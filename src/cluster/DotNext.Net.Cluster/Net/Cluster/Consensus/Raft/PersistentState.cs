@@ -1270,15 +1270,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         public Task InitializeAsync(CancellationToken token = default)
         {
-            Task result;
             if (token.IsCancellationRequested)
-                result = Task.FromCanceled(token);
-            else if (replayOnInitialize)
-                result = ReplayAsync(token);
-            else
-                result = Task.CompletedTask;
+                return Task.FromCanceled(token);
 
-            return result;
+            return replayOnInitialize ? ReplayAsync(token) : Task.CompletedTask;
         }
 
         private bool IsConsistent => state.Term <= lastTerm.VolatileRead();
