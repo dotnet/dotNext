@@ -248,9 +248,11 @@ namespace DotNext.Threading
             where T : QueuedSynchronizer
         {
             ValueTask result;
-            Monitor.Enter(synchronizer);
+            var lockTaken = false;
             try
             {
+                Monitor.Enter(synchronizer, ref lockTaken);
+
                 if (lockStateChecker(synchronizer))
                 {
                     result = new(synchronizer.DisposeAsync());
@@ -271,7 +273,8 @@ namespace DotNext.Threading
             }
             finally
             {
-                Monitor.Exit(synchronizer);
+                if (lockTaken)
+                    Monitor.Exit(synchronizer);
             }
 
             return result;
