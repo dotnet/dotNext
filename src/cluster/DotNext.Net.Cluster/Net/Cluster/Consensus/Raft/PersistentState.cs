@@ -44,7 +44,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         static PersistentState()
         {
-            IsConsistentPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<PersistentState>>(state => state.IsConsistent);
+            IsConsistentPredicate = IsConsistentCore;
+
+            static bool IsConsistentCore(PersistentState state) => state.IsConsistent;
         }
 
         private readonly DirectoryInfo location;
