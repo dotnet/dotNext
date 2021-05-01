@@ -378,15 +378,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private static SnapshotMetadata ReadMetadata(Stream input, Span<byte> buffer)
             {
-                if (input.Read(buffer) != SnapshotMetadata.Size)
-                    throw new EndOfStreamException();
+                buffer = buffer.Slice(0, SnapshotMetadata.Size);
+                input.ReadBlock(buffer);
                 return SnapshotMetadata.Deserialize(buffer);
             }
 
             private static async ValueTask<SnapshotMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
             {
                 buffer = buffer.Slice(0, SnapshotMetadata.Size);
-                await input.ReadAsync(buffer, token).ConfigureAwait(false);
+                await input.ReadBlockAsync(buffer, token).ConfigureAwait(false);
                 return SnapshotMetadata.Deserialize(buffer.Span);
             }
 
