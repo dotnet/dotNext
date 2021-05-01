@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -61,6 +62,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         // writer for this field must have exclusive async lock
         private Snapshot snapshot;
+
+        // diagnostic counters
+        private readonly Action<double>? readCounter, writeCounter, compactionCounter, commitCounter;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -127,11 +131,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
 
+            // counters
+            readCounter = ToDelegate(configuration.ReadCounter);
+            writeCounter = ToDelegate(configuration.WriteCounter);
+            compactionCounter = ToDelegate(configuration.CompactionCounter);
+            commitCounter = ToDelegate(configuration.CommitCounter);
+
             static int ComparePartitions(Partition x, Partition y)
             {
                 var xn = x.PartitionNumber;
                 return xn.CompareTo(y.PartitionNumber);
             }
+
+            static Action<double>? ToDelegate(IncrementingEventCounter? counter)
+                => counter is null ? null : counter.Increment;
         }
 
         /// <summary>
@@ -199,6 +212,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ValueTask.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig));
 #endif
 
+            readCounter?.Invoke(length);
             if (HasPartitions)
                 return ReadEntriesAsync(reader, session, startIndex, endIndex, (int)length, token);
 
@@ -431,6 +445,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state.Flush();
             await FlushAsync().ConfigureAwait(false);
             commitEvent.Set(true);
+            writeCounter?.Invoke(1D);
             return DetachPartitions(snapshotIndex);
 
             Snapshot CreateSnapshot()
@@ -446,6 +461,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            writeCounter?.Invoke(supplier.RemainingCount);
             Partition? partition;
             for (partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
             {
@@ -501,6 +518,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await partition.FlushAsync().ConfigureAwait(false);
             state.LastIndex = startIndex;
             state.Flush();
+            writeCounter?.Invoke(1D);
         }
 
         private async ValueTask<long> UnsafeAppendAsync<TEntry>(TEntry entry, bool flush, CancellationToken token)
@@ -517,6 +535,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 state.Flush();
             }
 
+            writeCounter?.Invoke(1D);
             return startIndex;
         }
 
@@ -877,6 +896,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
 
+            // update counter
+            compactionCounter?.Invoke(upperBoundIndex - snapshot.Index);
+
             // 3. Persist snapshot (cannot be canceled to avoid inconsistency)
             await snapshot.WriteAsync(sessionManager.CompactionSession, builder, upperBoundIndex).ConfigureAwait(false);
             await snapshot.FlushAsync().ConfigureAwait(false);
@@ -1022,6 +1044,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     count = 0L;
                 }
 
+                commitCounter?.Invoke(count);
                 return count;
             }
 

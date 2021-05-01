@@ -246,6 +246,42 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set;
             }
 
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of retrieved log entries.
+            /// </summary>
+            public IncrementingEventCounter? ReadCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of written log entries.
+            /// </summary>
+            public IncrementingEventCounter? WriteCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of squashed log entries.
+            /// </summary>
+            public IncrementingEventCounter? CompactionCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of committed log entries.
+            /// </summary>
+            public IncrementingEventCounter? CommitCounter
+            {
+                get;
+                set;
+            }
+
             internal ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? CreateBufferingConsumer()
                 => CopyOnReadOptions is null ? null : new BufferingLogEntryConsumer(CopyOnReadOptions);
         }
