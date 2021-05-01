@@ -176,9 +176,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly Action<LockState> releaseReadLock, releaseWriteLock, releaseCompactionLock, releaseExclusiveLock;
             private long lockVersion; // volatile
 
-            internal LockManager(long concurrencyLevel)
+            internal LockManager(IAsyncLockSettings configuration)
             {
-                state = new(concurrencyLevel);
+                state = new(configuration.ConcurrencyLevel);
                 acquireReadLock = LockState.TryAcquireReadLock;
                 releaseReadLock = LockState.ReleaseReadLock;
                 acquireWriteLock = LockState.TryAcquireWriteLock;
@@ -188,6 +188,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 acquireExclusiveLock = LockState.TryAcquireExclusiveLock;
                 releaseExclusiveLock = LockState.ReleaseExclusiveLock;
                 lockVersion = long.MinValue;
+
+                // setup metrics
+                if (configuration.LockContentionCounter is not null)
+                    LockContentionCounter = configuration.LockContentionCounter;
+                if (configuration.LockDurationCounter is not null)
+                    LockDurationCounter = configuration.LockDurationCounter;
             }
 
             internal Task AcquireExclusiveLockAsync(CancellationToken token = default)

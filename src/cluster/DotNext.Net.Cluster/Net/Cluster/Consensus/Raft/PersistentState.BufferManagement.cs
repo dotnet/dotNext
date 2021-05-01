@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryAllocator<IMemoryOwner<byte>?>? cacheAllocator;
             private readonly MemoryAllocator<LogEntry> entryAllocator;
 
-            internal BufferManager(Options options)
+            internal BufferManager(IBufferManagerSettings options)
             {
                 if (options.UseCaching)
                 {

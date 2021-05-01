@@ -89,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent = new(false);
             bufferManager = new(configuration);
             sessionManager = new(configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
-            syncRoot = new(sessionManager.Capacity);
+            syncRoot = new(configuration);
             initialEntry = new(sessionManager.WriteSession.Buffer);
             evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
 
