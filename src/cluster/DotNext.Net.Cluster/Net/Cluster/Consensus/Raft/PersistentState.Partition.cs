@@ -154,7 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 IMemoryOwner<byte>? cachedContent;
                 if (lookupCache.IsEmpty)
                 {
-                    reader.BaseStream.Position = (long)relativeIndex * LogEntryMetadata.Size;
+                    reader.BaseStream.Position = GetMetadataOffset(relativeIndex);
                     metadata = await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false);
                     cachedContent = null;
                 }
@@ -205,7 +205,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lookupCache[index] = LogEntryMetadata.Create(entry, offset, entry.Length);
             }
 
-            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
+            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory, Memory<byte> buffer)
             {
                 Debug.Assert(entryCache.IsEmpty is false);
                 Debug.Assert(lookupCache.IsEmpty is false);
@@ -218,7 +218,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     try
                     {
-                        Position = lookupCache[index].Offset;
+                        await WriteMetadataAsync(this, in lookupCache, index, buffer, out var offset).ConfigureAwait(false);
+                        Position = offset;
                         await WriteAsync(content.Memory).ConfigureAwait(false);
                     }
                     finally
@@ -230,11 +231,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                     }
                 }
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static ValueTask WriteMetadataAsync(Stream stream, in MemoryOwner<LogEntryMetadata> lookupCache, nint index, Memory<byte> buffer, out long contentOffset)
+                {
+                    ref var metadata = ref lookupCache[index];
+                    contentOffset = metadata.Offset;
+                    stream.Position = GetMetadataOffset(index);
+                    return Partition.WriteMetadataAsync(stream, in metadata, buffer);
+                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool IsFirstEntry(nint index)
                 => index == 0 || index == 1 && FirstIndex == 0L;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static long GetMetadataOffset(nint index)
+                => (long)index * LogEntryMetadata.Size;
 
             private ValueTask WriteFastAsync(in CachedLogEntry entry, nint index)
             {
@@ -289,7 +303,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
 
                 // record new log entry to the allocation table
-                Position = (long)index * LogEntryMetadata.Size;
+                Position = GetMetadataOffset(index);
                 await WriteMetadataAsync(this, metadata, buffer).ConfigureAwait(false);
 
                 // update cache

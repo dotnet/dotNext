@@ -182,6 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
+            /// <inheritdoc />
             int IAsyncLockSettings.ConcurrencyLevel => MaxConcurrentReads;
 
             /// <summary>

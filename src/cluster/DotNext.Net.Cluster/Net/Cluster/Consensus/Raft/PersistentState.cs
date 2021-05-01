@@ -60,11 +60,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool replayOnInitialize, writeThrough, evictOnCommit;
         private readonly CompactionMode compaction;
 
-        // writer for this field must have exclusive async lock
-        private Snapshot snapshot;
-
         // diagnostic counters
         private readonly Action<double>? readCounter, writeCounter, compactionCounter, commitCounter;
+
+        // writer for this field must have exclusive async lock
+        private Snapshot snapshot;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -1229,7 +1229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // Remove log entry from the cache according to eviction policy
                     if (entry.IsBuffered)
                     {
-                        await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
+                        await partition.PersistCachedEntryAsync(startIndex, evictOnCommit, sessionManager.WriteSession.Buffer).ConfigureAwait(false);
 
                         // Flush partition if we are finished or at the last entry in it.
                         // This allows to optimize access to disk especially when cached entries are small entries
