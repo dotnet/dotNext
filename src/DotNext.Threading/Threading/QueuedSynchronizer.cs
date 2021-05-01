@@ -78,8 +78,7 @@ namespace DotNext.Threading
             }
         }
 
-        private Action<double>? contentionCounter;
-        private Action<double>? lockDurationCounter;
+        private Action<double>? contentionCounter, lockDurationCounter;
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
