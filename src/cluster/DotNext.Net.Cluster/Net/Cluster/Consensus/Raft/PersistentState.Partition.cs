@@ -112,8 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
                     var source = buffer.Slice(0, count * LogEntryMetadata.Size);
-                    if (stream.Read(source) < source.Length)
-                        throw new EndOfStreamException();
+                    stream.ReadBlock(source);
                     for (var reader = new SpanReader<byte>(source); count > 0; count--, index++)
                     {
                         lookupCache[index] = new LogEntryMetadata(ref reader);
