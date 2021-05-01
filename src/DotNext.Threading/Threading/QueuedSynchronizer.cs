@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,13 +78,42 @@ namespace DotNext.Threading
             }
         }
 
-#if !NETSTANDARD2_1
-        private ulong contentionCount;
-#endif
+        private IncrementingEventCounter? contentionCounter;
+        private EventCounter? lockDurationCounter;
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
         {
+        }
+
+        /// <summary>
+        /// Sets counter for lock contention.
+        /// </summary>
+        public IncrementingEventCounter LockContentionCounter
+        {
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            {
+                contentionCounter = value ?? throw new ArgumentNullException(nameof(value));
+            }
+        }
+
+        /// <summary>
+        /// Sets counter of lock duration, in milliseconds.
+        /// </summary>
+        public EventCounter LockDurationCounter
+        {
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            {
+                lockDurationCounter = value ?? throw new ArgumentNullException(nameof(value));
+            }
         }
 
         /// <inheritdoc/>
@@ -98,6 +128,7 @@ namespace DotNext.Threading
             if (ReferenceEquals(tail, node))
                 tail = node.Previous;
             node.DetachNode();
+            lockDurationCounter?.WriteMetric(node.Age.TotalMilliseconds);
             return inList;
         }
 
@@ -157,21 +188,11 @@ namespace DotNext.Threading
             else
                 tail = manager.CreateNode(tail);
 
-#if !NETSTANDARD2_1
-            Interlocked.Increment(ref contentionCount);
-#endif
+            contentionCounter?.Increment();
             return timeout == InfiniteTimeSpan ?
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
         }
-
-#if !NETSTANDARD2_1
-        /// <summary>
-        /// Gets the number of times there was contention when trying to take the asynchronous lock.
-        /// </summary>
-        [CLSCompliant(false)]
-        public ulong LockContentionCount => contentionCount.VolatileRead();
-#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected static bool TryAcquire<TNode, TManager>(ref TManager manager)
