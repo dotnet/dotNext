@@ -104,7 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough);
+                    var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough, initialSize);
                     partition.PopulateCache(sessionManager.WriteSession.Buffer.Span);
                     partitionTable.Add(partition);
                 }
@@ -181,12 +181,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected Memory<byte> Buffer
             => compaction == CompactionMode.Sequential ? sessionManager.WriteSession.Buffer : throw new InvalidOperationException();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Partition CreatePartition(long partitionNumber)
-        {
-            var result = new Partition(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough);
-            result.Allocate(initialSize);
-            return result;
-        }
+            => new Partition(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough, initialSize);
 
         private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {

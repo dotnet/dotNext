@@ -32,8 +32,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private MemoryOwner<IMemoryOwner<byte>?> entryCache;
             private Partition? previous, next;
 
-            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough))
+            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize + GetAllocationTableSize(recordsPerPartition))
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
@@ -99,12 +99,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 previous = null;
             }
 
-            private long PayloadOffset => Math.BigMul(LogEntryMetadata.Size, Capacity);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static long GetAllocationTableSize(int recordsPerPartition)
+                => Math.BigMul(LogEntryMetadata.Size, recordsPerPartition);
+
+            private long PayloadOffset => GetAllocationTableSize(Capacity);
 
             internal long LastIndex => FirstIndex + Capacity - 1;
-
-            // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6
-            internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
 
             private static void PopulateCache(Stream stream, Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
             {
@@ -350,7 +351,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const string TempFileName = "snapshot.new";
 
             internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool writeThrough, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough))
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough), 0L)
             {
             }
 

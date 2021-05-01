@@ -136,9 +136,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
             private readonly int bufferSize;
 
-            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize)
             {
                 fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+
+                // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6. Also need to change initial size for snapshot
+                if (fs.Length == 0L && initialSize > 0L)
+                    fs.SetLength(initialSize);
+
                 this.bufferSize = bufferSize;
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
