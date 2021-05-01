@@ -134,10 +134,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // assumes that they are overridden and do async calls inefficiently
             private readonly FileStream fs;
             private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
+            private readonly int bufferSize;
 
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
             {
                 fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+                this.bufferSize = bufferSize;
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
                 {
@@ -149,6 +151,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         reader = new(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
                 }
             }
+
+            // This method is used for cache initialization
+            private protected FileStream CreateReaderStream()
+                => new FileStream(fs.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.SequentialScan);
 
             public sealed override bool CanRead => fs.CanRead;
 
@@ -242,7 +248,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal Task FlushAsync(in DataAccessSession session, CancellationToken token)
                 => GetReadSessionStream(session).FlushAsync(token);
 
-            internal abstract void PopulateCache(in DataAccessSession session);
+            internal abstract void PopulateCache(Span<byte> buffer);
 
             protected override void Dispose(bool disposing)
             {

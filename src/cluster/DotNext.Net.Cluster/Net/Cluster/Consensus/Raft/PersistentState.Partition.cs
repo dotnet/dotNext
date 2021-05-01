@@ -106,13 +106,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6
             internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
 
-            private void PopulateCache(Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
+            private static void PopulateCache(Stream stream, Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
             {
                 for (int index = 0, count; index < lookupCache.Length;)
                 {
                     count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
                     var source = buffer.Slice(0, count * LogEntryMetadata.Size);
-                    if (Read(source) < source.Length)
+                    if (stream.Read(source) < source.Length)
                         throw new EndOfStreamException();
                     for (var reader = new SpanReader<byte>(source); count > 0; count--, index++)
                     {
@@ -124,10 +124,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal bool Contains(long recordIndex)
                 => recordIndex >= FirstIndex && recordIndex <= LastIndex;
 
-            internal override void PopulateCache(in DataAccessSession session)
+            internal override void PopulateCache(Span<byte> buffer)
             {
                 if (!lookupCache.IsEmpty)
-                    PopulateCache(session.Buffer.Span, lookupCache.Memory.Span.Slice(0, Capacity));
+                {
+                    using var fs = CreateReaderStream();
+                    PopulateCache(fs, buffer, lookupCache.Memory.Span.Slice(0, Capacity));
+                }
             }
 
             private static async ValueTask<LogEntryMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
@@ -360,12 +363,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
             }
 
-            internal override void PopulateCache(in DataAccessSession session)
-                => Index = Length > 0L ? ReadMetadata(this).Index : 0L;
-
-            private static SnapshotMetadata ReadMetadata(Stream input)
+            internal override void PopulateCache(Span<byte> buffer)
             {
-                Span<byte> buffer = stackalloc byte[SnapshotMetadata.Size];
+                if (Length > 0L)
+                {
+                    using var fs = CreateReaderStream();
+                    Index = ReadMetadata(fs, buffer).Index;
+                }
+                else
+                {
+                    Index = 0L;
+                }
+            }
+
+            private static SnapshotMetadata ReadMetadata(Stream input, Span<byte> buffer)
+            {
                 if (input.Read(buffer) != SnapshotMetadata.Size)
                     throw new EndOfStreamException();
                 return SnapshotMetadata.Deserialize(buffer);

@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
                     var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough);
-                    partition.PopulateCache(sessionManager.WriteSession);
+                    partition.PopulateCache(sessionManager.WriteSession.Buffer.Span);
                     partitionTable.Add(partition);
                 }
             }
@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             partitionTable.Clear();
             state = new(path);
             snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
-            snapshot.PopulateCache(sessionManager.WriteSession);
+            snapshot.PopulateCache(sessionManager.WriteSession.Buffer.Span);
 
             // counters
             readCounter = ToDelegate(configuration.ReadCounter);
@@ -451,7 +451,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Snapshot CreateSnapshot()
             {
                 var result = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
-                result.PopulateCache(sessionManager.WriteSession);
+                result.PopulateCache(sessionManager.WriteSession.Buffer.Span);
                 return result;
             }
         }
