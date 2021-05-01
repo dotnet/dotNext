@@ -105,7 +105,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
                     var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough, initialSize);
-                    partition.PopulateCache(sessionManager.WriteSession.Buffer.Span);
                     partitionTable.Add(partition);
                 }
             }
@@ -129,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             partitionTable.Clear();
             state = new(path);
             snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
-            snapshot.PopulateCache(sessionManager.WriteSession.Buffer.Span);
+            snapshot.Initialize();
 
             // counters
             readCounter = ToDelegate(configuration.ReadCounter);
@@ -246,8 +245,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
 
                 // enumerate over partitions in search of log entries
-                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); list[listIndex++] = entry, startIndex++)
-                    entry = await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false);
+                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); list[listIndex++] = entry, startIndex++, token.ThrowIfCancellationRequested())
+                    entry = partition.Read(session, startIndex, true);
 
                 return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[(nint)0].SnapshotIndex, token).ConfigureAwait(false);
             }
@@ -448,7 +447,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Snapshot CreateSnapshot()
             {
                 var result = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
-                result.PopulateCache(sessionManager.WriteSession.Buffer.Span);
+                result.Initialize();
                 return result;
             }
         }
@@ -887,9 +886,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // 2. Do compaction
             Partition? current = head;
             Debug.Assert(current is not null);
-            for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++)
+            for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
             {
-                entry = await current.ReadAsync(sessionManager.CompactionSession, currentIndex, true, token).ConfigureAwait(false);
+                entry = current.Read(sessionManager.CompactionSession, currentIndex, true);
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
 
@@ -1215,18 +1214,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {
             var commitIndex = state.CommitIndex;
-            for (Partition? partition = null; startIndex <= commitIndex; state.LastApplied = startIndex++)
+            for (Partition? partition = null; startIndex <= commitIndex; state.LastApplied = startIndex++, token.ThrowIfCancellationRequested())
             {
                 if (TryGetPartition(startIndex, ref partition))
                 {
-                    var entry = await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, token).ConfigureAwait(false);
+                    var entry = partition.Read(sessionManager.WriteSession, startIndex, true);
                     await ApplyAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
 
                     // Remove log entry from the cache according to eviction policy
                     if (entry.IsBuffered)
                     {
-                        await partition.PersistCachedEntryAsync(startIndex, evictOnCommit, sessionManager.WriteSession.Buffer).ConfigureAwait(false);
+                        await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
 
                         // Flush partition if we are finished or at the last entry in it.
                         // This allows to optimize access to disk especially when cached entries are small entries

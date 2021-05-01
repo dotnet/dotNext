@@ -28,23 +28,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         internal readonly struct BufferManager
         {
-            private readonly MemoryAllocator<LogEntryMetadata>? metadataAllocator;
             private readonly MemoryAllocator<IMemoryOwner<byte>?>? cacheAllocator;
             private readonly MemoryAllocator<LogEntry> entryAllocator;
 
             internal BufferManager(IBufferManagerSettings options)
             {
-                if (options.UseCaching)
-                {
-                    metadataAllocator = options.GetMemoryAllocator<LogEntryMetadata>();
-                    cacheAllocator = options.GetMemoryAllocator<IMemoryOwner<byte>?>();
-                }
-                else
-                {
-                    metadataAllocator = null;
-                    cacheAllocator = null;
-                }
-
+                cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<IMemoryOwner<byte>?>() : null;
                 BufferAllocator = options.GetMemoryAllocator<byte>();
                 entryAllocator = options.GetMemoryAllocator<LogEntry>();
             }
@@ -55,9 +44,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal PooledBufferWriter<byte> CreateBufferWriter(long length)
                 => length <= int.MaxValue ? new(BufferAllocator, (int)length) : throw new InsufficientMemoryException();
-
-            internal MemoryOwner<LogEntryMetadata> AllocMetadataCache(int recordsPerPartition)
-                => metadataAllocator is null ? default : metadataAllocator.Invoke(recordsPerPartition, true);
 
             internal MemoryOwner<IMemoryOwner<byte>?> AllocLogEntryCache(int recordsPerPartition)
                 => cacheAllocator is null ? default : cacheAllocator.Invoke(recordsPerPartition, true);

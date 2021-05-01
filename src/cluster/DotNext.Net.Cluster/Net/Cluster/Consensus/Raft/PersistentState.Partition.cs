@@ -3,7 +3,9 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
@@ -12,6 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
+    using IO.MemoryMappedFiles;
     using IntegrityException = IO.Log.IntegrityException;
 
     public partial class PersistentState
@@ -28,7 +31,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal readonly long FirstIndex, PartitionNumber;
             internal readonly int Capacity;    // max number of entries
-            private MemoryOwner<LogEntryMetadata> lookupCache;
+            private readonly MemoryMappedFile mappedCache;
+            private readonly MemoryMappedViewAccessor lookupCacheAccessor;
             private MemoryOwner<IMemoryOwner<byte>?> entryCache;
             private Partition? previous, next;
 
@@ -38,7 +42,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
                 PartitionNumber = partitionNumber;
-                lookupCache = manager.AllocMetadataCache(recordsPerPartition);
+                mappedCache = CreateMemoryMappedFile();
+                lookupCacheAccessor = mappedCache.CreateViewAccessor(0L, PayloadOffset);
                 entryCache = manager.AllocLogEntryCache(recordsPerPartition);
             }
 
@@ -107,65 +112,70 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long LastIndex => FirstIndex + Capacity - 1;
 
-            private static void PopulateCache(Stream stream, Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
-            {
-                for (int index = 0, count; index < lookupCache.Length;)
-                {
-                    count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
-                    var source = buffer.Slice(0, count * LogEntryMetadata.Size);
-                    stream.ReadBlock(source);
-                    for (var reader = new SpanReader<byte>(source); count > 0; count--, index++)
-                    {
-                        lookupCache[index] = new LogEntryMetadata(ref reader);
-                    }
-                }
-            }
-
             internal bool Contains(long recordIndex)
                 => recordIndex >= FirstIndex && recordIndex <= LastIndex;
 
-            internal override void PopulateCache(Span<byte> buffer)
+            public override Task FlushAsync(CancellationToken token = default)
             {
-                if (!lookupCache.IsEmpty)
+                try
                 {
-                    using var fs = CreateReaderStream();
-                    PopulateCache(fs, buffer, lookupCache.Memory.Span.Slice(0, Capacity));
+                    lookupCacheAccessor.Flush();
+                }
+                catch (Exception e)
+                {
+                    return Task.FromException(e);
+                }
+
+                return base.FlushAsync(token);
+            }
+
+            private static unsafe Span<byte> GetMetadata(nint index, SafeBuffer buffer, out bool acquired)
+            {
+                byte* ptr = null;
+                buffer.AcquirePointer(ref ptr);
+                acquired = true;
+                return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr[0], index * LogEntryMetadata.Size), LogEntryMetadata.Size);
+            }
+
+            private void ReadMetadata(nint index, out LogEntryMetadata metadata)
+            {
+                var handle = lookupCacheAccessor.SafeMemoryMappedViewHandle;
+                var acquired = false;
+                try
+                {
+                    var reader = new SpanReader<byte>(GetMetadata(index, handle, out acquired));
+                    metadata = new LogEntryMetadata(ref reader);
+                }
+                finally
+                {
+                    if (acquired)
+                        handle.ReleasePointer();
                 }
             }
 
-            private static async ValueTask<LogEntryMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
+            private void WriteMetadata(nint index, in LogEntryMetadata metadata)
             {
-                buffer = buffer.Slice(0, LogEntryMetadata.Size);
-                await input.ReadBlockAsync(buffer, token).ConfigureAwait(false);
-                return LogEntryMetadata.Deserialize(buffer.Span);
-            }
-
-            private static ValueTask WriteMetadataAsync(Stream output, in LogEntryMetadata metadata, Memory<byte> buffer, CancellationToken token = default)
-            {
-                buffer = buffer.Slice(0, LogEntryMetadata.Size);
-                metadata.Serialize(buffer.Span);
-                return output.WriteAsync(buffer, token);
+                var handle = lookupCacheAccessor.SafeMemoryMappedViewHandle;
+                var acquired = false;
+                try
+                {
+                    var reader = new SpanWriter<byte>(GetMetadata(index, handle, out acquired));
+                    metadata.Serialize(ref reader);
+                }
+                finally
+                {
+                    if (acquired)
+                        handle.ReleasePointer();
+                }
             }
 
             // completed synchronously if metadata is cached
-            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex, CancellationToken token)
+            private LogEntry Read(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex)
             {
                 Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
 
-                // find pointer to the content
-                LogEntryMetadata metadata;
-                IMemoryOwner<byte>? cachedContent;
-                if (lookupCache.IsEmpty)
-                {
-                    reader.BaseStream.Position = GetMetadataOffset(relativeIndex);
-                    metadata = await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false);
-                    cachedContent = null;
-                }
-                else
-                {
-                    metadata = lookupCache[relativeIndex];
-                    cachedContent = entryCache[relativeIndex];
-                }
+                ReadMetadata(relativeIndex, out var metadata);
+                var cachedContent = entryCache.IsEmpty ? null : entryCache[relativeIndex];
 
                 LogEntry result;
                 if (cachedContent is not null)
@@ -180,7 +190,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // We don't need to analyze read optimization hint.
             // Metadata reconstruction is cheap operation (especially if metadata cache is enabled).
-            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
+            internal LogEntry Read(in DataAccessSession session, long index, bool absoluteIndex)
             {
                 // calculate relative index
                 nint relativeIndex;
@@ -194,24 +204,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     index += FirstIndex;
                 }
 
-                return ReadAsync(GetReadSessionStream(in session), session.Buffer, relativeIndex, index, token);
+                return Read(GetReadSessionStream(in session), session.Buffer, relativeIndex, index);
             }
 
-            private void UpdateCache(in CachedLogEntry entry, nint index, long offset)
+            private void UpdateCache(in CachedLogEntry entry, nint index)
             {
-                Debug.Assert(lookupCache.IsEmpty is false);
+                Debug.Assert(entryCache.IsEmpty is false);
                 Debug.Assert(index >= 0 && index < entryCache.Length);
 
                 ref var cacheEntry = ref entryCache[index];
                 cacheEntry?.Dispose();
                 cacheEntry = entry.Content;
-                lookupCache[index] = LogEntryMetadata.Create(entry, offset, entry.Length);
             }
 
-            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory, Memory<byte> buffer)
+            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
             {
                 Debug.Assert(entryCache.IsEmpty is false);
-                Debug.Assert(lookupCache.IsEmpty is false);
 
                 var index = ToRelativeIndex(absoluteIndex);
                 Debug.Assert(index >= 0 && index < entryCache.Length);
@@ -221,8 +229,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     try
                     {
-                        await WriteMetadataAsync(this, in lookupCache, index, buffer, out var offset).ConfigureAwait(false);
-                        Position = offset;
+                        ReadMetadata(index, out var metadata);
+                        Position = metadata.Offset;
                         await WriteAsync(content.Memory).ConfigureAwait(false);
                     }
                     finally
@@ -234,15 +242,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                     }
                 }
-
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                static ValueTask WriteMetadataAsync(Stream stream, in MemoryOwner<LogEntryMetadata> lookupCache, nint index, Memory<byte> buffer, out long contentOffset)
-                {
-                    ref var metadata = ref lookupCache[index];
-                    contentOffset = metadata.Offset;
-                    stream.Position = GetMetadataOffset(index);
-                    return Partition.WriteMetadataAsync(stream, in metadata, buffer);
-                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -250,88 +249,51 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => index == 0 || index == 1 && FirstIndex == 0L;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static long GetMetadataOffset(nint index)
-                => (long)index * LogEntryMetadata.Size;
-
-            private ValueTask WriteFastAsync(in CachedLogEntry entry, nint index)
-            {
-                var result = new ValueTask();
-                try
-                {
-                    ref var cacheEntry = ref entryCache[index];
-                    cacheEntry?.Dispose();
-                    cacheEntry = entry.Content;
-                    lookupCache[index] = LogEntryMetadata.Create(in entry, IsFirstEntry(index) ? PayloadOffset : lookupCache[index - 1].End);
-                }
-                catch (Exception e)
-                {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException(e));
-#else
-                    result = ValueTask.FromException(e);
-#endif
-                }
-
-                return result;
-            }
-
-            private async ValueTask WriteSlowAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
-                where TEntry : notnull, IRaftLogEntry
-            {
-                // calculate offset of the previous entry
-                long offset;
-                LogEntryMetadata metadata;
-                if (IsFirstEntry(index))
-                {
-                    offset = PayloadOffset;
-                }
-                else if (lookupCache.IsEmpty)
-                {
-                    // read content offset and the length of the previous entry
-                    Position = (index - 1L) * LogEntryMetadata.Size;
-                    metadata = await ReadMetadataAsync(this, buffer).ConfigureAwait(false);
-                    Debug.Assert(metadata.IsValid, "Previous entry doesn't exist for unknown reason");
-                    offset = metadata.End;
-                }
-                else
-                {
-                    metadata = lookupCache[index - 1];
-                    Debug.Assert(metadata.IsValid, "Previous entry doesn't exist for unknown reason");
-                    offset = metadata.End;
-                }
-
-                // write content
-                Position = offset;
-                await entry.WriteToAsync(this, buffer).ConfigureAwait(false);
-                metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
-
-                // record new log entry to the allocation table
-                Position = GetMetadataOffset(index);
-                await WriteMetadataAsync(this, metadata, buffer).ConfigureAwait(false);
-
-                // update cache
-                if (lookupCache.IsEmpty is false)
-                    lookupCache[index] = metadata;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long absoluteIndex)
+            internal async ValueTask WriteAsync<TEntry>(DataAccessSession session, TEntry entry, long absoluteIndex)
                 where TEntry : notnull, IRaftLogEntry
             {
                 // write operation always expects absolute index so we need to convert it to the relative index
                 var relativeIndex = ToRelativeIndex(absoluteIndex);
                 Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
 
-                return typeof(TEntry) == typeof(CachedLogEntry) ?
-                    WriteFastAsync(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex) :
-                    WriteSlowAsync(entry, relativeIndex, session.Buffer);
+                // calculate offset of the previous entry
+                long offset;
+                LogEntryMetadata metadata;
+                if (IsFirstEntry(relativeIndex))
+                {
+                    offset = PayloadOffset;
+                }
+                else
+                {
+                    ReadMetadata(relativeIndex - 1, out metadata);
+                    Debug.Assert(metadata.IsValid, "Previous entry doesn't exist for unknown reason");
+                    offset = metadata.End;
+                }
+
+                if (typeof(TEntry) == typeof(CachedLogEntry))
+                {
+                    // fast path - just add cached log entry to the cache table
+                    UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex);
+                    metadata = LogEntryMetadata.Create(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), offset);
+                }
+                else
+                {
+                    // slow path - persist log entry
+                    Position = offset;
+                    await entry.WriteToAsync(this, session.Buffer).ConfigureAwait(false);
+                    metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
+                }
+
+                // save new log entry to the allocation table
+                WriteMetadata(relativeIndex, in metadata);
             }
 
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
                 {
-                    lookupCache.Dispose();
+                    lookupCacheAccessor.Dispose();
+                    mappedCache.Dispose();
                     entryCache.ReleaseAll();
                     previous = next = null;
                 }
@@ -363,37 +325,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
             }
 
-            internal override void PopulateCache(Span<byte> buffer)
-            {
-                if (Length > 0L)
-                {
-                    using var fs = CreateReaderStream();
-                    Index = ReadMetadata(fs, buffer).Index;
-                }
-                else
-                {
-                    Index = 0L;
-                }
-            }
+            internal void Initialize()
+                => Index = Length > 0L ? ReadMetadata(this).Index : 0L;
 
-            private static SnapshotMetadata ReadMetadata(Stream input, Span<byte> buffer)
+            private static SnapshotMetadata ReadMetadata(Stream input)
             {
-                buffer = buffer.Slice(0, SnapshotMetadata.Size);
+                Span<byte> buffer = stackalloc byte[SnapshotMetadata.Size];
                 input.ReadBlock(buffer);
-                return SnapshotMetadata.Deserialize(buffer);
+                var reader = new SpanReader<byte>(buffer);
+                return new SnapshotMetadata(ref reader);
             }
 
             private static async ValueTask<SnapshotMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
             {
                 buffer = buffer.Slice(0, SnapshotMetadata.Size);
                 await input.ReadBlockAsync(buffer, token).ConfigureAwait(false);
-                return SnapshotMetadata.Deserialize(buffer.Span);
+                return Deserialize(buffer.Span);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static SnapshotMetadata Deserialize(Span<byte> metadata)
+                {
+                    var reader = new SpanReader<byte>(metadata);
+                    return new SnapshotMetadata(ref reader);
+                }
             }
 
             private static ValueTask WriteMetadataAsync(Stream output, in SnapshotMetadata metadata, Memory<byte> buffer, CancellationToken token = default)
             {
                 buffer = buffer.Slice(0, SnapshotMetadata.Size);
-                metadata.Serialize(buffer.Span);
+                var writer = new SpanWriter<byte>(buffer.Span);
+                metadata.Serialize(ref writer);
                 return output.WriteAsync(buffer, token);
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -72,18 +73,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 writer.WriteUInt32((uint)flags, true);
                 writer.WriteInt32(identifier, true);
             }
-
-            internal void Serialize(Span<byte> output)
-            {
-                var writer = new SpanWriter<byte>(output);
-                Serialize(ref writer);
-            }
-
-            internal static LogEntryMetadata Deserialize(ReadOnlySpan<byte> input)
-            {
-                var reader = new SpanReader<byte>(input);
-                return new(ref reader);
-            }
         }
 
         [StructLayout(LayoutKind.Auto)]
@@ -99,7 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 RecordMetadata = metadata;
             }
 
-            private SnapshotMetadata(ref SpanReader<byte> reader)
+            internal SnapshotMetadata(ref SpanReader<byte> reader)
             {
                 Index = reader.ReadInt64(true);
                 RecordMetadata = new(ref reader);
@@ -113,18 +102,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 writer.WriteInt64(Index, true);
                 RecordMetadata.Serialize(ref writer);
-            }
-
-            internal void Serialize(Span<byte> output)
-            {
-                var writer = new SpanWriter<byte>(output);
-                Serialize(ref writer);
-            }
-
-            internal static SnapshotMetadata Deserialize(ReadOnlySpan<byte> input)
-            {
-                var reader = new SpanReader<byte>(input);
-                return new(ref reader);
             }
         }
 
@@ -157,9 +134,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            // This method is used for cache initialization
-            private protected FileStream CreateReaderStream()
-                => new FileStream(fs.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.SequentialScan);
+            private protected MemoryMappedFile CreateMemoryMappedFile()
+                => MemoryMappedFile.CreateFromFile(fs, null, 0L, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
 
             public sealed override bool CanRead => fs.CanRead;
 
@@ -241,7 +217,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public sealed override void CopyTo(Stream destination, int bufferSize)
                 => fs.CopyTo(destination, bufferSize);
 
-            public sealed override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
+            public override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
 
             public sealed override void Flush() => fs.Flush(true);
 
@@ -249,11 +225,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
-
-            internal Task FlushAsync(in DataAccessSession session, CancellationToken token)
-                => GetReadSessionStream(session).FlushAsync(token);
-
-            internal abstract void PopulateCache(Span<byte> buffer);
 
             protected override void Dispose(bool disposing)
             {
