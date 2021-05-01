@@ -78,8 +78,8 @@ namespace DotNext.Threading
             }
         }
 
-        private IncrementingEventCounter? contentionCounter;
-        private EventCounter? lockDurationCounter;
+        private Action<double>? contentionCounter;
+        private Action<double>? lockDurationCounter;
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
@@ -97,7 +97,7 @@ namespace DotNext.Threading
             init
 #endif
             {
-                contentionCounter = value ?? throw new ArgumentNullException(nameof(value));
+                contentionCounter = (value ?? throw new ArgumentNullException(nameof(value))).Increment;
             }
         }
 
@@ -112,7 +112,7 @@ namespace DotNext.Threading
             init
 #endif
             {
-                lockDurationCounter = value ?? throw new ArgumentNullException(nameof(value));
+                lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
             }
         }
 
@@ -128,7 +128,7 @@ namespace DotNext.Threading
             if (ReferenceEquals(tail, node))
                 tail = node.Previous;
             node.DetachNode();
-            lockDurationCounter?.WriteMetric(node.Age.TotalMilliseconds);
+            lockDurationCounter?.Invoke(node.Age.TotalMilliseconds);
             return inList;
         }
 
@@ -188,7 +188,7 @@ namespace DotNext.Threading
             else
                 tail = manager.CreateNode(tail);
 
-            contentionCounter?.Increment();
+            contentionCounter?.Invoke(1L);
             return timeout == InfiniteTimeSpan ?
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
@@ -313,6 +313,8 @@ namespace DotNext.Threading
             if (disposing)
             {
                 NotifyObjectDisposed();
+                lockDurationCounter = null;
+                lockDurationCounter = null;
             }
 
             base.Dispose(disposing);
