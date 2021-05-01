@@ -66,6 +66,7 @@ This release is primarily focused on improvements of stuff related to cluster pr
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.1.0">DotNext.Threading 3.1.0</a>
 * `AsyncTigger` now supports fairness policy when resuming suspended callers
+* Added support of diagnostics counters
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.1.0">DotNext.IO 3.1.0</a>
 * Added `SkipAsync` method to `IAsyncBinaryReader` interface
