@@ -308,8 +308,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const string TempFileName = "snapshot.new";
 
             internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool writeThrough, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough), 0L)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough), 0L, out var actualLength)
             {
+                IsEmpty = actualLength == 0L;
+            }
+
+            // cache flag that allows to avoid expensive access to Length that can cause native call
+            internal bool IsEmpty
+            {
+                get;
+                private set;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -321,7 +329,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal void Initialize()
-                => Index = Length > 0L ? ReadMetadata(this).Index : 0L;
+                => Index = IsEmpty ? 0L : ReadMetadata(this).Index;
 
             private static SnapshotMetadata ReadMetadata(Stream input)
             {
@@ -357,10 +365,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 where TEntry : notnull, IRaftLogEntry
             {
                 Index = index;
+                IsEmpty = false;
                 Position = SnapshotMetadata.Size;
                 await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
                 var metadata = SnapshotMetadata.Create(entry, index, Length - SnapshotMetadata.Size);
-                Position = 0;
+                Position = 0L;
                 await WriteMetadataAsync(this, metadata, buffer, token).ConfigureAwait(false);
             }
 

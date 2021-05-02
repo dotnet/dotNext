@@ -111,11 +111,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly int bufferSize;
 
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize)
+                : this(fileName, bufferSize, readersCount, options, initialSize, out _)
+            {
+            }
+
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize, out long actualLength)
             {
                 fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+                actualLength = fs.Length;
 
                 // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6. Also need to change initial size for snapshot
-                if (fs.Length == 0L && initialSize > 0L)
+                if (actualLength == 0L && initialSize > 0L)
                     fs.SetLength(initialSize);
 
                 this.bufferSize = bufferSize;

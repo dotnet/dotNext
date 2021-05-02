@@ -212,7 +212,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (HasPartitions)
                 return ReadEntriesAsync(reader, session, startIndex, endIndex, (int)length, token);
 
-            if (snapshot.Length > 0L)
+            if (!snapshot.IsEmpty)
                 return ReadSnapshotAsync(reader, session, token);
 
             return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
@@ -224,7 +224,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 using var list = bufferManager.AllocLogEntryList(length);
 
                 // try to read snapshot out of the loop
-                if (snapshot.Length > 0L && startIndex <= snapshot.Index)
+                if (!snapshot.IsEmpty && startIndex <= snapshot.Index)
                 {
                     entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
                     list[(nint)0] = entry;
@@ -877,7 +877,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             LogEntry entry;
 
             // 1. Initialize builder with snapshot record
-            if (snapshot.Length > 0L)
+            if (!snapshot.IsEmpty)
             {
                 entry = await snapshot.ReadAsync(sessionManager.CompactionSession, token).ConfigureAwait(false);
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
@@ -1262,7 +1262,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 long startIndex;
 
                 // 1. Apply snapshot if it not empty
-                if (snapshot.Length > 0L)
+                if (!snapshot.IsEmpty)
                 {
                     entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                     await ApplyAsync(entry).ConfigureAwait(false);
