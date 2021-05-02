@@ -49,8 +49,6 @@ namespace DotNext
 
         internal static string MissingPartition(long index) => Resources.Get().Format(index);
 
-        internal static string MissingLogEntry(long index, string fileName) => Resources.Get().Format(index, fileName);
-
         internal static string UnknownCommand(int id) => Resources.Get().Format(id);
 
         internal static string MissingCommandFormatter<TCommand>()

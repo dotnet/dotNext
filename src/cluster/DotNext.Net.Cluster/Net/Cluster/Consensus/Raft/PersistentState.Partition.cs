@@ -14,7 +14,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
-    using IO.MemoryMappedFiles;
     using IntegrityException = IO.Log.IntegrityException;
 
     public partial class PersistentState
@@ -22,30 +21,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /*
             Partition file format:
             FileName - number of partition
-            Allocation table:
-            [struct LogEntryMetadata] X number of entries
             Payload:
             [octet string] X number of entries
+
+            FileName.meta - metadata table for the partition
+            Payload:
+            [struct LogEntryMetadata] X Capacity
          */
         private sealed class Partition : ConcurrentStorageAccess
         {
+            private const string MetadataTableFileExtension = "meta";
             internal readonly long FirstIndex, PartitionNumber;
             internal readonly int Capacity;    // max number of entries
-            private readonly MemoryMappedFile mappedCache;
-            private readonly MemoryMappedViewAccessor lookupCacheAccessor;
+            private readonly MemoryMappedFile metadataFile;
+            private readonly MemoryMappedViewAccessor metadataFileAccessor;
             private MemoryOwner<IMemoryOwner<byte>?> entryCache;
             private Partition? previous, next;
 
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize + GetAllocationTableSize(recordsPerPartition))
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize)
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
                 PartitionNumber = partitionNumber;
-                mappedCache = CreateMemoryMappedFile();
-                lookupCacheAccessor = mappedCache.CreateViewAccessor(0L, PayloadOffset);
+
+                // create metadata file
+                MetadataTableFileName = Path.ChangeExtension(FileName, MetadataTableFileExtension);
+                metadataFile = MemoryMappedFile.CreateFromFile(MetadataTableFileName, FileMode.OpenOrCreate, null, MetadataTableSize, MemoryMappedFileAccess.ReadWrite);
+                metadataFileAccessor = metadataFile.CreateViewAccessor(0L, MetadataTableSize);
                 entryCache = manager.AllocLogEntryCache(recordsPerPartition);
             }
+
+            internal string MetadataTableFileName { get; }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static FileOptions GetOptions(bool writeThrough)
@@ -104,11 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 previous = null;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static long GetAllocationTableSize(int recordsPerPartition)
-                => Math.BigMul(LogEntryMetadata.Size, recordsPerPartition);
-
-            private long PayloadOffset => GetAllocationTableSize(Capacity);
+            private long MetadataTableSize => Math.BigMul(LogEntryMetadata.Size, Capacity);
 
             internal long LastIndex => FirstIndex + Capacity - 1;
 
@@ -119,7 +122,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 try
                 {
-                    lookupCacheAccessor.Flush();
+                    metadataFileAccessor.Flush();
                 }
                 catch (Exception e)
                 {
@@ -139,7 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private void ReadMetadata(nint index, out LogEntryMetadata metadata)
             {
-                var handle = lookupCacheAccessor.SafeMemoryMappedViewHandle;
+                var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
                 var acquired = false;
                 try
                 {
@@ -155,7 +158,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private void WriteMetadata(nint index, in LogEntryMetadata metadata)
             {
-                var handle = lookupCacheAccessor.SafeMemoryMappedViewHandle;
+                var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
                 var acquired = false;
                 try
                 {
@@ -176,16 +179,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 ReadMetadata(relativeIndex, out var metadata);
                 var cachedContent = entryCache.IsEmpty ? null : entryCache[relativeIndex];
-
-                LogEntry result;
-                if (cachedContent is not null)
-                    result = new LogEntry(cachedContent, metadata, absoluteIndex);
-                else if (metadata.IsValid)
-                    result = new LogEntry(reader, buffer, metadata, absoluteIndex);
-                else
-                    throw new MissingLogEntryException(relativeIndex, FirstIndex, LastIndex, FileName);
-
-                return result;
+                return cachedContent is null ?
+                    new(reader, buffer, metadata, absoluteIndex) :
+                    new(cachedContent, metadata, absoluteIndex);
             }
 
             // We don't need to analyze read optimization hint.
@@ -261,12 +257,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntryMetadata metadata;
                 if (IsFirstEntry(relativeIndex))
                 {
-                    offset = PayloadOffset;
+                    offset = 0L;
                 }
                 else
                 {
                     ReadMetadata(relativeIndex - 1, out metadata);
-                    Debug.Assert(metadata.IsValid, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.End;
                 }
 
@@ -292,8 +287,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (disposing)
                 {
-                    lookupCacheAccessor.Dispose();
-                    mappedCache.Dispose();
+                    metadataFileAccessor.Dispose();
+                    metadataFile.Dispose();
                     entryCache.ReleaseAll();
                     previous = next = null;
                 }
@@ -404,41 +399,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets the index of the log entry.
             /// </summary>
             public long Index { get; }
-        }
-
-        /// <summary>
-        /// Indicates that the log record cannot be restored from the partition.
-        /// </summary>
-        public sealed class MissingLogEntryException : IntegrityException
-        {
-            internal MissingLogEntryException(long relativeIndex, long firstIndex, long lastIndex, string fileName)
-                : base(ExceptionMessages.MissingLogEntry(relativeIndex + firstIndex, fileName))
-            {
-                Index = relativeIndex + firstIndex;
-                PartitionFirstIndex = firstIndex;
-                PartitionLastIndex = lastIndex;
-                PartitionFileName = fileName;
-            }
-
-            /// <summary>
-            /// Gets index of the log record.
-            /// </summary>
-            public long Index { get; }
-
-            /// <summary>
-            /// Gets index of the first log record in the partition.
-            /// </summary>
-            public long PartitionFirstIndex { get; }
-
-            /// <summary>
-            /// Gets index of the last log record in the partition.
-            /// </summary>
-            public long PartitionLastIndex { get; }
-
-            /// <summary>
-            /// Gets file name of the partition.
-            /// </summary>
-            public string PartitionFileName { get; }
         }
 
         private readonly int recordsPerPartition;
@@ -643,9 +603,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private static async ValueTask DeletePartitionAsync(Partition partition)
         {
-            var fileName = partition.FileName;
+            string fileName = partition.FileName, metadataTableFileName = partition.MetadataTableFileName;
             await partition.DisposeAsync().ConfigureAwait(false);
             File.Delete(fileName);
+            File.Delete(metadataTableFileName);
         }
 
         // this method should be called for detached partition head only

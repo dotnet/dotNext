@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -52,8 +51,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal long End => Length + Offset;
-
-            internal bool IsValid => Offset > 0;
 
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
@@ -133,9 +130,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         reader = new(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
                 }
             }
-
-            private protected MemoryMappedFile CreateMemoryMappedFile()
-                => MemoryMappedFile.CreateFromFile(fs, null, 0L, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
 
             public sealed override bool CanRead => fs.CanRead;
 
