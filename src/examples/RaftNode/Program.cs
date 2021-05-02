@@ -68,7 +68,7 @@ namespace RaftNode
             var modifier = default(DataModifier?);
             if (!string.IsNullOrEmpty(persistentStorage))
             {
-                var state = new SimplePersistentState(persistentStorage);
+                var state = new SimplePersistentState(persistentStorage, new AppEventSource());
                 cluster.AuditTrail = state;
                 modifier = new DataModifier(cluster, state);
             }

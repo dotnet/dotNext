@@ -33,6 +33,7 @@ namespace RaftNode
             var path = configuration[SimplePersistentState.LogLocation];
             if (!string.IsNullOrWhiteSpace(path))
             {
+                services.AddSingleton<AppEventSource>();
                 services.UsePersistenceEngine<IValueProvider, SimplePersistentState>()
                     .AddSingleton<IHostedService, DataModifier>();
             }
