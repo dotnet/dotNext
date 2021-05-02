@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource timerCancellation;
 
         // key is log entry index, value is log entry term
-        private readonly Dictionary<long, long> precedingTermCache;
+        private readonly SortedDictionary<long, long> precedingTermCache;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
 
@@ -33,7 +33,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timerCancellation = new();
             replicationEvent = new();
             replicationQueue = new();
-            precedingTermCache = new Dictionary<long, long>(stateMachine.Members.Count);
+            precedingTermCache = new SortedDictionary<long, long>();
+        }
+
+        private static void ClearCache(SortedDictionary<long, long> precedingTermCache, long minIndex)
+        {
+            const int maxCacheSize = 50;
+            var count = precedingTermCache.Count;
+            if (count < maxCacheSize)
+            {
+                // collect all keys prior to minIndex
+                Span<long> keys = stackalloc long[count];
+                count = 0;
+                foreach (var key in precedingTermCache.Keys)
+                {
+                    if (key >= minIndex)
+                        break;
+                    keys[count++] = key;
+                }
+
+                // remove collected keys
+                foreach (var key in keys.Slice(0, count))
+                    precedingTermCache.Remove(key);
+            }
+            else
+            {
+                precedingTermCache.Clear();
+            }
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -43,7 +69,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             long commitIndex = auditTrail.GetLastIndex(true),
                 currentIndex = auditTrail.GetLastIndex(false),
-                term = currentTerm;
+                term = currentTerm,
+                minPrecedingIndex = 0L;
 
             // send heartbeat in parallel
             foreach (var member in stateMachine.Members)
@@ -51,6 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (member.IsRemote)
                 {
                     long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm;
+                    minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
 
                     // try to get term from the cache to avoid touching audit trail for each member
                     if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
@@ -59,6 +87,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     tasks.AddLast(new Replicator(member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
                 }
             }
+
+            // clear cache
+            ClearCache(precedingTermCache, minPrecedingIndex);
 
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
             for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
@@ -123,9 +154,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (forced)
                     DrainReplicationQueue();
-
-                // cache must be empty before each call of DoHeartbeats
-                precedingTermCache.Clear();
             }
         }
 
