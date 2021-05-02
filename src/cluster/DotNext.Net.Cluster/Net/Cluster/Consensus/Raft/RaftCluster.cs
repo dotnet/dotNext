@@ -303,7 +303,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
 
         /// <inheritdoc />
-        IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
+        IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
         /// <inheritdoc/>
         IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
