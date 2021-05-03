@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timerCancellation = new();
             replicationEvent = new();
             replicationQueue = new();
-            precedingTermCache = new TermCache(stateMachine.Members.Count);
+            precedingTermCache = new TermCache(MaxTermCacheSize);
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)

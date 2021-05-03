@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         ILogger Logger { get; }
 
-        IReadOnlyCollection<IRaftClusterMember> Members { get; }
+        IEnumerable<IRaftClusterMember> Members { get; }
 
         void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null);
 
