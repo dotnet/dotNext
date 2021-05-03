@@ -1230,7 +1230,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         // Flush partition if we are finished or at the last entry in it.
                         // This allows to optimize access to disk especially when cached entries are small entries
                         if (startIndex == commitIndex || startIndex == partition.LastIndex)
-                            await partition.FlushAsync().ConfigureAwait(false);
+                            partition.Flush();
                     }
                 }
                 else

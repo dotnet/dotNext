@@ -234,6 +234,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         Position = offset;
                         await WriteAsync(content.Memory).ConfigureAwait(false);
+
+                        // flush only internal buffer without flushing metadata table because
+                        // it remains unchanged
+                        await base.FlushAsync().ConfigureAwait(false);
                     }
                     finally
                     {
