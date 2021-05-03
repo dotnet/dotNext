@@ -74,7 +74,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 try
                 {
+#if NETSTANDARD2_1
                     var result = await task.Value.ConfigureAwait(false);
+#else
+                    var result = await task.ValueRef.ConfigureAwait(false);
+#endif
                     term = Math.Max(term, result.Term);
                     quorum += 1;
                     commitQuorum += result.Value ? 1 : -1;
