@@ -46,9 +46,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => length <= int.MaxValue ? new(BufferAllocator, (int)length) : throw new InsufficientMemoryException();
 
             internal MemoryOwner<IMemoryOwner<byte>?> AllocLogEntryCache(int recordsPerPartition)
-                => cacheAllocator is null ? default : cacheAllocator.Invoke(recordsPerPartition, true);
+                => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
 
-            internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator.Invoke(length, true);
+            internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator(length);
         }
 
         private readonly ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? bufferingConsumer;
