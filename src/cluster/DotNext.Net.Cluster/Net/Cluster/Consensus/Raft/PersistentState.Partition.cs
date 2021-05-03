@@ -133,6 +133,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return base.FlushAsync(token);
             }
 
+            public override void Flush()
+            {
+                metadataFileAccessor.Flush();
+                base.Flush();
+            }
+
             private static Span<byte> GetMetadata(nint index, SafeBuffer buffer, out bool acquired)
             {
                 ref var ptr = ref Unsafe.NullRef<byte>();
