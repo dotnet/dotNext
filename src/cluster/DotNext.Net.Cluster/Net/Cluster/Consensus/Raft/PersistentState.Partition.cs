@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                         // flush only internal buffer without flushing metadata table because
                         // it remains unchanged
-                        await base.FlushAsync().ConfigureAwait(false);
+                        await base.FlushAsync(CancellationToken.None).ConfigureAwait(false);
                     }
                     finally
                     {
