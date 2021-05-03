@@ -71,28 +71,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.state = state;
         }
 
-        [GlobalSetup(Target = nameof(ReadLogEntriesWithoutMetadataCacheAsync))]
-        public Task SetupStateWithoutMetadataCacheAsync()
+        [GlobalSetup(Target = nameof(ReadPersistedLogEntriesAsync))]
+        public Task SetupStateWithoutCacheAsync()
             => SetupStateAsync(new PersistentState.Options { UseCaching = false }, false);
 
-        [GlobalSetup(Target = nameof(ReadLogEntriesWithMetadataCacheAsync))]
-        public Task SetupStateWithMetadataCacheAsync()
-            => SetupStateAsync(new PersistentState.Options { UseCaching = true }, false);
-
-        [GlobalSetup(Target = nameof(ReadLogEntriesWithFullCacheAsync))]
-        public Task SetupStateWithFullCacheAsync()
+        [GlobalSetup(Target = nameof(ReadCachedLogEntriesAsync))]
+        public Task SetupStateWithCacheAsync()
             => SetupStateAsync(new PersistentState.Options { UseCaching = true }, true);
 
         [Benchmark]
-        public ValueTask<long> ReadLogEntriesWithoutMetadataCacheAsync()
+        public ValueTask<long> ReadCachedLogEntriesAsync()
             => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
 
         [Benchmark]
-        public ValueTask<long> ReadLogEntriesWithMetadataCacheAsync()
-            => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
-
-        [Benchmark]
-        public ValueTask<long> ReadLogEntriesWithFullCacheAsync()
+        public ValueTask<long> ReadPersistedLogEntriesAsync()
             => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
     }
 }
