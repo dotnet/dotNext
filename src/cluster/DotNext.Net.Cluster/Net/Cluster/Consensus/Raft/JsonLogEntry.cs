@@ -44,11 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException(e));
-#else
                     result = ValueTask.FromException(e);
-#endif
                 }
             }
 
