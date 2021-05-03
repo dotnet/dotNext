@@ -214,7 +214,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 cacheEntry = entry.Content;
             }
 
-            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
+            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
             {
                 Debug.Assert(entryCache.IsEmpty is false);
 
@@ -226,8 +226,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     try
                     {
-                        ReadMetadata(index, out var metadata);
-                        Position = metadata.Offset;
+                        Position = offset;
                         await WriteAsync(content.Memory).ConfigureAwait(false);
                     }
                     finally

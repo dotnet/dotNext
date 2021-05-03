@@ -93,6 +93,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal bool IsBuffered => contentType == ContentType.Memory;
 
+            internal long Position => metadata.Offset;
+
             /// <summary>
             /// Gets the index of this log entry.
             /// </summary>

@@ -1225,7 +1225,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // Remove log entry from the cache according to eviction policy
                     if (entry.IsBuffered)
                     {
-                        await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
+                        await partition.PersistCachedEntryAsync(startIndex, entry.Position, evictOnCommit).ConfigureAwait(false);
 
                         // Flush partition if we are finished or at the last entry in it.
                         // This allows to optimize access to disk especially when cached entries are small entries
