@@ -111,7 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
 
             // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum <= 0 & !allowPartitioning)
+            if (quorum <= 0 && !allowPartitioning)
                 goto stop_leading;
 
             check_term:
