@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Buffers;
     using IO;
     using IntegrityException = IO.Log.IntegrityException;
+    using static Runtime.InteropServices.SafeBufferExtensions;
 
     public partial class PersistentState
     {
@@ -132,12 +133,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return base.FlushAsync(token);
             }
 
-            private static unsafe Span<byte> GetMetadata(nint index, SafeBuffer buffer, out bool acquired)
+            private static Span<byte> GetMetadata(nint index, SafeBuffer buffer, out bool acquired)
             {
-                byte* ptr = null;
-                buffer.AcquirePointer(ref ptr);
-                acquired = true;
-                return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr[0], index * LogEntryMetadata.Size), LogEntryMetadata.Size);
+                ref var ptr = ref Unsafe.NullRef<byte>();
+                ptr = ref buffer.AcquirePointer();
+                acquired = !Unsafe.IsNullRef(ref ptr);
+                return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, index * LogEntryMetadata.Size), LogEntryMetadata.Size);
             }
 
             private void ReadMetadata(nint index, out LogEntryMetadata metadata)
