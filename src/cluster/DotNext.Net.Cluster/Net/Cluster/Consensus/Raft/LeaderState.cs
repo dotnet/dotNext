@@ -16,12 +16,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
+        private const int MaxTermCacheSize = 100;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
 
         // key is log entry index, value is log entry term
-        private readonly SortedDictionary<long, long> precedingTermCache;
+        private readonly TermCache precedingTermCache;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
 
@@ -33,33 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timerCancellation = new();
             replicationEvent = new();
             replicationQueue = new();
-            precedingTermCache = new SortedDictionary<long, long>();
-        }
-
-        private static void ClearCache(SortedDictionary<long, long> precedingTermCache, long minIndex)
-        {
-            const int maxCacheSize = 50;
-            var count = precedingTermCache.Count;
-            if (count < maxCacheSize)
-            {
-                // collect all keys prior to minIndex
-                Span<long> keys = stackalloc long[count];
-                count = 0;
-                foreach (var key in precedingTermCache.Keys)
-                {
-                    if (key >= minIndex)
-                        break;
-                    keys[count++] = key;
-                }
-
-                // remove collected keys
-                foreach (var key in keys.Slice(0, count))
-                    precedingTermCache.Remove(key);
-            }
-            else
-            {
-                precedingTermCache.Clear();
-            }
+            precedingTermCache = new TermCache(stateMachine.Members.Count);
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -89,7 +64,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             // clear cache
-            ClearCache(precedingTermCache, minPrecedingIndex);
+            if (precedingTermCache.Count > MaxTermCacheSize)
+                precedingTermCache.Clear();
+            else
+                precedingTermCache.RemoveHead(minPrecedingIndex);
 
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
             for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
