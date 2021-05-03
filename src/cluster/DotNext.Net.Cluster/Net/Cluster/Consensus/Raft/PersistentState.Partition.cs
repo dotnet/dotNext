@@ -14,8 +14,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
-    using IntegrityException = IO.Log.IntegrityException;
     using static Runtime.InteropServices.SafeBufferExtensions;
+    using IntegrityException = IO.Log.IntegrityException;
 
     public partial class PersistentState
     {
