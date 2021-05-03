@@ -43,6 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 #endif
         }
 
+        /// <inheritdoc />
         void ILeaderStateMetrics.ReportBroadcastTime(TimeSpan value)
         {
             BroadcastTimeCounter?.WriteMetric(value.TotalMilliseconds);
@@ -110,7 +111,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Reports that node receives a heartbeat from leader node.
         /// </summary>
         public virtual void ReportHeartbeat()
-            => HeartbeatCounter?.Increment();
+        {
+        }
 
         /// <summary>
         /// Sets counter that allows to track the number of received hearbeats from leader state.
@@ -123,6 +125,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 #else
             init;
 #endif
+        }
+
+        /// <inheritdoc />
+        void IFollowerStateMetrics.ReportHeartbeat()
+        {
+            HeartbeatCounter?.Increment();
+            ReportHeartbeat();
         }
     }
 }
