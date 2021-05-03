@@ -26,17 +26,46 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static ValueTask SerializeAsync<T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
             where TWriter : notnull, IAsyncBinaryWriter
         {
-            return writer.WriteAsync(SerializeToJson, (typeId, obj), token);
+            // try to get synchronous writer
+            var bufferWriter = writer.TryGetBufferWriter();
+            ValueTask result;
+            if (bufferWriter is null)
+            {
+                // slow path - delegate allocation is required and arguments must be packed
+                result = writer.WriteAsync(SerializeToJson, (typeId, obj), token);
+            }
+            else
+            {
+                // fast path - synchronous serialization
+                result = new();
+                try
+                {
+                    Serialize(typeId, obj, bufferWriter);
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
+                }
+            }
 
-            static void SerializeToJson((string TypeId, T Value) arg, IBufferWriter<byte> buffer)
+            return result;
+
+            static void Serialize(string typeId, T value, IBufferWriter<byte> buffer)
             {
                 // serialize type identifier
-                buffer.WriteString(arg.TypeId, DefaultEncoding, lengthFormat: LengthEncoding);
+                buffer.WriteString(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
 
                 // serialize object to JSON
                 using var jsonWriter = new Utf8JsonWriter(buffer, new() { SkipValidation = false, Indented = false });
-                JsonSerializer.Serialize(jsonWriter, arg.Value);
+                JsonSerializer.Serialize(jsonWriter, value);
             }
+
+            static void SerializeToJson((string TypeId, T Value) arg, IBufferWriter<byte> buffer)
+                => Serialize(arg.TypeId, arg.Value, buffer);
         }
 
         internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
