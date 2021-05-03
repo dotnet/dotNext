@@ -83,7 +83,31 @@ namespace DotNext.Net.Cluster.Messaging
         /// <inheritdoc />
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            return writer.WriteAsync(SerializeToJson, this, token);
+            var bufferWriter = writer.TryGetBufferWriter();
+            ValueTask result;
+            if (bufferWriter is null)
+            {
+                result = writer.WriteAsync(SerializeToJson, this, token);
+            }
+            else
+            {
+                // fast path - serialize synchronously
+                result = new();
+                try
+                {
+                    this.SerializeToJson(bufferWriter);
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
+                }
+            }
+
+            return result;
 
             static void SerializeToJson(JsonMessage<T> message, IBufferWriter<byte> buffer)
                 => message.SerializeToJson(buffer);
