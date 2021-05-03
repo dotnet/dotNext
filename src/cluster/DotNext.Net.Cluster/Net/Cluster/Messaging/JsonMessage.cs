@@ -122,10 +122,33 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Deserialized object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<T?> FromJsonAsync(IDataTransferObject message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        public static ValueTask<T?> FromJsonAsync(IDataTransferObject message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
         {
-            using var utf8Bytes = await message.ToMemoryAsync(allocator, token).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<T>(utf8Bytes.Memory.Span, options);
+            ValueTask<T?> result;
+            if (message.TryGetMemory(out var memory))
+            {
+                result = new();
+                try
+                {
+                    result = new(JsonSerializer.Deserialize<T>(memory.Span, options));
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<T?>(e);
+                }
+            }
+            else
+            {
+                result = DeserializeSlowAsync(message, options, allocator, token);
+            }
+
+            return result;
+
+            static async ValueTask<T?> DeserializeSlowAsync(IDataTransferObject message, JsonSerializerOptions? options, MemoryAllocator<byte>? allocator, CancellationToken token)
+            {
+                using var utf8Bytes = await message.ToMemoryAsync(allocator, token).ConfigureAwait(false);
+                return JsonSerializer.Deserialize<T>(utf8Bytes.Memory.Span, options);
+            }
         }
 
         /// <summary>
