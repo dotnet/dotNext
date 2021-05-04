@@ -247,7 +247,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         SetPosition(offset);
                         await WriteAsync(content.Memory).ConfigureAwait(false);
-                        writePosition = Position;
 
                         // flush only internal buffer without flushing metadata table because
                         // it remains unchanged
@@ -255,6 +254,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                     finally
                     {
+                        writePosition = Position;
+
                         if (removeFromMemory)
                         {
                             entryCache[index] = null;
