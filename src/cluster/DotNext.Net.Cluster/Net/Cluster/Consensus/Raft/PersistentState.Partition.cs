@@ -246,6 +246,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         SetPosition(offset);
                         await WriteAsync(content.Memory).ConfigureAwait(false);
+                        writePosition = Position;
 
                         // flush only internal buffer without flushing metadata table because
                         // it remains unchanged
@@ -298,7 +299,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // slow path - persist log entry
                     SetPosition(offset);
                     await entry.WriteToAsync(this, session.Buffer).ConfigureAwait(false);
-                    metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
+                    writePosition = Position;
+                    metadata = LogEntryMetadata.Create(entry, offset, writePosition - offset);
                 }
 
                 // save new log entry to the allocation table
