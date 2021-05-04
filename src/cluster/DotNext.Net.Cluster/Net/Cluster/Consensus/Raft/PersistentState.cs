@@ -281,7 +281,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
         {
             ValueTask<TResult> result;
-            if (startIndex < 0L)
+            if (IsDisposed)
+                result = new(GetDisposedTask<TResult>());
+            else if (startIndex < 0L)
 #if NETSTANDARD2_1
                 result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
 #else
@@ -382,7 +384,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
         {
             ValueTask<TResult> result;
-            if (startIndex < 0L)
+            if (IsDisposed)
+                result = new(GetDisposedTask<TResult>());
+            else if (startIndex < 0L)
 #if NETSTANDARD2_1
                 result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
 #else
@@ -561,7 +565,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             ValueTask result;
-            if (startIndex <= state.CommitIndex)
+            if (IsDisposed)
+            {
+                result = new(DisposedTask);
+            }
+            else if (startIndex <= state.CommitIndex)
             {
 #if NETSTANDARD2_1
                 result = new(Task.FromException(new InvalidOperationException(ExceptionMessages.InvalidAppendIndex)));
