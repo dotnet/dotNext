@@ -223,6 +223,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 cacheEntry = entry.Content;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SetPosition(long value)
             {
                 if (value != writePosition)
