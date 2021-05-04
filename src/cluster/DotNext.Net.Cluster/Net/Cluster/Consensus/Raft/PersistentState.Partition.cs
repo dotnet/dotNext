@@ -213,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return Read(GetReadSessionStream(in session), session.Buffer, relativeIndex, index);
             }
 
-            private void UpdateCache(in CachedLogEntry entry, nint index)
+            private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)
             {
                 Debug.Assert(entryCache.IsEmpty is false);
                 Debug.Assert(index >= 0 && index < entryCache.Length);
@@ -221,6 +221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ref var cacheEntry = ref entryCache[index];
                 cacheEntry?.Dispose();
                 cacheEntry = entry.Content;
+                metadata = LogEntryMetadata.Create(in entry, offset);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -293,8 +294,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (typeof(TEntry) == typeof(CachedLogEntry))
                 {
                     // fast path - just add cached log entry to the cache table
-                    UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex);
-                    metadata = LogEntryMetadata.Create(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), offset);
+                    UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex, offset, out metadata);
                 }
                 else
                 {
