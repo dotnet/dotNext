@@ -39,6 +39,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private MemoryOwner<IMemoryOwner<byte>?> entryCache;
             private Partition? previous, next;
 
+            // cached position for write to avoid expensive native calls
+            private long writePosition;
+
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize)
             {
@@ -58,8 +61,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static FileOptions GetOptions(bool writeThrough)
             {
-                const FileOptions skipBufferOptions = FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous;
-                const FileOptions dontSkipBufferOptions = FileOptions.RandomAccess | FileOptions.Asynchronous;
+                const FileOptions skipBufferOptions = FileOptions.SequentialScan | FileOptions.WriteThrough | FileOptions.Asynchronous;
+                const FileOptions dontSkipBufferOptions = FileOptions.SequentialScan | FileOptions.Asynchronous;
                 return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
             }
 
@@ -220,6 +223,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 cacheEntry = entry.Content;
             }
 
+            private void SetPosition(long value)
+            {
+                if (value != writePosition)
+                {
+                    writePosition = value;
+                    Position = value;
+                }
+            }
+
             internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
             {
                 Debug.Assert(entryCache.IsEmpty is false);
@@ -232,7 +244,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     try
                     {
-                        Position = offset;
+                        SetPosition(offset);
                         await WriteAsync(content.Memory).ConfigureAwait(false);
 
                         // flush only internal buffer without flushing metadata table because
@@ -284,7 +296,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     // slow path - persist log entry
-                    Position = offset;
+                    SetPosition(offset);
                     await entry.WriteToAsync(this, session.Buffer).ConfigureAwait(false);
                     metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
                 }
