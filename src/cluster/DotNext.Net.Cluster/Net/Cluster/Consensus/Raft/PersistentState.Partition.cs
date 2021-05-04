@@ -271,7 +271,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => index == 0 || index == 1 && FirstIndex == 0L;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal async ValueTask WriteAsync<TEntry>(DataAccessSession session, TEntry entry, long absoluteIndex)
+            internal async ValueTask WriteAsync<TEntry>(DataAccessSession session, TEntry entry, long absoluteIndex, CancellationToken token = default)
                 where TEntry : notnull, IRaftLogEntry
             {
                 // write operation always expects absolute index so we need to convert it to the relative index
@@ -300,7 +300,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     // slow path - persist log entry
                     SetPosition(offset);
-                    await entry.WriteToAsync(this, session.Buffer).ConfigureAwait(false);
+                    await entry.WriteToAsync(this, session.Buffer, token).ConfigureAwait(false);
                     writePosition = Position;
                     metadata = LogEntryMetadata.Create(entry, offset, writePosition - offset);
                 }

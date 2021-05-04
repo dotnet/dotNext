@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -500,20 +501,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, [NotNull] out Partition? partition, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
-            if (startIndex <= state.CommitIndex)
-                throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-            if (startIndex > state.LastIndex + 1L)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-
-            Partition? partition = null;
+            partition = null;
             GetOrCreatePartition(startIndex, ref partition);
-            await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
-            await partition.FlushAsync().ConfigureAwait(false);
+            return partition.WriteAsync(sessionManager.WriteSession, entry, startIndex, token);
+        }
+
+        private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, bool flush)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            Debug.Assert(startIndex <= state.LastIndex + 1L);
+            Debug.Assert(startIndex > state.CommitIndex);
+
+            await UnsafeAppendAsync(entry, startIndex, out var partition).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            state.Flush();
+            if (flush)
+            {
+                await partition.FlushAsync().ConfigureAwait(false);
+                state.Flush();
+            }
+
             writeCounter?.Invoke(1D);
         }
 
@@ -521,14 +531,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             var startIndex = state.LastIndex + 1L;
-            Partition? partition = null;
-            GetOrCreatePartition(startIndex, ref partition);
-            await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
-            state.LastIndex = startIndex;
+            await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
             if (flush)
             {
                 await partition.FlushAsync(token).ConfigureAwait(false);
+                state.LastIndex = startIndex;
                 state.Flush();
+            }
+            else
+            {
+                state.LastIndex = startIndex;
             }
 
             writeCounter?.Invoke(1D);
@@ -538,18 +550,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
         /// </summary>
+        /// <remarks>
+        /// It's recommended to pass <see langword="true"/> to <paramref name="flush"/>
+        /// only when you're adding the last log entry in the sequence.
+        /// </remarks>
         /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <param name="writeLock">The acquired lock token.</param>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
+        /// <param name="flush"><see langword="true"/> to flush the internal buffer to the disk.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or <paramref name="entry"/> is the snapshot.</exception>
-        public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex)
+        public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex, bool flush = true)
             where TEntry : notnull, IRaftLogEntry
         {
             ValueTask result;
-            if (entry.IsSnapshot)
+            if (startIndex <= state.CommitIndex)
+            {
+#if NETSTANDARD2_1
+                result = new(Task.FromException(new InvalidOperationException(ExceptionMessages.InvalidAppendIndex)));
+#else
+                result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.InvalidAppendIndex));
+#endif
+            }
+            else if (startIndex > state.LastIndex + 1L)
+            {
+#if NETSTANDARD2_1
+                result = new(Task.FromException(new ArgumentOutOfRangeException(nameof(startIndex))));
+#else
+                result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(startIndex)));
+#endif
+            }
+            else if (entry.IsSnapshot)
             {
 #if NETSTANDARD2_1
                 result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
@@ -559,7 +592,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (Validate(in writeLock))
             {
-                result = UnsafeAppendAsync(entry, startIndex);
+                result = UnsafeAppendAsync(entry, startIndex, flush);
             }
             else
             {
@@ -598,7 +631,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
                 try
                 {
-                    await UnsafeAppendAsync(entry, startIndex).ConfigureAwait(false);
+                    if (startIndex <= state.CommitIndex)
+                        throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                    if (startIndex > state.LastIndex + 1L)
+                        throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+                    await UnsafeAppendAsync(entry, startIndex, true).ConfigureAwait(false);
                 }
                 finally
                 {
