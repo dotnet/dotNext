@@ -550,19 +550,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
         /// </summary>
-        /// <remarks>
-        /// It's recommended to pass <see langword="true"/> to <paramref name="flush"/>
-        /// only when you're adding the last log entry in the sequence.
-        /// </remarks>
         /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <param name="writeLock">The acquired lock token.</param>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
-        /// <param name="flush"><see langword="true"/> to flush the internal buffer to the disk.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or <paramref name="entry"/> is the snapshot.</exception>
-        public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex, bool flush = true)
+        public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex)
             where TEntry : notnull, IRaftLogEntry
         {
             ValueTask result;
@@ -592,7 +587,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (Validate(in writeLock))
             {
-                result = UnsafeAppendAsync(entry, startIndex, flush);
+                result = UnsafeAppendAsync(entry, startIndex, true);
             }
             else
             {
@@ -671,15 +666,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <remarks>
         /// This method cannot be used to append a snapshot.
+        /// It's recommended to pass <see langword="true"/> to <paramref name="flush"/>
+        /// only when you're adding the last log entry in the sequence.
         /// </remarks>
         /// <param name="writeLock">The acquired lock token.</param>
         /// <param name="entry">The entry to add.</param>
+        /// <param name="flush"><see langword="true"/> to flush the internal buffer to the disk.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
-        public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, CancellationToken token = default)
+        public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, bool flush = true, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             ValueTask<long> result;
@@ -697,7 +695,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (Validate(in writeLock))
             {
-                result = UnsafeAppendAsync(entry, true, token);
+                result = UnsafeAppendAsync(entry, flush, token);
             }
             else
             {
