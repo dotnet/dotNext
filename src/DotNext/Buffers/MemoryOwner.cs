@@ -206,6 +206,7 @@ namespace DotNext.Buffers
                 if (index < 0 || index >= length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
+                Debug.Assert(owner is not null || array is not null);
                 return ref Unsafe.Add(ref First, index);
             }
         }
