@@ -525,23 +525,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private Task GetOrCreatePartitionAsync(long recordIndex, [NotNull] ref Partition? partition)
-        {
-            var flushTask = Task.CompletedTask;
-
-            switch (partition)
-            {
-                case not null when !partition.Contains(recordIndex):
-                    flushTask = partition.FlushAsync();
-                    goto case null;
-                case null:
-                    GetOrCreatePartition(recordIndex, ref partition);
-                    break;
-            }
-
-            return flushTask;
-        }
-
         private Partition? TryGetPartition(long partitionNumber)
         {
             Partition? result = tail;

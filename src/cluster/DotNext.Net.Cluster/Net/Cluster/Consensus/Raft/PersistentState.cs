@@ -464,25 +464,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 
             writeCounter?.Invoke(supplier.RemainingCount);
-            Partition? partition;
-            for (partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+            for (Partition? partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
             {
                 if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
 
                 if (startIndex > state.CommitIndex)
                 {
-                    await GetOrCreatePartitionAsync(startIndex, ref partition).ConfigureAwait(false);
+                    GetOrCreatePartition(startIndex, ref partition);
                     await partition.WriteAsync(sessionManager.WriteSession, supplier.Current, startIndex).ConfigureAwait(false);
+
+                    // flush if last entry is added to the partition or the last entry is consumed from the iterator
+                    if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                        await partition.FlushAsync().ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
                 {
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 }
             }
-
-            if (partition is not null)
-                await partition.FlushAsync().ConfigureAwait(false);
 
             // flush updated state
             state.Flush();
