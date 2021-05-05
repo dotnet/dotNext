@@ -184,7 +184,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            // completed synchronously if metadata is cached
             private LogEntry Read(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex)
             {
                 Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
@@ -197,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             // We don't need to analyze read optimization hint.
-            // Metadata reconstruction is cheap operation (especially if metadata cache is enabled).
+            // Metadata reconstruction is cheap operation.
             internal LogEntry Read(in DataAccessSession session, long index, bool absoluteIndex)
             {
                 // calculate relative index
