@@ -107,8 +107,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // do not derive from FileStream because some virtual methods
             // assumes that they are overridden and do async calls inefficiently
             private readonly FileStream fs;
-            private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
             private readonly int bufferSize;
+
+            // A pool of read-only streams that can be shared between multiple readers in parallel.
+            // The stream will be created on demand.
+            private StreamSegment?[] readers;
 
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize)
                 : this(fileName, bufferSize, readersCount, options, initialSize, out _)
@@ -127,14 +130,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.bufferSize = bufferSize;
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
-                {
                     readers[0] = new(fs, true);
-                }
-                else
-                {
-                    foreach (ref var reader in readers.AsSpan())
-                        reader = new(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
-                }
             }
 
             public sealed override bool CanRead => fs.CanRead;
@@ -224,7 +220,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal string FileName => fs.Name;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
+            private protected StreamSegment GetReadSessionStream(in DataAccessSession session)
+            {
+                ref var stream = ref readers[session.SessionId];
+                return stream ??= new(new FileStream(fs.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
+            }
 
             protected override void Dispose(bool disposing)
             {
@@ -232,10 +232,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     foreach (ref var reader in readers.AsSpan())
                     {
-                        reader?.Dispose();
+                        var stream = reader;
                         reader = null;
+                        stream?.Dispose();
                     }
 
+                    readers = Array.Empty<StreamSegment?>();
                     fs.Dispose();
                 }
 
@@ -244,14 +246,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public override async ValueTask DisposeAsync()
             {
-                foreach (Stream? reader in readers)
-                {
-                    if (reader is not null)
-                        await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                for (var i = 0; i < readers.Length; i++)
+                    await DisposeAsync(ref readers[i]).ConfigureAwait(false);
 
+                readers = Array.Empty<StreamSegment?>();
                 await fs.DisposeAsync().ConfigureAwait(false);
                 await base.DisposeAsync().ConfigureAwait(false);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static ValueTask DisposeAsync(ref StreamSegment? segment)
+                {
+                    var stream = segment;
+                    segment = null;
+                    return stream is null ? new() : stream.DisposeAsync();
+                }
             }
         }
     }
