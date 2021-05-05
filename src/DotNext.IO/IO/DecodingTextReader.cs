@@ -1,6 +1,8 @@
 using System;
 using System.Buffers;
 using System.Text;
+using Debug = System.Diagnostics.Debug;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
@@ -94,9 +96,13 @@ namespace DotNext.IO
             {
                 do
                 {
+                    ref var first = ref BufferHelpers.GetReference(in buffer);
+
                     do
                     {
-                        var ch = buffer[charPos];
+                        Debug.Assert(charPos >= 0 && charPos < buffer.Length);
+                        var ch = Unsafe.Add(ref first, charPos);
+
                         if (ch == newLine[newLineBufferPosition])
                         {
                             // skip character which is a part of line termination string
