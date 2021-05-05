@@ -142,7 +142,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static Span<byte> GetMetadata(nint index, SafeBuffer buffer, out bool acquired)
             {
                 ref var ptr = ref buffer.AcquirePointer();
-                acquired = !Unsafe.IsNullRef(ref ptr);
+                if (Unsafe.IsNullRef(ref ptr))
+                {
+                    acquired = false;
+                    return Span<byte>.Empty;
+                }
+
+                acquired = true;
                 return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, index * LogEntryMetadata.Size), LogEntryMetadata.Size);
             }
 
