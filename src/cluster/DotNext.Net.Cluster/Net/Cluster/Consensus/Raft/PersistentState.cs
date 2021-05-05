@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using Collections.Specialized;
     using IO.Log;
     using Replication;
@@ -220,36 +221,42 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             async ValueTask<TResult> ReadEntriesAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, int length, CancellationToken token)
             {
-                LogEntry entry;
-                int listIndex;
                 using var list = bufferManager.AllocLogEntryList(length);
+                Debug.Assert(list.Length >= length);
 
                 // try to read snapshot out of the loop
                 if (!snapshot.IsEmpty && startIndex <= snapshot.Index)
                 {
-                    entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
-                    list[(nint)0] = entry;
+                    var snapshotEntry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                    BufferHelpers.GetReference(in list) = snapshotEntry;
 
                     // skip squashed log entries
                     startIndex = snapshot.Index + 1L;
-                    listIndex = 1;
+                    length = 1;
                 }
                 else if (startIndex == 0L)
                 {
-                    list[(nint)0] = initialEntry;
-                    startIndex = 1L;
-                    listIndex = 1;
+                    BufferHelpers.GetReference(in list) = initialEntry;
+                    startIndex = length = 1;
                 }
                 else
                 {
-                    listIndex = 0;
+                    length = 0;
                 }
 
+                return await ReadEntries(in reader, in list, startIndex, endIndex, length, token).ConfigureAwait(false);
+            }
+
+            ValueTask<TResult> ReadEntries(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, long startIndex, long endIndex, int listIndex, CancellationToken token)
+            {
+                LogEntry entry;
+                ref var first = ref BufferHelpers.GetReference(in list);
+
                 // enumerate over partitions in search of log entries
-                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); list[listIndex++] = entry, startIndex++, token.ThrowIfCancellationRequested())
+                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); Unsafe.Add(ref first, listIndex++) = entry, startIndex++, token.ThrowIfCancellationRequested())
                     entry = partition.Read(session, startIndex, true);
 
-                return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[(nint)0].SnapshotIndex, token).ConfigureAwait(false);
+                return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
             }
 
             async ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, CancellationToken token)
