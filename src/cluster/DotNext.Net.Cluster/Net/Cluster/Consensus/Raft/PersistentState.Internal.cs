@@ -54,10 +54,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
                 => new(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
                 => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
