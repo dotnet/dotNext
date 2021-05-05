@@ -1272,9 +1272,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         await partition.PersistCachedEntryAsync(startIndex, entry.Position, evictOnCommit).ConfigureAwait(false);
 
                         // Flush partition if we are finished or at the last entry in it.
-                        // However, we don't need to flush metadata table because it remains unchanged
                         if (startIndex == commitIndex || startIndex == partition.LastIndex)
-                            partition.FlushToDisk();
+                            await partition.FlushAsync().ConfigureAwait(false);
                     }
                 }
                 else

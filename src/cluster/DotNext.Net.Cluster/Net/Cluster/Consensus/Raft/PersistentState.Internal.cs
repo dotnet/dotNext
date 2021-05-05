@@ -219,9 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
 
-            internal void FlushToDisk() => fs.Flush(true);
-
-            public override void Flush() => FlushToDisk();
+            public override void Flush() => fs.Flush(true);
 
             internal string FileName => fs.Name;
 
