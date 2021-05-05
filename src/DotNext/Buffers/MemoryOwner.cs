@@ -199,6 +199,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
         public readonly ref T this[nint index]
         {
             get
@@ -216,6 +217,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
         public readonly ref T this[int index] => ref this[(nint)index];
 
         internal void Dispose(bool clearBuffer)
