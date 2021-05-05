@@ -115,28 +115,17 @@ namespace DotNext.Buffers
 
         internal void Expand()
         {
-            int length;
-
             if (array is not null)
                 length = array.Length;
             else if (owner is not null)
                 length = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
-            else
-                goto exit;
-
-            this.length = length;
-
-        exit:
-            return;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Truncate(int newLength)
         {
             Debug.Assert(newLength > 0);
-            if (newLength < length)
-            {
-                length = newLength;
-            }
+            length = Math.Min(length, newLength);
         }
 
         /// <summary>
