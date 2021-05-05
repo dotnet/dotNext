@@ -188,6 +188,7 @@ namespace DotNext.Threading.Tasks
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task<bool> WaitAsync(this Task task, TimeSpan timeout, CancellationToken token = default)
         {
+            // TODO: Replace with Task.WaitAsync in .NET 6
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
 
