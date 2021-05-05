@@ -39,9 +39,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private MemoryOwner<IMemoryOwner<byte>?> entryCache;
             private Partition? previous, next;
 
-            // cached position for write to avoid expensive native calls
-            private long writePosition;
-
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize)
             {
@@ -227,9 +224,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void SetPosition(long value)
             {
-                if (value != writePosition)
+                if (value != Position)
                 {
-                    writePosition = value;
                     Position = value;
                 }
             }
@@ -251,8 +247,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                     finally
                     {
-                        writePosition = Position;
-
                         if (removeFromMemory)
                         {
                             entryCache[index] = null;
@@ -297,8 +291,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // slow path - persist log entry
                     SetPosition(offset);
                     await entry.WriteToAsync(this, session.Buffer, token).ConfigureAwait(false);
-                    writePosition = Position;
-                    metadata = LogEntryMetadata.Create(entry, offset, writePosition - offset);
+                    metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
                 }
 
                 // save new log entry to the allocation table
