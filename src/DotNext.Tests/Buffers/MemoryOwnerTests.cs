@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers
 {
@@ -30,7 +31,7 @@ namespace DotNext.Buffers
             using var owner = MemoryPool<byte>.Shared.ToAllocator().Invoke(10);
             Equal(10, owner.Memory.Length);
             owner[1] = 42;
-            Equal(42, owner.Memory.Span[1]);
+            Equal(42, owner[1]);
         }
 
         [Fact]
@@ -39,7 +40,7 @@ namespace DotNext.Buffers
             using var owner = new MemoryOwner<byte>(MemoryPool<byte>.Shared.Rent, 10);
             Equal(10, owner.Memory.Length);
             owner[1] = 42;
-            Equal(42, owner.Memory.Span[1]);
+            Equal(42, owner[1]);
         }
 
         [Fact]
@@ -74,6 +75,19 @@ namespace DotNext.Buffers
         {
             using var owner = MemoryAllocator.CreateArrayAllocator<int>().Invoke(4, false);
             Equal(4, owner.Length);
+        }
+
+        [Fact]
+        public static void RawReference()
+        {
+            var owner = new MemoryOwner<byte>(Array.Empty<byte>());
+            True(Unsafe.IsNullRef(ref BufferHelpers.GetReference(in owner)));
+
+            owner = default;
+            True(Unsafe.IsNullRef(ref BufferHelpers.GetReference(in owner)));
+
+            owner = new(new byte[] { 10 });
+            Equal(10, BufferHelpers.GetReference(in owner));
         }
     }
 }

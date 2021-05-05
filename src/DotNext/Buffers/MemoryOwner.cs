@@ -187,6 +187,24 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
+        internal readonly ref T First
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                if (array is not null)
+#if NETSTANDARD2_1
+                    return ref array[0];
+#else
+                    return ref MemoryMarshal.GetArrayDataReference(array);
+#endif
+                if (owner is not null)
+                    return ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
+
+                return ref Unsafe.NullRef<T>();
+            }
+        }
+
         /// <summary>
         /// Gets managed pointer to the item in the rented memory.
         /// </summary>
@@ -197,24 +215,9 @@ namespace DotNext.Buffers
             get
             {
                 if (index < 0 || index >= length)
-                    goto invalid_index;
+                    throw new ArgumentOutOfRangeException(nameof(index));
 
-                ref var result = ref Unsafe.NullRef<T>();
-                if (array is not null)
-#if NETSTANDARD2_1
-                    result = ref array[0];
-#else
-                    result = ref MemoryMarshal.GetArrayDataReference(array);
-#endif
-                else if (owner is not null)
-                    result = ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
-                else
-                    goto invalid_index;
-
-                return ref Unsafe.Add(ref result, index);
-
-            invalid_index:
-                throw new ArgumentOutOfRangeException(nameof(index));
+                return ref Unsafe.Add(ref First, index);
             }
         }
 
