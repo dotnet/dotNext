@@ -140,8 +140,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ValueTask IRaftClusterMember.CancelPendingRequestsAsync()
         {
-            CancelPendingRequests();
-            return new ValueTask();
+            var result = new ValueTask();
+            try
+            {
+                CancelPendingRequests();
+            }
+            catch (Exception e)
+            {
+#if NETCOREAPP3_1
+                result = new(Task.FromException(e));
+#else
+                result = ValueTask.FromException(e);
+#endif
+            }
+
+            return result;
         }
 
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
