@@ -894,7 +894,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // take the next partition if startIndex is not a beginning of the calculated partition
                 partitionNumber += (remainder > 0L).ToInt32();
-                for (Partition? partition = TryGetPartition(partitionNumber), next; partition is not null; partition = next)
+                for (Partition? partition = TryGetPartition(partitionNumber), next; partition is not null; partition = next, token.ThrowIfCancellationRequested())
                 {
                     next = partition.Next;
                     await DropPartitionAsync(partition).ConfigureAwait(false);
