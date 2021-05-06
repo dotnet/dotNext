@@ -183,8 +183,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => compaction == CompactionMode.Sequential ? sessionManager.WriteSession.Buffer : throw new InvalidOperationException();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Partition CreatePartition(long partitionNumber)
-            => new Partition(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough, initialSize);
+        private partial Partition CreatePartition(long partitionNumber)
+            => new(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough, initialSize);
 
         private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {

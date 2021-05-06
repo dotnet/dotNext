@@ -447,6 +447,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private bool HasPartitions => tail is not null;
 
+        private partial Partition CreatePartition(long partitionNumber);
+
         // during insertion the index is growing monothonically so
         // this method is optimized for forward lookup in sorted list of partitions
         private void GetOrCreatePartition(long recordIndex, [NotNull] ref Partition? partition)
