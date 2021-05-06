@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : ConcurrentStorageAccess
         {
             private const string MetadataTableFileExtension = "meta";
-            internal readonly long FirstIndex, PartitionNumber;
+            internal readonly long FirstIndex, PartitionNumber, LastIndex;
             internal readonly int Capacity;    // max number of entries
             private readonly MemoryMappedFile metadataFile;
             private readonly MemoryMappedViewAccessor metadataFileAccessor;
@@ -44,6 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
+                LastIndex = FirstIndex + Capacity - 1L;
                 PartitionNumber = partitionNumber;
 
                 // create metadata file
@@ -113,8 +114,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             private long MetadataTableSize => Math.BigMul(LogEntryMetadata.Size, Capacity);
-
-            internal long LastIndex => FirstIndex + Capacity - 1;
 
             internal bool Contains(long recordIndex)
                 => recordIndex >= FirstIndex && recordIndex <= LastIndex;
