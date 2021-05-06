@@ -33,7 +33,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private const string MetadataTableFileExtension = "meta";
             internal readonly long FirstIndex, PartitionNumber, LastIndex;
-            internal readonly int Capacity;    // max number of entries
             internal readonly string MetadataTableFileName;
             private readonly MemoryMappedFile metadataFile;
             private readonly MemoryMappedViewAccessor metadataFileAccessor;
@@ -43,14 +42,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize)
             {
-                Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
-                LastIndex = FirstIndex + Capacity - 1L;
+                LastIndex = FirstIndex + recordsPerPartition - 1L;
                 PartitionNumber = partitionNumber;
 
                 // create metadata file
                 MetadataTableFileName = Path.ChangeExtension(FileName, MetadataTableFileExtension);
-                var metadataTableSize = Math.BigMul(LogEntryMetadata.Size, Capacity);
+                var metadataTableSize = Math.BigMul(LogEntryMetadata.Size, recordsPerPartition);
                 metadataFile = MemoryMappedFile.CreateFromFile(MetadataTableFileName, FileMode.OpenOrCreate, null, metadataTableSize, MemoryMappedFileAccess.ReadWrite);
                 metadataFileAccessor = metadataFile.CreateViewAccessor(0L, metadataTableSize);
                 entryCache = manager.AllocLogEntryCache(recordsPerPartition);
@@ -183,7 +181,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private LogEntry Read(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex)
             {
-                Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
+                Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
                 ReadMetadata(relativeIndex, out var metadata);
                 var cachedContent = entryCache.IsEmpty ? null : entryCache[relativeIndex];
@@ -267,7 +265,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 // write operation always expects absolute index so we need to convert it to the relative index
                 var relativeIndex = ToRelativeIndex(absoluteIndex);
-                Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
+                Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
                 // calculate offset of the previous entry
                 long offset;
