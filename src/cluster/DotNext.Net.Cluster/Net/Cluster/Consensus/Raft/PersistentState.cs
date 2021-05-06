@@ -853,11 +853,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Dropes the uncommitted entries starting from the specified position to the end of the log.
         /// </summary>
         /// <param name="startIndex">The index of the first log entry to be dropped.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <param name="reuseSpace">
         /// <see langword="true"/> to drop entries quickly without cleaning of the disk space occupied by these entries;
         /// <see langword="false"/> to drop entries and reclaim the disk space occupied by these entries.
         /// </param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of dropped entries.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
         public async ValueTask<long> DropAsync(long startIndex, bool reuseSpace = false, CancellationToken token = default)
