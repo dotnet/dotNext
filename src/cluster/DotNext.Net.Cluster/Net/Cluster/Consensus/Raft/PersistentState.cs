@@ -854,9 +854,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="startIndex">The index of the first log entry to be dropped.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <param name="reuseSpace">
+        /// <see langword="true"/> to drop entries quickly without cleaning of the disk space occupied by these entries;
+        /// <see langword="false"/> to drop entries and reclaim the disk space occupied by these entries.
+        /// </param>
         /// <returns>The actual number of dropped entries.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
-        public async ValueTask<long> DropAsync(long startIndex, CancellationToken token)
+        public async ValueTask<long> DropAsync(long startIndex, bool reuseSpace = false, CancellationToken token = default)
         {
             ThrowIfDisposed();
             var count = 0L;
@@ -872,8 +876,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 state.LastIndex = startIndex - 1L;
                 state.Flush();
 
+                if (!reuseSpace)
+                    await DropPartitionsAsync(startIndex, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                syncRoot.ReleaseWriteLock();
+            }
+
+        exit:
+            return count;
+
+            async ValueTask DropPartitionsAsync(long upToIndex, CancellationToken token)
+            {
                 // find partitions to be deleted
-                var partitionNumber = Math.DivRem(startIndex, recordsPerPartition, out var remainder);
+                var partitionNumber = Math.DivRem(upToIndex, recordsPerPartition, out var remainder);
 
                 // take the next partition if startIndex is not a beginning of the calculated partition
                 partitionNumber += (remainder > 0L).ToInt32();
@@ -883,13 +900,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await DropPartitionAsync(partition).ConfigureAwait(false);
                 }
             }
-            finally
-            {
-                syncRoot.ReleaseWriteLock();
-            }
-
-        exit:
-            return count;
 
             ValueTask DropPartitionAsync(Partition partition)
             {
@@ -901,6 +911,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return DeletePartitionAsync(partition);
             }
         }
+
+        /// <inheritdoc />
+        ValueTask<long> IAuditTrail.DropAsync(long startIndex, CancellationToken token)
+            => DropAsync(startIndex, false, token);
 
         /// <summary>
         /// Waits for the commit.

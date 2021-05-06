@@ -264,7 +264,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
-            Equal(5L, await state.DropAsync(1L, CancellationToken.None));
+            Equal(5L, await state.DropAsync(1L));
             Equal(0L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
         }
