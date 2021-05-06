@@ -34,6 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const string MetadataTableFileExtension = "meta";
             internal readonly long FirstIndex, PartitionNumber, LastIndex;
             internal readonly int Capacity;    // max number of entries
+            internal readonly string MetadataTableFileName;
             private readonly MemoryMappedFile metadataFile;
             private readonly MemoryMappedViewAccessor metadataFileAccessor;
             private MemoryOwner<IMemoryOwner<byte>?> entryCache;
@@ -49,12 +50,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // create metadata file
                 MetadataTableFileName = Path.ChangeExtension(FileName, MetadataTableFileExtension);
-                metadataFile = MemoryMappedFile.CreateFromFile(MetadataTableFileName, FileMode.OpenOrCreate, null, MetadataTableSize, MemoryMappedFileAccess.ReadWrite);
-                metadataFileAccessor = metadataFile.CreateViewAccessor(0L, MetadataTableSize);
+                var metadataTableSize = Math.BigMul(LogEntryMetadata.Size, Capacity);
+                metadataFile = MemoryMappedFile.CreateFromFile(MetadataTableFileName, FileMode.OpenOrCreate, null, metadataTableSize, MemoryMappedFileAccess.ReadWrite);
+                metadataFileAccessor = metadataFile.CreateViewAccessor(0L, metadataTableSize);
                 entryCache = manager.AllocLogEntryCache(recordsPerPartition);
             }
-
-            internal string MetadataTableFileName { get; }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static FileOptions GetOptions(bool writeThrough)
@@ -112,8 +112,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     previous.next = null;
                 previous = null;
             }
-
-            private long MetadataTableSize => Math.BigMul(LogEntryMetadata.Size, Capacity);
 
             internal bool Contains(long recordIndex)
                 => recordIndex >= FirstIndex && recordIndex <= LastIndex;
