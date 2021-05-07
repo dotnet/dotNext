@@ -277,7 +277,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     ReadMetadata(relativeIndex - 1, out metadata);
-                    offset = metadata.End;
+                    offset = metadata.Length + metadata.Offset;
                 }
 
                 if (typeof(TEntry) == typeof(CachedLogEntry))

@@ -50,8 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 identifier = reader.ReadInt32(true);
             }
 
-            internal long End => Length + Offset;
-
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
