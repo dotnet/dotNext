@@ -70,7 +70,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 precedingTermCache.RemoveHead(minPrecedingIndex);
 
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
+#if NETSTANDARD2_1
             for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
+#else
+            for (var task = tasks.First; task is not null; task.ValueRef = default, task = task.Next)
+#endif
             {
                 try
                 {
