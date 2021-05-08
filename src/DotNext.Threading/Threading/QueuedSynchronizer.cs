@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -156,8 +157,14 @@ namespace DotNext.Threading
         [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
-            if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
-                return true;
+            Debug.Assert(token.CanBeCanceled);
+
+            using (var cancellationTask = new CancelableCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously, token))
+            {
+                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, cancellationTask).ConfigureAwait(false)))
+                    return true;
+            }
+
             if (RemoveNode(node))
             {
                 token.ThrowIfCancellationRequested();
