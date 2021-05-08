@@ -222,6 +222,20 @@ namespace DotNext
         }
 
         [Fact]
+        public static void BufferizeSpan()
+        {
+            var owner = ReadOnlySpan<byte>.Empty.Copy();
+            True(owner.IsEmpty);
+
+            owner = new ReadOnlySpan<byte>(new byte[] { 10, 20, 30 }).Copy();
+            Equal(3, owner.Length);
+            Equal(10, owner[0]);
+            Equal(20, owner[1]);
+            Equal(30, owner[2]);
+            owner.Dispose();
+        }
+
+        [Fact]
         public static void Tuple0ToSpan()
         {
             var tuple = new ValueTuple();
