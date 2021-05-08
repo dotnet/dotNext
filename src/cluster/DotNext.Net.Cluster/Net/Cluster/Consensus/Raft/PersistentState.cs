@@ -55,7 +55,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly LockManager syncRoot;
-        private readonly LogEntry initialEntry;
         private readonly long initialSize;
         private readonly BufferManager bufferManager;
         private readonly int bufferSize, snapshotBufferSize;
@@ -96,7 +95,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bufferManager = new(configuration);
             sessionManager = new(configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
             syncRoot = new(configuration);
-            initialEntry = new(sessionManager.WriteSession.Buffer);
             evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
 
             var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -236,7 +234,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else if (startIndex == 0L)
                 {
-                    BufferHelpers.GetReference(in list) = initialEntry;
+                    BufferHelpers.GetReference(in list) = LogEntry.Initial;
                     startIndex = length = 1;
                 }
                 else
@@ -266,7 +264,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-                => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+                => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(LogEntry.Initial), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
         }
 
         /// <summary>
