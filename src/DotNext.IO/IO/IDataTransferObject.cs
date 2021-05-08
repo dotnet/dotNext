@@ -214,6 +214,9 @@ namespace DotNext.IO
         ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
             where TTransformation : notnull, ITransformation<TResult>
         {
+            if (TryGetMemory(out var memory))
+                return transformation.TransformAsync(IAsyncBinaryReader.Create(memory), token);
+
             if (Length.TryGetValue(out var length))
                 return length < FileBufferingWriter.Options.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TTransformation>(transformation, length, token) : GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token);
 
