@@ -119,6 +119,12 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
             => input.CopyToAsync(consumer, token);
+
+        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = default;
+            return false;
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]

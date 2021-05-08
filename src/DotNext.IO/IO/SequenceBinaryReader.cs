@@ -1512,5 +1512,19 @@ namespace DotNext.IO
             foreach (var segment in RemainingSequence)
                 await consumer.Invoke(segment, token).ConfigureAwait(false);
         }
+
+        /// <inheritdoc/>
+        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            var sequence = RemainingSequence;
+            if (sequence.IsSingleSegment)
+            {
+                bytes = sequence.FirstSpan;
+                return true;
+            }
+
+            bytes = default;
+            return false;
+        }
     }
 }

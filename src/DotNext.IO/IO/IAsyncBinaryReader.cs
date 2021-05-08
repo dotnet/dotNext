@@ -503,6 +503,20 @@ namespace DotNext.IO
             where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
         /// <summary>
+        /// Attempts to get the entire content represented by this reader.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used for efficient synchronous decoding.
+        /// </remarks>
+        /// <param name="bytes">The content represented by this reader.</param>
+        /// <returns><see langword="true"/> if the content is available synchronously; otherwise, <see langword="false"/>.</returns>
+        bool TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = default;
+            return false;
+        }
+
+        /// <summary>
         /// Creates default implementation of binary reader for the stream.
         /// </summary>
         /// <remarks>
