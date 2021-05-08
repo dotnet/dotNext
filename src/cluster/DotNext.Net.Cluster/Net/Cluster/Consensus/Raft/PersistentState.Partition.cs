@@ -179,34 +179,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            private LogEntry Read(StreamSegment reader, in Memory<byte> buffer, nint relativeIndex, long absoluteIndex)
+            // We don't need to analyze read optimization hint.
+            // Metadata reconstruction is cheap operation.
+            internal LogEntry Read(in DataAccessSession session, long absoluteIndex)
             {
                 Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
+                var relativeIndex = ToRelativeIndex(absoluteIndex);
                 ReadMetadata(relativeIndex, out var metadata);
+
                 var cachedContent = entryCache.IsEmpty ? null : entryCache[relativeIndex];
                 return cachedContent is null ?
-                    new(reader, in buffer, metadata, absoluteIndex) :
+                    new(GetReadSessionStream(in session), in session.Buffer, metadata, absoluteIndex) :
                     new(cachedContent, metadata, absoluteIndex);
-            }
-
-            // We don't need to analyze read optimization hint.
-            // Metadata reconstruction is cheap operation.
-            internal LogEntry Read(in DataAccessSession session, long index, bool absoluteIndex)
-            {
-                // calculate relative index
-                nint relativeIndex;
-                if (absoluteIndex)
-                {
-                    relativeIndex = ToRelativeIndex(index);
-                }
-                else
-                {
-                    relativeIndex = (nint)index;
-                    index += FirstIndex;
-                }
-
-                return Read(GetReadSessionStream(in session), in session.Buffer, relativeIndex, index);
             }
 
             private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)

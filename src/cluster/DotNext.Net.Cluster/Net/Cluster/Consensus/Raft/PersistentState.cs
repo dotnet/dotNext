@@ -251,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // enumerate over partitions in search of log entries
                 for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-                    Unsafe.Add(ref first, listIndex) = partition.Read(session, startIndex, true);
+                    Unsafe.Add(ref first, listIndex) = partition.Read(session, startIndex);
 
                 return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
             }
@@ -950,7 +950,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Debug.Assert(current is not null);
             for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
             {
-                entry = current.Read(sessionManager.CompactionSession, currentIndex, true);
+                entry = current.Read(sessionManager.CompactionSession, currentIndex);
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
 
@@ -1280,7 +1280,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (TryGetPartition(startIndex, ref partition))
                 {
-                    var entry = partition.Read(sessionManager.WriteSession, startIndex, true);
+                    var entry = partition.Read(sessionManager.WriteSession, startIndex);
                     await ApplyAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
 
