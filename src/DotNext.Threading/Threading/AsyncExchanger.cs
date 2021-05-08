@@ -63,37 +63,35 @@ namespace DotNext.Threading
 
             if (IsDisposed)
             {
-                result = new ValueTask<T>(GetDisposedTask<T>());
+                result = new(GetDisposedTask<T>());
             }
             else if (disposeRequested)
             {
                 Dispose();
-                result = new ValueTask<T>(GetDisposedTask<T>());
+                result = new(GetDisposedTask<T>());
             }
             else if (termination is not null)
             {
 #if NETSTANDARD2_1
-                result = new ValueTask<T>(Task.FromException<T>(termination));
+                result = new(Task.FromException<T>(termination));
 #else
                 result = ValueTask.FromException<T>(termination);
 #endif
             }
             else if (point is null)
             {
-                point = new ExchangePoint(value, timeout, token);
-                result = new ValueTask<T>(point.Task);
+                result = new(point = new ExchangePoint(value, timeout, token));
             }
             else if (point.TryExchange(ref value))
             {
                 point.Dispose();
                 point = null;
-                result = new ValueTask<T>(value);
+                result = new(value);
             }
             else
             {
                 point.Dispose();
-                point = new ExchangePoint(value, timeout, token);
-                result = new ValueTask<T>(point.Task);
+                result = new(point = new ExchangePoint(value, timeout, token));
             }
 
             return result;
