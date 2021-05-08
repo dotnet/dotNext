@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Messaging
         async ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
         {
             buffer.Dispose();
-            buffer = await source.ToMemoryAsync(token: token);
+            buffer = await source.ToMemoryAsync(token: token).ConfigureAwait(false);
         }
 
         void IBufferedMessage.PrepareForReuse()
