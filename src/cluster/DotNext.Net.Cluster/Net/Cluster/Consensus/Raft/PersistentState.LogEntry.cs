@@ -162,6 +162,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
+            /// Attempts to obtain the payload of this log entry in the form of the memory block.
+            /// </summary>
+            /// <remarks>
+            /// This method returns <see langword="false"/> if the log entry is not cached
+            /// in the memory. Use <see cref="TransformAsync{TResult, TTransformation}(TTransformation, CancellationToken)"/>
+            /// as a uniform way to deserialize this payload.
+            /// </remarks>
+            /// <param name="memory">The memory block representing the log entry payload.</param>
+            /// <returns><see langword="true"/> if the log entry payload is available as a memory block; otherwise, <see langword="false"/>.</returns>
+            public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                if (content is null)
+                {
+                    memory = buffer;
+                    return true;
+                }
+
+                memory = default;
+                return false;
+            }
+
+            /// <summary>
             /// Gets reader that can be used to deserialize the content of this log entry.
             /// </summary>
             /// <returns>The binary reader providing access to the content of this log entry.</returns>
