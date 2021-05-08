@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long index;
 
             // for regular log entry
-            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
+            internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
             {
                 this.metadata = metadata;
                 content = cachedContent;
@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             // for snapshot
-            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
+            internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
             {
                 Debug.Assert(metadata.Index > 0L);
                 this.metadata = metadata.RecordMetadata;

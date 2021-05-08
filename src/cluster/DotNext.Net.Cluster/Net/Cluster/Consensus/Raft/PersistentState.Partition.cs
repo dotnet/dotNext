@@ -179,14 +179,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            private LogEntry Read(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex)
+            private LogEntry Read(StreamSegment reader, in Memory<byte> buffer, nint relativeIndex, long absoluteIndex)
             {
                 Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
                 ReadMetadata(relativeIndex, out var metadata);
                 var cachedContent = entryCache.IsEmpty ? null : entryCache[relativeIndex];
                 return cachedContent is null ?
-                    new(reader, buffer, metadata, absoluteIndex) :
+                    new(reader, in buffer, metadata, absoluteIndex) :
                     new(cachedContent, metadata, absoluteIndex);
             }
 
@@ -206,7 +206,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     index += FirstIndex;
                 }
 
-                return Read(GetReadSessionStream(in session), session.Buffer, relativeIndex, index);
+                return Read(GetReadSessionStream(in session), in session.Buffer, relativeIndex, index);
             }
 
             private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)
