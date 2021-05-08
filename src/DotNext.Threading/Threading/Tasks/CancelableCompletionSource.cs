@@ -22,13 +22,13 @@ namespace DotNext.Threading.Tasks
                 token = source.Token;
             }
 
-            registration = ICancellationSupport.Attach(token, this);
+            registration = ICancellationSupport.Attach(this, token);
         }
 
         // only for cancelable token without timeout
         internal CancelableCompletionSource(TaskCreationOptions options, CancellationToken token)
             : base(options)
-            => registration = ICancellationSupport.Attach(token, this);
+            => registration = ICancellationSupport.Attach(this, token);
 
         void ICancellationSupport.RequestCancellation()
         {

@@ -18,7 +18,7 @@ namespace DotNext.Threading.Tasks
 
         private protected void RequestCancellation();
 
-        private protected static CancellationTokenRegistration Attach(CancellationToken token, ICancellationSupport cancellation)
+        private protected static CancellationTokenRegistration Attach(ICancellationSupport cancellation, CancellationToken token)
         {
 #if NETSTANDARD2_1
             return token.Register(CancellationCallback, cancellation);
