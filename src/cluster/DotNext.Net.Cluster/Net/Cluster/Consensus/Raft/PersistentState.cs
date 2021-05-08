@@ -247,12 +247,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ValueTask<TResult> ReadEntries(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, long startIndex, long endIndex, int listIndex, CancellationToken token)
             {
-                LogEntry entry;
                 ref var first = ref BufferHelpers.GetReference(in list);
 
                 // enumerate over partitions in search of log entries
-                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); Unsafe.Add(ref first, listIndex++) = entry, startIndex++, token.ThrowIfCancellationRequested())
-                    entry = partition.Read(session, startIndex, true);
+                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
+                    Unsafe.Add(ref first, listIndex) = partition.Read(session, startIndex, true);
 
                 return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
             }
