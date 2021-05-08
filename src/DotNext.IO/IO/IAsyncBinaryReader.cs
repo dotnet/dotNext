@@ -465,7 +465,27 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-            => CopyToAsync(new BufferConsumer<byte>(writer), token);
+        {
+            Task result;
+            if (TryGetSpan(out var span))
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.Write(span);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+            else
+            {
+                result = CopyToAsync(new BufferConsumer<byte>(writer), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -477,7 +497,27 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-            => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+        {
+            Task result;
+            if (TryGetSpan(out var span))
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    consumer(span, arg);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+            else
+            {
+                result = CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
