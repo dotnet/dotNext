@@ -32,11 +32,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : ConcurrentStorageAccess
         {
             private const string MetadataTableFileExtension = "meta";
+            private static readonly MemoryOwner<byte> EmptyBuffer = default;
+
             internal readonly long FirstIndex, PartitionNumber, LastIndex;
             internal readonly string MetadataTableFileName;
             private readonly MemoryMappedFile metadataFile;
             private readonly MemoryMappedViewAccessor metadataFileAccessor;
-            private MemoryOwner<IMemoryOwner<byte>?> entryCache;
+            private MemoryOwner<MemoryOwner<byte>> entryCache;
             private Partition? previous, next;
 
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
@@ -188,10 +190,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var relativeIndex = ToRelativeIndex(absoluteIndex);
                 ReadMetadata(relativeIndex, out var metadata);
 
-                var cachedContent = entryCache.IsEmpty ? null : entryCache[relativeIndex];
-                return cachedContent is null ?
-                    new(GetReadSessionStream(in session), in session.Buffer, metadata, absoluteIndex) :
-                    new(cachedContent, metadata, absoluteIndex);
+                ref readonly var cachedContent = ref entryCache.IsEmpty ?
+                    ref EmptyBuffer :
+                    ref entryCache[relativeIndex];
+                return cachedContent.IsEmpty ?
+                    new(GetReadSessionStream(in session), in session.Buffer, in metadata, absoluteIndex) :
+                    new(in cachedContent, in metadata, absoluteIndex);
             }
 
             private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)
@@ -200,7 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(index >= 0 && index < entryCache.Length);
 
                 ref var cacheEntry = ref entryCache[index];
-                cacheEntry?.Dispose();
+                cacheEntry.Dispose();
                 cacheEntry = entry.Content;
                 metadata = LogEntryMetadata.Create(in entry, offset);
             }
@@ -221,21 +225,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var index = ToRelativeIndex(absoluteIndex);
                 Debug.Assert(index >= 0 && index < entryCache.Length);
 
-                var content = entryCache[index];
-                if (content is not null)
+                var content = entryCache[index].Memory;
+                if (!content.IsEmpty)
                 {
                     try
                     {
                         SetPosition(offset);
-                        await WriteAsync(content.Memory).ConfigureAwait(false);
+                        await WriteAsync(content).ConfigureAwait(false);
                     }
                     finally
                     {
                         if (removeFromMemory)
-                        {
-                            entryCache[index] = null;
-                            content.Dispose();
-                        }
+                            entryCache[index].Dispose();
                     }
                 }
             }

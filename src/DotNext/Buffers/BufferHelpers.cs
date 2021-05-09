@@ -149,13 +149,13 @@ namespace DotNext.Buffers
         /// </remarks>
         /// <typeparam name="T">The type of items in the rented memory.</typeparam>
         /// <param name="owner">The rented memory.</param>
-        public static void ReleaseAll<T>(this ref MemoryOwner<T?> owner)
-            where T : class, IDisposable
+        public static void ReleaseAll<T>(this ref MemoryOwner<T> owner)
+            where T : notnull, IDisposable
         {
             foreach (ref var item in owner.Memory.Span)
             {
-                item?.Dispose();
-                item = null;
+                item.Dispose();
+                item = default!;
             }
 
             owner.Dispose(false);

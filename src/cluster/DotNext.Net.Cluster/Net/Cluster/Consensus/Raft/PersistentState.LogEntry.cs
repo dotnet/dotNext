@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Runtime.InteropServices;
 #if !NETSTANDARD2_1
 using System.Text.Json;
@@ -10,6 +9,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
 
     public partial class PersistentState
@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             // for regular log entry cached in memory
-            internal LogEntry(IMemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
+            internal LogEntry(in MemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
             {
                 Debug.Assert(cachedContent.Memory.Length == metadata.Length);
                 this.metadata = metadata;

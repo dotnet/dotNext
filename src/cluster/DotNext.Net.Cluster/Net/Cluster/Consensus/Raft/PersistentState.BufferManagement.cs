@@ -28,12 +28,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         internal readonly struct BufferManager
         {
-            private readonly MemoryAllocator<IMemoryOwner<byte>?>? cacheAllocator;
+            private readonly MemoryAllocator<MemoryOwner<byte>>? cacheAllocator;
             private readonly MemoryAllocator<LogEntry> entryAllocator;
 
             internal BufferManager(IBufferManagerSettings options)
             {
-                cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<IMemoryOwner<byte>?>() : null;
+                cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<MemoryOwner<byte>>() : null;
                 BufferAllocator = options.GetMemoryAllocator<byte>();
                 entryAllocator = options.GetMemoryAllocator<LogEntry>();
             }
@@ -42,10 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal MemoryAllocator<byte> BufferAllocator { get; }
 
-            internal PooledBufferWriter<byte> CreateBufferWriter(long length)
-                => length <= int.MaxValue ? new(BufferAllocator, (int)length) : throw new InsufficientMemoryException();
-
-            internal MemoryOwner<IMemoryOwner<byte>?> AllocLogEntryCache(int recordsPerPartition)
+            internal MemoryOwner<MemoryOwner<byte>> AllocLogEntryCache(int recordsPerPartition)
                 => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
 
             internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator(length);
