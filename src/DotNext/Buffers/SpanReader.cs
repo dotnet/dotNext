@@ -33,6 +33,9 @@ namespace DotNext.Buffers
         /// <param name="length">The length of the elements referenced by the pointer.</param>
         public SpanReader(ref T reference, int length)
         {
+            if (Unsafe.IsNullRef(ref reference))
+                throw new ArgumentNullException(nameof(reference));
+
             span = MemoryMarshal.CreateReadOnlySpan(ref reference, length);
             position = 0;
         }
