@@ -156,7 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     var reader = new SpanReader<byte>(GetMetadata(index, handle, out acquired));
-                    metadata = new LogEntryMetadata(ref reader);
+                    metadata = new(ref reader);
                 }
                 finally
                 {
