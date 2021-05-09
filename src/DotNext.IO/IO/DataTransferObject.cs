@@ -284,7 +284,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new(memory.Span.Copy());
+                    result = new(memory.Span.Copy(allocator));
                 }
                 catch (Exception e)
                 {
