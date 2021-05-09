@@ -26,6 +26,17 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Initializes a new memory writer.
+        /// </summary>
+        /// <param name="reference">Managed pointer to the memory block.</param>
+        /// <param name="length">The length of the elements referenced by the pointer.</param>
+        public SpanWriter(ref T reference, int length)
+        {
+            span = MemoryMarshal.CreateSpan(ref reference, length);
+            position = 0;
+        }
+
+        /// <summary>
         /// Gets the element at the current position in the
         /// underlying memory block.
         /// </summary>
