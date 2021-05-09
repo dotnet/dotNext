@@ -193,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ref readonly var cachedContent = ref entryCache.IsEmpty ?
                     ref EmptyBuffer :
                     ref entryCache[relativeIndex];
-                return cachedContent.IsEmpty ?
+                return cachedContent.IsEmpty && metadata.Length > 0L ?
                     new(GetReadSessionStream(in session), in session.Buffer, in metadata, absoluteIndex) :
                     new(in cachedContent, in metadata, absoluteIndex);
             }
