@@ -113,14 +113,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 // fast path attempt to obtain session ID in o(1)
                 var sessionId = (Environment.CurrentManagedThreadId & int.MaxValue) % tokens.Length;
-                if (tokens[sessionId].TrueToFalse())
+#if NETSTANDARD2_1
+                ref var first = ref tokens[0];
+#else
+                ref var first = ref MemoryMarshal.GetArrayDataReference(tokens);
+#endif
+                if (Unsafe.Add(ref first, sessionId).TrueToFalse())
                     goto exit;
 
                 // slow path - enumerate over all slots in search of available ID
                 repeat_search:
                 for (sessionId = 0; sessionId < tokens.Length; sessionId++)
                 {
-                    if (tokens[sessionId].TrueToFalse())
+                    if (Unsafe.Add(ref first, sessionId).TrueToFalse())
                         goto exit;
                 }
 
