@@ -20,56 +20,6 @@ namespace DotNext.IO
         private const int DefaultBufferSize = 1024;
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct TextDecoder : IDataTransferObject.ITransformation<string>
-        {
-            private readonly Encoding encoding;
-            private readonly long? capacity;
-            private readonly MemoryAllocator<byte>? allocator;
-
-            internal TextDecoder(Encoding encoding, long? capacity, MemoryAllocator<byte>? allocator)
-            {
-                this.encoding = encoding;
-                this.capacity = capacity;
-                this.allocator = allocator;
-            }
-
-            public async ValueTask<string> TransformAsync<TReader>(TReader reader, CancellationToken token)
-                where TReader : IAsyncBinaryReader
-            {
-                using var writer = CreateBuffer(capacity, allocator);
-                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-                return writer.WrittenCount == 0 ? string.Empty : encoding.GetString(writer.WrittenMemory.Span);
-            }
-        }
-
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct MemoryDecoder : IDataTransferObject.ITransformation<MemoryOwner<byte>>, IDataTransferObject.ITransformation<byte[]>
-        {
-            private readonly MemoryAllocator<byte>? allocator;
-            private readonly long? capacity;
-
-            internal MemoryDecoder(MemoryAllocator<byte>? allocator, long? length)
-            {
-                this.allocator = allocator;
-                capacity = length;
-            }
-
-            async ValueTask<MemoryOwner<byte>> IDataTransferObject.ITransformation<MemoryOwner<byte>>.TransformAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                using var writer = CreateBuffer(capacity, allocator);
-                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-                return writer.DetachBuffer();
-            }
-
-            async ValueTask<byte[]> IDataTransferObject.ITransformation<byte[]>.TransformAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                using var writer = CreateBuffer(capacity, allocator);
-                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-                return writer.WrittenMemory.ToArray();
-            }
-        }
-
-        [StructLayout(LayoutKind.Auto)]
         private readonly struct ValueDecoder<T> : IDataTransferObject.ITransformation<T>
             where T : unmanaged
         {
@@ -223,10 +173,17 @@ namespace DotNext.IO
             }
             else
             {
-                result = dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding, dto.Length, allocator), token);
+                result = DecodeAsync(dto, encoding, allocator, token);
             }
 
             return result;
+
+            static async ValueTask<string> DecodeAsync(TObject dto, Encoding encoding, MemoryAllocator<byte>? allocator, CancellationToken token)
+            {
+                using var buffer = CreateBuffer(dto.Length, allocator);
+                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                return buffer.WrittenCount == 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
+            }
         }
 
         /// <summary>
@@ -260,10 +217,17 @@ namespace DotNext.IO
             }
             else
             {
-                result = dto.TransformAsync<byte[], MemoryDecoder>(new MemoryDecoder(allocator, dto.Length), token);
+                result = BufferizeAsync(dto, allocator, token);
             }
 
             return result;
+
+            static async ValueTask<byte[]> BufferizeAsync(TObject dto, MemoryAllocator<byte>? allocator, CancellationToken token)
+            {
+                using var buffer = CreateBuffer(dto.Length, allocator);
+                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                return buffer.WrittenMemory.ToArray();
+            }
         }
 
         /// <summary>
@@ -297,10 +261,17 @@ namespace DotNext.IO
             }
             else
             {
-                result = dto.TransformAsync<MemoryOwner<byte>, MemoryDecoder>(new MemoryDecoder(allocator, dto.Length), token);
+                result = BufferizeAsync(dto, allocator, token);
             }
 
             return result;
+
+            static async ValueTask<MemoryOwner<byte>> BufferizeAsync(TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+            {
+                using var buffer = CreateBuffer(dto.Length, allocator);
+                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                return buffer.DetachBuffer();
+            }
         }
 
         /// <summary>
