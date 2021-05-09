@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // for regular log entry cached in memory
             internal LogEntry(in MemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
             {
-                Debug.Assert(cachedContent.Memory.Length == metadata.Length);
+                Debug.Assert(cachedContent.Length == metadata.Length);
                 this.metadata = metadata;
                 content = null;
                 buffer = cachedContent.Memory;

@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Equal(10, entries[0].Term);
                 Equal(0, entries[0].Length);
-                False(entries[0].IsReusable);
+                True(entries[0].IsReusable);
                 False(entries[0].IsSnapshot);
                 return default;
             };
