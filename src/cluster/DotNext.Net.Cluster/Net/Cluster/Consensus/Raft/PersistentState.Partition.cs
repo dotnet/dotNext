@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : ConcurrentStorageAccess
         {
             private const string MetadataTableFileExtension = "meta";
-            private static readonly MemoryOwner<byte> EmptyBuffer = default;
+            private static readonly MemoryOwner<byte> EmptyBuffer;
 
             internal readonly long FirstIndex, PartitionNumber, LastIndex;
             internal readonly string MetadataTableFileName;
