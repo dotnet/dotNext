@@ -136,17 +136,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 base.Flush();
             }
 
-            private static Span<byte> GetMetadata(nint index, SafeBuffer buffer, out bool acquired)
+            private static ref byte GetMetadata(nint index, SafeBuffer buffer)
             {
                 ref var ptr = ref buffer.AcquirePointer();
-                if (Unsafe.IsNullRef(ref ptr))
-                {
-                    acquired = false;
-                    return Span<byte>.Empty;
-                }
+                if (!Unsafe.IsNullRef(ref ptr))
+                    ptr = ref Unsafe.Add(ref ptr, index * LogEntryMetadata.Size);
 
-                acquired = true;
-                return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, index * LogEntryMetadata.Size), LogEntryMetadata.Size);
+                return ref ptr;
             }
 
             private void ReadMetadata(nint index, out LogEntryMetadata metadata)
@@ -155,7 +151,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var acquired = false;
                 try
                 {
-                    var reader = new SpanReader<byte>(GetMetadata(index, handle, out acquired));
+                    var reader = new SpanReader<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
+                    acquired = true;
                     metadata = new(ref reader);
                 }
                 finally
@@ -171,7 +168,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var acquired = false;
                 try
                 {
-                    var reader = new SpanWriter<byte>(GetMetadata(index, handle, out acquired));
+                    var reader = new SpanWriter<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
+                    acquired = true;
                     metadata.Serialize(ref reader);
                 }
                 finally
