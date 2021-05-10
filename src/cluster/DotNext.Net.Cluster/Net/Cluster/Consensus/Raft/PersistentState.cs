@@ -774,7 +774,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
         public ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
-            => AppendAsync(entry, false, token);
+            => AppendAsync(entry, true, token);
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
