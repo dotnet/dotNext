@@ -803,7 +803,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 #else
                 result = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
 #endif
-            else if (addToCache && bufferManager.IsCachingEnabled)
+            else if (bufferManager.IsCachingEnabled && addToCache)
                 result = AppendCachedAsync(entry, token);
             else
                 result = AppendUncachedAsync(entry, token);
