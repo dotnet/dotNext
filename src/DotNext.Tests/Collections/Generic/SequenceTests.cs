@@ -40,7 +40,7 @@ namespace DotNext.Collections.Generic
             await list.ForEachAsync(counter.Accept);
             Equal(3, counter.value);
             counter.value = 0;
-            
+
             list = new int[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
             await list.ForEachAsync(counter.Accept);
             Equal(5, counter.value);
@@ -236,7 +236,7 @@ namespace DotNext.Collections.Generic
         public static async Task ConversionToAsyncEnumerable()
         {
             int index = 0;
-            await foreach(var item in new int[] { 10, 20, 30}.ToAsyncEnumerable())
+            await foreach (var item in new int[] { 10, 20, 30 }.ToAsyncEnumerable())
             {
                 switch (index++)
                 {
@@ -258,7 +258,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static async Task ConversionToAsyncEnumerator()
         {
-            await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator();
+            await using var enumerator = new int[] { 10, 20, 30 }.GetAsyncEnumerator();
             for (int index = 0; await enumerator.MoveNextAsync(); index++)
             {
                 switch (index)
@@ -281,7 +281,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static async Task CanceledAsyncEnumerator()
         {
-            await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator(new CancellationToken(true));
+            await using var enumerator = new int[] { 10, 20, 30 }.GetAsyncEnumerator(new CancellationToken(true));
             await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
         }
 

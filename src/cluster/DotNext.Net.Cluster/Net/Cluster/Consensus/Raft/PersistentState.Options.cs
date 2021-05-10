@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.Tracing;
 using System.IO.Compression;
 using System.Threading;
 
@@ -10,6 +11,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     public partial class PersistentState
     {
+        internal interface IBufferManagerSettings
+        {
+            MemoryAllocator<T> GetMemoryAllocator<T>();
+
+            bool UseCaching { get; }
+        }
+
+        internal interface IAsyncLockSettings
+        {
+            int ConcurrencyLevel { get; }
+
+            IncrementingEventCounter? LockContentionCounter { get; }
+
+            EventCounter? LockDurationCounter { get; }
+        }
+
         /// <summary>
         /// Represents log compaction mode.
         /// </summary>
@@ -72,10 +89,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents configuration options of the persistent audit trail.
         /// </summary>
-        public class Options
+        public class Options : IBufferManagerSettings, IAsyncLockSettings
         {
             private const int MinBufferSize = 128;
-            private int bufferSize = 2048;
+            private int bufferSize = 4096;
             private int? snapshotBufferSize;
             private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
             private long partitionSize;
@@ -165,6 +182,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
+            /// <inheritdoc />
+            int IAsyncLockSettings.ConcurrencyLevel => MaxConcurrentReads;
+
             /// <summary>
             /// Gets value indicating that dataset
             /// should be reconstructed when <see cref="InitializeAsync(System.Threading.CancellationToken)"/>
@@ -204,6 +224,60 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </remarks>
             /// <seealso cref="AppendAsync{TEntry}(TEntry, bool, CancellationToken)"/>
             public LogEntryCacheEvictionPolicy CacheEvictionPolicy
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets lock contention counter.
+            /// </summary>
+            public IncrementingEventCounter? LockContentionCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets lock duration counter.
+            /// </summary>
+            public EventCounter? LockDurationCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of retrieved log entries.
+            /// </summary>
+            public IncrementingEventCounter? ReadCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of written log entries.
+            /// </summary>
+            public IncrementingEventCounter? WriteCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of squashed log entries.
+            /// </summary>
+            public IncrementingEventCounter? CompactionCounter
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the counter used to measure the number of committed log entries.
+            /// </summary>
+            public IncrementingEventCounter? CommitCounter
             {
                 get;
                 set;

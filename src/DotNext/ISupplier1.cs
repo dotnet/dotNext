@@ -75,7 +75,7 @@ namespace DotNext
         /// <param name="ptr">The pointer to the managed method.</param>
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-        public static implicit operator Supplier<T, TResult>(delegate*<T, TResult> ptr) => new (ptr);
+        public static implicit operator Supplier<T, TResult>(delegate*<T, TResult> ptr) => new(ptr);
 
         /// <summary>
         /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
@@ -175,7 +175,7 @@ namespace DotNext
         /// <returns>The supplier represented by the delegate.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static implicit operator DelegatingSupplier<T, TResult>(Func<T, TResult> func)
-            => new (func);
+            => new(func);
 
         /// <summary>
         /// Determines whether the two objects contain references to the same delegate instance.
@@ -208,7 +208,7 @@ namespace DotNext
         bool ISupplier<T, bool>.Invoke(T arg) => predicate(arg);
 
         public static implicit operator DelegatingPredicate<T>(Predicate<T> predicate)
-            => new (predicate);
+            => new(predicate);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -223,6 +223,6 @@ namespace DotNext
         TOutput ISupplier<TInput, TOutput>.Invoke(TInput arg) => converter(arg);
 
         public static implicit operator DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter)
-            => new (converter);
+            => new(converter);
     }
 }

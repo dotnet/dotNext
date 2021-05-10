@@ -485,14 +485,14 @@ namespace DotNext.Linq.Expressions
         public static void NullCoalescingAssignmentOfArrayElement2()
         {
             string[] array = { null };
-            Func<string[]> provider = () => array;
+            string[] GetEmptyArray() => array;
             var parameter = Expression.Parameter(typeof(Func<string[]>));
             var lambda = Expression.Lambda<Action<Func<string[]>>>(parameter.Invoke().ElementAt(0.Const()).NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
-            lambda(provider);
+            lambda(GetEmptyArray);
             Equal(string.Empty, array[0]);
 
             array[0] = "Hello, world!";
-            lambda(provider);
+            lambda(GetEmptyArray);
             Equal("Hello, world!", array[0]);
         }
 

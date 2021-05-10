@@ -1,8 +1,6 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,40 +9,30 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
-    using Buffers;
-
-    internal sealed unsafe class TextBufferWriter<TWriter> : TextWriter
-        where TWriter : class, IBufferWriter<char>
+    internal abstract class TextBufferWriter<T, TWriter> : TextWriter
+        where T : struct, IEquatable<T>, IConvertible, IComparable<T>
+        where TWriter : class, IBufferWriter<T>
     {
-        private readonly delegate*<TWriter, ReadOnlySpan<char>, void> writeImpl;
-        private readonly TWriter writer;
+        private protected readonly TWriter writer;
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
 
-        internal TextBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
+        private protected TextBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
             : base(provider ?? InvariantCulture)
         {
             if (writer is null)
                 throw new ArgumentNullException(nameof(writer));
 
-            writeImpl = writer is IReadOnlySpanConsumer<char> ?
-                &DirectWrite :
-                &BuffersExtensions.Write<char>;
-
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
-
-            static void DirectWrite(TWriter output, ReadOnlySpan<char> input)
-            {
-                Debug.Assert(output is IReadOnlySpanConsumer<char>);
-                Unsafe.As<IReadOnlySpanConsumer<char>>(output).Invoke(input);
-            }
         }
 
-        public override Encoding Encoding => Encoding.UTF8;
+        public sealed override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
 
-        public override void Flush()
+        public sealed override void Write(char value) => Write(CreateReadOnlySpan(ref value, 1));
+
+        public sealed override void Flush()
         {
             if (flush is null)
             {
@@ -57,7 +45,7 @@ namespace DotNext.IO
             }
         }
 
-        public override Task FlushAsync()
+        public sealed override Task FlushAsync()
         {
             if (flushAsync is null)
             {
@@ -71,11 +59,9 @@ namespace DotNext.IO
             }
         }
 
-        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(writer, buffer);
+        public sealed override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
 
-        public override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
-
-        public override Task WriteLineAsync()
+        public sealed override Task WriteLineAsync()
         {
             var result = Task.CompletedTask;
             try
@@ -90,9 +76,7 @@ namespace DotNext.IO
             return result;
         }
 
-        public override void Write(char value) => Write(CreateReadOnlySpan(ref value, 1));
-
-        public override Task WriteLineAsync(char value)
+        public sealed override Task WriteLineAsync(char value)
         {
             var result = Task.CompletedTask;
             try
@@ -108,16 +92,14 @@ namespace DotNext.IO
             return result;
         }
 
-        public override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
-
-        public override void Write(char[] buffer, int index, int count)
+        public sealed override void Write(char[] buffer, int index, int count)
             => Write(new ReadOnlySpan<char>(buffer, index, count));
 
-        public override void Write(char[]? buffer) => Write(new ReadOnlySpan<char>(buffer));
+        public sealed override void Write(char[]? buffer) => Write(new ReadOnlySpan<char>(buffer));
 
-        public override void Write(string? value) => Write(value.AsSpan());
+        public sealed override void Write(string? value) => Write(value.AsSpan());
 
-        public override Task WriteLineAsync(string? value)
+        public sealed override Task WriteLineAsync(string? value)
         {
             var result = Task.CompletedTask;
             try
@@ -133,28 +115,13 @@ namespace DotNext.IO
             return result;
         }
 
-        public override void Write(decimal value)
-            => writer.WriteDecimal(value, string.Empty, FormatProvider);
+        private protected abstract void Write(DateTime value);
 
-        public override void Write(double value)
-            => writer.WriteDouble(value, string.Empty, FormatProvider);
+        private protected abstract void Write(DateTimeOffset value);
 
-        public override void Write(float value)
-            => writer.WriteSingle(value, string.Empty, FormatProvider);
+        private protected abstract void Write(TimeSpan value);
 
-        public override void Write(int value)
-            => writer.WriteInt32(value, string.Empty, FormatProvider);
-
-        public override void Write(long value)
-            => writer.WriteInt64(value, string.Empty, FormatProvider);
-
-        public override void Write(uint value)
-            => writer.WriteUInt32(value, string.Empty, FormatProvider);
-
-        public override void Write(ulong value)
-            => writer.WriteUInt64(value, string.Empty, FormatProvider);
-
-        public override void Write(object? value)
+        public sealed override void Write(object? value)
         {
             switch (value)
             {
@@ -194,13 +161,13 @@ namespace DotNext.IO
                     Write(v);
                     break;
                 case DateTime v:
-                    writer.WriteDateTime(v, string.Empty, FormatProvider);
+                    Write(v);
                     break;
                 case DateTimeOffset v:
-                    writer.WriteDateTimeOffset(v, string.Empty, FormatProvider);
+                    Write(v);
                     break;
                 case TimeSpan v:
-                    writer.WriteTimeSpan(v, string.Empty, FormatProvider);
+                    Write(v);
                     break;
                 case IFormattable formattable:
                     Write(formattable.ToString(null, FormatProvider));
@@ -211,19 +178,19 @@ namespace DotNext.IO
             }
         }
 
-        public override void WriteLine(object? value)
+        public sealed override void WriteLine(object? value)
         {
             Write(value);
             WriteLine();
         }
 
-        public override void WriteLine(ReadOnlySpan<char> buffer)
+        public sealed override void WriteLine(ReadOnlySpan<char> buffer)
         {
             Write(buffer);
             WriteLine();
         }
 
-        public override Task WriteAsync(ReadOnlyMemory<char> buffer, CancellationToken token)
+        public sealed override Task WriteAsync(ReadOnlyMemory<char> buffer, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -246,7 +213,7 @@ namespace DotNext.IO
             return result;
         }
 
-        public override Task WriteAsync(char value)
+        public sealed override Task WriteAsync(char value)
         {
             var result = Task.CompletedTask;
             try
@@ -261,7 +228,7 @@ namespace DotNext.IO
             return result;
         }
 
-        public override Task WriteAsync(string? value)
+        public sealed override Task WriteAsync(string? value)
         {
             var result = Task.CompletedTask;
             try
@@ -276,10 +243,10 @@ namespace DotNext.IO
             return result;
         }
 
-        public override Task WriteAsync(char[] buffer, int index, int count)
+        public sealed override Task WriteAsync(char[] buffer, int index, int count)
             => WriteAsync(buffer.AsMemory(index, count), CancellationToken.None);
 
-        public override Task WriteLineAsync(char[] buffer, int index, int count)
+        public sealed override Task WriteLineAsync(char[] buffer, int index, int count)
         {
             var result = Task.CompletedTask;
             try
@@ -295,7 +262,7 @@ namespace DotNext.IO
             return result;
         }
 
-        public override Task WriteLineAsync(ReadOnlyMemory<char> buffer, CancellationToken token)
+        public sealed override Task WriteLineAsync(ReadOnlyMemory<char> buffer, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -380,8 +347,5 @@ namespace DotNext.IO
             return result;
         }
 #endif
-
-        public override string ToString()
-            => writer is ArrayBufferWriter<char> buffer ? buffer.BuildString() : writer.ToString() ?? string.Empty;
     }
 }

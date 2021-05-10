@@ -27,6 +27,6 @@ namespace DotNext.Reflection
             task = typeof(ValueTask<int>);
             Equal(typeof(int), task.GetTaskType());
             Equal(typeof(ValueTask<int>), typeof(int).MakeTaskType(true));
-        } 
+        }
     }
 }

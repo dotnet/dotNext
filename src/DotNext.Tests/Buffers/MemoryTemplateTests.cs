@@ -49,7 +49,7 @@ namespace DotNext.Buffers
             const string placeholder = "%s";
             var template = "Hello, %s!%s".AsTemplate(placeholder);
             var writer = new StringBuilder();
-            string[] replacement = {"world", "!"};
+            string[] replacement = { "world", "!" };
             template.Render(writer, replacement);
             Equal("Hello, world!!", writer.ToString());
 
@@ -70,7 +70,7 @@ namespace DotNext.Buffers
             const string placeholder = "%s";
             var template = "Hello, %s!%s".AsTemplate(placeholder);
             var writer = new StringWriter();
-            string[] replacement = {"world", "!"};
+            string[] replacement = { "world", "!" };
             template.Render(writer, replacement);
             Equal("Hello, world!!", writer.ToString());
 
@@ -90,7 +90,7 @@ namespace DotNext.Buffers
         {
             const char placeholder = '%';
             var template = "Hello, %!%".AsTemplate(placeholder);
-            string[] replacement = {"world", "!"};
+            string[] replacement = { "world", "!" };
             Equal("Hello, world!!", template.Render(replacement));
 
             template = "%%".AsTemplate(placeholder);

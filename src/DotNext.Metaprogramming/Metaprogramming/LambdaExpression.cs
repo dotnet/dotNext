@@ -69,7 +69,7 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This property can be used to make recursive calls.
         /// </remarks>
-        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(TDelegate), "self"));
+        internal override Expression Self => recursion ??= Expression.Variable(typeof(TDelegate), "self");
 
         /// <summary>
         /// Gets lambda parameters.

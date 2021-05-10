@@ -278,9 +278,9 @@ namespace DotNext.Reflection
             }
         }
 
-        private static TValue? GetValue(Provider provider, [DisallowNull]in T instance) => provider(instance);
+        private static TValue? GetValue(Provider provider, [DisallowNull] in T instance) => provider(instance);
 
-        private static void SetValue(Provider provider, [DisallowNull]in T instance, TValue value) => provider(instance) = value;
+        private static void SetValue(Provider provider, [DisallowNull] in T instance, TValue value) => provider(instance) = value;
 
         /// <summary>
         /// Obtains field getter in the form of the delegate instance.
@@ -365,7 +365,7 @@ namespace DotNext.Reflection
         /// Gets or sets instance field value.
         /// </summary>
         /// <param name="this"><c>this</c> argument.</param>
-        public ref TValue? this[[DisallowNull]in T @this]
+        public ref TValue? this[[DisallowNull] in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref provider(@this);

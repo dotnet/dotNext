@@ -83,7 +83,7 @@ namespace DotNext.Text
         {
             Span<byte> buffer = stackalloc byte[DecodingBufferSize];
 
-            consume_next_chunk:
+        consume_next_chunk:
 
             // x & 3 is the same as x % 4
             switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out var produced, (utf8Chars.Length & 3) == 0))

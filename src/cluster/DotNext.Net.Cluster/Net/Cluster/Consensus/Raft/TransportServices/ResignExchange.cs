@@ -12,10 +12,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             Debug.Assert(headers.Control == FlowControl.Ack);
             TrySetResult(ValueTypeExtensions.ToBoolean(payload.Span[0]));
-            return new (false);
+            return new(false);
         }
 
         public override ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
-            => new ((new PacketHeaders(MessageType.Resign, FlowControl.None), 0, true));
+            => new((new PacketHeaders(MessageType.Resign, FlowControl.None), 0, true));
     }
 }

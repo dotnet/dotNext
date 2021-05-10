@@ -232,7 +232,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public sealed class UdpConfiguration : NodeConfiguration
         {
-            private static readonly IPEndPoint DefaultLocalEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            private static readonly IPEndPoint DefaultLocalEndPoint = new(IPAddress.Any, 0);
 
             private int clientChannels;
             private int datagramSize;
@@ -299,7 +299,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public IPEndPoint LocalEndPoint { get; set; }
 
             private UdpClient CreateClient(IPEndPoint address)
-                => new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory)
+                => new(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory)
                 {
                     DatagramSize = datagramSize,
                     DontFragment = DontFragment,
@@ -383,7 +383,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set;
             }
 
-            private TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, MemoryAllocator, LoggerFactory)
+            private TcpClient CreateClient(IPEndPoint address) => new(address, MemoryAllocator, LoggerFactory)
             {
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
@@ -397,7 +397,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal override IServer CreateServer(ILocalMember localMember)
             {
-                ServerExchange CreateExchange() => new ServerExchange(localMember, PipeConfig);
+                ServerExchange CreateExchange() => new(localMember, PipeConfig);
                 return new TcpServer(HostEndPoint, ServerBacklog, MemoryAllocator, CreateExchange, LoggerFactory)
                 {
                     TransmissionBlockSize = TransmissionBlockSize,

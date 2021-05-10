@@ -33,6 +33,14 @@ namespace DotNext.Buffers
             where T : unmanaged
             => writer.Write(Span.AsReadOnlyBytes(in value));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void Write<T>(this ref SpanWriter<byte> writer, delegate*<Span<byte>, T, void> action, T value)
+            where T : unmanaged
+        {
+            action(writer.RemainingSpan, value);
+            writer.Advance(sizeof(T));
+        }
+
         /// <summary>
         /// Writes 16-bit signed integer to the block of memory.
         /// </summary>
@@ -42,7 +50,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteInt16(this ref SpanWriter<byte> writer, short value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteInt16LittleEndian : &WriteInt16BigEndian, value, sizeof(short));
+            => writer.Write(isLittleEndian ? &WriteInt16LittleEndian : &WriteInt16BigEndian, value);
 
         /// <summary>
         /// Writes 16-bit unsigned integer to the block of memory.
@@ -54,7 +62,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe void WriteUInt16(this ref SpanWriter<byte> writer, ushort value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteUInt16LittleEndian : &WriteUInt16BigEndian, value, sizeof(ushort));
+            => writer.Write(isLittleEndian ? &WriteUInt16LittleEndian : &WriteUInt16BigEndian, value);
 
         /// <summary>
         /// Writes 32-bit signed integer to the block of memory.
@@ -65,7 +73,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteInt32(this ref SpanWriter<byte> writer, int value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteInt32LittleEndian : &WriteInt32BigEndian, value, sizeof(int));
+            => writer.Write(isLittleEndian ? &WriteInt32LittleEndian : &WriteInt32BigEndian, value);
 
         /// <summary>
         /// Writes 32-bit unsigned integer to the block of memory.
@@ -77,7 +85,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe void WriteUInt32(this ref SpanWriter<byte> writer, uint value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteUInt32LittleEndian : &WriteUInt32BigEndian, value, sizeof(uint));
+            => writer.Write(isLittleEndian ? &WriteUInt32LittleEndian : &WriteUInt32BigEndian, value);
 
         /// <summary>
         /// Writes 64-bit signed integer to the block of memory.
@@ -88,7 +96,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteInt64(this ref SpanWriter<byte> writer, long value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteInt64LittleEndian : &WriteInt64BigEndian, value, sizeof(long));
+            => writer.Write(isLittleEndian ? &WriteInt64LittleEndian : &WriteInt64BigEndian, value);
 
         /// <summary>
         /// Writes 64-bit unsigned integer to the block of memory.
@@ -100,7 +108,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe void WriteUInt64(this ref SpanWriter<byte> writer, ulong value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteUInt64LittleEndian : &WriteUInt64BigEndian, value, sizeof(ulong));
+            => writer.Write(isLittleEndian ? &WriteUInt64LittleEndian : &WriteUInt64BigEndian, value);
 
 #if !NETSTANDARD2_1
         /// <summary>
@@ -112,7 +120,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteSingle(this ref SpanWriter<byte> writer, float value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteSingleLittleEndian : &WriteSingleBigEndian, value, sizeof(float));
+            => writer.Write(isLittleEndian ? &WriteSingleLittleEndian : &WriteSingleBigEndian, value);
 
         /// <summary>
         /// Writes double-precision floating-point number to the block of memory.
@@ -123,7 +131,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteDouble(this ref SpanWriter<byte> writer, double value, bool isLittleEndian)
-            => writer.Write(isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, value, sizeof(double));
+            => writer.Write(isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, value);
 
         /// <summary>
         /// Writes the contents of string builder to the buffer.

@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal static class LogMessages
     {
-        private static readonly ResourceManager Resources = new ResourceManager("DotNext.Net.Cluster.Consensus.Raft.LogMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new("DotNext.Net.Cluster.Consensus.Raft.LogMessages", Assembly.GetExecutingAssembly());
 
         internal static void DowngradingToFollowerState(this ILogger logger)
             => logger.LogDebug((string)Resources.Get());

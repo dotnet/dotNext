@@ -153,7 +153,7 @@ namespace DotNext.IO
         private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
             where TTransformation : notnull, ITransformation<TResult>
         {
-            using PooledArrayBufferWriter<byte> writer = new PooledArrayBufferWriter<byte>((int)length);
+            using var writer = length <= int.MaxValue ? new PooledArrayBufferWriter<byte>((int)length) : throw new InsufficientMemoryException();
 
             await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
             return await parser.TransformAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
@@ -214,10 +214,24 @@ namespace DotNext.IO
         ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
             where TTransformation : notnull, ITransformation<TResult>
         {
+            if (TryGetMemory(out var memory))
+                return transformation.TransformAsync(IAsyncBinaryReader.Create(memory), token);
+
             if (Length.TryGetValue(out var length))
                 return length < FileBufferingWriter.Options.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TTransformation>(transformation, length, token) : GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token);
 
             return GetUnknownObjectDataAsync<TResult, TTransformation>(transformation, token);
+        }
+
+        /// <summary>
+        /// Attempts to retrieve contents of this object as a memory block synchronously.
+        /// </summary>
+        /// <param name="memory">The memory block containing contents of this object.</param>
+        /// <returns><see langword="true"/> if this object is representable as a memory block; otherwise, <see langword="false"/>.</returns>
+        bool TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = default;
+            return false;
         }
     }
 }

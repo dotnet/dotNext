@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -189,7 +191,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
         public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
-            => new ReadOnlyListView<TInput, TOutput>(list, converter);
+            => new(list, converter);
 
         /// <summary>
         /// Constructs read-only list with single item in it.
@@ -198,6 +200,42 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <returns>Read-only list containing single item.</returns>
         public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T>(item);
+
+#if !NETSTANDARD2_1
+        /// <summary>
+        /// Inserts the item into sorted list.
+        /// </summary>
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// This version method is specially optimized for <see cref="List{T}"/> data type
+        /// while <see cref="InsertOrdered{T, TComparer}(IList{T}, T, TComparer)"/>
+        /// is for generic list of unknown type.
+        /// </remarks>
+        /// <typeparam name="T">The type of the items in the list.</typeparam>
+        /// <typeparam name="TComparer">The type of the comparer providing comparison logic.</typeparam>
+        /// <param name="list">The list to insert into.</param>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        public static int InsertOrdered<T, TComparer>(this List<T> list, T item, TComparer comparer)
+            where TComparer : IComparer<T>
+        {
+            var span = CollectionsMarshal.AsSpan(list);
+            var low = 0;
+            for (var high = span.Length; low < high; )
+            {
+                var mid = (low + high) / 2;
+                var cmp = comparer.Compare(Unsafe.Add(ref MemoryMarshal.GetReference(span), mid), item);
+                if (cmp > 0)
+                    high = mid;
+                else
+                    low = mid + 1;
+            }
+
+            list.Insert(low, item);
+            return low;
+        }
+#endif
 
         /// <summary>
         /// Inserts the item into sorted list.
@@ -214,8 +252,8 @@ namespace DotNext.Collections.Generic
         public static int InsertOrdered<T, TComparer>(this IList<T> list, T item, TComparer comparer)
             where TComparer : IComparer<T>
         {
-            int low = 0, high = list.Count;
-            while (low < high)
+            var low = 0;
+            for (var high = list.Count; low < high; )
             {
                 var mid = (low + high) / 2;
                 var cmp = comparer.Compare(list[mid], item);
@@ -302,6 +340,6 @@ namespace DotNext.Collections.Generic
         /// <param name="range">The range of elements in the list.</param>
         /// <returns>The section of the list.</returns>
         public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
-            => new ListSegment<T>(list, range);
+            => new(list, range);
     }
 }

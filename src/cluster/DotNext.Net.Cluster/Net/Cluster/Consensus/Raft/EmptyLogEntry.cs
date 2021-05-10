@@ -41,6 +41,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = ReadOnlyMemory<byte>.Empty;
+            return true;
+        }
+
         /// <summary>
         /// Gets or sets log entry term.
         /// </summary>
@@ -52,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public DateTimeOffset Timestamp { get; }
 
         /// <inheritdoc/>
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new ();
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new();
 
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token) => transformation.TransformAsync(IAsyncBinaryReader.Empty, token);

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace DotNext.Buffers
     /// implementation of this interface in your code.
     /// </remarks>
     /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
     {
         /// <summary>

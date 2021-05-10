@@ -137,9 +137,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return new FlushResult(canceled, false);
         }
 
-        private static ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, ref TEntry entry, CancellationToken token)
-            => WriteLogEntryContent(writer, entry, token);
-
         internal static async Task WriteEntryAsync(PipeWriter writer, TEntry entry, CancellationToken token)
         {
             foreach (var serializer in FragmentWriters)

@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
             try
             {
-                archive = new (output, ZipArchiveMode.Create, true);
+                archive = new(output, ZipArchiveMode.Create, true);
                 foreach (var file in location.EnumerateFiles())
                 {
                     await using var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, true);

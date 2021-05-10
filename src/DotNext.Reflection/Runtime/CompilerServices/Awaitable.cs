@@ -36,7 +36,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <returns>An awaiter instance.</returns>
         /// <exception cref="InvalidOperationException"><typeparamref name="TAwaiter"/> returned by <typeparamref name="T"/> is <see langword="null"/>.</exception>
-        public Awaiter<TAwaiter> GetAwaiter() => new Awaiter<TAwaiter>(GetAwaiter(in awaitable));
+        public Awaiter<TAwaiter> GetAwaiter() => new(GetAwaiter(in awaitable));
 
         /// <summary>
         /// Gets underlying awaitable object.
@@ -84,7 +84,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <returns>An awaiter instance.</returns>
         /// <exception cref="InvalidOperationException"><typeparamref name="TAwaiter"/> returned by <typeparamref name="T"/> is <see langword="null"/>.</exception>
-        public Awaiter<TAwaiter, TResult> GetAwaiter() => new Awaiter<TAwaiter, TResult>(GetAwaiter(in awaitable));
+        public Awaiter<TAwaiter, TResult> GetAwaiter() => new(GetAwaiter(in awaitable));
 
         /// <summary>
         /// Gets underlying awaitable object.

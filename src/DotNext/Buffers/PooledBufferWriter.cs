@@ -45,7 +45,7 @@ namespace DotNext.Buffers
             get
             {
                 ThrowIfDisposed();
-                return buffer.Memory.Length;
+                return buffer.Length;
             }
         }
 
@@ -76,7 +76,6 @@ namespace DotNext.Buffers
             if (!reuseBuffer)
             {
                 buffer.Dispose();
-                buffer = default;
             }
             else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             {
@@ -99,6 +98,26 @@ namespace DotNext.Buffers
             return buffer.Memory.Slice(position);
         }
 
+        /// <inheritdoc />
+        public override MemoryOwner<T> DetachBuffer()
+        {
+            ThrowIfDisposed();
+            MemoryOwner<T> result;
+            if (position > 0)
+            {
+                result = buffer;
+                buffer = default;
+                result.Truncate(position);
+                position = 0;
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
+        }
+
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
@@ -116,7 +135,6 @@ namespace DotNext.Buffers
             {
                 BufferSizeCallback?.Invoke(buffer.Length);
                 buffer.Dispose();
-                buffer = default;
             }
 
             base.Dispose(disposing);

@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal static LogEntryMetadata Create<TEntry>(TEntry entry)
             where TEntry : notnull, IRaftLogEntry
-            => new LogEntryMetadata(entry.Term, entry.Timestamp, entry.Length.GetValueOrDefault(), entry.CommandId);
+            => new(entry.Term, entry.Timestamp, entry.Length.GetValueOrDefault(), entry.CommandId);
 
         internal LogEntryMetadata(ReadOnlySpan<byte> input)
         {
@@ -48,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal long Length { get; }
 
-        internal DateTimeOffset Timestamp => new DateTimeOffset(timestamp, TimeSpan.Zero);
+        internal DateTimeOffset Timestamp => new(timestamp, TimeSpan.Zero);
 
         internal int? CommandId => (flags & HasIdentifierFlag) != 0 ? identifier : null;
 

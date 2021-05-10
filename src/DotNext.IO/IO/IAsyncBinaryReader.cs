@@ -465,7 +465,27 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-            => CopyToAsync(new BufferConsumer<byte>(writer), token);
+        {
+            Task result;
+            if (TryGetSpan(out var span))
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.Write(span);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+            else
+            {
+                result = CopyToAsync(new BufferConsumer<byte>(writer), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -477,7 +497,27 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-            => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+        {
+            Task result;
+            if (TryGetSpan(out var span))
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    consumer(span, arg);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+            else
+            {
+                result = CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -503,6 +543,20 @@ namespace DotNext.IO
             where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
         /// <summary>
+        /// Attempts to get the entire content represented by this reader.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used for efficient synchronous decoding.
+        /// </remarks>
+        /// <param name="bytes">The content represented by this reader.</param>
+        /// <returns><see langword="true"/> if the content is available synchronously; otherwise, <see langword="false"/>.</returns>
+        bool TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = default;
+            return false;
+        }
+
+        /// <summary>
         /// Creates default implementation of binary reader for the stream.
         /// </summary>
         /// <remarks>
@@ -523,14 +577,14 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="sequence">The sequence of bytes.</param>
         /// <returns>The binary reader for the sequence of bytes.</returns>
-        public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new SequenceBinaryReader(sequence);
+        public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new(sequence);
 
         /// <summary>
         /// Creates default implementation of binary reader over contiguous memory block.
         /// </summary>
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>
-        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new SequenceBinaryReader(memory);
+        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new(memory);
 
         /// <summary>
         /// Creates default implementation of binary reader for the specifed pipe reader.

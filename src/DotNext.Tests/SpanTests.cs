@@ -183,7 +183,7 @@ namespace DotNext
             yield return new object[] { MemoryAllocator.CreateArrayAllocator<char>() };
             yield return new object[] { ArrayPool<char>.Shared.ToAllocator() };
         }
-        
+
         [Theory]
         [MemberData(nameof(TestAllocators))]
         public static void Concatenation(MemoryAllocator<char> allocator)
@@ -216,9 +216,23 @@ namespace DotNext
             Span<int> dst = destination;
             src.CopyTo(dst, out var writtenCount);
             Equal(Math.Min(src.Length, dst.Length), writtenCount);
-            
+
             for (var i = 0; i < writtenCount; i++)
                 Equal(src[i], dst[i]);
+        }
+
+        [Fact]
+        public static void BufferizeSpan()
+        {
+            var owner = ReadOnlySpan<byte>.Empty.Copy();
+            True(owner.IsEmpty);
+
+            owner = new ReadOnlySpan<byte>(new byte[] { 10, 20, 30 }).Copy();
+            Equal(3, owner.Length);
+            Equal(10, owner[0]);
+            Equal(20, owner[1]);
+            Equal(30, owner[2]);
+            owner.Dispose();
         }
 
         [Fact]

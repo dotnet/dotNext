@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// Constructs an instance of <see cref="CommandInterpreter"/>.
             /// </summary>
             /// <returns>A new instance of the interpreter.</returns>
-            public CommandInterpreter Build() => new CommandInterpreter(interpreters, formatters, snapshotCommandId);
+            public CommandInterpreter Build() => new(interpreters, formatters, snapshotCommandId);
 
             /// <inheritdoc />
             CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();

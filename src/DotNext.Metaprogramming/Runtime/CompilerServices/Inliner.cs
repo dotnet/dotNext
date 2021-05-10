@@ -33,8 +33,8 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Expression Rewrite(Expression node)
         {
-            using (var rewriter = new Inliner())
-                return rewriter.Visit(node);
+            using var rewriter = new Inliner();
+            return rewriter.Visit(node);
         }
     }
 }

@@ -125,7 +125,7 @@ namespace DotNext.VariantType
         /// Change order of type parameters.
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
-        public Variant<T2, T1> Permute() => new Variant<T2, T1>(value);
+        public Variant<T2, T1> Permute() => new(value);
 
         /// <summary>
         /// Deconstructs this object.
@@ -146,7 +146,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2>(T1? value) => new Variant<T1, T2>(value);
+        public static implicit operator Variant<T1, T2>(T1? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T1"/>.
@@ -158,7 +158,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T2"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2>(T2? value) => new Variant<T1, T2>(value);
+        public static implicit operator Variant<T1, T2>(T2? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
@@ -286,7 +286,7 @@ namespace DotNext.VariantType
 
         private static Variant<T1, T2, T3> Create<TVariant>(TVariant variant)
             where TVariant : struct, IVariant
-            => new Variant<T1, T2, T3>(variant.Value);
+            => new(variant.Value);
 
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
@@ -297,7 +297,7 @@ namespace DotNext.VariantType
         /// Change order of type parameters.
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
-        public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(value);
+        public Variant<T3, T1, T2> Permute() => new(value);
 
         /// <summary>
         /// Deconstructs this object.
@@ -366,7 +366,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3>(T1? value) => new Variant<T1, T2, T3>(value);
+        public static implicit operator Variant<T1, T2, T3>(T1? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T1"/>.
@@ -378,7 +378,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T2"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3>(T2? value) => new Variant<T1, T2, T3>(value);
+        public static implicit operator Variant<T1, T2, T3>(T2? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
@@ -390,7 +390,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T3"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3>(T3? value) => new Variant<T1, T2, T3>(value);
+        public static implicit operator Variant<T1, T2, T3>(T3? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T3"/>.
@@ -491,7 +491,7 @@ namespace DotNext.VariantType
 
         private static Variant<T1, T2, T3, T4> Create<TVariant>(TVariant variant)
             where TVariant : struct, IVariant
-            => new Variant<T1, T2, T3, T4>(variant.Value);
+            => new(variant.Value);
 
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
@@ -502,7 +502,7 @@ namespace DotNext.VariantType
         /// Change order of type parameters.
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
-        public Variant<T4, T1, T2, T3> Permute() => new Variant<T4, T1, T2, T3>(value);
+        public Variant<T4, T1, T2, T3> Permute() => new(value);
 
         /// <summary>
         /// Deconstructs this object.
@@ -573,7 +573,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T1? value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T1? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
@@ -585,7 +585,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T2"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T2? value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T2? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
@@ -597,7 +597,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T3"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T3? value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T3? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T3"/>.
@@ -609,7 +609,7 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T4"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T4? value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T4? value) => new(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T4"/>.

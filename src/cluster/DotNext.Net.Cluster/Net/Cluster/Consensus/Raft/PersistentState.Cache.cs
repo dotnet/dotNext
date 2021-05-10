@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
     using IO.Log;
 
@@ -15,39 +16,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents buffered Raft log entry.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct CachedRaftLogEntry : IRaftLogEntry
+        internal readonly struct CachedLogEntry : IRaftLogEntry
         {
-            private readonly long term;
-            private readonly int? commandId;
-            private readonly DateTimeOffset timestamp;
+            private readonly MemoryOwner<byte> content;
 
-            internal CachedRaftLogEntry(IMemoryOwner<byte> content, long term, DateTimeOffset timestamp, int? commandId)
+            internal CachedLogEntry(in MemoryOwner<byte> content, long term, DateTimeOffset timestamp, int? commandId)
             {
-                Content = content;
-                this.term = term;
-                this.timestamp = timestamp;
-                this.commandId = commandId;
+                this.content = content;
+                Term = term;
+                Timestamp = timestamp;
+                CommandId = commandId;
             }
 
-            internal IMemoryOwner<byte> Content { get; }
+            internal MemoryOwner<byte> Content => content;
 
-            long IRaftLogEntry.Term => term;
+            public long Term { get; }
 
-            int? IRaftLogEntry.CommandId => commandId;
+            public int? CommandId { get;  }
 
-            long? IDataTransferObject.Length => Content.Memory.Length;
+            internal long Length => content.Length;
+
+            long? IDataTransferObject.Length => Length;
 
             bool ILogEntry.IsSnapshot => false;
 
-            DateTimeOffset ILogEntry.Timestamp => timestamp;
+            public DateTimeOffset Timestamp { get; }
 
             bool IDataTransferObject.IsReusable => true;
 
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-                => writer.WriteAsync(Content.Memory, null, token);
+                => writer.WriteAsync(content.Memory, null, token);
 
             ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-                => transformation.TransformAsync(IAsyncBinaryReader.Create(Content.Memory), token);
+                => transformation.TransformAsync(IAsyncBinaryReader.Create(content.Memory), token);
+
+            bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                memory = content.Memory;
+                return true;
+            }
         }
     }
 }

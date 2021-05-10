@@ -12,17 +12,15 @@ namespace DotNext.IO
     public class BinaryTransferObject<T> : IDataTransferObject, ISupplier<T>
         where T : unmanaged
     {
+        private T content;
+
         /// <summary>
         /// Gets or sets a value of blittable type encapsulated by this object.
         /// </summary>
-        public T Content
-        {
-            get;
-            set;
-        }
+        public ref T Content => ref content;
 
         /// <inheritdoc/>
-        T ISupplier<T>.Invoke() => Content;
+        T ISupplier<T>.Invoke() => content;
 
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
@@ -34,7 +32,22 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(Content, token);
+            => writer.WriteAsync(content, token);
+
+        private ReadOnlyMemory<byte> ToMemory() => Span.AsReadOnlyBytes(in content).ToArray();
+
+        /// <inheritdoc/>
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        {
+            return transformation.TransformAsync(new SequenceBinaryReader(ToMemory()), token);
+        }
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = ToMemory();
+            return true;
+        }
     }
 
     /// <summary>
@@ -42,11 +55,13 @@ namespace DotNext.IO
     /// </summary>
     public class BinaryTransferObject : IDataTransferObject, ISupplier<ReadOnlySequence<byte>>
     {
+        private readonly ReadOnlySequence<byte> content;
+
         /// <summary>
         /// Initializes a new binary DTO.
         /// </summary>
         /// <param name="content">The content of the object.</param>
-        public BinaryTransferObject(ReadOnlySequence<byte> content) => Content = content;
+        public BinaryTransferObject(ReadOnlySequence<byte> content) => this.content = content;
 
         /// <summary>
         /// Initializes a new binary object.
@@ -60,19 +75,36 @@ namespace DotNext.IO
         /// <summary>
         /// Gets stream representing content.
         /// </summary>
-        public ReadOnlySequence<byte> Content { get; }
+        public ref readonly ReadOnlySequence<byte> Content => ref content;
 
         /// <inheritdoc/>
-        ReadOnlySequence<byte> ISupplier<ReadOnlySequence<byte>>.Invoke() => Content;
+        ReadOnlySequence<byte> ISupplier<ReadOnlySequence<byte>>.Invoke() => content;
 
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
         /// <inheritdoc/>
-        long? IDataTransferObject.Length => Content.Length;
+        long? IDataTransferObject.Length => content.Length;
 
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => new ValueTask(writer.WriteAsync(Content, token));
+            => new(writer.WriteAsync(content, token));
+
+        /// <inheritdoc/>
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            => transformation.TransformAsync(new SequenceBinaryReader(content), token);
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            if (content.IsSingleSegment)
+            {
+                memory = content.First;
+                return true;
+            }
+
+            memory = default;
+            return false;
+        }
     }
 }

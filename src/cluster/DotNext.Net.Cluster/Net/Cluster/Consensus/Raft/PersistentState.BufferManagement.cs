@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -27,42 +28,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         internal readonly struct BufferManager
         {
-            private readonly MemoryAllocator<LogEntryMetadata>? metadataAllocator;
-            private readonly MemoryAllocator<IMemoryOwner<byte>?>? cacheAllocator;
+            private readonly MemoryAllocator<MemoryOwner<byte>>? cacheAllocator;
             private readonly MemoryAllocator<LogEntry> entryAllocator;
 
-            internal BufferManager(Options options)
+            internal BufferManager(IBufferManagerSettings options)
             {
-                if (options.UseCaching)
-                {
-                    metadataAllocator = options.GetMemoryAllocator<LogEntryMetadata>();
-                    cacheAllocator = options.GetMemoryAllocator<IMemoryOwner<byte>?>();
-                }
-                else
-                {
-                    metadataAllocator = null;
-                    cacheAllocator = null;
-                }
-
+                cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<MemoryOwner<byte>>() : null;
                 BufferAllocator = options.GetMemoryAllocator<byte>();
                 entryAllocator = options.GetMemoryAllocator<LogEntry>();
             }
 
+            internal bool IsCachingEnabled => cacheAllocator is not null;
+
             internal MemoryAllocator<byte> BufferAllocator { get; }
 
-            internal PooledBufferWriter<byte> CreateBufferWriter(long? length)
-            {
-                var len = length.GetValueOrDefault();
-                return len > 0L ? new (BufferAllocator, len.Truncate()) : new (BufferAllocator);
-            }
+            internal MemoryOwner<MemoryOwner<byte>> AllocLogEntryCache(int recordsPerPartition)
+                => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
 
-            internal MemoryOwner<LogEntryMetadata> AllocMetadataCache(int recordsPerPartition)
-                => metadataAllocator is null ? default : metadataAllocator.Invoke(recordsPerPartition, true);
-
-            internal MemoryOwner<IMemoryOwner<byte>?> AllocLogEntryCache(int recordsPerPartition)
-                => cacheAllocator is null ? default : cacheAllocator.Invoke(recordsPerPartition, true);
-
-            internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator.Invoke(length, true);
+            internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator(length);
         }
 
         private readonly ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? bufferingConsumer;

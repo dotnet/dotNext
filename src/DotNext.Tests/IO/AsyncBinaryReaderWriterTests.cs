@@ -67,7 +67,7 @@ namespace DotNext.IO
                     => writer.WriteAsync(input, lengthFormat, token);
             }
 
-            private readonly MemoryStream stream = new MemoryStream();
+            private readonly MemoryStream stream = new();
             private readonly byte[] buffer = new byte[512];
 
             public IAsyncBinaryReader CreateReader()
@@ -83,7 +83,7 @@ namespace DotNext.IO
 
         private sealed class BufferSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly PooledBufferWriter<byte> buffer = new ();
+            private readonly PooledBufferWriter<byte> buffer = new();
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(buffer);
 
@@ -98,7 +98,7 @@ namespace DotNext.IO
 
         private sealed class StreamSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly MemoryStream stream = new MemoryStream(1024);
+            private readonly MemoryStream stream = new(1024);
             private readonly byte[] buffer = new byte[512];
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream, buffer);
@@ -114,7 +114,7 @@ namespace DotNext.IO
 
         private sealed class PipeSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly Pipe pipe = new Pipe();
+            private readonly Pipe pipe = new();
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(pipe.Writer);
 
@@ -132,7 +132,7 @@ namespace DotNext.IO
 
         private sealed class PipeSourceWithSettings : IAsyncBinaryReaderWriterSource
         {
-            private readonly Pipe pipe = new Pipe();
+            private readonly Pipe pipe = new();
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(pipe.Writer, 1024, 128);
 
@@ -148,7 +148,7 @@ namespace DotNext.IO
 
         private sealed class ReadOnlySequenceSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly MemoryStream stream = new MemoryStream(1024);
+            private readonly MemoryStream stream = new(1024);
             private readonly byte[] buffer = new byte[512];
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream, buffer);
@@ -304,7 +304,7 @@ namespace DotNext.IO
         {
             await using (source)
             {
-                const string value = "Hello, world!&*(@&*(fghjwgfwffgw ������, ���!";
+                const string value = "Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!";
                 var writer = source.CreateWriter();
                 await writer.WriteAsync(value.AsMemory(), encoding, lengthFormat);
 
@@ -328,9 +328,9 @@ namespace DotNext.IO
         [MemberData(nameof(GetSources))]
         public static async Task CopyFromStreamToStream(IAsyncBinaryReaderWriterSource source)
         {
-            await using(source)
+            await using (source)
             {
-                var content = new byte[] { 1, 2, 3};
+                var content = new byte[] { 1, 2, 3 };
                 using var sourceStream = new MemoryStream(content, false);
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(sourceStream);
@@ -360,16 +360,16 @@ namespace DotNext.IO
             }
 
             internal static ValueTask<ReadOnlyMemory<byte>> SupplyContent(MemorySource supplier, CancellationToken token)
-                => new ValueTask<ReadOnlyMemory<byte>>(supplier.ReadContent());
+                => new(supplier.ReadContent());
         }
 
         [Theory]
         [MemberData(nameof(GetSources))]
         public static async Task CopyUsingSpanAction(IAsyncBinaryReaderWriterSource source)
         {
-            await using(source)
+            await using (source)
             {
-                var supplier = new MemorySource(new byte[] { 1, 2, 3});
+                var supplier = new MemorySource(new byte[] { 1, 2, 3 });
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(MemorySource.SupplyContent, supplier);
                 if (source is PipeSource pipe)
@@ -386,9 +386,9 @@ namespace DotNext.IO
         [MemberData(nameof(GetSources))]
         public static async Task CopyToBuffer(IAsyncBinaryReaderWriterSource source)
         {
-            await using(source)
+            await using (source)
             {
-                var supplier = new MemorySource(new byte[] { 1, 2, 3});
+                var supplier = new MemorySource(new byte[] { 1, 2, 3 });
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(MemorySource.SupplyContent, supplier);
                 if (source is PipeSource pipe)
@@ -405,9 +405,9 @@ namespace DotNext.IO
         [MemberData(nameof(GetSources))]
         public static async Task CopyUsingAsyncFunc(IAsyncBinaryReaderWriterSource source)
         {
-            await using(source)
+            await using (source)
             {
-                var supplier = new MemorySource(new byte[] { 1, 2, 3});
+                var supplier = new MemorySource(new byte[] { 1, 2, 3 });
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(MemorySource.SupplyContent, supplier);
                 if (source is PipeSource pipe)
@@ -474,8 +474,8 @@ namespace DotNext.IO
             await using (source)
             {
                 var writer = source.CreateWriter();
-                await writer.WriteAsync(new byte[] {1, 2, 3});
-                await writer.WriteAsync(new byte[] { 4, 5, 6});
+                await writer.WriteAsync(new byte[] { 1, 2, 3 });
+                await writer.WriteAsync(new byte[] { 4, 5, 6 });
                 if (source is PipeSource pipe)
                     await pipe.CompleteWriterAsync();
 

@@ -27,6 +27,20 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Initializes a new memory reader.
+        /// </summary>
+        /// <param name="reference">Managed pointer to the memory block.</param>
+        /// <param name="length">The length of the elements referenced by the pointer.</param>
+        public SpanReader(ref T reference, int length)
+        {
+            if (Unsafe.IsNullRef(ref reference))
+                throw new ArgumentNullException(nameof(reference));
+
+            span = MemoryMarshal.CreateReadOnlySpan(ref reference, length);
+            position = 0;
+        }
+
+        /// <summary>
         /// Gets the element at the current position in the
         /// underlying memory block.
         /// </summary>
@@ -61,6 +75,24 @@ namespace DotNext.Buffers
         /// Gets the span over consumed elements.
         /// </summary>
         public readonly ReadOnlySpan<T> ConsumedSpan => span.Slice(0, position);
+
+        /// <summary>
+        /// Gets the remaining part of the span.
+        /// </summary>
+        public readonly ReadOnlySpan<T> RemainingSpan => span.Slice(position);
+
+        /// <summary>
+        /// Advances the position of this reader.
+        /// </summary>
+        /// <param name="count">The number of consumed elements.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
+        public void Advance(int count)
+        {
+            var newPosition = checked(position + count);
+            if (newPosition > span.Length)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            position = newPosition;
+        }
 
         /// <summary>
         /// Sets reader position to the first element.
@@ -127,7 +159,7 @@ namespace DotNext.Buffers
         /// <returns>The number of obtained elements.</returns>
         public int Read(Span<T> output)
         {
-            span.Slice(position).CopyTo(output, out var writtenCount);
+            RemainingSpan.CopyTo(output, out var writtenCount);
             position += writtenCount;
             return writtenCount;
         }
@@ -200,7 +232,7 @@ namespace DotNext.Buffers
         /// <returns>The rest of the memory block.</returns>
         public ReadOnlySpan<T> ReadToEnd()
         {
-            var result = span.Slice(position);
+            var result = RemainingSpan;
             position = span.Length;
             return result;
         }
@@ -209,6 +241,6 @@ namespace DotNext.Buffers
         /// Gets the textual representation of the written content.
         /// </summary>
         /// <returns>The textual representation of the written content.</returns>
-        public override string ToString() => ConsumedSpan.ToString();
+        public readonly override string ToString() => ConsumedSpan.ToString();
     }
 }

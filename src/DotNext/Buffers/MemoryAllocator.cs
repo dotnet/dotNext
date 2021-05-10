@@ -19,7 +19,7 @@ namespace DotNext.Buffers
     public static class MemoryAllocator
     {
         private static MemoryOwner<T> Allocate<T>(this ArrayPool<T> pool, int length)
-            => new MemoryOwner<T>(pool, length);
+            => new(pool, length);
 
         /// <summary>
         /// Converts array pool to the memory allocator.
@@ -31,7 +31,7 @@ namespace DotNext.Buffers
             => pool.Allocate;
 
         private static MemoryOwner<T> Allocate<T>(this MemoryPool<T> pool, int length)
-            => new MemoryOwner<T>(pool, length);
+            => new(pool, length);
 
         /// <summary>
         /// Converts memory pool to the memory allocator.
@@ -43,7 +43,7 @@ namespace DotNext.Buffers
             => pool.Allocate;
 
         private static MemoryOwner<T> Allocate<T>(this Func<int, IMemoryOwner<T>> provider, int length)
-            => new MemoryOwner<T>(provider, length);
+            => new(provider, length);
 
         /// <summary>
         /// Converts memory provider to the memory allocator.
@@ -94,9 +94,9 @@ namespace DotNext.Buffers
 
             static MemoryOwner<T> AllocateArray(int length)
 #if NETSTANDARD2_1
-                => new MemoryOwner<T>(OneDimensionalArray.New<T>(length));
+                => new (OneDimensionalArray.New<T>(length));
 #else
-                => new MemoryOwner<T>(GC.AllocateUninitializedArray<T>(length, false));
+                => new(GC.AllocateUninitializedArray<T>(length, false));
 #endif
         }
     }

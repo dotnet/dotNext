@@ -12,17 +12,18 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
+    public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
         // of Memory, this[nint index] and Expand members
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool or null
-        private readonly int length;
+        private int length; // TODO: must be native integer in .NET 6
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
+            Debug.Assert(array.Length >= length);
             this.array = array;
             owner = pool;
             this.length = length;
@@ -110,36 +111,33 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets numbers of elements in the rented memory block.
         /// </summary>
-        public int Length => length;
+        public readonly int Length => length;
 
-        // WARNING: This is mutable method and should be used with care
         internal void Expand()
         {
-            int length;
-
             if (array is not null)
                 length = array.Length;
             else if (owner is not null)
                 length = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
-            else
-                goto exit;
+        }
 
-            Unsafe.AsRef(in this.length) = length;
-
-            exit:
-            return;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void Truncate(int newLength)
+        {
+            Debug.Assert(newLength > 0);
+            length = Math.Min(length, newLength);
         }
 
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
-        public bool IsEmpty => length == 0;
+        public readonly bool IsEmpty => length == 0;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
         /// </summary>
         /// <value>The memory belonging to this owner.</value>
-        public Memory<T> Memory
+        public readonly Memory<T> Memory
         {
             get
             {
@@ -160,7 +158,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="segment">The array segment retrieved from the underlying memory buffer.</param>
         /// <returns><see langword="true"/> if the method call succeeds; <see langword="false"/> otherwise.</returns>
-        public bool TryGetArray(out ArraySegment<T> segment)
+        public readonly bool TryGetArray(out ArraySegment<T> segment)
         {
             if (array is not null)
             {
@@ -176,36 +174,23 @@ namespace DotNext.Buffers
         }
 
         /// <inheritdoc/>
-        Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
+        readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
-        /// <summary>
-        /// Gets managed pointer to the item in the rented memory.
-        /// </summary>
-        /// <param name="index">The index of the element in memory.</param>
-        /// <value>The managed pointer to the item.</value>
-        public ref T this[nint index]
+        internal readonly ref T First
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (index < 0 || index >= length)
-                    goto invalid_index;
-
-                ref var result = ref Unsafe.NullRef<T>();
                 if (array is not null)
 #if NETSTANDARD2_1
-                    result = ref array[0];
+                    return ref array[0];
 #else
-                    result = ref MemoryMarshal.GetArrayDataReference(array);
+                    return ref MemoryMarshal.GetArrayDataReference(array);
 #endif
-                else if (owner is not null)
-                    result = ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
-                else
-                    goto invalid_index;
+                if (owner is not null)
+                    return ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
 
-                return ref Unsafe.Add(ref result, index);
-
-                invalid_index:
-                throw new ArgumentOutOfRangeException(nameof(index));
+                return ref Unsafe.NullRef<T>();
             }
         }
 
@@ -214,12 +199,28 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
-        public ref T this[int index] => ref this[(nint)index];
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
+        public readonly ref T this[nint index]
+        {
+            get
+            {
+                if (index < 0 || index >= length)
+                    throw new ArgumentOutOfRangeException(nameof(index));
+
+                Debug.Assert(owner is not null || array is not null);
+                return ref Unsafe.Add(ref First, index);
+            }
+        }
 
         /// <summary>
-        /// Releases rented memory.
+        /// Gets managed pointer to the item in the rented memory.
         /// </summary>
-        public void Dispose()
+        /// <param name="index">The index of the element in memory.</param>
+        /// <value>The managed pointer to the item.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
+        public readonly ref T this[int index] => ref this[(nint)index];
+
+        internal void Dispose(bool clearBuffer)
         {
             switch (owner)
             {
@@ -228,9 +229,16 @@ namespace DotNext.Buffers
                     break;
                 case ArrayPool<T> pool:
                     Debug.Assert(array is not null);
-                    pool.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                    pool.Return(array, clearBuffer);
                     break;
             }
+
+            this = default;
         }
+
+        /// <summary>
+        /// Releases rented memory.
+        /// </summary>
+        public void Dispose() => Dispose(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
 }

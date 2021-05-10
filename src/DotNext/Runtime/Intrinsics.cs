@@ -306,7 +306,7 @@ namespace DotNext.Runtime
 
             // TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
             result = true;
-            exit:
+        exit:
             return result;
         }
 
@@ -482,7 +482,7 @@ namespace DotNext.Runtime
             => ref Unsafe.Add(ref ptr, sizeof(T));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
+        private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] long* length)
             where T : unmanaged
         {
             *length -= sizeof(T);
@@ -523,7 +523,7 @@ namespace DotNext.Runtime
             }
 
             result = true;
-            exit:
+        exit:
             return result;
         }
 

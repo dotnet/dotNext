@@ -282,7 +282,6 @@ namespace DotNext.IO
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             buffer.Dispose();
-            buffer = default;
             fileBackend?.Dispose();
             fileBackend = null;
             position = 0;
@@ -357,7 +356,6 @@ namespace DotNext.IO
                 Debug.Assert(fileBackend is not null);
                 await fileBackend.WriteAsync(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
                 buffer.Dispose();
-                buffer = default;
                 position = 0;
             }
         }
@@ -370,7 +368,6 @@ namespace DotNext.IO
                 Debug.Assert(fileBackend is not null);
                 fileBackend.Write(buffer.Memory.Span.Slice(0, position));
                 buffer.Dispose();
-                buffer = default;
                 position = 0;
             }
         }
@@ -516,7 +513,11 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
-            => new ValueTask<int>(Task.FromException<int>(new NotSupportedException()));
+#if NETSTANDARD2_1
+            => new (Task.FromException<int>(new NotSupportedException()));
+#else
+            => ValueTask.FromException<int>(new NotSupportedException());
+#endif
 
         /// <inheritdoc/>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
@@ -558,7 +559,7 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         ValueTask IGrowableBuffer<byte>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-            => new ValueTask(CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
+            => new(CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
 
         /// <summary>
         /// Drains the written content to the consumer synchronously.
@@ -855,7 +856,6 @@ namespace DotNext.IO
                 fileBackend?.Dispose();
                 fileBackend = null;
                 buffer.Dispose();
-                buffer = default;
                 reader = null;
             }
 
@@ -872,7 +872,6 @@ namespace DotNext.IO
             }
 
             buffer.Dispose();
-            buffer = default;
             await base.DisposeAsync().ConfigureAwait(false);
         }
     }

@@ -16,9 +16,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
+        private const int MaxTermCacheSize = 100;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
+
+        // key is log entry index, value is log entry term
+        private readonly TermCache precedingTermCache;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
 
@@ -27,9 +31,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
-            timerCancellation = new ();
-            replicationEvent = new ();
-            replicationQueue = new ();
+            timerCancellation = new();
+            replicationEvent = new();
+            replicationQueue = new();
+            precedingTermCache = new TermCache(MaxTermCacheSize);
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -39,24 +44,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             long commitIndex = auditTrail.GetLastIndex(true),
                 currentIndex = auditTrail.GetLastIndex(false),
-                term = currentTerm;
+                term = currentTerm,
+                minPrecedingIndex = 0L;
 
             // send heartbeat in parallel
             foreach (var member in stateMachine.Members)
             {
                 if (member.IsRemote)
                 {
-                    long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
+                    long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm;
+                    minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
+
+                    // try to get term from the cache to avoid touching audit trail for each member
+                    if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
+                        precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
+
                     tasks.AddLast(new Replicator(member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
                 }
             }
 
+            // clear cache
+            if (precedingTermCache.Count > MaxTermCacheSize)
+                precedingTermCache.Clear();
+            else
+                precedingTermCache.RemoveHead(minPrecedingIndex);
+
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
+#if NETSTANDARD2_1
             for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
+#else
+            for (var task = tasks.First; task is not null; task.ValueRef = default, task = task.Next)
+#endif
             {
                 try
                 {
+#if NETSTANDARD2_1
                     var result = await task.Value.ConfigureAwait(false);
+#else
+                    var result = await task.ValueRef.ConfigureAwait(false);
+#endif
                     term = Math.Max(term, result.Term);
                     quorum += 1;
                     commitQuorum += result.Value ? 1 : -1;
@@ -93,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
 
             // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum <= 0 & !allowPartitioning)
+            if (quorum <= 0 && !allowPartitioning)
                 goto stop_leading;
 
             check_term:

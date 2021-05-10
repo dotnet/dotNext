@@ -71,7 +71,7 @@ namespace DotNext
         /// <param name="ptr">The pointer to the managed method.</param>
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-        public static implicit operator Supplier<TResult>(delegate*<TResult> ptr) => new (ptr);
+        public static implicit operator Supplier<TResult>(delegate*<TResult> ptr) => new(ptr);
 
         /// <summary>
         /// Converts this supplier to the delegate of type <see cref="Func{TResult}"/>.
@@ -90,7 +90,7 @@ namespace DotNext
         where T : new()
     {
         /// <inheritdoc />
-        T ISupplier<T>.Invoke() => new T();
+        T ISupplier<T>.Invoke() => new();
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ namespace DotNext
         /// <param name="func">The delegate instance.</param>
         /// <returns>The supplier represented by the delegate.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public static implicit operator DelegatingSupplier<TResult>(Func<TResult> func) => new (func);
+        public static implicit operator DelegatingSupplier<TResult>(Func<TResult> func) => new(func);
 
         /// <summary>
         /// Determines whether the two objects contain references to the same delegate instance.

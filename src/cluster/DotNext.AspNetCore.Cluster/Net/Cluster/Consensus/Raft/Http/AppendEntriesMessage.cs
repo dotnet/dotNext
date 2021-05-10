@@ -113,7 +113,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ValueTask result;
                 if (consumed)
                 {
-                    result = new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
+#if NETCOREAPP3_1
+                    result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
+#else
+                    result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
+#endif
                 }
                 else
                 {
@@ -316,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            private ValueTask WriteMetadataAsync(Stream output, Memory<byte> buffer, TEntry entry, CancellationToken token)
+            private static ValueTask WriteMetadataAsync(Stream output, Memory<byte> buffer, TEntry entry, CancellationToken token)
             {
                 var metadata = LogEntryMetadata.Create(entry);
                 buffer = buffer.Slice(0, LogEntryMetadata.Size);

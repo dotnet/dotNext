@@ -195,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (!entry.Length.TryGetValue(out var length))
                 result = CopyToMemoryOrFileAsync(entry, options, token);
             else if (length == 0L)
-                result = new (new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
+                result = new(new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
             else if (length <= options.MemoryThreshold)
                 result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);
             else
@@ -204,7 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             ValueTask result;
@@ -212,17 +212,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 case FileStream fs:
                     fs.Position = 0L;
-                    result = new (writer.CopyFromAsync(fs, token));
+                    result = new(writer.CopyFromAsync(fs, token));
                     break;
                 case IGrowableBuffer<byte> buffer:
                     result = buffer.CopyToAsync(writer, token);
                     break;
                 default:
-                    result = new ();
+                    result = new();
                     break;
             }
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = default;
+            return false;
         }
 
         /// <summary>

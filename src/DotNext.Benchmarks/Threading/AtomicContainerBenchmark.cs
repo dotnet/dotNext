@@ -53,11 +53,11 @@ namespace DotNext.Threading
             }
         }
 
-        private static Atomic<LargeStruct> VContainer = new Atomic<LargeStruct>();
-        private static readonly SynchronizedContainer SContainer = new SynchronizedContainer();
-        private static readonly SpinLockContainer SLContainer = new SpinLockContainer();
+        private static Atomic<LargeStruct> VContainer = new();
+        private static readonly SynchronizedContainer SContainer = new();
+        private static readonly SpinLockContainer SLContainer = new();
 
-        private static readonly LargeStruct Value = new LargeStruct { Field2 = Guid.NewGuid(), Field1 = Guid.NewGuid(), Field3 = Guid.NewGuid() };
+        private static readonly LargeStruct Value = new() { Field2 = Guid.NewGuid(), Field1 = Guid.NewGuid(), Field3 = Guid.NewGuid() };
 
         private Thread vRead1, vRead2, vWrite;
         private Thread sRead1, sRead2, sWrite;

@@ -33,7 +33,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 var enumerator = (typeof(Task<>), typeof(ValueTask<>)).AsReadOnlySpan().GetEnumerator();
 
-                move_next:
+            move_next:
                 if (!enumerator.MoveNext())
                     throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
 

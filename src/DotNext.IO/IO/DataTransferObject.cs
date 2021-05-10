@@ -20,78 +20,6 @@ namespace DotNext.IO
         private const int DefaultBufferSize = 1024;
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct TextDecoder : IDataTransferObject.ITransformation<string>
-        {
-            private readonly Encoding encoding;
-            private readonly long? capacity;
-            private readonly MemoryAllocator<byte>? allocator;
-
-            internal TextDecoder(Encoding encoding, long? capacity, MemoryAllocator<byte>? allocator)
-            {
-                this.encoding = encoding;
-                this.capacity = capacity;
-                this.allocator = allocator;
-            }
-
-            private BufferWriter<byte> CreateBuffer()
-                => capacity.TryGetValue(out var initialCapacity) && initialCapacity > 0L ?
-                    new PooledBufferWriter<byte>(allocator, initialCapacity.Truncate()) :
-                    new PooledBufferWriter<byte>(allocator);
-
-            public async ValueTask<string> TransformAsync<TReader>(TReader reader, CancellationToken token)
-                where TReader : IAsyncBinaryReader
-            {
-                using var writer = CreateBuffer();
-                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-                return writer.WrittenCount == 0 ? string.Empty : encoding.GetString(writer.WrittenMemory.Span);
-            }
-        }
-
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct MemoryDecoder : IDataTransferObject.ITransformation<MemoryOwner<byte>>, IDataTransferObject.ITransformation<byte[]>
-        {
-            private readonly MemoryAllocator<byte>? allocator;
-            private readonly long? initialCapacity;
-
-            internal MemoryDecoder(MemoryAllocator<byte>? allocator, long? length)
-            {
-                this.allocator = allocator;
-                initialCapacity = length;
-            }
-
-            private BufferWriter<byte> CreateBuffer()
-                => this.initialCapacity.TryGetValue(out var initialCapacity) && initialCapacity > 0L ?
-                    new PooledBufferWriter<byte>(allocator, initialCapacity.Truncate()) :
-                    new PooledBufferWriter<byte>(allocator);
-
-            async ValueTask<MemoryOwner<byte>> IDataTransferObject.ITransformation<MemoryOwner<byte>>.TransformAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                using var writer = CreateBuffer();
-                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-
-                MemoryOwner<byte> result;
-                if (writer.WrittenCount > 0)
-                {
-                    result = allocator.Invoke(writer.WrittenCount, true);
-                    writer.WrittenMemory.CopyTo(result.Memory);
-                }
-                else
-                {
-                    result = default;
-                }
-
-                return result;
-            }
-
-            async ValueTask<byte[]> IDataTransferObject.ITransformation<byte[]>.TransformAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                using var writer = CreateBuffer();
-                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-                return writer.WrittenMemory.ToArray();
-            }
-        }
-
-        [StructLayout(LayoutKind.Auto)]
         private readonly struct ValueDecoder<T> : IDataTransferObject.ITransformation<T>
             where T : unmanaged
         {
@@ -110,6 +38,19 @@ namespace DotNext.IO
 
             ValueTask<T> IDataTransferObject.ITransformation<T>.TransformAsync<TReader>(TReader reader, CancellationToken token)
                 => decoder(reader, token);
+        }
+
+        private static BufferWriter<byte> CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator)
+        {
+            BufferWriter<byte> result;
+            if (!capacity.TryGetValue(out var len) || len == 0L)
+                result = new PooledBufferWriter<byte>(allocator);
+            else if (len <= int.MaxValue)
+                result = new PooledBufferWriter<byte>(allocator, (int)len);
+            else
+                throw new InsufficientMemoryException();
+
+            return result;
         }
 
         /// <summary>
@@ -136,11 +77,18 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        public static ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
         {
-            using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, bufferSize);
-            await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
+            return dto.TryGetMemory(out var memory) ?
+                output.WriteAsync(memory, token) :
+                WriteToStreamAsync(dto, output, bufferSize, token);
+
+            static async ValueTask WriteToStreamAsync(TObject dto, Stream output, int bufferSize, CancellationToken token)
+            {
+                using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, bufferSize);
+                await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -167,7 +115,31 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask WriteToAsync<TObject>(this TObject dto, IBufferWriter<byte> writer, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.WriteToAsync(new AsyncBufferWriter(writer), token);
+        {
+            ValueTask result;
+            if (dto.TryGetMemory(out var memory))
+            {
+                result = new();
+                try
+                {
+                    writer.Write(memory.Span);
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new (Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
+                }
+            }
+            else
+            {
+                result = dto.WriteToAsync(new AsyncBufferWriter(writer), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Converts DTO content to string.
@@ -181,7 +153,38 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding, dto.Length, allocator), token);
+        {
+            ValueTask<string> result;
+
+            if (dto.TryGetMemory(out var memory))
+            {
+                try
+                {
+                    result = new(encoding.GetString(memory.Span));
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException<string>(e));
+#else
+                    result = ValueTask.FromException<string>(e);
+#endif
+                }
+            }
+            else
+            {
+                result = DecodeAsync(dto, encoding, allocator, token);
+            }
+
+            return result;
+
+            static async ValueTask<string> DecodeAsync(TObject dto, Encoding encoding, MemoryAllocator<byte>? allocator, CancellationToken token)
+            {
+                using var buffer = CreateBuffer(dto.Length, allocator);
+                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                return buffer.WrittenCount == 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
+            }
+        }
 
         /// <summary>
         /// Converts DTO to an array of bytes.
@@ -194,7 +197,38 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<byte[]> ToByteArrayAsync<TObject>(this TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<byte[], MemoryDecoder>(new MemoryDecoder(allocator, dto.Length), token);
+        {
+            ValueTask<byte[]> result;
+
+            if (dto.TryGetMemory(out var memory))
+            {
+                try
+                {
+                    result = new(memory.ToArray());
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException<byte[]>(e));
+#else
+                    result = ValueTask.FromException<byte[]>(e);
+#endif
+                }
+            }
+            else
+            {
+                result = BufferizeAsync(dto, allocator, token);
+            }
+
+            return result;
+
+            static async ValueTask<byte[]> BufferizeAsync(TObject dto, MemoryAllocator<byte>? allocator, CancellationToken token)
+            {
+                using var buffer = CreateBuffer(dto.Length, allocator);
+                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                return buffer.WrittenMemory.ToArray();
+            }
+        }
 
         /// <summary>
         /// Converts DTO to a block of memory.
@@ -207,7 +241,38 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<MemoryOwner<byte>> ToMemoryAsync<TObject>(this TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<MemoryOwner<byte>, MemoryDecoder>(new MemoryDecoder(allocator, dto.Length), token);
+        {
+            ValueTask<MemoryOwner<byte>> result;
+
+            if (dto.TryGetMemory(out var memory))
+            {
+                try
+                {
+                    result = new(memory.Span.Copy(allocator));
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException<MemoryOwner<byte>>(e));
+#else
+                    result = ValueTask.FromException<MemoryOwner<byte>>(e);
+#endif
+                }
+            }
+            else
+            {
+                result = BufferizeAsync(dto, allocator, token);
+            }
+
+            return result;
+
+            static async ValueTask<MemoryOwner<byte>> BufferizeAsync(TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+            {
+                using var buffer = CreateBuffer(dto.Length, allocator);
+                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                return buffer.DetachBuffer();
+            }
+        }
 
         /// <summary>
         /// Converts DTO to value of blittable type.
@@ -221,7 +286,31 @@ namespace DotNext.IO
         public static ValueTask<TResult> ToTypeAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
             where TResult : unmanaged
-            => dto.TransformAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
+        {
+            ValueTask<TResult> result;
+
+            if (dto.TryGetMemory(out var memory))
+            {
+                try
+                {
+                    result = new(MemoryMarshal.Read<TResult>(memory.Span));
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException<TResult>(e));
+#else
+                    result = ValueTask.FromException<TResult>(e);
+#endif
+                }
+            }
+            else
+            {
+                result = dto.TransformAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Converts data transfer object to another type.

@@ -1673,7 +1673,7 @@ namespace DotNext.IO
         public static async Task CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
             where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
         {
-            for (int count; (count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
+            for (int count; (count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
             {
                 await consumer.Invoke(buffer.Slice(0, count), token).ConfigureAwait(false);
             }

@@ -69,15 +69,15 @@ namespace DotNext.Threading.Tasks
         public static async Task OnFaultedConditional()
         {
             var task = Task.FromException<int>(new ArithmeticException());
-            Predicate<AggregateException> filter = e => e.InnerException is ArithmeticException;
-            task = task.OnFaulted<int, Int32Const.Min>(filter);
+            static bool Filter(AggregateException e) => e.InnerException is ArithmeticException;
+            task = task.OnFaulted<int, Int32Const.Min>(Filter);
             Equal(int.MinValue, await task);
             var source = new TaskCompletionSource<int>();
-            task = source.Task.OnFaulted<int, Int32Const.Min>(filter);
+            task = source.Task.OnFaulted<int, Int32Const.Min>(Filter);
             source.SetException(new ArithmeticException());
             Equal(int.MinValue, await task);
             source = new TaskCompletionSource<int>();
-            task = source.Task.OnFaulted<int, Int32Const.Min>(filter);
+            task = source.Task.OnFaulted<int, Int32Const.Min>(Filter);
             source.SetException(new IndexOutOfRangeException());
             await ThrowsAsync<IndexOutOfRangeException>(() => task);
         }
@@ -86,15 +86,15 @@ namespace DotNext.Threading.Tasks
         public static async Task OnFaultedOrCanceledConditional()
         {
             var task = Task.FromCanceled<int>(new CancellationToken(true));
-            Predicate<AggregateException> filter = e => e.InnerException is ArithmeticException;
-            task = task.OnFaultedOrCanceled<int, Int32Const.Min>(filter);
+            static bool Filter(AggregateException e) => e.InnerException is ArithmeticException;
+            task = task.OnFaultedOrCanceled<int, Int32Const.Min>(Filter);
             Equal(int.MinValue, await task);
             var source = new TaskCompletionSource<int>();
-            task = source.Task.OnFaulted<int, Int32Const.Min>(filter);
+            task = source.Task.OnFaulted<int, Int32Const.Min>(Filter);
             source.SetException(new ArithmeticException());
             Equal(int.MinValue, await task);
             source = new TaskCompletionSource<int>();
-            task = source.Task.OnFaulted<int, Int32Const.Min>(filter);
+            task = source.Task.OnFaulted<int, Int32Const.Min>(Filter);
             source.SetException(new IndexOutOfRangeException());
             await ThrowsAsync<IndexOutOfRangeException>(() => task);
         }

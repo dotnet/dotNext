@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Buffers;
 using System.Runtime.InteropServices;
 #if !NETSTANDARD2_1
 using System.Text.Json;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.CompilerServices.Unsafe;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
 
     public partial class PersistentState
@@ -24,16 +23,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         protected internal readonly struct LogEntry : IRaftLogEntry
         {
-            private enum ContentType : byte
-            {
-                None = 0,
-                Stream,
-                Memory,
-            }
-
-            // this field has correlation with 'content' field
-            private readonly ContentType contentType;
-            private readonly IDisposable? content;
+            // if null then the log entry payload is represented by buffer
+            private readonly StreamSegment? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
 
@@ -41,46 +32,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long index;
 
             // for regular log entry
-            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
+            internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
             {
                 this.metadata = metadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
                 this.index = index;
-                contentType = ContentType.Stream;
             }
 
             // for regular log entry cached in memory
-            internal LogEntry(IMemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
+            internal LogEntry(in MemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
             {
-                Debug.Assert(cachedContent.Memory.Length == metadata.Length);
+                Debug.Assert(cachedContent.Length == metadata.Length);
                 this.metadata = metadata;
-                content = cachedContent;
-                buffer = default;
+                content = null;
+                buffer = cachedContent.Memory;
                 this.index = index;
-                contentType = ContentType.Memory;
             }
 
             // for snapshot
-            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
+            internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
             {
                 Debug.Assert(metadata.Index > 0L);
                 this.metadata = metadata.RecordMetadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
                 index = -metadata.Index;
-                contentType = ContentType.Stream;
             }
 
-            // for ephemeral entry
-            internal LogEntry(Memory<byte> sharedBuffer)
-            {
-                metadata = default;
-                content = null;
-                buffer = sharedBuffer;
-                index = 0L;
-                contentType = ContentType.None;
-            }
+            internal static LogEntry Initial => new();
 
             internal long? SnapshotIndex
             {
@@ -91,7 +71,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal bool IsBuffered => contentType == ContentType.Memory;
+            internal bool IsBuffered => content is null && !buffer.IsEmpty;
+
+            internal long Position => metadata.Offset;
 
             /// <summary>
             /// Gets the index of this log entry.
@@ -118,35 +100,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static void Adjust(StreamSegment segment, in LogEntryMetadata metadata)
                 => segment.Adjust(metadata.Offset, metadata.Length);
 
-            private ValueTask CopyFromStream<TWriter>(TWriter writer, CancellationToken token)
-                where TWriter : notnull, IAsyncBinaryWriter
-            {
-                Debug.Assert(content is StreamSegment);
-                var segment = As<StreamSegment>(content);
-                Adjust(segment, in metadata);
-                return new (writer.CopyFromAsync(segment, token));
-            }
-
-            private ValueTask CopyFromMemory<TWriter>(TWriter writer, CancellationToken token)
-                where TWriter : notnull, IAsyncBinaryWriter
-            {
-                Debug.Assert(content is IMemoryOwner<byte>);
-                return writer.WriteAsync(As<IMemoryOwner<byte>>(content).Memory, null, token);
-            }
-
             /// <inheritdoc/>
-            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => contentType switch
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
-                ContentType.Stream => CopyFromStream(writer, token),
-                ContentType.Memory => CopyFromMemory(writer, token),
-                _ => new (),
-            };
+                ValueTask result;
+
+                if (content is not null)
+                {
+                    Adjust(content, in metadata);
+                    result = new(writer.CopyFromAsync(content, token));
+                }
+                else if (!buffer.IsEmpty)
+                {
+                    result = writer.WriteAsync(buffer, null, token);
+                }
+                else
+                {
+                    result = new();
+                }
+
+                return result;
+            }
 
             /// <inheritdoc/>
             long? IDataTransferObject.Length => Length;
 
             /// <inheritdoc/>
-            bool IDataTransferObject.IsReusable => false;
+            bool IDataTransferObject.IsReusable => content is null;
 
             /// <summary>
             /// Gets Raft term of this log entry.
@@ -156,65 +136,79 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets timestamp of this log entry.
             /// </summary>
-            public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
-
-            private ValueTask<TResult> TransformStreamAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-                where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
-            {
-                Debug.Assert(content is StreamSegment);
-                var segment = As<StreamSegment>(content);
-                Adjust(segment, in metadata);
-                return IDataTransferObject.TransformAsync<TResult, TTransformation>(segment, transformation, false, buffer, token);
-            }
-
-            private ValueTask<TResult> TransformMemoryAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-                where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
-                => transformation.TransformAsync(GetMemoryReader(), token);
+            public DateTimeOffset Timestamp => new(metadata.Timestamp, TimeSpan.Zero);
 
             /// <inheritdoc/>
             public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
-                => contentType switch
-                {
-                    ContentType.Stream => TransformStreamAsync<TResult, TTransformation>(transformation, token),
-                    ContentType.Memory => TransformMemoryAsync<TResult, TTransformation>(transformation, token),
-                    _ => transformation.TransformAsync(IAsyncBinaryReader.Empty, token),
-                };
-
-            private IAsyncBinaryReader GetStreamReader()
             {
-                Debug.Assert(content is StreamSegment);
-                var segment = As<StreamSegment>(content);
-                Adjust(segment, in metadata);
-                return IAsyncBinaryReader.Create(segment, buffer);
+                ValueTask<TResult> result;
+
+                if (content is not null)
+                {
+                    Adjust(content, in metadata);
+                    result = IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
+                }
+                else if (!buffer.IsEmpty)
+                {
+                    result = transformation.TransformAsync(IAsyncBinaryReader.Create(buffer), token);
+                }
+                else
+                {
+                    result = transformation.TransformAsync(IAsyncBinaryReader.Empty, token);
+                }
+
+                return result;
             }
 
-            private SequenceBinaryReader GetMemoryReader()
+            /// <summary>
+            /// Attempts to obtain the payload of this log entry in the form of the memory block.
+            /// </summary>
+            /// <remarks>
+            /// This method returns <see langword="false"/> if the log entry is not cached
+            /// in the memory. Use <see cref="TransformAsync{TResult, TTransformation}(TTransformation, CancellationToken)"/>
+            /// as a uniform way to deserialize this payload.
+            /// </remarks>
+            /// <param name="memory">The memory block representing the log entry payload.</param>
+            /// <returns><see langword="true"/> if the log entry payload is available as a memory block; otherwise, <see langword="false"/>.</returns>
+            public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
             {
-                Debug.Assert(content is IMemoryOwner<byte>);
-                return IAsyncBinaryReader.Create(As<IMemoryOwner<byte>>(content).Memory);
+                if (content is null)
+                {
+                    memory = buffer;
+                    return true;
+                }
+
+                memory = default;
+                return false;
             }
 
             /// <summary>
             /// Gets reader that can be used to deserialize the content of this log entry.
             /// </summary>
             /// <returns>The binary reader providing access to the content of this log entry.</returns>
-            public IAsyncBinaryReader GetReader() => contentType switch
+            public IAsyncBinaryReader GetReader()
             {
-                ContentType.Stream => GetStreamReader(),
-                ContentType.Memory => GetMemoryReader(),
-                _ => IAsyncBinaryReader.Empty,
-            };
+                IAsyncBinaryReader result;
 
-#if !NETSTANDARD2_1
-            private ValueTask<object?> DeserializeFromJsonStreamAsync(Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
-            {
-                Debug.Assert(content is StreamSegment);
-                var segment = As<StreamSegment>(content);
-                Adjust(segment, in metadata);
-                return JsonLogEntry.DeserializeAsync(segment, typeLoader, options, token);
+                if (content is not null)
+                {
+                    Adjust(content, in metadata);
+                    result = IAsyncBinaryReader.Create(content, buffer);
+                }
+                else if (!buffer.IsEmpty)
+                {
+                    result = IAsyncBinaryReader.Create(buffer);
+                }
+                else
+                {
+                    result = IAsyncBinaryReader.Empty;
+                }
+
+                return result;
             }
 
+#if !NETSTANDARD2_1
             /// <summary>
             /// Deserializes JSON content represented by this log entry.
             /// </summary>
@@ -229,12 +223,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
             /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
             /// <seealso cref="CreateJsonLogEntry"/>
-            public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default) => contentType switch
+            public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
             {
-                ContentType.Stream => DeserializeFromJsonStreamAsync(typeLoader, options, token),
-                ContentType.Memory => new (JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
-                _ => new ((object?)null),
-            };
+                ValueTask<object?> result;
+
+                if (content is not null)
+                {
+                    Adjust(content, in metadata);
+                    result = JsonLogEntry.DeserializeAsync(content, typeLoader, options, token);
+                }
+                else if (!buffer.IsEmpty)
+                {
+                    result = new(JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, options));
+                }
+                else
+                {
+                    result = new(default(object));
+                }
+
+                return result;
+            }
 #endif
         }
 
@@ -252,7 +260,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The log entry representing JSON-serializable content.</returns>
         /// <seealso cref="LogEntry.DeserializeFromJsonAsync"/>
         public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
-            => new JsonLogEntry<T>(Term, content, typeId, options);
+            => new(Term, content, typeId, options);
 #endif
     }
 }

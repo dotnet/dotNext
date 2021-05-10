@@ -50,13 +50,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 identifier = reader.ReadInt32(true);
             }
 
-            internal bool IsValid => Offset > 0;
-
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
-                => new (entry.Timestamp, entry.Term, offset, length, entry.CommandId);
+                => new(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
+                => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
             internal void Serialize(ref SpanWriter<byte> writer)
             {
@@ -66,18 +69,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 writer.WriteInt64(Offset, true);
                 writer.WriteUInt32((uint)flags, true);
                 writer.WriteInt32(identifier, true);
-            }
-
-            internal void Serialize(Span<byte> output)
-            {
-                var writer = new SpanWriter<byte>(output);
-                Serialize(ref writer);
-            }
-
-            internal static LogEntryMetadata Deserialize(ReadOnlySpan<byte> input)
-            {
-                var reader = new SpanReader<byte>(input);
-                return new (ref reader);
             }
         }
 
@@ -94,32 +85,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 RecordMetadata = metadata;
             }
 
-            private SnapshotMetadata(ref SpanReader<byte> reader)
+            internal SnapshotMetadata(ref SpanReader<byte> reader)
             {
                 Index = reader.ReadInt64(true);
-                RecordMetadata = new (ref reader);
+                RecordMetadata = new(ref reader);
             }
 
             internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
                 where TLogEntry : IRaftLogEntry
-                => new (LogEntryMetadata.Create(snapshot, Size, length), index);
+                => new(LogEntryMetadata.Create(snapshot, Size, length), index);
 
             internal void Serialize(ref SpanWriter<byte> writer)
             {
                 writer.WriteInt64(Index, true);
                 RecordMetadata.Serialize(ref writer);
-            }
-
-            internal void Serialize(Span<byte> output)
-            {
-                var writer = new SpanWriter<byte>(output);
-                Serialize(ref writer);
-            }
-
-            internal static SnapshotMetadata Deserialize(ReadOnlySpan<byte> input)
-            {
-                var reader = new SpanReader<byte>(input);
-                return new (ref reader);
             }
         }
 
@@ -128,21 +107,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // do not derive from FileStream because some virtual methods
             // assumes that they are overridden and do async calls inefficiently
             private readonly FileStream fs;
-            private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
+            private readonly int bufferSize;
 
-            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
+            // A pool of read-only streams that can be shared between multiple readers in parallel.
+            // The stream will be created on demand.
+            private StreamSegment?[] readers;
+
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize)
+                : this(fileName, bufferSize, readersCount, options, initialSize, out _)
             {
-                fs = new (fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+            }
+
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize, out long actualLength)
+            {
+                fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+                actualLength = fs.Length;
+
+                // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6. Also need to change initial size for snapshot
+                if (actualLength == 0L && initialSize > 0L)
+                    fs.SetLength(initialSize);
+
+                this.bufferSize = bufferSize;
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
-                {
-                    readers[0] = new (fs, true);
-                }
-                else
-                {
-                    foreach (ref var reader in readers.AsSpan())
-                        reader = new (new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
-                }
+                    readers[0] = new(fs, true);
             }
 
             public sealed override bool CanRead => fs.CanRead;
@@ -225,19 +213,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public sealed override void CopyTo(Stream destination, int bufferSize)
                 => fs.CopyTo(destination, bufferSize);
 
-            public sealed override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
+            public override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
 
-            public sealed override void Flush() => fs.Flush(true);
+            public override void Flush() => fs.Flush(true);
 
             internal string FileName => fs.Name;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
-
-            internal Task FlushAsync(in DataAccessSession session, CancellationToken token)
-                => GetReadSessionStream(session).FlushAsync(token);
-
-            internal abstract void PopulateCache(in DataAccessSession session);
+            private protected StreamSegment GetReadSessionStream(in DataAccessSession session)
+            {
+                ref var stream = ref readers[session.SessionId];
+                return stream ??= new(new FileStream(fs.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
+            }
 
             protected override void Dispose(bool disposing)
             {
@@ -245,10 +232,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     foreach (ref var reader in readers.AsSpan())
                     {
-                        reader?.Dispose();
+                        var stream = reader;
                         reader = null;
+                        stream?.Dispose();
                     }
 
+                    readers = Array.Empty<StreamSegment?>();
                     fs.Dispose();
                 }
 
@@ -257,14 +246,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public override async ValueTask DisposeAsync()
             {
-                foreach (Stream? reader in readers)
-                {
-                    if (reader is not null)
-                        await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                for (var i = 0; i < readers.Length; i++)
+                    await DisposeAsync(ref readers[i]).ConfigureAwait(false);
 
+                readers = Array.Empty<StreamSegment?>();
                 await fs.DisposeAsync().ConfigureAwait(false);
                 await base.DisposeAsync().ConfigureAwait(false);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static ValueTask DisposeAsync(ref StreamSegment? segment)
+                {
+                    var stream = segment;
+                    segment = null;
+                    return stream is null ? new() : stream.DisposeAsync();
+                }
             }
         }
     }

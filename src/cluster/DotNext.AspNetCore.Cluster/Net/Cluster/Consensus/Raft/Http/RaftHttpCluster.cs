@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private static RaftProtocolException CreateUnresolvedLocalMemberException()
-            => new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            => new(ExceptionMessages.UnresolvedLocalMember);
 
         private protected void ConfigureMember(RaftClusterMember member)
         {

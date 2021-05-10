@@ -45,7 +45,7 @@ namespace DotNext.IO.Pipelines
         public static async Task<long> WriteAsync<TArg>(this PipeWriter writer, Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
         {
             var count = 0L;
-            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; )
+            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty;)
             {
                 var result = await writer.WriteAsync(source, token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
@@ -121,7 +121,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, LengthFormat lengthFormat, EncodingContext context,  string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteInt64(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);

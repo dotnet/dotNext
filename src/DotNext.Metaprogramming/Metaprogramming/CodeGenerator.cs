@@ -518,7 +518,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test, LexicalScope.Current);
+        public static ConditionalBuilder If(Expression test) => new(test, LexicalScope.Current);
 
         /// <summary>
         /// Constructs positive branch of the conditional expression.
@@ -864,14 +864,14 @@ namespace DotNext.Metaprogramming
         /// <returns>A new instance of selection expression builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
-        public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, LexicalScope.Current);
+        public static SwitchBuilder Switch(Expression value) => new(value, LexicalScope.Current);
 
         /// <summary>
         /// Adds pattern match statement.
         /// </summary>
         /// <param name="value">The value to be matched with patterns.</param>
         /// <returns>Pattern matcher.</returns>
-        public static MatchBuilder Match(Expression value) => new MatchBuilder(value, LexicalScope.Current);
+        public static MatchBuilder Match(Expression value) => new(value, LexicalScope.Current);
 
         /// <summary>
         /// Defines pattern matching.
@@ -1159,7 +1159,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>
-        public static TryBuilder Try(Expression body) => new TryBuilder(body, LexicalScope.Current);
+        public static TryBuilder Try(Expression body) => new(body, LexicalScope.Current);
 
         /// <summary>
         /// Constructs block of code run when control leaves a <c>try</c> statement.

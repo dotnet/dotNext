@@ -54,7 +54,7 @@ namespace DotNext.Reflection
                 }
             }
 
-            exit:
+        exit:
             return item;
         }
     }

@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal virtual void Reset() => taskSource.Reset();
 
-        internal ValueTask Task => new (this, taskSource.Version);
+        internal ValueTask Task => new(this, taskSource.Version);
 
         private protected virtual bool IsCancellationRequested(out CancellationToken token)
         {

@@ -43,7 +43,7 @@ namespace DotNext.Collections.Generic
         /// Gets enumerator for the single element in the list.
         /// </summary>
         /// <returns>The enumerator over single element.</returns>
-        public Enumerator GetEnumerator() => new Enumerator(item);
+        public Enumerator GetEnumerator() => new(item);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 

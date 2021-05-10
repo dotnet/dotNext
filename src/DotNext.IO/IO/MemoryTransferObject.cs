@@ -51,11 +51,18 @@ namespace DotNext.IO
         /// </summary>
         public Memory<byte> Content => owner.Memory;
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         long? IDataTransferObject.Length => owner.Length;
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = Content;
+            return true;
+        }
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -63,7 +70,6 @@ namespace DotNext.IO
             if (disposing)
             {
                 owner.Dispose();
-                owner = default;
             }
 
             base.Dispose(disposing);

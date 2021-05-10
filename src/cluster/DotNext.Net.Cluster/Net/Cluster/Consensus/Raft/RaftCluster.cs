@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
+    using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -130,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public readonly MemberHolder Current => new MemberHolder(current);
+                public readonly MemberHolder Current => new(current);
             }
 
             private readonly MemberCollection members;
@@ -151,7 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Returns enumerator over cluster members.
             /// </summary>
             /// <returns>The enumerator over cluster members.</returns>
-            public Enumerator GetEnumerator() => new Enumerator(members);
+            public Enumerator GetEnumerator() => new(members);
 
             internal IMemberCollection Build() => members;
         }
@@ -172,11 +173,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
 
         private readonly bool allowPartitioning;
-        private readonly bool standbyNode;
         private readonly ElectionTimeout electionTimeoutProvider;
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold;
         private volatile IMemberCollection members;
+        private bool standbyNode;
 
         private AsyncLock transitionSync;  // used to synchronize state transitions
 
@@ -326,6 +327,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event ClusterLeaderChangedEventHandler? LeaderChanged;
 
+        /// <summary>
+        /// Represents an event raised when the local node completes its replication with another
+        /// node.
+        /// </summary>
+        public event ReplicationCompletedEventHandler? ReplicationCompleted;
+
         /// <inheritdoc/>
         IClusterMember? ICluster.Leader => Leader;
 
@@ -343,11 +350,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private RaftState CreateInitialState()
+            => state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
+
         /// <summary>
         /// Starts serving local member.
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
-        /// <returns>The task representing asynchronous execution of the method.</returns>
+        /// <returns>The task representing asynchronous execution of the methodC.</returns>
         public virtual async Task StartAsync(CancellationToken token)
         {
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
@@ -356,7 +366,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise use ephemeral state
             state = standbyNode ?
                 new StandbyState(this) :
-                new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
+                CreateInitialState();
+        }
+
+        /// <summary>
+        /// Turns this node into regular state when the node can be elected as leader.
+        /// </summary>
+        /// <remarks>
+        /// Initially, the node can be started in standby mode when it cannot be elected as a leader.
+        /// This can be helpful if you need to wait for full replication with existing leader node.
+        /// When replication finished, you can turn this node into regular state.
+        /// </remarks>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this operation.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+        public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
+        {
+            ThrowIfDisposed();
+            if (standbyNode && state is StandbyState)
+            {
+                var tokenSource = token.LinkTo(Token);
+                var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+                try
+                {
+                    standbyNode = false;
+                    state = CreateInitialState();
+                }
+                finally
+                {
+                    transitionLock.Dispose();
+                    tokenSource?.Dispose();
+                }
+            }
         }
 
         private async Task CancelPendingRequestsAsync()
@@ -539,6 +580,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = sender;
                     if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
                     {
+                        var emptySet = entries.RemainingCount > 0L;
+
                         /*
                         * AppendAsync is called with skipCommitted=true because HTTP response from the previous
                         * replication might fail but the log entry was committed by the local node.
@@ -547,7 +590,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                         */
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
-                        result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
+
+                        if (commitIndex <= auditTrail.GetLastIndex(true))
+                        {
+                            // This node is in sync with the leader and no entries arrived
+                            if (emptySet)
+                                ReplicationCompleted?.Invoke(this, sender);
+
+                            result = true;
+                        }
+                        else
+                        {
+                            result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
+                        }
                     }
                 }
 
@@ -643,7 +698,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 tokenSource?.Dispose();
             }
 
-            exit:
+        exit:
             return new Result<bool>(currentTerm, result);
         }
 
@@ -654,7 +709,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> ReceiveResignAsync(CancellationToken token)
         {
-            if (standbyNode)
+            if (state is StandbyState)
                 goto resign_denied;
 
             var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
@@ -674,7 +729,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lockHolder.Dispose();
             }
 
-            resign_denied:
+        resign_denied:
             return false;
         }
 

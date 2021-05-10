@@ -129,7 +129,7 @@ namespace DotNext.IO
 
             return flushAsync(arg, token);
 
-            static Action CreateTaskCallback(Action<TArg> action, TArg arg) => new Action(() => action(arg));
+            static Action CreateTaskCallback(Action<TArg> action, TArg arg) => new(() => action(arg));
         }
     }
 }

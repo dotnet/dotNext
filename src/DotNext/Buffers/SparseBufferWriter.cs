@@ -165,7 +165,7 @@ namespace DotNext.Buffers
                 length += input.Length;
             }
 
-            exit:
+        exit:
             return;
         }
 

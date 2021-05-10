@@ -91,7 +91,7 @@ namespace DotNext.Threading.Channels
         }
 
         /// <inheritdoc />
-        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull]ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)
+        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull] ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)
         {
             var partitionNumber = state.Position / maxCount;
             PartitionStream result;

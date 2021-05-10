@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DotNext.Buffers
@@ -75,7 +76,7 @@ namespace DotNext.Buffers
         public static void Write<T>(this IBufferWriter<T> writer, T value)
         {
             const int count = 1;
-            writer.GetSpan(count)[0] = value;
+            writer.GetSpan()[0] = value;
             writer.Advance(count);
         }
 
@@ -85,10 +86,79 @@ namespace DotNext.Buffers
         /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The sequence of elements to be written.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value)
         {
-            foreach (var segment in value)
-                writer.Write(segment.Span);
+            if (value.IsSingleSegment)
+            {
+                writer.Write(value.FirstSpan);
+            }
+            else
+            {
+                WriteSlow(writer, in value);
+            }
+
+            static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
+            {
+                foreach (var segment in value)
+                    writer.Write(segment.Span);
+            }
+        }
+
+        /// <summary>
+        /// Copies the contents from the source sequence into a destination span.
+        /// </summary>
+        /// <param name="source">Source sequence.</param>
+        /// <param name="destination">Destination memory.</param>
+        /// <param name="writtenCount">The number of copied elements.</param>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo<T>(this in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
+        {
+            if (source.IsSingleSegment)
+            {
+                // fast path - single-segment sequence
+                source.FirstSpan.CopyTo(destination, out writtenCount);
+            }
+            else
+            {
+                // slow path - multisegment sequence
+                writtenCount = CopyToSlow(in source, destination);
+            }
+
+            static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination)
+            {
+                int result = 0, subcount;
+
+                for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); result += subcount)
+                {
+                    block.Span.CopyTo(destination, out subcount);
+                    destination = destination.Slice(subcount);
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Releases all resources encapsulated by the container.
+        /// </summary>
+        /// <remarks>
+        /// This method calls <see cref="IDisposable.Dispose"/> for each
+        /// object in the rented block.
+        /// </remarks>
+        /// <typeparam name="T">The type of items in the rented memory.</typeparam>
+        /// <param name="owner">The rented memory.</param>
+        public static void ReleaseAll<T>(this ref MemoryOwner<T> owner)
+            where T : notnull, IDisposable
+        {
+            foreach (ref var item in owner.Memory.Span)
+            {
+                item.Dispose();
+                item = default!;
+            }
+
+            owner.Dispose(false);
         }
 
 #if !NETSTANDARD2_1

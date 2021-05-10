@@ -15,10 +15,18 @@ namespace DotNext.IO
     internal sealed class EmptyBinaryReader : IAsyncBinaryReader
     {
         private static ValueTask<T> EndOfStream<T>()
-            => new ValueTask<T>(Task.FromException<T>(new EndOfStreamException()));
+#if NETSTANDARD2_1
+            => new (Task.FromException<T>(new EndOfStreamException()));
+#else
+            => ValueTask.FromException<T>(new EndOfStreamException());
+#endif
 
         private static ValueTask EndOfStream()
-            => new ValueTask(Task.FromException(new EndOfStreamException()));
+#if NETSTANDARD2_1
+            => new (Task.FromException(new EndOfStreamException()));
+#else
+            => ValueTask.FromException(new EndOfStreamException());
+#endif
 
         public ValueTask<T> ReadAsync<T>(CancellationToken token)
             where T : unmanaged

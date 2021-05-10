@@ -374,7 +374,7 @@ namespace DotNext
                     return i;
             }
 
-            not_found:
+        not_found:
             return -1;
         }
 
@@ -607,6 +607,26 @@ namespace DotNext
             second.CopyTo(output = output.Slice(first.Length));
             third.CopyTo(output.Slice(second.Length));
 
+            return result;
+        }
+
+        /// <summary>
+        /// Creates buffered copy of the memory block.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the memory.</typeparam>
+        /// <param name="span">The span of elements to be copied to the buffer.</param>
+        /// <param name="allocator">Optional buffer allocator.</param>
+        /// <returns>The copy of the elements from <paramref name="span"/>.</returns>
+        public static MemoryOwner<T> Copy<T>(this ReadOnlySpan<T> span, MemoryAllocator<T>? allocator = null)
+        {
+            if (span.IsEmpty)
+                return default;
+
+            var result = allocator is null ?
+                new MemoryOwner<T>(ArrayPool<T>.Shared, span.Length) :
+                allocator(span.Length);
+
+            span.CopyTo(result.Memory.Span);
             return result;
         }
 

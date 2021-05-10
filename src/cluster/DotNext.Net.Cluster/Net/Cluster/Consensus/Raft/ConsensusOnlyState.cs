@@ -79,8 +79,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        private readonly AsyncReaderWriterLock syncRoot = new AsyncReaderWriterLock();
-        private readonly AsyncManualResetEvent commitEvent = new AsyncManualResetEvent(false);
+        private readonly AsyncReaderWriterLock syncRoot = new();
+        private readonly AsyncManualResetEvent commitEvent = new(false);
         private long term, commitIndex, lastTerm, index;
         private volatile IRaftClusterMember? votedFor;
         private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries
@@ -252,7 +252,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => committed ? commitIndex.VolatileRead() : index.VolatileRead();
 
         /// <inheritdoc/>
-        ValueTask<long> IPersistentState.IncrementTermAsync() => new (term.IncrementAndGet());
+        ValueTask<long> IPersistentState.IncrementTermAsync() => new(term.IncrementAndGet());
 
         /// <inheritdoc/>
         Task IAuditTrail.InitializeAsync(CancellationToken token)
@@ -343,14 +343,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (resetLastVote)
                 votedFor = null;
 
-            return new ();
+            return new();
         }
 
         /// <inheritdoc/>
         ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
         {
             votedFor = member;
-            return new ();
+            return new();
         }
 
         /// <inheritdoc/>

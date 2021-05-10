@@ -449,7 +449,7 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Property value.</returns>
         [MaybeNull]
-        public TValue this[[DisallowNull]in T @this]
+        public TValue this[[DisallowNull] in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get

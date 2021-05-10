@@ -368,7 +368,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="instance">The event target.</param>
         /// <param name="handler">The event handler.</param>
-        public delegate void Accessor([DisallowNull]in T instance, THandler handler);
+        public delegate void Accessor([DisallowNull] in T instance, THandler handler);
 
         private readonly Accessor? addMethod, removeMethod;
 
@@ -440,7 +440,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddEventHandler([DisallowNull]in T target, THandler handler)
+        public void AddEventHandler([DisallowNull] in T target, THandler handler)
             => addMethod?.Invoke(in target, handler);
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveEventHandler([DisallowNull]in T target, THandler handler)
+        public void RemoveEventHandler([DisallowNull] in T target, THandler handler)
             => removeMethod?.Invoke(in target, handler);
 
         /// <summary>

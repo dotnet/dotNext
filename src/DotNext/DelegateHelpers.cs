@@ -55,7 +55,7 @@ namespace DotNext
         /// <returns>The factory of closed delegate.</returns>
         public static Func<object, TDelegate> CreateClosedDelegateFactory<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
-            => new (GetMethod(expression).CreateDelegate<TDelegate>);
+            => new(GetMethod(expression).CreateDelegate<TDelegate>);
 
         /// <summary>
         /// Performs contravariant conversion

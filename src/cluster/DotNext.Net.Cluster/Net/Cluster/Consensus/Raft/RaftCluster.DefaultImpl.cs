@@ -162,6 +162,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 BufferizeSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
         }
 
+        private void Cleanup()
+        {
+            server?.Dispose();
+            server = null;
+        }
+
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
@@ -169,12 +175,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                server?.Dispose();
-                server = null;
-            }
+                Cleanup();
 
             base.Dispose(disposing);
+        }
+
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsyncCore()
+        {
+            await base.DisposeAsyncCore().ConfigureAwait(false);
+            Cleanup();
         }
     }
 }

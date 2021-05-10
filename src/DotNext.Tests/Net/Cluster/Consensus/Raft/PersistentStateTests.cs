@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
 
-            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new ValueTask(Task.FromException(new NotImplementedException()));
+            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new(Task.FromException(new NotImplementedException()));
 
             public EndPoint EndPoint { get; }
 
@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Equal(10, entries[0].Term);
                 Equal(0, entries[0].Length);
-                False(entries[0].IsReusable);
+                True(entries[0].IsReusable);
                 False(entries[0].IsSnapshot);
                 return default;
             };
@@ -219,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new (){ CopyOnReadOptions = new () });
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new() { CopyOnReadOptions = new() });
             try
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
@@ -264,7 +264,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
-            Equal(5L, await state.DropAsync(1L, CancellationToken.None));
+            Equal(5L, await state.DropAsync(1L));
             Equal(0L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
         }
@@ -735,7 +735,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class JsonPersistentState : PersistentState
         {
-            private readonly List<object> entries = new List<object>();
+            private readonly List<object> entries = new();
 
             internal JsonPersistentState(string location, bool caching)
                 : base(location, RecordsPerPartition, new Options { UseCaching = caching })

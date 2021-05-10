@@ -63,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             }
         }
 
-        private static readonly Uri Root = new Uri("/", UriKind.Relative);
+        private static readonly Uri Root = new("/", UriKind.Relative);
         private readonly IHost host;
 
         public RaftHostedCluster(IServiceProvider services)
@@ -101,7 +101,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         {
             if (disposing)
                 host.Dispose();
+
             base.Dispose(disposing);
+        }
+
+        protected override async ValueTask DisposeAsyncCore()
+        {
+            await base.DisposeAsyncCore().ConfigureAwait(false);
+
+            if (host is IAsyncDisposable disposable)
+                await disposable.DisposeAsync().ConfigureAwait(false);
+            else
+                host.Dispose();
         }
     }
 }

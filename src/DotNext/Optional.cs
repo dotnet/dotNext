@@ -157,7 +157,7 @@ namespace DotNext
         /// <param name="value">The value to be wrapped.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <returns>The optional container.</returns>
-        public static Optional<T> Some<T>(T value) => new Optional<T>(value);
+        public static Optional<T> Some<T>(T value) => new(value);
 
         /// <summary>
         /// Wraps <see langword="null"/> value to <see cref="Optional{T}"/> container.
@@ -329,7 +329,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([MaybeNullWhen(false)]out T value)
+        public bool TryGet([MaybeNullWhen(false)] out T value)
         {
             value = this.value!;
             return HasValue;
@@ -341,7 +341,7 @@ namespace DotNext
         /// <param name="value">Extracted value.</param>
         /// <param name="isNull"><see langword="true"/> if underlying value is <see langword="null"/>; otherwise, <see langword="false"/>.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([NotNullWhen(true)]out T value, out bool isNull)
+        public bool TryGet([NotNullWhen(true)] out T value, out bool isNull)
         {
             value = this.value!;
             switch (kind)
@@ -610,7 +610,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Optional<T>(T? value) => new (value);
+        public static implicit operator Optional<T>(T? value) => new(value);
 
         /// <summary>
         /// Extracts value stored in the Optional container.

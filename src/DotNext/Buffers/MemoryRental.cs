@@ -132,7 +132,7 @@ namespace DotNext.Buffers
         /// <param name="span">The allocated memory to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator MemoryRental<T>(Span<T> span)
-            => new MemoryRental<T>(span);
+            => new(span);
 
         /// <summary>
         /// Gets length of the rented memory.

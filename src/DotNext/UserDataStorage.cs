@@ -212,11 +212,11 @@ namespace DotNext
                     }
                 }
 
-                exit:
+            exit:
                 return userData;
             }
 
-            internal bool Get<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
+            internal bool Get<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
             {
                 lockState.EnterReadLock();
                 try
@@ -250,7 +250,7 @@ namespace DotNext
                 return result;
             }
 
-            internal bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
+            internal bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
             {
                 lockState.EnterWriteLock();
                 try
@@ -264,7 +264,7 @@ namespace DotNext
             }
         }
 
-        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ();
+        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new();
 
         private readonly object source;
 
@@ -426,7 +426,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-        public bool TryGet<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
+        public bool TryGet<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
         {
             var storage = GetStorage();
             if (storage is null)
@@ -444,7 +444,7 @@ namespace DotNext
         /// <typeparam name="TValue">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data to be saved in this collection.</param>
-        public void Set<TValue>(UserDataSlot<TValue> slot, [DisallowNull]TValue userData)
+        public void Set<TValue>(UserDataSlot<TValue> slot, [DisallowNull] TValue userData)
             => GetOrCreateStorage().Set(slot, userData);
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">Remove user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
+        public bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
         {
             var storage = GetStorage();
             if (storage is null)

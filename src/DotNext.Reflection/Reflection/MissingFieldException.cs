@@ -21,7 +21,7 @@ namespace DotNext.Reflection
         }
 
         internal static MissingFieldException Create<T, TValue>(string fieldName)
-            => new MissingFieldException(typeof(T), fieldName, typeof(TValue));
+            => new(typeof(T), fieldName, typeof(TValue));
 
         /// <summary>
         /// Gets type of the field.

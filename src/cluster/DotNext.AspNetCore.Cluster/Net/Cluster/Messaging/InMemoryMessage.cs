@@ -1,6 +1,5 @@
 using System;
 using System.Net.Mime;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,24 +12,8 @@ namespace DotNext.Net.Cluster.Messaging
     // For that purpose we using growable buffer which relies on the pooled memory
     internal sealed class InMemoryMessage : Disposable, IDataTransferObject, IBufferedMessage
     {
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct BufferDecoder : IDataTransferObject.ITransformation<BufferWriter<byte>>
-        {
-            private readonly int initialSize;
-
-            internal BufferDecoder(int initialSize) => this.initialSize = initialSize;
-
-            public async ValueTask<BufferWriter<byte>> TransformAsync<TReader>(TReader reader, CancellationToken token)
-                where TReader : notnull, IAsyncBinaryReader
-            {
-                var writer = new PooledArrayBufferWriter<byte>(initialSize);
-                await reader.CopyToAsync(writer).ConfigureAwait(false);
-                return writer;
-            }
-        }
-
         private readonly int initialSize;
-        private BufferWriter<byte>? buffer;
+        private MemoryOwner<byte> buffer;
 
         internal InMemoryMessage(string name, ContentType type, int initialSize)
         {
@@ -45,9 +28,9 @@ namespace DotNext.Net.Cluster.Messaging
 
         bool IDataTransferObject.IsReusable => true;
 
-        long? IDataTransferObject.Length => buffer?.WrittenCount ?? 0L;
+        long? IDataTransferObject.Length => buffer.Length;
 
-        private ReadOnlyMemory<byte> Content => buffer?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty;
+        private ReadOnlyMemory<byte> Content => buffer.Memory;
 
         public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter
@@ -55,8 +38,8 @@ namespace DotNext.Net.Cluster.Messaging
 
         async ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
         {
-            buffer?.Dispose();
-            buffer = await source.TransformAsync<BufferWriter<byte>, BufferDecoder>(new BufferDecoder(initialSize), token).ConfigureAwait(false);
+            buffer.Dispose();
+            buffer = await source.ToMemoryAsync(token: token).ConfigureAwait(false);
         }
 
         void IBufferedMessage.PrepareForReuse()
@@ -66,12 +49,17 @@ namespace DotNext.Net.Cluster.Messaging
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
             => transformation.TransformAsync(IAsyncBinaryReader.Create(Content), token);
 
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = buffer.Memory;
+            return true;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                buffer?.Dispose();
-                buffer = null;
+                buffer.Dispose();
             }
 
             base.Dispose(disposing);

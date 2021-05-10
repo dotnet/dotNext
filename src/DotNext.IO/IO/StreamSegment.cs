@@ -178,7 +178,11 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
-            => new ValueTask(Task.FromException(new NotSupportedException()));
+#if NETSTANDARD2_1
+            => new (Task.FromException(new NotSupportedException()));
+#else
+            => ValueTask.FromException(new NotSupportedException());
+#endif
 
         /// <inheritdoc/>
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
