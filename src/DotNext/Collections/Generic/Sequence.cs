@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Collections.Generic
 {
@@ -149,7 +150,7 @@ namespace DotNext.Collections.Generic
             return true;
         }
 
-        private static bool ElementAt<T>(this IList<T> list, int index, [MaybeNullWhen(false)]out T element)
+        private static bool ElementAt<T>(this IList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -163,7 +164,7 @@ namespace DotNext.Collections.Generic
             }
         }
 
-        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [MaybeNullWhen(false)]out T element)
+        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -189,7 +190,7 @@ namespace DotNext.Collections.Generic
         /// <param name="index">Index of the element to read.</param>
         /// <param name="element">Obtained element.</param>
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
+        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
         {
             switch (collection)
             {
@@ -274,7 +275,7 @@ namespace DotNext.Collections.Generic
         /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
         /// <returns>The enumerator which is limited by count.</returns>
         public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
-            => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
+            => new(enumerator, count, leaveOpen);
 
         /// <summary>
         /// Gets enumerator over all elements in the memory.
@@ -285,8 +286,15 @@ namespace DotNext.Collections.Generic
         /// <seealso cref="System.Runtime.InteropServices.MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
         public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
         {
-            for (var i = 0; i < memory.Length; i++)
-                yield return memory.Span[i];
+            return MemoryMarshal.TryGetArray(memory, out var segment) ?
+                segment.GetEnumerator() :
+                ToEnumeratorSlow(memory);
+
+            static IEnumerator<T> ToEnumeratorSlow(ReadOnlyMemory<T> memory)
+            {
+                for (var i = 0; i < memory.Length; i++)
+                    yield return memory.Span[i];
+            }
         }
     }
 }

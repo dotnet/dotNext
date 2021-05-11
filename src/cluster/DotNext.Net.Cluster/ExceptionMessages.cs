@@ -9,7 +9,7 @@ namespace DotNext
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
-        private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
         internal static string CannotRemoveLocalNode => (string)Resources.Get();
 
@@ -49,8 +49,6 @@ namespace DotNext
 
         internal static string MissingPartition(long index) => Resources.Get().Format(index);
 
-        internal static string MissingLogEntry(long index, string fileName) => Resources.Get().Format(index, fileName);
-
         internal static string UnknownCommand(int id) => Resources.Get().Format(id);
 
         internal static string MissingCommandFormatter<TCommand>()
@@ -60,5 +58,7 @@ namespace DotNext
         internal static string MissingCommandAttribute<TCommand>()
             where TCommand : struct
             => Resources.Get().Format(typeof(TCommand));
+
+        internal static string MissingCommandId => (string)Resources.Get();
     }
 }

@@ -155,7 +155,7 @@ namespace DotNext.Reflection
         /// <param name="value">The value to be converted.</param>
         /// <param name="result">The conversion result.</param>
         /// <returns><see langword="true"/>, if conversion is supported by the given type; otherwise, <see langword="false"/>.</returns>
-        public static bool TryConvert<TSource>(TSource value, [MaybeNullWhen(false)]out T result) => TryConvert(value).TryGet(out result);
+        public static bool TryConvert<TSource>(TSource value, [MaybeNullWhen(false)] out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>
         /// Converts object into type <typeparamref name="T"/>.

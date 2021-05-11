@@ -82,7 +82,7 @@ namespace DotNext.Metaprogramming
 
         internal static ILexicalScope Current => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
 
-        private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
+        private readonly Dictionary<string, ParameterExpression> variables = new();
 
         private StatementNode? first, last;
         private protected readonly LexicalScope? Parent;
@@ -131,7 +131,7 @@ namespace DotNext.Metaprogramming
                 return Expression.Block(Variables, this);
         }
 
-        private Enumerator GetEnumerator() => new Enumerator(first);
+        private Enumerator GetEnumerator() => new(first);
 
         IEnumerator<Expression> IEnumerable<Expression>.GetEnumerator() => GetEnumerator();
 

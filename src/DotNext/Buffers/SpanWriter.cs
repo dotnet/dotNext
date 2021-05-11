@@ -26,6 +26,20 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Initializes a new memory writer.
+        /// </summary>
+        /// <param name="reference">Managed pointer to the memory block.</param>
+        /// <param name="length">The length of the elements referenced by the pointer.</param>
+        public SpanWriter(ref T reference, int length)
+        {
+            if (Unsafe.IsNullRef(ref reference))
+                throw new ArgumentNullException(nameof(reference));
+
+            span = MemoryMarshal.CreateSpan(ref reference, length);
+            position = 0;
+        }
+
+        /// <summary>
         /// Gets the element at the current position in the
         /// underlying memory block.
         /// </summary>
@@ -50,6 +64,24 @@ namespace DotNext.Buffers
         /// Gets the number of occupied elements in the underlying span.
         /// </summary>
         public readonly int WrittenCount => position;
+
+        /// <summary>
+        /// Gets the remaining part of the span.
+        /// </summary>
+        public readonly Span<T> RemainingSpan => span.Slice(position);
+
+        /// <summary>
+        /// Advances the position of this writer.
+        /// </summary>
+        /// <param name="count">The number of written elements.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
+        public void Advance(int count)
+        {
+            var newPosition = checked(position + count);
+            if (newPosition > span.Length)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            position = newPosition;
+        }
 
         /// <summary>
         /// Sets writer position to the first element.
@@ -91,7 +123,7 @@ namespace DotNext.Buffers
         /// <returns>The number of written elements.</returns>
         public int Write(ReadOnlySpan<T> input)
         {
-            input.CopyTo(span.Slice(position), out var writtenCount);
+            input.CopyTo(RemainingSpan, out var writtenCount);
             position += writtenCount;
             return writtenCount;
         }
@@ -196,10 +228,9 @@ namespace DotNext.Buffers
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            var output = span.Slice(position);
             bool result;
 
-            if (result = action(arg, output, out var writtenCount))
+            if (result = action(arg, RemainingSpan, out var writtenCount))
                 position += writtenCount;
 
             return result;
@@ -209,6 +240,6 @@ namespace DotNext.Buffers
         /// Gets the textual representation of the written content.
         /// </summary>
         /// <returns>The textual representation of the written content.</returns>
-        public override string ToString() => WrittenSpan.ToString();
+        public readonly override string ToString() => WrittenSpan.ToString();
     }
 }

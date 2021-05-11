@@ -47,16 +47,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return sizeof(int);
         }
 
-        internal static int ParseLogEntryPrologue(ReadOnlySpan<byte> input, out long length, out long term, out DateTimeOffset timeStamp, out bool isSnapshot)
+        internal static int ParseLogEntryPrologue(ReadOnlySpan<byte> input, out LogEntryMetadata metadata)
         {
             var reader = new SpanReader<byte>(input);
-
-            length = reader.ReadInt64(true);
-            term = reader.ReadInt64(true);
-            timeStamp = reader.Read<DateTimeOffset>();
-            isSnapshot = ValueTypeExtensions.ToBoolean(reader.Read());
-
-            return reader.ConsumedCount;
+            metadata = new LogEntryMetadata(ref reader);
+            return LogEntryMetadata.Size;
         }
 
         internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
@@ -106,14 +101,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     internal abstract class EntriesExchange<TEntry> : EntriesExchange
         where TEntry : IRaftLogEntry
     {
-        private delegate ValueTask<FlushResult> LogEntryFragmentWriter(PipeWriter writer, ref TEntry entry, CancellationToken token);
+        private delegate ValueTask<FlushResult> LogEntryFragmentWriter(PipeWriter writer, TEntry entry, CancellationToken token);
 
         private static readonly LogEntryFragmentWriter[] FragmentWriters =
         {
-            WriteLogEntryLength,
-            WriteLogEntryTerm,
-            WriteLogEntryTimestamp,
-            WriteLogEntrySnapshotMarker,
+            WriteLogEntryMetadata,
             WriteLogEntryContent,
         };
 
@@ -122,17 +114,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
         }
 
-        private static ValueTask<FlushResult> WriteLogEntryLength(PipeWriter writer, ref TEntry entry, CancellationToken token)
-            => writer.WriteInt64Async(entry.Length.GetValueOrDefault(-1L), true, token);
-
-        private static ValueTask<FlushResult> WriteLogEntryTerm(PipeWriter writer, ref TEntry entry, CancellationToken token)
-            => writer.WriteInt64Async(entry.Term, true, token);
-
-        private static ValueTask<FlushResult> WriteLogEntryTimestamp(PipeWriter writer, ref TEntry entry, CancellationToken token)
-            => writer.WriteAsync(entry.Timestamp, token);
-
-        private static ValueTask<FlushResult> WriteLogEntrySnapshotMarker(PipeWriter writer, ref TEntry entry, CancellationToken token)
-            => writer.WriteAsync(entry.IsSnapshot.ToByte(), token);
+        private static ValueTask<FlushResult> WriteLogEntryMetadata(PipeWriter writer, TEntry entry, CancellationToken token)
+        {
+            var buffer = writer.GetSpan(LogEntryMetadata.Size);
+            LogEntryMetadata.Create(entry).Serialize(buffer.Slice(0, LogEntryMetadata.Size));
+            writer.Advance(LogEntryMetadata.Size);
+            return writer.FlushAsync(token);
+        }
 
         private static async ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, TEntry entry, CancellationToken token)
         {
@@ -149,14 +137,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return new FlushResult(canceled, false);
         }
 
-        private static ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, ref TEntry entry, CancellationToken token)
-            => WriteLogEntryContent(writer, entry, token);
-
         internal static async Task WriteEntryAsync(PipeWriter writer, TEntry entry, CancellationToken token)
         {
             foreach (var serializer in FragmentWriters)
             {
-                var flushResult = await serializer(writer, ref entry, token).ConfigureAwait(false);
+                var flushResult = await serializer(writer, entry, token).ConfigureAwait(false);
                 if (flushResult.IsCompleted)
                     return;
                 if (flushResult.IsCanceled)

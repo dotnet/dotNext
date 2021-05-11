@@ -247,7 +247,7 @@ namespace DotNext.Metaprogramming
 
             Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value) => statement(value);
 
-            public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
+            public static implicit operator CaseStatementBuilder(CaseStatement statement) => new(statement);
         }
 
         private readonly ParameterExpression value;

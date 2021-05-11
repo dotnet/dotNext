@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
         /// <seealso href="https://www.openlife.cc/sites/default/files/4-modifications-for-Raft-consensus.pdf">Four modifications for the Raft consensus algorithm.</seealso>
         Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled<Result<bool>>(token) : Task.FromResult<Result<bool>>(new (term, true));
+            => token.IsCancellationRequested ? Task.FromCanceled<Result<bool>>(token) : Task.FromResult<Result<bool>>(new(term, true));
 
         /// <summary>
         /// Transfers transaction log entry to the member.

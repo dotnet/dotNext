@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             };
         }
 
-        private readonly object valuePlaceholder = new object();
+        private readonly object valuePlaceholder = new();
 
         /*
             Logic of this method:

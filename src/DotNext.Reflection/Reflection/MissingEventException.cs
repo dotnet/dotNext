@@ -22,7 +22,7 @@ namespace DotNext.Reflection
 
         internal static MissingEventException Create<T, THandler>(string eventName)
             where THandler : MulticastDelegate
-            => new MissingEventException(typeof(T), eventName, typeof(THandler));
+            => new(typeof(T), eventName, typeof(THandler));
 
         /// <summary>
         /// Gets event handler type.

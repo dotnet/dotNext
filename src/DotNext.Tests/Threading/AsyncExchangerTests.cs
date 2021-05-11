@@ -82,7 +82,8 @@ namespace DotNext.Threading
             Equal(56, await task);
 
             exchanger.Terminate();
-            Throws<ExchangeTerminatedException>(() => {
+            Throws<ExchangeTerminatedException>(() =>
+            {
                 var tmp = 0;
                 exchanger.TryExchange(ref tmp);
             });

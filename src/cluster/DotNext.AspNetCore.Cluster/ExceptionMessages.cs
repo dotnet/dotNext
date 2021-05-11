@@ -9,7 +9,7 @@ namespace DotNext
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
-        private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
         internal static string UnresolvedHostName(string hostName)
             => Resources.Get().Format(hostName);

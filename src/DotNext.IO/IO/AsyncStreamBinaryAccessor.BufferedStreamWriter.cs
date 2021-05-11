@@ -33,13 +33,13 @@ namespace DotNext.IO
 
                 if (extraBuffer is null)
                 {
-                    extraBuffer = new (null, sizeHint + position);
+                    extraBuffer = new(null, sizeHint + position);
                     extraBuffer.Write(buffer.Span);
                 }
 
                 result = extraBuffer.GetMemory(sizeHint);
 
-                exit:
+            exit:
                 return result;
             }
 

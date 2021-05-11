@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using Buffers;
     using IO;
     using static Mime.ContentTypeExtensions;
 
@@ -53,7 +54,33 @@ namespace DotNext.Net.Cluster.Messaging
 
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
+        {
+            ValueTask result;
+            var bufferWriter = writer.TryGetBufferWriter();
+            if (bufferWriter is null)
+            {
+                result = writer.WriteAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
+            }
+            else
+            {
+                // fast path - serialize synchronously
+                result = new();
+                try
+                {
+                    bufferWriter.WriteString(Content.AsSpan(), Type.GetEncoding());
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// MIME type of the message.

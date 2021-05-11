@@ -641,7 +641,7 @@ namespace DotNext.Linq.Expressions
         /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
         public static AwaitExpression Await(this Expression expression, bool configureAwait = false)
-            => new AwaitExpression(expression, configureAwait);
+            => new(expression, configureAwait);
 
         /// <summary>
         /// Constructs explicit unboxing.
@@ -852,7 +852,7 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't provide implicit support of Index expression.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
         public static CollectionAccessExpression ElementAt(this Expression collection, ItemIndexExpression index)
-            => new CollectionAccessExpression(collection, index);
+            => new(collection, index);
 
         /// <summary>
         /// Constructs slice of collection or array.
@@ -871,7 +871,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="range">The range of collection or array.</param>
         /// <returns>The slice of collection or array.</returns>
         public static SliceExpression Slice(this Expression collection, Expression range)
-            => new SliceExpression(collection, range);
+            => new(collection, range);
 
         /// <summary>
         /// Constructs array length expression.
@@ -1261,7 +1261,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="referenceType">The type of the managed reference.</param>
         /// <returns>The expression representing statically typed referenced.</returns>
         public static RefAnyValExpression RefAnyVal(this ParameterExpression typedRef, Type referenceType)
-            => new RefAnyValExpression(typedRef, referenceType);
+            => new(typedRef, referenceType);
 
         /// <summary>
         /// Creates a new expression that is equal to <c>refanyval</c> IL instruction.
@@ -1280,7 +1280,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Index expression.</returns>
         /// <exception cref="ArgumentException">Type of <paramref name="value"/> should be <see cref="int"/>, <see cref="short"/>, <see cref="byte"/> or <see cref="sbyte"/>.</exception>
         public static ItemIndexExpression Index(this Expression value, bool fromEnd)
-            => new ItemIndexExpression(value, fromEnd);
+            => new(value, fromEnd);
 
         /// <summary>
         /// Constructs expression of type <see cref="System.Index"/>.
@@ -1306,7 +1306,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="end">The exclusive end index of the range.</param>
         /// <returns>The range expression.</returns>
         public static RangeExpression To(this ItemIndexExpression start, ItemIndexExpression end)
-            => new RangeExpression(start, end);
+            => new(start, end);
 
         /// <summary>
         /// Constructs range.
@@ -1336,7 +1336,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The constructed expression.</returns>
         /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
         public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this ParameterExpression left, Expression right)
-            => new NullCoalescingAssignmentExpression(left, right);
+            => new(left, right);
 
         /// <summary>
         /// Constructs null-coalescing assignment expression.
@@ -1349,7 +1349,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The constructed expression.</returns>
         /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
         public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this MemberExpression left, Expression right)
-            => new NullCoalescingAssignmentExpression(left, right);
+            => new(left, right);
 
         /// <summary>
         /// Constructs null-coalescing assignment expression.
@@ -1362,7 +1362,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The constructed expression.</returns>
         /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
         public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this IndexExpression left, Expression right)
-            => new NullCoalescingAssignmentExpression(left, right);
+            => new(left, right);
 
         /// <summary>
         /// Converts value type to the expression of <see cref="Nullable{T}"/> type.

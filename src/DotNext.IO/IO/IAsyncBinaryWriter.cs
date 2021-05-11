@@ -309,6 +309,12 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Attempts to get synchronous writer.
+        /// </summary>
+        /// <returns>Synchronous writer wrapped by this asynchronous writer; or <see langword="null"/> if underlying I/O is fully asynchronous.</returns>
+        IBufferWriter<byte>? TryGetBufferWriter() => null;
+
+        /// <summary>
         /// Encodes a block of characters using the specified encoding.
         /// </summary>
         /// <param name="chars">The characters to encode.</param>
@@ -335,7 +341,7 @@ namespace DotNext.IO
         {
             const int defaultBufferSize = 512;
             using var buffer = BufferWriter.DefaultByteAllocator.Invoke(defaultBufferSize, false);
-            for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0; )
+            for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
                 await WriteAsync(buffer.Memory.Slice(0, count), null, token).ConfigureAwait(false);
         }
 
@@ -352,7 +358,7 @@ namespace DotNext.IO
             do
             {
                 result = await input.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
                 for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
                     await WriteAsync(block, null, token).ConfigureAwait(false);
@@ -387,7 +393,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         async Task CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
         {
-            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; )
+            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty;)
                 await WriteAsync(source, null, token).ConfigureAwait(false);
         }
 

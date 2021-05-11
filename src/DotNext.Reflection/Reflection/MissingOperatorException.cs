@@ -19,9 +19,9 @@ namespace DotNext.Reflection
         }
 
         internal static MissingOperatorException Create<T>(UnaryOperator @operator)
-            => new MissingOperatorException(typeof(T), @operator.ToExpressionType());
+            => new(typeof(T), @operator.ToExpressionType());
 
         internal static MissingOperatorException Create<T>(BinaryOperator @operator)
-            => new MissingOperatorException(typeof(T), @operator.ToExpressionType());
+            => new(typeof(T), @operator.ToExpressionType());
     }
 }

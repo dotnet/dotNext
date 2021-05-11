@@ -34,13 +34,47 @@ namespace DotNext.IO
 
         Task IFlushable.FlushAsync(CancellationToken token) => stream.FlushAsync(token);
 
-#region Reader
+        #region Reader
         public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
             where T : unmanaged
             => StreamExtensions.ReadAsync<T>(stream, buffer, token);
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
             => StreamExtensions.ReadBlockAsync(stream, output, token);
+
+        private async ValueTask SkipSlowAsync(int length, CancellationToken token)
+        {
+            for (int bytesRead; length > 0; length -= bytesRead)
+            {
+                bytesRead = await stream.ReadAsync(length < buffer.Length ? buffer.Slice(0, length) : buffer, token).ConfigureAwait(false);
+                if (bytesRead == 0)
+                    throw new EndOfStreamException();
+            }
+        }
+
+        ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+        {
+            if (length < 0)
+#if NETSTANDARD2_1
+                return new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(length))));
+#else
+                return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
+#endif
+
+            if (!stream.CanSeek)
+                return SkipSlowAsync(length, token);
+
+            var current = stream.Position;
+            if (current + length > stream.Length)
+#if NETSTANDARD2_1
+                return new ValueTask(Task.FromException(new EndOfStreamException()));
+#else
+                return ValueTask.FromException(new EndOfStreamException());
+#endif
+
+            stream.Position = length + current;
+            return new ValueTask();
+        }
 
         ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
             => StreamExtensions.ReadBlockAsync(stream, lengthFormat, buffer, allocator, token);
@@ -143,9 +177,16 @@ namespace DotNext.IO
 
         Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
             => stream.CopyToAsync(consumer, buffer, token);
-#endregion
 
-#region Writer
+        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = default;
+            return false;
+        }
+
+        #endregion
+
+        #region Writer
         public ValueTask WriteAsync<T>(T value, CancellationToken token)
             where T : unmanaged
             => stream.WriteAsync(value, buffer, token);
@@ -231,6 +272,8 @@ namespace DotNext.IO
 
         Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
             => stream.WriteAsync(supplier, arg, token);
-#endregion
+
+        IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => null;
+        #endregion
     }
 }

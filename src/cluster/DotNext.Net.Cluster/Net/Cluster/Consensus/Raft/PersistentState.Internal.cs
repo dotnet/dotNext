@@ -1,36 +1,81 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
 
     public partial class PersistentState
     {
+        [Flags]
+        private enum LogEntryFlags : uint
+        {
+            None = 0,
+
+            HasIdentifier = 0x01,
+        }
+
+        [StructLayout(LayoutKind.Auto)]
         internal readonly struct LogEntryMetadata
         {
+            internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
+            private readonly LogEntryFlags flags;
+            private readonly int identifier;
             internal readonly long Term, Timestamp, Length, Offset;
 
-            private LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length)
+            private LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id)
             {
                 Term = term;
                 Timestamp = timeStamp.UtcTicks;
                 Length = length;
                 Offset = offset;
+                flags = LogEntryFlags.None;
+                if (id.HasValue)
+                    flags |= LogEntryFlags.HasIdentifier;
+                identifier = id.GetValueOrDefault();
             }
 
+            internal LogEntryMetadata(ref SpanReader<byte> reader)
+            {
+                Term = reader.ReadInt64(true);
+                Timestamp = reader.ReadInt64(true);
+                Length = reader.ReadInt64(true);
+                Offset = reader.ReadInt64(true);
+                flags = (LogEntryFlags)reader.ReadUInt32(true);
+                identifier = reader.ReadInt32(true);
+            }
+
+            internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
-                => new LogEntryMetadata(entry.Timestamp, entry.Term, offset, length);
+                => new(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
 
-            internal static int Size => Unsafe.SizeOf<LogEntryMetadata>();
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
+                => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
+
+            internal void Serialize(ref SpanWriter<byte> writer)
+            {
+                writer.WriteInt64(Term, true);
+                writer.WriteInt64(Timestamp, true);
+                writer.WriteInt64(Length, true);
+                writer.WriteInt64(Offset, true);
+                writer.WriteUInt32((uint)flags, true);
+                writer.WriteInt32(identifier, true);
+            }
         }
 
+        [StructLayout(LayoutKind.Auto)]
         internal readonly struct SnapshotMetadata
         {
+            internal const int Size = sizeof(long) + LogEntryMetadata.Size;
             internal readonly long Index;
             internal readonly LogEntryMetadata RecordMetadata;
 
@@ -40,11 +85,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 RecordMetadata = metadata;
             }
 
+            internal SnapshotMetadata(ref SpanReader<byte> reader)
+            {
+                Index = reader.ReadInt64(true);
+                RecordMetadata = new(ref reader);
+            }
+
             internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
                 where TLogEntry : IRaftLogEntry
-                => new SnapshotMetadata(LogEntryMetadata.Create(snapshot, Size, length), index);
+                => new(LogEntryMetadata.Create(snapshot, Size, length), index);
 
-            internal static int Size => Unsafe.SizeOf<SnapshotMetadata>();
+            internal void Serialize(ref SpanWriter<byte> writer)
+            {
+                writer.WriteInt64(Index, true);
+                RecordMetadata.Serialize(ref writer);
+            }
         }
 
         private abstract class ConcurrentStorageAccess : Stream, IFlushable
@@ -52,21 +107,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // do not derive from FileStream because some virtual methods
             // assumes that they are overridden and do async calls inefficiently
             private readonly FileStream fs;
-            private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
+            private readonly int bufferSize;
 
-            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
+            // A pool of read-only streams that can be shared between multiple readers in parallel.
+            // The stream will be created on demand.
+            private StreamSegment?[] readers;
+
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize)
+                : this(fileName, bufferSize, readersCount, options, initialSize, out _)
             {
-                fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+            }
+
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize, out long actualLength)
+            {
+                fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+                actualLength = fs.Length;
+
+                // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6. Also need to change initial size for snapshot
+                if (actualLength == 0L && initialSize > 0L)
+                    fs.SetLength(initialSize);
+
+                this.bufferSize = bufferSize;
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
-                {
-                    readers[0] = new StreamSegment(fs, true);
-                }
-                else
-                {
-                    foreach (ref var reader in readers.AsSpan())
-                        reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
-                }
+                    readers[0] = new(fs, true);
             }
 
             public sealed override bool CanRead => fs.CanRead;
@@ -149,19 +213,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public sealed override void CopyTo(Stream destination, int bufferSize)
                 => fs.CopyTo(destination, bufferSize);
 
-            public sealed override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
+            public override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
 
-            public sealed override void Flush() => fs.Flush(true);
+            public override void Flush() => fs.Flush(true);
 
             internal string FileName => fs.Name;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
-
-            internal Task FlushAsync(in DataAccessSession session, CancellationToken token)
-                => GetReadSessionStream(session).FlushAsync(token);
-
-            internal abstract void PopulateCache(in DataAccessSession session);
+            private protected StreamSegment GetReadSessionStream(in DataAccessSession session)
+            {
+                ref var stream = ref readers[session.SessionId];
+                return stream ??= new(new FileStream(fs.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
+            }
 
             protected override void Dispose(bool disposing)
             {
@@ -169,10 +232,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     foreach (ref var reader in readers.AsSpan())
                     {
-                        reader?.Dispose();
+                        var stream = reader;
                         reader = null;
+                        stream?.Dispose();
                     }
 
+                    readers = Array.Empty<StreamSegment?>();
                     fs.Dispose();
                 }
 
@@ -181,15 +246,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public override async ValueTask DisposeAsync()
             {
-                foreach (Stream? reader in readers)
-                {
-                    if (reader is not null)
-                        await reader.DisposeAsync().ConfigureAwait(false);
-                }
+                for (var i = 0; i < readers.Length; i++)
+                    await DisposeAsync(ref readers[i]).ConfigureAwait(false);
 
-                Array.Clear(readers, 0, readers.Length);
+                readers = Array.Empty<StreamSegment?>();
                 await fs.DisposeAsync().ConfigureAwait(false);
-                base.Dispose(true);
+                await base.DisposeAsync().ConfigureAwait(false);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static ValueTask DisposeAsync(ref StreamSegment? segment)
+                {
+                    var stream = segment;
+                    segment = null;
+                    return stream is null ? new() : stream.DisposeAsync();
+                }
             }
         }
     }

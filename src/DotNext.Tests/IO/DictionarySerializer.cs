@@ -10,7 +10,7 @@ namespace DotNext.IO
         {
             // write count
             output.Write(dictionary.Count);
-            
+
             // write pairs
             foreach (var (key, value) in dictionary)
             {

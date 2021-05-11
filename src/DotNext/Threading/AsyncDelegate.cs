@@ -36,7 +36,7 @@ namespace DotNext.Threading
                 this.context = context;
             }
 
-            internal unsafe void Invoke()
+            internal void Invoke()
             {
                 // null when no errors
                 // Exception when single error
@@ -78,7 +78,7 @@ namespace DotNext.Threading
                             errors = e;
                             break;
                         case Exception error:
-                            errors = CreateList(e);
+                            errors = CreateList(error, e);
                             break;
                         case ICollection<Exception> collection:
                             collection.Add(e);
@@ -86,10 +86,11 @@ namespace DotNext.Threading
                     }
                 }
 
-                static ICollection<Exception> CreateList(Exception e)
+                static ICollection<Exception> CreateList(Exception first, Exception second)
                 {
                     ICollection<Exception> result = new LinkedList<Exception>();
-                    result.Add(e);
+                    result.Add(first);
+                    result.Add(second);
                     return result;
                 }
             }

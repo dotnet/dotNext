@@ -11,32 +11,75 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
+    using static Buffers.BufferWriter;
 
     internal static class JsonLogEntry
     {
         private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
-        internal static readonly Func<string, Type> DefaultTypeLoader = LoadType;
+        private static readonly JsonReaderOptions DefaultReaderOptions = new JsonSerializerOptions(JsonSerializerDefaults.General).GetReaderOptions();
 
-        private static Type LoadType(string typeId) => Type.GetType(typeId, true)!;
+        private static Type LoadType(string typeId, Func<string, Type>? typeLoader)
+            => typeLoader is null ? Type.GetType(typeId, true)! : typeLoader(typeId);
 
         private static Encoding DefaultEncoding => Encoding.UTF8;
 
-        internal static async ValueTask SerializeAsync<T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
+        internal static ValueTask SerializeAsync<T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
             where TWriter : notnull, IAsyncBinaryWriter
         {
-            // serialize type identifier
-            await writer.WriteAsync(typeId.AsMemory(), DefaultEncoding, LengthEncoding, token).ConfigureAwait(false);
-            await writer.WriteAsync(SerializeToJson, obj, token).ConfigureAwait(false);
-
-            static void SerializeToJson(T obj, IBufferWriter<byte> buffer)
+            // try to get synchronous writer
+            var bufferWriter = writer.TryGetBufferWriter();
+            ValueTask result;
+            if (bufferWriter is null)
             {
-                using var jsonWriter = new Utf8JsonWriter(buffer, new JsonWriterOptions { SkipValidation = false, Indented = false });
-                JsonSerializer.Serialize(jsonWriter, obj);
+                // slow path - delegate allocation is required and arguments must be packed
+                result = writer.WriteAsync(SerializeToJson, (typeId, obj), token);
             }
+            else
+            {
+                // fast path - synchronous serialization
+                result = new();
+                try
+                {
+                    Serialize(typeId, obj, bufferWriter);
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException(e);
+                }
+            }
+
+            return result;
+
+            static void Serialize(string typeId, T value, IBufferWriter<byte> buffer)
+            {
+                // serialize type identifier
+                buffer.WriteString(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
+
+                // serialize object to JSON
+                using var jsonWriter = new Utf8JsonWriter(buffer, new() { SkipValidation = false, Indented = false });
+                JsonSerializer.Serialize(jsonWriter, value);
+            }
+
+            static void SerializeToJson((string TypeId, T Value) arg, IBufferWriter<byte> buffer)
+                => Serialize(arg.TypeId, arg.Value, buffer);
         }
 
-        internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type> typeLoader, JsonSerializerOptions? options, CancellationToken token)
-            => await JsonSerializer.DeserializeAsync(input, typeLoader(await input.ReadStringAsync(LengthEncoding, DefaultEncoding, token).ConfigureAwait(false)), options, token).ConfigureAwait(false);
+        internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+            => await JsonSerializer.DeserializeAsync(input, LoadType(await input.ReadStringAsync(LengthEncoding, DefaultEncoding, token).ConfigureAwait(false), typeLoader), options, token).ConfigureAwait(false);
+
+        private static JsonReaderOptions GetReaderOptions(this JsonSerializerOptions options) => new()
+        {
+            AllowTrailingCommas = options.AllowTrailingCommas,
+            CommentHandling = options.ReadCommentHandling,
+            MaxDepth = options.MaxDepth,
+        };
+
+        internal static object? Deserialize(SequenceBinaryReader input, Func<string, Type>? typeLoader, JsonSerializerOptions? options)
+        {
+            var typeId = input.ReadString(LengthEncoding, DefaultEncoding);
+            var reader = new Utf8JsonReader(input.RemainingSequence, options?.GetReaderOptions() ?? DefaultReaderOptions);
+            return JsonSerializer.Deserialize(ref reader, LoadType(typeId, typeLoader), options);
+        }
     }
 
     /// <summary>

@@ -83,7 +83,27 @@ namespace DotNext.Net.Cluster.Messaging
         /// <inheritdoc />
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            return writer.WriteAsync(SerializeToJson, this, token);
+            var bufferWriter = writer.TryGetBufferWriter();
+            ValueTask result;
+            if (bufferWriter is null)
+            {
+                result = writer.WriteAsync(SerializeToJson, this, token);
+            }
+            else
+            {
+                // fast path - serialize synchronously
+                result = new();
+                try
+                {
+                    this.SerializeToJson(bufferWriter);
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException(e);
+                }
+            }
+
+            return result;
 
             static void SerializeToJson(JsonMessage<T> message, IBufferWriter<byte> buffer)
                 => message.SerializeToJson(buffer);
@@ -98,10 +118,33 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Deserialized object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<T?> FromJsonAsync(IDataTransferObject message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        public static ValueTask<T?> FromJsonAsync(IDataTransferObject message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
         {
-            using var utf8Bytes = await message.ToMemoryAsync(allocator, token).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<T>(utf8Bytes.Memory.Span, options);
+            ValueTask<T?> result;
+            if (message.TryGetMemory(out var memory))
+            {
+                result = new();
+                try
+                {
+                    result = new(JsonSerializer.Deserialize<T>(memory.Span, options));
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<T?>(e);
+                }
+            }
+            else
+            {
+                result = DeserializeSlowAsync(message, options, allocator, token);
+            }
+
+            return result;
+
+            static async ValueTask<T?> DeserializeSlowAsync(IDataTransferObject message, JsonSerializerOptions? options, MemoryAllocator<byte>? allocator, CancellationToken token)
+            {
+                using var utf8Bytes = await message.ToMemoryAsync(allocator, token).ConfigureAwait(false);
+                return JsonSerializer.Deserialize<T>(utf8Bytes.Memory.Span, options);
+            }
         }
 
         /// <summary>

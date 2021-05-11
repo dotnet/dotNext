@@ -7,7 +7,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <IsPackable>false</IsPackable>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
@@ -51,6 +51,7 @@
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" />
   </ItemGroup>
 
 </Project>

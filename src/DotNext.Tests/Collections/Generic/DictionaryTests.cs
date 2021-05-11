@@ -145,8 +145,8 @@ namespace DotNext.Collections.Generic
                 {"two", 2}
             };
 
-            Equal(new HashSet<string>(new[] {"one", "two"}), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
-            Equal(new HashSet<int>(new[] {1, 2}), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
+            Equal(new HashSet<string>(new[] { "one", "two" }), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
+            Equal(new HashSet<int>(new[] { 1, 2 }), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
         }
 
         [Fact]
@@ -158,8 +158,8 @@ namespace DotNext.Collections.Generic
                 {"two", 2}
             };
 
-            Equal(new HashSet<string>(new[] {"one", "two"}), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
-            Equal(new HashSet<int>(new[] {1, 2}), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
+            Equal(new HashSet<string>(new[] { "one", "two" }), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
+            Equal(new HashSet<int>(new[] { 1, 2 }), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
         }
     }
 }

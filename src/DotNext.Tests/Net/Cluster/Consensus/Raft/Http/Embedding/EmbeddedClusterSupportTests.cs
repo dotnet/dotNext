@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             }
         }
 
-        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
+        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null, IMemberDiscoveryService discovery = null)
             where TStartup : class
         {
             return new HostBuilder()
@@ -64,6 +64,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     {
                         if (configurator is not null)
                             services.AddSingleton(configurator);
+                        if (discovery is not null)
+                            services.AddSingleton(discovery);
+                        services.EnableBuffering(options =>
+                        {
+                            options.MemoryThreshold = 512;
+                        });
                     })
                     .UseStartup<TStartup>()
                 )
@@ -259,7 +265,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
                 if (leader1 is null || leader2 is null || leader3 is null)
                     continue;
-                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader1.EndPoint.Equals(leader2.EndPoint))
+                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader3.EndPoint.Equals(leader2.EndPoint))
                     break;
             }
 
@@ -356,7 +362,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             using var leaderResetEvent = new LeaderChangedEvent();
             using var host = CreateHost<Startup>(3262, true, config, leaderResetEvent);
             await host.StartAsync();
-            leaderResetEvent.WaitOne(DefaultTimeout);
+            leaderResetEvent.WaitOne(TimeSpan.FromSeconds(5));
+            Null(leaderResetEvent.Leader);
+            await host.StopAsync();
+        }
+
+        [Fact]
+        public static async Task CustomServiceDiscovery()
+        {
+            var config = new Dictionary<string, string>
+            {
+                { "partitioning", "true" },
+                { "metadata:nodeName", "TestNode" },
+                { "hostAddressHint", "127.0.0.1" },
+                { "heartbeatThreshold", "0.3" },
+            };
+            using var discovery = new TestDiscoveryService()
+            {
+                new Uri("http://localhost:3262"),
+                new Uri("http://localhost:3263")
+            };
+
+            using var leaderResetEvent = new LeaderChangedEvent();
+            using var host = CreateHost<Startup>(3262, true, config, leaderResetEvent, discovery: discovery);
+            await host.StartAsync();
+            leaderResetEvent.WaitOne(TimeSpan.FromSeconds(5));
             Null(leaderResetEvent.Leader);
             await host.StopAsync();
         }

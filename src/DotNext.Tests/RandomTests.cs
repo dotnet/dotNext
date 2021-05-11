@@ -23,10 +23,8 @@ namespace DotNext
         [Fact]
         public static void RandomInt()
         {
-            using (var rng = new DummyRNG(42))
-            {
-                Equal(42, rng.Next());
-            }
+            using var rng = new DummyRNG(42);
+            Equal(42, rng.Next());
         }
 
         public static IEnumerable<object[]> RandomDoubleTestData()

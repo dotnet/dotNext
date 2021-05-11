@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
 
-            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new ValueTask(Task.FromException(new NotImplementedException()));
+            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new(Task.FromException(new NotImplementedException()));
 
             public EndPoint EndPoint { get; }
 
@@ -100,6 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 protected override async ValueTask ApplyAsync(LogEntry entry)
                 {
+                    Assert.True(entry.Index > 0L);
                     currentValue = await entry.ToTypeAsync<long, LogEntry>();
                 }
 
@@ -107,8 +108,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     => writer.WriteAsync(currentValue, token);
             }
 
-            internal TestAuditTrail(string path, bool useCaching)
-                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching })
+            internal TestAuditTrail(string path, bool useCaching, PersistentState.CompactionMode compactionMode = default)
+                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode })
             {
             }
 
@@ -157,7 +158,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var auditTrail = new PersistentState(dir, RecordsPerPartition);
-            await auditTrail.AppendAsync(new EmptyLogEntry(10), CancellationToken.None);
+            using (var lockToken = await auditTrail.AcquireWriteLockAsync(CancellationToken.None))
+            {
+                await auditTrail.AppendAsync(in lockToken, new EmptyLogEntry(10));
+            }
+
             Equal(1, auditTrail.GetLastIndex(false));
             await auditTrail.CommitAsync(1L, CancellationToken.None);
             Equal(1, auditTrail.GetLastIndex(true));
@@ -165,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Equal(10, entries[0].Term);
                 Equal(0, entries[0].Length);
-                False(entries[0].IsReusable);
+                True(entries[0].IsReusable);
                 False(entries[0].IsSnapshot);
                 return default;
             };
@@ -179,7 +184,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { MaxConcurrentReads = 65 });
             try
             {
                 checker = (entries, snapshotIndex, token) =>
@@ -214,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new() { CopyOnReadOptions = new() });
             try
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
@@ -259,7 +264,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
-            Equal(5L, await state.DropAsync(1L, CancellationToken.None));
+            Equal(5L, await state.DropAsync(1L));
             Equal(0L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
         }
@@ -408,7 +413,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
-                Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
+                Equal(1L, await state.AppendAsync(entry1, true));
                 Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
 
                 Equal(1L, await state.CommitAsync(1L, CancellationToken.None));
@@ -481,36 +486,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Theory]
-        [InlineData(true)]
         [InlineData(false)]
-        public static async Task Compaction(bool useCaching)
+        [InlineData(true)]
+        public static async Task SequentialCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Sequential))
             {
+                False(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
+                Equal(0L, state.CompactionCount);
                 await state.CommitAsync(CancellationToken.None);
                 Equal(entries.Length + 41L, state.Value);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
                     Equal(1, readResult.Count);
-                    Equal(7, snapshotIndex);
+                    Equal(9, snapshotIndex);
                     True(readResult[0].IsSnapshot);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
-                checker = static (readResult, snapshotIndex, token) =>
-                {
-                    Equal(3, readResult.Count);
-                    Equal(7, snapshotIndex);
-                    True(readResult[0].IsSnapshot);
-                    False(readResult[1].IsSnapshot);
-                    False(readResult[2].IsSnapshot);
-                    return default;
-                };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
@@ -527,11 +525,120 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(0L, state.Value);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
+                    Equal(1, readResult.Count);
+                    Equal(9, snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task BackgroundCompaction(bool useCaching)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Background))
+            {
+                True(state.IsBackgroundCompaction);
+                await state.AppendAsync(new LogEntryList(entries));
+                Equal(0L, state.CompactionCount);
+                await state.CommitAsync(CancellationToken.None);
+                Equal(1L, state.CompactionCount);
+                Equal(entries.Length + 41L, state.Value);
+                await state.ForceCompactionAsync(1L, CancellationToken.None).ConfigureAwait(false);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
                     Equal(3, readResult.Count);
-                    Equal(7, snapshotIndex);
+                    Equal(4, snapshotIndex);
                     True(readResult[0].IsSnapshot);
                     False(readResult[1].IsSnapshot);
                     False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            }
+
+            //read agian
+            using (var state = new TestAuditTrail(dir, useCaching))
+            {
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    NotNull(snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+                Equal(0L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task ForegroundCompaction(bool useCaching)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Foreground))
+            {
+                False(state.IsBackgroundCompaction);
+                await state.AppendAsync(new LogEntryList(entries));
+                Equal(0L, state.CompactionCount);
+                await state.CommitAsync(3, CancellationToken.None);
+                await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(4, readResult.Count);
+                    Equal(3, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            }
+
+            //read agian
+            using (var state = new TestAuditTrail(dir, useCaching))
+            {
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(4, readResult.Count);
+                    NotNull(snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+                Equal(0L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(7, readResult.Count);
+                    Equal(3, snapshotIndex);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
@@ -628,10 +735,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class JsonPersistentState : PersistentState
         {
-            private readonly List<object> entries = new List<object>();
+            private readonly List<object> entries = new();
 
-            internal JsonPersistentState(string location)
-                : base(location, RecordsPerPartition)
+            internal JsonPersistentState(string location, bool caching)
+                : base(location, RecordsPerPartition, new Options { UseCaching = caching })
             {
             }
 
@@ -644,15 +751,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal IReadOnlyList<object> Entries => entries;
         }
 
-        [Fact]
-        public static async Task JsonSerialization()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task JsonSerialization(bool cached)
         {
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            await using var state = new JsonPersistentState(dir);
+            await using var state = new JsonPersistentState(dir, cached);
             var entry1 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 10, Y = 20, Message = "Entry1" });
             var entry2 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 50, Y = 60, Message = "Entry2" });
-            await state.AppendAsync(entry1);
-            await state.AppendAsync(entry2);
+            await state.AppendAsync(entry1, true);
+            await state.AppendAsync(entry2, true);
             await state.CommitAsync(CancellationToken.None);
             Equal(2, state.Entries.Count);
 

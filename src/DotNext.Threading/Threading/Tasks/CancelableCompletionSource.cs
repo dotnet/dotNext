@@ -1,26 +1,14 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks
 {
-    internal class CancelableCompletionSource<T> : TaskCompletionSource<T>, IDisposable
+    internal class CancelableCompletionSource<T> : TaskCompletionSource<T>, ICancellationSupport, IDisposable
     {
-        // cached callback to avoid extra memory allocation
-        private static readonly Action<object?> CancellationCallback;
-
         private readonly CancellationTokenRegistration registration;
         private readonly CancellationTokenSource? source;
-
-        static CancelableCompletionSource()
-        {
-            CancellationCallback = CancellationRequested;
-
-            static void CancellationRequested(object? state)
-                => Unsafe.As<CancelableCompletionSource<T>>(state)!.CancellationRequested();
-        }
 
         internal CancelableCompletionSource(TaskCreationOptions options, TimeSpan timeout, CancellationToken token)
             : base(options)
@@ -29,20 +17,24 @@ namespace DotNext.Threading.Tasks
             {
                 source = token.CanBeCanceled ?
                     CancellationTokenSource.CreateLinkedTokenSource(token) :
-                    new CancellationTokenSource();
+                    new();
                 source.CancelAfter(timeout);
                 token = source.Token;
             }
 
-            registration = token.Register(CancellationCallback, this);
+            registration = ICancellationSupport.Attach(this, token);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CancellationRequested()
+        // only for cancelable token without timeout
+        internal CancelableCompletionSource(TaskCreationOptions options, CancellationToken token)
+            : base(options)
+            => registration = ICancellationSupport.Attach(this, token);
+
+        void ICancellationSupport.RequestCancellation()
         {
             var token = registration.Token;
             if (!token.IsCancellationRequested)
-                token = new CancellationToken(true);
+                token = new(true);
 
             TrySetCanceled(token);
         }
@@ -63,5 +55,8 @@ namespace DotNext.Threading.Tasks
         }
 
         ~CancelableCompletionSource() => Dispose(false);
+
+        public static implicit operator Task<T>(CancelableCompletionSource<T> source)
+            => source.Task;
     }
 }

@@ -35,6 +35,23 @@ namespace DotNext.IO
             }
         }
 
+        [Fact]
+        public static void PermanentFile()
+        {
+            var expected = RandomBytes(500);
+            string fileName;
+            using (var writer = new FileBufferingWriter(new FileBufferingWriter.Options { MemoryThreshold = 100, AsyncIO = false, FileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }))
+            {
+                writer.Write(expected);
+                False(writer.TryGetWrittenContent(out _, out fileName));
+            }
+
+            using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            var actual = new byte[expected.Length];
+            fs.ReadBlock(actual);
+            Equal(expected, actual);
+        }
+
         [Theory]
         [InlineData(10)]
         [InlineData(100)]
@@ -51,9 +68,13 @@ namespace DotNext.IO
             Equal(bytes.Length, writer.Length);
             using var manager = writer.GetWrittenContent();
             Equal(bytes, manager.Memory.ToArray());
-            if (writer.TryGetWrittenContent(out var content))
+            if (writer.TryGetWrittenContent(out var content, out var fileName))
             {
                 Equal(bytes, content.ToArray());
+            }
+            else
+            {
+                NotEmpty(fileName);
             }
         }
 
@@ -91,11 +112,11 @@ namespace DotNext.IO
             Equal(bytes.Length, writer.Length);
             using (var manager = await writer.GetWrittenContentAsync())
                 Equal(bytes, manager.Memory.ToArray());
-            await writer.WriteAsync(new byte[] {3, 4, 5}.AsMemory());
+            await writer.WriteAsync(new byte[] { 3, 4, 5 }.AsMemory());
             writer.WriteByte(6);
             using (var manager = await writer.GetWrittenContentAsync(500..))
             {
-                Equal(new byte[] {3, 4, 5, 6}, manager.Memory.ToArray());
+                Equal(new byte[] { 3, 4, 5, 6 }, manager.Memory.ToArray());
             }
         }
 
@@ -180,7 +201,7 @@ namespace DotNext.IO
             await ThrowsAsync<NotSupportedException>(() => writer.ReadAsync(new byte[10], 0, 10));
             await ThrowsAsync<NotSupportedException>(writer.ReadAsync(new byte[10], CancellationToken.None).AsTask);
         }
-        
+
         [Theory]
         [InlineData(10)]
         [InlineData(100)]
@@ -298,7 +319,7 @@ namespace DotNext.IO
         [Fact]
         public static void CtorExceptions()
         {
-            Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold : -1));
+            Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold: -1));
             var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Throws<DirectoryNotFoundException>(() => new FileBufferingWriter(tempDir: tempFolder));
             Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold: 100, initialCapacity: 101));
@@ -309,9 +330,9 @@ namespace DotNext.IO
         public static async Task WriteDuringReadAsync()
         {
             using var writer = new FileBufferingWriter();
-            writer.Write(new byte[] {1, 2, 3});
+            writer.Write(new byte[] { 1, 2, 3 });
             using var manager = writer.GetWrittenContent();
-            Equal(new byte[] {1, 2, 3}, manager.Memory.ToArray());
+            Equal(new byte[] { 1, 2, 3 }, manager.Memory.ToArray());
             Throws<InvalidOperationException>(writer.Clear);
             Throws<InvalidOperationException>(() => writer.WriteByte(2));
             Throws<InvalidOperationException>(() => writer.GetWrittenContent());
@@ -462,7 +483,7 @@ namespace DotNext.IO
             var bytes = new byte[500];
             for (byte i = 0; i < byte.MaxValue; i++)
                 bytes[i] = i;
-            
+
             var ar = writer.BeginWrite(bytes, 0, byte.MaxValue, null, "state1");
             Equal("state1", ar.AsyncState);
             True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
@@ -491,7 +512,7 @@ namespace DotNext.IO
             var bytes = new byte[500];
             for (byte i = 0; i < byte.MaxValue; i++)
                 bytes[i] = i;
-            
+
             var checker = new CallbackChecker();
             var ar = writer.BeginWrite(bytes, 0, byte.MaxValue, checker.DoCallback, "state1");
             Equal("state1", ar.AsyncState);

@@ -12,7 +12,7 @@ namespace DotNext.IO.MemoryMappedFiles
     /// to its virtual memory.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
+    public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     {
         private readonly MemoryMappedViewAccessor accessor;
         private readonly byte* ptr;
@@ -31,40 +31,40 @@ namespace DotNext.IO.MemoryMappedFiles
         /// The caller is responsible for disposing of the returned stream.
         /// </remarks>
         /// <returns>The stream representing virtual memory of the memory-mapped file.</returns>
-        public Stream AsStream() => accessor is null ? Stream.Null : Pointer.AsStream(Size, accessor.GetFileAccess());
+        public readonly Stream AsStream() => accessor is null ? Stream.Null : Pointer.AsStream(Size, accessor.GetFileAccess());
 
         /// <summary>
         /// Gets a value indicating that this object doesn't represent the memory-mapped file segment.
         /// </summary>
-        public bool IsEmpty => accessor is null;
+        public readonly bool IsEmpty => accessor is null;
 
         /// <summary>
         /// Gets the number of bytes by which the starting position of this segment is offset from the beginning of the memory-mapped file.
         /// </summary>
-        public long Offset => accessor?.PointerOffset ?? 0L;
+        public readonly long Offset => accessor?.PointerOffset ?? 0L;
 
         /// <summary>
         /// Gets pointer to the virtual memory of the mapped file.
         /// </summary>
         /// <value>The pointer to the memory-mapped file.</value>
-        public Pointer<byte> Pointer => accessor is null ? default : new Pointer<byte>(ptr + accessor.PointerOffset);
+        public readonly Pointer<byte> Pointer => accessor is null ? default : new Pointer<byte>(ptr + accessor.PointerOffset);
 
         /// <summary>
         /// Gets length of the mapped segment, in bytes.
         /// </summary>
-        public long Size => accessor?.Capacity ?? 0L;
+        public readonly long Size => accessor?.Capacity ?? 0L;
 
         /// <summary>
         /// Represents memory-mapped file segment in the form of <see cref="Span{T}"/>.
         /// </summary>
         /// <value><see cref="Span{T}"/> representing virtual memory of the mapped file segment.</value>
-        public Span<byte> Bytes => Pointer.ToSpan(checked((int)accessor.Capacity));
+        public readonly Span<byte> Bytes => Pointer.ToSpan(checked((int)accessor.Capacity));
 
         /// <summary>
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        public void Clear()
+        public readonly void Clear()
         {
             if (ptr == default)
                 throw new ObjectDisposedException(GetType().Name);
@@ -74,12 +74,15 @@ namespace DotNext.IO.MemoryMappedFiles
         /// <summary>
         /// Clears all buffers for this view and causes any buffered data to be written to the underlying file.
         /// </summary>
-        public void Flush() => accessor?.Flush();
+        public readonly void Flush() => accessor?.Flush();
 
         /// <summary>
         /// Releases virtual memory associated with the mapped file segment.
         /// </summary>
         public void Dispose()
-            => accessor?.ReleasePointerAndDispose();
+        {
+            accessor?.ReleasePointerAndDispose();
+            this = default;
+        }
     }
 }

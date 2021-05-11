@@ -18,37 +18,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     internal readonly struct ReceivedLogEntry : IRaftLogEntry
     {
         private readonly PipeReader reader;
-        private readonly long term, length;
-        private readonly DateTimeOffset timestamp;
-        private readonly bool isSnapshot;
+        private readonly LogEntryMetadata metadata;
 
         internal ReceivedLogEntry(ref ReadOnlyMemory<byte> prologue, PipeReader reader)
         {
-            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out length, out term, out timestamp, out isSnapshot);
+            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out metadata);
             prologue = prologue.Slice(count);
             this.reader = reader;
         }
 
         internal ReceivedLogEntry(ref ReadOnlyMemory<byte> announcement, PipeReader reader, out ushort remotePort, out long term, out long snapshotIndex)
         {
-            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out remotePort, out term, out snapshotIndex, out length, out this.term, out timestamp);
+            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out remotePort, out term, out snapshotIndex, out metadata);
             announcement = announcement.Slice(count);
-            isSnapshot = true;
             this.reader = reader;
         }
 
-        long? IDataTransferObject.Length => length < 0 ? new long?() : length;
+        long? IDataTransferObject.Length => metadata.Length;
 
-        long IRaftLogEntry.Term => term;
+        long IRaftLogEntry.Term => metadata.Term;
 
-        DateTimeOffset ILogEntry.Timestamp => timestamp;
+        DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
 
-        bool ILogEntry.IsSnapshot => isSnapshot;
+        bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
 
         bool IDataTransferObject.IsReusable => false;
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => new ValueTask(writer.CopyFromAsync(reader, token));
+            => new(writer.CopyFromAsync(reader, token));
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
             => IDataTransferObject.TransformAsync<TResult, TTransformation>(reader, transformation, token);
@@ -72,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             static void SetState(ServerExchange server, State state) => server.SetState(state);
         }
 
-        private readonly AsyncTrigger transmissionStateTrigger = new AsyncTrigger();
+        private readonly AsyncTrigger transmissionStateTrigger = new();
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;
 
@@ -82,12 +79,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private void SetState(State newState) => state = newState;
 
-        private bool IsReadyToReadEntry() => state.IsOneOf(State.ReceivingEntry, State.EntryReceived);
+        private bool IsReadyToReadEntry() => state is State.ReceivingEntry or State.EntryReceived;
 
         private bool IsValidStateForResponse()
-            => state.IsOneOf(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry);
+            => state is State.ReceivingEntriesFinished or State.ReadyToReceiveEntry or State.ReceivingEntry;
 
-        private bool IsValidForTransition() => state.IsOneOf(State.AppendEntriesReceived, State.EntryReceived);
+        private bool IsValidForTransition() => state is State.AppendEntriesReceived or State.EntryReceived;
 
         async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
         {
@@ -214,7 +211,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             remainingCount = -1;
             GC.SuppressFinalize(this);
-            return new ValueTask();
+            return new();
         }
     }
 }

@@ -28,9 +28,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string RequestIdHeader = "X-Request-ID";
 
         private protected static readonly ValueParser<long> Int64Parser = long.TryParse;
+        private protected static readonly ValueParser<int> Int32Parser = int.TryParse;
         private static readonly ValueParser<ClusterMemberId> IpAddressParser = ClusterMemberId.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
-        private static readonly Random RequestIdGenerator = new Random();
+        private static readonly Random RequestIdGenerator = new();
 
         private protected class OutboundTransferObject : HttpContent
         {
@@ -118,6 +119,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
 
             throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
+        }
+
+        private protected static T? ParseHeaderAsNullable<THeaders, T>(string headerName, HeadersReader<THeaders> reader, ValueParser<T> parser)
+            where THeaders : IEnumerable<string>
+            where T : struct
+        {
+            if (reader(headerName, out var headers))
+            {
+                foreach (var header in headers)
+                {
+                    if (parser(header, out var result))
+                        return result;
+                }
+            }
+
+            return null;
         }
 
         private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)

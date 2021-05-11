@@ -12,7 +12,7 @@ namespace DotNext.IO
         [Fact]
         public static void ReadByteSequentially()
         {
-            var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+            using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
             using var segment = new StreamSegment(ms);
             Equal(0, segment.Position);
             segment.Adjust(0, 2);
@@ -27,9 +27,23 @@ namespace DotNext.IO
         }
 
         [Fact]
+        public static void SetPosition()
+        {
+            using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+            using var segment = new StreamSegment(ms);
+            segment.Adjust(1, 3);
+            segment.Position = 1;
+            Equal(5, segment.ReadByte());
+            Equal(2, segment.Position);
+            segment.Position = 0;
+            Equal(3, segment.ReadByte());
+            Equal(1, segment.Position);
+        }
+
+        [Fact]
         public static void ReadRange()
         {
-            var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+            using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
             using var segment = new StreamSegment(ms);
             segment.Adjust(1L, 2L);
             var buffer = new byte[4];

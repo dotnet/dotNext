@@ -45,9 +45,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public int Value;
         }
 
-        private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>
+        [Command(4, Formatter = typeof(Formatter), FormatterMember = nameof(Formatter.Instance))]
+        private struct SnapshotCommand
         {
-            public static readonly Formatter Instance = new Formatter();
+            public int Value;
+        }
+
+        private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>, IFormatter<SnapshotCommand>
+        {
+            public static readonly Formatter Instance = new();
 
             async ValueTask IFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
             {
@@ -95,6 +101,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
             unsafe long? IFormatter<AssignCommand>.GetLength(AssignCommand command)
                 => sizeof(AssignCommand);
+
+            ValueTask IFormatter<SnapshotCommand>.SerializeAsync<TWriter>(SnapshotCommand command, TWriter writer, CancellationToken token)
+                => writer.WriteAsync(command, token);
+
+            ValueTask<SnapshotCommand> IFormatter<SnapshotCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+                => reader.ReadAsync<SnapshotCommand>(token);
+
+            unsafe long? IFormatter<SnapshotCommand>.GetLength(SnapshotCommand command)
+                => sizeof(SnapshotCommand);
         }
 
         private sealed class CustomInterpreter : CommandInterpreter
@@ -110,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     _ => throw new NotSupportedException()
                 };
 
-                return new ValueTask();
+                return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
             }
 
             [CommandHandler]
@@ -126,12 +141,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     _ => throw new NotSupportedException()
                 };
 
-                return new ValueTask();
+                return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
             }
 
             [CommandHandler]
             public ValueTask DoUnaryOperation(UnaryOperationCommand command, CancellationToken token)
                 => DoUnaryOperation(ref Value, command, token);
+
+            [CommandHandler(IsSnapshotHandler = true)]
+            public ValueTask ApplySnapshot(SnapshotCommand command, CancellationToken token)
+            {
+                Value = command.Value;
+                return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
+            }
         }
 
         private sealed class TestPersistenceState : PersistentState
@@ -151,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 => interpreter.CreateLogEntry(command, Term);
 
             protected override ValueTask ApplyAsync(LogEntry entry)
-                => new ValueTask(interpreter.InterpretAsync(entry).AsTask());
+                => new(interpreter.InterpretAsync(entry).AsTask());
 
             protected override void Dispose(bool disposing)
             {
@@ -174,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public static async Task MethodsAsHandlers()
         {
             using var interpreter = new CustomInterpreter();
-            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add}, 1L);
+            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
             Equal(1L, entry1.Term);
             Equal(0, interpreter.Value);
             Equal(0, await interpreter.InterpretAsync(entry1));
@@ -204,7 +226,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 .Add(assignOp, new Formatter())
                 .Build();
 
-            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add}, 1L);
+            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
             Equal(1L, entry1.Term);
             Equal(0, state.Value);
             Equal(0, await interpreter.InterpretAsync(entry1));
@@ -225,7 +247,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public static async Task InterpreterWithPersistentState()
         {
             await using var wal = new TestPersistenceState();
-            var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract});
+            var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract });
             await wal.AppendAsync(entry1);
             Equal(0, wal.Value);
             await wal.CommitAsync(CancellationToken.None);
@@ -235,6 +257,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             await wal.AppendAsync(entry2);
             await wal.CommitAsync(CancellationToken.None);
             Equal(~42, wal.Value);
+
+            var entry3 = wal.CreateLogEntry(new SnapshotCommand { Value = 56 });
+            await wal.AppendAsync(entry3);
+            await wal.CommitAsync(CancellationToken.None);
+            Equal(56, wal.Value);
         }
     }
 }

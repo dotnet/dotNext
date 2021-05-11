@@ -396,7 +396,7 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value.</returns>
-        public delegate TValue? Getter([DisallowNull]in T @this, in TIndicies index);
+        public delegate TValue? Getter([DisallowNull] in T @this, in TIndicies index);
 
         /// <summary>
         /// Represents property setter.
@@ -404,7 +404,7 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be set.</param>
         /// <param name="index">The property value of the specified object.</param>
         /// <param name="value">The new property value.</param>
-        public delegate void Setter([DisallowNull]in T @this, in TIndicies index, TValue value);
+        public delegate void Setter([DisallowNull] in T @this, in TIndicies index, TValue value);
 
         private Indexer(PropertyInfo property, Method<Getter>? getter, Method<Setter>? setter)
             : base(property)
@@ -442,7 +442,7 @@ namespace DotNext.Reflection
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The value of the property.</returns>
         [MaybeNull]
-        public TValue this[[DisallowNull]in T @this, in TIndicies index]
+        public TValue this[[DisallowNull] in T @this, in TIndicies index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get

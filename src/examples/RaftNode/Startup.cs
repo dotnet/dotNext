@@ -19,14 +19,21 @@ namespace RaftNode
             app.UseConsensusProtocolHandler();
         }
 
+        private static void ConfigureBuffering(RaftLogEntryBufferingOptions options)
+        {
+            options.MemoryThreshold = 512;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureCluster<ClusterConfigurator>()
+                .EnableBuffering(ConfigureBuffering)
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddOptions();
             var path = configuration[SimplePersistentState.LogLocation];
             if (!string.IsNullOrWhiteSpace(path))
             {
+                services.AddSingleton<AppEventSource>();
                 services.UsePersistenceEngine<IValueProvider, SimplePersistentState>()
                     .AddSingleton<IHostedService, DataModifier>();
             }

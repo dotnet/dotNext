@@ -206,7 +206,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             accessLock.CancelSuspendedCallers(new CancellationToken(true));
             var stream = Interlocked.Exchange(ref this.stream, null);
-            return stream is null ? new ValueTask() : new ValueTask(ShutdownConnectionGracefully(stream, ConnectTimeout));
+            return stream is null ? new() : new(ShutdownConnectionGracefully(stream, ConnectTimeout));
         }
 
         protected override void Dispose(bool disposing)

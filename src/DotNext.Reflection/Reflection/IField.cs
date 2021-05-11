@@ -39,6 +39,6 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="this">A reference to <c>this</c> parameter.</param>
         /// <returns>The managed pointer to the instance field.</returns>
-        ref TValue? this[[DisallowNull]in T @this] { get; }
+        ref TValue? this[[DisallowNull] in T @this] { get; }
     }
 }

@@ -31,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets recommended election timeout.
         /// </summary>
-        public static ElectionTimeout Recommended => new ElectionTimeout(150, 300);
+        public static ElectionTimeout Recommended => new(150, 300);
 
         /// <summary>
         /// Generates random election timeout.

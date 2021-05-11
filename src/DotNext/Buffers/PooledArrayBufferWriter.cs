@@ -97,10 +97,10 @@ namespace DotNext.Buffers
                 ThrowIfDisposed();
                 if (index < 0 || index >= position)
                     throw new ArgumentOutOfRangeException(nameof(index));
-#if !NETSTANDARD2_1
-                return ref Unsafe.Add(ref GetArrayDataReference(buffer), new IntPtr(index));
-#else
+#if NETSTANDARD2_1
                 return ref buffer[index];
+#else
+                return ref Unsafe.Add(ref GetArrayDataReference(buffer), (nint)index);
 #endif
             }
         }
@@ -192,7 +192,7 @@ namespace DotNext.Buffers
             items.CopyTo(buffer.AsSpan(index));
             position += items.Length;
 
-            exit:
+        exit:
             return;
         }
 
@@ -315,6 +315,25 @@ namespace DotNext.Buffers
             }
 
             position = 0;
+        }
+
+        /// <inheritdoc />
+        public override MemoryOwner<T> DetachBuffer()
+        {
+            ThrowIfDisposed();
+            MemoryOwner<T> result;
+            if (position > 0)
+            {
+                result = new MemoryOwner<T>(pool, buffer, position);
+                buffer = Array.Empty<T>();
+                position = 0;
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
         }
 
         /// <summary>

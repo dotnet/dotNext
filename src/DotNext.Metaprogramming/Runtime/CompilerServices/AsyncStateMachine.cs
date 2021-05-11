@@ -119,7 +119,7 @@ namespace DotNext.Runtime.CompilerServices
 
         void IAsyncStateMachine.MoveNext()
         {
-            begin:
+        begin:
             try
             {
                 transition(ref this);
@@ -276,7 +276,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
-        public bool TryRecover<TException>([NotNullWhen(true)]out TException? restoredException)
+        public bool TryRecover<TException>([NotNullWhen(true)] out TException? restoredException)
             where TException : Exception
         {
             if (exception?.SourceException is TException typed)
@@ -359,7 +359,7 @@ namespace DotNext.Runtime.CompilerServices
 
         void IAsyncStateMachine.MoveNext()
         {
-            begin:
+        begin:
             try
             {
                 transition(ref this);

@@ -188,17 +188,24 @@ namespace DotNext.Threading.Tasks
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task<bool> WaitAsync(this Task task, TimeSpan timeout, CancellationToken token = default)
         {
+            // TODO: Replace with Task.WaitAsync in .NET 6
+            Task<bool> result;
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-            if (token.IsCancellationRequested)
-                return Task.FromCanceled<bool>(token);
-            if (task.IsCompleted)
-                return CompletedTask<bool, BooleanConst.True>.Task;
-            if (timeout == TimeSpan.Zero)
-                return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
-            if (timeout > InfiniteTimeSpan)
-                return WaitAsyncImpl(task, timeout, token);
-            return !token.CanBeCanceled && task is Task<bool> boolTask ? boolTask : task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                result = Task.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+            else if (token.IsCancellationRequested)
+                result = Task.FromCanceled<bool>(token);
+            else if (task.IsCompleted)
+                result = CompletedTask<bool, BooleanConst.True>.Task;
+            else if (timeout == TimeSpan.Zero)
+                result = CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
+            else if (timeout > InfiniteTimeSpan)
+                result = WaitAsyncImpl(task, timeout, token);
+            else if (!token.CanBeCanceled && task is Task<bool> boolTask)
+                result = boolTask;
+            else
+                result = task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+
+            return result;
         }
     }
 }

@@ -252,9 +252,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 var sender = FindMember(MatchById, message.Sender);
                 if (sender is null)
+                {
                     response.StatusCode = StatusCodes.Status404NotFound;
+                }
                 else
-                    await message.SaveResponse(response, await ReceiveEntriesAsync(sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false), token).ConfigureAwait(false);
+                {
+                    Result<bool> result;
+                    if (bufferingOptions is null)
+                    {
+                        result = await ReceiveEntriesAsync(sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
+                        result = await ReceiveEntriesAsync(sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
+                    }
+
+                    await message.SaveResponse(response, result, token).ConfigureAwait(false);
+                }
             }
         }
 
@@ -262,9 +277,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var sender = FindMember(MatchById, message.Sender);
             if (sender is null)
+            {
                 response.StatusCode = StatusCodes.Status404NotFound;
+            }
             else
-                await message.SaveResponse(response, await ReceiveSnapshotAsync(sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false), token).ConfigureAwait(false);
+            {
+                Result<bool> result;
+                if (bufferingOptions is null)
+                {
+                    result = await ReceiveSnapshotAsync(sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
+                }
+                else
+                {
+                    using var buffered = await BufferedRaftLogEntry.CopyAsync(message.Snapshot, bufferingOptions, token).ConfigureAwait(false);
+                    result = await ReceiveSnapshotAsync(sender, message.ConsensusTerm, buffered, message.Index, token).ConfigureAwait(false);
+                }
+
+                await message.SaveResponse(response, result, token).ConfigureAwait(false);
+            }
         }
 
         internal Task ProcessRequest(HttpContext context)

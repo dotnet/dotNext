@@ -14,7 +14,6 @@ namespace DotNext.IO
     public class FileBufferingWriterBenchmark
     {
         private const int MemoryThreshold = 500 * 1024; // 500 KB
-        private const int ChunkSize = 1024; //1 KB
         private readonly byte[] content;
 
         public FileBufferingWriterBenchmark()
@@ -58,7 +57,7 @@ namespace DotNext.IO
             foreach (var chunk in GetChunks())
                 await writer.WriteAsync(chunk);
             await writer.FlushAsync();
-            
+
             using var ms = new MemoryStream(content.Length);
             await writer.DrainBufferAsync(ms);
         }
@@ -82,7 +81,7 @@ namespace DotNext.IO
             foreach (var chunk in GetChunks())
                 writer.Write(chunk.Span);
             writer.Flush();
-            
+
             using var ms = new MemoryStream(content.Length);
             writer.DrainBufferAsync(ms).GetAwaiter().GetResult();
         }

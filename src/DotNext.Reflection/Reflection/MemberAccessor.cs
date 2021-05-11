@@ -23,7 +23,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="TValue">Member type.</typeparam>
     /// <returns>Field value.</returns>
-    public delegate TValue? MemberGetter<T, out TValue>([DisallowNull]in T @this);
+    public delegate TValue? MemberGetter<T, out TValue>([DisallowNull] in T @this);
 
     /// <summary>
     /// Represents field setter.
@@ -32,5 +32,5 @@ namespace DotNext.Reflection
     /// <param name="value">A value to set.</param>
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="TValue">Member type.</typeparam>
-    public delegate void MemberSetter<T, in TValue>([DisallowNull]in T @this, TValue value);
+    public delegate void MemberSetter<T, in TValue>([DisallowNull] in T @this, TValue value);
 }

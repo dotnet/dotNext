@@ -233,5 +233,32 @@ namespace DotNext.Buffers
                 Equal(bi, reader.ReadBigInteger(LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
             }
         }
+
+        public static IEnumerable<object[]> ContiguousBuffers()
+        {
+            yield return new object[] { new PooledBufferWriter<byte>() };
+            yield return new object[] { new PooledArrayBufferWriter<byte>() };
+        }
+
+        [Theory]
+        [MemberData(nameof(ContiguousBuffers))]
+        public static void DetachBuffer(BufferWriter<byte> writer)
+        {
+            using (writer)
+            {
+                var buffer = writer.DetachBuffer();
+                True(buffer.IsEmpty);
+                var bytes = new byte[] { 10, 20, 30 };
+                writer.Write(bytes);
+                Equal(3, writer.WrittenCount);
+                buffer = writer.DetachBuffer();
+                Equal(0, writer.WrittenCount);
+                Equal(0, writer.FreeCapacity);
+                False(buffer.IsEmpty);
+                Equal(3, buffer.Length);
+                Equal(bytes, buffer.Memory.ToArray());
+                buffer.Dispose();
+            }
+        }
     }
 }

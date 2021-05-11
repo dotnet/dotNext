@@ -2,8 +2,6 @@
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -37,16 +35,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor stateView;
-            private AsyncLock syncRoot;
 
             // boxed ClusterMemberId or null if there is not last vote stored
             private volatile object? votedFor;
             private long term, commitIndex, lastIndex, lastApplied;  // volatile
 
-            internal NodeState(DirectoryInfo location, AsyncLock writeLock)
+            internal NodeState(DirectoryInfo location)
             {
                 mappedFile = MemoryMappedFile.CreateFromFile(Path.Combine(location.FullName, FileName), FileMode.OpenOrCreate, null, Capacity, MemoryMappedFileAccess.ReadWrite);
-                syncRoot = writeLock;
                 stateView = mappedFile.CreateViewAccessor();
                 term = stateView.ReadInt64(TermOffset);
                 commitIndex = stateView.ReadInt64(CommitIndexOffset);
@@ -72,7 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            private static bool IsCommitted(NodeState state, long index) => index <= state.commitIndex.VolatileRead();
+            private static bool IsCommitted(NodeState state, long index) => index <= state.CommitIndex;
 
             internal long LastApplied
             {
@@ -96,25 +92,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long Term => term.VolatileRead();
 
-            internal async ValueTask UpdateTermAsync(long value)
+            internal void UpdateTerm(long value, bool resetLastVote)
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                stateView.Write(TermOffset, value);
+                if (resetLastVote)
                 {
-                    stateView.Write(TermOffset, value);
-                    stateView.Flush();
-                    term.VolatileWrite(value);
+                    votedFor = null;
+                    stateView.Write(LastVotePresenceOffset, False);
                 }
+
+                stateView.Flush();
+                term.VolatileWrite(value);
             }
 
-            internal async ValueTask<long> IncrementTermAsync()
+            internal long IncrementTerm()
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
-                {
-                    var result = term.IncrementAndGet();
-                    stateView.Write(TermOffset, result);
-                    stateView.Flush();
-                    return result;
-                }
+                var result = term.IncrementAndGet();
+                stateView.Write(TermOffset, result);
+                stateView.Flush();
+                return result;
             }
 
             internal bool IsVotedFor(ClusterMemberId? expected)
@@ -125,29 +121,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return actual is null || (expected.HasValue && Unsafe.Unbox<ClusterMemberId>(actual).Equals(expected.GetValueOrDefault()));
             }
 
-            private async ValueTask UpdateVotedForAsync(ClusterMemberId member)
+            internal void UpdateVotedFor(ClusterMemberId? member)
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                if (member.HasValue)
                 {
+                    var id = member.GetValueOrDefault();
+                    votedFor = id;
                     stateView.Write(LastVotePresenceOffset, True);
-                    stateView.Write(LastVoteOffset, ref member);
-                    votedFor = member;
-                    stateView.Flush();
+                    stateView.Write(LastVoteOffset, ref id);
                 }
-            }
-
-            private async ValueTask UpdateVotedForAsync()
-            {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                else
                 {
-                    stateView.Write(LastVotePresenceOffset, False);
                     votedFor = null;
-                    stateView.Flush();
+                    stateView.Write(LastVotePresenceOffset, False);
                 }
-            }
 
-            internal ValueTask UpdateVotedForAsync(ClusterMemberId? member)
-                => member.HasValue ? UpdateVotedForAsync(member.GetValueOrDefault()) : UpdateVotedForAsync();
+                stateView.Flush();
+            }
 
             protected override void Dispose(bool disposing)
             {
@@ -155,7 +145,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     stateView.Dispose();
                     mappedFile.Dispose();
-                    syncRoot = default;
                     votedFor = null;
                 }
 

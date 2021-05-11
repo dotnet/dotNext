@@ -26,7 +26,7 @@ namespace DotNext.IO.MemoryMappedFiles
             var sequence = accessor.Sequence;
             Equal(content.Length, sequence.Length);
             False(sequence.IsSingleSegment);
-            
+
             var offset = 0;
             for (var position = sequence.Start; sequence.TryGet(ref position, out var block) && !block.IsEmpty; offset += block.Length)
             {

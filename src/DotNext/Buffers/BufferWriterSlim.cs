@@ -28,7 +28,7 @@ namespace DotNext.Buffers
         private int position;
 
         /// <summary>
-        /// Initializes growable builder.
+        /// Initializes growable buffer.
         /// </summary>
         /// <param name="buffer">Pre-allocated buffer used by this builder.</param>
         /// <param name="allocator">The memory allocator used to rent the memory blocks.</param>
@@ -43,6 +43,23 @@ namespace DotNext.Buffers
             initialBuffer = buffer;
             this.allocator = allocator;
             extraBuffer = default;
+            position = 0;
+        }
+
+        /// <summary>
+        /// Initializes growable buffer.
+        /// </summary>
+        /// <param name="initialCapacity">The initial capacity of the internal buffer.</param>
+        /// <param name="allocator">The memory allocator used to rent the memory blocks.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than zero.</exception>
+        public BufferWriterSlim(int initialCapacity, MemoryAllocator<T>? allocator = null)
+        {
+            if (initialCapacity < 0)
+                throw new ArgumentOutOfRangeException(nameof(initialCapacity));
+
+            initialBuffer = default;
+            this.allocator = allocator;
+            extraBuffer = initialCapacity == 0 ? default : allocator.Invoke(initialCapacity, false);
             position = 0;
         }
 

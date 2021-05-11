@@ -24,7 +24,7 @@ namespace DotNext.Threading
             {
                 Value.IncrementAndGet();
                 Set();
-                return TrueTask.Task;
+                return token.IsCancellationRequested ? Task.FromCanceled<bool>(token) : TrueTask.Task;
             }
         }
 

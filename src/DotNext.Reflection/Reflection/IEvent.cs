@@ -44,13 +44,13 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="instance">Object with declared event.</param>
         /// <param name="handler">An event handler to add.</param>
-        void AddEventHandler([DisallowNull]in T instance, THandler handler);
+        void AddEventHandler([DisallowNull] in T instance, THandler handler);
 
         /// <summary>
         /// Remove event handler.
         /// </summary>
         /// <param name="instance">Object with declared event.</param>
         /// <param name="handler">An event handler to remove.</param>
-        void RemoveEventHandler([DisallowNull]in T instance, THandler handler);
+        void RemoveEventHandler([DisallowNull] in T instance, THandler handler);
     }
 }

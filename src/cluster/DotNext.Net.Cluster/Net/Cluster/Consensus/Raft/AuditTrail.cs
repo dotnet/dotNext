@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -17,11 +16,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-                => new ValueTask<long>(entries[0].Term);
+                => new(entries[0].Term);
+
+            LogEntryReadOptimizationHint ILogEntryConsumer<IRaftLogEntry, long>.OptimizationHint
+                => LogEntryReadOptimizationHint.MetadataOnly;
         }
 
         internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
-            => auditTrail.ReadAsync<long>(TermReader.Instance, index, index, token);
+            => index == 0L ? new(0L) : auditTrail.ReadAsync<long>(TermReader.Instance, index, index, token);
 
         internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
         {

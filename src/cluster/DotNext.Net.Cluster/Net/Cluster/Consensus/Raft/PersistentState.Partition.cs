@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
-using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
+    using static Runtime.InteropServices.SafeBufferExtensions;
     using IntegrityException = IO.Log.IntegrityException;
 
     public partial class PersistentState
@@ -20,133 +22,275 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /*
             Partition file format:
             FileName - number of partition
-            Allocation table:
-            [struct LogEntryMetadata] X number of entries
             Payload:
             [octet string] X number of entries
+
+            FileName.meta - metadata table for the partition
+            Payload:
+            [struct LogEntryMetadata] X Capacity
          */
         private sealed class Partition : ConcurrentStorageAccess
         {
-            internal readonly long FirstIndex;
-            internal readonly int Capacity;    // max number of entries
-            private readonly MemoryOwner<LogEntryMetadata> lookupCache;
+            private const string MetadataTableFileExtension = "meta";
+            private static readonly MemoryOwner<byte> EmptyBuffer;
 
-            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal readonly long FirstIndex, PartitionNumber, LastIndex;
+            internal readonly string MetadataTableFileName;
+            private readonly MemoryMappedFile metadataFile;
+            private readonly MemoryMappedViewAccessor metadataFileAccessor;
+            private MemoryOwner<MemoryOwner<byte>> entryCache;
+            private Partition? previous, next;
+
+            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough), initialSize)
             {
-                Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
-                lookupCache = cachePool is null ? default : cachePool(recordsPerPartition);
+                LastIndex = FirstIndex + recordsPerPartition - 1L;
+                PartitionNumber = partitionNumber;
+
+                // create metadata file
+                MetadataTableFileName = Path.ChangeExtension(FileName, MetadataTableFileExtension);
+                var metadataTableSize = Math.BigMul(LogEntryMetadata.Size, recordsPerPartition);
+                metadataFile = MemoryMappedFile.CreateFromFile(MetadataTableFileName, FileMode.OpenOrCreate, null, metadataTableSize, MemoryMappedFileAccess.ReadWrite);
+                metadataFileAccessor = metadataFile.CreateViewAccessor(0L, metadataTableSize);
+                entryCache = manager.AllocLogEntryCache(recordsPerPartition);
             }
 
-            private long PayloadOffset => LogEntryMetadata.Size * (long)Capacity;
-
-            internal long LastIndex => FirstIndex + Capacity - 1;
-
-            internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
-
-            private void PopulateCache(Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static FileOptions GetOptions(bool writeThrough)
             {
-                for (int index = 0, count; index < lookupCache.Length; index += count)
+                const FileOptions skipBufferOptions = FileOptions.SequentialScan | FileOptions.WriteThrough | FileOptions.Asynchronous;
+                const FileOptions dontSkipBufferOptions = FileOptions.SequentialScan | FileOptions.Asynchronous;
+                return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private nint ToRelativeIndex(long absoluteIndex)
+                => (nint)(absoluteIndex - FirstIndex);
+
+            internal bool IsHead => previous is null;
+
+            internal bool IsTail => next is null;
+
+            internal Partition? Next => next;
+
+            internal Partition? Previous => previous;
+
+            internal void Append(Partition partition)
+            {
+                Debug.Assert(PartitionNumber < partition.PartitionNumber);
+                partition.previous = this;
+                partition.next = next;
+                if (next is not null)
+                    next.previous = partition;
+                next = partition;
+            }
+
+            internal void Prepend(Partition partition)
+            {
+                Debug.Assert(PartitionNumber > partition.PartitionNumber);
+                partition.previous = previous;
+                partition.next = this;
+                if (previous is not null)
+                    previous.next = partition;
+                previous = partition;
+            }
+
+            internal void Detach()
+            {
+                if (previous is not null)
+                    previous.next = next;
+                if (next is not null)
+                    next.previous = previous;
+
+                next = previous = null;
+            }
+
+            internal void DetachAncestor()
+            {
+                if (previous is not null)
+                    previous.next = null;
+                previous = null;
+            }
+
+            internal bool Contains(long recordIndex)
+                => recordIndex >= FirstIndex && recordIndex <= LastIndex;
+
+            public override Task FlushAsync(CancellationToken token = default)
+            {
+                try
                 {
-                    count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
-                    var maxBytes = count * LogEntryMetadata.Size;
-                    var source = buffer.Slice(0, maxBytes);
-                    if (Read(source) < maxBytes)
-                        throw new EndOfStreamException();
-                    var destination = AsBytes(lookupCache.Slice(index));
-                    source.CopyTo(destination);
+                    metadataFileAccessor.Flush();
+                }
+                catch (Exception e)
+                {
+                    return Task.FromException(e);
+                }
+
+                return base.FlushAsync(token);
+            }
+
+            public override void Flush()
+            {
+                metadataFileAccessor.Flush();
+                base.Flush();
+            }
+
+            private static ref byte GetMetadata(nint index, SafeBuffer buffer)
+            {
+                ref var ptr = ref buffer.AcquirePointer();
+                if (!Unsafe.IsNullRef(ref ptr))
+                    ptr = ref Unsafe.Add(ref ptr, index * LogEntryMetadata.Size);
+
+                return ref ptr;
+            }
+
+            private void ReadMetadata(nint index, out LogEntryMetadata metadata)
+            {
+                var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
+                var acquired = false;
+                try
+                {
+                    var reader = new SpanReader<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
+                    acquired = true;
+                    metadata = new(ref reader);
+                }
+                finally
+                {
+                    if (acquired)
+                        handle.ReleasePointer();
                 }
             }
 
-            internal override void PopulateCache(in DataAccessSession session)
+            private void WriteMetadata(nint index, in LogEntryMetadata metadata)
             {
-                if (!lookupCache.IsEmpty)
-                    PopulateCache(session.Buffer.Span, lookupCache.Memory.Span.Slice(0, Capacity));
-            }
-
-            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
-            {
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-
-                // find pointer to the content
-                LogEntryMetadata metadata;
-                if (refreshStream)
-                    await reader.FlushAsync(token).ConfigureAwait(false);
-                if (lookupCache.IsEmpty)
+                var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
+                var acquired = false;
+                try
                 {
-                    reader.BaseStream.Position = index * LogEntryMetadata.Size;
-                    metadata = await reader.BaseStream.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
+                    var reader = new SpanWriter<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
+                    acquired = true;
+                    metadata.Serialize(ref reader);
                 }
-                else
+                finally
                 {
-                    metadata = lookupCache[index];
+                    if (acquired)
+                        handle.ReleasePointer();
                 }
-
-                return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : throw new MissingLogEntryException(index, FirstIndex, LastIndex, FileName);
             }
 
-            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
+            // We don't need to analyze read optimization hint.
+            // Metadata reconstruction is cheap operation.
+            internal LogEntry Read(in DataAccessSession session, long absoluteIndex)
             {
-                // calculate relative index
-                if (absoluteIndex)
-                    index -= FirstIndex;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return ReadAsync(GetReadSessionStream(session), session.Buffer, (int)index, refreshStream, token);
+                Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
+
+                var relativeIndex = ToRelativeIndex(absoluteIndex);
+                ReadMetadata(relativeIndex, out var metadata);
+
+                ref readonly var cachedContent = ref entryCache.IsEmpty ?
+                    ref EmptyBuffer :
+                    ref entryCache[relativeIndex];
+                return cachedContent.IsEmpty && metadata.Length > 0L ?
+                    new(GetReadSessionStream(in session), in session.Buffer, in metadata, absoluteIndex) :
+                    new(in cachedContent, in metadata, absoluteIndex);
             }
 
-            private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
+            private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)
+            {
+                Debug.Assert(entryCache.IsEmpty is false);
+                Debug.Assert(index >= 0 && index < entryCache.Length);
+
+                ref var cacheEntry = ref entryCache[index];
+                cacheEntry.Dispose();
+                cacheEntry = entry.Content;
+                metadata = LogEntryMetadata.Create(in entry, offset);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private void SetPosition(long value)
+            {
+                if (value != Position)
+                {
+                    Position = value;
+                }
+            }
+
+            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
+            {
+                Debug.Assert(entryCache.IsEmpty is false);
+
+                var index = ToRelativeIndex(absoluteIndex);
+                Debug.Assert(index >= 0 && index < entryCache.Length);
+
+                var content = entryCache[index].Memory;
+                if (!content.IsEmpty)
+                {
+                    try
+                    {
+                        SetPosition(offset);
+                        await WriteAsync(content).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        if (removeFromMemory)
+                            entryCache[index].Dispose();
+                    }
+                }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool IsFirstEntry(nint index)
+                => index == 0 || index == 1 && FirstIndex == 0L;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal async ValueTask WriteAsync<TEntry>(DataAccessSession session, TEntry entry, long absoluteIndex, CancellationToken token = default)
                 where TEntry : notnull, IRaftLogEntry
             {
+                // write operation always expects absolute index so we need to convert it to the relative index
+                var relativeIndex = ToRelativeIndex(absoluteIndex);
+                Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
+
                 // calculate offset of the previous entry
                 long offset;
                 LogEntryMetadata metadata;
-                if (index == 0L || index == 1L && FirstIndex == 0L)
+                if (IsFirstEntry(relativeIndex))
                 {
-                    offset = PayloadOffset;
-                }
-                else if (lookupCache.IsEmpty)
-                {
-                    // read content offset and the length of the previous entry
-                    Position = (index - 1) * LogEntryMetadata.Size;
-                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
-                    Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
-                    offset = metadata.Length + metadata.Offset;
+                    offset = 0L;
                 }
                 else
                 {
-                    metadata = lookupCache[index - 1];
-                    Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
+                    ReadMetadata(relativeIndex - 1, out metadata);
                     offset = metadata.Length + metadata.Offset;
                 }
 
-                // write content
-                Position = offset;
-                await entry.WriteToAsync(this, buffer).ConfigureAwait(false);
-                metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
+                if (typeof(TEntry) == typeof(CachedLogEntry))
+                {
+                    // fast path - just add cached log entry to the cache table
+                    UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex, offset, out metadata);
+                }
+                else
+                {
+                    // slow path - persist log entry
+                    SetPosition(offset);
+                    await entry.WriteToAsync(this, session.Buffer, token).ConfigureAwait(false);
+                    metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
+                }
 
-                // record new log entry to the allocation table
-                Position = index * LogEntryMetadata.Size;
-                await this.WriteAsync(metadata, buffer).ConfigureAwait(false);
-
-                // update cache
-                if (!lookupCache.IsEmpty)
-                    lookupCache[index] = metadata;
-            }
-
-            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index)
-                where TEntry : notnull, IRaftLogEntry
-            {
-                // calculate relative index
-                index -= FirstIndex;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return WriteAsync(entry, (int)index, session.Buffer);
+                // save new log entry to the allocation table
+                WriteMetadata(relativeIndex, in metadata);
             }
 
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
-                    lookupCache.Dispose();
+                {
+                    metadataFileAccessor.Dispose();
+                    metadataFile.Dispose();
+                    entryCache.ReleaseAll();
+                    previous = next = null;
+                }
+
                 base.Dispose(disposing);
             }
         }
@@ -161,38 +305,83 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private new const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
 
-            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool writeThrough, bool tempSnapshot = false)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough), 0L, out var actualLength)
             {
+                IsEmpty = actualLength == 0L;
             }
 
-            internal override void PopulateCache(in DataAccessSession session)
-                => Index = Length > 0L ? this.Read<SnapshotMetadata>().Index : 0L;
+            // cache flag that allows to avoid expensive access to Length that can cause native call
+            internal bool IsEmpty
+            {
+                get;
+                private set;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static FileOptions GetOptions(bool writeThrough)
+            {
+                const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough;
+                const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess;
+                return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
+            }
+
+            internal void Initialize()
+                => Index = IsEmpty ? 0L : ReadMetadata(this).Index;
+
+            private static SnapshotMetadata ReadMetadata(Stream input)
+            {
+                Span<byte> buffer = stackalloc byte[SnapshotMetadata.Size];
+                input.ReadBlock(buffer);
+                var reader = new SpanReader<byte>(buffer);
+                return new SnapshotMetadata(ref reader);
+            }
+
+            private static async ValueTask<SnapshotMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
+            {
+                buffer = buffer.Slice(0, SnapshotMetadata.Size);
+                await input.ReadBlockAsync(buffer, token).ConfigureAwait(false);
+                return Deserialize(buffer.Span);
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static SnapshotMetadata Deserialize(Span<byte> metadata)
+                {
+                    var reader = new SpanReader<byte>(metadata);
+                    return new SnapshotMetadata(ref reader);
+                }
+            }
+
+            private static ValueTask WriteMetadataAsync(Stream output, in SnapshotMetadata metadata, Memory<byte> buffer, CancellationToken token = default)
+            {
+                buffer = buffer.Slice(0, SnapshotMetadata.Size);
+                var writer = new SpanWriter<byte>(buffer.Span);
+                metadata.Serialize(ref writer);
+                return output.WriteAsync(buffer, token);
+            }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token)
                 where TEntry : notnull, IRaftLogEntry
             {
                 Index = index;
+                IsEmpty = false;
                 Position = SnapshotMetadata.Size;
                 await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
                 var metadata = SnapshotMetadata.Create(entry, index, Length - SnapshotMetadata.Size);
-                Position = 0;
-                await this.WriteAsync(metadata, buffer, token).ConfigureAwait(false);
+                Position = 0L;
+                await WriteMetadataAsync(this, metadata, buffer, token).ConfigureAwait(false);
             }
 
-            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token)
+            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token = default)
                 where TEntry : notnull, IRaftLogEntry
                 => WriteAsync(entry, index, session.Buffer, token);
 
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)
             {
-                reader.BaseStream.Position = 0;
-
-                // snapshot reader stream may be out of sync with writer stream
-                await reader.FlushAsync(token).ConfigureAwait(false);
-                return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
+                reader.BaseStream.Position = 0L;
+                return new LogEntry(reader, buffer, await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false));
             }
 
+            // optimization hint is not supported for snapshots
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
                 => ReadAsync(GetReadSessionStream(session), session.Buffer, token);
 
@@ -219,101 +408,225 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public long Index { get; }
         }
 
-        /// <summary>
-        /// Indicates that the log record cannot be restored from the partition.
-        /// </summary>
-        public sealed class MissingLogEntryException : IntegrityException
-        {
-            internal MissingLogEntryException(long relativeIndex, long firstIndex, long lastIndex, string fileName)
-                : base(ExceptionMessages.MissingLogEntry(relativeIndex + firstIndex, fileName))
-            {
-                Index = relativeIndex + firstIndex;
-                PartitionFirstIndex = firstIndex;
-                PartitionLastIndex = lastIndex;
-                PartitionFileName = fileName;
-            }
-
-            /// <summary>
-            /// Gets index of the log record.
-            /// </summary>
-            public long Index { get; }
-
-            /// <summary>
-            /// Gets index of the first log record in the partition.
-            /// </summary>
-            public long PartitionFirstIndex { get; }
-
-            /// <summary>
-            /// Gets index of the last log record in the partition.
-            /// </summary>
-            public long PartitionLastIndex { get; }
-
-            /// <summary>
-            /// Gets file name of the partition.
-            /// </summary>
-            public string PartitionFileName { get; }
-        }
-
         private readonly int recordsPerPartition;
 
-        // key is the number of partition
-        private readonly IDictionary<long, Partition> partitionTable;
+        // Maintaining efficient data structure for a collection of partitions with the following characteristics:
+        // 1. Committed partitions must be removed from the head of the list
+        // 2. Uncommitted partitions must be removed at the tail of the list
+        // 2. New partitions must be added to the tail of the list
+        // 3. The list is sorted in ascending order (head is a partition with smaller number, tail is a partition with higher number)
+        // 4. The thread that is responsible for removing partitions from the head (compaction thread) doesn't have
+        // concurrency with the thread that is adding new partitions
+        // Under the hood, this is simply a sorted linked list
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed as a part of the linked list")]
+        private Partition? head, tail;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition)
-            => partition is not null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
+        private bool HasPartitions => tail is not null;
 
-        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition, out bool switched)
+        private partial Partition CreatePartition(long partitionNumber);
+
+        // during insertion the index is growing monothonically so
+        // this method is optimized for forward lookup in sorted list of partitions
+        private void GetOrCreatePartition(long recordIndex, [NotNull] ref Partition? partition)
         {
-            var previous = partition;
-            var result = TryGetPartition(recordIndex, ref partition);
-            switched = partition != previous;
+            var partitionNumber = PartitionOf(recordIndex);
+
+            if (tail is null)
+            {
+                Debug.Assert(head is null);
+                Debug.Assert(partition is null);
+                head = tail = partition = CreatePartition(partitionNumber);
+                goto exit;
+            }
+
+            Debug.Assert(head is not null);
+            partition ??= tail;
+
+            for (int previous = 0, current; ; previous = current)
+            {
+                switch (current = partitionNumber.CompareTo(partition.PartitionNumber))
+                {
+                    case > 0:
+                        if (previous < 0)
+                        {
+                            partition = Append(partitionNumber, partition);
+                            goto exit;
+                        }
+
+                        // nothing on the right side, create new tail
+                        if (partition.IsTail)
+                        {
+                            tail = partition = Append(partitionNumber, partition);
+                            goto exit;
+                        }
+
+                        partition = partition.Next;
+                        break;
+                    case < 0:
+                        if (previous > 0)
+                        {
+                            partition = Prepend(partitionNumber, partition);
+                            goto exit;
+                        }
+
+                        // nothing on the left side, create new head
+                        if (partition.IsHead)
+                        {
+                            head = partition = Prepend(partitionNumber, partition);
+                            goto exit;
+                        }
+
+                        partition = partition.Previous;
+                        break;
+                    default:
+                        goto exit;
+                }
+
+                Debug.Assert(partition is not null);
+            }
+
+        exit:
+            return;
+
+            Partition Prepend(long partitionNumber, Partition partition)
+            {
+                var tmp = CreatePartition(partitionNumber);
+                partition.Prepend(tmp);
+                return tmp;
+            }
+
+            Partition Append(long partitionNumber, Partition partition)
+            {
+                var tmp = CreatePartition(partitionNumber);
+                partition.Append(tmp);
+                return tmp;
+            }
+        }
+
+        private Partition? TryGetPartition(long partitionNumber)
+        {
+            Partition? result = tail;
+            if (result is null)
+                goto exit;
+
+            for (int previous = 0, current; ; previous = current)
+            {
+                switch (current = partitionNumber.CompareTo(result.PartitionNumber))
+                {
+                    case > 0:
+                        if (previous < 0 || result.IsTail)
+                        {
+                            result = null;
+                            goto exit;
+                        }
+
+                        result = result.Next;
+                        break;
+                    case < 0:
+                        if (previous > 0 || result.IsHead)
+                        {
+                            result = null;
+                            goto exit;
+                        }
+
+                        result = result.Previous;
+                        break;
+                    default:
+                        goto exit;
+                }
+
+                Debug.Assert(result is not null);
+            }
+
+        exit:
             return result;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Task FlushAsync(Partition? partition) => partition is null ? Task.CompletedTask : partition.FlushAsync();
-
-        private void GetOrCreatePartition(long recordIndex, [NotNull] out Partition? partition)
+        // during reads the index is growing monothonically
+        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
         {
-            var partitionNumber = PartitionOf(recordIndex);
-            if (!partitionTable.TryGetValue(partitionNumber, out partition))
+            if (partition is not null && partition.Contains(recordIndex))
+                goto success;
+
+            if (tail is null)
             {
-                partition = CreatePartition(partitionNumber);
-                partition.Allocate(initialSize);
-                partitionTable.Add(partitionNumber, partition);
+                Debug.Assert(head is null);
+                Debug.Assert(partition is null);
+                goto fail;
+            }
+
+            Debug.Assert(head is not null);
+            partition ??= tail;
+
+            var partitionNumber = PartitionOf(recordIndex);
+
+            for (int previous = 0, current; ; previous = current)
+            {
+                switch (current = partitionNumber.CompareTo(partition.PartitionNumber))
+                {
+                    case > 0:
+                        if (previous < 0 || partition.IsTail)
+                            goto fail;
+
+                        partition = partition.Next;
+                        break;
+                    case < 0:
+                        if (previous > 0 || partition.IsHead)
+                            goto fail;
+
+                        partition = partition.Previous;
+                        break;
+                    default:
+                        goto success;
+                }
+
+                Debug.Assert(partition is not null);
+            }
+
+        success:
+            return true;
+
+        fail:
+            return false;
+        }
+
+        private static async ValueTask DeletePartitionAsync(Partition partition)
+        {
+            string fileName = partition.FileName, metadataTableFileName = partition.MetadataTableFileName;
+            await partition.DisposeAsync().ConfigureAwait(false);
+            File.Delete(fileName);
+            File.Delete(metadataTableFileName);
+        }
+
+        // this method should be called for detached partition head only
+        private static async ValueTask DeletePartitionsAsync(Partition? current)
+        {
+            for (Partition? next; current is not null; current = next)
+            {
+                next = current.Next;
+                await DeletePartitionAsync(current).ConfigureAwait(false);
             }
         }
 
-        private Task GetOrCreatePartitionAsync(long recordIndex, [NotNull]ref Partition? partition)
+        private Partition? DetachPartitions(long upperBoundIndex)
         {
-            Task flushTask;
+            Partition? result = head, current;
+            for (current = result; current is not null && current.LastIndex <= upperBoundIndex; current = current.Next);
 
-            if (partition is null || recordIndex < partition.FirstIndex || recordIndex > partition.LastIndex)
+            if (current is null)
             {
-                flushTask = FlushAsync(partition);
-                GetOrCreatePartition(recordIndex, out partition);
+                head = tail = null;
             }
             else
             {
-                flushTask = Task.CompletedTask;
+                current.DetachAncestor();
+                head = current;
             }
 
-            return flushTask;
-        }
-
-        private void RemovePartitions(IDictionary<long, Partition> partitions)
-        {
-            foreach (var (partitionNumber, partition) in partitions)
-            {
-                partitionTable.Remove(partitionNumber);
-                var fileName = partition.FileName;
-                partition.Dispose();
-                File.Delete(fileName);
-            }
+            return result;
         }
     }
 }

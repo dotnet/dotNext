@@ -22,6 +22,6 @@ namespace DotNext.IO.Pipelines
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
             => Write(writer, input, token);
 
-        public static implicit operator PipeConsumer(PipeWriter writer) => new PipeConsumer(writer);
+        public static implicit operator PipeConsumer(PipeWriter writer) => new(writer);
     }
 }

@@ -102,7 +102,7 @@ namespace DotNext.Threading
             Equal(80D, array.VolatileRead(0L));
             Equal(80D, array.GetAndAccumulate(0L, 10D, static (x, y) => x + y));
             Equal(90D, array.VolatileRead(0L));
-            Equal(10D, array.AccumulateAndGet(0L, 80D, static(x, y) => x - y));
+            Equal(10D, array.AccumulateAndGet(0L, 80D, static (x, y) => x - y));
             Equal(10D, array.VolatileRead(0L));
             Equal(10D, array.GetAndSet(0L, 25D));
             Equal(25D, array.VolatileRead(0L));

@@ -57,7 +57,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="body">The body of the code block.</param>
         /// <returns>The synchronized block of code.</returns>
         public static LockExpression Create(Expression syncRoot, Expression body)
-            => new LockExpression(syncRoot) { Body = body };
+            => new(syncRoot) { Body = body };
 
         /// <summary>
         /// Represents monitor object.

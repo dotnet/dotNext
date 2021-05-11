@@ -25,6 +25,12 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default);
+
+        /// <summary>
+        /// Represents an event raised when the local node completes its replication with another
+        /// node.
+        /// </summary>
+        event ReplicationCompletedEventHandler? ReplicationCompleted;
     }
 
     /// <summary>

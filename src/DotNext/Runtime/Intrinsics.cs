@@ -72,11 +72,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type for which default value should be obtained.</typeparam>
         /// <returns>The default value of type <typeparamref name="T"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T? DefaultOf<T>()
-        {
-            Unsafe.SkipInit(out T result);
-            return result;
-        }
+        public static T? DefaultOf<T>() => default;
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="TResult"/> by
@@ -311,7 +307,7 @@ namespace DotNext.Runtime
 
             // TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
             result = true;
-            exit:
+        exit:
             return result;
         }
 
@@ -487,7 +483,7 @@ namespace DotNext.Runtime
             => ref Unsafe.Add(ref ptr, sizeof(T));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
+        private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] long* length)
             where T : unmanaged
         {
             *length -= sizeof(T);
@@ -528,7 +524,7 @@ namespace DotNext.Runtime
             }
 
             result = true;
-            exit:
+        exit:
             return result;
         }
 

@@ -33,6 +33,35 @@ namespace DotNext.Threading
             True(valueNode.IsCompletedSuccessfully);
         }
 
+        [Fact]
+        public static void WaitForValueOrdered()
+        {
+            var state = new State { Value = 0 };
+            using var trigger = new AsyncTrigger();
+            static bool Condition(State state)
+            {
+                if (state.Value == 42)
+                {
+                    state.Value = 14;
+                    return true;
+                }
+
+                return false;
+            };
+            var valueNode = trigger.WaitAsync(state, Condition);
+            var valueNode2 = trigger.WaitAsync(state, Condition);
+            False(valueNode.IsCompleted);
+            False(valueNode2.IsCompleted);
+            trigger.Signal(state, static s => s.Value = 14);
+            False(valueNode.IsCompleted);
+            False(valueNode2.IsCompleted);
+            trigger.Signal(state, static s => s.Value = 42, true);
+            True(valueNode.IsCompletedSuccessfully);
+            False(valueNode2.IsCompletedSuccessfully);
+            trigger.Signal(state, static (s, i) => s.Value = i, 42, true);
+            True(valueNode2.IsCompletedSuccessfully);
+        }
+
         private static void ModifyState(State state, int value) => state.Value = value;
 
         private static void ModifyState(State state) => state.Value = 42;

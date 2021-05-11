@@ -14,7 +14,7 @@ namespace DotNext.IO
 
             internal ReaderStream(FileBufferingWriter writer, bool useAsyncIO)
             {
-                writer.GetWrittenContentAsStream(out source, useAsyncIO);
+                source = writer.GetWrittenContentAsStream(useAsyncIO);
                 session = writer.EnterReadMode(this);
             }
 
@@ -79,7 +79,11 @@ namespace DotNext.IO
                 => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
 
             public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
-                => new ValueTask(token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException()));
+#if NETSTANDARD2_1
+                => new (token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException()));
+#else
+                => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.FromException(new NotSupportedException());
+#endif
 
             public override void WriteByte(byte value) => throw new NotSupportedException();
 
@@ -107,18 +111,21 @@ namespace DotNext.IO
             }
         }
 
-        private void GetWrittenContentAsStream(out Stream stream, bool useAsyncIO)
+        private Stream GetWrittenContentAsStream(bool useAsyncIO)
         {
+            Stream result;
             if (fileBackend is null)
             {
-                stream = StreamSource.AsStream(buffer.Memory.Slice(0, position));
+                result = StreamSource.AsStream(buffer.Memory.Slice(0, position));
             }
             else
             {
                 const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
                 const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileBufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
+                result = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
             }
+
+            return result;
         }
 
         /// <summary>

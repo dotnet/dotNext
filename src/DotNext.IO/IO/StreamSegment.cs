@@ -14,7 +14,7 @@ namespace DotNext.IO
     public sealed class StreamSegment : Stream, IFlushable
     {
         private readonly bool leaveOpen;
-        private long length, position;
+        private long length, offset;
 
         /// <summary>
         /// Initializes a new segment of the specified stream.
@@ -26,7 +26,7 @@ namespace DotNext.IO
         {
             BaseStream = stream ?? throw new ArgumentNullException(nameof(stream));
             length = stream.Length;
-            position = 0L;
+            offset = 0L;
             this.leaveOpen = leaveOpen;
         }
 
@@ -51,7 +51,7 @@ namespace DotNext.IO
             if (length < 0L || length > BaseStream.Length - offset)
                 throw new ArgumentOutOfRangeException(nameof(length));
             this.length = length;
-            Position = 0L;
+            this.offset = offset;
             BaseStream.Position = offset;
         }
 
@@ -79,14 +79,16 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override long Position
         {
-            get => position;
+            get => BaseStream.Position - offset;
             set
             {
                 if (value < 0L || value > length)
                     throw new ArgumentOutOfRangeException(nameof(value));
-                position = value;
+                BaseStream.Position = offset + value;
             }
         }
+
+        private long RemainingBytes => length - Position;
 
         /// <inheritdoc/>
         public override void Flush() => BaseStream.Flush();
@@ -99,63 +101,41 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override int ReadByte()
-        {
-            if (position >= length)
-                return -1;
-            position += 1;
-            return BaseStream.ReadByte();
-        }
+            => Position < length ? BaseStream.ReadByte() : -1;
 
         /// <inheritdoc/>
         public override void WriteByte(byte value) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
-        {
-            count = BaseStream.Read(buffer, offset, (int)Math.Min(count, length - position));
-            position += count;
-            return count;
-        }
+            => BaseStream.Read(buffer, offset, (int)Math.Min(count, RemainingBytes));
 
         /// <inheritdoc/>
         public override int Read(Span<byte> buffer)
         {
-            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, length - position));
-            var count = BaseStream.Read(buffer);
-            position += count;
-            return count;
+            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, RemainingBytes));
+            return BaseStream.Read(buffer);
         }
 
         /// <inheritdoc/>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
-            count = (int)Math.Min(count, length - position);
+            count = (int)Math.Min(count, RemainingBytes);
             return BaseStream.BeginRead(buffer, offset, count, callback, state);
         }
 
         /// <inheritdoc/>
-        public override int EndRead(IAsyncResult asyncResult)
-        {
-            var count = BaseStream.EndRead(asyncResult);
-            position += count;
-            return count;
-        }
+        public override int EndRead(IAsyncResult asyncResult) => BaseStream.EndRead(asyncResult);
 
         /// <inheritdoc/>
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
-        {
-            count = await BaseStream.ReadAsync(buffer, offset, (int)Math.Min(count, length - position)).ConfigureAwait(false);
-            position += count;
-            return count;
-        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
+            => BaseStream.ReadAsync(buffer, offset, (int)Math.Min(count, RemainingBytes), token);
 
         /// <inheritdoc/>
-        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
         {
-            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, length - position));
-            var count = await BaseStream.ReadAsync(buffer, token).ConfigureAwait(false);
-            position += count;
-            return count;
+            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, RemainingBytes));
+            return BaseStream.ReadAsync(buffer, token);
         }
 
         /// <inheritdoc/>
@@ -164,7 +144,7 @@ namespace DotNext.IO
             var newPosition = origin switch
             {
                 SeekOrigin.Begin => offset,
-                SeekOrigin.Current => position + offset,
+                SeekOrigin.Current => Position + offset,
                 SeekOrigin.End => length + offset,
                 _ => throw new ArgumentOutOfRangeException(nameof(origin))
             };
@@ -175,7 +155,7 @@ namespace DotNext.IO
             if (newPosition > length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
-            position = newPosition;
+            Position = newPosition;
             return newPosition;
         }
 
@@ -198,7 +178,11 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
-            => new ValueTask(Task.FromException(new NotSupportedException()));
+#if NETSTANDARD2_1
+            => new (Task.FromException(new NotSupportedException()));
+#else
+            => ValueTask.FromException(new NotSupportedException());
+#endif
 
         /// <inheritdoc/>
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)

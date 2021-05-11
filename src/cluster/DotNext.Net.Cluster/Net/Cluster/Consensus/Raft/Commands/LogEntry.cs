@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using IO;
+    using IO.Log;
     using Runtime.Serialization;
 
     /// <summary>
@@ -36,6 +37,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public DateTimeOffset Timestamp { get; }
 
         /// <inheritdoc />
+        int? IRaftLogEntry.CommandId => id;
+
+        /// <inheritdoc />
         bool IDataTransferObject.IsReusable => true;
 
         /// <inheritdoc />
@@ -51,11 +55,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             }
         }
 
-        /// <inheritdoc />
-        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        private async ValueTask WriteIdAndContentAsync<TWriter>(TWriter writer, CancellationToken token)
+            where TWriter : notnull, IAsyncBinaryWriter
         {
             await writer.WriteInt32Async(id, true, token).ConfigureAwait(false);
             await formatter.SerializeAsync(command, writer, token).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => formatter.SerializeAsync(command, writer, token);
     }
 }

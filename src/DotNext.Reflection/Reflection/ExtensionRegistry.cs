@@ -22,7 +22,7 @@ namespace DotNext.Reflection
         {
         }
 
-        private static ExtensionRegistry Create() => new ExtensionRegistry();
+        private static ExtensionRegistry Create() => new();
 
         private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> types, UserDataSlot<ExtensionRegistry> registrySlot)
         {

@@ -37,7 +37,7 @@ namespace DotNext
     /// <typeparam name="TResult">The type of the result.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     [CLSCompliant(false)]
-    public readonly unsafe struct Supplier<T, TResult> : ISupplier<T, TResult>, IEquatable<Supplier<T, TResult>>
+    public readonly unsafe struct Supplier<T, TResult> : ISupplier<T, TResult>
     {
         private readonly delegate*<T, TResult> ptr;
 
@@ -58,24 +58,10 @@ namespace DotNext
         TResult ISupplier<T, TResult>.Invoke(T arg) => ptr(arg);
 
         /// <summary>
-        /// Determines whether the two objects contain the same pointer.
+        /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
         /// </summary>
-        /// <param name="other">The object to be compared.</param>
-        /// <returns><see langword="true"/> if this object contains the same pointer as the specified object.</returns>
-        public bool Equals(Supplier<T, TResult> other) => ptr == other.ptr;
-
-        /// <summary>
-        /// Determines whether the two objects contain the same pointer.
-        /// </summary>
-        /// <param name="other">The object to be compared.</param>
-        /// <returns><see langword="true"/> if this object contains the same pointer as the specified object.</returns>
-        public override bool Equals(object? other) => other is Supplier<T, TResult> supplier && Equals(supplier);
-
-        /// <summary>
-        /// Gets the hash code of this function pointer.
-        /// </summary>
-        /// <returns>The hash code of the function pointer.</returns>
-        public override int GetHashCode() => Runtime.Intrinsics.PointerHashCode(ptr);
+        /// <returns>The delegate representing the wrapped method.</returns>
+        public Func<T, TResult> ToDelegate() => DelegateHelpers.CreateDelegate<T, TResult>(ptr);
 
         /// <summary>
         /// Gets hexadecimal representation of this pointer.
@@ -89,26 +75,14 @@ namespace DotNext
         /// <param name="ptr">The pointer to the managed method.</param>
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-        public static implicit operator Supplier<T, TResult>(delegate*<T, TResult> ptr)
-            => new (ptr);
+        public static implicit operator Supplier<T, TResult>(delegate*<T, TResult> ptr) => new(ptr);
 
         /// <summary>
-        /// Determines whether the two objects contain the same pointer.
+        /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
         /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <see langword="true"/> if both objects contain the same pointer; otherwise, <see langword="false"/>.
-        public static bool operator ==(Supplier<T, TResult> x, Supplier<T, TResult> y)
-            => x.Equals(y);
-
-        /// <summary>
-        /// Determines whether the two objects contain the different pointers.
-        /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <see langword="true"/> if both objects contain the different pointers; otherwise, <see langword="false"/>.
-        public static bool operator !=(Supplier<T, TResult> x, Supplier<T, TResult> y)
-            => !x.Equals(y);
+        /// <param name="supplier">The value representing the pointer to the method.</param>
+        /// <returns>The delegate representing the wrapped method.</returns>
+        public static explicit operator Func<T, TResult>(Supplier<T, TResult> supplier) => supplier.ToDelegate();
     }
 
     /// <summary>
@@ -201,7 +175,7 @@ namespace DotNext
         /// <returns>The supplier represented by the delegate.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public static implicit operator DelegatingSupplier<T, TResult>(Func<T, TResult> func)
-            => new (func);
+            => new(func);
 
         /// <summary>
         /// Determines whether the two objects contain references to the same delegate instance.
@@ -234,7 +208,7 @@ namespace DotNext
         bool ISupplier<T, bool>.Invoke(T arg) => predicate(arg);
 
         public static implicit operator DelegatingPredicate<T>(Predicate<T> predicate)
-            => new (predicate);
+            => new(predicate);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -249,6 +223,6 @@ namespace DotNext
         TOutput ISupplier<TInput, TOutput>.Invoke(TInput arg) => converter(arg);
 
         public static implicit operator DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter)
-            => new (converter);
+            => new(converter);
     }
 }

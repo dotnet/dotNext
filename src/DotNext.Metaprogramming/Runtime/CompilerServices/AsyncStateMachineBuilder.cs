@@ -259,34 +259,25 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private static bool IsAssignment(BinaryExpression binary)
-        {
-            switch (binary.NodeType)
-            {
-                case ExpressionType.Assign:
-                case ExpressionType.AddAssign:
-                case ExpressionType.AddAssignChecked:
-                case ExpressionType.SubtractAssign:
-                case ExpressionType.SubtractAssignChecked:
-                case ExpressionType.OrAssign:
-                case ExpressionType.AndAssign:
-                case ExpressionType.ExclusiveOrAssign:
-                case ExpressionType.DivideAssign:
-                case ExpressionType.LeftShiftAssign:
-                case ExpressionType.RightShiftAssign:
-                case ExpressionType.MultiplyAssign:
-                case ExpressionType.MultiplyAssignChecked:
-                case ExpressionType.ModuloAssign:
-                case ExpressionType.PostDecrementAssign:
-                case ExpressionType.PreDecrementAssign:
-                case ExpressionType.PostIncrementAssign:
-                case ExpressionType.PreIncrementAssign:
-                case ExpressionType.PowerAssign:
-                    return true;
-                default:
-                    return false;
-            }
-        }
+        private static bool IsAssignment(BinaryExpression binary) => binary.NodeType is ExpressionType.Assign or
+            ExpressionType.AddAssign or
+            ExpressionType.AddAssignChecked or
+            ExpressionType.SubtractAssign or
+            ExpressionType.SubtractAssignChecked or
+            ExpressionType.OrAssign or
+            ExpressionType.AndAssign or
+            ExpressionType.ExclusiveOrAssign or
+            ExpressionType.DivideAssign or
+            ExpressionType.LeftShiftAssign or
+            ExpressionType.RightShiftAssign or
+            ExpressionType.MultiplyAssign or
+            ExpressionType.MultiplyAssignChecked or
+            ExpressionType.ModuloAssign or
+            ExpressionType.PostDecrementAssign or
+            ExpressionType.PreDecrementAssign or
+            ExpressionType.PostIncrementAssign or
+            ExpressionType.PreIncrementAssign or
+            ExpressionType.PowerAssign;
 
         private Expression RewriteBinary(BinaryExpression node)
         {
@@ -335,13 +326,14 @@ namespace DotNext.Runtime.CompilerServices
         private Expression RewriteCallable<TException>(TException node, Expression[] arguments, Converter<TException, Expression> visitor, Func<TException, Expression[], TException> updater)
             where TException : Expression
         {
-            var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = visitor(node);
             if (newNode is TException typedExpr)
                 node = typedExpr;
             else
                 return newNode;
+
             var hasAwait = false;
+            var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             for (var i = arguments.LongLength - 1L; i >= 0L; i--)
             {
                 ref Expression arg = ref arguments[i];

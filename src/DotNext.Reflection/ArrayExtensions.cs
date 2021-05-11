@@ -18,7 +18,7 @@ namespace DotNext
             return false;
         }
 
-        internal static bool Take<T>(this T[] array, [MaybeNullWhen(false)] out T first, [MaybeNullWhen(false)] out T second, [MaybeNullWhen(false)]out T third, int startIndex = 0)
+        internal static bool Take<T>(this T[] array, [MaybeNullWhen(false)] out T first, [MaybeNullWhen(false)] out T second, [MaybeNullWhen(false)] out T third, int startIndex = 0)
             where T : notnull
         {
             if (startIndex + 2 < array.LongLength)

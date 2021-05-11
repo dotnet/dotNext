@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -18,6 +19,7 @@ namespace DotNext.Threading
         {
             None = 0,
             Monitor,
+            MonitorWithSpinWait,
             ReadLock,
             UpgradeableReadLock,
             WriteLock,
@@ -57,7 +59,7 @@ namespace DotNext.Threading
             {
                 switch (type)
                 {
-                    case Type.Monitor:
+                    case Type.Monitor or Type.MonitorWithSpinWait:
                         System.Threading.Monitor.Exit(lockedObject);
                         break;
                     case Type.ReadLock:
@@ -101,7 +103,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="semaphore">The semaphore to wrap into lock object.</param>
         /// <returns>The lock representing semaphore.</returns>
-        public static Lock Semaphore(SemaphoreSlim semaphore) => new Lock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
+        public static Lock Semaphore(SemaphoreSlim semaphore) => new(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
         /// <summary>
         /// Creates semaphore-based lock but doesn't acquire the lock.
@@ -112,14 +114,15 @@ namespace DotNext.Threading
         /// <param name="initialCount">The initial number of requests for the semaphore that can be granted concurrently.</param>
         /// <param name="maxCount">The maximum number of requests for the semaphore that can be granted concurrently.</param>
         /// <returns>The lock representing semaphore.</returns>
-        public static Lock Semaphore(int initialCount, int maxCount) => new Lock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
+        public static Lock Semaphore(int initialCount, int maxCount) => new(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
         /// <summary>
         /// Creates monitor-based lock control object but doesn't acquire the lock.
         /// </summary>
         /// <param name="obj">Monitor lock target.</param>
+        /// <param name="useSpinWait"><see langword="true"/> to use spin wait when acquiring lock to avoid unnecessary thread parking; otherwise, <see langword="false"/>.</param>
         /// <returns>The lock representing monitor.</returns>
-        public static Lock Monitor(object obj) => new Lock(obj ?? throw new ArgumentNullException(nameof(obj)), Type.Monitor, false);
+        public static Lock Monitor(object obj, bool useSpinWait = false) => new(obj ?? throw new ArgumentNullException(nameof(obj)), useSpinWait ? Type.MonitorWithSpinWait : Type.Monitor, false);
 
         /// <summary>
         /// Creates exclusive lock.
@@ -128,7 +131,7 @@ namespace DotNext.Threading
         /// Constructed lock owns the object instance used as a monitor.
         /// </remarks>
         /// <returns>The exclusive lock.</returns>
-        public static Lock Monitor() => new Lock(new object(), Type.Monitor, true);
+        public static Lock Monitor() => new(new object(), Type.Monitor, true);
 
         /// <summary>
         /// Creates read lock but doesn't acquire it.
@@ -137,7 +140,7 @@ namespace DotNext.Threading
         /// <param name="upgradeable"><see langword="true"/> to create upgradeable read lock wrapper.</param>
         /// <returns>Reader lock.</returns>
         public static Lock ReadLock(ReaderWriterLockSlim rwLock, bool upgradeable)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradeable ? Type.UpgradeableReadLock : Type.ReadLock, false);
+            => new(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradeable ? Type.UpgradeableReadLock : Type.ReadLock, false);
 
         /// <summary>
         /// Creates write lock but doesn't acquire it.
@@ -145,7 +148,64 @@ namespace DotNext.Threading
         /// <param name="rwLock">Read/write lock source.</param>
         /// <returns>Write-only lock.</returns>
         public static Lock WriteLock(ReaderWriterLockSlim rwLock)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
+            => new(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
+
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        private static void EnterMonitorSpinWait(object obj)
+        {
+            var sw = new SpinWait();
+        try_enter:
+            if (System.Threading.Monitor.TryEnter(obj))
+                goto exit;
+
+            // spin and try again to acquire the lock
+            sw.SpinOnce();
+            if (!sw.NextSpinWillYield)
+                goto try_enter;
+
+            // thread must be parked because spin-wait failed
+            System.Threading.Monitor.Enter(obj);
+
+        exit:
+            return;
+        }
+
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        private static bool TryEnterMonitorSpinWait(object obj, Timeout timeout)
+        {
+            var sw = new SpinWait();
+            bool result;
+        try_enter:
+            if (System.Threading.Monitor.TryEnter(obj))
+            {
+                result = true;
+                goto exit;
+            }
+
+            if (timeout.IsExpired)
+            {
+                result = false;
+                goto exit;
+            }
+
+            // spin and try again to acquire the lock
+            sw.SpinOnce();
+            if (!sw.NextSpinWillYield)
+                goto try_enter;
+
+            // thread must be parked because spin-wait failed
+            result = timeout.RemainingTime.TryGetValue(out var remaining) && System.Threading.Monitor.TryEnter(obj, remaining);
+
+        exit:
+            return result;
+        }
+
+        private static bool TryEnterMonitorSpinWait(object obj, TimeSpan timeout)
+            => TryEnterMonitorSpinWait(obj, new Timeout(timeout));
 
         /// <summary>
         /// Acquires lock.
@@ -157,6 +217,9 @@ namespace DotNext.Threading
             {
                 case Type.Monitor:
                     System.Threading.Monitor.Enter(lockedObject);
+                    break;
+                case Type.MonitorWithSpinWait:
+                    EnterMonitorSpinWait(lockedObject);
                     break;
                 case Type.ReadLock:
                     As<ReaderWriterLockSlim>(lockedObject).EnterReadLock();
@@ -177,7 +240,7 @@ namespace DotNext.Threading
 
         private readonly bool TryAcquire() => type switch
         {
-            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.Monitor or Type.MonitorWithSpinWait => System.Threading.Monitor.TryEnter(lockedObject),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
@@ -205,6 +268,7 @@ namespace DotNext.Threading
         private readonly bool TryAcquire(TimeSpan timeout) => type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.MonitorWithSpinWait => TryEnterMonitorSpinWait(lockedObject, timeout),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),

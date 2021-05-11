@@ -373,6 +373,26 @@ namespace DotNext.IO
         ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default);
 
         /// <summary>
+        /// Skips the block of bytes.
+        /// </summary>
+        /// <param name="length">The length of the block to skip, in bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        async ValueTask SkipAsync(int length, CancellationToken token = default)
+        {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            if (length > 0)
+            {
+                using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+                await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Reads length-prefixed block of bytes.
         /// </summary>
         /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
@@ -445,7 +465,27 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-            => CopyToAsync(new BufferConsumer<byte>(writer), token);
+        {
+            Task result;
+            if (TryGetSpan(out var span))
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.Write(span);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+            else
+            {
+                result = CopyToAsync(new BufferConsumer<byte>(writer), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -457,7 +497,27 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-            => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+        {
+            Task result;
+            if (TryGetSpan(out var span))
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    consumer(span, arg);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+            else
+            {
+                result = CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -483,6 +543,20 @@ namespace DotNext.IO
             where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
         /// <summary>
+        /// Attempts to get the entire content represented by this reader.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used for efficient synchronous decoding.
+        /// </remarks>
+        /// <param name="bytes">The content represented by this reader.</param>
+        /// <returns><see langword="true"/> if the content is available synchronously; otherwise, <see langword="false"/>.</returns>
+        bool TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = default;
+            return false;
+        }
+
+        /// <summary>
         /// Creates default implementation of binary reader for the stream.
         /// </summary>
         /// <remarks>
@@ -495,21 +569,22 @@ namespace DotNext.IO
         /// <returns>The stream reader.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryAccessor(input, buffer);
+        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
+            => ReferenceEquals(input, Stream.Null) ? Empty : new AsyncStreamBinaryAccessor(input, buffer);
 
         /// <summary>
         /// Creates default implementation of binary reader over sequence of bytes.
         /// </summary>
         /// <param name="sequence">The sequence of bytes.</param>
         /// <returns>The binary reader for the sequence of bytes.</returns>
-        public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new SequenceBinaryReader(sequence);
+        public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new(sequence);
 
         /// <summary>
         /// Creates default implementation of binary reader over contiguous memory block.
         /// </summary>
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>
-        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new SequenceBinaryReader(memory);
+        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new(memory);
 
         /// <summary>
         /// Creates default implementation of binary reader for the specifed pipe reader.

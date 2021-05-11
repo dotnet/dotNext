@@ -87,7 +87,7 @@ namespace DotNext
             var result = (Result<string>)Optional<string>.None;
             False(result.IsSuccessful);
             Throws<InvalidOperationException>(() => result.Value);
-            
+
             result = (Result<string>)new Optional<string>(null);
             True(result.IsSuccessful);
             Null(result.Value);

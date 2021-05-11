@@ -27,11 +27,11 @@ namespace DotNext.Buffers
 
         int IBuffer<T>.Length => length;
 
-        Span<T> IBuffer<T>.Span => new Span<T>(ptr, length);
+        Span<T> IBuffer<T>.Span => new(ptr, length);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct ArrayBuffer<T> : IBuffer<T>, IDisposable
+    internal struct ArrayBuffer<T> : IBuffer<T>, IDisposable
         where T : unmanaged
     {
         private readonly MemoryOwner<T> buffer;
@@ -39,9 +39,9 @@ namespace DotNext.Buffers
         internal ArrayBuffer(int length)
             => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
 
-        int IBuffer<T>.Length => buffer.Length;
+        readonly int IBuffer<T>.Length => buffer.Length;
 
-        Span<T> IBuffer<T>.Span => buffer.Memory.Span;
+        readonly Span<T> IBuffer<T>.Span => buffer.Memory.Span;
 
         public void Dispose() => buffer.Dispose();
     }

@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,10 +79,41 @@ namespace DotNext.Threading
             }
         }
 
+        private Action<double>? contentionCounter, lockDurationCounter;
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
         {
+        }
+
+        /// <summary>
+        /// Sets counter for lock contention.
+        /// </summary>
+        public IncrementingEventCounter LockContentionCounter
+        {
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            {
+                contentionCounter = (value ?? throw new ArgumentNullException(nameof(value))).Increment;
+            }
+        }
+
+        /// <summary>
+        /// Sets counter of lock duration, in milliseconds.
+        /// </summary>
+        public EventCounter LockDurationCounter
+        {
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            {
+                lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
+            }
         }
 
         /// <inheritdoc/>
@@ -95,6 +128,7 @@ namespace DotNext.Threading
             if (ReferenceEquals(tail, node))
                 tail = node.Previous;
             node.DetachNode();
+            lockDurationCounter?.Invoke(node.Age.TotalMilliseconds);
             return inList;
         }
 
@@ -123,8 +157,14 @@ namespace DotNext.Threading
         [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
-            if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
-                return true;
+            Debug.Assert(token.CanBeCanceled);
+
+            using (var cancellationTask = new CancelableCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously, token))
+            {
+                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, cancellationTask).ConfigureAwait(false)))
+                    return true;
+            }
+
             if (RemoveNode(node))
             {
                 token.ThrowIfCancellationRequested();
@@ -153,6 +193,8 @@ namespace DotNext.Threading
                 head = tail = manager.CreateNode(null);
             else
                 tail = manager.CreateNode(tail);
+
+            contentionCounter?.Invoke(1L);
             return timeout == InfiniteTimeSpan ?
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
@@ -232,14 +274,37 @@ namespace DotNext.Threading
         private protected static unsafe ValueTask DisposeAsync<T>(T synchronizer, delegate*<T, bool> lockStateChecker)
             where T : QueuedSynchronizer
         {
-            lock (synchronizer)
+            ValueTask result;
+            var lockTaken = false;
+            try
             {
-                if (lockStateChecker(synchronizer))
-                    return new ValueTask(synchronizer.DisposeAsync());
+                Monitor.Enter(synchronizer, ref lockTaken);
 
-                synchronizer.Dispose();
-                return new ValueTask();
+                if (lockStateChecker(synchronizer))
+                {
+                    result = new(synchronizer.DisposeAsync());
+                }
+                else
+                {
+                    synchronizer.Dispose();
+                    result = new();
+                }
             }
+            catch (Exception e)
+            {
+#if NETSTANDARD2_1
+                result = new(Task.FromException(e));
+#else
+                result = ValueTask.FromException(e);
+#endif
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(synchronizer);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -254,6 +319,8 @@ namespace DotNext.Threading
             if (disposing)
             {
                 NotifyObjectDisposed();
+                lockDurationCounter = null;
+                lockDurationCounter = null;
             }
 
             base.Dispose(disposing);

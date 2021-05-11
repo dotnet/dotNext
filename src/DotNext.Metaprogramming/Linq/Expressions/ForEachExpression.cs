@@ -140,7 +140,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="body">The body of the loop.</param>
         /// <returns>The expression instance.</returns>
         public static ForEachExpression Create(Expression collection, Expression body)
-            => new ForEachExpression(collection) { Body = body };
+            => new(collection) { Body = body };
 
         /// <summary>
         /// Creates asynchronous loop expression.
@@ -153,7 +153,7 @@ namespace DotNext.Linq.Expressions
         /// <seealso cref="IAsyncEnumerable{T}"/>
         /// <seealso cref="IsAwaitable"/>
         public static ForEachExpression Create(Expression collection, Expression cancellationToken, bool configureAwait, Expression body)
-            => new ForEachExpression(collection, cancellationToken, configureAwait) { Body = body };
+            => new(collection, cancellationToken, configureAwait) { Body = body };
 
         /// <summary>
         /// Indicates that this expression represents enumeration over asynchronous collection.

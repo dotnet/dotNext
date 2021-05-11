@@ -4,13 +4,13 @@ using System.Collections.Immutable;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using TransportServices;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
-    using ILocalMember = TransportServices.ILocalMember;
 
     /// <summary>
     /// Represents default implementation of Raft-based cluster.
@@ -23,6 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly IPEndPoint publicEndPoint;
         private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
+        private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private IServer? server;
 
         /// <summary>
@@ -37,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
+            bufferingOptions = configuration.BufferingOptions;
 
             // create members without starting clients
             foreach (var member in configuration.Members)
@@ -96,6 +98,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ReceiveResignAsync(token);
 
+        private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(RaftClusterMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            Debug.Assert(bufferingOptions is not null);
+            using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
+            return await ReceiveEntriesAsync(sender, senderTerm, buffered.ToProducer(), prevLogIndex, prevLogTerm, commitIndex, token).ConfigureAwait(false);
+        }
+
         /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
@@ -104,7 +114,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return Task.FromResult(new Result<bool>(Term, false));
 
             member.Touch();
-            return ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+            return bufferingOptions is null ?
+                ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
+                BufferizeReceivedEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         /// <inheritdoc />
@@ -129,6 +141,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return ReceivePreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
         }
 
+        private async Task<Result<bool>> BufferizeSnapshotAsync<TSnapshot>(RaftClusterMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : notnull, IRaftLogEntry
+        {
+            Debug.Assert(bufferingOptions is not null);
+            using var buffered = await BufferedRaftLogEntry.CopyAsync(snapshot, bufferingOptions, token).ConfigureAwait(false);
+            return await ReceiveSnapshotAsync(sender, senderTerm, buffered, snapshotIndex, token).ConfigureAwait(false);
+        }
+
         /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
@@ -137,7 +157,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return Task.FromResult(new Result<bool>(Term, false));
 
             member.Touch();
-            return ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
+            return bufferingOptions is null ?
+                ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token) :
+                BufferizeSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
+        }
+
+        private void Cleanup()
+        {
+            server?.Dispose();
+            server = null;
         }
 
         /// <summary>
@@ -147,12 +175,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                server?.Dispose();
-                server = null;
-            }
+                Cleanup();
 
             base.Dispose(disposing);
+        }
+
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsyncCore()
+        {
+            await base.DisposeAsyncCore().ConfigureAwait(false);
+            Cleanup();
         }
     }
 }

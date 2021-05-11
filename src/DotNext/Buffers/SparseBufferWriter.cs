@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
@@ -163,7 +165,7 @@ namespace DotNext.Buffers
                 length += input.Length;
             }
 
-            exit:
+        exit:
             return;
         }
 
@@ -192,6 +194,16 @@ namespace DotNext.Buffers
             {
                 var buffer = current.WrittenMemory.Span;
                 consumer.Invoke(buffer);
+            }
+        }
+
+        /// <inheritdoc />
+        async ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+        {
+            ThrowIfDisposed();
+            for (MemoryChunk? current = first; current is not null; current = current.Next)
+            {
+                await consumer.Invoke(current.WrittenMemory, token).ConfigureAwait(false);
             }
         }
 

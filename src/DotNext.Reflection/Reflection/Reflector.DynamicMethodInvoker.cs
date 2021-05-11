@@ -33,7 +33,7 @@ namespace DotNext.Reflection
             {
                 var position = Expression.Constant(parameter.Position);
                 var getter = Get(arguments, position);
-                Func<Expression, MethodCallExpression> setter = value => Set(arguments, position, value);
+                MethodCallExpression SetArgument(Expression value) => Set(arguments, position, value);
                 Expression argument;
 
                 if (parameter.ParameterType.IsByRefLike)
@@ -56,9 +56,9 @@ namespace DotNext.Reflection
                         tempVars.Add(tempVar);
                         prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(getter, parameterType) : Expression.Convert(getter, parameterType)));
                         if (parameterType.IsPointer)
-                            epilogue.Add(setter(Wrap(tempVar)));
+                            epilogue.Add(SetArgument(Wrap(tempVar)));
                         else
-                            epilogue.Add(setter(tempVar));
+                            epilogue.Add(SetArgument(tempVar));
                         argument = tempVar;
                     }
                 }

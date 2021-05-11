@@ -471,7 +471,7 @@ namespace DotNext.Buffers
         private static unsafe void Write<T>(IBufferWriter<char> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct, IFormattable
         {
-            for (int bufferSize = 0; ; )
+            for (int bufferSize = 0; ;)
             {
                 var buffer = writer.GetSpan(bufferSize);
                 if (formatter(in value, buffer, out var charsWritten, format, provider))
@@ -640,7 +640,7 @@ namespace DotNext.Buffers
         private static unsafe void Write<T>(ref BufferWriterSlim<char> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct, IFormattable
         {
-            for (int bufferSize = 0; ; )
+            for (int bufferSize = 0; ;)
             {
                 var buffer = writer.GetSpan(bufferSize);
                 if (formatter(in value, buffer, out var charsWritten, format, provider))

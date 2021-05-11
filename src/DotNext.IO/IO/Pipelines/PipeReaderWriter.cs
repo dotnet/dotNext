@@ -27,6 +27,9 @@ namespace DotNext.IO.Pipelines
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
             => input.ReadBlockAsync(output, token);
 
+        ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+            => input.SkipAsync(length, token);
+
         ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
             => input.ReadBlockAsync(lengthFormat, allocator, token);
 
@@ -116,6 +119,12 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
             => input.CopyToAsync(consumer, token);
+
+        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = default;
+            return false;
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -339,5 +348,7 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
             => output.WriteAsync(supplier, arg, token);
+
+        IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => output;
     }
 }
