@@ -8,7 +8,7 @@
     <title>Asynchronous Trigger | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Asynchronous Trigger | .NEXT ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.57.2.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -75,6 +75,13 @@
 <li><code>SignalAndWaitAsync</code> method is a combination of <code>Signal</code> and <code>WaitAsync</code> that works atomically. Useful in situations when you need to notify about state change and wait for another state.</li>
 </ul>
 <p>As a result, this synchronization primitive can be used for building complex asynchronous state machines.</p>
+<p>Signaling method behaves in two ways:</p>
+<ul>
+<li>Resume all suspended callers in unordered fashion. For instance, if you have the queue with configiration <em>A1-A2-A3</em> and <em>A1</em>, <em>A2</em> return <strong>true</strong> then they will be removed from the queue and <em>A2</em> remains untouched.</li>
+<li>Fair dequeuing when suspended callers resumed in strict order. In this case only <em>A1</em> will be removed. <em>A2</em> and <em>A3</em> remain untouched because <em>A2</em> returns <strong>false</strong>.</li>
+</ul>
+<p>Fairness policy for dequeuing can be passed as <strong>bool</strong> parameter to <code>Signal</code> and <code>SignalAndWaitAsync</code> methods.</p>
+<p>You can check <a href="https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.LockManager.cs">this</a> class as an example of complex asynchronous lock constructed on top of <code>AsyncTrigger</code>. The implementation is used by persistent Write-Ahead Log to allow multiple writers co-exist without blocking in some specific cirtumstances.</p>
 </article>
           </div>
           

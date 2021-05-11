@@ -8,7 +8,7 @@
     <title>I/O Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="I/O Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.57.2.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -169,10 +169,11 @@ string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
 <li>It doesn't depend on ASP.NET Core</li>
 <li>Ability to use custom <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">MemoryAllocator&lt;T&gt;</a> for memory pooling</li>
 <li>Selection between synchronous and asynchronous modes</li>
+<li>Ability to read the file used as backing store after closing the writer</li>
 <li>Can drain content to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;byte&gt;</a></li>
 <li>Ability to read written content as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a></li>
 <li>Ability to represent written content as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;byte&gt;</a></li>
-<li>Ability to represent written content as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;byte&gt;</a> if it's too large for representation using <code>Memory&lt;byte&gt;</code> data type.</li>
+<li>Ability to represent written content as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;byte&gt;</a> if it's too large for representation in the form of <code>Memory&lt;byte&gt;</code> data type</li>
 </ul>
 <p>The last two features are very useful in situations when the size of memory is not known at the time of the call of write operations. If written content is in memory then returned <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> just references it. Otherwise, <code>FileBufferingWriter</code> utilizes memory-mapped file feature and returned <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> represents mapped virtual memory. It's better than using pooled memory because of memory deterministic lifetime and GC pressure.</p>
 <p>The following example demonstrates this feature:</p>
@@ -209,6 +210,29 @@ writer.Write(...);
 // read data from the stream
 using (Stream reader = writer.GetWrittenContentAsStream())
 {
+}
+</code></pre>
+<p>By default, the writer uses temporary file as backing store if in-memory buffer limit has been reached. This file will be deleted automatically when <code>Dispose</code> called. However, there is a way to leave the file untouched and reuse its content later. To do that, you need to specify file name explicitly:</p>
+<pre><code class="lang-csharp">using DotNext.IO;
+using System;
+
+const string pathToFile = &quot;/absolute/path/to/file&quot;;
+var options = new FileBufferingWriter.Options
+{
+    FileName = pathToFile,
+};
+
+using var writer = new FileBufferingWriter(options);
+
+if (writer.TryGetWrittenContent(out ReadOnlyMemory&lt;byte&gt; block, out string fileName))
+{
+    // All written content is in memory block, file was not used as the backing store.
+    // Thus, fileName is null
+}
+else
+{
+    // All written content is in file.
+    // Thus, fileName contains full path to the file with the content and the memory block is empty
 }
 </code></pre>
 <h1 id="encodingdecoding-of-memory-block">Encoding/decoding of Memory Block</h1>

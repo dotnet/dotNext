@@ -8,7 +8,7 @@
     <title>Persistent Write Ahead Log | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Persistent Write Ahead Log | .NEXT ">
-    <meta name="generator" content="docfx 2.56.6.0">
+    <meta name="generator" content="docfx 2.57.2.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -90,18 +90,25 @@
 <p>Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition depends on the settings.</p>
 <p><code>PersistentState</code> has a rich set of tunable configuration parameters and overridable methods to achieve the best performance according with application needs:</p>
 <ul>
-<li><code>recordsPerPartition</code> allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, write ahead log records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.</li>
-<li><code>BufferSize</code> is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.</li>
+<li><code>recordsPerPartition</code> allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, the log writes the snapshot into the separated file and removes the partition files from the file system. Exact behavior of this procedure as well as its performance depends on chosen compaction mode.</li>
+<li><code>BufferSize</code> is the number of bytes that is allocated by persistent WAL to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.</li>
+<li><code>SnapshotBufferSize</code> is the number of bytes that is allocated by persistent WAL to perform I/O operations related to log snapshot. By default it is equal to <code>BufferSize</code>. You can set it explicitly to the maximum expected size of the log entry to achieve the best performance.</li>
 <li><code>InitialPartitionSize</code> represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.</li>
-<li><code>UseCaching</code> is <code>bool</code> flag that allows to enable or disable in-memory caching of log entries metadata. <code>true</code> value allows to improve the performance or read/write operations by the cost of additional heap memory. <code>false</code> reduces the memory footprint by the cost of the read/write performance</li>
+<li><code>UseCaching</code> is <code>bool</code> flag that allows to enable or disable in-memory caching of log entries. <code>true</code> value allows to improve the performance or read/write operations by the cost of additional heap memory. <code>false</code> reduces the memory footprint by the cost of the read/write performance.</li>
 <li><code>GetMemoryAllocator</code> generic method used for renting the memory and can be overridden</li>
 <li><code>MaxConcurrentReads</code> is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.</li>
 <li><code>ReplayOnInitialize</code> is a flag indicating that state of underlying database engine should be reconstructed when <code>InitializeAsync</code> is called by infrastructure. It can be done manually using <code>ReplayAsync</code> method.</li>
+<li><code>WriteThrough</code> indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls <em>fsync</em> for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.</li>
+<li><code>BackupCompression</code> represents compression level used by <code>CreateBackupAsync</code> method.</li>
+<li><code>CompactionMode</code> represents log compaction mode. The default is <em>Sequential</em>.</li>
+<li><code>CopyOnReadOptions</code> allows to enable <em>copy-on-read</em> behavior which allows to avoid lock contention between writers and the replication process.</li>
+<li><code>CacheEvictionPolicy</code> represents eviction policy of the cached log entries.</li>
 </ul>
 <p>Choose <code>recordsPerPartition</code> value with care because it cannot be changed for the existing persistent WAL.</p>
 <p>Let's write a simple custom audit trail based on the <code>PersistentState</code> to demonstrate basics of Write Ahead Log. Our state machine stores only the single <strong>long</strong> value as the only possible persistent state.</p>
 <p>The example below additionally requires <strong>DotNext.IO</strong> library to simplify I/O work.</p>
-<pre><code class="lang-csharp">using DotNext.IO;
+<pre><code class="lang-csharp">using DotNext.Buffers;
+using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -114,14 +121,17 @@ sealed class SimpleAuditTrail : PersistentState
 	private sealed class SimpleSnapshotBuilder : SnapshotBuilder
 	{
 		private long currentValue;
-		private readonly Memory&lt;byte&gt; sharedBuffer;
+		private MemoryOwner&lt;byte&gt; sharedBuffer;
 
-		internal SimpleSnapshotBuilder(Memory&lt;byte&gt; buffer) =&gt; sharedBuffer = buffer;
+		internal SimpleSnapshotBuilder(MemoryAllocator&lt;byte&gt; allocator)
+		{
+			sharedBuffer = allocator.Invoke(2048, false);
+		}
 
 		//2.1
 		public override ValueTask CopyToAsync(Stream output, CancellationToken token)
 		{
-			return output.WriteAsync(currentValue, buffer, token);
+			return output.WriteAsync(currentValue, sharedBuffer.Memory, token);
 		}
 
 		//2.2
@@ -132,8 +142,26 @@ sealed class SimpleAuditTrail : PersistentState
 
 		//1
 		protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; currentValue = await Decode(entry);
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				sharedBuffer.Dispose();
+				sharedBuffer = default;
+			}
+
+			base.Dispose(disposing);
+		}
 	}
-	
+
+	private readonly MemoryAllocator&lt;byte&gt;? snapshotBufferAllocator;
+
+	public SimpleAuditTrail(Options options)
+	{
+		snapshotBufferAllocator = options.GetMemoryAllocator&lt;byte&gt;();
+	}
+
 	//3
 	private static async Task&lt;long&gt; Decode(LogEntry entry) =&gt; ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
 	
@@ -141,7 +169,7 @@ sealed class SimpleAuditTrail : PersistentState
     protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; Value = await Decode(entry);
 	
 	//5
-    protected override SnapshotBuilder CreateSnapshotBuilder() =&gt; new SimpleSnapshotBuilder(Buffer);
+    protected override SnapshotBuilder CreateSnapshotBuilder() =&gt; new SimpleSnapshotBuilder(snapshotBufferAllocator);
 }
 </code></pre>
 <p>1)Aggregates the commited entry with the existing state; 2)called by infrastructure to serialize the aggregated state into stream; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder</p>
@@ -155,10 +183,35 @@ sealed class SimpleAuditTrail : PersistentState
 <li><code>CommitAsync</code> marks appended entries as committed. Optionally, it can force log compaction</li>
 <li><code>EnsureConsistencyAsync</code> suspends the caller and waits until the last committed entry is from leader's term</li>
 <li><code>WaitForCommitAsync</code> waits for the specific or any commit</li>
+<li><code>CreateBackupAsync</code> creates backup of the log packed into ZIP archive</li>
+<li><code>ForceCompactionAsync</code> manually triggers log compaction. Has no effect if compaction mode other than <em>Background</em>.</li>
 </ul>
 <p><code>ReadAsync</code> method can be used to obtain committed or uncommitted entries in stream-like manner.</p>
 <h1 id="state-reconstruction">State Reconstruction</h1>
 <p><code>PersistentState</code> is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by <strong>DotNext.AspNetCore.Cluster</strong> library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call <code>ReplayAsync</code> method which reads all committed log entry and pass each entry to <code>ApplyAsync</code> protected method. Usually, <code>ApplyAsync</code> method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.</p>
+<h1 id="performance">Performance</h1>
+<p>Raft implementation must deal with the following bottlenecks: <em>network</em>, <em>disk I/O</em> and synchronization when accessing WAL concurrently. The current implementation of persistent WAL provides many configuration options that allows to reduce the overhead caused by the last two aspects.</p>
+<h2 id="durable-disk-io">Durable disk I/O</h2>
+<p>By default, <code>WriteThrough</code> option is disabled. It means that OS is responsible to decide when to do <a href="https://man7.org/linux/man-pages/man2/fsync.2.html">fsync</a>. The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to <strong>true</strong> by the cost of I/O performance. However, this overhead can be mitigated by the caching mechanism.</p>
+<h2 id="caching">Caching</h2>
+<p><code>UseCaching</code> allows to enable caching of the log entries and their metadata. If enabled, log entry metadata is always cached in the memory for all appended log entries by the cost of increased RAM consumption. Cached metadata allows to avoid disk I/O when requesting entries. However, reading of log entry payload still requires disk I/O. This overhead can be eliminated by the calling of <em>AppendAsync</em> or <em>AppendAndEnsureCommitAsync</em> method with <strong>true</strong> argument passed to <strong>bool</strong> parameter. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.</p>
+<p>The following operations have the positive impact provided by caching:</p>
+<ul>
+<li>All reads including replication process</li>
+<li>Commit process, because state machine interprets a series of log entries cached in the memory</li>
+<li>Snapshotting process, because snapshot builder deals with the log entries cached in the memory</li>
+</ul>
+<h2 id="lock-contention">Lock contention</h2>
+<p><em>Copy-on-read</em> optimization allows to reduce lock contention between the replication process that requires <em>read lock</em> and writers. Multiple readers can co-exist in the same time. However, appending of new log entries is not allowed while read lock acquired. Replication process acquires <em>read lock</em> and then reads the log entries to be replicated. Sending of these log entries is also protected by the <em>read lock</em>. The replication may take a long time that causes writers to wait in the queue. This overhead can be reduced by switching <em>copy-on-read</em> behavior on using <code>CopyOnReadOptions</code> configuration property by the cost of increased RAM consumption. In this case, all necessary log entries for replication will be copied to the temporary buffer and passed to the replication process. Buffered copies can be transferred to other cluster members without <em>read lock</em>.</p>
+<h2 id="log-compaction">Log Compaction</h2>
+<p>WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called <em>log compaction</em>. As a result, the snapshot is produced. <em>Snapshot</em> is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.</p>
+<p><code>PersistentState</code> offers the following compaction modes:</p>
+<ul>
+<li><em>Sequential</em> offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.</li>
+<li><em>Background</em> doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using <code>ForceCompactionAsync</code> method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.</li>
+<li><em>Foreground</em> is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.</li>
+</ul>
+<p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD.</p>
 <h1 id="interpreter-framework">Interpreter Framework</h1>
 <p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntry">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
 <p>There are two ways to do that:</p>
@@ -289,6 +342,13 @@ public class MyInterpreter : CommandInterpreter
 <li>The second parameter is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></li>
 <li>Must be public instance method</li>
 </ul>
+<p>The handler of the log snapshot must be decored with <code>CommandHandlerAttribute</code> as well with <code>IsSnapshotHandler</code> property assigned to <strong>true</strong>:</p>
+<pre><code class="lang-csharp">[CommandHandler(IsSnapshotHandler = true)]
+public async ValueTask HandleSnapshotAsync(LogSnapshot command, CancellationToken token)
+{
+}
+</code></pre>
+<p><code>LogSnapshot</code> here is a custom command describing a whole snapshot.</p>
 <p><code>CommandInterpreter</code> automatically discovers all declared command handlers and associated command types. Now the log entry can be appended easily:</p>
 <pre><code class="lang-csharp">MyInterpreter interpreter = ...;
 PersistentState state = ...;
