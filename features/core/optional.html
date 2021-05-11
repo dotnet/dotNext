@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="optional-type">Optional Type</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional</a> is a container which may or may not contain a value. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a> type can work with value types only. <code>Optional&lt;T&gt;</code> data type can work with reference and value type both.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional</a> is a container which may or may not contain a value. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a> type can work with value types only. <code>Optional&lt;T&gt;</code> data type can work with reference and value type both.</p>
 <p>The following example demonstrates usage of this type:</p>
 <pre><code class="lang-csharp">using DotNext;
 using DotNext.Collections.Generic;
@@ -89,7 +89,7 @@ value = i.Or(-1);   //returns -1 if i has no value
 value = i.OrDefault(); //returns default(int) if i has no value
 value = i.OrInvoke(() =&gt; 10); //calls lambda if i has no value
 </code></pre>
-<p><code>Nullable&lt;T&gt;</code> and <code>Optional&lt;T&gt;</code> are mutually convertible types with help of <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext/Optional">extension methods</a>.</p>
+<p><code>Nullable&lt;T&gt;</code> and <code>Optional&lt;T&gt;</code> are mutually convertible types with help of <a class="xref" href="https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Optional">extension methods</a>.</p>
 <h1 id="null-vs-undefined">Null vs Undefined</h1>
 <p>Let's take a look at the following code:</p>
 <pre><code class="lang-csharp">using DotNext;

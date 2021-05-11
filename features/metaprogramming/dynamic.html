@@ -69,7 +69,7 @@
 <h1 id="building-expression-trees">Building Expression Trees</h1>
 
 <p>The expression tree can be constructed using <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/using-type-dynamic">dynamic</a> type provided by C# programming language or similar feature in other .NET languages. As a result, expression tree looks like a true language expression or statement without method calls such as <code>Property()</code> or <code>Field()</code> for member access.</p>
-<p>This feature converts any dynamic expression into expression tree. The starting point is <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.0.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">ExpressionBuilder.AsDynamic</a> extension method. After all necessary manipulations with expression tree it is possible to convert dynamic type to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> type back again.</p>
+<p>This feature converts any dynamic expression into expression tree. The starting point is <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.1.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">ExpressionBuilder.AsDynamic</a> extension method. After all necessary manipulations with expression tree it is possible to convert dynamic type to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> type back again.</p>
 <pre><code class="lang-csharp">using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
 
