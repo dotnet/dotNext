@@ -1,413 +1,413 @@
 ﻿references:
 - uid: DotNext.Disposable`1
   name: Disposable`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Disposable%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Disposable%601
   fullName: DotNext.Disposable`1
 - uid: DotNext.Function`2
   name: Function`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%602
   fullName: DotNext.Function`2
 - uid: DotNext.Function`3
   name: Function`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%603
   fullName: DotNext.Function`3
 - uid: DotNext.Function
   name: Function
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Function
   fullName: DotNext.Function
 - uid: DotNext.Number`1
   name: Number`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Number%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Number%601
   fullName: DotNext.Number`1
 - uid: DotNext.Procedure`1
   name: Procedure`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%601
   fullName: DotNext.Procedure`1
 - uid: DotNext.Procedure`2
   name: Procedure`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%602
   fullName: DotNext.Procedure`2
 - uid: DotNext.Procedure
   name: Procedure
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure
   fullName: DotNext.Procedure
 - uid: DotNext.Runtime.CompilerServices.Awaitable`2
   name: Awaitable`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%602
   fullName: DotNext.Runtime.CompilerServices.Awaitable`2
 - uid: DotNext.Runtime.CompilerServices.Awaitable`3
   name: Awaitable`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%603
   fullName: DotNext.Runtime.CompilerServices.Awaitable`3
 - uid: DotNext.Runtime.CompilerServices.Awaiter`2
   name: Awaiter`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaiter%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaiter%602
   fullName: DotNext.Runtime.CompilerServices.Awaiter`2
 - uid: DotNext.Runtime.CompilerServices.Awaiter`1
   name: Awaiter`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaiter%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaiter%601
   fullName: DotNext.Runtime.CompilerServices.Awaiter`1
 - uid: DotNext.Runtime.CompilerServices.Concept
   name: Concept
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Concept
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Concept
   fullName: DotNext.Runtime.CompilerServices.Concept
 - uid: DotNext.Runtime.CompilerServices.ConceptAttribute
   name: ConceptAttribute
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConceptAttribute
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConceptAttribute
   fullName: DotNext.Runtime.CompilerServices.ConceptAttribute
 - uid: DotNext.Runtime.CompilerServices.ConstraintAttribute
   name: ConstraintAttribute
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConstraintAttribute
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConstraintAttribute
   fullName: DotNext.Runtime.CompilerServices.ConstraintAttribute
 - uid: DotNext.Runtime.CompilerServices.NotifyCompletion`1
   name: NotifyCompletion`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/NotifyCompletion%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/NotifyCompletion%601
   fullName: DotNext.Runtime.CompilerServices.NotifyCompletion`1
 - uid: DotNext.Reflection.BinaryOperator
   name: BinaryOperator
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/BinaryOperator
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/BinaryOperator
   fullName: DotNext.Reflection.BinaryOperator
 - uid: DotNext.Reflection.BinaryOperator`3
   name: BinaryOperator`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/BinaryOperator%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/BinaryOperator%603
   fullName: DotNext.Reflection.BinaryOperator`3
 - uid: DotNext.Reflection.ConstraintViolationException
   name: ConstraintViolationException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/ConstraintViolationException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/ConstraintViolationException
   fullName: DotNext.Reflection.ConstraintViolationException
 - uid: DotNext.Reflection.Constructor`1
   name: Constructor`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Constructor%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Constructor%601
   fullName: DotNext.Reflection.Constructor`1
 - uid: DotNext.Reflection.DynamicInvoker
   name: DynamicInvoker
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvoker
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvoker
   fullName: DotNext.Reflection.DynamicInvoker
 - uid: DotNext.Reflection.DynamicInvokerExtensions
   name: DynamicInvokerExtensions
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvokerExtensions
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvokerExtensions
   fullName: DotNext.Reflection.DynamicInvokerExtensions
 - uid: DotNext.Reflection.EventBase`1
   name: EventBase`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/EventBase%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/EventBase%601
   fullName: DotNext.Reflection.EventBase`1
 - uid: DotNext.Reflection.Event`1
   name: Event`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Event%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Event%601
   fullName: DotNext.Reflection.Event`1
 - uid: DotNext.Reflection.Event`2
   name: Event`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Event%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Event%602
   fullName: DotNext.Reflection.Event`2
 - uid: DotNext.Reflection.Event`2.Accessor
   name: Event`2.Accessor
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Event%602.Accessor
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Event%602.Accessor
   fullName: DotNext.Reflection.Event`2.Accessor
 - uid: DotNext.Reflection.ExtensionRegistry
   name: ExtensionRegistry
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/ExtensionRegistry
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/ExtensionRegistry
   fullName: DotNext.Reflection.ExtensionRegistry
 - uid: DotNext.Reflection.FieldBase`1
   name: FieldBase`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/FieldBase%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/FieldBase%601
   fullName: DotNext.Reflection.FieldBase`1
 - uid: DotNext.Reflection.Field`2
   name: Field`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%602
   fullName: DotNext.Reflection.Field`2
 - uid: DotNext.Reflection.Field`1
   name: Field`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%601
   fullName: DotNext.Reflection.Field`1
 - uid: DotNext.Reflection.IConstructor`1
   name: IConstructor`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IConstructor%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IConstructor%601
   fullName: DotNext.Reflection.IConstructor`1
 - uid: DotNext.Reflection.IEvent
   name: IEvent
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IEvent
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IEvent
   fullName: DotNext.Reflection.IEvent
 - uid: DotNext.Reflection.IEvent`1
   name: IEvent`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IEvent%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IEvent%601
   fullName: DotNext.Reflection.IEvent`1
 - uid: DotNext.Reflection.IEvent`2
   name: IEvent`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IEvent%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IEvent%602
   fullName: DotNext.Reflection.IEvent`2
 - uid: DotNext.Reflection.IField
   name: IField
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IField
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IField
   fullName: DotNext.Reflection.IField
 - uid: DotNext.Reflection.IField`1
   name: IField`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IField%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IField%601
   fullName: DotNext.Reflection.IField`1
 - uid: DotNext.Reflection.IField`2
   name: IField`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IField%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IField%602
   fullName: DotNext.Reflection.IField`2
 - uid: DotNext.Reflection.IMember`1
   name: IMember`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMember%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMember%601
   fullName: DotNext.Reflection.IMember`1
 - uid: DotNext.Reflection.IMember`2
   name: IMember`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMember%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMember%602
   fullName: DotNext.Reflection.IMember`2
 - uid: DotNext.Reflection.Member
   name: Member
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Member
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Member
   fullName: DotNext.Reflection.Member
 - uid: DotNext.Reflection.IMethod`2
   name: IMethod`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMethod%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMethod%602
   fullName: DotNext.Reflection.IMethod`2
 - uid: DotNext.Reflection.IMethod`1
   name: IMethod`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMethod%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IMethod%601
   fullName: DotNext.Reflection.IMethod`1
 - uid: DotNext.Reflection.IndexerBase`2
   name: IndexerBase`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IndexerBase%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IndexerBase%602
   fullName: DotNext.Reflection.IndexerBase`2
 - uid: DotNext.Reflection.Indexer`2
   name: Indexer`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%602
   fullName: DotNext.Reflection.Indexer`2
 - uid: DotNext.Reflection.Indexer`2.Getter
   name: Indexer`2.Getter
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%602.Getter
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%602.Getter
   fullName: DotNext.Reflection.Indexer`2.Getter
 - uid: DotNext.Reflection.Indexer`2.Setter
   name: Indexer`2.Setter
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%602.Setter
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%602.Setter
   fullName: DotNext.Reflection.Indexer`2.Setter
 - uid: DotNext.Reflection.Indexer`3
   name: Indexer`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%603
   fullName: DotNext.Reflection.Indexer`3
 - uid: DotNext.Reflection.Indexer`3.Getter
   name: Indexer`3.Getter
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%603.Getter
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%603.Getter
   fullName: DotNext.Reflection.Indexer`3.Getter
 - uid: DotNext.Reflection.Indexer`3.Setter
   name: Indexer`3.Setter
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%603.Setter
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Indexer%603.Setter
   fullName: DotNext.Reflection.Indexer`3.Setter
 - uid: DotNext.Reflection.IOperator`1
   name: IOperator`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IOperator%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IOperator%601
   fullName: DotNext.Reflection.IOperator`1
 - uid: DotNext.Reflection.IProperty
   name: IProperty
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IProperty
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IProperty
   fullName: DotNext.Reflection.IProperty
 - uid: DotNext.Reflection.IProperty`1
   name: IProperty`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IProperty%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IProperty%601
   fullName: DotNext.Reflection.IProperty`1
 - uid: DotNext.Reflection.IProperty`2
   name: IProperty`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IProperty%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/IProperty%602
   fullName: DotNext.Reflection.IProperty`2
 - uid: DotNext.Reflection.MemberGetter`1
   name: MemberGetter`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberGetter%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberGetter%601
   fullName: DotNext.Reflection.MemberGetter`1
 - uid: DotNext.Reflection.MemberSetter`1
   name: MemberSetter`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberSetter%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberSetter%601
   fullName: DotNext.Reflection.MemberSetter`1
 - uid: DotNext.Reflection.MemberGetter`2
   name: MemberGetter`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberGetter%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberGetter%602
   fullName: DotNext.Reflection.MemberGetter`2
 - uid: DotNext.Reflection.MemberSetter`2
   name: MemberSetter`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberSetter%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MemberSetter%602
   fullName: DotNext.Reflection.MemberSetter`2
 - uid: DotNext.Reflection.Method`1
   name: Method`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Method%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Method%601
   fullName: DotNext.Reflection.Method`1
 - uid: DotNext.Reflection.MethodLookup
   name: MethodLookup
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MethodLookup
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MethodLookup
   fullName: DotNext.Reflection.MethodLookup
 - uid: DotNext.Reflection.MissingAttributeException
   name: MissingAttributeException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingAttributeException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingAttributeException
   fullName: DotNext.Reflection.MissingAttributeException
 - uid: DotNext.Reflection.MissingConstructorException
   name: MissingConstructorException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingConstructorException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingConstructorException
   fullName: DotNext.Reflection.MissingConstructorException
 - uid: DotNext.Reflection.MissingEventException
   name: MissingEventException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingEventException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingEventException
   fullName: DotNext.Reflection.MissingEventException
 - uid: DotNext.Reflection.MissingFieldException
   name: MissingFieldException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingFieldException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingFieldException
   fullName: DotNext.Reflection.MissingFieldException
 - uid: DotNext.Reflection.MissingMethodException
   name: MissingMethodException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingMethodException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingMethodException
   fullName: DotNext.Reflection.MissingMethodException
 - uid: DotNext.Reflection.MissingOperatorException
   name: MissingOperatorException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingOperatorException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingOperatorException
   fullName: DotNext.Reflection.MissingOperatorException
 - uid: DotNext.Reflection.MissingPropertyException
   name: MissingPropertyException
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingPropertyException
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingPropertyException
   fullName: DotNext.Reflection.MissingPropertyException
 - uid: DotNext.Reflection.Operator`1
   name: Operator`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Operator%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Operator%601
   fullName: DotNext.Reflection.Operator`1
 - uid: DotNext.Reflection.Operator`2
   name: Operator`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Operator%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Operator%602
   fullName: DotNext.Reflection.Operator`2
 - uid: DotNext.Reflection.Operator`3
   name: Operator`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Operator%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Operator%603
   fullName: DotNext.Reflection.Operator`3
 - uid: DotNext.Reflection.OperatorLookup
   name: OperatorLookup
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/OperatorLookup
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/OperatorLookup
   fullName: DotNext.Reflection.OperatorLookup
 - uid: DotNext.Reflection.PropertyBase`1
   name: PropertyBase`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/PropertyBase%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/PropertyBase%601
   fullName: DotNext.Reflection.PropertyBase`1
 - uid: DotNext.Reflection.Property`1
   name: Property`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Property%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Property%601
   fullName: DotNext.Reflection.Property`1
 - uid: DotNext.Reflection.Property`2
   name: Property`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Property%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Property%602
   fullName: DotNext.Reflection.Property`2
 - uid: DotNext.Reflection.Ref`1
   name: Ref`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Ref%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Ref%601
   fullName: DotNext.Reflection.Ref`1
 - uid: DotNext.Reflection.Reflector
   name: Reflector
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Reflector
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Reflector
   fullName: DotNext.Reflection.Reflector
 - uid: DotNext.Reflection.Type`1
   name: Type`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601
   fullName: DotNext.Reflection.Type`1
 - uid: DotNext.Reflection.Type`1.Attribute`1
   name: Type`1.Attribute`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Attribute%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Attribute%601
   fullName: DotNext.Reflection.Type`1.Attribute`1
 - uid: DotNext.Reflection.Type`1.Constructor
   name: Type`1.Constructor
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor
   fullName: DotNext.Reflection.Type`1.Constructor
 - uid: DotNext.Reflection.Type`1.Constructor`1
   name: Type`1.Constructor`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%601
   fullName: DotNext.Reflection.Type`1.Constructor`1
 - uid: DotNext.Reflection.Type`1.Constructor`2
   name: Type`1.Constructor`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%602
   fullName: DotNext.Reflection.Type`1.Constructor`2
 - uid: DotNext.Reflection.Type`1.Constructor`3
   name: Type`1.Constructor`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%603
   fullName: DotNext.Reflection.Type`1.Constructor`3
 - uid: DotNext.Reflection.Type`1.Constructor`4
   name: Type`1.Constructor`4
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%604
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%604
   fullName: DotNext.Reflection.Type`1.Constructor`4
 - uid: DotNext.Reflection.Type`1.Constructor`5
   name: Type`1.Constructor`5
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%605
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%605
   fullName: DotNext.Reflection.Type`1.Constructor`5
 - uid: DotNext.Reflection.Type`1.Constructor`6
   name: Type`1.Constructor`6
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%606
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%606
   fullName: DotNext.Reflection.Type`1.Constructor`6
 - uid: DotNext.Reflection.Type`1.Constructor`7
   name: Type`1.Constructor`7
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%607
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%607
   fullName: DotNext.Reflection.Type`1.Constructor`7
 - uid: DotNext.Reflection.Type`1.Constructor`8
   name: Type`1.Constructor`8
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%608
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%608
   fullName: DotNext.Reflection.Type`1.Constructor`8
 - uid: DotNext.Reflection.Type`1.Constructor`9
   name: Type`1.Constructor`9
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%609
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%609
   fullName: DotNext.Reflection.Type`1.Constructor`9
 - uid: DotNext.Reflection.Type`1.Constructor`10
   name: Type`1.Constructor`10
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%6010
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Constructor%6010
   fullName: DotNext.Reflection.Type`1.Constructor`10
 - uid: DotNext.Reflection.Type`1.Event`1
   name: Type`1.Event`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Event%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Event%601
   fullName: DotNext.Reflection.Type`1.Event`1
 - uid: DotNext.Reflection.Type`1.Field`1
   name: Type`1.Field`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Field%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Field%601
   fullName: DotNext.Reflection.Type`1.Field`1
 - uid: DotNext.Reflection.Type`1.Indexer`2
   name: Type`1.Indexer`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Indexer%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Indexer%602
   fullName: DotNext.Reflection.Type`1.Indexer`2
 - uid: DotNext.Reflection.Type`1.Method
   name: Type`1.Method
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method
   fullName: DotNext.Reflection.Type`1.Method
 - uid: DotNext.Reflection.Type`1.Method`1
   name: Type`1.Method`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%601
   fullName: DotNext.Reflection.Type`1.Method`1
 - uid: DotNext.Reflection.Type`1.Method`2
   name: Type`1.Method`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%602
   fullName: DotNext.Reflection.Type`1.Method`2
 - uid: DotNext.Reflection.Type`1.Method`3
   name: Type`1.Method`3
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%603
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%603
   fullName: DotNext.Reflection.Type`1.Method`3
 - uid: DotNext.Reflection.Type`1.Method`4
   name: Type`1.Method`4
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%604
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%604
   fullName: DotNext.Reflection.Type`1.Method`4
 - uid: DotNext.Reflection.Type`1.Method`5
   name: Type`1.Method`5
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%605
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%605
   fullName: DotNext.Reflection.Type`1.Method`5
 - uid: DotNext.Reflection.Type`1.Method`6
   name: Type`1.Method`6
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%606
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Method%606
   fullName: DotNext.Reflection.Type`1.Method`6
 - uid: DotNext.Reflection.Type`1.Operator
   name: Type`1.Operator
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Operator
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Operator
   fullName: DotNext.Reflection.Type`1.Operator
 - uid: DotNext.Reflection.Type`1.Operator`1
   name: Type`1.Operator`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Operator%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Operator%601
   fullName: DotNext.Reflection.Type`1.Operator`1
 - uid: DotNext.Reflection.Type`1.Property`1
   name: Type`1.Property`1
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Property%601
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Property%601
   fullName: DotNext.Reflection.Type`1.Property`1
 - uid: DotNext.Reflection.UnaryOperator
   name: UnaryOperator
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/UnaryOperator
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/UnaryOperator
   fullName: DotNext.Reflection.UnaryOperator
 - uid: DotNext.Reflection.UnaryOperator`2
   name: UnaryOperator`2
-  href: https://fuget.org/packages/DotNext.Reflection/3.1.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/UnaryOperator%602
+  href: https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/UnaryOperator%602
   fullName: DotNext.Reflection.UnaryOperator`2

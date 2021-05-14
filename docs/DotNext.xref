@@ -1,629 +1,629 @@
 ﻿references:
 - uid: DotNext.BitwiseComparer`1
   name: BitwiseComparer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601
   fullName: DotNext.BitwiseComparer`1
 - uid: DotNext.BoundType
   name: BoundType
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/BoundType
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/BoundType
   fullName: DotNext.BoundType
 - uid: DotNext.Comparison
   name: Comparison
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Comparison
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Comparison
   fullName: DotNext.Comparison
 - uid: DotNext.Converter
   name: Converter
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Converter
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Converter
   fullName: DotNext.Converter
 - uid: DotNext.DelegateHelpers
   name: DelegateHelpers
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/DelegateHelpers
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/DelegateHelpers
   fullName: DotNext.DelegateHelpers
 - uid: DotNext.Disposable
   name: Disposable
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Disposable
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Disposable
   fullName: DotNext.Disposable
 - uid: DotNext.EnumConverter
   name: EnumConverter
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/EnumConverter
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/EnumConverter
   fullName: DotNext.EnumConverter
 - uid: DotNext.EqualityComparerBuilder`1
   name: EqualityComparerBuilder`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/EqualityComparerBuilder%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/EqualityComparerBuilder%601
   fullName: DotNext.EqualityComparerBuilder`1
 - uid: DotNext.Func
   name: Func
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Func
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Func
   fullName: DotNext.Func
 - uid: DotNext.GenericArgumentException
   name: GenericArgumentException
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/GenericArgumentException
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/GenericArgumentException
   fullName: DotNext.GenericArgumentException
 - uid: DotNext.GenericArgumentException`1
   name: GenericArgumentException`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/GenericArgumentException%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/GenericArgumentException%601
   fullName: DotNext.GenericArgumentException`1
 - uid: DotNext.IConsumer`1
   name: IConsumer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/IConsumer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/IConsumer%601
   fullName: DotNext.IConsumer`1
 - uid: DotNext.Consumer`1
   name: Consumer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Consumer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Consumer%601
   fullName: DotNext.Consumer`1
 - uid: DotNext.ConsumerClosure`2
   name: ConsumerClosure`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ConsumerClosure%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ConsumerClosure%602
   fullName: DotNext.ConsumerClosure`2
 - uid: DotNext.DelegatingConsumer`1
   name: DelegatingConsumer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/DelegatingConsumer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/DelegatingConsumer%601
   fullName: DotNext.DelegatingConsumer`1
 - uid: DotNext.ISupplier`1
   name: ISupplier`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ISupplier%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ISupplier%601
   fullName: DotNext.ISupplier`1
 - uid: DotNext.Supplier`1
   name: Supplier`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Supplier%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Supplier%601
   fullName: DotNext.Supplier`1
 - uid: DotNext.Activator`1
   name: Activator`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Activator%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Activator%601
   fullName: DotNext.Activator`1
 - uid: DotNext.SupplierClosure`2
   name: SupplierClosure`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/SupplierClosure%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/SupplierClosure%602
   fullName: DotNext.SupplierClosure`2
 - uid: DotNext.DelegatingSupplier`1
   name: DelegatingSupplier`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/DelegatingSupplier%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/DelegatingSupplier%601
   fullName: DotNext.DelegatingSupplier`1
 - uid: DotNext.ISupplier`2
   name: ISupplier`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ISupplier%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ISupplier%602
   fullName: DotNext.ISupplier`2
 - uid: DotNext.Supplier`2
   name: Supplier`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Supplier%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Supplier%602
   fullName: DotNext.Supplier`2
 - uid: DotNext.SupplierClosure`3
   name: SupplierClosure`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/SupplierClosure%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/SupplierClosure%603
   fullName: DotNext.SupplierClosure`3
 - uid: DotNext.DelegatingSupplier`2
   name: DelegatingSupplier`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/DelegatingSupplier%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/DelegatingSupplier%602
   fullName: DotNext.DelegatingSupplier`2
 - uid: DotNext.ISupplier`3
   name: ISupplier`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ISupplier%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ISupplier%603
   fullName: DotNext.ISupplier`3
 - uid: DotNext.Supplier`3
   name: Supplier`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Supplier%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Supplier%603
   fullName: DotNext.Supplier`3
 - uid: DotNext.SupplierClosure`4
   name: SupplierClosure`4
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/SupplierClosure%604
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/SupplierClosure%604
   fullName: DotNext.SupplierClosure`4
 - uid: DotNext.DelegatingSupplier`3
   name: DelegatingSupplier`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/DelegatingSupplier%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/DelegatingSupplier%603
   fullName: DotNext.DelegatingSupplier`3
 - uid: DotNext.ObjectExtensions
   name: ObjectExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ObjectExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ObjectExtensions
   fullName: DotNext.ObjectExtensions
 - uid: DotNext.OneDimensionalArray
   name: OneDimensionalArray
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray
   fullName: DotNext.OneDimensionalArray
 - uid: DotNext.Optional
   name: Optional
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Optional
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Optional
   fullName: DotNext.Optional
 - uid: DotNext.Optional`1
   name: Optional`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Optional%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Optional%601
   fullName: DotNext.Optional`1
 - uid: DotNext.Predicate
   name: Predicate
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Predicate
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Predicate
   fullName: DotNext.Predicate
 - uid: DotNext.RandomExtensions
   name: RandomExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/RandomExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/RandomExtensions
   fullName: DotNext.RandomExtensions
 - uid: DotNext.RefAction`2
   name: RefAction`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/RefAction%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/RefAction%602
   fullName: DotNext.RefAction`2
 - uid: DotNext.RefFunc`3
   name: RefFunc`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/RefFunc%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/RefFunc%603
   fullName: DotNext.RefFunc`3
 - uid: DotNext.Result
   name: Result
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Result
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Result
   fullName: DotNext.Result
 - uid: DotNext.Result`1
   name: Result`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Result%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Result%601
   fullName: DotNext.Result`1
 - uid: DotNext.ServiceProviderFactory
   name: ServiceProviderFactory
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ServiceProviderFactory
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ServiceProviderFactory
   fullName: DotNext.ServiceProviderFactory
 - uid: DotNext.ServiceProviderFactory.Builder
   name: ServiceProviderFactory.Builder
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ServiceProviderFactory.Builder
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ServiceProviderFactory.Builder
   fullName: DotNext.ServiceProviderFactory.Builder
 - uid: DotNext.Span
   name: Span
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/Span
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Span
   fullName: DotNext.Span
 - uid: DotNext.StringExtensions
   name: StringExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/StringExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/StringExtensions
   fullName: DotNext.StringExtensions
 - uid: DotNext.UserDataSlot`1
   name: UserDataSlot`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/UserDataSlot%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/UserDataSlot%601
   fullName: DotNext.UserDataSlot`1
 - uid: DotNext.UserDataStorage
   name: UserDataStorage
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/UserDataStorage
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/UserDataStorage
   fullName: DotNext.UserDataStorage
 - uid: DotNext.UserDataStorage.IContainer
   name: UserDataStorage.IContainer
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/UserDataStorage.IContainer
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/UserDataStorage.IContainer
   fullName: DotNext.UserDataStorage.IContainer
 - uid: DotNext.ValueTypeExtensions
   name: ValueTypeExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext/ValueTypeExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ValueTypeExtensions
   fullName: DotNext.ValueTypeExtensions
 - uid: DotNext.VariantType.IVariant
   name: IVariant
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.VariantType/IVariant
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.VariantType/IVariant
   fullName: DotNext.VariantType.IVariant
 - uid: DotNext.VariantType.Variant`2
   name: Variant`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.VariantType/Variant%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.VariantType/Variant%602
   fullName: DotNext.VariantType.Variant`2
 - uid: DotNext.VariantType.Variant`3
   name: Variant`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.VariantType/Variant%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.VariantType/Variant%603
   fullName: DotNext.VariantType.Variant`3
 - uid: DotNext.VariantType.Variant`4
   name: Variant`4
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.VariantType/Variant%604
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.VariantType/Variant%604
   fullName: DotNext.VariantType.Variant`4
 - uid: DotNext.Threading.AsyncDelegate
   name: AsyncDelegate
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AsyncDelegate
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AsyncDelegate
   fullName: DotNext.Threading.AsyncDelegate
 - uid: DotNext.Threading.Atomic`1
   name: Atomic`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601
   fullName: DotNext.Threading.Atomic`1
 - uid: DotNext.Threading.Atomic`1.Updater
   name: Atomic`1.Updater
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601.Updater
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601.Updater
   fullName: DotNext.Threading.Atomic`1.Updater
 - uid: DotNext.Threading.Atomic`1.Accumulator
   name: Atomic`1.Accumulator
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601.Accumulator
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601.Accumulator
   fullName: DotNext.Threading.Atomic`1.Accumulator
 - uid: DotNext.Threading.AtomicBoolean
   name: AtomicBoolean
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicBoolean
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicBoolean
   fullName: DotNext.Threading.AtomicBoolean
 - uid: DotNext.Threading.AtomicDouble
   name: AtomicDouble
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicDouble
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicDouble
   fullName: DotNext.Threading.AtomicDouble
 - uid: DotNext.Threading.AtomicEnum
   name: AtomicEnum
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicEnum
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicEnum
   fullName: DotNext.Threading.AtomicEnum
 - uid: DotNext.Threading.AtomicEnum`1
   name: AtomicEnum`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicEnum%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicEnum%601
   fullName: DotNext.Threading.AtomicEnum`1
 - uid: DotNext.Threading.AtomicInt32
   name: AtomicInt32
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicInt32
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicInt32
   fullName: DotNext.Threading.AtomicInt32
 - uid: DotNext.Threading.AtomicInt64
   name: AtomicInt64
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicInt64
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicInt64
   fullName: DotNext.Threading.AtomicInt64
 - uid: DotNext.Threading.AtomicIntPtr
   name: AtomicIntPtr
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicIntPtr
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicIntPtr
   fullName: DotNext.Threading.AtomicIntPtr
 - uid: DotNext.Threading.AtomicReference
   name: AtomicReference
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicReference
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicReference
   fullName: DotNext.Threading.AtomicReference
 - uid: DotNext.Threading.AtomicSingle
   name: AtomicSingle
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicSingle
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicSingle
   fullName: DotNext.Threading.AtomicSingle
 - uid: DotNext.Threading.AtomicUInt32
   name: AtomicUInt32
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicUInt32
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicUInt32
   fullName: DotNext.Threading.AtomicUInt32
 - uid: DotNext.Threading.AtomicUInt64
   name: AtomicUInt64
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicUInt64
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AtomicUInt64
   fullName: DotNext.Threading.AtomicUInt64
 - uid: DotNext.Threading.Lock
   name: Lock
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Lock
   fullName: DotNext.Threading.Lock
 - uid: DotNext.Threading.Lock.Holder
   name: Lock.Holder
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock.Holder
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Lock.Holder
   fullName: DotNext.Threading.Lock.Holder
 - uid: DotNext.Threading.LockAcquisition
   name: LockAcquisition
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition
   fullName: DotNext.Threading.LockAcquisition
 - uid: DotNext.Threading.ReaderWriterSpinLock
   name: ReaderWriterSpinLock
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/ReaderWriterSpinLock
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/ReaderWriterSpinLock
   fullName: DotNext.Threading.ReaderWriterSpinLock
 - uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp
   name: ReaderWriterSpinLock.LockStamp
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/ReaderWriterSpinLock.LockStamp
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/ReaderWriterSpinLock.LockStamp
   fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp
 - uid: DotNext.Threading.ThreadPoolWorkItemFactory
   name: ThreadPoolWorkItemFactory
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/ThreadPoolWorkItemFactory
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/ThreadPoolWorkItemFactory
   fullName: DotNext.Threading.ThreadPoolWorkItemFactory
 - uid: DotNext.Threading.Timeout
   name: Timeout
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading/Timeout
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Timeout
   fullName: DotNext.Threading.Timeout
 - uid: DotNext.Threading.Tasks.CompletedTask`2
   name: CompletedTask`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/CompletedTask%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/CompletedTask%602
   fullName: DotNext.Threading.Tasks.CompletedTask`2
 - uid: DotNext.Threading.Tasks.Continuation
   name: Continuation
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Continuation
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Continuation
   fullName: DotNext.Threading.Tasks.Continuation
 - uid: DotNext.Threading.Tasks.Conversion
   name: Conversion
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Conversion
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Conversion
   fullName: DotNext.Threading.Tasks.Conversion
 - uid: DotNext.Threading.Tasks.DynamicTaskAwaitable
   name: DynamicTaskAwaitable
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/DynamicTaskAwaitable
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/DynamicTaskAwaitable
   fullName: DotNext.Threading.Tasks.DynamicTaskAwaitable
 - uid: DotNext.Threading.Tasks.DynamicTaskAwaitable.Awaiter
   name: DynamicTaskAwaitable.Awaiter
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/DynamicTaskAwaitable.Awaiter
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/DynamicTaskAwaitable.Awaiter
   fullName: DotNext.Threading.Tasks.DynamicTaskAwaitable.Awaiter
 - uid: DotNext.Threading.Tasks.IFuture
   name: IFuture
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/IFuture
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/IFuture
   fullName: DotNext.Threading.Tasks.IFuture
 - uid: DotNext.Threading.Tasks.Synchronization
   name: Synchronization
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Synchronization
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Synchronization
   fullName: DotNext.Threading.Tasks.Synchronization
 - uid: DotNext.Text.Base64Decoder
   name: Base64Decoder
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Text/Base64Decoder
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Text/Base64Decoder
   fullName: DotNext.Text.Base64Decoder
 - uid: DotNext.Text.EncodingExtensions
   name: EncodingExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Text/EncodingExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Text/EncodingExtensions
   fullName: DotNext.Text.EncodingExtensions
 - uid: DotNext.Runtime.Box`1
   name: Box`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Box%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Runtime/Box%601
   fullName: DotNext.Runtime.Box`1
 - uid: DotNext.Runtime.Intrinsics
   name: Intrinsics
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics
   fullName: DotNext.Runtime.Intrinsics
 - uid: DotNext.Runtime.InteropServices.SafeBufferExtensions
   name: SafeBufferExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Runtime.InteropServices/SafeBufferExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Runtime.InteropServices/SafeBufferExtensions
   fullName: DotNext.Runtime.InteropServices.SafeBufferExtensions
 - uid: DotNext.Runtime.CompilerServices.CallerMustBeSynchronizedAttribute
   name: CallerMustBeSynchronizedAttribute
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Runtime.CompilerServices/CallerMustBeSynchronizedAttribute
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Runtime.CompilerServices/CallerMustBeSynchronizedAttribute
   fullName: DotNext.Runtime.CompilerServices.CallerMustBeSynchronizedAttribute
 - uid: DotNext.Runtime.CompilerServices.FunctionalInterfaceAttribute
   name: FunctionalInterfaceAttribute
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Runtime.CompilerServices/FunctionalInterfaceAttribute
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Runtime.CompilerServices/FunctionalInterfaceAttribute
   fullName: DotNext.Runtime.CompilerServices.FunctionalInterfaceAttribute
 - uid: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute
   name: RuntimeFeaturesAttribute
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Runtime.CompilerServices/RuntimeFeaturesAttribute
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Runtime.CompilerServices/RuntimeFeaturesAttribute
   fullName: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute
 - uid: DotNext.Resources.ResourceEntry
   name: ResourceEntry
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Resources/ResourceEntry
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Resources/ResourceEntry
   fullName: DotNext.Resources.ResourceEntry
 - uid: DotNext.Resources.ResourceManagerExtensions
   name: ResourceManagerExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Resources/ResourceManagerExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Resources/ResourceManagerExtensions
   fullName: DotNext.Resources.ResourceManagerExtensions
 - uid: DotNext.Reflection.CollectionType
   name: CollectionType
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/CollectionType
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/CollectionType
   fullName: DotNext.Reflection.CollectionType
 - uid: DotNext.Reflection.CustomAttribute
   name: CustomAttribute
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/CustomAttribute
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/CustomAttribute
   fullName: DotNext.Reflection.CustomAttribute
 - uid: DotNext.Reflection.DelegateType
   name: DelegateType
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/DelegateType
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/DelegateType
   fullName: DotNext.Reflection.DelegateType
 - uid: DotNext.Reflection.DisposableType
   name: DisposableType
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/DisposableType
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/DisposableType
   fullName: DotNext.Reflection.DisposableType
 - uid: DotNext.Reflection.EnumType
   name: EnumType
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/EnumType
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/EnumType
   fullName: DotNext.Reflection.EnumType
 - uid: DotNext.Reflection.MethodExtensions
   name: MethodExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/MethodExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/MethodExtensions
   fullName: DotNext.Reflection.MethodExtensions
 - uid: DotNext.Reflection.TaskType
   name: TaskType
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/TaskType
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/TaskType
   fullName: DotNext.Reflection.TaskType
 - uid: DotNext.Reflection.TypeExtensions
   name: TypeExtensions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Reflection/TypeExtensions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Reflection/TypeExtensions
   fullName: DotNext.Reflection.TypeExtensions
 - uid: DotNext.Net.NetworkInformation.MtuDiscovery
   name: MtuDiscovery
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Net.NetworkInformation/MtuDiscovery
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Net.NetworkInformation/MtuDiscovery
   fullName: DotNext.Net.NetworkInformation.MtuDiscovery
 - uid: DotNext.Net.NetworkInformation.MtuDiscoveryOptions
   name: MtuDiscoveryOptions
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Net.NetworkInformation/MtuDiscoveryOptions
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Net.NetworkInformation/MtuDiscoveryOptions
   fullName: DotNext.Net.NetworkInformation.MtuDiscoveryOptions
 - uid: DotNext.IO.IFlushable
   name: IFlushable
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.IO/IFlushable
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.IO/IFlushable
   fullName: DotNext.IO.IFlushable
 - uid: DotNext.IO.StreamConsumer
   name: StreamConsumer
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.IO/StreamConsumer
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.IO/StreamConsumer
   fullName: DotNext.IO.StreamConsumer
 - uid: DotNext.IO.StreamSource
   name: StreamSource
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.IO/StreamSource
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.IO/StreamSource
   fullName: DotNext.IO.StreamSource
 - uid: DotNext.IO.TextConsumer
   name: TextConsumer
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.IO/TextConsumer
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.IO/TextConsumer
   fullName: DotNext.IO.TextConsumer
 - uid: DotNext.Generic.BooleanConst
   name: BooleanConst
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst
   fullName: DotNext.Generic.BooleanConst
 - uid: DotNext.Generic.BooleanConst.True
   name: BooleanConst.True
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst.True
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst.True
   fullName: DotNext.Generic.BooleanConst.True
 - uid: DotNext.Generic.BooleanConst.False
   name: BooleanConst.False
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst.False
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst.False
   fullName: DotNext.Generic.BooleanConst.False
 - uid: DotNext.Generic.Constant`1
   name: Constant`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Constant%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Constant%601
   fullName: DotNext.Generic.Constant`1
 - uid: DotNext.Generic.DefaultConst`1
   name: DefaultConst`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/DefaultConst%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/DefaultConst%601
   fullName: DotNext.Generic.DefaultConst`1
 - uid: DotNext.Generic.Int32Const
   name: Int32Const
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const
   fullName: DotNext.Generic.Int32Const
 - uid: DotNext.Generic.Int32Const.Zero
   name: Int32Const.Zero
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const.Zero
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const.Zero
   fullName: DotNext.Generic.Int32Const.Zero
 - uid: DotNext.Generic.Int32Const.Max
   name: Int32Const.Max
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const.Max
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const.Max
   fullName: DotNext.Generic.Int32Const.Max
 - uid: DotNext.Generic.Int32Const.Min
   name: Int32Const.Min
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const.Min
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const.Min
   fullName: DotNext.Generic.Int32Const.Min
 - uid: DotNext.Generic.Int64Const
   name: Int64Const
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const
   fullName: DotNext.Generic.Int64Const
 - uid: DotNext.Generic.Int64Const.Zero
   name: Int64Const.Zero
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const.Zero
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const.Zero
   fullName: DotNext.Generic.Int64Const.Zero
 - uid: DotNext.Generic.Int64Const.Max
   name: Int64Const.Max
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const.Max
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const.Max
   fullName: DotNext.Generic.Int64Const.Max
 - uid: DotNext.Generic.Int64Const.Min
   name: Int64Const.Min
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const.Min
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const.Min
   fullName: DotNext.Generic.Int64Const.Min
 - uid: DotNext.Generic.StringConst
   name: StringConst
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst
   fullName: DotNext.Generic.StringConst
 - uid: DotNext.Generic.StringConst.Null
   name: StringConst.Null
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst.Null
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst.Null
   fullName: DotNext.Generic.StringConst.Null
 - uid: DotNext.Generic.StringConst.Empty
   name: StringConst.Empty
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst.Empty
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst.Empty
   fullName: DotNext.Generic.StringConst.Empty
 - uid: DotNext.Diagnostics.Timestamp
   name: Timestamp
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Diagnostics/Timestamp
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Diagnostics/Timestamp
   fullName: DotNext.Diagnostics.Timestamp
 - uid: DotNext.Collections.Generic.Collection
   name: Collection
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Collection
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Collection
   fullName: DotNext.Collections.Generic.Collection
 - uid: DotNext.Collections.Generic.Dictionary
   name: Dictionary
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Dictionary
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Dictionary
   fullName: DotNext.Collections.Generic.Dictionary
 - uid: DotNext.Collections.Generic.Dictionary.Indexer`2
   name: Dictionary.Indexer`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Dictionary.Indexer%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Dictionary.Indexer%602
   fullName: DotNext.Collections.Generic.Dictionary.Indexer`2
 - uid: DotNext.Collections.Generic.List
   name: List
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/List
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/List
   fullName: DotNext.Collections.Generic.List
 - uid: DotNext.Collections.Generic.List.Indexer`1
   name: List.Indexer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/List.Indexer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/List.Indexer%601
   fullName: DotNext.Collections.Generic.List.Indexer`1
 - uid: DotNext.Collections.Generic.ListSegment`1
   name: ListSegment`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ListSegment%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ListSegment%601
   fullName: DotNext.Collections.Generic.ListSegment`1
 - uid: DotNext.Collections.Generic.ReadOnlyCollectionView`2
   name: ReadOnlyCollectionView`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyCollectionView%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyCollectionView%602
   fullName: DotNext.Collections.Generic.ReadOnlyCollectionView`2
 - uid: DotNext.Collections.Generic.ReadOnlyDictionaryView`3
   name: ReadOnlyDictionaryView`3
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyDictionaryView%603
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyDictionaryView%603
   fullName: DotNext.Collections.Generic.ReadOnlyDictionaryView`3
 - uid: DotNext.Collections.Generic.ReadOnlyListView`2
   name: ReadOnlyListView`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyListView%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyListView%602
   fullName: DotNext.Collections.Generic.ReadOnlyListView`2
 - uid: DotNext.Collections.Generic.Sequence
   name: Sequence
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence
   fullName: DotNext.Collections.Generic.Sequence
 - uid: DotNext.Collections.Generic.Sequence.AsyncGenerator`1
   name: Sequence.AsyncGenerator`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.AsyncGenerator%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.AsyncGenerator%601
   fullName: DotNext.Collections.Generic.Sequence.AsyncGenerator`1
 - uid: DotNext.Collections.Generic.Sequence.ConsumingEnumerable`1
   name: Sequence.ConsumingEnumerable`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.ConsumingEnumerable%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.ConsumingEnumerable%601
   fullName: DotNext.Collections.Generic.Sequence.ConsumingEnumerable`1
 - uid: DotNext.Collections.Generic.Sequence.ConsumingEnumerable`1.Enumerator
   name: Sequence.ConsumingEnumerable`1.Enumerator
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.ConsumingEnumerable%601.Enumerator
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.ConsumingEnumerable%601.Enumerator
   fullName: DotNext.Collections.Generic.Sequence.ConsumingEnumerable`1.Enumerator
 - uid: DotNext.Collections.Generic.Sequence.Generator`1
   name: Sequence.Generator`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.Generator%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.Generator%601
   fullName: DotNext.Collections.Generic.Sequence.Generator`1
 - uid: DotNext.Collections.Generic.Sequence.Generator`1.Enumerator
   name: Sequence.Generator`1.Enumerator
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.Generator%601.Enumerator
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.Generator%601.Enumerator
   fullName: DotNext.Collections.Generic.Sequence.Generator`1.Enumerator
 - uid: DotNext.Collections.Generic.Sequence.LimitedEnumerator`1
   name: Sequence.LimitedEnumerator`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.LimitedEnumerator%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence.LimitedEnumerator%601
   fullName: DotNext.Collections.Generic.Sequence.LimitedEnumerator`1
 - uid: DotNext.Buffers.BufferHelpers
   name: BufferHelpers
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferHelpers
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferHelpers
   fullName: DotNext.Buffers.BufferHelpers
 - uid: DotNext.Buffers.BufferWriter`1
   name: BufferWriter`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriter%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriter%601
   fullName: DotNext.Buffers.BufferWriter`1
 - uid: DotNext.Buffers.BufferWriterSlim`1
   name: BufferWriterSlim`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601
   fullName: DotNext.Buffers.BufferWriterSlim`1
 - uid: DotNext.Buffers.IGrowableBuffer`1
   name: IGrowableBuffer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/IGrowableBuffer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/IGrowableBuffer%601
   fullName: DotNext.Buffers.IGrowableBuffer`1
 - uid: DotNext.Buffers.IReadOnlySpanConsumer`1
   name: IReadOnlySpanConsumer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/IReadOnlySpanConsumer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/IReadOnlySpanConsumer%601
   fullName: DotNext.Buffers.IReadOnlySpanConsumer`1
 - uid: DotNext.Buffers.ReadOnlySpanConsumer`2
   name: ReadOnlySpanConsumer`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/ReadOnlySpanConsumer%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/ReadOnlySpanConsumer%602
   fullName: DotNext.Buffers.ReadOnlySpanConsumer`2
 - uid: DotNext.Buffers.DelegatingReadOnlySpanConsumer`2
   name: DelegatingReadOnlySpanConsumer`2
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/DelegatingReadOnlySpanConsumer%602
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/DelegatingReadOnlySpanConsumer%602
   fullName: DotNext.Buffers.DelegatingReadOnlySpanConsumer`2
 - uid: DotNext.Buffers.BufferConsumer`1
   name: BufferConsumer`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferConsumer%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferConsumer%601
   fullName: DotNext.Buffers.BufferConsumer`1
 - uid: DotNext.Buffers.MemoryAllocator`1
   name: MemoryAllocator`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601
   fullName: DotNext.Buffers.MemoryAllocator`1
 - uid: DotNext.Buffers.MemoryAllocator
   name: MemoryAllocator
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator
   fullName: DotNext.Buffers.MemoryAllocator
 - uid: DotNext.Buffers.MemoryOwner`1
   name: MemoryOwner`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601
   fullName: DotNext.Buffers.MemoryOwner`1
 - uid: DotNext.Buffers.MemoryRental`1
   name: MemoryRental`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryRental%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryRental%601
   fullName: DotNext.Buffers.MemoryRental`1
 - uid: DotNext.Buffers.MemoryTemplate`1
   name: MemoryTemplate`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryTemplate%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryTemplate%601
   fullName: DotNext.Buffers.MemoryTemplate`1
 - uid: DotNext.Buffers.MemoryTemplate
   name: MemoryTemplate
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryTemplate
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryTemplate
   fullName: DotNext.Buffers.MemoryTemplate
 - uid: DotNext.Buffers.PooledArrayBufferWriter`1
   name: PooledArrayBufferWriter`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601
   fullName: DotNext.Buffers.PooledArrayBufferWriter`1
 - uid: DotNext.Buffers.PooledBufferWriter`1
   name: PooledBufferWriter`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601
   fullName: DotNext.Buffers.PooledBufferWriter`1
 - uid: DotNext.Buffers.SpanReader`1
   name: SpanReader`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SpanReader%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SpanReader%601
   fullName: DotNext.Buffers.SpanReader`1
 - uid: DotNext.Buffers.SpanWriter`1
   name: SpanWriter`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SpanWriter%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SpanWriter%601
   fullName: DotNext.Buffers.SpanWriter`1
 - uid: DotNext.Buffers.SparseBufferGrowth
   name: SparseBufferGrowth
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferGrowth
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferGrowth
   fullName: DotNext.Buffers.SparseBufferGrowth
 - uid: DotNext.Buffers.SparseBufferWriter`1
   name: SparseBufferWriter`1
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601
   fullName: DotNext.Buffers.SparseBufferWriter`1
 - uid: DotNext.Buffers.SparseBufferWriter`1.Enumerator
   name: SparseBufferWriter`1.Enumerator
-  href: https://fuget.org/packages/DotNext/3.1.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601.Enumerator
+  href: https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601.Enumerator
   fullName: DotNext.Buffers.SparseBufferWriter`1.Enumerator
