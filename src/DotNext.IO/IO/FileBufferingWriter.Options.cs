@@ -56,21 +56,22 @@ namespace DotNext.IO
         /// Represents construction options of the writer.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public class Options
+        public struct Options // TODO: Must be readonly struct in .NET 6
         {
             internal const int DefaultMemoryThreshold = 32768;
             internal const int DefaultFileBufferSize = 4096;
-            private int fileBufferSize = DefaultFileBufferSize, memoryThreshold = DefaultMemoryThreshold;
+            private int memoryThreshold, initialCapacity;
             private string? path;
             private bool keepFileAlive;
-            private int initialCapacity;
+            private int? fileBufferSize;
+            private bool synchronousIO;
 
             /// <summary>
             /// The maximum amount of memory in bytes to allocate before switching to a file on disk.
             /// </summary>
             public int MemoryThreshold
             {
-                get => memoryThreshold;
+                readonly get => memoryThreshold == 0 ? DefaultMemoryThreshold : memoryThreshold;
                 set => memoryThreshold = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
@@ -79,7 +80,7 @@ namespace DotNext.IO
             /// </summary>
             public int InitialCapacity
             {
-                get => initialCapacity;
+                readonly get => initialCapacity;
                 set => initialCapacity = value >= 0 && value < MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
@@ -88,7 +89,7 @@ namespace DotNext.IO
             /// </summary>
             public MemoryAllocator<byte>? MemoryAllocator
             {
-                get;
+                readonly get;
                 set;
             }
 
@@ -100,7 +101,7 @@ namespace DotNext.IO
             /// </remarks>
             public int FileBufferSize
             {
-                get => fileBufferSize;
+                readonly get => fileBufferSize.GetValueOrDefault(DefaultFileBufferSize);
                 set => fileBufferSize = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
@@ -112,7 +113,7 @@ namespace DotNext.IO
             /// </remarks>
             public bool WriteThrough
             {
-                get;
+                readonly get;
                 set;
             }
 
@@ -124,7 +125,11 @@ namespace DotNext.IO
             /// calls in this mode cause performance overhead.
             /// The default value is <see langword="true"/>.
             /// </remarks>
-            public bool AsyncIO { get; set; } = true;
+            public bool AsyncIO
+            {
+                readonly get => !synchronousIO;
+                set => synchronousIO = !value;
+            }
 
             /// <summary>
             /// Defines the path to the file to be used
@@ -166,12 +171,12 @@ namespace DotNext.IO
             /// Gets a value indicating that the backing store for the writer
             /// should be represented by temporary file which will be deleted automatically.
             /// </summary>
-            public bool UseTemporaryFile => !keepFileAlive;
+            public readonly bool UseTemporaryFile => !keepFileAlive;
 
             private static string DefaultTempPath
                 => Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(System.IO.Path.GetTempPath());
 
-            internal string Path
+            internal readonly string Path
             {
                 get
                 {
@@ -196,7 +201,7 @@ namespace DotNext.IO
             /// </summary>
             public EventCounter? AllocationCounter
             {
-                get;
+                readonly get;
                 set;
             }
         }
