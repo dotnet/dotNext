@@ -1,6 +1,32 @@
 Release Notes
 ====
 
+# 05-14-2021
+<a href="https://www.nuget.org/packages/dotnext/3.1.1">DotNext 3.1.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.1.1">DotNext.Metaprogramming 3.1.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.1.1">DotNext.Reflection 3.1.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.1.1">DotNext.Unsafe 3.1.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/3.1.1">DotNext.Threading 3.1.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/3.1.1">DotNext.IO 3.1.1</a>
+* `FileBufferingWriter.Options` is refactored as value type to avoid heap allocation
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.1">DotNext.Net.Cluster 3.1.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.1">DotNext.AspNetCore.Cluster 3.1.1</a>
+* Updated dependencies
+
 # 05-11-2021
 This release is primarily focused on improvements of stuff related to cluster programming and Raft: persistent WAL, transferring over the wire, buffering and reducing I/O overhead. Many ideas for this release were proposed by [potrusil-osi](https://github.com/potrusil-osi) in the issue [57](https://github.com/sakno/dotNext/issues/57).
 
