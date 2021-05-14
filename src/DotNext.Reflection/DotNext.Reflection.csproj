@@ -6,7 +6,7 @@
   <LangVersion>latest</LangVersion>
   <Nullable>enable</Nullable>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>3.1.0</Version>
+	<Version>3.1.1</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
@@ -45,7 +45,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Fody" Version="6.3.0" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.5.1" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.6.0" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
   </ItemGroup>
@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.1.0, 4)" />
+    <PackageReference Include="DotNext" Version="[3.1.1, 4)" />
   </ItemGroup>
 
   <ItemGroup>
