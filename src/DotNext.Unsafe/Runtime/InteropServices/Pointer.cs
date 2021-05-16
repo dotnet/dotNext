@@ -35,15 +35,15 @@ namespace DotNext.Runtime.InteropServices
         {
             private const int InitialPosition = -1;
             private readonly T* ptr;
-            private readonly long count;
+            private readonly nuint count;
             private nint index;
 
             /// <inheritdoc/>
             object IEnumerator.Current => Current;
 
-            internal Enumerator(T* ptr, long count)
+            internal Enumerator(T* ptr, nuint count)
             {
-                this.count = count;
+                this.count = count > 0 ? count : throw new ArgumentOutOfRangeException(nameof(count));
                 this.ptr = ptr;
                 index = InitialPosition;
             }
@@ -70,7 +70,7 @@ namespace DotNext.Runtime.InteropServices
             /// Adjust pointer.
             /// </summary>
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
-            public bool MoveNext() => ptr != null && ++index < count;
+            public bool MoveNext() => ptr != null && (nuint)(++index) < count;
 
             /// <summary>
             /// Sets the enumerator to its initial position.
@@ -609,7 +609,27 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="length">A number of elements to iterate.</param>
         /// <returns>Iterator object.</returns>
-        public unsafe Enumerator GetEnumerator(long length) => IsNull ? default : new Enumerator(value, length);
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        public unsafe Enumerator GetEnumerator(long length)
+        {
+            Enumerator result;
+            if (IsNull || length == 0L)
+                result = default;
+            else if (length < 0L)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            else
+                result = GetEnumerator((nuint)length);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets enumerator over raw memory.
+        /// </summary>
+        /// <param name="length">A number of elements to iterate.</param>
+        /// <returns>Iterator object.</returns>
+        [CLSCompliant(false)]
+        public unsafe Enumerator GetEnumerator(nuint length) => IsNull ? default : new Enumerator(value, length);
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.
