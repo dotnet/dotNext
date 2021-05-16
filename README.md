@@ -60,7 +60,7 @@ This is maintenance release.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/3.1.1">DotNext.Unsafe 3.1.1</a>
-* Updated dependencies
+* Added additional overloads to `Pointer<T>` value type with **nuint** parameter
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.1.1">DotNext.Threading 3.1.1</a>
 * Added `EnsureState` to `AsyncTrigger` class as synchronous alternative with fail-fast behavior
