@@ -33,10 +33,10 @@ namespace DotNext.Runtime.InteropServices
         [StructLayout(LayoutKind.Auto)]
         public unsafe struct Enumerator : IEnumerator<T>
         {
-            private const long InitialPosition = -1L;
+            private const int InitialPosition = -1;
             private readonly T* ptr;
             private readonly long count;
-            private long index;
+            private nint index;
 
             /// <inheritdoc/>
             object IEnumerator.Current => Current;
@@ -179,6 +179,27 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Array element.</returns>
         /// <exception cref="NullPointerException">This array is not allocated.</exception>
         public unsafe ref T this[long index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                if (IsNull)
+                    throw new NullPointerException();
+                return ref value[index];
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets pointer value at the specified position in the memory.
+        /// </summary>
+        /// <remarks>
+        /// This property doesn't check bounds of the array.
+        /// </remarks>
+        /// <param name="index">Element index.</param>
+        /// <returns>Array element.</returns>
+        /// <exception cref="NullPointerException">This array is not allocated.</exception>
+        [CLSCompliant(false)]
+        public unsafe ref T this[nuint index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -939,7 +960,7 @@ namespace DotNext.Runtime.InteropServices
         /// Computes hash code of the pointer itself (i.e. address), not of the memory content.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => Address.GetHashCode();
+        public override unsafe int GetHashCode() => Intrinsics.PointerHashCode(value);
 
         /// <summary>
         /// Indicates that this pointer represents the same memory location as other pointer.
