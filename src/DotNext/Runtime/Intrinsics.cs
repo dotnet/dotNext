@@ -205,8 +205,14 @@ namespace DotNext.Runtime
             return (T?)obj;
         }
 
+        /// <summary>
+        /// Computes transient hash code of the specified pointer.
+        /// </summary>
+        /// <param name="pointer">The pointer value.</param>
+        /// <returns>The hash code of the pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe int PointerHashCode([In] void* pointer)
+        [CLSCompliant(false)]
+        public static unsafe int PointerHashCode([In] void* pointer)
         {
             Ldarga(nameof(pointer));
             Call(Method(Type<UIntPtr>(), nameof(UIntPtr.GetHashCode)));
