@@ -125,7 +125,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 buffer.Dispose();
-                buffer = default;
             }
 
             if (writer.TryGetWrittenContent(out _, out var fileName))
@@ -173,7 +172,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 buffer.Dispose();
-                buffer = default;
             }
 
             return new BufferedRaftLogEntry(output, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
