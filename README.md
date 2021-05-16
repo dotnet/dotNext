@@ -46,7 +46,7 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 05-14-2021
+Release Date: 05-XX-2021
 
 This is maintenance release.
 
@@ -63,14 +63,14 @@ This is maintenance release.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.1.1">DotNext.Threading 3.1.1</a>
-* Updated dependencies
+* Added `EnsureState` to `AsyncTrigger` class as synchronous alternative with fail-fast behavior
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.1.1">DotNext.IO 3.1.1</a>
 * `FileBufferingWriter.Options` is refactored as value type to avoid heap allocation
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.1">DotNext.Net.Cluster 3.1.1</a>
-* Updated dependencies
+* Fixed some LGTM warnings
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.1">DotNext.AspNetCore.Cluster 3.1.1</a>
 * Updated dependencies
