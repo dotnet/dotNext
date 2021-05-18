@@ -18,6 +18,7 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     /// <seealso cref="PooledArrayBufferWriter{T}"/>
     /// <seealso cref="PooledBufferWriter{T}"/>
+    /// <seealso cref="SparseBufferWriter{T}"/>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
     public ref struct BufferWriterSlim<T>
@@ -80,6 +81,8 @@ namespace DotNext.Buffers
         /// </summary>
         public readonly int FreeCapacity => Capacity - WrittenCount;
 
+        private readonly bool NoOverflow => position <= initialBuffer.Length;
+
         /// <summary>
         /// Gets span over constructed memory block.
         /// </summary>
@@ -88,7 +91,7 @@ namespace DotNext.Buffers
         {
             get
             {
-                var result = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
+                var result = NoOverflow ? initialBuffer : extraBuffer.Memory.Span;
                 return result.Slice(0, position);
             }
         }
@@ -194,9 +197,32 @@ namespace DotNext.Buffers
                 if (index < 0 || index >= position)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                var buffer = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
+                var buffer = NoOverflow ? initialBuffer : extraBuffer.Memory.Span;
                 return ref Unsafe.Add(ref MemoryMarshal.GetReference(buffer), index);
             }
+        }
+
+        /// <summary>
+        /// Detaches the underlying buffer with written content from this writer.
+        /// </summary>
+        /// <param name="owner">The buffer owner.</param>
+        /// <returns>
+        /// <see langword="true"/> if the written content is in rented buffer because initial buffer overflows;
+        /// <see langword="false"/> if the written content is in preallocated buffer.
+        /// </returns>
+        public bool TryDetachBuffer(out MemoryOwner<T> owner)
+        {
+            if (NoOverflow)
+            {
+                owner = default;
+                return false;
+            }
+
+            owner = extraBuffer;
+            owner.Truncate(position);
+            position = 0;
+            extraBuffer = default;
+            return true;
         }
 
         /// <summary>
