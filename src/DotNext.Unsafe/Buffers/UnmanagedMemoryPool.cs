@@ -41,7 +41,15 @@ namespace DotNext.Buffers
         /// <param name="zeroMem"><see langword="true"/> to set all bits in the memory to zero; otherwise, <see langword="false"/>.</param>
         /// <returns>The unmanaged memory allocator.</returns>
         public static MemoryAllocator<T> GetAllocator(bool zeroMem)
-            => new Func<int, IUnmanagedMemoryOwner<T>>(length => Allocate(length, zeroMem)).ToAllocator();
+        {
+            return zeroMem ? AllocateZeroMem : AllocateRaw;
+
+            static unsafe MemoryOwner<T> AllocateZeroMem(int length)
+                => MemoryOwner<T>.Create(&Allocate, length, true);
+
+            static unsafe MemoryOwner<T> AllocateRaw(int length)
+                => MemoryOwner<T>.Create(&Allocate, length, false);
+        }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void RemoveTracking(IUnmanagedMemoryOwner<T> owner)
