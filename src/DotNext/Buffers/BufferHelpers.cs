@@ -158,7 +158,7 @@ namespace DotNext.Buffers
                 item = default!;
             }
 
-            owner.Dispose(false);
+            owner.Clear(false);
         }
 
 #if !NETSTANDARD2_1
