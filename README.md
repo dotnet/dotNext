@@ -50,29 +50,29 @@ Release Date: 05-XX-2021
 
 This is maintenance release.
 
-<a href="https://www.nuget.org/packages/dotnext/3.1.1">DotNext 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
+* Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.1.1">DotNext.Metaprogramming 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/3.1.1">DotNext.Reflection 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/3.1.1">DotNext.Unsafe 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.2.0">DotNext.Unsafe 3.2.0</a>
 * Added additional overloads to `Pointer<T>` value type with **nuint** parameter
 
-<a href="https://www.nuget.org/packages/dotnext.threading/3.1.1">DotNext.Threading 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/3.2.0">DotNext.Threading 3.2.0</a>
 * Added `EnsureState` to `AsyncTrigger` class as synchronous alternative with fail-fast behavior
 
-<a href="https://www.nuget.org/packages/dotnext.io/3.1.1">DotNext.IO 3.1.1</a>
-* `FileBufferingWriter.Options` is refactored as value type to avoid heap allocation
+<a href="https://www.nuget.org/packages/dotnext.io/3.2.0">DotNext.IO 3.2.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.1">DotNext.Net.Cluster 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.0">DotNext.Net.Cluster 3.2.0</a>
 * Fixed some LGTM warnings
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.1">DotNext.AspNetCore.Cluster 3.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.0">DotNext.AspNetCore.Cluster 3.2.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
