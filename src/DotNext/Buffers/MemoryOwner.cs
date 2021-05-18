@@ -220,7 +220,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
         public readonly ref T this[int index] => ref this[(nint)index];
 
-        internal void Dispose(bool clearBuffer)
+        internal void Clear(bool clearBuffer)
         {
             switch (owner)
             {
@@ -239,6 +239,6 @@ namespace DotNext.Buffers
         /// <summary>
         /// Releases rented memory.
         /// </summary>
-        public void Dispose() => Dispose(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        public void Dispose() => Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
 }
