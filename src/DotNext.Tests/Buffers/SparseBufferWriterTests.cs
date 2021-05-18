@@ -41,5 +41,19 @@ namespace DotNext.Buffers
                 remaining -= take;
             }
         }
+
+        [Fact]
+        public static void ExtractSingleSegment()
+        {
+            using var writer = new SparseBufferWriter<int>();
+            True(writer.IsSingleSegment);
+            True(writer.TryGetMemory(out var segment));
+            True(segment.IsEmpty);
+
+            writer.Write(10);
+            True(writer.IsSingleSegment);
+            True(writer.TryGetMemory(out segment));
+            Equal(10, segment.Span[0]);
+        }
     }
 }
