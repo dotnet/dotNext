@@ -113,5 +113,23 @@ namespace DotNext.Buffers
                 builder.Dispose();
             }
         }
+
+        [Fact]
+        public static void EscapeBuffer()
+        {
+            using var buffer = new BufferWriterSlim<int>(stackalloc int[2]);
+            buffer.Add(10);
+            buffer.Add(20);
+            False(buffer.TryDetachBuffer(out var owner));
+
+            buffer.Add(30);
+            True(buffer.TryDetachBuffer(out owner));
+            Equal(0, buffer.WrittenCount);
+            Equal(10, owner[0]);
+            Equal(20, owner[1]);
+            Equal(30, owner[2]);
+            Equal(3, owner.Length);
+            owner.Dispose();
+        }
     }
 }
