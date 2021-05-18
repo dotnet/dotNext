@@ -137,7 +137,7 @@ namespace DotNext.Buffers
             if (provider == null)
                 throw new ArgumentNullException(nameof(provider));
 
-            return new MemoryOwner<T>(provider(length, arg), exactSize ? length : null);
+            return new(provider(length, arg), exactSize ? length : null);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace DotNext.Buffers
             {
                 Memory<T> result;
                 if (array is not null)
-                    result = new Memory<T>(array);
+                    result = new(array);
                 else if (owner is not null)
                     result = Unsafe.As<IMemoryOwner<T>>(owner).Memory;
                 else
@@ -194,7 +194,7 @@ namespace DotNext.Buffers
         {
             if (array is not null)
             {
-                segment = new ArraySegment<T>(array, 0, length);
+                segment = new(array, 0, length);
                 return true;
             }
 
