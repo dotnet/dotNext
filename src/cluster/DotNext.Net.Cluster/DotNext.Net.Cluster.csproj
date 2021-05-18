@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>3.1.1</Version>
+    <Version>3.2.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Basic framework for building clusters</Description>
@@ -71,8 +71,8 @@
   </ItemGroup>
   
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext.Threading" Version="[3.1.1, 4)" />
-    <PackageReference Include="DotNext.IO" Version="[3.1.1, 4)" />
+    <PackageReference Include="DotNext.Threading" Version="[3.2.0, 4)" />
+    <PackageReference Include="DotNext.IO" Version="[3.2.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>
