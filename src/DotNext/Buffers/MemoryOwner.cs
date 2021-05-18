@@ -131,6 +131,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentNullException"><paramref name="provider"/> is zero pointer.</exception>
         [CLSCompliant(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe MemoryOwner<T> Create<TArg>(delegate*<int, TArg, IMemoryOwner<T>> provider, int length, TArg arg, bool exactSize = true)
         {
             if (provider == null)
