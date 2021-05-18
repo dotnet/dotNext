@@ -166,8 +166,8 @@ namespace DotNext.Buffers
                 return true;
             }
 
-            if (owner is IMemoryOwner<T> memory)
-                return MemoryMarshal.TryGetArray(memory.Memory, out segment);
+            if (owner is not null)
+                return MemoryMarshal.TryGetArray(Unsafe.As<IMemoryOwner<T>>(owner).Memory, out segment);
 
             segment = default;
             return false;
