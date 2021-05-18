@@ -110,7 +110,7 @@ namespace DotNext.Buffers
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
 
             var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
-            memory = exactSize ? owner.AsSpan(0, minBufferSize) : new Span<T>(owner);
+            memory = exactSize ? owner.AsSpan(0, minBufferSize) : new(owner);
             this.owner = owner;
         }
 
