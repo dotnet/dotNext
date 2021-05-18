@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>3.1.1</Version>
+    <Version>3.2.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>
@@ -62,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.1.1, 4)" />
+    <PackageReference Include="DotNext" Version="[3.2.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>
