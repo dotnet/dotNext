@@ -67,6 +67,7 @@ This is maintenance release.
 * Added `EnsureState` to `AsyncTrigger` class as synchronous alternative with fail-fast behavior
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.2.0">DotNext.IO 3.2.0</a>
+* Improved performance of all `IAsyncBinaryReader` interface implementations
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.0">DotNext.Net.Cluster 3.2.0</a>
