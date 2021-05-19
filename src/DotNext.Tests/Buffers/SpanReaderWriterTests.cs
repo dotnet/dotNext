@@ -240,5 +240,41 @@ namespace DotNext.Buffers
             static bool WriteBigInt(BigInteger value, Span<byte> destination, out int count)
                 => value.TryWriteBytes(destination, out count);
         }
+
+        [Fact]
+        public static void AdvanceWriter()
+        {
+            var writer = new SpanWriter<byte>(stackalloc byte[4]);
+
+            writer.Current = 10;
+            writer.Advance(1);
+
+            writer.Current = 20;
+            writer.Advance(1);
+
+            writer.Current = 30;
+            writer.Advance(2);
+
+            True(writer.RemainingSpan.IsEmpty);
+
+            writer.Rewind(2);
+            Equal(30, writer.Current);
+
+            writer.Rewind(1);
+            Equal(20, writer.Current);
+        }
+
+        [Fact]
+        public static void AdvanceReader()
+        {
+            var reader = new SpanReader<byte>(new byte[] { 10, 20, 30 });
+            Equal(10, reader.Current);
+
+            reader.Advance(2);
+            Equal(30, reader.Current);
+
+            reader.Rewind(2);
+            Equal(10, reader.Current);
+        }
     }
 }
