@@ -7,15 +7,14 @@ namespace DotNext.Buffers
 {
     internal static partial class BufferReader
     {
-        internal static void Append<TResult, TParser>(this ref TParser parser, ref SequenceReader<byte> reader)
+        private static void Append<TResult, TParser>(ref TParser parser, ref SequenceReader<byte> reader)
             where TParser : struct, IBufferReader<TResult>
         {
             while (parser.RemainingBytes > 0 && reader.Remaining > 0L)
             {
                 var block = reader.UnreadSpan;
                 var bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
-                block = block.Slice(0, bytesToConsume);
-                parser.Append(block, ref bytesToConsume);
+                parser.Append(block.Slice(0, bytesToConsume), ref bytesToConsume);
                 reader.Advance(bytesToConsume);
             }
         }
