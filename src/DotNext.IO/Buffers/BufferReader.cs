@@ -7,16 +7,31 @@ namespace DotNext.Buffers
 {
     internal static partial class BufferReader
     {
-        internal static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
+        internal static void Append<TResult, TParser>(this ref TParser parser, ref SequenceReader<byte> reader, out SequencePosition consumed)
             where TParser : struct, IBufferReader<TResult>
         {
-            consumed = input.Start;
-            for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = input.GetPosition(bytesToConsume, consumed))
+            try
             {
-                bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
-                block = block.Slice(0, bytesToConsume);
-                parser.Append(block.Span, ref bytesToConsume);
+                while (parser.RemainingBytes > 0 && reader.Remaining > 0L)
+                {
+                    var block = reader.UnreadSpan;
+                    var bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
+                    block = block.Slice(0, bytesToConsume);
+                    parser.Append(block, ref bytesToConsume);
+                    reader.Advance(bytesToConsume);
+                }
             }
+            finally
+            {
+                consumed = reader.Position;
+            }
+        }
+
+        internal static void Append<TResult, TParser>(this ref TParser parser, ReadOnlySequence<byte> input, out SequencePosition consumed)
+            where TParser : struct, IBufferReader<TResult>
+        {
+            var reader = new SequenceReader<byte>(input);
+            Append<TResult, TParser>(ref parser, ref reader, out consumed);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
