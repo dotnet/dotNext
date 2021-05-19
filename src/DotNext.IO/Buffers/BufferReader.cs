@@ -7,23 +7,16 @@ namespace DotNext.Buffers
 {
     internal static partial class BufferReader
     {
-        internal static void Append<TResult, TParser>(this ref TParser parser, ref SequenceReader<byte> reader, out SequencePosition consumed)
+        internal static void Append<TResult, TParser>(this ref TParser parser, ref SequenceReader<byte> reader)
             where TParser : struct, IBufferReader<TResult>
         {
-            try
+            while (parser.RemainingBytes > 0 && reader.Remaining > 0L)
             {
-                while (parser.RemainingBytes > 0 && reader.Remaining > 0L)
-                {
-                    var block = reader.UnreadSpan;
-                    var bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
-                    block = block.Slice(0, bytesToConsume);
-                    parser.Append(block, ref bytesToConsume);
-                    reader.Advance(bytesToConsume);
-                }
-            }
-            finally
-            {
-                consumed = reader.Position;
+                var block = reader.UnreadSpan;
+                var bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
+                block = block.Slice(0, bytesToConsume);
+                parser.Append(block, ref bytesToConsume);
+                reader.Advance(bytesToConsume);
             }
         }
 
@@ -31,7 +24,14 @@ namespace DotNext.Buffers
             where TParser : struct, IBufferReader<TResult>
         {
             var reader = new SequenceReader<byte>(input);
-            Append<TResult, TParser>(ref parser, ref reader, out consumed);
+            try
+            {
+                Append<TResult, TParser>(ref parser, ref reader);
+            }
+            finally
+            {
+                consumed = reader.Position;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
