@@ -14,6 +14,12 @@ namespace DotNext.IO
 
     internal sealed class EmptyBinaryReader : IAsyncBinaryReader
     {
+        internal static readonly EmptyBinaryReader Instance = new();
+
+        private EmptyBinaryReader()
+        {
+        }
+
         private static ValueTask<T> EndOfStream<T>()
 #if NETSTANDARD2_1
             => new (Task.FromException<T>(new EndOfStreamException()));
