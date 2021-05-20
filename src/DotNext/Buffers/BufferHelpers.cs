@@ -87,7 +87,7 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The sequence of elements to be written.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value)
+        public static void Write<T>(this IBufferWriter<T> writer, in ReadOnlySequence<T> value)
         {
             if (value.IsSingleSegment)
             {
