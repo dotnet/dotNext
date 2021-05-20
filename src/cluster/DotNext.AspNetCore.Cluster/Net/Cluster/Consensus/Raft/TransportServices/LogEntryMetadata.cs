@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
