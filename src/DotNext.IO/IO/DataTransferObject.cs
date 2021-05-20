@@ -156,7 +156,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new(encoding.GetString(memory.Span));
+                    result = new(memory.IsEmpty ? string.Empty : encoding.GetString(memory.Span));
                 }
                 catch (Exception e)
                 {
