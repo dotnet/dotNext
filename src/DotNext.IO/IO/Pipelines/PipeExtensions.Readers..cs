@@ -461,17 +461,9 @@ namespace DotNext.IO.Pipelines
         /// </returns>
         public static ReadOnlySequence<byte> TryReadBlock(this PipeReader reader, long length, out bool canceled, out bool completed)
         {
-            ReadResult result;
-            ReadOnlySequence<byte> block;
-            if (reader.TryRead(out result) && length <= result.Buffer.Length)
-            {
-                block = result.Buffer.Slice(0, length);
-            }
-            else
-            {
-                result = default;
-                block = ReadOnlySequence<byte>.Empty;
-            }
+            var block = reader.TryRead(out var result) && length <= result.Buffer.Length ?
+                result.Buffer.Slice(0L, length) :
+                ReadOnlySequence<byte>.Empty;
 
             canceled = result.IsCanceled;
             completed = result.IsCompleted;
