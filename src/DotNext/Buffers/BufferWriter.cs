@@ -98,6 +98,13 @@ namespace DotNext.Buffers
         }
 
         /// <inheritdoc />
+        bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
+        {
+            block = WrittenMemory;
+            return true;
+        }
+
+        /// <inheritdoc />
         ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
             => IsDisposed ? new ValueTask(DisposedTask) : consumer.Invoke(WrittenMemory, token);
 
