@@ -155,7 +155,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    result = transformation.TransformAsync(IAsyncBinaryReader.Empty, token);
+                    result = IDataTransferObject.Empty.TransformAsync<TResult, TTransformation>(transformation, token);
                 }
 
                 return result;
