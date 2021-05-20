@@ -311,6 +311,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // following format:
         // <term> - 8 bytes
         // <timestamp> - 8 bytes
+        // <flags> - 1 byte
+        // <command-id> - 4 bytes
         // <length> - 8 bytes
         // <payload> - octet string
         private sealed class OctetStreamLogEntriesWriter : HttpContent
