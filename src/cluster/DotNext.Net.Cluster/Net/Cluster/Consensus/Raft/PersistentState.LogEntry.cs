@@ -179,6 +179,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return true;
                 }
 
+                if (IsEmpty)
+                {
+                    memory = ReadOnlyMemory<byte>.Empty;
+                    return true;
+                }
+
                 memory = default;
                 return false;
             }
