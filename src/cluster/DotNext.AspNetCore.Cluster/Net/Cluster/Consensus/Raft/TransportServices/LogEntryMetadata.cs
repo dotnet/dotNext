@@ -36,11 +36,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             => new(entry.Term, entry.Timestamp, entry.Length.GetValueOrDefault(), entry.CommandId);
 
         internal LogEntryMetadata(ReadOnlyMemory<byte> input)
-            : this(new ReadOnlySequence<byte>(input))
+            : this(new ReadOnlySequence<byte>(input), out _)
         {
         }
 
-        internal LogEntryMetadata(ReadOnlySequence<byte> input)
+        internal LogEntryMetadata(ReadOnlySequence<byte> input, out SequencePosition position)
         {
             Debug.Assert(input.Length >= Size);
 
@@ -50,6 +50,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             reader.TryRead(out flags);
             reader.TryReadLittleEndian(out identifier);
             reader.TryReadLittleEndian(out length);
+
+            position = reader.Position;
         }
 
         internal long Term => term;

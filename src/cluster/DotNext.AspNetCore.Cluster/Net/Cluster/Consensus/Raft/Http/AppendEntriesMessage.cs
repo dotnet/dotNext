@@ -94,9 +94,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 if (!reader.TryReadBlock(LogEntryMetadata.Size, out var result) || result.IsCanceled)
                     return false;
 
-                var buffer = result.Buffer;
-                metadata = new LogEntryMetadata(buffer);
-                reader.AdvanceTo(buffer.End);
+                metadata = new LogEntryMetadata(result.Buffer, out var metadataEnd);
+                reader.AdvanceTo(metadataEnd);
                 consumed = false;
                 return true;
             }
