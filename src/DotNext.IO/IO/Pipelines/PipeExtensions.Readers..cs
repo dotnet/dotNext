@@ -446,6 +446,39 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Attempts to read block of data synchronously.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't advance the reader position.
+        /// </remarks>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the block to consume, in bytes.</param>
+        /// <param name="canceled">The reading was canceled.</param>
+        /// <param name="completed">Indicates that the end of the data has been reached.</param>
+        /// <returns>
+        /// The requested block of data which length is equal to <paramref name="length"/> in case of success;
+        /// otherwise, empty block.
+        /// </returns>
+        public static ReadOnlySequence<byte> TryReadBlock(this PipeReader reader, long length, out bool canceled, out bool completed)
+        {
+            ReadResult result;
+            ReadOnlySequence<byte> block;
+            if (reader.TryRead(out result) && length <= result.Buffer.Length)
+            {
+                block = result.Buffer.Slice(0, length);
+            }
+            else
+            {
+                result = default;
+                block = ReadOnlySequence<byte>.Empty;
+            }
+
+            canceled = result.IsCanceled;
+            completed = result.IsCompleted;
+            return block;
+        }
+
+        /// <summary>
         /// Consumes the requested portion of data asynchronously.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>

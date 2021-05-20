@@ -319,5 +319,25 @@ namespace DotNext.IO.Pipelines
             Equal(46, reader.ReadInt16(true));
             Equal(47, reader.ReadUInt16(true));
         }
+
+        [Fact]
+        public static void ReadBlockSynchronously()
+        {
+            var pipe = new Pipe();
+            pipe.Writer.Write(new byte[] { 10, 20, 30 });
+            var block = pipe.Reader.TryReadBlock(10L, out var canceled, out var completed);
+            True(block.IsEmpty);
+            False(canceled);
+            False(completed);
+
+            pipe.Writer.Complete();
+            block = pipe.Reader.TryReadBlock(3L, out canceled, out completed);
+            True(completed);
+            False(block.IsEmpty);
+            Equal(3L, block.Length);
+            Equal(10, block.FirstSpan[0]);
+            Equal(20, block.FirstSpan[1]);
+            Equal(30, block.FirstSpan[2]);
+        }
     }
 }
