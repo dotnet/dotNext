@@ -469,7 +469,6 @@ namespace DotNext.IO.Pipelines
                 return true;
             }
 
-            result = default;
             return false;
         }
 
