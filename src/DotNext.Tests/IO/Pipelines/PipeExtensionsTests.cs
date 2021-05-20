@@ -325,19 +325,19 @@ namespace DotNext.IO.Pipelines
         {
             var pipe = new Pipe();
             pipe.Writer.Write(new byte[] { 10, 20, 30 });
-            var block = pipe.Reader.TryReadBlock(10L, out var canceled, out var completed);
-            True(block.IsEmpty);
-            False(canceled);
-            False(completed);
+            False(pipe.Reader.TryReadBlock(10L, out var result));
+            True(result.Buffer.IsEmpty);
+            False(result.IsCanceled);
+            False(result.IsCompleted);
 
             pipe.Writer.Complete();
-            block = pipe.Reader.TryReadBlock(3L, out canceled, out completed);
-            True(completed);
-            False(block.IsEmpty);
-            Equal(3L, block.Length);
-            Equal(10, block.FirstSpan[0]);
-            Equal(20, block.FirstSpan[1]);
-            Equal(30, block.FirstSpan[2]);
+            True(pipe.Reader.TryReadBlock(3L, out result));
+            True(result.IsCompleted);
+            False(result.Buffer.IsEmpty);
+            Equal(3L, result.Buffer.Length);
+            Equal(10, result.Buffer.FirstSpan[0]);
+            Equal(20, result.Buffer.FirstSpan[1]);
+            Equal(30, result.Buffer.FirstSpan[2]);
         }
     }
 }
