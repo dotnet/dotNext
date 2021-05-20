@@ -226,8 +226,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
         {
-            memory = default;
-            return false;
+            switch (content)
+            {
+                case IGrowableBuffer<byte> buffer:
+                    return buffer.TryGetWrittenContent(out memory);
+                case null:
+                    memory = ReadOnlyMemory<byte>.Empty;
+                    return true;
+                default:
+                    memory = default;
+                    return false;
+            }
         }
 
         /// <summary>
