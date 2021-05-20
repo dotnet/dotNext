@@ -502,7 +502,7 @@ namespace DotNext.IO.Pipelines
                 readResult.ThrowIfCancellationRequested(token);
                 var buffer = readResult.Buffer;
                 if (buffer.IsEmpty)
-                    break;
+                    throw new EndOfStreamException();
                 consumed = buffer.Start;
                 for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
                 {
@@ -510,9 +510,6 @@ namespace DotNext.IO.Pipelines
                     await consumer.Invoke(block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
                 }
             }
-
-            if (length > 0L)
-                throw new EndOfStreamException();
         }
 
         /// <summary>
@@ -542,7 +539,33 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data to skip.</exception>
         public static ValueTask SkipAsync(this PipeReader reader, long length, CancellationToken token = default)
-            => length == 0L ? new() : ReadBlockAsync(reader, length, SkippingConsumer.Instance, token);
+        {
+            return length switch
+            {
+                0L => new(),
+#if NETSTANDARD2_1
+                < 0L => new(Task.FromException(new ArgumentOutOfRangeException(nameof(length)))),
+#else
+                < 0L => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
+#endif
+                _ => SkipCoreAsync(reader, length, token),
+            };
+
+            static async ValueTask SkipCoreAsync(PipeReader reader, long length, CancellationToken token)
+            {
+                while (length > 0L)
+                {
+                    var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+                    readResult.ThrowIfCancellationRequested(token);
+                    var buffer = readResult.Buffer;
+                    if (buffer.IsEmpty)
+                        throw new EndOfStreamException();
+                    var bytesToConsume = Math.Min(buffer.Length, length);
+                    length -= bytesToConsume;
+                    reader.AdvanceTo(buffer.GetPosition(bytesToConsume));
+                }
+            }
+        }
 
         /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
