@@ -127,6 +127,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 return result;
             }
+
+            bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                memory = ReadOnlyMemory<byte>.Empty;
+                return metadata.Length == 0L;
+            }
         }
 
         private sealed class MultipartLogEntriesReader : MultipartReader, ILogEntryProducer<MultipartLogEntry>, IDisposable
