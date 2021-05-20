@@ -91,14 +91,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             // fast path - attempt to consume metadata synchronously
             private bool TryConsume()
             {
-                Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size];
-                var block = reader.TryReadBlock(metadataBuffer.Length, out var canceled, out _);
+                var block = reader.TryReadBlock(LogEntryMetadata.Size, out var canceled, out _);
                 if (block.IsEmpty || canceled)
                     return false;
 
-                block.CopyTo(metadataBuffer);
+                metadata = new LogEntryMetadata(block);
                 reader.AdvanceTo(block.End);
-                metadata = new LogEntryMetadata(metadataBuffer);
                 consumed = false;
                 return true;
             }
@@ -110,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     metadataBuffer = new Memory<byte>(new byte[LogEntryMetadata.Size]);
 
                 await reader.ReadBlockAsync(metadataBuffer).ConfigureAwait(false);
-                metadata = new LogEntryMetadata(metadataBuffer.Span);
+                metadata = new LogEntryMetadata(metadataBuffer);
                 consumed = false;
             }
 
