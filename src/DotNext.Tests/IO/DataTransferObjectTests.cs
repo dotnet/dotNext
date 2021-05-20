@@ -133,5 +133,21 @@ namespace DotNext.IO
             True(withLength == dto.Length.HasValue);
             Equal(data, await dto.ToByteArrayAsync());
         }
+
+        [Fact]
+        public static void EmptyObject()
+        {
+            var empty = IDataTransferObject.Empty;
+            Equal(0L, empty.Length);
+            True(empty.IsReusable);
+            True(empty.TryGetMemory(out var memory));
+            True(memory.IsEmpty);
+
+            Empty(empty.ToByteArrayAsync().Result);
+
+            var writer = new ArrayBufferWriter<byte>();
+            True(empty.WriteToAsync(IAsyncBinaryWriter.Create(writer), CancellationToken.None).IsCompletedSuccessfully);
+            Equal(0, writer.WrittenCount);
+        }
     }
 }
