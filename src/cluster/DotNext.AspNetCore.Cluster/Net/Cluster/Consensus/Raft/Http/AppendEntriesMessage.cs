@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 if (!reader.TryReadBlock(LogEntryMetadata.Size, out var result) || result.IsCanceled)
                     return false;
 
-                metadata = new LogEntryMetadata(result.Buffer, out var metadataEnd);
+                metadata = new(result.Buffer, out var metadataEnd);
                 reader.AdvanceTo(metadataEnd);
                 consumed = false;
                 return true;
@@ -104,10 +104,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private async ValueTask ConsumeSlowAsync()
             {
                 if (metadataBuffer.IsEmpty)
-                    metadataBuffer = new Memory<byte>(new byte[LogEntryMetadata.Size]);
+                    metadataBuffer = new(new byte[LogEntryMetadata.Size]);
 
                 await reader.ReadBlockAsync(metadataBuffer).ConfigureAwait(false);
-                metadata = new LogEntryMetadata(metadataBuffer);
+                metadata = new(metadataBuffer);
                 consumed = false;
             }
 
@@ -171,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
                 if (section is null)
                     return false;
-                current = new MultipartLogEntry(section);
+                current = new(section);
                 count -= 1L;
                 return true;
             }
@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ValueTask IAsyncDisposable.DisposeAsync()
             {
                 count = 0L;
-                return new ValueTask();
+                return new();
             }
         }
 
@@ -320,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OctetStreamLogEntriesWriter(in TList entries)
             {
-                Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Octet);
+                Headers.ContentType = new(MediaTypeNames.Application.Octet);
                 this.entries = entries;
             }
 
@@ -385,9 +385,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal MultipartLogEntriesWriter(in TList entries)
             {
                 boundary = Guid.NewGuid().ToString();
-                this.entries = new Enumerable<TEntry, TList>(in entries);
+                this.entries = new(in entries);
                 var contentType = new MediaTypeHeaderValue(ContentType);
-                contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
+                contentType.Parameters.Add(new(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
             }
 
