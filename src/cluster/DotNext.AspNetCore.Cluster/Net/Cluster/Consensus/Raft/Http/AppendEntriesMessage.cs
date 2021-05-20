@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private class OctetStreamLogEntry : IRaftLogEntry
         {
             private readonly PipeReader reader;
-            private readonly byte[] metadataBuffer;
+            private Memory<byte> metadataBuffer;
             private LogEntryMetadata metadata;
             private bool consumed;
 
@@ -78,7 +78,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 this.reader = reader;
                 consumed = true;
-                metadataBuffer = new byte[LogEntryMetadata.Size];
             }
 
             private protected bool Consumed => consumed;
@@ -89,12 +88,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return metadata.Length > 0L ? reader.SkipAsync(metadata.Length) : new();
             }
 
-            private protected async ValueTask ConsumeAsync()
+            // fast path - attempt to consume metadata synchronously
+            private bool TryConsume()
             {
-                await reader.ReadBlockAsync(metadataBuffer.AsMemory()).ConfigureAwait(false);
+                Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size];
+                var block = reader.TryReadBlock(metadataBuffer.Length, out var canceled, out _);
+                if (block.IsEmpty || canceled)
+                    return false;
+
+                block.CopyTo(metadataBuffer);
                 metadata = new LogEntryMetadata(metadataBuffer);
                 consumed = false;
+                return true;
             }
+
+            // slow path - consume metadata asynchronously and allocate buffer on the heap
+            private async ValueTask ConsumeSlowAsync()
+            {
+                if (metadataBuffer.IsEmpty)
+                    metadataBuffer = new Memory<byte>(new byte[LogEntryMetadata.Size]);
+
+                await reader.ReadBlockAsync(metadataBuffer).ConfigureAwait(false);
+                metadata = new LogEntryMetadata(metadataBuffer.Span);
+                consumed = false;
+            }
+
+            private protected ValueTask ConsumeAsync() => TryConsume() ? new() : ConsumeSlowAsync();
 
             long? IDataTransferObject.Length => metadata.Length;
 
