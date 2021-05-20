@@ -91,12 +91,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             // fast path - attempt to consume metadata synchronously
             private bool TryConsume()
             {
-                var block = reader.TryReadBlock(LogEntryMetadata.Size, out var canceled, out _);
-                if (block.IsEmpty || canceled)
+                if (!reader.TryReadBlock(LogEntryMetadata.Size, out var result) || result.IsCanceled)
                     return false;
 
-                metadata = new LogEntryMetadata(block);
-                reader.AdvanceTo(block.End);
+                var buffer = result.Buffer;
+                metadata = new LogEntryMetadata(buffer);
+                reader.AdvanceTo(buffer.End);
                 consumed = false;
                 return true;
             }

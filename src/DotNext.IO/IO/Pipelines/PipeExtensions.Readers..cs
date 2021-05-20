@@ -453,21 +453,24 @@ namespace DotNext.IO.Pipelines
         /// </remarks>
         /// <param name="reader">The pipe reader.</param>
         /// <param name="length">The length of the block to consume, in bytes.</param>
-        /// <param name="canceled">The reading was canceled.</param>
-        /// <param name="completed">Indicates that the end of the data has been reached.</param>
-        /// <returns>
+        /// <param name="result">
         /// The requested block of data which length is equal to <paramref name="length"/> in case of success;
         /// otherwise, empty block.
+        /// </param>
+        /// <returns>
+        /// <see langword="true"/> if the block of requested length is obtained successfully;
+        /// otherwise, <see langword="false"/>.
         /// </returns>
-        public static ReadOnlySequence<byte> TryReadBlock(this PipeReader reader, long length, out bool canceled, out bool completed)
+        public static bool TryReadBlock(this PipeReader reader, long length, out ReadResult result)
         {
-            var block = reader.TryRead(out var result) && length <= result.Buffer.Length ?
-                result.Buffer.Slice(0L, length) :
-                ReadOnlySequence<byte>.Empty;
+            if (reader.TryRead(out result) && length <= result.Buffer.Length)
+            {
+                result = new ReadResult(result.Buffer.Slice(0L, length), result.IsCanceled, result.IsCompleted);
+                return true;
+            }
 
-            canceled = result.IsCanceled;
-            completed = result.IsCompleted;
-            return block;
+            result = default;
+            return false;
         }
 
         /// <summary>
