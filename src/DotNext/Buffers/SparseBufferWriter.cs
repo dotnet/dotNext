@@ -110,7 +110,7 @@ namespace DotNext.Buffers
         /// <param name="segment">The single segment representing written content.</param>
         /// <returns><see langword="true"/> if this buffer is represented by a single segment; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public bool TryGetMemory(out ReadOnlyMemory<T> segment)
+        public bool TryGetWrittenContent(out ReadOnlyMemory<T> segment)
         {
             ThrowIfDisposed();
 
@@ -276,7 +276,7 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
-            => TryGetMemory(out var segment) ? new ReadOnlySequence<T>(segment) : BufferHelpers.ToReadOnlySequence(this);
+            => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : BufferHelpers.ToReadOnlySequence(this);
 
         /// <summary>
         /// Gets enumerator over memory segments.
