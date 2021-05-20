@@ -86,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private protected ValueTask SkipAsync()
             {
                 consumed = true;
-                return reader.SkipAsync(metadata.Length);
+                return metadata.Length > 0L ? reader.SkipAsync(metadata.Length) : new();
             }
 
             private protected async ValueTask ConsumeAsync()
