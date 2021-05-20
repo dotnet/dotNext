@@ -142,7 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     consumed = true;
-                    result = reader.ReadBlockAsync(metadata.Length, writer, token);
+                    result = metadata.Length > 0L ? reader.ReadBlockAsync(metadata.Length, writer, token) : new();
                 }
 
                 return result;
