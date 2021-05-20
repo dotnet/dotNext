@@ -96,8 +96,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 if (block.IsEmpty || canceled)
                     return false;
 
-                reader.AdvanceTo(block.End);
                 block.CopyTo(metadataBuffer);
+                reader.AdvanceTo(block.End);
                 metadata = new LogEntryMetadata(metadataBuffer);
                 consumed = false;
                 return true;
