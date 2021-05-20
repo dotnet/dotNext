@@ -69,6 +69,7 @@ This is maintenance release.
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.2.0">DotNext.IO 3.2.0</a>
 * Improved performance of all `IAsyncBinaryReader` interface implementations
+* Added `TryReadBlock` extension method that allows to read the block of memory from pipe synchronously
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.0">DotNext.Net.Cluster 3.2.0</a>
