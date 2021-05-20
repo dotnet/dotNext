@@ -52,6 +52,7 @@ This is maintenance release.
 
 <a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
 * Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
+* Added `TryGetWrittenContent` method to `SparseBufferWriter<T>` that allows to obtain the written buffer if it is represented by contiguous memory block
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
@@ -71,10 +72,10 @@ This is maintenance release.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.0">DotNext.Net.Cluster 3.2.0</a>
-* Fixed some LGTM warnings
+* Smallish improvements of I/O operations related to log entries
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.0">DotNext.AspNetCore.Cluster 3.2.0</a>
-* Updated dependencies
+* Improved performance of log entries decoding on receiver side
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
