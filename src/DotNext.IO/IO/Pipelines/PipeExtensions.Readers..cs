@@ -542,7 +542,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data to skip.</exception>
         public static ValueTask SkipAsync(this PipeReader reader, long length, CancellationToken token = default)
-            => ReadBlockAsync(reader, length, SkippingConsumer.Instance, token);
+            => length == 0L ? new() : ReadBlockAsync(reader, length, SkippingConsumer.Instance, token);
 
         /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
