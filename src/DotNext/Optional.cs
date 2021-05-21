@@ -575,7 +575,7 @@ namespace DotNext
             return kind switch
             {
                 UndefinedValue or NullValue => true,
-                _ => EqualityComparer<T>.Default.Equals(value, other.value),
+                _ => EqualityComparer<T?>.Default.Equals(value, other.value),
             };
         }
 
