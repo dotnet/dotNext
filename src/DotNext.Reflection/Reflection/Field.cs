@@ -203,7 +203,8 @@ namespace DotNext.Reflection
         /// <summary>
         /// Determines whether this field is read-only and cannot be modified.
         /// </summary>
-        public bool IsReadOnly => (field.Attributes & FieldAttributes.InitOnly) != 0;
+        [Obsolete("Use IsInitOnly property")]
+        public bool IsReadOnly => field.IsInitOnly;
 
         /// <inheritdoc/>
         FieldInfo IMember<FieldInfo>.Metadata => field;
