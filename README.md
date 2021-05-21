@@ -59,7 +59,7 @@ This is maintenance release.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
-* Updated dependencies
+* Respect volatile modifier when reading/writing field
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/3.2.0">DotNext.Unsafe 3.2.0</a>
 * Added additional overloads to `Pointer<T>` value type with **nuint** parameter
