@@ -41,6 +41,15 @@ namespace DotNext.Text.Json
             }
         }
 
+        /// <summary>
+        /// Initializes a new converter for <see cref="Optional{T}"/> type.
+        /// </summary>
+        public OptionalConverterFactory()
+        {
+            if (LibrarySettings.IsUndefinedEqualsNull)
+                throw new NotSupportedException(ExceptionMessages.UndefinedEqualsNullSwitchEnabled);
+        }
+
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert) => Optional.IsOptional(typeToConvert);
 
