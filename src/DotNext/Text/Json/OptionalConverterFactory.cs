@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 
 namespace DotNext.Text.Json
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
     /// <summary>
     /// Represents JSON converter for <see cref="Optional{T}"/> data type.
     /// </summary>
@@ -55,6 +57,7 @@ namespace DotNext.Text.Json
 
         /// <inheritdoc />
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DelegatingConverter<>))]
+        [RuntimeFeaturesAttribute(RuntimeGenericInstantiation = true)]
         public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             var underlyingType = Optional.GetUnderlyingType(typeToConvert);
