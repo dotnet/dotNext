@@ -198,8 +198,8 @@ namespace DotNext
             False(first != second);
 
             first = new Optional<string>(null);
-            True(first == second);
             False(first != second);
+            True(first == second);
 
             first = "Hello, world!";
             False(first == second);
