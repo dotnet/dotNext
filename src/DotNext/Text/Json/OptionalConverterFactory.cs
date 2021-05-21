@@ -57,8 +57,10 @@ namespace DotNext.Text.Json
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DelegatingConverter<>))]
         public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            var underlyingType = Optional.GetUnderlyingType(typeToConvert) ?? throw new InvalidOperationException();
-            return Activator.CreateInstance(typeof(DelegatingConverter<>).MakeGenericType(underlyingType)) as JsonConverter;
+            var underlyingType = Optional.GetUnderlyingType(typeToConvert);
+            return underlyingType is null ?
+                null :
+                Activator.CreateInstance(typeof(DelegatingConverter<>).MakeGenericType(underlyingType)) as JsonConverter;
         }
     }
 }
