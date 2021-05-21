@@ -197,9 +197,16 @@ namespace DotNext
             True(first.Equals(second));
             False(first != second);
 
+            // enable legacy behavior
+            AppContext.SetSwitch("DotNext.Optional.UndefinedEqualsNull", true);
             first = new Optional<string>(null);
             False(first != second);
             True(first == second);
+
+            AppContext.SetSwitch("DotNext.Optional.UndefinedEqualsNull", false);
+            first = new Optional<string>(null);
+            True(first != second);
+            False(first == second);
 
             first = "Hello, world!";
             False(first == second);
