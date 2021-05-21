@@ -43,7 +43,7 @@ namespace DotNext.Text.Json
             var expected = new JsonObject
             {
                 IntegerValue = Optional.None<int>(),
-                StringField = new(null),
+                StringField = Optional.Null<string>(),
                 BoolField = true,
             };
 
