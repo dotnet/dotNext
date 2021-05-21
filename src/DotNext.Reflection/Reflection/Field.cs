@@ -12,6 +12,8 @@ using static InlineIL.TypeRef;
 
 namespace DotNext.Reflection
 {
+    using ReflectionUtils = Runtime.CompilerServices.ReflectionUtils;
+
     /// <summary>
     /// Represents reflected field.
     /// </summary>
@@ -21,6 +23,18 @@ namespace DotNext.Reflection
         private readonly FieldInfo field;
 
         private protected FieldBase(FieldInfo field) => this.field = field;
+
+        private protected static bool IsVolatile(FieldInfo field)
+        {
+            var volatileModifier = typeof(IsVolatile);
+            foreach (var modified in field.GetRequiredCustomModifiers())
+            {
+                if (modified == volatileModifier)
+                    return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Returns the value of a field supported by a given object.
@@ -254,12 +268,16 @@ namespace DotNext.Reflection
             if (field.DeclaringType is null)
                 throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(field), nameof(field));
             var instanceParam = Parameter(typeof(T).MakeByRefType());
+            var isVolatile = IsVolatile(field);
 
             // TODO: Should be optimized when LINQ Expression will have a support for ref return
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(instanceParam, field)), instanceParam).Compile();
 
             Push(provider);
-            Ldftn(Method(Type<Field<T, TValue>>(), nameof(GetValue), Type<Provider>(), Type<T>().MakeByRefType()));
+            if (isVolatile)
+                Ldftn(Method(Type<Field<T, TValue>>(), nameof(GetValueVolatile), Type<Provider>(), Type<T>().MakeByRefType()));
+            else
+                Ldftn(Method(Type<Field<T, TValue>>(), nameof(GetValue), Type<Provider>(), Type<T>().MakeByRefType()));
             Newobj(Constructor(Type<MemberGetter<T, TValue>>(), Type<object>(), Type<IntPtr>()));
             Pop(out MemberGetter<T, TValue> getter);
             this.getter = getter;
@@ -271,7 +289,10 @@ namespace DotNext.Reflection
             else
             {
                 Push(provider);
-                Ldftn(Method(Type<Field<T, TValue>>(), nameof(SetValue), Type<Provider>(), Type<T>().MakeByRefType(), Type<TValue>()));
+                if (isVolatile)
+                    Ldftn(Method(Type<Field<T, TValue>>(), nameof(SetValueVolatile), Type<Provider>(), Type<T>().MakeByRefType(), Type<TValue>()));
+                else
+                    Ldftn(Method(Type<Field<T, TValue>>(), nameof(SetValue), Type<Provider>(), Type<T>().MakeByRefType(), Type<TValue>()));
                 Newobj(Constructor(Type<MemberSetter<T, TValue>>(), Type<object>(), Type<IntPtr>()));
                 Pop(out MemberSetter<T, TValue> setter);
                 this.setter = setter;
@@ -280,7 +301,13 @@ namespace DotNext.Reflection
 
         private static TValue? GetValue(Provider provider, [DisallowNull] in T instance) => provider(instance);
 
+        private static TValue? GetValueVolatile(Provider provider, [DisallowNull] in T instance)
+            => ReflectionUtils.VolatileRead(ref provider(instance));
+
         private static void SetValue(Provider provider, [DisallowNull] in T instance, TValue value) => provider(instance) = value;
+
+        private static void SetValueVolatile(Provider provider, [DisallowNull] in T instance, TValue value)
+            => ReflectionUtils.VolatileWrite(ref provider(instance), value);
 
         /// <summary>
         /// Obtains field getter in the form of the delegate instance.
@@ -305,7 +332,7 @@ namespace DotNext.Reflection
         {
             if (obj is T instance)
             {
-                value = this[instance];
+                value = getter(in instance);
                 return true;
             }
 
@@ -325,7 +352,7 @@ namespace DotNext.Reflection
                 return false;
             if (obj is T instance)
             {
-                this[instance] = value;
+                setter(in instance, value);
                 return true;
             }
 
@@ -338,7 +365,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose field value will be returned.</param>
         /// <returns>An object containing the value of the field reflected by this instance.</returns>
         public override object? GetValue(object? obj)
-            => obj is T instance ? this[instance] : throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
+            => obj is T instance ? getter(in instance) : throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
 
         /// <summary>
         /// Sets the value of the field supported by the given object.
@@ -352,18 +379,22 @@ namespace DotNext.Reflection
         {
             if (setter is null)
                 throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
-            if (obj is not T)
+            if (obj is not T instance)
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
             if (value is null)
-                this[(T)obj] = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(TValue)!;
-            if (value is not TValue)
+                setter(in instance, FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(TValue)!);
+            if (value is not TValue typedValue)
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(value, typeof(TValue)));
-            this[(T)obj] = (TValue)value;
+            setter(in instance, typedValue);
         }
 
         /// <summary>
         /// Gets or sets instance field value.
         /// </summary>
+        /// <remarks>
+        /// If the underlying field is volatile then you need to use static methods from <see cref="Volatile"/> explicitly to
+        /// implement volatile semantics.
+        /// </remarks>
         /// <param name="this"><c>this</c> argument.</param>
         public ref TValue? this[[DisallowNull] in T @this]
         {
@@ -412,9 +443,13 @@ namespace DotNext.Reflection
         {
             // TODO: Should be optimized when LINQ Expression will have a support for ref return
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(null, field))).Compile();
+            var isVolatile = IsVolatile(field);
 
             Push(provider);
-            Ldftn(Method(Type<Field<TValue>>(), nameof(GetValue), Type<Provider>()));
+            if (isVolatile)
+                Ldftn(Method(Type<Field<TValue>>(), nameof(GetValueVolatile), Type<Provider>()));
+            else
+                Ldftn(Method(Type<Field<TValue>>(), nameof(GetValue), Type<Provider>()));
             Newobj(Constructor(Type<MemberGetter<TValue>>(), Type<object>(), Type<IntPtr>()));
             Pop(out MemberGetter<TValue> getter);
             this.getter = getter;
@@ -426,7 +461,10 @@ namespace DotNext.Reflection
             else
             {
                 Push(provider);
-                Ldftn(Method(Type<Field<TValue>>(), nameof(SetValue), Type<Provider>(), Type<TValue>()));
+                if (isVolatile)
+                    Ldftn(Method(Type<Field<TValue>>(), nameof(SetValueVolatile), Type<Provider>(), Type<TValue>()));
+                else
+                    Ldftn(Method(Type<Field<TValue>>(), nameof(SetValue), Type<Provider>(), Type<TValue>()));
                 Newobj(Constructor(Type<MemberSetter<TValue>>(), Type<object>(), Type<IntPtr>()));
                 Pop(out MemberSetter<TValue> setter);
                 this.setter = setter;
@@ -435,7 +473,11 @@ namespace DotNext.Reflection
 
         private static TValue? GetValue(Provider provider) => provider();
 
+        private static TValue? GetValueVolatile(Provider provider) => ReflectionUtils.VolatileRead(ref provider());
+
         private static void SetValue(Provider provider, TValue value) => provider() = value;
+
+        private static void SetValueVolatile(Provider provider, TValue value) => ReflectionUtils.VolatileWrite(ref provider(), value);
 
         /// <summary>
         /// Obtains field getter in the form of the delegate instance.
@@ -460,7 +502,7 @@ namespace DotNext.Reflection
         {
             if (obj is null)
             {
-                value = Value;
+                value = getter();
                 return true;
             }
 
@@ -480,7 +522,7 @@ namespace DotNext.Reflection
                 return false;
             if (obj is null)
             {
-                Value = value;
+                setter(value);
                 return true;
             }
 
@@ -492,7 +534,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <returns>An object containing the value of the field reflected by this instance.</returns>
-        public override object? GetValue(object? obj) => Value;
+        public override object? GetValue(object? obj) => getter();
 
         /// <summary>
         /// Sets the value of the field supported by the given object.
@@ -507,15 +549,19 @@ namespace DotNext.Reflection
             if (setter is null)
                 throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
             if (value is null)
-                Value = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(TValue)!;
-            if (value is not TValue)
+                setter(FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(TValue)!);
+            if (value is not TValue typedValue)
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(value, typeof(TValue)));
-            Value = (TValue)value;
+            setter(typedValue);
         }
 
         /// <summary>
         /// Obtains managed pointer to the static field.
         /// </summary>
+        /// <remarks>
+        /// If the underlying field is volatile then you need to use static methods from <see cref="Volatile"/> explicitly to
+        /// implement volatile semantics.
+        /// </remarks>
         /// <value>The managed pointer to the static field.</value>
         public ref TValue? Value
         {
