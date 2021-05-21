@@ -465,7 +465,7 @@ namespace DotNext.IO.Pipelines
         {
             if (reader.TryRead(out result) && length <= result.Buffer.Length)
             {
-                result = new ReadResult(result.Buffer.Slice(0L, length), result.IsCanceled, result.IsCompleted);
+                result = new(result.Buffer.Slice(0L, length), result.IsCanceled, result.IsCompleted);
                 return true;
             }
 
