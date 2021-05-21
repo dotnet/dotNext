@@ -547,7 +547,7 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
+        public override int GetHashCode() => kind != UndefinedValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -555,14 +555,19 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T? other) => HasValue && EqualityComparer<T?>.Default.Equals(value, other);
+        public bool Equals(T? other) => kind != UndefinedValue && EqualityComparer<T?>.Default.Equals(value, other);
 
-        private bool Equals(in Optional<T> other) => (kind + other.kind) switch
+        private bool Equals(in Optional<T> other)
         {
-            NotEmptyValue or NotEmptyValue + NullValue => false,
-            NotEmptyValue + NotEmptyValue => EqualityComparer<T?>.Default.Equals(value, other.value),
-            _ => true,
-        };
+            if (kind != other.kind)
+                return false;
+
+            return kind switch
+            {
+                UndefinedValue or NullValue => true,
+                _ => EqualityComparer<T>.Default.Equals(value, other.value),
+            };
+        }
 
         /// <summary>
         /// Determines whether this container stores
