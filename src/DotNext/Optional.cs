@@ -123,7 +123,7 @@ namespace DotNext
         /// <returns>The value wrapped into Optional container.</returns>
         public static Optional<T> ToOptional<T>(this in T? value)
             where T : struct
-            => value ?? Optional<T>.None;
+            => value.HasValue ? Some(value.GetValueOrDefault()) : None<T>();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise <see langword="null"/>.
@@ -133,7 +133,7 @@ namespace DotNext
         /// <returns>Nullable value.</returns>
         public static T? OrNull<T>(this in Optional<T> value)
             where T : struct
-            => value.TryGet(out var result) ? new T?(result) : null;
+            => value.HasValue ? value.OrDefault() : null;
 
         /// <summary>
         /// Returns the second value if the first is empty.
