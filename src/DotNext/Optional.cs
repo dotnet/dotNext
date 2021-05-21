@@ -557,8 +557,18 @@ namespace DotNext
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T? other) => kind != UndefinedValue && EqualityComparer<T?>.Default.Equals(value, other);
 
-        private bool StrictEquals(in Optional<T> other)
+        private bool LegacyEquals(in Optional<T> other) => (kind + other.kind) switch
         {
+            NotEmptyValue or NotEmptyValue + NullValue => false,
+            NotEmptyValue + NotEmptyValue => EqualityComparer<T?>.Default.Equals(value, other.value),
+            _ => true,
+        };
+
+        private bool Equals(in Optional<T> other)
+        {
+            if (LibrarySettings.IsUndefinedEqualsNull)
+                return LegacyEquals(in other);
+
             if (kind != other.kind)
                 return false;
 
@@ -568,16 +578,6 @@ namespace DotNext
                 _ => EqualityComparer<T>.Default.Equals(value, other.value),
             };
         }
-
-        private bool LegacyEquals(in Optional<T> other) => (kind + other.kind) switch
-        {
-            NotEmptyValue or NotEmptyValue + NullValue => false,
-            NotEmptyValue + NotEmptyValue => EqualityComparer<T?>.Default.Equals(value, other.value),
-            _ => true,
-        };
-
-        private bool Equals(in Optional<T> other)
-            => LibrarySettings.IsUndefinedEqualsNull ? LegacyEquals(in other) : StrictEquals(in other);
 
         /// <summary>
         /// Determines whether this container stores
