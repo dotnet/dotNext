@@ -1,6 +1,6 @@
 Optional Type
 ====
-[Optional](xref:DotNext.Optional`1) is a container which may or may not contain a value. [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1) type can work with value types only. `Optional<T>` data type can work with reference and value type both.
+[Optional&lt;T&gt;](xref:DotNext.Optional`1) is a container which may or may not contain a value. [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1) type can work with value types only. `Optional<T>` data type can work with reference and value type both.
 
 The following example demonstrates usage of this type:
 ```csharp
@@ -33,7 +33,7 @@ using DotNext;
 using System;
 
 static Optional<string> FirstOrNull(string[] array)
-    => array.Length > 0 ? array[0] : Optional<string>.Empty;
+    => array.Length > 0 ? array[0] : Optional<string>.None;
 
 string[] array1 = { null };
 Optional<string> first1 = FirstOrNull(array1);
@@ -47,7 +47,7 @@ Optional<string> first2 = FirstOrNull(array2);
 using DotNext;
 
 var first1 = new Optional<string>(null);
-var first2 = Optional<string>.Empty;    //or default(Optional<string>)
+var first2 = Optional<string>.None;    //or default(Optional<string>)
 ```
 
 Is it possible to distinguish the absence of value from **null** value? The answer is yes. There are two additional properties:
@@ -73,12 +73,55 @@ else
 }
 ```
 
-Undefined `Optional<T>` instance can be produced only by `Empty` static property or by default value:
+Undefined `Optional<T>` instance can be produced only by `None` static property or by default value:
 ```csharp
 using DotNext;
 
-Optional<string>.Empty; // IsUndefined == true, IsNull == false
+Optional<string>.None; // IsUndefined == true, IsNull == false
 new Optional<string>(); // IsUndefined == true, IsNull == false
 default(Optional<string>);  // IsUndefined == true, IsNull == false
 new Optional<string>(null); // IsUndefined == false, IsNull == true
+```
+
+There is also convenient factory methods for creating optional values:
+```csharp
+using DotNext;
+
+Optional<string> nullValue = Optional.Null<string>();       // undefined
+Optional<string> undefinedValue = Optional.None<string>();  // null
+Optional<string> value = Optional.Some("Hello, world!");    // not null
+```
+
+Behavior of `Equals` method and equality operators depend on underlying value and its presence. Undefined and null values behave similarily to JavaScript.
+```csharp
+using DotNext;
+
+Optional.Null<string>() == Optional.Null<string>(); // true
+Optional.None<string>() == Optional.None<string>(); // true
+Optional.None<string>() == Optional.Null<string>(); // false
+```
+
+> [!IMPORTANT]
+> Prior to .NEXT 3.2.0, null value is equal to undefined value, i.e. `Optional.None<string>() == Optional.Null<string>()` evaluated as true. Starting from 3.2.0 the behavior is changed. If you need to return previous behavior, then enable _DotNext.Optional.UndefinedEqualsNull_ switch using `SetSwitch` method from [AppContext](https://docs.microsoft.com/en-us/dotnet/api/system.appcontext) class.
+
+# JSON serialization
+[Optional&lt;T&gt;](xref:DotNext.Optional`1) is compatible with JSON serialization provided by `System.Text.Json` namespace. You can enable support of this type using [OptionalConverterFactory](xref:DotNext.Text.Json.OptionalConverterFactory) converter. The converter can be applied to the property or field directly using [JsonConverterAttribute](https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonconverterattribute) attribute or it can be registered via [Converters](https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonserializeroptions.converters) property.
+
+If the value of `Optional<T>` is undefined, then property will be completely removed from serialized JSON document. This is useful when you want to describe Data Transfer Object for your resource in REST API that allows partial updates with _PATCH_ HTTP method. To make this magic work, you also need to apply [JsonIgnoreAttribute](https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonignoreattribute) with condition equal to [JsonIgnoreCondition.WhenWritingDefault](https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonignorecondition). This condition tells JSON serializer to drop the field if its value is equal to default value. As we know, the default value of `Optional<T>` is always undefined. The following example demonstrates how to design DTO with optional JSON fields:
+```csharp
+using DotNext.Text.Json;
+using System.Text.Json;
+
+public sealed class JsonObject
+{
+    [JsonConverter(typeof(OptionalConverterFactory))]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public Optional<int> IntegerValue { get; set; } // optional field
+
+    [JsonConverter(typeof(OptionalConverterFactory))]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public Optional<string> StringField { get; set; } // optional field
+
+    public bool BoolField{ get; set; } // required field which is always presented in JSON
+}
 ```
