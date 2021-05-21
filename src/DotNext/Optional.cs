@@ -322,7 +322,7 @@ namespace DotNext
         /// Boxes value encapsulated by this object.
         /// </summary>
         /// <returns>The boxed value.</returns>
-        public Optional<object> Box() => HasValue ? new Optional<object>(value!) : default;
+        public Optional<object> Box() => IsUndefined ? default : new(value);
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -555,7 +555,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T? other) => kind != UndefinedValue && EqualityComparer<T?>.Default.Equals(value, other);
+        public bool Equals(T? other) => !IsUndefined && EqualityComparer<T?>.Default.Equals(value, other);
 
         private bool LegacyEquals(in Optional<T> other) => (kind + other.kind) switch
         {
@@ -595,10 +595,10 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other) => other switch
         {
-            null => kind == NullValue,
+            null => IsNull,
             Optional<T> optional => Equals(in optional),
             T value => Equals(value),
-            _ => ReferenceEquals(other, Missing.Value) && kind == UndefinedValue
+            _ => ReferenceEquals(other, Missing.Value) && IsUndefined,
         };
 
         /// <summary>
@@ -609,7 +609,7 @@ namespace DotNext
         /// <param name="comparer">The comparer implementing custom equality check.</param>
         /// <returns><see langword="true"/> if <paramref name="other"/> is equal to <see cref="Value"/> using custom check; otherwise, <see langword="false"/>.</returns>
         public bool Equals(object? other, IEqualityComparer comparer)
-            => other is T && HasValue && comparer.Equals(value, other);
+            => !IsUndefined && comparer.Equals(value, other);
 
         /// <summary>
         /// Computes hash code for the stored value
