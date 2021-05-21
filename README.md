@@ -53,6 +53,7 @@ This is maintenance release.
 <a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
 * Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
 * Added `TryGetWrittenContent` method to `SparseBufferWriter<T>` that allows to obtain the written buffer if it is represented by contiguous memory block
+* Added `OptionalConverterFactory` class that allows to use `Optional<T>` data type in JSON serialization. This type allows to hide data from JSON if the property of field has undefined value. Useful for designing DTOs for REST API with partial resource updates via PATCH method. Available only when target is .NET 5.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
