@@ -125,6 +125,7 @@ namespace DotNext.Reflection
             internal static long StaticProp { get; set; }
 
             private int value;
+            private volatile int volatileField;
 
             public ClassWithProperties() { }
 
@@ -243,6 +244,7 @@ namespace DotNext.Reflection
         }
 
         private static long Field = 0;
+        private static volatile int VolatileField = 0;
 
         [Fact]
         public static void StaticFieldTest()
@@ -252,6 +254,17 @@ namespace DotNext.Reflection
             Equal(Field, statField.Value);
             MemberGetter<long> getter = statField;
             Equal(42L, getter());
+        }
+
+        [Fact]
+        public static void StaticVolatileField()
+        {
+            var statField = Type<TypeTests>.Field<int>.RequireStatic(nameof(VolatileField), true);
+            True(statField.GetValue(null, out int value));
+            Equal(VolatileField, value);
+            True(statField.SetValue(null, 42));
+            True(statField.GetValue(null, out value));
+            Equal(42, value);
         }
 
         [Fact]
@@ -268,6 +281,16 @@ namespace DotNext.Reflection
             classField[obj] = 42;
             Equal(42, obj.ReadOnlyProp);
             Equal(42, classField[obj]);
+        }
+
+        [Fact]
+        public void InstanceVolatileFieldTest()
+        {
+            var obj = new ClassWithProperties();
+            var classField = Type<ClassWithProperties>.Field<int>.Require("volatileField", true);
+            True(classField.SetValue(obj, 42));
+            True(classField.GetValue(obj, out int value));
+            Equal(42, value);
         }
 
         [Fact]
