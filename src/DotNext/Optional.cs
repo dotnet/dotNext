@@ -157,16 +157,16 @@ namespace DotNext
         /// <param name="value">The value to be wrapped.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <returns>The optional container.</returns>
-        public static Optional<T> Some<T>(T value) => new(value);
+        public static Optional<T> Some<T>(T? value) => new(value);
 
         /// <summary>
         /// Wraps <see langword="null"/> value to <see cref="Optional{T}"/> container.
         /// </summary>
         /// <typeparam name="T">The reference type.</typeparam>
         /// <returns>The <see cref="Optional{T}"/> instance representing <see langword="null"/> value.</returns>
-        public static Optional<T?> Null<T>()
+        public static Optional<T> Null<T>()
             where T : class
-            => Some<T?>(null);
+            => Some<T>(null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
