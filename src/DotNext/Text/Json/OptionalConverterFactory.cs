@@ -53,7 +53,7 @@ namespace DotNext.Text.Json
         }
 
         /// <inheritdoc />
-        public override bool CanConvert(Type typeToConvert) => Optional.IsOptional(typeToConvert);
+        public override bool CanConvert(Type typeToConvert) => typeToConvert.IsOptional();
 
         /// <inheritdoc />
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DelegatingConverter<>))]
