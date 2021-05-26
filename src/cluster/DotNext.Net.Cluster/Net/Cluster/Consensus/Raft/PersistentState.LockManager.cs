@@ -19,10 +19,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long maxReadCount;
             private long readerCount;
 
-            internal LockState(long concurrencyLevel)
+            internal LockState(int concurrencyLevel)
             {
                 maxReadCount = concurrencyLevel;
-                readerCount = 0L;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -41,6 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private void ReleaseReadLock()
             {
                 Debug.Assert(readerCount > 0L);
+
                 readerCount -= 1L;
             }
 
