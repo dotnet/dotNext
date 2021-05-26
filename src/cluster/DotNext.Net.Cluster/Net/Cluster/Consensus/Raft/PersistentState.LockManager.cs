@@ -159,10 +159,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal interface IWriteLock
         {
-            Task AcquireAsync(CancellationToken token);
-
-            void Release();
-
             long Version { get; }
 
             void Release(long version);
@@ -208,10 +204,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void Release(LockType type)
                 => Signal(state, lockRelease[(int)type], true);
-
-            Task IWriteLock.AcquireAsync(CancellationToken token) => AcquireAsync(LockType.WriteLock, token);
-
-            void IWriteLock.Release() => Release(LockType.WriteLock);
 
             long IWriteLock.Version => lockVersion.VolatileRead();
 
