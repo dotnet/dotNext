@@ -489,5 +489,41 @@ namespace DotNext.IO
                 await ThrowsAsync<EndOfStreamException>(() => reader.SkipAsync(3).AsTask());
             }
         }
+
+        [Fact]
+        public static void EmptyReader()
+        {
+            var reader = IAsyncBinaryReader.Empty;
+            True(reader.TryGetSpan(out var span));
+            True(span.IsEmpty);
+            True(reader.SkipAsync(0).IsCompletedSuccessfully);
+            True(reader.CopyToAsync(Stream.Null).IsCompletedSuccessfully);
+            True(reader.CopyToAsync(new ArrayBufferWriter<byte>()).IsCompletedSuccessfully);
+            True(reader.CopyToAsync(static (sp, arg) => { }, 10).IsCompletedSuccessfully);
+            True(reader.CopyToAsync(new StreamConsumer(Stream.Null)).IsCompletedSuccessfully);
+            Throws<EndOfStreamException>(() => reader.ReadAsync<int>().Result);
+            Throws<EndOfStreamException>(() => reader.ReadAsync(new byte[2].AsMemory()).GetAwaiter().GetResult());
+            Throws<EndOfStreamException>(() => reader.SkipAsync(10).GetAwaiter().GetResult());
+            True(reader.ReadAsync(Memory<byte>.Empty).IsCompletedSuccessfully);
+            Throws<EndOfStreamException>(() => reader.ReadInt16Async(true).Result);
+            Throws<EndOfStreamException>(() => reader.ReadInt32Async(true).Result);
+            Throws<EndOfStreamException>(() => reader.ReadInt64Async(true).Result);
+
+            Throws<EndOfStreamException>(() => reader.ReadStringAsync(10, default).Result);
+            Empty(reader.ReadStringAsync(0, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadStringAsync(LengthFormat.Plain, default).Result);
+
+            Throws<EndOfStreamException>(() => reader.ReadByteAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadInt16Async(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadInt32Async(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadInt64Async(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadSingleAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadDoubleAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadGuidAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadTimeSpanAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadDateTimeAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadDateTimeOffsetAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ReadDecimalAsync(LengthFormat.Plain, default).Result);
+        }
     }
 }

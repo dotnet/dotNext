@@ -446,6 +446,33 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Attempts to read block of data synchronously.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't advance the reader position.
+        /// </remarks>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the block to consume, in bytes.</param>
+        /// <param name="result">
+        /// The requested block of data which length is equal to <paramref name="length"/> in case of success;
+        /// otherwise, empty block.
+        /// </param>
+        /// <returns>
+        /// <see langword="true"/> if the block of requested length is obtained successfully;
+        /// otherwise, <see langword="false"/>.
+        /// </returns>
+        public static bool TryReadBlock(this PipeReader reader, long length, out ReadResult result)
+        {
+            if (reader.TryRead(out result) && length <= result.Buffer.Length)
+            {
+                result = new(result.Buffer.Slice(0L, length), result.IsCanceled, result.IsCompleted);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Consumes the requested portion of data asynchronously.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>
@@ -469,7 +496,7 @@ namespace DotNext.IO.Pipelines
                 readResult.ThrowIfCancellationRequested(token);
                 var buffer = readResult.Buffer;
                 if (buffer.IsEmpty)
-                    break;
+                    throw new EndOfStreamException();
                 consumed = buffer.Start;
                 for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
                 {
@@ -477,9 +504,6 @@ namespace DotNext.IO.Pipelines
                     await consumer.Invoke(block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
                 }
             }
-
-            if (length > 0L)
-                throw new EndOfStreamException();
         }
 
         /// <summary>
@@ -509,7 +533,33 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data to skip.</exception>
         public static ValueTask SkipAsync(this PipeReader reader, long length, CancellationToken token = default)
-            => ReadBlockAsync(reader, length, SkippingConsumer.Instance, token);
+        {
+            return length switch
+            {
+                0L => new(),
+#if NETSTANDARD2_1
+                < 0L => new(Task.FromException(new ArgumentOutOfRangeException(nameof(length)))),
+#else
+                < 0L => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
+#endif
+                _ => SkipCoreAsync(reader, length, token),
+            };
+
+            static async ValueTask SkipCoreAsync(PipeReader reader, long length, CancellationToken token)
+            {
+                while (length > 0L)
+                {
+                    var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+                    readResult.ThrowIfCancellationRequested(token);
+                    var buffer = readResult.Buffer;
+                    if (buffer.IsEmpty)
+                        throw new EndOfStreamException();
+                    var bytesToConsume = Math.Min(buffer.Length, length);
+                    length -= bytesToConsume;
+                    reader.AdvanceTo(buffer.GetPosition(bytesToConsume));
+                }
+            }
+        }
 
         /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.

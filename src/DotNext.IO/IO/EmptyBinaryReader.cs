@@ -14,6 +14,12 @@ namespace DotNext.IO
 
     internal sealed class EmptyBinaryReader : IAsyncBinaryReader
     {
+        internal static readonly EmptyBinaryReader Instance = new();
+
+        private EmptyBinaryReader()
+        {
+        }
+
         private static ValueTask<T> EndOfStream<T>()
 #if NETSTANDARD2_1
             => new (Task.FromException<T>(new EndOfStreamException()));
@@ -28,27 +34,30 @@ namespace DotNext.IO
             => ValueTask.FromException(new EndOfStreamException());
 #endif
 
+        private static Task GetCompletedOrCanceledTask(CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+
         public ValueTask<T> ReadAsync<T>(CancellationToken token)
             where T : unmanaged
             => EndOfStream<T>();
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
-            => EndOfStream();
+            => output.IsEmpty ? new() : EndOfStream();
 
         public ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
             => EndOfStream<MemoryOwner<byte>>();
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-            => EndOfStream<string>();
+            => length == 0 ? new(string.Empty) : EndOfStream<string>();
 
         public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
             => EndOfStream<string>();
 
         public Task CopyToAsync(Stream output, CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+            => GetCompletedOrCanceledTask(token);
 
         public Task CopyToAsync(PipeWriter output, CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+            => GetCompletedOrCanceledTask(token);
 
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
             => EndOfStream<long>();
@@ -113,8 +122,14 @@ namespace DotNext.IO
         ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
             => EndOfStream<BigInteger>();
 
-        private static Task GetCompletedOrCanceledTask(CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+        ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+            => length == 0 ? new() : EndOfStream();
+
+        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            bytes = ReadOnlySpan<byte>.Empty;
+            return true;
+        }
 
         Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
             => GetCompletedOrCanceledTask(token);

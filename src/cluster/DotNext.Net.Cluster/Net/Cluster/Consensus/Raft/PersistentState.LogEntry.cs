@@ -155,7 +155,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    result = transformation.TransformAsync(IAsyncBinaryReader.Empty, token);
+                    result = IDataTransferObject.Empty.TransformAsync<TResult, TTransformation>(transformation, token);
                 }
 
                 return result;
@@ -176,6 +176,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (content is null)
                 {
                     memory = buffer;
+                    return true;
+                }
+
+                if (IsEmpty)
+                {
+                    memory = ReadOnlyMemory<byte>.Empty;
                     return true;
                 }
 

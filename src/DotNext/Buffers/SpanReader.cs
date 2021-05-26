@@ -95,6 +95,19 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Moves the reader back the specified number of items.
+        /// </summary>
+        /// <param name="count">The number of items.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="ConsumedCount"/>.</exception>
+        public void Rewind(int count)
+        {
+            if (count < 0 || count > position)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            position -= count;
+        }
+
+        /// <summary>
         /// Sets reader position to the first element.
         /// </summary>
         public void Reset() => position = 0;

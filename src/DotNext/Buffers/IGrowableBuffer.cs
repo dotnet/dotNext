@@ -93,6 +93,13 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
         void Clear();
 
+        /// <summary>
+        /// Attempts to get written content as contiguous block of memory.
+        /// </summary>
+        /// <param name="block">The block representing written content.</param>
+        /// <returns><see langword="true"/> if the written content can be represented as contiguous block of memory; otherwise, <see langword="false"/>.</returns>
+        bool TryGetWrittenContent(out ReadOnlyMemory<T> block);
+
         internal static int? GetBufferSize(int sizeHint, int capacity, int writtenCount)
         {
             if (sizeHint < 0)

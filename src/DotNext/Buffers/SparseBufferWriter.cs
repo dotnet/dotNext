@@ -99,6 +99,31 @@ namespace DotNext.Buffers
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating that this buffer consists of a single segment.
+        /// </summary>
+        public bool IsSingleSegment => ReferenceEquals(first, last);
+
+        /// <summary>
+        /// Attempts to get the underlying buffer if it is presented by a single segment.
+        /// </summary>
+        /// <param name="segment">The single segment representing written content.</param>
+        /// <returns><see langword="true"/> if this buffer is represented by a single segment; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
+        public bool TryGetWrittenContent(out ReadOnlyMemory<T> segment)
+        {
+            ThrowIfDisposed();
+
+            if (IsSingleSegment)
+            {
+                segment = first is null ? ReadOnlyMemory<T>.Empty : first.WrittenMemory;
+                return true;
+            }
+
+            segment = default;
+            return false;
+        }
+
         private long FragmentedBytes
         {
             get
@@ -251,15 +276,7 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
-        {
-            if (first is null)
-                return ReadOnlySequence<T>.Empty;
-
-            if (first.Next is null)
-                return new ReadOnlySequence<T>(first.WrittenMemory);
-
-            return BufferHelpers.ToReadOnlySequence(this);
-        }
+            => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : BufferHelpers.ToReadOnlySequence(this);
 
         /// <summary>
         /// Gets enumerator over memory segments.

@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private class OctetStreamLogEntry : IRaftLogEntry
         {
             private readonly PipeReader reader;
-            private readonly byte[] metadataBuffer;
+            private Memory<byte> metadataBuffer;
             private LogEntryMetadata metadata;
             private bool consumed;
 
@@ -78,7 +78,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 this.reader = reader;
                 consumed = true;
-                metadataBuffer = new byte[LogEntryMetadata.Size];
             }
 
             private protected bool Consumed => consumed;
@@ -86,15 +85,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private protected ValueTask SkipAsync()
             {
                 consumed = true;
-                return reader.SkipAsync(metadata.Length);
+                return metadata.Length > 0L ? reader.SkipAsync(metadata.Length) : new();
             }
 
-            private protected async ValueTask ConsumeAsync()
+            // fast path - attempt to consume metadata synchronously
+            private bool TryConsume()
             {
-                await reader.ReadBlockAsync(metadataBuffer.AsMemory()).ConfigureAwait(false);
-                metadata = new LogEntryMetadata(metadataBuffer);
+                if (!reader.TryReadBlock(LogEntryMetadata.Size, out var result) || result.IsCanceled)
+                    return false;
+
+                metadata = new(result.Buffer, out var metadataEnd);
+                reader.AdvanceTo(metadataEnd);
+                consumed = false;
+                return true;
+            }
+
+            // slow path - consume metadata asynchronously and allocate buffer on the heap
+            private async ValueTask ConsumeSlowAsync()
+            {
+                if (metadataBuffer.IsEmpty)
+                    metadataBuffer = new(new byte[LogEntryMetadata.Size]);
+
+                await reader.ReadBlockAsync(metadataBuffer).ConfigureAwait(false);
+                metadata = new(metadataBuffer);
                 consumed = false;
             }
+
+            private protected ValueTask ConsumeAsync() => TryConsume() ? new() : ConsumeSlowAsync();
 
             long? IDataTransferObject.Length => metadata.Length;
 
@@ -122,10 +139,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     consumed = true;
-                    result = reader.ReadBlockAsync(metadata.Length, writer, token);
+                    result = metadata.Length > 0L ? reader.ReadBlockAsync(metadata.Length, writer, token) : new();
                 }
 
                 return result;
+            }
+
+            bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                memory = ReadOnlyMemory<byte>.Empty;
+                return metadata.Length == 0L;
             }
         }
 
@@ -148,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
                 if (section is null)
                     return false;
-                current = new MultipartLogEntry(section);
+                current = new(section);
                 count -= 1L;
                 return true;
             }
@@ -214,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ValueTask IAsyncDisposable.DisposeAsync()
             {
                 count = 0L;
-                return new ValueTask();
+                return new();
             }
         }
 
@@ -287,6 +310,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // following format:
         // <term> - 8 bytes
         // <timestamp> - 8 bytes
+        // <flags> - 1 byte
+        // <command-id> - 4 bytes
         // <length> - 8 bytes
         // <payload> - octet string
         private sealed class OctetStreamLogEntriesWriter : HttpContent
@@ -295,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OctetStreamLogEntriesWriter(in TList entries)
             {
-                Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Octet);
+                Headers.ContentType = new(MediaTypeNames.Application.Octet);
                 this.entries = entries;
             }
 
@@ -360,9 +385,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal MultipartLogEntriesWriter(in TList entries)
             {
                 boundary = Guid.NewGuid().ToString();
-                this.entries = new Enumerable<TEntry, TList>(in entries);
+                this.entries = new(in entries);
                 var contentType = new MediaTypeHeaderValue(ContentType);
-                contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
+                contentType.Parameters.Add(new(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
             }
 

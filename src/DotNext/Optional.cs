@@ -123,7 +123,7 @@ namespace DotNext
         /// <returns>The value wrapped into Optional container.</returns>
         public static Optional<T> ToOptional<T>(this in T? value)
             where T : struct
-            => value ?? Optional<T>.None;
+            => value.HasValue ? Some(value.GetValueOrDefault()) : None<T>();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise <see langword="null"/>.
@@ -133,7 +133,7 @@ namespace DotNext
         /// <returns>Nullable value.</returns>
         public static T? OrNull<T>(this in Optional<T> value)
             where T : struct
-            => value.TryGet(out var result) ? new T?(result) : null;
+            => value.HasValue ? value.OrDefault() : null;
 
         /// <summary>
         /// Returns the second value if the first is empty.
@@ -157,16 +157,16 @@ namespace DotNext
         /// <param name="value">The value to be wrapped.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <returns>The optional container.</returns>
-        public static Optional<T> Some<T>(T value) => new(value);
+        public static Optional<T> Some<T>([DisallowNull] T value) => new(value);
 
         /// <summary>
         /// Wraps <see langword="null"/> value to <see cref="Optional{T}"/> container.
         /// </summary>
         /// <typeparam name="T">The reference type.</typeparam>
         /// <returns>The <see cref="Optional{T}"/> instance representing <see langword="null"/> value.</returns>
-        public static Optional<T?> Null<T>()
+        public static Optional<T> Null<T>()
             where T : class
-            => Some<T?>(null);
+            => new(null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
@@ -322,7 +322,7 @@ namespace DotNext
         /// Boxes value encapsulated by this object.
         /// </summary>
         /// <returns>The boxed value.</returns>
-        public Optional<object> Box() => HasValue ? new Optional<object>(value!) : default;
+        public Optional<object> Box() => IsUndefined ? default : new(value);
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -555,14 +555,29 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T? other) => HasValue && EqualityComparer<T?>.Default.Equals(value, other);
+        public bool Equals(T? other) => !IsUndefined && EqualityComparer<T?>.Default.Equals(value, other);
 
-        private bool Equals(in Optional<T> other) => (kind + other.kind) switch
+        private bool LegacyEquals(in Optional<T> other) => (kind + other.kind) switch
         {
             NotEmptyValue or NotEmptyValue + NullValue => false,
             NotEmptyValue + NotEmptyValue => EqualityComparer<T?>.Default.Equals(value, other.value),
             _ => true,
         };
+
+        private bool Equals(in Optional<T> other)
+        {
+            if (LibrarySettings.IsUndefinedEqualsNull)
+                return LegacyEquals(in other);
+
+            if (kind != other.kind)
+                return false;
+
+            return kind switch
+            {
+                UndefinedValue or NullValue => true,
+                _ => EqualityComparer<T?>.Default.Equals(value, other.value),
+            };
+        }
 
         /// <summary>
         /// Determines whether this container stores
@@ -580,10 +595,10 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other) => other switch
         {
-            null => kind == NullValue,
+            null => IsNull,
             Optional<T> optional => Equals(in optional),
             T value => Equals(value),
-            _ => ReferenceEquals(other, Missing.Value) && kind == UndefinedValue
+            _ => ReferenceEquals(other, Missing.Value) && IsUndefined,
         };
 
         /// <summary>
@@ -594,7 +609,7 @@ namespace DotNext
         /// <param name="comparer">The comparer implementing custom equality check.</param>
         /// <returns><see langword="true"/> if <paramref name="other"/> is equal to <see cref="Value"/> using custom check; otherwise, <see langword="false"/>.</returns>
         public bool Equals(object? other, IEqualityComparer comparer)
-            => other is T && HasValue && comparer.Equals(value, other);
+            => !IsUndefined && comparer.Equals(value, other);
 
         /// <summary>
         /// Computes hash code for the stored value

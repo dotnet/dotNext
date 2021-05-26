@@ -8,7 +8,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>3.1.1</Version>
+    <Version>3.2.0</Version>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -49,7 +49,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
     <PackageReference Include="Fody" Version="6.5.1" PrivateAssets="all" />
-    <PackageReference Include="InlineIL.Fody" Version="1.6.0" PrivateAssets="all" />
+    <PackageReference Include="InlineIL.Fody" Version="1.7.0" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
   </ItemGroup>
 
@@ -58,7 +58,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.1.1, 4)" />
+    <PackageReference Include="DotNext" Version="[3.2.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>

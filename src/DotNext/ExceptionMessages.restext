@@ -14,3 +14,5 @@ BoxedValueTypeExpected=The object must be boxed value type of type {0}
 ResourceEntryIsNull=Resource entry {0} is null
 EmptyBuffer=The buffer is empty
 MalformedBase64=The input BASE64 string contains invalid characters
+UndefinedValueDetected=Undefined value is unexpected in converter. Apply JsonIgnoreAttribute attribute with condition equal to JsonIgnoreCondition.WhenWritingDefault
+UndefinedEqualsNullSwitchEnabled=Converter is not supported if switch DotNext.Optional.UndefinedEqualsNull is enabled

@@ -18,6 +18,11 @@ namespace DotNext.IO
         private const int DefaultBufferSize = 256;
 
         /// <summary>
+        /// Gets empty data transfer object.
+        /// </summary>
+        public static IDataTransferObject Empty => EmptyDataTransferObject.Instance;
+
+        /// <summary>
         /// Represents DTO transformation.
         /// </summary>
         /// <typeparam name="TResult">The result type.</typeparam>

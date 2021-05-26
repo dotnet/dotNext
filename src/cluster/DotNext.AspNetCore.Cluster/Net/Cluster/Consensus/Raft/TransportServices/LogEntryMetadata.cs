@@ -1,6 +1,7 @@
 using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -17,15 +18,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private const byte NoFlags = 0;
         private const byte HasIdentifierFlag = 0x01;
 
-        private readonly long timestamp;
+        private readonly long timestamp, term, length;
         private readonly byte flags;
         private readonly int identifier;
 
         private LogEntryMetadata(long term, DateTimeOffset timestamp, long length, int? identifier)
         {
-            Term = term;
+            this.term = term;
             this.timestamp = timestamp.UtcTicks;
-            Length = length;
+            this.length = length;
             flags = identifier.HasValue ? HasIdentifierFlag : NoFlags;
             this.identifier = identifier.GetValueOrDefault();
         }
@@ -34,19 +35,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             where TEntry : notnull, IRaftLogEntry
             => new(entry.Term, entry.Timestamp, entry.Length.GetValueOrDefault(), entry.CommandId);
 
-        internal LogEntryMetadata(ReadOnlySpan<byte> input)
+        internal LogEntryMetadata(ReadOnlyMemory<byte> input)
+            : this(new ReadOnlySequence<byte>(input), out _)
         {
-            var reader = new SpanReader<byte>(input);
-            Term = reader.ReadInt64(true);
-            timestamp = reader.ReadInt64(true);
-            flags = reader.Read();
-            identifier = reader.ReadInt32(true);
-            Length = reader.ReadInt64(true);
         }
 
-        internal long Term { get; }
+        internal LogEntryMetadata(ReadOnlySequence<byte> input, out SequencePosition position)
+        {
+            Debug.Assert(input.Length >= Size);
 
-        internal long Length { get; }
+            var reader = new SequenceReader<byte>(input);
+            reader.TryReadLittleEndian(out term);
+            reader.TryReadLittleEndian(out timestamp);
+            reader.TryRead(out flags);
+            reader.TryReadLittleEndian(out identifier);
+            reader.TryReadLittleEndian(out length);
+
+            position = reader.Position;
+        }
+
+        internal long Term => term;
+
+        internal long Length => length;
 
         internal DateTimeOffset Timestamp => new(timestamp, TimeSpan.Zero);
 

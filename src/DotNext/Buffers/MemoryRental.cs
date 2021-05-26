@@ -26,7 +26,7 @@ namespace DotNext.Buffers
     /// </example>
     /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly ref struct MemoryRental<T>
+    public ref struct MemoryRental<T>
     {
         /// <summary>
         /// Global recommended number of elements that can be allocated on the stack.
@@ -110,20 +110,20 @@ namespace DotNext.Buffers
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
 
             var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
-            memory = exactSize ? owner.AsSpan(0, minBufferSize) : new Span<T>(owner);
+            memory = exactSize ? owner.AsSpan(0, minBufferSize) : new(owner);
             this.owner = owner;
         }
 
         /// <summary>
         /// Gets the rented memory.
         /// </summary>
-        public Span<T> Span => memory;
+        public readonly Span<T> Span => memory;
 
         /// <summary>
         /// Gets a value indicating that this object
         /// doesn't reference rented memory.
         /// </summary>
-        public bool IsEmpty => memory.IsEmpty;
+        public readonly bool IsEmpty => memory.IsEmpty;
 
         /// <summary>
         /// Converts the reference to the already allocated memory
@@ -137,14 +137,14 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets length of the rented memory.
         /// </summary>
-        public int Length => memory.Length;
+        public readonly int Length => memory.Length;
 
         /// <summary>
         /// Gets the memory element by its index.
         /// </summary>
         /// <param name="index">The index of the memory element.</param>
         /// <returns>The managed pointer to the memory element.</returns>
-        public ref T this[int index] => ref memory[index];
+        public readonly ref T this[int index] => ref memory[index];
 
         /// <summary>
         /// Obtains managed pointer to the first element of the rented array.
@@ -152,13 +152,13 @@ namespace DotNext.Buffers
         /// <returns>The managed pointer to the first element of the rented array.</returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetPinnableReference() => ref memory.GetPinnableReference();
+        public readonly ref T GetPinnableReference() => ref memory.GetPinnableReference();
 
         /// <summary>
         /// Gets textual representation of the rented memory.
         /// </summary>
         /// <returns>The textual representation of the rented memory.</returns>
-        public override string ToString() => memory.ToString();
+        public override readonly string ToString() => memory.ToString();
 
         /// <summary>
         /// Returns the memory back to the pool.
@@ -174,6 +174,8 @@ namespace DotNext.Buffers
                     ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
                     break;
             }
+
+            this = default;
         }
     }
 }

@@ -242,6 +242,25 @@ namespace DotNext.Threading
         }
 
         /// <summary>
+        /// Ensures that the object has expected state.
+        /// </summary>
+        /// <remarks>
+        /// This is synchronous version of <see cref="WaitAsync{TState}(TState, Predicate{TState}, TimeSpan, CancellationToken)"/>
+        /// with fail-fast behavior.
+        /// </remarks>
+        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
+        /// <param name="state">The state to be inspected by predicate.</param>
+        /// <param name="condition">The condition to be examined immediately.</param>
+        /// <returns>The result of <paramref name="condition"/> invocation.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool EnsureState<TState>(TState state, Predicate<TState> condition)
+            where TState : class
+        {
+            ThrowIfDisposed();
+            return condition(state);
+        }
+
+        /// <summary>
         /// Suspends the caller and waits for the event that meets to the specified condition.
         /// </summary>
         /// <typeparam name="TState">The type of the state to be inspected.</typeparam>

@@ -41,7 +41,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T VolatileRead<T>(ref T fieldRef)
+        public static T VolatileRead<T>(ref T? fieldRef)
         {
             Push(ref fieldRef);
             Volatile();
@@ -82,7 +82,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite<T>(ref T fieldRef, T value)
+        public static void VolatileWrite<T>(ref T? fieldRef, T value)
         {
             Push(ref fieldRef);
             Push(value);

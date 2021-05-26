@@ -40,18 +40,14 @@ namespace DotNext.IO
                 => decoder(reader, token);
         }
 
-        private static BufferWriter<byte> CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator)
+        // can return null if capacity == 0
+        private static BufferWriter<byte>? CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator) => capacity switch
         {
-            BufferWriter<byte> result;
-            if (!capacity.TryGetValue(out var len) || len == 0L)
-                result = new PooledBufferWriter<byte>(allocator);
-            else if (len <= int.MaxValue)
-                result = new PooledBufferWriter<byte>(allocator, (int)len);
-            else
-                throw new InsufficientMemoryException();
-
-            return result;
-        }
+            null => new PooledBufferWriter<byte>(allocator),
+            0L => null,
+            long length when length <= int.MaxValue => new PooledBufferWriter<byte>(allocator, (int)length),
+            _ => throw new InsufficientMemoryException(),
+        };
 
         /// <summary>
         /// Copies the object content into the specified stream.
@@ -160,7 +156,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new(encoding.GetString(memory.Span));
+                    result = new(memory.IsEmpty ? string.Empty : encoding.GetString(memory.Span));
                 }
                 catch (Exception e)
                 {
@@ -180,9 +176,19 @@ namespace DotNext.IO
 
             static async ValueTask<string> DecodeAsync(TObject dto, Encoding encoding, MemoryAllocator<byte>? allocator, CancellationToken token)
             {
-                using var buffer = CreateBuffer(dto.Length, allocator);
-                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
-                return buffer.WrittenCount == 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
+                var buffer = CreateBuffer(dto.Length, allocator);
+                if (buffer is null)
+                    return string.Empty;
+
+                try
+                {
+                    await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                    return buffer.WrittenCount == 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
         }
 
@@ -224,9 +230,19 @@ namespace DotNext.IO
 
             static async ValueTask<byte[]> BufferizeAsync(TObject dto, MemoryAllocator<byte>? allocator, CancellationToken token)
             {
-                using var buffer = CreateBuffer(dto.Length, allocator);
-                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
-                return buffer.WrittenMemory.ToArray();
+                var buffer = CreateBuffer(dto.Length, allocator);
+                if (buffer is null)
+                    return Array.Empty<byte>();
+
+                try
+                {
+                    await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                    return buffer.WrittenMemory.ToArray();
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
         }
 
@@ -268,9 +284,19 @@ namespace DotNext.IO
 
             static async ValueTask<MemoryOwner<byte>> BufferizeAsync(TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             {
-                using var buffer = CreateBuffer(dto.Length, allocator);
-                await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
-                return buffer.DetachBuffer();
+                var buffer = CreateBuffer(dto.Length, allocator);
+                if (buffer is null)
+                    return new();
+
+                try
+                {
+                    await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
+                    return buffer.DetachBuffer();
+                }
+                finally
+                {
+                    buffer.Dispose();
+                }
             }
         }
 

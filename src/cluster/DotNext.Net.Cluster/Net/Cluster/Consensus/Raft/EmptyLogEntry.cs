@@ -62,6 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new();
 
         /// <inheritdoc/>
-        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token) => transformation.TransformAsync(IAsyncBinaryReader.Empty, token);
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            => IDataTransferObject.Empty.TransformAsync<TResult, TTransformation>(transformation, token);
     }
 }

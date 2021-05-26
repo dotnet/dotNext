@@ -60,6 +60,8 @@ namespace DotNext.IO
 #else
                 return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
 #endif
+            if (length == 0)
+                goto exit;
 
             if (!stream.CanSeek)
                 return SkipSlowAsync(length, token);
@@ -73,7 +75,8 @@ namespace DotNext.IO
 #endif
 
             stream.Position = length + current;
-            return new ValueTask();
+        exit:
+            return new();
         }
 
         ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)

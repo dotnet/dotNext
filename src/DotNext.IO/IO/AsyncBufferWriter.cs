@@ -48,7 +48,7 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
-                    writer.Write(input);
+                    writer.Write(in input);
                 }
                 catch (Exception e)
                 {

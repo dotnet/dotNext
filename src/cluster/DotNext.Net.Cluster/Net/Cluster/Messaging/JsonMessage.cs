@@ -123,7 +123,6 @@ namespace DotNext.Net.Cluster.Messaging
             ValueTask<T?> result;
             if (message.TryGetMemory(out var memory))
             {
-                result = new();
                 try
                 {
                     result = new(JsonSerializer.Deserialize<T>(memory.Span, options));

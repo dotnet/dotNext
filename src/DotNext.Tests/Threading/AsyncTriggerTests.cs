@@ -20,7 +20,8 @@ namespace DotNext.Threading
             using var trigger = new AsyncTrigger();
             var eventNode = trigger.WaitAsync();
             False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(state, static i => i.Value == 42);
+            var valueNode = trigger.WaitAsync(state, IsEqualTo42);
+            False(trigger.EnsureState(state, IsEqualTo42));
             False(valueNode.IsCompleted);
             trigger.Signal();
             True(eventNode.IsCompletedSuccessfully);
@@ -29,8 +30,11 @@ namespace DotNext.Threading
             trigger.Signal(state);
             False(valueNode.IsCompleted);
             state.Value = 42;
+            True(trigger.EnsureState(state, IsEqualTo42));
             trigger.Signal(state);
             True(valueNode.IsCompletedSuccessfully);
+
+            static bool IsEqualTo42(State state) => state.Value == 42;
         }
 
         [Fact]

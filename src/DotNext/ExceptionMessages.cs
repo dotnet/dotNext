@@ -41,5 +41,9 @@ namespace DotNext
         internal static string EmptyBuffer => Resources.GetString("EmptyBuffer")!;
 
         internal static string MalformedBase64 => Resources.GetString("MalformedBase64")!;
+
+        internal static string UndefinedValueDetected => Resources.GetString("UndefinedValueDetected")!;
+
+        internal static string UndefinedEqualsNullSwitchEnabled => Resources.GetString("UndefinedEqualsNullSwitchEnabled")!;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -19,7 +20,14 @@ namespace DotNext.Buffers
         // of Memory, this[nint index] and Expand members
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool or null
-        private int length; // TODO: must be native integer in .NET 6
+        private int length;
+
+        private MemoryOwner(IMemoryOwner<T> owner, int? length)
+        {
+            this.owner = owner;
+            this.length = length ?? owner.Memory.Length;
+            array = null;
+        }
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
@@ -109,6 +117,30 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Rents the memory block and wrap it to the <see cref="MemoryOwner{T}"/> type.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the provider.</typeparam>
+        /// <param name="provider">The provider that allows to rent the memory.</param>
+        /// <param name="length">The length of the memory block to rent.</param>
+        /// <param name="arg">The argument to be passed to the provider.</param>
+        /// <param name="exactSize">
+        /// <see langword="true"/> to preserve the requested length;
+        /// <see langword="false"/> to use actual length of the rented memory block.
+        /// </param>
+        /// <returns>Rented memory block.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="provider"/> is zero pointer.</exception>
+        [CLSCompliant(false)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe MemoryOwner<T> Create<TArg>(delegate*<int, TArg, IMemoryOwner<T>> provider, int length, TArg arg, bool exactSize = true)
+        {
+            if (provider == null)
+                throw new ArgumentNullException(nameof(provider));
+
+            return new(provider(length, arg), exactSize ? length : null);
+        }
+
+        /// <summary>
         /// Gets numbers of elements in the rented memory block.
         /// </summary>
         public readonly int Length => length;
@@ -143,7 +175,7 @@ namespace DotNext.Buffers
             {
                 Memory<T> result;
                 if (array is not null)
-                    result = new Memory<T>(array);
+                    result = new(array);
                 else if (owner is not null)
                     result = Unsafe.As<IMemoryOwner<T>>(owner).Memory;
                 else
@@ -162,12 +194,12 @@ namespace DotNext.Buffers
         {
             if (array is not null)
             {
-                segment = new ArraySegment<T>(array, 0, length);
+                segment = new(array, 0, length);
                 return true;
             }
 
-            if (owner is IMemoryOwner<T> memory)
-                return MemoryMarshal.TryGetArray(memory.Memory, out segment);
+            if (owner is not null)
+                return MemoryMarshal.TryGetArray(Unsafe.As<IMemoryOwner<T>>(owner).Memory, out segment);
 
             segment = default;
             return false;
@@ -220,7 +252,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
         public readonly ref T this[int index] => ref this[(nint)index];
 
-        internal void Dispose(bool clearBuffer)
+        internal void Clear(bool clearBuffer)
         {
             switch (owner)
             {
@@ -239,6 +271,6 @@ namespace DotNext.Buffers
         /// <summary>
         /// Releases rented memory.
         /// </summary>
-        public void Dispose() => Dispose(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        public void Dispose() => Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
 }

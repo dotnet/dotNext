@@ -24,7 +24,7 @@ namespace DotNext.IO
         /// <summary>
         /// Represents empty reader.
         /// </summary>
-        public static IAsyncBinaryReader Empty { get; } = new EmptyBinaryReader();
+        public static IAsyncBinaryReader Empty => EmptyBinaryReader.Instance;
 
         /// <summary>
         /// Decodes the value of blittable type.
