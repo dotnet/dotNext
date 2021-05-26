@@ -405,7 +405,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         // Maintaining efficient data structure for a collection of partitions with the following characteristics:
         // 1. Committed partitions must be removed from the head of the list
-        // 2. Uncommitted partitions must be removed at the tail of the list
+        // 2. Uncommitted partitions must be removed from the tail of the list
         // 2. New partitions must be added to the tail of the list
         // 3. The list is sorted in ascending order (head is a partition with smaller number, tail is a partition with higher number)
         // 4. The thread that is responsible for removing partitions from the head (compaction thread) doesn't have
