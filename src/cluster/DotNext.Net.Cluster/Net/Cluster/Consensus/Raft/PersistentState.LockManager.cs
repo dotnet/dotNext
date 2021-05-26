@@ -186,7 +186,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal LockManager(IAsyncLockSettings configuration)
             {
                 state = new(configuration.ConcurrencyLevel);
-    
+
                 lockVersion = long.MinValue;
 
                 // setup metrics
