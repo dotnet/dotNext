@@ -527,19 +527,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return partition.WriteAsync(entry, startIndex, sessionManager.WriteBuffer, token);
         }
 
-        private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, bool flush)
+        private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex)
             where TEntry : notnull, IRaftLogEntry
         {
             Debug.Assert(startIndex <= state.LastIndex + 1L);
             Debug.Assert(startIndex > state.CommitIndex);
 
             await UnsafeAppendAsync(entry, startIndex, out var partition).ConfigureAwait(false);
+            await partition.FlushAsync().ConfigureAwait(false);
             state.LastIndex = startIndex;
-            if (flush)
-            {
-                await partition.FlushAsync().ConfigureAwait(false);
-                state.Flush();
-            }
+            state.Flush();
 
             writeCounter?.Invoke(1D);
         }
@@ -608,7 +605,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (Validate(in writeLock))
             {
-                result = UnsafeAppendAsync(entry, startIndex, true);
+                result = UnsafeAppendAsync(entry, startIndex);
             }
             else
             {
@@ -652,7 +649,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (startIndex > state.LastIndex + 1L)
                         throw new ArgumentOutOfRangeException(nameof(startIndex));
 
-                    await UnsafeAppendAsync(entry, startIndex, true).ConfigureAwait(false);
+                    await UnsafeAppendAsync(entry, startIndex).ConfigureAwait(false);
                 }
                 finally
                 {
