@@ -942,13 +942,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask<Partition?> ForceCompactionAsync(DataAccessSession session, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
         {
-            LogEntry entry;
-
             // 1. Initialize builder with snapshot record
             if (!snapshot.IsEmpty)
             {
-                entry = await snapshot.ReadAsync(in session, token).ConfigureAwait(false);
-                await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
+                await builder.ApplyCoreAsync(await snapshot.ReadAsync(in session, token).ConfigureAwait(false)).ConfigureAwait(false);
             }
 
             // 2. Do compaction
@@ -956,8 +953,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Debug.Assert(current is not null);
             for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
             {
-                entry = current.Read(in session, currentIndex);
-                await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
+                await builder.ApplyCoreAsync(current.Read(in session, currentIndex)).ConfigureAwait(false);
             }
 
             // update counter
