@@ -1091,22 +1091,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return commitIndex - startIndex + 1L;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            long FinalizeCommit(long count)
-            {
-                if (count > 0L)
-                {
-                    commitEvent.Set(true);
-                }
-                else
-                {
-                    count = 0L;
-                }
-
-                commitCounter?.Invoke(count);
-                return count;
-            }
-
             async ValueTask<long> CommitAndCompactSequentiallyAsync(long? endIndex, CancellationToken token)
             {
                 Partition? removedHead;
@@ -1116,16 +1100,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                    if (count > 0)
-                    {
-                        state.CommitIndex = commitIndex;
-                        await ApplyAsync(session, token).ConfigureAwait(false);
-                        removedHead = await ForceSequentialCompactionAsync(commitIndex, token).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        removedHead = null;
-                    }
+                    if (count == 0L)
+                        return 0L;
+
+                    state.CommitIndex = commitIndex;
+                    await ApplyAsync(session, token).ConfigureAwait(false);
+                    removedHead = await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -1133,24 +1113,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseExclusiveLock();
                 }
 
+                commitEvent.Set(true);
+                commitCounter?.Invoke(count);
                 await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
-                return FinalizeCommit(count);
+                return count;
             }
 
-            async ValueTask<Partition?> ForceSequentialCompactionAsync(long upperBoundIndex, CancellationToken token)
+            async ValueTask<Partition?> ForceSequentialCompactionAsync(DataAccessSession session, long upperBoundIndex, CancellationToken token)
             {
                 SnapshotBuilder? builder;
                 Partition? removedHead;
                 if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
                 {
-                    var session = sessionManager.OpenSession();
                     try
                     {
                         removedHead = await ForceCompactionAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                     finally
                     {
-                        sessionManager.CloseSession(in session);
                         builder.Dispose();
                     }
                 }
@@ -1170,11 +1150,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                    if (count > 0)
-                    {
-                        state.CommitIndex = commitIndex;
-                        await ApplyAsync(session, token).ConfigureAwait(false);
-                    }
+                    if (count == 0L)
+                        return 0L;
+
+                    state.CommitIndex = commitIndex;
+                    await ApplyAsync(session, token).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -1182,7 +1162,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseWriteLock();
                 }
 
-                return FinalizeCommit(count);
+                commitEvent.Set(true);
+                commitCounter?.Invoke(count);
+                return count;
             }
 
             async Task<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
@@ -1220,23 +1202,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                    if (count > 0)
+                    if (count == 0L)
+                        return 0L;
+
+                    var compactionIndex = Math.Min(state.CommitIndex, snapshot.Index + count);
+                    state.CommitIndex = commitIndex;
+                    var compaction = ForceIncrementalCompactionAsync(compactionIndex, token);
+                    try
                     {
-                        var compactionIndex = Math.Min(state.CommitIndex, snapshot.Index + count);
-                        state.CommitIndex = commitIndex;
-                        var compaction = ForceIncrementalCompactionAsync(compactionIndex, token);
-                        try
-                        {
-                            await ApplyAsync(session, token).ConfigureAwait(false);
-                        }
-                        finally
-                        {
-                            removedHead = await compaction.ConfigureAwait(false);
-                        }
+                        await ApplyAsync(session, token).ConfigureAwait(false);
                     }
-                    else
+                    finally
                     {
-                        removedHead = null;
+                        removedHead = await compaction.ConfigureAwait(false);
                     }
                 }
                 finally
@@ -1245,8 +1223,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseExclusiveLock();
                 }
 
+                commitEvent.Set(true);
+                commitCounter?.Invoke(count);
                 await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
-                return FinalizeCommit(count);
+                return count;
             }
         }
 
