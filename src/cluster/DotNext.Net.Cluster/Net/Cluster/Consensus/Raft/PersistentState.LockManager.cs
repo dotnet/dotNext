@@ -182,14 +182,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal LockManager(IAsyncLockSettings configuration)
             {
                 state = new(configuration.ConcurrencyLevel);
+
                 acquireReadLock = LockState.TryAcquireReadLock;
                 releaseReadLock = LockState.ReleaseReadLock;
+
                 acquireWriteLock = LockState.TryAcquireWriteLock;
                 releaseWriteLock = LockState.ReleaseWriteLock;
+
                 acquireCompactionLock = LockState.TryAcquireCompactionLock;
                 releaseCompactionLock = LockState.ReleaseCompactionLock;
+
                 acquireExclusiveLock = LockState.TryAcquireExclusiveLock;
                 releaseExclusiveLock = LockState.ReleaseExclusiveLock;
+    
                 lockVersion = long.MinValue;
 
                 // setup metrics
