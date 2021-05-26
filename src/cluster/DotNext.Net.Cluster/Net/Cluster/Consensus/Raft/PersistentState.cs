@@ -1100,7 +1100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                    if (count == 0L)
+                    if (count <= 0L)
                         return 0L;
 
                     state.CommitIndex = commitIndex;
@@ -1150,7 +1150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                    if (count == 0L)
+                    if (count <= 0L)
                         return 0L;
 
                     state.CommitIndex = commitIndex;
@@ -1202,7 +1202,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                    if (count == 0L)
+                    if (count <= 0L)
                         return 0L;
 
                     var compactionIndex = Math.Min(state.CommitIndex, snapshot.Index + count);
