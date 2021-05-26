@@ -75,6 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private void ReleaseWriteLock()
             {
                 Debug.Assert(readerCount == WriteLock || readerCount == WriteAndCompactionLock);
+
                 switch (readerCount)
                 {
                     case WriteLock:
@@ -114,6 +115,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private void ReleaseCompactionLock()
             {
                 Debug.Assert(readerCount == CompactionLock || readerCount == WriteAndCompactionLock);
+
                 switch (readerCount)
                 {
                     case CompactionLock:
@@ -147,6 +149,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private void ReleaseExclusiveLock()
             {
                 Debug.Assert(readerCount == WriteAndCompactionLock);
+
                 readerCount = 0L;
             }
 
