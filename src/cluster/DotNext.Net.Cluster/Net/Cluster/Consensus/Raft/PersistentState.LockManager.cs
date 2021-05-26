@@ -168,6 +168,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             void Release(long version);
         }
 
+        internal enum LockType : int
+        {
+            ReadLock = 0,
+            WriteLock = 1,
+            CompactionLock = 2,
+            ExclusiveLock = 3,
+        }
+
         // This lock manager implements the following logic:
         // Multiple reads are allowed, but mutually exclusive with write or compaction lock
         // Write lock is mutually exclusive with read lock but can co-exist with compaction lock
@@ -175,25 +183,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class LockManager : AsyncTrigger, IWriteLock
         {
             private readonly LockState state;
-            private readonly Predicate<LockState> acquireReadLock, acquireWriteLock, acquireCompactionLock, acquireExclusiveLock;
-            private readonly Action<LockState> releaseReadLock, releaseWriteLock, releaseCompactionLock, releaseExclusiveLock;
+            private readonly Predicate<LockState>[] lockAcquisition = { LockState.TryAcquireReadLock, LockState.TryAcquireWriteLock, LockState.TryAcquireCompactionLock, LockState.TryAcquireExclusiveLock };
+            private readonly Action<LockState>[] lockRelease = { LockState.ReleaseReadLock, LockState.ReleaseWriteLock, LockState.ReleaseCompactionLock, LockState.ReleaseExclusiveLock };
             private long lockVersion; // volatile
 
             internal LockManager(IAsyncLockSettings configuration)
             {
                 state = new(configuration.ConcurrencyLevel);
-
-                acquireReadLock = LockState.TryAcquireReadLock;
-                releaseReadLock = LockState.ReleaseReadLock;
-
-                acquireWriteLock = LockState.TryAcquireWriteLock;
-                releaseWriteLock = LockState.ReleaseWriteLock;
-
-                acquireCompactionLock = LockState.TryAcquireCompactionLock;
-                releaseCompactionLock = LockState.ReleaseCompactionLock;
-
-                acquireExclusiveLock = LockState.TryAcquireExclusiveLock;
-                releaseExclusiveLock = LockState.ReleaseExclusiveLock;
     
                 lockVersion = long.MinValue;
 
@@ -204,43 +200,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     LockDurationCounter = configuration.LockDurationCounter;
             }
 
-            internal Task AcquireExclusiveLockAsync(CancellationToken token = default)
-                => WaitAsync(state, acquireExclusiveLock, token);
+            internal Task AcquireAsync(LockType type, CancellationToken token = default)
+                => WaitAsync(state, lockAcquisition[(int)type], token);
 
-            internal void ReleaseExclusiveLock()
-                => Signal(state, releaseExclusiveLock, true);
+            internal Task<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
+                => WaitAsync(state, lockAcquisition[(int)type], timeout, token);
 
-            internal Task AcquireReadLockAsync(CancellationToken token)
-                => WaitAsync(state, acquireReadLock, token);
+            internal void Release(LockType type)
+                => Signal(state, lockRelease[(int)type], true);
 
-            internal void ReleaseReadLock()
-                => Signal(state, releaseReadLock, true);
+            Task IWriteLock.AcquireAsync(CancellationToken token) => AcquireAsync(LockType.WriteLock, token);
 
-            internal Task<bool> AcquireWriteLockAsync(TimeSpan timeout, CancellationToken token)
-                => WaitAsync(state, acquireWriteLock, timeout, token);
-
-            internal Task AcquireWriteLockAsync(CancellationToken token = default)
-                => WaitAsync(state, acquireWriteLock, token);
-
-            Task IWriteLock.AcquireAsync(CancellationToken token) => AcquireWriteLockAsync(token);
-
-            internal void ReleaseWriteLock()
-                => Signal(state, releaseWriteLock, true);
-
-            void IWriteLock.Release() => ReleaseWriteLock();
-
-            internal Task AcquireCompactionLockAsync(CancellationToken token)
-                => WaitAsync(state, acquireCompactionLock, token);
-
-            internal void ReleaseCompactionLock()
-                => Signal(state, releaseCompactionLock, true);
+            void IWriteLock.Release() => Release(LockType.WriteLock);
 
             long IWriteLock.Version => lockVersion.VolatileRead();
 
             void IWriteLock.Release(long version)
             {
                 if (lockVersion.CompareAndSet(version, version + 1L))
-                    ReleaseWriteLock();
+                    Release(LockType.WriteLock);
                 else
                     Debug.Fail(ExceptionMessages.InvalidLockToken);
             }

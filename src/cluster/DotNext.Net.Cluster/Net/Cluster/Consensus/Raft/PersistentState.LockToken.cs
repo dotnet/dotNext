@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="TimeoutException">The lock has not been acquired in the specified time window.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public async Task<WriteLockToken> AcquireWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-            => await syncRoot.AcquireWriteLockAsync(timeout, token).ConfigureAwait(false) ? new WriteLockToken(syncRoot) : throw new TimeoutException();
+            => await syncRoot.AcquireAsync(LockType.WriteLock, timeout, token).ConfigureAwait(false) ? new WriteLockToken(syncRoot) : throw new TimeoutException();
 
         /// <summary>
         /// Acquires write lock so the caller has exclusive rights to write the entries.

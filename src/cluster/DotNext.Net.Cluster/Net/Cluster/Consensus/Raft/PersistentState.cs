@@ -336,7 +336,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         // unbuffered read
         private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
         {
-            await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.ReadLock, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession();
             try
             {
@@ -345,7 +345,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 sessionManager.CloseSession(session);
-                syncRoot.ReleaseReadLock();
+                syncRoot.Release(LockType.ReadLock);
             }
         }
 
@@ -357,7 +357,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // create buffered copy of all entries
             BufferedRaftLogEntryList bufferedEntries;
             long? snapshotIndex;
-            await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.ReadLock, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession();
             try
             {
@@ -366,7 +366,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 sessionManager.CloseSession(session);
-                syncRoot.ReleaseReadLock();
+                syncRoot.Release(LockType.ReadLock);
             }
 
             // pass buffered entries to the reader
@@ -507,14 +507,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (entries.RemainingCount == 0L)
                 return;
-            await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
             try
             {
                 await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
         }
 
@@ -641,7 +641,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask AppendRegularEntryAsync(TEntry entry, long startIndex)
             {
                 Debug.Assert(!entry.IsSnapshot);
-                await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
                 try
                 {
                     if (startIndex <= state.CommitIndex)
@@ -653,7 +653,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 finally
                 {
-                    syncRoot.ReleaseWriteLock();
+                    syncRoot.Release(LockType.WriteLock);
                 }
             }
 
@@ -663,7 +663,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Partition? removedHead;
 
                 // Snapshot requires exclusive lock. However, snapshot installation is very rare operation
-                await syncRoot.AcquireExclusiveLockAsync().ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.ExclusiveLock).ConfigureAwait(false);
                 try
                 {
                     if (startIndex <= state.CommitIndex)
@@ -672,7 +672,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 finally
                 {
-                    syncRoot.ReleaseExclusiveLock();
+                    syncRoot.Release(LockType.ExclusiveLock);
                 }
 
                 await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
@@ -730,7 +730,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<long> AppendUncachedAsync<TEntry>(TEntry entry, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
             long startIndex;
             try
             {
@@ -738,7 +738,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
 
             return startIndex;
@@ -752,7 +752,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // copy log entry to the memory
             var cachedEntry = new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId);
 
-            await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
             long startIndex;
             try
             {
@@ -761,7 +761,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
 
             return startIndex;
@@ -835,7 +835,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ThrowIfDisposed();
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
-            await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
             var startIndex = state.LastIndex + 1L;
             try
             {
@@ -843,7 +843,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
 
             return startIndex;
@@ -867,7 +867,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex > state.LastIndex)
                 goto exit;
 
-            await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
             try
             {
                 if (startIndex <= state.CommitIndex)
@@ -881,7 +881,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
 
         exit:
@@ -1050,7 +1050,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (builder is not null)
                 {
                     Partition? removedHead;
-                    await syncRoot.AcquireCompactionLockAsync(token).ConfigureAwait(false);
+                    await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
                     var session = sessionManager.OpenSession();
                     try
                     {
@@ -1063,7 +1063,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     finally
                     {
                         sessionManager.CloseSession(in session);
-                        syncRoot.ReleaseCompactionLock();
+                        syncRoot.Release(LockType.CompactionLock);
                         builder.Dispose();
                     }
 
@@ -1095,7 +1095,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Partition? removedHead;
                 long count;
-                await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
                 var session = sessionManager.OpenSession();
                 try
                 {
@@ -1110,7 +1110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 finally
                 {
                     sessionManager.CloseSession(in session);
-                    syncRoot.ReleaseExclusiveLock();
+                    syncRoot.Release(LockType.ExclusiveLock);
                 }
 
                 commitEvent.Set(true);
@@ -1145,7 +1145,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
             {
                 long count;
-                await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
                 var session = sessionManager.OpenSession();
                 try
                 {
@@ -1159,7 +1159,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 finally
                 {
                     sessionManager.CloseSession(in session);
-                    syncRoot.ReleaseWriteLock();
+                    syncRoot.Release(LockType.WriteLock);
                 }
 
                 commitEvent.Set(true);
@@ -1197,7 +1197,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Partition? removedHead;
                 long count;
-                await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
                 var session = sessionManager.OpenSession();
                 try
                 {
@@ -1220,7 +1220,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 finally
                 {
                     sessionManager.CloseSession(in session);
-                    syncRoot.ReleaseExclusiveLock();
+                    syncRoot.Release(LockType.ExclusiveLock);
                 }
 
                 commitEvent.Set(true);
@@ -1315,7 +1315,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public async Task ReplayAsync(CancellationToken token = default)
         {
             ThrowIfDisposed();
-            await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession();
             try
             {
@@ -1341,7 +1341,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 sessionManager.CloseSession(in session);
-                syncRoot.ReleaseExclusiveLock();
+                syncRoot.Release(LockType.ExclusiveLock);
             }
         }
 
@@ -1391,14 +1391,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async ValueTask<long> IPersistentState.IncrementTermAsync()
         {
             long result;
-            await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
             try
             {
                 result = state.IncrementTerm();
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
 
             return result;
@@ -1407,28 +1407,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         async ValueTask IPersistentState.UpdateTermAsync(long term, bool resetLastVote)
         {
-            await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
             try
             {
                 state.UpdateTerm(term, resetLastVote);
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
         }
 
         /// <inheritdoc/>
         async ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
         {
-            await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
             try
             {
                 state.UpdateVotedFor(member?.Id);
             }
             finally
             {
-                syncRoot.ReleaseWriteLock();
+                syncRoot.Release(LockType.WriteLock);
             }
         }
 
