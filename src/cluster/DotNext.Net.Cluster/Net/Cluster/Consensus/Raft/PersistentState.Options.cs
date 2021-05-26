@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// Demonstrates the best ratio between the performance of the commit process
             /// and the log compaction. This mode provides the best efficiency if
-            /// <see cref="ApplyAsync(CancellationToken)"/> has approx the same execution
+            /// <see cref="ApplyAsync(LogEntry)"/> has approx the same execution
             /// time as <see cref="SnapshotBuilder.ApplyAsync(LogEntry)"/>.
             /// </remarks>
             Foreground = 2,

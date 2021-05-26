@@ -150,7 +150,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly SessionIdPool sessions;
             private readonly int bufferSize;
             internal readonly int Capacity;
-            internal readonly DataAccessSession WriteSession, CompactionSession;
             private MemoryOwner<byte> writeBuffer, compactionBuffer, readBuffer;
 
             internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int bufferSize)
@@ -159,14 +158,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
 
                 writeBuffer = sharedPool.Invoke(bufferSize, false);
-                WriteSession = new(0, writeBuffer.Memory);
 
                 compactionBuffer = sharedPool.Invoke(bufferSize, false);
-                CompactionSession = new(1, compactionBuffer.Memory);
 
                 readBuffer = sharedPool.Invoke(checked(readersCount * bufferSize), false);
                 this.bufferSize = bufferSize;
             }
+
+            internal Memory<byte> WriteBuffer => writeBuffer.Memory;
+
+            internal Memory<byte> CompactionBuffer => compactionBuffer.Memory;
 
             internal readonly DataAccessSession OpenSession()
             {

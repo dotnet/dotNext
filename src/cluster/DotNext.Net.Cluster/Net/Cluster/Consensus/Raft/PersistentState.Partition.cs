@@ -243,9 +243,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private bool IsFirstEntry(nint index)
                 => index == 0 || index == 1 && FirstIndex == 0L;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal async ValueTask WriteAsync<TEntry>(DataAccessSession session, TEntry entry, long absoluteIndex, CancellationToken token = default)
-                where TEntry : notnull, IRaftLogEntry
+            internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, Memory<byte> buffer, CancellationToken token = default)
             {
                 // write operation always expects absolute index so we need to convert it to the relative index
                 var relativeIndex = ToRelativeIndex(absoluteIndex);
@@ -273,7 +271,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     // slow path - persist log entry
                     SetPosition(offset);
-                    await entry.WriteToAsync(this, session.Buffer, token).ConfigureAwait(false);
+                    await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
                     metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
                 }
 
@@ -359,8 +357,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return output.WriteAsync(buffer, token);
             }
 
-            private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token)
-                where TEntry : notnull, IRaftLogEntry
+            internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token = default)
             {
                 Index = index;
                 IsEmpty = false;
@@ -370,10 +367,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Position = 0L;
                 await WriteMetadataAsync(this, metadata, buffer, token).ConfigureAwait(false);
             }
-
-            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token = default)
-                where TEntry : notnull, IRaftLogEntry
-                => WriteAsync(entry, index, session.Buffer, token);
 
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)
             {
