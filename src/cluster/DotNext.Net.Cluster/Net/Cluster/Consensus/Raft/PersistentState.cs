@@ -937,15 +937,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 
-        private async ValueTask<Partition?> ForceCompactionAsync(DataAccessSession session, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
+        // this operation doesn't require write lock
+        private async ValueTask BuildSnapshotAsync(DataAccessSession session, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
         {
-            // 1. Initialize builder with snapshot record
+            // Initialize builder with snapshot record
             if (!snapshot.IsEmpty)
             {
                 await builder.ApplyCoreAsync(await snapshot.ReadAsync(in session, token).ConfigureAwait(false)).ConfigureAwait(false);
             }
 
-            // 2. Do compaction
             Partition? current = head;
             Debug.Assert(current is not null);
             for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
@@ -956,18 +956,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // update counter
             compactionCounter?.Invoke(upperBoundIndex - snapshot.Index);
 
-            // 3. Persist snapshot (cannot be canceled to avoid inconsistency)
-            await snapshot.WriteAsync(builder, upperBoundIndex, sessionManager.CompactionBuffer).ConfigureAwait(false);
-            await snapshot.FlushAsync().ConfigureAwait(false);
-
-            // 4. Remove squashed partitions
-            return DetachPartitions(upperBoundIndex);
-
             bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, ref Partition? partition)
             {
                 builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
                 return currentIndex.Between(startIndex, endIndex, BoundType.Closed) && this.TryGetPartition(currentIndex, ref partition);
             }
+        }
+
+        private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder snapshot, long snapshotIndex)
+        {
+            // Persist snapshot (cannot be canceled to avoid inconsistency)
+            await this.snapshot.WriteAsync(snapshot, snapshotIndex, sessionManager.CompactionBuffer).ConfigureAwait(false);
+            await this.snapshot.FlushAsync().ConfigureAwait(false);
+
+            // Remove squashed partitions
+            return DetachPartitions(snapshotIndex);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1056,9 +1059,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         // check compaction range again because snapshot index can be modified by snapshot installation method
                         var upperBoundIndex = ComputeUpperBoundIndex(count);
-                        removedHead = IsCompactionRequired(upperBoundIndex) ?
-                            await ForceCompactionAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false) :
-                            null;
+                        if (IsCompactionRequired(upperBoundIndex))
+                        {
+                            await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+                            removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            removedHead = null;
+                        }
                     }
                     finally
                     {
@@ -1127,7 +1136,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     try
                     {
-                        removedHead = await ForceCompactionAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+                        await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+                        removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
                     }
                     finally
                     {
@@ -1177,7 +1187,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var session = sessionManager.OpenSession();
                     try
                     {
-                        removedHead = await ForceCompactionAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+                        await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+                        removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
                     }
                     finally
                     {
