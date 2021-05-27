@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -12,24 +13,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class LockState
         {
-            private const long WriteLock = -1L;
-            private const long CompactionLock = -2L;
-            private const long WriteAndCompactionLock = -3L;
-
-            private readonly long maxReadCount;
-            private long readerCount;
+            private readonly uint maxReadCount;
+            private uint readerCount;
+            private bool allowWrite;
 
             internal LockState(int concurrencyLevel)
             {
-                maxReadCount = concurrencyLevel;
+                maxReadCount = (uint)concurrencyLevel;
+                allowWrite = true;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private bool TryAcquireReadLock()
+            private bool TryAcquireStrongReadLock()
             {
-                if (readerCount.Between(0L, maxReadCount, BoundType.LeftClosed))
+                if (readerCount < maxReadCount && allowWrite)
                 {
-                    readerCount += 1L;
+                    allowWrite = false;
+                    readerCount += 1U;
+                    return true;
+                }
+
+                return false;
+            }
+
+            private void ReleaseStrongReadLock()
+            {
+                Debug.Assert(readerCount > 0U);
+                Debug.Assert(!allowWrite);
+
+                readerCount -= 1U;
+                allowWrite = true;
+            }
+
+            internal static bool TryAcquireStrongReadLock(LockState state)
+                => state.TryAcquireStrongReadLock();
+
+            internal static void ReleaseStrongReadLock(LockState state)
+                => state.ReleaseStrongReadLock();
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool TryAcquireWeakReadLock()
+            {
+                if (readerCount < maxReadCount)
+                {
+                    readerCount += 1U;
                     return true;
                 }
 
@@ -37,55 +64,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ReleaseReadLock()
+            private void ReleaseWeakReadLock()
             {
                 Debug.Assert(readerCount > 0L);
 
-                readerCount -= 1L;
+                readerCount -= 1U;
             }
 
-            internal static bool TryAcquireReadLock(LockState state)
-                => state.TryAcquireReadLock();
+            internal static bool TryAcquireWeakReadLock(LockState state)
+                => state.TryAcquireWeakReadLock();
 
-            internal static void ReleaseReadLock(LockState state)
-                => state.ReleaseReadLock();
+            internal static void ReleaseWeakReadLock(LockState state)
+                => state.ReleaseWeakReadLock();
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool TryAcquireWriteLock()
             {
-                switch (readerCount)
+                if (allowWrite)
                 {
-                    default:
-                        return false;
-                    case 0L:
-                        readerCount = WriteLock;
-                        break;
-                    case CompactionLock:
-                        readerCount = WriteAndCompactionLock;
-                        break;
+                    allowWrite = false;
+                    return true;
                 }
 
-                return true;
+                return false;
             }
-
-            internal static bool TryAcquireWriteLock(LockState state)
-                => state.TryAcquireWriteLock();
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ReleaseWriteLock()
             {
-                Debug.Assert(readerCount == WriteLock || readerCount == WriteAndCompactionLock);
+                Debug.Assert(!allowWrite);
 
-                switch (readerCount)
-                {
-                    case WriteLock:
-                        readerCount = 0L;
-                        break;
-                    case WriteAndCompactionLock:
-                        readerCount = CompactionLock;
-                        break;
-                }
+                allowWrite = true;
             }
+
+            internal static bool TryAcquireWriteLock(LockState state)
+                => state.TryAcquireWriteLock();
 
             internal static void ReleaseWriteLock(LockState state)
                 => state.ReleaseWriteLock();
@@ -93,39 +106,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool TryAcquireCompactionLock()
             {
-                switch (readerCount)
+                if (readerCount == 0U)
                 {
-                    default:
-                        return false;
-                    case 0L:
-                        readerCount = CompactionLock;
-                        break;
-                    case WriteLock:
-                        readerCount = WriteAndCompactionLock;
-                        break;
+                    readerCount = uint.MaxValue;
+                    return true;
                 }
 
-                return true;
+                return false;
             }
-
-            internal static bool TryAcquireCompactionLock(LockState state)
-                => state.TryAcquireCompactionLock();
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ReleaseCompactionLock()
             {
-                Debug.Assert(readerCount == CompactionLock || readerCount == WriteAndCompactionLock);
+                Debug.Assert(readerCount == uint.MaxValue);
 
-                switch (readerCount)
-                {
-                    case CompactionLock:
-                        readerCount = 0L;
-                        break;
-                    case WriteAndCompactionLock:
-                        readerCount = WriteLock;
-                        break;
-                }
+                readerCount = 0U;
             }
+
+            internal static bool TryAcquireCompactionLock(LockState state)
+                => state.TryAcquireCompactionLock();
 
             internal static void ReleaseCompactionLock(LockState state)
                 => state.ReleaseCompactionLock();
@@ -133,25 +132,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool TryAcquireExclusiveLock()
             {
-                if (readerCount == 0L)
+                if (readerCount == 0L && allowWrite)
                 {
-                    readerCount = WriteAndCompactionLock;
+                    readerCount = uint.MaxValue;
+                    allowWrite = false;
                     return true;
                 }
 
                 return false;
             }
 
-            internal static bool TryAcquireExclusiveLock(LockState state)
-                => state.TryAcquireExclusiveLock();
-
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ReleaseExclusiveLock()
             {
-                Debug.Assert(readerCount == WriteAndCompactionLock);
+                Debug.Assert(readerCount == uint.MaxValue);
+                Debug.Assert(!allowWrite);
 
-                readerCount = 0L;
+                readerCount = 0U;
+                allowWrite = true;
             }
+
+            internal static bool TryAcquireExclusiveLock(LockState state)
+                => state.TryAcquireExclusiveLock();
 
             internal static void ReleaseExclusiveLock(LockState state)
                 => state.ReleaseExclusiveLock();
@@ -166,21 +168,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal enum LockType : int
         {
-            ReadLock = 0,
-            WriteLock = 1,
-            CompactionLock = 2,
-            ExclusiveLock = 3,
+            WeakReadLock = 0,
+            StrongReadLock = 1,
+            WriteLock = 2,
+            CompactionLock = 3,
+            ExclusiveLock = 4,
         }
 
         // This lock manager implements the following logic:
-        // Multiple reads are allowed, but mutually exclusive with write or compaction lock
-        // Write lock is mutually exclusive with read lock but can co-exist with compaction lock
-        // Compaction lock is mutually exclusive with read lock but can co-exist with write lock
-        private sealed class LockManager : AsyncTrigger, IWriteLock
+        // Weak read lock   - allow reads, allow writes (to the end of the log), disallow compaction
+        // Strong read lock - allow reads, disallow writes, disallow compaction
+        // Write lock       - allow reads, disallow writes, allow compaction
+        // Compaction lock  - disallow reads, allow writes (to the end of the log), disallow compaction
+        // Exclusive lock   - disallow everything
+        // Write lock + Compaction lock = exclusive lock
+        internal sealed class LockManager : AsyncTrigger, IWriteLock
         {
             private readonly LockState state;
-            private readonly Predicate<LockState>[] lockAcquisition = { LockState.TryAcquireReadLock, LockState.TryAcquireWriteLock, LockState.TryAcquireCompactionLock, LockState.TryAcquireExclusiveLock };
-            private readonly Action<LockState>[] lockRelease = { LockState.ReleaseReadLock, LockState.ReleaseWriteLock, LockState.ReleaseCompactionLock, LockState.ReleaseExclusiveLock };
+            private readonly Predicate<LockState>[] lockAcquisition = { LockState.TryAcquireWeakReadLock, LockState.TryAcquireStrongReadLock, LockState.TryAcquireWriteLock, LockState.TryAcquireCompactionLock, LockState.TryAcquireExclusiveLock };
+            private readonly Action<LockState>[] lockRelease = { LockState.ReleaseWeakReadLock, LockState.ReleaseStrongReadLock, LockState.ReleaseWriteLock, LockState.ReleaseCompactionLock, LockState.ReleaseExclusiveLock };
             private long lockVersion; // volatile
 
             internal LockManager(IAsyncLockSettings configuration)
@@ -197,20 +203,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal Task AcquireAsync(LockType type, CancellationToken token = default)
+#if NETSTANDARD2_1
                 => WaitAsync(state, lockAcquisition[(int)type], token);
+#else
+            {
+                Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
+
+                var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockAcquisition), (int)type);
+                return WaitAsync(state, acquisition, token);
+            }
+#endif
 
             internal Task<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
+#if NETSTANDARD2_1
                 => WaitAsync(state, lockAcquisition[(int)type], timeout, token);
+#else
+            {
+                Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
+
+                var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockAcquisition), (int)type);
+                return WaitAsync(state, acquisition, timeout, token);
+            }
+#endif
 
             internal void Release(LockType type)
+#if NETSTANDARD2_1
                 => Signal(state, lockRelease[(int)type], true);
+#else
+            {
+                Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
+
+                var release = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockRelease), (int)type);
+                Signal(state, release, true);
+            }
+#endif
 
             long IWriteLock.Version => lockVersion.VolatileRead();
 
             void IWriteLock.Release(long version)
             {
                 if (lockVersion.CompareAndSet(version, version + 1L))
-                    Release(LockType.WriteLock);
+                    Release(LockType.ExclusiveLock);
                 else
                     Debug.Fail(ExceptionMessages.InvalidLockToken);
             }

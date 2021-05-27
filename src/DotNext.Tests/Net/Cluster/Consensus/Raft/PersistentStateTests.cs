@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -158,10 +159,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var auditTrail = new PersistentState(dir, RecordsPerPartition);
-            using (var lockToken = await auditTrail.AcquireWriteLockAsync(CancellationToken.None))
-            {
-                await auditTrail.AppendAsync(in lockToken, new EmptyLogEntry(10));
-            }
+            await auditTrail.AppendAsync(new EmptyLogEntry(10));
 
             Equal(1, auditTrail.GetLastIndex(false));
             await auditTrail.CommitAsync(1L, CancellationToken.None);
@@ -723,6 +721,52 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.InitializeAsync();
                 Equal(entries.Length + 41L, state.Value);
             }
+        }
+
+        private sealed class AsyncLockSettings : PersistentState.IAsyncLockSettings
+        {
+            public int ConcurrencyLevel => 10;
+
+            IncrementingEventCounter PersistentState.IAsyncLockSettings.LockContentionCounter => null;
+
+            EventCounter PersistentState.IAsyncLockSettings.LockDurationCounter => null;
+        }
+
+        [Fact]
+        public static void ReadWriteConcurrently()
+        {
+            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
+            True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
+            True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
+            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
+            False(manager.AcquireAsync(PersistentState.LockType.ExclusiveLock, TimeSpan.Zero).Result);
+        }
+
+        [Fact]
+        public static void CombineCompactionAndWriteLock()
+        {
+            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
+            True(manager.AcquireAsync(PersistentState.LockType.CompactionLock).IsCompletedSuccessfully);
+            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
+            False(manager.AcquireAsync(PersistentState.LockType.WeakReadLock, TimeSpan.Zero).Result);
+            False(manager.AcquireAsync(PersistentState.LockType.StrongReadLock, TimeSpan.Zero).Result);
+
+            manager.Release(PersistentState.LockType.ExclusiveLock);
+            True(manager.AcquireAsync(PersistentState.LockType.ExclusiveLock).IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static void StrongWeakLock()
+        {
+            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            True(manager.AcquireAsync(PersistentState.LockType.StrongReadLock).IsCompletedSuccessfully);
+            True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
+            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
+
+            manager.Release(PersistentState.LockType.StrongReadLock);
+            True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
         }
 
 #if !NETCOREAPP3_1

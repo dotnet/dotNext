@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public async Task CreateBackupAsync(Stream output, CancellationToken token = default)
         {
             ZipArchive? archive = null;
-            await syncRoot.AcquireAsync(LockType.ReadLock, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.StrongReadLock, token).ConfigureAwait(false);
             try
             {
                 archive = new(output, ZipArchiveMode.Create, true);
@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                syncRoot.Release(LockType.ReadLock);
+                syncRoot.Release(LockType.StrongReadLock);
                 archive?.Dispose();
             }
         }

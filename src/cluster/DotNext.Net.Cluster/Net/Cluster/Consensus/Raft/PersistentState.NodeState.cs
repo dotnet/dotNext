@@ -90,6 +90,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
+            internal long TailIndex => LastIndex + 1L;
+
             internal long Term => term.VolatileRead();
 
             internal void UpdateTerm(long value, bool resetLastVote)

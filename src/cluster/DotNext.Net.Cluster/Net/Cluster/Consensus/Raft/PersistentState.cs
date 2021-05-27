@@ -336,7 +336,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         // unbuffered read
         private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
         {
-            await syncRoot.AcquireAsync(LockType.ReadLock, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession();
             try
             {
@@ -345,7 +345,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 sessionManager.CloseSession(session);
-                syncRoot.Release(LockType.ReadLock);
+                syncRoot.Release(LockType.WeakReadLock);
             }
         }
 
@@ -357,7 +357,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // create buffered copy of all entries
             BufferedRaftLogEntryList bufferedEntries;
             long? snapshotIndex;
-            await syncRoot.AcquireAsync(LockType.ReadLock, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession();
             try
             {
@@ -366,7 +366,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 sessionManager.CloseSession(session);
-                syncRoot.Release(LockType.ReadLock);
+                syncRoot.Release(LockType.WeakReadLock);
             }
 
             // pass buffered entries to the reader
@@ -473,11 +473,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            if (startIndex > state.LastIndex + 1)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            Debug.Assert(startIndex <= state.TailIndex);
 
             writeCounter?.Invoke(supplier.RemainingCount);
-            for (Partition? partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+            for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
             {
                 if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
@@ -489,7 +488,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                     // flush if last entry is added to the partition or the last entry is consumed from the iterator
                     if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
-                        await partition.FlushAsync().ConfigureAwait(false);
+                        await partition.FlushAsync(token).ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
                 {
@@ -497,24 +496,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            // flush updated state
+            // flush updated state. Update index here to guarantee safe reads of recently added log entries
+            state.LastIndex = startIndex - 1L;
             state.Flush();
-            token.ThrowIfCancellationRequested();
         }
 
         /// <inheritdoc/>
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
+            ThrowIfDisposed();
             if (entries.RemainingCount == 0L)
                 return;
-            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
+
+            // assuming that we want to add log entry to the tail
+            LockType lockType;
+            await syncRoot.AcquireAsync(lockType = LockType.WriteLock, token).ConfigureAwait(false);
+
             try
             {
+                var tailIndex = state.TailIndex;
+                if (startIndex > tailIndex)
+                    throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+                // wrong assumption, tail of the log can be rewritten so we need exclusive lock
+                if (startIndex != tailIndex)
+                {
+                    // write + compaction lock = exclusive lock
+                    await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
+                    lockType = LockType.ExclusiveLock;
+                }
+
                 await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
             }
             finally
             {
-                syncRoot.Release(LockType.WriteLock);
+                syncRoot.Release(lockType);
             }
         }
 
@@ -527,14 +543,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return partition.WriteAsync(entry, startIndex, sessionManager.WriteBuffer, token);
         }
 
-        private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex)
+        private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
-            Debug.Assert(startIndex <= state.LastIndex + 1L);
+            Debug.Assert(startIndex <= state.TailIndex);
             Debug.Assert(startIndex > state.CommitIndex);
 
-            await UnsafeAppendAsync(entry, startIndex, out var partition).ConfigureAwait(false);
-            await partition.FlushAsync().ConfigureAwait(false);
+            await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
+            await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
             state.Flush();
 
@@ -544,7 +560,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<long> UnsafeAppendAsync<TEntry>(TEntry entry, bool flush, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            var startIndex = state.LastIndex + 1L;
+            var startIndex = state.TailIndex;
             await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
             if (flush)
             {
@@ -571,6 +587,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or <paramref name="entry"/> is the snapshot.</exception>
+        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
         public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex)
             where TEntry : notnull, IRaftLogEntry
         {
@@ -587,7 +604,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.InvalidAppendIndex));
 #endif
             }
-            else if (startIndex > state.LastIndex + 1L)
+            else if (startIndex > state.TailIndex)
             {
 #if NETSTANDARD2_1
                 result = new(Task.FromException(new ArgumentOutOfRangeException(nameof(startIndex))));
@@ -631,39 +648,57 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        public ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex)
+        public ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
-            return entry.IsSnapshot ? InstallSnapshotAsync(entry, startIndex) : AppendRegularEntryAsync(entry, startIndex);
+            if (IsDisposed)
+                return new(DisposedTask);
 
-            async ValueTask AppendRegularEntryAsync(TEntry entry, long startIndex)
+            return entry.IsSnapshot ? InstallSnapshotAsync(entry, startIndex, token) : AppendRegularEntryAsync(entry, startIndex, token);
+
+            async ValueTask AppendRegularEntryAsync(TEntry entry, long startIndex, CancellationToken token)
             {
                 Debug.Assert(!entry.IsSnapshot);
-                await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
+
+                // assuming that we want to add log entry to the tail
+                LockType lockType;
+                await syncRoot.AcquireAsync(lockType = LockType.WriteLock, token).ConfigureAwait(false);
                 try
                 {
                     if (startIndex <= state.CommitIndex)
                         throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                    if (startIndex > state.LastIndex + 1L)
+
+                    var tailIndex = state.TailIndex;
+                    if (startIndex > tailIndex)
                         throw new ArgumentOutOfRangeException(nameof(startIndex));
 
-                    await UnsafeAppendAsync(entry, startIndex).ConfigureAwait(false);
+                    // wrong assumption, tail of the log can be rewritten so we need exclusive lock
+                    if (startIndex != tailIndex)
+                    {
+                        // write + compaction lock = exclusive lock
+                        await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
+                        lockType = LockType.ExclusiveLock;
+                    }
+
+                    await UnsafeAppendAsync(entry, startIndex, token).ConfigureAwait(false);
                 }
                 finally
                 {
-                    syncRoot.Release(LockType.WriteLock);
+                    syncRoot.Release(lockType);
                 }
             }
 
-            async ValueTask InstallSnapshotAsync(TEntry entry, long startIndex)
+            async ValueTask InstallSnapshotAsync(TEntry entry, long startIndex, CancellationToken token)
             {
                 Debug.Assert(entry.IsSnapshot);
+
                 Partition? removedHead;
 
                 // Snapshot requires exclusive lock. However, snapshot installation is very rare operation
-                await syncRoot.AcquireAsync(LockType.ExclusiveLock).ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
                 try
                 {
                     if (startIndex <= state.CommitIndex)
@@ -695,6 +730,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
+        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
         public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, bool flush = true, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
@@ -836,7 +872,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
             await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
-            var startIndex = state.LastIndex + 1L;
+            var startIndex = state.TailIndex;
             try
             {
                 await UnsafeAppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
@@ -867,7 +903,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex > state.LastIndex)
                 goto exit;
 
-            await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
             try
             {
                 if (startIndex <= state.CommitIndex)
@@ -881,7 +917,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                syncRoot.Release(LockType.WriteLock);
+                syncRoot.Release(LockType.ExclusiveLock);
             }
 
         exit:
@@ -1050,34 +1086,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
             {
                 var builder = CreateSnapshotBuilder();
-                if (builder is not null)
+                if (builder is null)
+                    return;
+
+                Partition? removedHead;
+                try
                 {
-                    Partition? removedHead;
-                    await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
+                    long upperBoundIndex;
+
+                    // initialize builder with log entries (read-only)
+                    await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
                     var session = sessionManager.OpenSession();
                     try
                     {
                         // check compaction range again because snapshot index can be modified by snapshot installation method
-                        var upperBoundIndex = ComputeUpperBoundIndex(count);
-                        if (IsCompactionRequired(upperBoundIndex))
-                        {
-                            await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
-                            removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            removedHead = null;
-                        }
+                        upperBoundIndex = ComputeUpperBoundIndex(count);
+                        if (!IsCompactionRequired(upperBoundIndex))
+                            return;
+
+                        // construct snapshot (read-only operation)
+                        await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                     finally
                     {
                         sessionManager.CloseSession(in session);
-                        syncRoot.Release(LockType.CompactionLock);
-                        builder.Dispose();
+                        syncRoot.Release(LockType.WeakReadLock);
                     }
 
-                    await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
+                    // rewrite snapshot as well as remove log entries (write access required)
+                    await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
+                    try
+                    {
+                        removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        syncRoot.Release(LockType.CompactionLock);
+                    }
                 }
+                finally
+                {
+                    builder.Dispose();
+                }
+
+                await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
             }
         }
 
@@ -1155,7 +1207,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
             {
                 long count;
-                await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
+                await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
                 var session = sessionManager.OpenSession();
                 try
                 {
@@ -1169,7 +1221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 finally
                 {
                     sessionManager.CloseSession(in session);
-                    syncRoot.Release(LockType.WriteLock);
+                    syncRoot.Release(LockType.ExclusiveLock);
                 }
 
                 commitEvent.Set(true);
