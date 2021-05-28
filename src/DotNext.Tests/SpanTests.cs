@@ -171,12 +171,6 @@ namespace DotNext
             Equal(data, hex.FromHex());
         }
 
-        private struct TwoIDs
-        {
-            internal Guid First;
-            internal Guid Second;
-        }
-
         public static IEnumerable<object[]> TestAllocators()
         {
             yield return new object[] { null };
