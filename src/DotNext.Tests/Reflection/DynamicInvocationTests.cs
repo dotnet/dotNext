@@ -21,7 +21,7 @@ namespace DotNext.Reflection
 
         private struct MyType
         {
-            public int X, Y;
+            public int X;
         }
 
         [Theory]
