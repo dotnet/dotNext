@@ -254,7 +254,7 @@ namespace DotNext
         public Optional(T? value)
         {
             this.value = value;
-            kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value!) : NotEmptyValue;
+            kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value) : NotEmptyValue;
 
             static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
             {
