@@ -4,8 +4,6 @@ using static System.Threading.Thread;
 
 namespace DotNext.Metaprogramming
 {
-    using Linq.Expressions;
-
     /// <summary>
     /// Represents compound expression builder.
     /// </summary>
@@ -14,7 +12,7 @@ namespace DotNext.Metaprogramming
     /// be shared between threads.
     /// </remarks>
     /// <typeparam name="TExpression">Type of expression to be constructed.</typeparam>
-    public abstract class ExpressionBuilder<TExpression> : IExpressionBuilder<TExpression>
+    public abstract class ExpressionBuilder<TExpression> : ISupplier<TExpression>
         where TExpression : Expression
     {
         private readonly int ownerThread;
@@ -60,7 +58,7 @@ namespace DotNext.Metaprogramming
         private protected abstract TExpression Build();
 
         /// <inheritdoc />
-        TExpression IExpressionBuilder<TExpression>.Build() => Build();
+        TExpression ISupplier<TExpression>.Invoke() => Build();
 
         private protected virtual void Cleanup() => currentScope = null;
 

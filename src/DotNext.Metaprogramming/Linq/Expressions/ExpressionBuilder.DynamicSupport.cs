@@ -5,7 +5,7 @@ namespace DotNext.Linq.Expressions
 {
     public static partial class ExpressionBuilder
     {
-        private sealed class MetaExpressionProvider : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
+        private sealed class MetaExpressionProvider : ISupplier<Expression>, IDynamicMetaObjectProvider
         {
             private readonly Expression expression;
 
@@ -13,7 +13,7 @@ namespace DotNext.Linq.Expressions
                 => this.expression = expression ?? Expression.Empty();
 
             /// <inheritdoc/>
-            Expression IExpressionBuilder<Expression>.Build() => expression;
+            Expression ISupplier<Expression>.Invoke() => expression;
 
             /// <inheritdoc/>
             DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) => new MetaExpression(parameter, this);

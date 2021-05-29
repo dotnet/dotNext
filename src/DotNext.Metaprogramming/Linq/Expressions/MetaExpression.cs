@@ -9,9 +9,9 @@ namespace DotNext.Linq.Expressions
 {
     internal sealed class MetaExpression : DynamicMetaObject
     {
-        private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, IExpressionBuilder<Expression>?>(Unsafe.As<IExpressionBuilder<Expression>>).Method;
+        private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, ISupplier<Expression>?>(Unsafe.As<ISupplier<Expression>>).Method;
         private static readonly MethodInfo AsExpressionMethod = new Func<object?, Expression?>(Unsafe.As<Expression>).Method;
-        private static readonly MethodInfo BuildMethod = typeof(IExpressionBuilder<Expression>).GetMethod(nameof(IExpressionBuilder<Expression>.Build), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
+        private static readonly MethodInfo BuildMethod = typeof(ISupplier<Expression>).GetMethod(nameof(ISupplier<Expression>.Invoke), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
         private static readonly MethodInfo MakeUnaryMethod = new Func<ExpressionType, Expression, Type, UnaryExpression>(Expression.MakeUnary).Method;
         private static readonly MethodInfo MakeBinaryMethod = new Func<ExpressionType, Expression, Expression, BinaryExpression>(Expression.MakeBinary).Method;
         private static readonly MethodInfo PropertyOrFieldMethod = new Func<Expression, string, MemberExpression>(Expression.PropertyOrField).Method;
@@ -25,8 +25,8 @@ namespace DotNext.Linq.Expressions
         private static readonly ConstantExpression ItemName = "Item".Const();
         private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.Const();
 
-        internal MetaExpression(Expression binding, IExpressionBuilder<Expression> builder)
-            : base(binding, BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(binding, typeof(IExpressionBuilder<Expression>))), builder)
+        internal MetaExpression(Expression binding, ISupplier<Expression> builder)
+            : base(binding, BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(binding, typeof(ISupplier<Expression>))), builder)
         {
         }
 
@@ -50,7 +50,7 @@ namespace DotNext.Linq.Expressions
         }
 
         private Expression PrepareExpression()
-            => Value is IExpressionBuilder<Expression> ?
+            => Value is ISupplier<Expression> ?
                 Expression.Call(Expression.Call(null, AsExpressionBuilderMethod, Expression), BuildMethod) :
                 Expression;
 
