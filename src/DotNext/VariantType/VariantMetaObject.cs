@@ -20,7 +20,7 @@ namespace DotNext.VariantType
             => BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(Expression, typeof(IVariant)));
 
         private DynamicMetaObject GetValueObject()
-            => new DynamicMetaObject(valueAccess, BindingRestrictions.Empty, Unsafe.As<IVariant>(base.Value)?.Value!);
+            => new DynamicMetaObject(valueAccess, BindingRestrictions.Empty, Unsafe.As<IVariant>(Value)?.Value!);
 
         private DynamicMetaObject ApplyRestrictions(DynamicMetaObject value)
             => new DynamicMetaObject(value.Expression, CreateRestrictions().Merge(value.Restrictions));
