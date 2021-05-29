@@ -58,7 +58,7 @@ This is maintenance release.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
-* Updated dependencies
+* Call site optimization for `AsDynamic()` extension method that allows to construct LINQ expression tree on-the-fly using C# expressions
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
 * Respect volatile modifier when reading/writing field
