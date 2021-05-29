@@ -537,5 +537,28 @@ namespace DotNext.Linq.Expressions
             NotEqual(expr1.Right, expr2.Right);
             NotEqual(expr2, expr3);
         }
+
+        [Fact]
+        public static void LateBindConstant()
+        {
+            object value = 42.Const();
+            BinaryExpression expr = 43.Const().AsDynamic() > value;
+            IsType<ConstantExpression>(expr.Right);
+        }
+
+        [Fact]
+        public static void EarlyBindConstant()
+        {
+            BinaryExpression expr = 43.Const().AsDynamic() > 42.Const();
+            IsType<ConstantExpression>(expr.Right);
+        }
+
+        [Fact]
+        public static void LateBindMetaConstant()
+        {
+            dynamic right = 42.Const().AsDynamic();
+            BinaryExpression expr = 43.Const().AsDynamic() > right;
+            IsType<ConstantExpression>(expr.Right);
+        }
     }
 }
