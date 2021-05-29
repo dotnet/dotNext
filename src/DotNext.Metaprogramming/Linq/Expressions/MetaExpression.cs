@@ -35,6 +35,9 @@ namespace DotNext.Linq.Expressions
         {
         }
 
+        private DynamicMetaObject NotSupportedResult()
+            => new(Expression.Throw(Expression.New(typeof(NotSupportedException))), Restrictions);
+
         private static Expression ToExpression(DynamicMetaObject arg)
         {
             if (arg is MetaExpression meta)
@@ -124,10 +127,10 @@ namespace DotNext.Linq.Expressions
         }
 
         public override DynamicMetaObject BindDeleteMember(DeleteMemberBinder binder)
-            => throw new NotSupportedException();
+            => NotSupportedResult();
 
         public override DynamicMetaObject BindDeleteIndex(DeleteIndexBinder binder, DynamicMetaObject[] indexes)
-            => throw new NotSupportedException();
+            => NotSupportedResult();
 
         public override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
         {
