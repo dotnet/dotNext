@@ -49,12 +49,6 @@ namespace DotNext.Linq.Expressions
 
         private static Expression ToExpression(DynamicMetaObject arg, out BindingRestrictions restrictions)
         {
-            // if (arg is MetaExpression meta)
-            // {
-            //     restrictions = meta.Restrictions;
-            //     return meta.PrepareExpression();
-            // }
-
             restrictions = arg.Restrictions;
 
             // early binding cases
