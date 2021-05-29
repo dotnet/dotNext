@@ -22,11 +22,8 @@ namespace DotNext.Linq.Expressions
         private static readonly MethodInfo CallMethod = new Func<Expression, string, Expression[], MethodCallExpression>(ExpressionBuilder.Call).Method;
         private static readonly MethodInfo InvokeMethod = new Func<Expression, Expression[], InvocationExpression>(Expression.Invoke).Method;
         private static readonly MethodInfo NewMethod = new Func<Type, Expression[], NewExpression>(ExpressionBuilder.New).Method;
-        private static readonly MethodInfo PropertyMethod = new Func<Expression, string, Expression[], IndexExpression>(Expression.Property).Method;
+        private static readonly MethodInfo MakeIndexMethod = new Func<Expression, Expression[], IndexExpression>(ExpressionBuilder.MakeIndex).Method;
         private static readonly MethodInfo ActivateMethod = new Func<Expression, Expression[], MethodCallExpression>(ExpressionBuilder.New).Method;
-
-        private static readonly ConstantExpression ItemName = "Item".Const();
-        private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.Const();
 
         internal MetaExpression(Expression binding, ISupplier<Expression> builder)
             : base(binding, BindingRestrictions.Empty, builder)
@@ -47,8 +44,8 @@ namespace DotNext.Linq.Expressions
             return BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(Expression, typeof(ISupplier<Expression>)));
         }
 
-        private DynamicMetaObject NotSupportedResult()
-            => new(Expression.Throw(Expression.New(typeof(NotSupportedException))), CreateRestrictions());
+        private DynamicMetaObject NotSupportedResult(Type type)
+            => new(Expression.Throw(Expression.New(typeof(NotSupportedException)), type), CreateRestrictions());
 
         private static Expression ToExpression(DynamicMetaObject arg, out BindingRestrictions restrictions)
         {
@@ -138,14 +135,14 @@ namespace DotNext.Linq.Expressions
         public override DynamicMetaObject BindGetIndex(GetIndexBinder binder, DynamicMetaObject[] indexes)
         {
             var binding = PrepareExpression();
-            binding = Expression.Call(PropertyMethod, binding, ItemName, Expression.NewArrayInit(typeof(Expression), ToExpressions(indexes, out var restrictions)));
+            binding = Expression.Call(MakeIndexMethod, binding, Expression.NewArrayInit(typeof(Expression), ToExpressions(indexes, out var restrictions)));
             return new MetaExpression(binding, CreateRestrictions().Merge(restrictions));
         }
 
         public override DynamicMetaObject BindSetIndex(SetIndexBinder binder, DynamicMetaObject[] indexes, DynamicMetaObject value)
         {
             var binding = PrepareExpression();
-            binding = Expression.Call(PropertyMethod, binding, ItemName, Expression.NewArrayInit(typeof(Expression), ToExpressions(indexes, out var indexesRestrictions)));
+            binding = Expression.Call(MakeIndexMethod, binding, Expression.NewArrayInit(typeof(Expression), ToExpressions(indexes, out var indexesRestrictions)));
             binding = Expression.Call(AssignMethod, binding, ToExpression(value, out var valueRestrictions));
             return new MetaExpression(binding, CreateRestrictions().Merge(indexesRestrictions).Merge(valueRestrictions));
         }
@@ -167,19 +164,17 @@ namespace DotNext.Linq.Expressions
         public override DynamicMetaObject BindConvert(ConvertBinder binder)
         {
             var binding = PrepareExpression();
-            var restrictions = CreateRestrictions();
             if (binder.Type == typeof(Expression))
-                return new DynamicMetaObject(binding, restrictions);
+                return new DynamicMetaObject(binding, CreateRestrictions());
 
-            binding = Expression.Call(MakeUnaryMethod, ConvertOperator, binding, binder.Type.Const());
-            return new MetaExpression(binding, restrictions);
+            return NotSupportedResult(binder.Type);
         }
 
         public override DynamicMetaObject BindDeleteMember(DeleteMemberBinder binder)
-            => NotSupportedResult();
+            => NotSupportedResult(binder.ReturnType);
 
         public override DynamicMetaObject BindDeleteIndex(DeleteIndexBinder binder, DynamicMetaObject[] indexes)
-            => NotSupportedResult();
+            => NotSupportedResult(binder.ReturnType);
 
         public override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
         {

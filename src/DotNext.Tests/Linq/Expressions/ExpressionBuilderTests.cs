@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Xunit;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Linq.Expressions
 {
@@ -559,6 +561,48 @@ namespace DotNext.Linq.Expressions
             dynamic right = 42.Const().AsDynamic();
             BinaryExpression expr = 43.Const().AsDynamic() > right;
             IsType<ConstantExpression>(expr.Right);
+        }
+
+        [Fact]
+        public static void DynamicMethodCallExpr()
+        {
+            MethodCallExpression expr = 43.Const().AsDynamic().ToString(InvariantCulture);
+            IsType<ConstantExpression>(expr.Object);
+        }
+
+        [Fact]
+        public static void DynamicMemberGetter()
+        {
+            MemberExpression expr = "Hello, world!".Const().AsDynamic().Length;
+            IsType<ConstantExpression>(expr.Expression);
+        }
+
+        [Fact]
+        public static void DynamicArrayGetElement()
+        {
+            IndexExpression expr = Array.Empty<int>().Const().AsDynamic()[1];
+            IsType<ConstantExpression>(expr.Object);
+        }
+
+        [Fact]
+        public static void DynamicListGetElement()
+        {
+            IndexExpression expr = ImmutableList<int>.Empty.Const().AsDynamic()[1];
+            IsType<ConstantExpression>(expr.Object);
+        }
+
+        [Fact]
+        public static void DynamicUnaryOperator()
+        {
+            UnaryExpression expr = ~42.Const().AsDynamic();
+            IsType<ConstantExpression>(expr.Operand);
+        }
+
+        [Fact]
+        public static void DynamicConvertOperator()
+        {
+            dynamic result = 42.Const().AsDynamic();
+            Throws<NotSupportedException>(() => (long)result);
         }
     }
 }

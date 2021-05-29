@@ -10,6 +10,7 @@ using static System.Linq.Enumerable;
 namespace DotNext.Linq.Expressions
 {
     using Reflection;
+    using static Reflection.TypeExtensions;
 
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
@@ -1400,6 +1401,20 @@ namespace DotNext.Linq.Expressions
             return Expression.TryCatch(
                 Expression.New(ctor, expression),
                 Expression.Catch(exception, Expression.New(fallbackCtor, exception)));
+        }
+
+        internal static IndexExpression MakeIndex(Expression target, Expression[] args)
+        {
+            // handle case for array
+            if (target.Type.IsArray)
+                return Expression.MakeIndex(target, null, args);
+
+            // not an array, looking for DefaultMemberAttribute
+            var attribute = target.Type.GetCustomAttribute<DefaultMemberAttribute>(true);
+            if (attribute is null)
+                throw new NotSupportedException();
+
+            return Expression.Property(target, attribute.MemberName, args);
         }
     }
 }
