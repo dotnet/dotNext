@@ -1,71 +1,66 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.VariantType
 {
-    internal abstract class VariantMetaObject : DynamicMetaObject
+    internal sealed class VariantMetaObject : DynamicMetaObject
     {
-        private protected VariantMetaObject(Expression parameter, IVariant variant, out MemberExpression valueExpression)
+        private readonly Expression valueAccess;
+
+        internal VariantMetaObject(Expression parameter, IVariant variant)
             : base(parameter, BindingRestrictions.Empty, variant)
         {
-            valueExpression = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
+            valueAccess = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
         }
 
-        public new IVariant? Value => Unsafe.As<IVariant>(base.Value);
+        private BindingRestrictions CreateRestrictions()
+            => BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(Expression, typeof(IVariant)));
 
-        protected abstract DynamicMetaObject VariantValue { get; }
+        private DynamicMetaObject GetValueObject()
+            => new DynamicMetaObject(valueAccess, BindingRestrictions.Empty, Unsafe.As<IVariant>(base.Value)?.Value!);
+
+        private DynamicMetaObject ApplyRestrictions(DynamicMetaObject value)
+            => new DynamicMetaObject(value.Expression, CreateRestrictions().Merge(value.Restrictions));
 
         public sealed override DynamicMetaObject BindBinaryOperation(BinaryOperationBinder binder, DynamicMetaObject arg)
-            => VariantValue.BindBinaryOperation(binder, arg);
+            => ApplyRestrictions(binder.FallbackBinaryOperation(GetValueObject(), arg));
 
         public sealed override DynamicMetaObject BindConvert(ConvertBinder binder)
-            => VariantValue.BindConvert(binder);
+            => ApplyRestrictions(binder.FallbackConvert(GetValueObject()));
 
         public sealed override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
-            => VariantValue.BindCreateInstance(binder, args);
+            => ApplyRestrictions(binder.FallbackCreateInstance(GetValueObject(), args));
 
         public sealed override DynamicMetaObject BindDeleteIndex(DeleteIndexBinder binder, DynamicMetaObject[] indexes)
-            => VariantValue.BindDeleteIndex(binder, indexes);
+            => ApplyRestrictions(binder.FallbackDeleteIndex(GetValueObject(), indexes));
 
         public sealed override DynamicMetaObject BindDeleteMember(DeleteMemberBinder binder)
-            => VariantValue.BindDeleteMember(binder);
+            => ApplyRestrictions(binder.FallbackDeleteMember(GetValueObject()));
 
         public sealed override DynamicMetaObject BindGetIndex(GetIndexBinder binder, DynamicMetaObject[] indexes)
-            => VariantValue.BindGetIndex(binder, indexes);
+            => ApplyRestrictions(binder.FallbackGetIndex(GetValueObject(), indexes));
 
         public sealed override DynamicMetaObject BindGetMember(GetMemberBinder binder)
-            => VariantValue.BindGetMember(binder);
+            => ApplyRestrictions(binder.FallbackGetMember(GetValueObject()));
 
         public sealed override DynamicMetaObject BindInvoke(InvokeBinder binder, DynamicMetaObject[] args)
-            => VariantValue.BindInvoke(binder, args);
+            => ApplyRestrictions(binder.FallbackInvoke(GetValueObject(), args));
 
         public sealed override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
-            => VariantValue.BindInvokeMember(binder, args);
+            => ApplyRestrictions(binder.FallbackInvokeMember(GetValueObject(), args));
 
         public sealed override DynamicMetaObject BindSetIndex(SetIndexBinder binder, DynamicMetaObject[] indexes, DynamicMetaObject value)
-            => VariantValue.BindSetIndex(binder, indexes, value);
+            => ApplyRestrictions(binder.FallbackSetIndex(GetValueObject(), indexes, value));
 
         public sealed override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value)
-            => VariantValue.BindSetMember(binder, value);
+            => ApplyRestrictions(binder.FallbackSetMember(GetValueObject(), value));
 
         public sealed override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
-            => VariantValue.BindUnaryOperation(binder);
+            => ApplyRestrictions(binder.FallbackUnaryOperation(GetValueObject()));
 
-        public sealed override IEnumerable<string> GetDynamicMemberNames() => VariantValue.GetDynamicMemberNames();
-    }
-
-    internal sealed class VariantImmutableMetaObject : VariantMetaObject
-    {
-        internal VariantImmutableMetaObject(Expression parameter, IVariant variant)
-            : base(parameter, variant, out var valueExpression)
-        {
-            VariantValue = variant.Value is null ?
-                new DynamicMetaObject(valueExpression, Restrictions, null!) :
-                new DynamicMetaObject(Expression.Convert(valueExpression, variant.Value.GetType()), Restrictions, variant.Value);
-        }
-
-        protected override DynamicMetaObject VariantValue { get; }
+        public sealed override IEnumerable<string> GetDynamicMemberNames() => Array.Empty<string>();
     }
 }
