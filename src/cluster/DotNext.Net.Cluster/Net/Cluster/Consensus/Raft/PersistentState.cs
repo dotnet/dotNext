@@ -538,7 +538,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, [NotNull] out Partition? partition, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
-            partition = null;
+            partition = tail;
             GetOrCreatePartition(startIndex, ref partition);
             return partition.WriteAsync(entry, startIndex, sessionManager.WriteBuffer, token);
         }
