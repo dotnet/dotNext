@@ -21,7 +21,7 @@ namespace DotNext.IO
     /// Represents binary reader for the sequence of bytes.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct SequenceBinaryReader : IAsyncBinaryReader
+    public struct SequenceBinaryReader : IAsyncBinaryReader // TODO: Rename to SequenceReader in .NEXT 4
     {
         private readonly ReadOnlySequence<byte> sequence;
         private SequencePosition position;
