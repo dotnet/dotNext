@@ -34,7 +34,7 @@ namespace DotNext.Buffers
     internal struct ArrayBuffer<T> : IBuffer<T>, IDisposable
         where T : unmanaged
     {
-        private readonly MemoryOwner<T> buffer;
+        private MemoryOwner<T> buffer;
 
         internal ArrayBuffer(int length)
             => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);

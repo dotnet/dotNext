@@ -89,5 +89,34 @@ namespace DotNext.Buffers
             owner = new(new byte[] { 10 });
             Equal(10, BufferHelpers.GetReference(in owner));
         }
+
+        [Fact]
+        public static void SetBufferLength()
+        {
+            var buffer = default(MemoryOwner<byte>);
+            True(buffer.TryResize(0));
+            False(buffer.TryResize(10));
+            Throws<ArgumentOutOfRangeException>(() => buffer.TryResize(-1));
+
+            buffer = new MemoryOwner<byte>(new byte[] { 10, 20, 30 });
+            True(buffer.TryResize(1));
+            True(buffer.TryResize(3));
+            False(buffer.TryResize(10));
+        }
+
+        [Fact]
+        public static void ResizeBuffer()
+        {
+            var allocator = MemoryAllocator.CreateArrayAllocator<byte>();
+            var buffer = default(MemoryOwner<byte>);
+
+            buffer.Resize(10, false, allocator);
+            Equal(10, buffer.Length);
+
+            buffer.Resize(3, false, allocator);
+            Equal(3, buffer.Length);
+
+            True(buffer.TryResize(10));
+        }
     }
 }

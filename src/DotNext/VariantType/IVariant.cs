@@ -30,6 +30,6 @@ namespace DotNext.VariantType
 
         /// <inheritdoc/>
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
+            => new VariantMetaObject(parameter, this);
     }
 }

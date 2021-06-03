@@ -1,6 +1,39 @@
 Release Notes
 ====
 
+# 06-14-2021
+<a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
+* Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
+* Added `TryGetWrittenContent` method to `SparseBufferWriter<T>` that allows to obtain the written buffer if it is represented by contiguous memory block
+* Added `OptionalConverterFactory` class that allows to use `Optional<T>` data type in JSON serialization. This type allows to hide data from JSON if the property of field has undefined value. Useful for designing DTOs for REST API with partial resource updates via PATCH method. Available only when target is .NET 5.
+* Added `TryResize` and `Resize` methods to `MemoryOwner<T>` value type
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
+* Call site optimization for `AsDynamic()` extension method that allows to construct LINQ expression tree on-the-fly using C# expressions
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
+* Respect volatile modifier when reading/writing field
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.2.0">DotNext.Unsafe 3.2.0</a>
+* Added additional overloads to `Pointer<T>` value type with **nuint** parameter
+
+<a href="https://www.nuget.org/packages/dotnext.threading/3.2.0">DotNext.Threading 3.2.0</a>
+* Added `EnsureState` to `AsyncTrigger` class as synchronous alternative with fail-fast behavior
+
+<a href="https://www.nuget.org/packages/dotnext.io/3.2.0">DotNext.IO 3.2.0</a>
+* Improved performance of all `IAsyncBinaryReader` interface implementations
+* Added `TryReadBlock` extension method that allows to read the block of memory from pipe synchronously
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.0">DotNext.Net.Cluster 3.2.0</a>
+* Smallish improvements of I/O operations related to log entries
+* Improved performance of background compaction algorithm
+* Persistent WAL now supports concurrent read/write. Appending of new log entries to the log tail doesn't suspend readers anymore
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.0">DotNext.AspNetCore.Cluster 3.2.0</a>
+* Improved performance of log entries decoding on receiver side
+
 # 05-14-2021
 <a href="https://www.nuget.org/packages/dotnext/3.1.1">DotNext 3.1.1</a>
 * Updated dependencies

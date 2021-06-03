@@ -163,9 +163,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc/>
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token)
         {
-            using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
             {
                 if (startIndex <= commitIndex.VolatileRead())
                 {

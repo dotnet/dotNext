@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents the token describing acquired write lock.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
+        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
         public readonly struct WriteLockToken : IDisposable
         {
             private readonly long version;
@@ -37,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token of acquired lock to verify.</param>
         /// <returns><see langword="true"/> if <paramref name="token"/> is valid; otherwise, <see langword="false"/>.</returns>
+        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
         public bool Validate(in WriteLockToken token)
             => token.IsValid(syncRoot);
 
@@ -48,8 +50,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The token representing acquired write lock.</returns>
         /// <exception cref="TimeoutException">The lock has not been acquired in the specified time window.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
         public async Task<WriteLockToken> AcquireWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-            => await syncRoot.AcquireWriteLockAsync(timeout, token).ConfigureAwait(false) ? new WriteLockToken(syncRoot) : throw new TimeoutException();
+            => await syncRoot.AcquireAsync(LockType.ExclusiveLock, timeout, token).ConfigureAwait(false) ? new WriteLockToken(syncRoot) : throw new TimeoutException();
 
         /// <summary>
         /// Acquires write lock so the caller has exclusive rights to write the entries.
@@ -57,6 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The token representing acquired write lock.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
         public Task<WriteLockToken> AcquireWriteLockAsync(CancellationToken token)
             => AcquireWriteLockAsync(InfiniteTimeSpan, token);
     }

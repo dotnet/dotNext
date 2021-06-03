@@ -133,6 +133,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     readers[0] = new(fs, true);
             }
 
+            internal abstract ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token = default)
+                where TEntry : notnull, IRaftLogEntry;
+
             public sealed override bool CanRead => fs.CanRead;
 
             public sealed override bool CanWrite => fs.CanWrite;

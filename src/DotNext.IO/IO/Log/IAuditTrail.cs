@@ -125,6 +125,7 @@ namespace DotNext.IO.Log
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token = default);
 
@@ -137,6 +138,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token = default);
 
@@ -147,6 +149,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of dropped entries.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
     }
 
@@ -173,6 +176,7 @@ namespace DotNext.IO.Log
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default);
 
@@ -185,6 +189,7 @@ namespace DotNext.IO.Log
         /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token = default)
@@ -203,6 +208,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, CancellationToken token = default);
 
@@ -215,6 +221,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token = default)
             => ReadAsync(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, token);
 
@@ -234,6 +241,7 @@ namespace DotNext.IO.Log
         /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
         ValueTask AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry;
@@ -250,6 +258,7 @@ namespace DotNext.IO.Log
         /// <returns>The index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry;
 
@@ -265,9 +274,11 @@ namespace DotNext.IO.Log
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry;
 
         /// <summary>
@@ -281,6 +292,7 @@ namespace DotNext.IO.Log
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry
             => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);

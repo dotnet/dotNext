@@ -121,11 +121,8 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
-            var newBuffer = allocator.Invoke(newSize, false);
-            buffer.Memory.CopyTo(newBuffer.Memory);
-            buffer.Dispose();
-            buffer = newBuffer;
-            AllocationCounter?.WriteMetric(newBuffer.Length);
+            buffer.Resize(newSize, false, allocator);
+            AllocationCounter?.WriteMetric(buffer.Length);
         }
 
         /// <inheritdoc/>

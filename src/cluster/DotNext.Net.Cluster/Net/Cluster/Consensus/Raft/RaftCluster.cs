@@ -539,7 +539,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-                    await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
+                    await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
                     return new Result<bool>(currentTerm, true);
                 }
 

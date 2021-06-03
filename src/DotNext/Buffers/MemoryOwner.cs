@@ -145,19 +145,66 @@ namespace DotNext.Buffers
         /// </summary>
         public readonly int Length => length;
 
-        internal void Expand()
-        {
-            if (array is not null)
-                length = array.Length;
-            else if (owner is not null)
-                length = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
-        }
+        internal void Expand() => length = RawLength;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Truncate(int newLength)
         {
             Debug.Assert(newLength > 0);
+            Debug.Assert(newLength <= RawLength);
+
             length = Math.Min(length, newLength);
+        }
+
+        private readonly int RawLength
+        {
+            get
+            {
+                int result;
+
+                if (array is not null)
+                    result = array.Length;
+                else if (owner is not null)
+                    result = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
+                else
+                    result = 0;
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to resize this buffer without reallocation.
+        /// </summary>
+        /// <remarks>
+        /// This method always return <see langword="true"/> if <paramref name="newLength"/> is less than
+        /// or equal to <see cref="Length"/>.
+        /// </remarks>
+        /// <param name="newLength">The requested length of this buffer.</param>
+        /// <returns><see langword="true"/> if this buffer is resized successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="newLength"/> is less than zero.</exception>
+        public bool TryResize(int newLength)
+        {
+            if (newLength < 0)
+                throw new ArgumentOutOfRangeException(nameof(newLength));
+
+            var result = true;
+
+            var rawLength = RawLength;
+            if (newLength == 0)
+            {
+                Dispose();
+            }
+            else if(rawLength == 0 || newLength > rawLength)
+            {
+                result = false;
+            }
+            else if (newLength < rawLength)
+            {
+                length = newLength;
+            }
+
+            return result;
         }
 
         /// <summary>
