@@ -48,8 +48,6 @@ Documentation for older versions:
 # What's new
 Release Date: 06-03-2021
 
-This is maintenance release.
-
 <a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
 * Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
 * Added `TryGetWrittenContent` method to `SparseBufferWriter<T>` that allows to obtain the written buffer if it is represented by contiguous memory block
