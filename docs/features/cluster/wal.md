@@ -31,7 +31,7 @@ Internally, persistent WAL uses files to store the state of cluster member and l
 * `WriteThrough` indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls _fsync_ for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.
 * `BackupCompression` represents compression level used by `CreateBackupAsync` method.
 * `CompactionMode` represents log compaction mode. The default is _Sequential_.
-* `CopyOnReadOptions` allows to enable _copy-on-read_ behavior which allows to avoid lock contention between writers and the replication process.
+* `CopyOnReadOptions` allows to enable _copy-on-read_ behavior which allows to avoid lock contention between log compaction and replication processes
 * `CacheEvictionPolicy` represents eviction policy of the cached log entries.
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
@@ -114,12 +114,13 @@ In the reality, the state machine should persist its state in reliable way, e.g.
 
 The following methods allows to implement this scenario:
 * `AppendAsync` adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries
+* `AppendAndEnsureCommitAsync` adds a single log entry and waits untile the entry is committed
 * `DropAsync` removes the uncommitted entries from the log
 * `CommitAsync` marks appended entries as committed. Optionally, it can force log compaction
 * `EnsureConsistencyAsync` suspends the caller and waits until the last committed entry is from leader's term
 * `WaitForCommitAsync` waits for the specific or any commit
 * `CreateBackupAsync` creates backup of the log packed into ZIP archive
-* `ForceCompactionAsync` manually triggers log compaction. Has no effect if compaction mode other than _Background_.
+* `ForceCompactionAsync` manually triggers log compaction. Has no effect if compaction mode other than _Background_
 
 `ReadAsync` method can be used to obtain committed or uncommitted entries in stream-like manner.
 
@@ -141,7 +142,7 @@ The following operations have the positive impact provided by caching:
 * Snapshotting process, because snapshot builder deals with the log entries cached in the memory
 
 ## Lock contention
-_Copy-on-read_ optimization allows to reduce lock contention between the replication process that requires _read lock_ and writers. Multiple readers can co-exist in the same time. However, appending of new log entries is not allowed while read lock acquired. Replication process acquires _read lock_ and then reads the log entries to be replicated. Sending of these log entries is also protected by the _read lock_. The replication may take a long time that causes writers to wait in the queue. This overhead can be reduced by switching _copy-on-read_ behavior on using `CopyOnReadOptions` configuration property by the cost of increased RAM consumption. In this case, all necessary log entries for replication will be copied to the temporary buffer and passed to the replication process. Buffered copies can be transferred to other cluster members without _read lock_.
+_Copy-on-read_ optimization allows to reduce lock contention between the compaction process that requires _compaction lock_ and readers. Multiple readers in parallel are allowed. Appending new log entries to the end of the log is also allowed in parallel with reading. However, log compaction is mutually exclusive with _read lock_. To avoid this contention, you can configure WAL using `CopyOnReadOptions` property. In this case, the replication process will be moved out of the lock. _Read lock_ still requires to create a range of log entries to be replicated.
 
 ## Log Compaction
 WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called _log compaction_. As a result, the snapshot is produced. _Snapshot_ is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.

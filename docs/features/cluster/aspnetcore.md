@@ -399,22 +399,6 @@ The wire format is highly optimized for transferring log entries during the repl
 
 _Incremental background compaction_ is the default strategy when _Background_ compaction enabled. The worker just waits for the commit and checks whether `PersistentState.CompactionCount` property is greater than zero. If so, it calls `ForceCompactionAsync` with the compaction factor which is equal to 1. It provides minimal compaction of the log. As a result, the contention between the compaction worker and readers is minimal or close to zero.
 
-## Buffered Replication
-Replication process requires read access to the WAL. In case of `PersistentState` this means that no one can append new entries or execute log compaction. Receiver also need to write the received log entries. So the read lock time is the sum of the time needed for the transfer over the wire and the time needed to persist received log entries. The time needed for disk I/O can be removed completely if buffered replication is enabled.
-
-The following example shows how to enable the buffering:
-```csharp
-using DotNext.Net.Cluster.Consensus.Raft;
-
-IServiceCollection services;
-services.EnableBuffering(options => 
-{
-    MemoryThreshold = 10 * 1024
-});
-```
-
-Each log entry which is less than 10 KB in size will be stored in memory before writing to the WAL. Log entries larger than 10 KB will be stored in the temporary files. These files will be deleted automatically in the end of the replication process.
-
 # Example
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
