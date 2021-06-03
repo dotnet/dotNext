@@ -104,6 +104,21 @@ Optional.None<string>() == Optional.Null<string>(); // false
 > [!IMPORTANT]
 > Prior to .NEXT 3.2.0, null value is equal to undefined value, i.e. `Optional.None<string>() == Optional.Null<string>()` evaluated as true. Starting from 3.2.0 the behavior is changed. If you need to return previous behavior, then enable _DotNext.Optional.UndefinedEqualsNull_ switch using `SetSwitch` method from [AppContext](https://docs.microsoft.com/en-us/dotnet/api/system.appcontext) class.
 
+The following table describes relationship between `HasValue`, `IsNull` and `IsUndefined` properties for nullable type `T` (reference type, `Nullable<T>` or `Optional<T>`):
+
+| HasValue | IsNull | IsUndefined |
+| ---- | ---- | ---- |
+| true | false | false |
+| false | true | false |
+| false | false | true |
+
+The following table describes relationship between `HasValue`, `IsNull` and `IsUndefined` properties for non-nullable type `T` (all value types except `Nullable<T>` and `Optional<T>`):
+
+| HasValue | IsNull | IsUndefined |
+| ---- | ---- | ---- |
+| true | false | false |
+| false | false | true |
+
 # JSON serialization
 [Optional&lt;T&gt;](xref:DotNext.Optional`1) is compatible with JSON serialization provided by `System.Text.Json` namespace. You can enable support of this type using [OptionalConverterFactory](xref:DotNext.Text.Json.OptionalConverterFactory) converter. The converter can be applied to the property or field directly using [JsonConverterAttribute](https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonconverterattribute) attribute or it can be registered via [Converters](https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonserializeroptions.converters) property.
 
