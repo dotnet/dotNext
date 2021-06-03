@@ -46,7 +46,7 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 05-XX-2021
+Release Date: 06-03-2021
 
 This is maintenance release.
 
