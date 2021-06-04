@@ -1,6 +1,5 @@
 using System;
 using System.Linq.Expressions;
-using static System.Threading.Thread;
 
 namespace DotNext.Metaprogramming
 {
@@ -22,14 +21,14 @@ namespace DotNext.Metaprogramming
         private protected ExpressionBuilder(ILexicalScope currentScope)
         {
             this.currentScope = currentScope;
-            ownerThread = CurrentThread.ManagedThreadId;
+            ownerThread = Environment.CurrentManagedThreadId;
         }
 
         private protected Type Type => expressionType ?? typeof(void);
 
         private protected void VerifyCaller()
         {
-            if (ownerThread != CurrentThread.ManagedThreadId)
+            if (ownerThread != Environment.CurrentManagedThreadId)
                 throw new InvalidOperationException();
         }
 
