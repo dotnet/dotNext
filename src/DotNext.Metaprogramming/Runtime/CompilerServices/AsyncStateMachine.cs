@@ -366,7 +366,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             catch (Exception e)
             {
-                suspended = true;
+                suspended = false;
                 exception = ExceptionDispatchInfo.Capture(e);
 
                 // try to recover from exception and re-enter into state machine

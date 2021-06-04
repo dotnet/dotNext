@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -409,6 +410,44 @@ namespace DotNext.Metaprogramming
         {
             var lambda = Lambda<Func<long, long, long>>(static fun => ExpressionBuilder.Fragment<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1])).Compile();
             Equal(10, lambda(5, 10));
+        }
+
+        [Fact]
+        public static async Task RegressionIssue70()
+        {
+            var exprThrowException = new Func<Task<string>>(ThrowException).Method;
+            var exprReprocess = new Func<Task<string>>(Reprocess).Method;
+
+            var asyncTryCatchExpression = AsyncLambda<Func<Task<string>>>((lambdaContext, result) =>
+            {
+                Try(() =>
+                    {
+
+                        Assign(result, Expression.Call(null, exprThrowException).Await());
+                        Return(result);
+                    })
+                    .Catch<Exception>(() =>
+                    {
+                        Assign(result, Expression.Call(null, exprReprocess).Await());
+                        Return(result);
+                    })
+                    .End();
+            });
+
+            var asyncTryCatchFunc = asyncTryCatchExpression.Compile();
+
+            using var cancellationTokenSource = new CancellationTokenSource(DefaultTimeout);
+            var task = await Task.WhenAny(asyncTryCatchFunc(), Task.Delay(-1, cancellationTokenSource.Token));
+            True(task.IsCompletedSuccessfully);
+            Equal("Hello, world!", (string)task.GetResult(DefaultTimeout).Value);
+
+            static async Task<string> ThrowException()
+            {
+                await Task.Yield();
+                throw new Exception();
+            }
+
+            static Task<string> Reprocess() => Task.FromResult("Hello, world!");
         }
     }
 }
