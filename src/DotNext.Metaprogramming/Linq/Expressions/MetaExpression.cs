@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 using Debug = System.Diagnostics.Debug;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions
 {
