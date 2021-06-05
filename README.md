@@ -57,6 +57,7 @@ Release Date: 06-03-2021
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
 * Call site optimization for `AsDynamic()` extension method that allows to construct LINQ expression tree on-the-fly using C# expressions
+* Fixed [70](https://github.com/sakno/dotNext/issues/70)
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
 * Respect volatile modifier when reading/writing field
@@ -76,9 +77,11 @@ Release Date: 06-03-2021
 * Smallish improvements of I/O operations related to log entries
 * Improved performance of background compaction algorithm
 * Persistent WAL now supports concurrent read/write. Appending of new log entries to the log tail doesn't suspend readers anymore
+* Added event id and event name to all log messages
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.0">DotNext.AspNetCore.Cluster 3.2.0</a>
 * Improved performance of log entries decoding on receiver side
+* Added event id and event name to all log messages
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
