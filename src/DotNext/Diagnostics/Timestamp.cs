@@ -14,6 +14,7 @@ namespace DotNext.Diagnostics
     /// </remarks>
     public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     {
+        private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
         private readonly long ticks;
 
         private Timestamp(long ticks) => this.ticks = ticks;
@@ -24,7 +25,7 @@ namespace DotNext.Diagnostics
         public static Timestamp Current => new(GetTimestamp());
 
         private static long ToTicks(double duration)
-            => (long)(TimeSpan.TicksPerSecond * duration / Frequency);
+            => unchecked((long)(TickFrequency * duration));
 
         /// <summary>
         /// Gets <see cref="TimeSpan"/> representing this timestamp.
