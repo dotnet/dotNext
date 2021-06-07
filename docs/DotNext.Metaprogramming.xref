@@ -1,165 +1,165 @@
 ﻿references:
 - uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder
   name: ValueTupleBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Runtime.CompilerServices/ValueTupleBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Runtime.CompilerServices/ValueTupleBuilder
   fullName: DotNext.Runtime.CompilerServices.ValueTupleBuilder
 - uid: DotNext.Metaprogramming.CodeGenerator
   name: CodeGenerator
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/CodeGenerator
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/CodeGenerator
   fullName: DotNext.Metaprogramming.CodeGenerator
 - uid: DotNext.Metaprogramming.ConditionalBuilder
   name: ConditionalBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/ConditionalBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/ConditionalBuilder
   fullName: DotNext.Metaprogramming.ConditionalBuilder
 - uid: DotNext.Metaprogramming.ExpressionBuilder`1
   name: ExpressionBuilder`1
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/ExpressionBuilder%601
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/ExpressionBuilder%601
   fullName: DotNext.Metaprogramming.ExpressionBuilder`1
 - uid: DotNext.Metaprogramming.LambdaContext
   name: LambdaContext
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/LambdaContext
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/LambdaContext
   fullName: DotNext.Metaprogramming.LambdaContext
 - uid: DotNext.Metaprogramming.LoopContext
   name: LoopContext
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/LoopContext
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/LoopContext
   fullName: DotNext.Metaprogramming.LoopContext
 - uid: DotNext.Metaprogramming.MatchBuilder
   name: MatchBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/MatchBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/MatchBuilder
   fullName: DotNext.Metaprogramming.MatchBuilder
 - uid: DotNext.Metaprogramming.MatchBuilder.Pattern
   name: MatchBuilder.Pattern
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/MatchBuilder.Pattern
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/MatchBuilder.Pattern
   fullName: DotNext.Metaprogramming.MatchBuilder.Pattern
 - uid: DotNext.Metaprogramming.MatchBuilder.CaseStatement
   name: MatchBuilder.CaseStatement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/MatchBuilder.CaseStatement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/MatchBuilder.CaseStatement
   fullName: DotNext.Metaprogramming.MatchBuilder.CaseStatement
 - uid: DotNext.Metaprogramming.SwitchBuilder
   name: SwitchBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/SwitchBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/SwitchBuilder
   fullName: DotNext.Metaprogramming.SwitchBuilder
 - uid: DotNext.Metaprogramming.TryBuilder
   name: TryBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/TryBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/TryBuilder
   fullName: DotNext.Metaprogramming.TryBuilder
 - uid: DotNext.Metaprogramming.TryBuilder.Filter
   name: TryBuilder.Filter
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/TryBuilder.Filter
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/TryBuilder.Filter
   fullName: DotNext.Metaprogramming.TryBuilder.Filter
 - uid: DotNext.Metaprogramming.TryBuilder.Handler
   name: TryBuilder.Handler
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/TryBuilder.Handler
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/TryBuilder.Handler
   fullName: DotNext.Metaprogramming.TryBuilder.Handler
 - uid: DotNext.Linq.Expressions.AsyncResultExpression
   name: AsyncResultExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/AsyncResultExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/AsyncResultExpression
   fullName: DotNext.Linq.Expressions.AsyncResultExpression
 - uid: DotNext.Linq.Expressions.AwaitExpression
   name: AwaitExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/AwaitExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/AwaitExpression
   fullName: DotNext.Linq.Expressions.AwaitExpression
 - uid: DotNext.Linq.Expressions.CollectionAccessExpression
   name: CollectionAccessExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/CollectionAccessExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/CollectionAccessExpression
   fullName: DotNext.Linq.Expressions.CollectionAccessExpression
 - uid: DotNext.Linq.Expressions.CustomExpression
   name: CustomExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/CustomExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/CustomExpression
   fullName: DotNext.Linq.Expressions.CustomExpression
 - uid: DotNext.Linq.Expressions.ExpressionBuilder
   name: ExpressionBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder
   fullName: DotNext.Linq.Expressions.ExpressionBuilder
 - uid: DotNext.Linq.Expressions.ForEachExpression
   name: ForEachExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForEachExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForEachExpression
   fullName: DotNext.Linq.Expressions.ForEachExpression
 - uid: DotNext.Linq.Expressions.ForEachExpression.Statement
   name: ForEachExpression.Statement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForEachExpression.Statement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForEachExpression.Statement
   fullName: DotNext.Linq.Expressions.ForEachExpression.Statement
 - uid: DotNext.Linq.Expressions.ForExpression
   name: ForExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression
   fullName: DotNext.Linq.Expressions.ForExpression
 - uid: DotNext.Linq.Expressions.ForExpression.LoopBuilder
   name: ForExpression.LoopBuilder
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder
   fullName: DotNext.Linq.Expressions.ForExpression.LoopBuilder
 - uid: DotNext.Linq.Expressions.ForExpression.LoopBuilder.Condition
   name: ForExpression.LoopBuilder.Condition
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder.Condition
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder.Condition
   fullName: DotNext.Linq.Expressions.ForExpression.LoopBuilder.Condition
 - uid: DotNext.Linq.Expressions.ForExpression.LoopBuilder.Iteration
   name: ForExpression.LoopBuilder.Iteration
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder.Iteration
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder.Iteration
   fullName: DotNext.Linq.Expressions.ForExpression.LoopBuilder.Iteration
 - uid: DotNext.Linq.Expressions.ForExpression.LoopBuilder.Statement
   name: ForExpression.LoopBuilder.Statement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder.Statement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ForExpression.LoopBuilder.Statement
   fullName: DotNext.Linq.Expressions.ForExpression.LoopBuilder.Statement
 - uid: DotNext.Linq.Expressions.InterpolationExpression
   name: InterpolationExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/InterpolationExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/InterpolationExpression
   fullName: DotNext.Linq.Expressions.InterpolationExpression
 - uid: DotNext.Linq.Expressions.ItemIndexExpression
   name: ItemIndexExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ItemIndexExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ItemIndexExpression
   fullName: DotNext.Linq.Expressions.ItemIndexExpression
 - uid: DotNext.Linq.Expressions.LockExpression
   name: LockExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/LockExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/LockExpression
   fullName: DotNext.Linq.Expressions.LockExpression
 - uid: DotNext.Linq.Expressions.LockExpression.Statement
   name: LockExpression.Statement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/LockExpression.Statement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/LockExpression.Statement
   fullName: DotNext.Linq.Expressions.LockExpression.Statement
 - uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression
   name: NullCoalescingAssignmentExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/NullCoalescingAssignmentExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/NullCoalescingAssignmentExpression
   fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression
 - uid: DotNext.Linq.Expressions.NullSafetyExpression
   name: NullSafetyExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/NullSafetyExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/NullSafetyExpression
   fullName: DotNext.Linq.Expressions.NullSafetyExpression
 - uid: DotNext.Linq.Expressions.RangeExpression
   name: RangeExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/RangeExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/RangeExpression
   fullName: DotNext.Linq.Expressions.RangeExpression
 - uid: DotNext.Linq.Expressions.RefAnyValExpression
   name: RefAnyValExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/RefAnyValExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/RefAnyValExpression
   fullName: DotNext.Linq.Expressions.RefAnyValExpression
 - uid: DotNext.Linq.Expressions.SliceExpression
   name: SliceExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/SliceExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/SliceExpression
   fullName: DotNext.Linq.Expressions.SliceExpression
 - uid: DotNext.Linq.Expressions.UsingExpression
   name: UsingExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/UsingExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/UsingExpression
   fullName: DotNext.Linq.Expressions.UsingExpression
 - uid: DotNext.Linq.Expressions.UsingExpression.Statement
   name: UsingExpression.Statement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/UsingExpression.Statement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/UsingExpression.Statement
   fullName: DotNext.Linq.Expressions.UsingExpression.Statement
 - uid: DotNext.Linq.Expressions.WhileExpression
   name: WhileExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WhileExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WhileExpression
   fullName: DotNext.Linq.Expressions.WhileExpression
 - uid: DotNext.Linq.Expressions.WhileExpression.Statement
   name: WhileExpression.Statement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WhileExpression.Statement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WhileExpression.Statement
   fullName: DotNext.Linq.Expressions.WhileExpression.Statement
 - uid: DotNext.Linq.Expressions.WithExpression
   name: WithExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WithExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WithExpression
   fullName: DotNext.Linq.Expressions.WithExpression
 - uid: DotNext.Linq.Expressions.WithExpression.Statement
   name: WithExpression.Statement
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WithExpression.Statement
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WithExpression.Statement
   fullName: DotNext.Linq.Expressions.WithExpression.Statement
 - uid: DotNext.Linq.Expressions.WriteLineExpression
   name: WriteLineExpression
-  href: https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WriteLineExpression
+  href: https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WriteLineExpression
   fullName: DotNext.Linq.Expressions.WriteLineExpression
