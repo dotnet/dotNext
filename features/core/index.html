@@ -69,7 +69,7 @@
 <h1 id="base-class-library-enhancements">Base Class Library Enhancements</h1>
 
 <h1 id="randomization">Randomization</h1>
-<p>Related class: <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/RandomExtensions">RandomExtensions</a></p>
+<p>Related class: <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/RandomExtensions">RandomExtensions</a></p>
 <p>Extension methods for random data generation extends both classes <a href="https://docs.microsoft.com/en-us/dotnet/api/system.random">Random</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator">RandomNumberGenerator</a>.</p>
 <h2 id="random-string-generation">Random string generation</h2>
 <p>Provides a way to generate random string of the given length and set of allowed characters.</p>
@@ -91,7 +91,7 @@ var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 </code></pre>
 <p>The same extension method is provided for class <a href="https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator">RandomNumberGenerator</a>.</p>
 <h1 id="string-extensions">String extensions</h1>
-<p>Related class: <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/StringExtensions">StringExtensions</a>.</p>
+<p>Related class: <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/StringExtensions">StringExtensions</a>.</p>
 <h2 id="reverse-string">Reverse string</h2>
 <p>Extension method <em>Reverse</em> allows to reverse string characters and returns a new string:</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -109,7 +109,7 @@ Span&lt;int&gt; array = new int[] { 10, 20, 30 };
 array = array.TrimLength(2);    //array is { 10, 20 }
 </code></pre>
 <h1 id="delegates">Delegates</h1>
-<p>Related classes: <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/DelegateHelpers">DelegateHelpers</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Func">Func</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Converter">Converter</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Predicate">Predicate</a>.</p>
+<p>Related classes: <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/DelegateHelpers">DelegateHelpers</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Func">Func</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Converter">Converter</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Predicate">Predicate</a>.</p>
 <h2 id="change-type-of-delegate">Change type of delegate</h2>
 <p>Different types of delegates can refer to the same method. For instance, <code>Func&lt;string, string&gt;</code> represents the same signature as <code>Converter&lt;string, string&gt;</code>. It means that the delegate instance can be converted into another delegate type if signature matches.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -158,7 +158,7 @@ Func&lt;string, int&gt; openDelegate = DelegateHelpers.CreateDelegate&lt;string,
 Func&lt;int&gt; closedDelegate = DelegateHelpers.CreateDelegate&lt;string, int&gt;(hashCode, &quot;Hello, world!&quot;);
 </code></pre>
 <h1 id="comparable-data-types">Comparable data types</h1>
-<p>Related class: <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Comparison">Comparison</a></p>
+<p>Related class: <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Comparison">Comparison</a></p>
 <h2 id="range-check">Range check</h2>
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -170,7 +170,7 @@ i = 5.Clamp(6, 10); //i == 6
 i = 5.Clamp(0, 4); //i == 4
 </code></pre>
 <h1 id="equality-check">Equality check</h1>
-<p>Related classes: <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ObjectExtensions">ObjectExtensions</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/ValueTypeExtensions">ValueTypeExtensions</a>.</p>
+<p>Related classes: <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/ObjectExtensions">ObjectExtensions</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/ValueTypeExtensions">ValueTypeExtensions</a>.</p>
 <p>Extension method <em>IsOneOf</em> allows to check whether the value is equal to one of the given values.</p>
 <pre><code class="lang-csharp">using DotNext;
 
@@ -179,7 +179,7 @@ var b = 42.IsOneOf(0, 5, 42, 3); //b == true
 b = &quot;a&quot;.IsOneOf(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;); //b == false
 </code></pre>
 <h1 id="array-extensions">Array extensions</h1>
-<p>Related classes: <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray">OneDimensionalArray</a>.</p>
+<p>Related classes: <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray">OneDimensionalArray</a>.</p>
 <p>Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.</p>
 <h2 id="equality-check-1">Equality check</h2>
 <p><em>BitwiseEquals</em> extension method performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. <code>int</code>, <code>long</code>, <code>System.Guid</code>.</p>
@@ -210,7 +210,7 @@ array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
 </code></pre>
 <p>The same behavior can be achieved using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. However, these methods support large arrays where index and length cannot be represented by <strong>int</strong> data type.</p>
 <h1 id="timestamp">Timestamp</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Diagnostics/Timestamp">Timestamp</a> value type can be used as allocation-free alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a> when you need to measure time intervals.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Diagnostics/Timestamp">Timestamp</a> value type can be used as allocation-free alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a> when you need to measure time intervals.</p>
 <pre><code class="lang-csharp">using DotNext.Diagnostics;
 using System;
 
@@ -223,8 +223,8 @@ Console.WriteLine(current.Elapsed);
 <h1 id="dynamic-task-result">Dynamic Task Result</h1>
 <p>In .NET it is not possible to obtain a result from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">task</a> if its result type is not known at compile-time. It can be useful if you are writing proxy or SOAP Middleware using ASP.NET Core and task type is not known for your code. .NEXT provides two ways of doing that:</p>
 <ol>
-<li>Synchronous method <code>GetResult</code> which is located in <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Synchronization">Synchronization</a> class</li>
-<li>Asynchronous method <code>AsDynamic</code> which is located in <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Conversion">Conversion</a> class.</li>
+<li>Synchronous method <code>GetResult</code> which is located in <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Synchronization">Synchronization</a> class</li>
+<li>Asynchronous method <code>AsDynamic</code> which is located in <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading.Tasks/Conversion">Conversion</a> class.</li>
 </ol>
 <p>All you need is to have instance of non-generic <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> class because all types tasks derive from it.</p>
 <p>Under the hood, .NEXT uses Dynamic Language Runtime feature in combination with high-speed optimizations.</p>
@@ -243,7 +243,7 @@ dynamic result = await t.AsDynamic();
 </code></pre>
 <h1 id="hex-converter">Hex Converter</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring">BitConverter.ToString</a> method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support <code>Span&lt;byte&gt;</code> data type and therefore cannot be used in situations when bytes come from different source such as stack-allocated memory or segment of another array. Moreover, the method cannot place its result to variable of <code>Span&lt;char&gt;</code> type and allocates new string every time. It may be unacceptable in low-latency scenario when number of memory allocations should be reduced.</p>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext/Span">Span</a> static class exposes two static methods for fast hexadecimal conversion:</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Span">Span</a> static class exposes two static methods for fast hexadecimal conversion:</p>
 <ul>
 <li><code>ToHex</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;char&gt;</code></li>
 <li><code>FromHex</code> allows to convert hexadecimal string in the from of <code>ReadOnlySpan&lt;char&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
@@ -255,7 +255,7 @@ Span&lt;char&gt; hex = new stackalloc[bytes.Length * 2];
 Span.ToHex(bytes, hex); //now hex == 081018
 </code></pre>
 <h1 id="polling-of-concurrent-collections">Polling of Concurrent Collections</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence">Sequence</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence">Sequence</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Concurrent;
 using System.Collections.Concurrent;
 

@@ -77,7 +77,7 @@
 <li>Writer lock</li>
 <li>Semaphore</li>
 </ul>
-<p>This unification is implemented in the form of the single type <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Lock">Lock</a>. It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/Lock.Holder">lock holder</a>. The only purpose of this object is to hold the acquired lock. The lock can be released using <code>Dispose</code> method of the holder.</p>
+<p>This unification is implemented in the form of the single type <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock">Lock</a>. It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock.Holder">lock holder</a>. The only purpose of this object is to hold the acquired lock. The lock can be released using <code>Dispose</code> method of the holder.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System.Threading;
 
@@ -123,7 +123,7 @@ using(builder.AcquireWriteLock())
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside of <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition">LockAcquisition</a> class.</p>
+<p>For more information check extension methods inside of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition">LockAcquisition</a> class.</p>
 </article>
           </div>
           

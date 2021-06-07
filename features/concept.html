@@ -78,7 +78,7 @@
 <h5>Caution</h5>
 <p>Due to lack of native compiler support of this feature, any mistake in definition of concept type will not be highlighted at compile time.</p>
 </div>
-<p>The feature is based on strongly typed reflection so read <a href="reflection/fast.html">this</a> document first. Entry point to discover class members is <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601">Type&lt;T&gt;</a>. Reflected members are cached to speed-up performance and typed by specific delegate type. The delegate describes signature of the reflected member. All types of members are supported: constructors, fields, methods, event, properties, indexer properties.</p>
+<p>The feature is based on strongly typed reflection so read <a href="reflection/fast.html">this</a> document first. Entry point to discover class members is <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601">Type&lt;T&gt;</a>. Reflected members are cached to speed-up performance and typed by specific delegate type. The delegate describes signature of the reflected member. All types of members are supported: constructors, fields, methods, event, properties, indexer properties.</p>
 <h1 id="defining-concept">Defining Concept</h1>
 <p>The recommended code style for the concept type is a definition of static class with restrictions expressed as static fields. Let's define type class with single instance method and single static method:</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
@@ -101,7 +101,7 @@ public static class Parseable&lt;T&gt;
     public static string ToString(in T @this, string format) =&gt; toStringMethod(@this, format);
 }
 </code></pre>
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConceptAttribute">ConceptAttribute</a> is required attribute that should be applied to the concept type definition.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConceptAttribute">ConceptAttribute</a> is required attribute that should be applied to the concept type definition.</p>
 <p><code>Type&lt;T&gt;.Method.Require</code> is a method requirement declaration. In this example, type <em>T</em> should have two methods:</p>
 <ul>
 <li>Public static method <code>T Parse(string text)</code></li>
@@ -129,16 +129,16 @@ var length = LengthSupport&lt;string&gt;.GetLength(&quot;Hello, world!&quot;); /
 length = LengthSupport&lt;byte[]&gt;.GetLength(new byte[]{ 1, 2, 3 }); //length == 3
 </code></pre>
 <p>Now this concept allows to obtain value of <code>Length</code> property from any object.</p>
-<p><code>Require</code> method is used to obtain instance member from the type specified as actual generic argument for type <code>Type&lt;T&gt;</code>. Static member can be obtained using <code>RequireStatic</code> family of methods. <code>Require</code> and <code>RequireStatic</code> are useful in the context of concept type declaration. If target type <em>T</em> doesn't have required member then these methods will throw one of <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/ConstraintViolationException">ConstraintViolationException</a> ancestors:</p>
+<p><code>Require</code> method is used to obtain instance member from the type specified as actual generic argument for type <code>Type&lt;T&gt;</code>. Static member can be obtained using <code>RequireStatic</code> family of methods. <code>Require</code> and <code>RequireStatic</code> are useful in the context of concept type declaration. If target type <em>T</em> doesn't have required member then these methods will throw one of <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/ConstraintViolationException">ConstraintViolationException</a> ancestors:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingConstructorException">MissingConstructorException</a> if required constructor doesn't exist</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingMethodException">MissingMethodException</a> if required method or property getter/setter doesn't exist</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingFieldException">MissingFieldException</a> if required field doesn't exist</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingEventException">MissingEventException</a> if required event doesn't exist</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingConstructorException">MissingConstructorException</a> if required constructor doesn't exist</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingMethodException">MissingMethodException</a> if required method or property getter/setter doesn't exist</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingFieldException">MissingFieldException</a> if required field doesn't exist</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/MissingEventException">MissingEventException</a> if required event doesn't exist</li>
 </ul>
 <p>In the context of strongly typed reflection it is recommended to use alternative methods <code>Get</code> (for instance members) or <code>GetStatic</code> (for static members). These methods have same the same behavior as <code>Require</code>/<code>RequireStatic</code> but they don't throw exception. If member cannot be resolved then these methods return <strong>null</strong>.</p>
 <h1 id="applying-concept">Applying Concept</h1>
-<p>When concept type is declared, it can be used as a constraint for generic type parameter of class or method. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Concept">Concept</a> class allows to apply concept type to the generic parameter and verify constraints, thus, <em>fail fast</em> if actual generic argument doesn't meet to the them. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConstraintAttribute">ConstraintAttribute</a> indicating that the specified generic parameter is constrained with one or more concept types.</p>
+<p>When concept type is declared, it can be used as a constraint for generic type parameter of class or method. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Concept">Concept</a> class allows to apply concept type to the generic parameter and verify constraints, thus, <em>fail fast</em> if actual generic argument doesn't meet to the them. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/ConstraintAttribute">ConstraintAttribute</a> indicating that the specified generic parameter is constrained with one or more concept types.</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.CompilerServices;
 using System;
 
@@ -175,10 +175,10 @@ Console.WriteLine(formatter.Concat(1L, 2L));//constraint checked here
 <li>Use custom delegate type, as it was shown in the example above (<code>ToStringMethod</code> delegate type)</li>
 <li>Use special delegates provided by DotNext Reflection library:
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%602">Function&lt;TArgs, TResult&gt;</a> for static methods with return type</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%603">Function&lt;T, TArgs, TResult&gt;</a> for instance methods with return type</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%601">Procedure&lt;TArgs&gt;</a> for static methods without return type</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%602">Procedure&lt;T, TArgs&gt;</a> for instance methods without return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%602">Function&lt;TArgs, TResult&gt;</a> for static methods with return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%603">Function&lt;T, TArgs, TResult&gt;</a> for instance methods with return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%601">Procedure&lt;TArgs&gt;</a> for static methods without return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%602">Procedure&lt;T, TArgs&gt;</a> for instance methods without return type</li>
 </ul>
 </li>
 </ul>
@@ -189,7 +189,7 @@ Console.WriteLine(formatter.Concat(1L, 2L));//constraint checked here
 </div>
 <p>These delegates accept input arguments in the form of the value type. Usually, the value type for the arguments is initialized on the stack. Therefore, all arguments will be passed through stack and .NET optimizations related to arguments passing are not possible.</p>
 <p>It is allowed to use any custom value type to pass arguments. The arguments should be represented by public instance fields. Properties and private fields will be ignored by <code>Type&lt;T&gt;</code>. Therefore, it is recommended to use value tuples for passing arguments. Value tuples have native compiler support in C# and VB.NET so the source code still remain readable.</p>
-<p>If parameter in the method signature is declared as <strong>ref</strong> our <strong>out</strong> then field in such structure should be of type <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Ref%601">Ref&lt;T&gt;</a>.</p>
+<p>If parameter in the method signature is declared as <strong>ref</strong> our <strong>out</strong> then field in such structure should be of type <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Ref%601">Ref&lt;T&gt;</a>.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 
 //reflect static method as Function
@@ -214,9 +214,9 @@ decimal parsedValue = args.result;  //parsedValue == 42M
 <h1 id="reusable-concepts">Reusable Concepts</h1>
 <p>The library offers ready-to-use concept types:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Number%601">Number&lt;T&gt;</a> represents any numeric type. This concept exposes operators, instance and static methods that are common to all numeric types in .NET Base Class Library.</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext/Disposable%601">Disposable&lt;T&gt;</a> represents any type implementing <em>Dispose pattern</em> even if target type doesn't implement <a href="https://docs.microsoft.com/en-us/dotnet/api/system.idisposable">IDisposable</a> interface directly.</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%602">Awaitable&lt;T, TAwaitor&gt;</a> or <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.1.1/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%603">Awaitable&lt;T, TAwaitor, TResult&gt;</a> represents <em>awaitable pattern</em> which describes any type compatible with <strong>await</strong> operator.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Number%601">Number&lt;T&gt;</a> represents any numeric type. This concept exposes operators, instance and static methods that are common to all numeric types in .NET Base Class Library.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Disposable%601">Disposable&lt;T&gt;</a> represents any type implementing <em>Dispose pattern</em> even if target type doesn't implement <a href="https://docs.microsoft.com/en-us/dotnet/api/system.idisposable">IDisposable</a> interface directly.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%602">Awaitable&lt;T, TAwaitor&gt;</a> or <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.2.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Runtime.CompilerServices/Awaitable%603">Awaitable&lt;T, TAwaitor, TResult&gt;</a> represents <em>awaitable pattern</em> which describes any type compatible with <strong>await</strong> operator.</li>
 </ul>
 </article>
           </div>

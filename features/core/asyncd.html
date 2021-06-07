@@ -69,7 +69,7 @@
 <h1 id="asynchronous-delegates">Asynchronous Delegates</h1>
 
 <p>C# compiler adds <code>BeginInvoke</code> and <code>EndInvoke</code> methods for each custom delegate type. However, these methods throw <a href="https://docs.microsoft.com/en-us/dotnet/api/system.notsupportedexception">NotSupportedException</a> in .NET Core because they depend on .NET Remoting. You can read more about this limitation <a href="https://github.com/dotnet/corefx/issues/5940">here</a>.</p>
-<p>.NEXT library provides alternative to these methods for asynchronous invocation of synchronous delegates. Extension method <code>InvokeAsync</code> which is located in <a class="xref" href="https://fuget.org/packages/DotNext/3.1.1/lib/net5.0/DotNext.dll/DotNext.Threading/AsyncDelegate">AsyncDelegate</a> class overloaded for commonly used delegate types from .NET library. The implementation executes every single method in the invocation list asynchronously because all delegates in C# are multicast delegates.</p>
+<p>.NEXT library provides alternative to these methods for asynchronous invocation of synchronous delegates. Extension method <code>InvokeAsync</code> which is located in <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading/AsyncDelegate">AsyncDelegate</a> class overloaded for commonly used delegate types from .NET library. The implementation executes every single method in the invocation list asynchronously because all delegates in C# are multicast delegates.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System;
 
