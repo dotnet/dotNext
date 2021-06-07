@@ -1,11 +1,11 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using static System.Diagnostics.Stopwatch;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Diagnostics
 {
+    using static Threading.AtomicInt64;
+
     /// <summary>
     /// Represents timestamp.
     /// </summary>
@@ -14,6 +14,7 @@ namespace DotNext.Diagnostics
     /// </remarks>
     public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     {
+        private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
         private readonly long ticks;
 
         private Timestamp(long ticks) => this.ticks = ticks;
@@ -24,7 +25,7 @@ namespace DotNext.Diagnostics
         public static Timestamp Current => new(GetTimestamp());
 
         private static long ToTicks(double duration)
-            => (long)(TimeSpan.TicksPerSecond * duration / Frequency);
+            => unchecked((long)(TickFrequency * duration));
 
         /// <summary>
         /// Gets <see cref="TimeSpan"/> representing this timestamp.
@@ -129,10 +130,7 @@ namespace DotNext.Diagnostics
         /// <param name="location">The managed pointer to the timestamp.</param>
         /// <returns>The value at the specified location.</returns>
         public static Timestamp VolatileRead(ref Timestamp location)
-        {
-            Debug.Assert(Unsafe.SizeOf<Timestamp>() == sizeof(long));
-            return new Timestamp(Volatile.Read(ref Unsafe.As<Timestamp, long>(ref location)));
-        }
+            => new(location.ticks.VolatileRead());
 
         /// <summary>
         /// Writes the timestamp and prevents the proces from reordering memory operations.
@@ -140,9 +138,6 @@ namespace DotNext.Diagnostics
         /// <param name="location">The managed pointer to the timestamp.</param>
         /// <param name="newValue">The value to write.</param>
         public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
-        {
-            Debug.Assert(Unsafe.SizeOf<Timestamp>() == sizeof(long));
-            Volatile.Write(ref Unsafe.As<Timestamp, long>(ref location), newValue.ticks);
-        }
+            => Unsafe.AsRef(in location.ticks).VolatileWrite(newValue.ticks);
     }
 }

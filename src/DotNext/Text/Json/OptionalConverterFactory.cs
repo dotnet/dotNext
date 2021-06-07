@@ -28,19 +28,7 @@ namespace DotNext.Text.Json
             }
 
             public override Optional<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                Optional<T> result;
-                if (reader.TokenType == JsonTokenType.Null)
-                {
-                    result = default(T);
-                }
-                else
-                {
-                    result = JsonSerializer.Deserialize<T>(ref reader, options);
-                }
-
-                return result;
-            }
+                => new(reader.TokenType == JsonTokenType.Null ? default : JsonSerializer.Deserialize<T>(ref reader, options));
         }
 
         /// <summary>

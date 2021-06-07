@@ -49,5 +49,14 @@ namespace DotNext.Diagnostics
             var ts = Timestamp.Current;
             Equal(ts.Value, ts);
         }
+
+        [Fact]
+        public static void VolatileAccess()
+        {
+            var ts = Timestamp.Current;
+            Equal(ts, Timestamp.VolatileRead(ref ts));
+            Timestamp.VolatileWrite(ref ts, default(Timestamp));
+            Equal(default(Timestamp), ts);
+        }
     }
 }

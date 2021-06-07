@@ -249,6 +249,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
+        public static async Task AppendWhileReading()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using var state = new PersistentState(dir, RecordsPerPartition);
+            var entry = new TestLogEntry("SET X = 0") { Term = 42L };
+            await state.AppendAsync(entry);
+
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<long>> checker = async (entries, snapshotIndex, token) =>
+            {
+                Null(snapshotIndex);
+                Equal(2, entries.Count);
+                Equal(0L, entries[0].Term);
+                Equal(42L, entries[1].Term);
+
+                Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+
+                // append a new log entry
+                return await state.AppendAsync(new TestLogEntry("SET Y = 42") { Term = 43L });
+            };
+
+            var index = await state.As<IPersistentState>().ReadAsync(checker, 0L);
+            Equal(2L, index);
+        }
+
+        [Fact]
         public static async Task DropRecords()
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };

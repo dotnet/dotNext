@@ -94,6 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="options">The delegate used to provide configuration options.</param>
         /// <returns>A modified collection of services.</returns>
         /// <seealso cref="TransportLevelBufferingOptionsName"/>
+        [Obsolete("Buffering is no longer needed because persistent WAL supports concurrent reads/writes")]
         public static IServiceCollection EnableBuffering(this IServiceCollection services, Action<RaftLogEntriesBufferingOptions> options)
             => services.Configure(TransportLevelBufferingOptionsName, options);
 
