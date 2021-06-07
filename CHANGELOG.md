@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 06-14-2021
+# 06-07-2021
 <a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
 * Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
 * Added `TryGetWrittenContent` method to `SparseBufferWriter<T>` that allows to obtain the written buffer if it is represented by contiguous memory block
@@ -11,6 +11,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
 * Call site optimization for `AsDynamic()` extension method that allows to construct LINQ expression tree on-the-fly using C# expressions
+* Fixed [70](https://github.com/sakno/dotNext/issues/70)
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
 * Respect volatile modifier when reading/writing field
@@ -30,9 +31,11 @@ Release Notes
 * Smallish improvements of I/O operations related to log entries
 * Improved performance of background compaction algorithm
 * Persistent WAL now supports concurrent read/write. Appending of new log entries to the log tail doesn't suspend readers anymore
+* Added event id and event name to all log messages
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.0">DotNext.AspNetCore.Cluster 3.2.0</a>
 * Improved performance of log entries decoding on receiver side
+* Added event id and event name to all log messages
 
 # 05-14-2021
 <a href="https://www.nuget.org/packages/dotnext/3.1.1">DotNext 3.1.1</a>
