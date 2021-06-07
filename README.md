@@ -46,7 +46,7 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 06-03-2021
+Release Date: 06-07-2021
 
 <a href="https://www.nuget.org/packages/dotnext/3.2.0">DotNext 3.2.0</a>
 * Added `TryDetachBuffer` method to `BufferWriterSlim<T>` type that allows to flow buffer in async scenarios
