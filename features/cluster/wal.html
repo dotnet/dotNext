@@ -101,7 +101,7 @@
 <li><code>WriteThrough</code> indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls <em>fsync</em> for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.</li>
 <li><code>BackupCompression</code> represents compression level used by <code>CreateBackupAsync</code> method.</li>
 <li><code>CompactionMode</code> represents log compaction mode. The default is <em>Sequential</em>.</li>
-<li><code>CopyOnReadOptions</code> allows to enable <em>copy-on-read</em> behavior which allows to avoid lock contention between writers and the replication process.</li>
+<li><code>CopyOnReadOptions</code> allows to enable <em>copy-on-read</em> behavior which allows to avoid lock contention between log compaction and replication processes</li>
 <li><code>CacheEvictionPolicy</code> represents eviction policy of the cached log entries.</li>
 </ul>
 <p>Choose <code>recordsPerPartition</code> value with care because it cannot be changed for the existing persistent WAL.</p>
@@ -179,12 +179,13 @@ sealed class SimpleAuditTrail : PersistentState
 <p>The following methods allows to implement this scenario:</p>
 <ul>
 <li><code>AppendAsync</code> adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries</li>
+<li><code>AppendAndEnsureCommitAsync</code> adds a single log entry and waits untile the entry is committed</li>
 <li><code>DropAsync</code> removes the uncommitted entries from the log</li>
 <li><code>CommitAsync</code> marks appended entries as committed. Optionally, it can force log compaction</li>
 <li><code>EnsureConsistencyAsync</code> suspends the caller and waits until the last committed entry is from leader's term</li>
 <li><code>WaitForCommitAsync</code> waits for the specific or any commit</li>
 <li><code>CreateBackupAsync</code> creates backup of the log packed into ZIP archive</li>
-<li><code>ForceCompactionAsync</code> manually triggers log compaction. Has no effect if compaction mode other than <em>Background</em>.</li>
+<li><code>ForceCompactionAsync</code> manually triggers log compaction. Has no effect if compaction mode other than <em>Background</em></li>
 </ul>
 <p><code>ReadAsync</code> method can be used to obtain committed or uncommitted entries in stream-like manner.</p>
 <h1 id="state-reconstruction">State Reconstruction</h1>
@@ -202,7 +203,7 @@ sealed class SimpleAuditTrail : PersistentState
 <li>Snapshotting process, because snapshot builder deals with the log entries cached in the memory</li>
 </ul>
 <h2 id="lock-contention">Lock contention</h2>
-<p><em>Copy-on-read</em> optimization allows to reduce lock contention between the replication process that requires <em>read lock</em> and writers. Multiple readers can co-exist in the same time. However, appending of new log entries is not allowed while read lock acquired. Replication process acquires <em>read lock</em> and then reads the log entries to be replicated. Sending of these log entries is also protected by the <em>read lock</em>. The replication may take a long time that causes writers to wait in the queue. This overhead can be reduced by switching <em>copy-on-read</em> behavior on using <code>CopyOnReadOptions</code> configuration property by the cost of increased RAM consumption. In this case, all necessary log entries for replication will be copied to the temporary buffer and passed to the replication process. Buffered copies can be transferred to other cluster members without <em>read lock</em>.</p>
+<p><em>Copy-on-read</em> optimization allows to reduce lock contention between the compaction process that requires <em>compaction lock</em> and readers. Multiple readers in parallel are allowed. Appending new log entries to the end of the log is also allowed in parallel with reading. However, log compaction is mutually exclusive with <em>read lock</em>. To avoid this contention, you can configure WAL using <code>CopyOnReadOptions</code> property. In this case, the replication process will be moved out of the lock. <em>Read lock</em> still requires to create a range of log entries to be replicated.</p>
 <h2 id="log-compaction">Log Compaction</h2>
 <p>WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called <em>log compaction</em>. As a result, the snapshot is produced. <em>Snapshot</em> is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.</p>
 <p><code>PersistentState</code> offers the following compaction modes:</p>

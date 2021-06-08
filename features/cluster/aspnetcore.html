@@ -551,18 +551,6 @@ sealed class Startup
 <li>If you're registering persistence engine in DI container manually, you need to implement background compaction worker manually using <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.backgroundservice.startasync">BackgroundService</a> class and call <code>ForceCompactionAsync</code> method in the overridden <code>ExecuteAsync</code> method.</li>
 </ol>
 <p><em>Incremental background compaction</em> is the default strategy when <em>Background</em> compaction enabled. The worker just waits for the commit and checks whether <code>PersistentState.CompactionCount</code> property is greater than zero. If so, it calls <code>ForceCompactionAsync</code> with the compaction factor which is equal to 1. It provides minimal compaction of the log. As a result, the contention between the compaction worker and readers is minimal or close to zero.</p>
-<h2 id="buffered-replication">Buffered Replication</h2>
-<p>Replication process requires read access to the WAL. In case of <code>PersistentState</code> this means that no one can append new entries or execute log compaction. Receiver also need to write the received log entries. So the read lock time is the sum of the time needed for the transfer over the wire and the time needed to persist received log entries. The time needed for disk I/O can be removed completely if buffered replication is enabled.</p>
-<p>The following example shows how to enable the buffering:</p>
-<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
-
-IServiceCollection services;
-services.EnableBuffering(options =&gt; 
-{
-    MemoryThreshold = 10 * 1024
-});
-</code></pre>
-<p>Each log entry which is less than 10 KB in size will be stored in memory before writing to the WAL. Log entries larger than 10 KB will be stored in the temporary files. These files will be deleted automatically in the end of the replication process.</p>
 <h1 id="example">Example</h1>
 <p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:</p>
 <pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
