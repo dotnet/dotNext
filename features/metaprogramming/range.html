@@ -70,10 +70,10 @@
 
 <p>C# 8 introduced <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">ranges and indicies</a> for slicing and indexing collections at runtime. These operators are missing in Expression Trees. To bridge the gap, .NEXT Metaprogramming library offers the following expressions:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ItemIndexExpression">Index Expression</a> allows to construct expression of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">Index</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/RangeExpression">Range Expression</a> allows to construct expression of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">Range</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/CollectionAccessExpression">Element Access Expression</a> allows to construct access to the individual element of the arbitrary collection using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">Index</a>. This type of expression is based on <em>Index Expression</em></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/SliceExpression">Slice Expression</a> allows to obtain a slice of the arbitrary collection using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">Range</a>. This type of expression is based on <em>Range Expression</em>.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ItemIndexExpression">Index Expression</a> allows to construct expression of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">Index</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/RangeExpression">Range Expression</a> allows to construct expression of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">Range</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/CollectionAccessExpression">Element Access Expression</a> allows to construct access to the individual element of the arbitrary collection using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">Index</a>. This type of expression is based on <em>Index Expression</em></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/SliceExpression">Slice Expression</a> allows to obtain a slice of the arbitrary collection using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">Range</a>. This type of expression is based on <em>Range Expression</em>.</li>
 </ul>
 <p><em>Element Access</em> and <em>Slice</em> expressions follow the same rules as described <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">here</a> for C# language so library types such as one-dimensional arrays and strings are supported out-of-the-box.</p>
 <p>The following example demonstrates how to obtain individual character from string and slice the string:</p>
@@ -89,7 +89,7 @@ var stringValue = &quot;Hello, world&quot;;
 var character = stringValue[new Index(2, false)];
 var slice = stringValue[0..^1];
 </code></pre>
-<p><code>Index</code>, <code>ElementAt</code> and <code>Slice</code> are extension methods from <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.1.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">ExpressionBuilder</a> simplifying construction of <em>Index Expressio</em>, <em>Element Access Expression</em> and <em>Slice Expression</em> respectively.</p>
+<p><code>Index</code>, <code>ElementAt</code> and <code>Slice</code> are extension methods from <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">ExpressionBuilder</a> simplifying construction of <em>Index Expressio</em>, <em>Element Access Expression</em> and <em>Slice Expression</em> respectively.</p>
 </article>
           </div>
           

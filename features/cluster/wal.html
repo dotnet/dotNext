@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="persistent-write-ahead-log">Persistent Write Ahead Log</h1>
 
-<p>Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.1.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState">persistent Write-Ahead Log</a> providing the following features:</p>
+<p>Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState">persistent Write-Ahead Log</a> providing the following features:</p>
 <ul>
 <li>Log compaction based on snapshotting</li>
 <li>File-based persistent storage for the log entries</li>
@@ -213,11 +213,11 @@ sealed class SimpleAuditTrail : PersistentState
 </ul>
 <p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD.</p>
 <h1 id="interpreter-framework">Interpreter Framework</h1>
-<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.1.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntry">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
+<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntry">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
 <p>There are two ways to do that:</p>
 <ol>
 <li>JSON serialization</li>
-<li>Deriving from <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.1.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter">CommandInterpreter</a> class</li>
+<li>Deriving from <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter">CommandInterpreter</a> class</li>
 </ol>
 <p>The first approach is very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.</p>
 <h2 id="json-log-entries">JSON log entries</h2>
@@ -257,7 +257,7 @@ sealed class SimpleAuditTrail : PersistentState
 </code></pre>
 <p><code>DeserializeFromJsonAsync</code> accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.</p>
 <h2 id="command-interpreter">Command Interpreter</h2>
-<p>Interpreting of the custom log entries can be implemented with help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.1.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.</p>
+<p>Interpreting of the custom log entries can be implemented with help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.</p>
 <p>First of all, it's needed to decorate command type with necessary attribute and write serialization and deserialization logic:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.Serialization;
 using DotNext.Net.Cluster.Consensus.Raft.Commands;

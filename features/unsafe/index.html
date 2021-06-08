@@ -79,18 +79,18 @@
 </div>
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.1.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601">UnmanagedMemoryPool&lt;T&gt;</a> provides allocation of unmanaged memory</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.1.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/IUnmanagedMemoryOwner%601">IUnmanagedMemoryOwner&lt;T&gt;</a> provides structured access to the allocated unmanaged memory.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601">UnmanagedMemoryPool&lt;T&gt;</a> provides allocation of unmanaged memory</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/IUnmanagedMemoryOwner%601">IUnmanagedMemoryOwner&lt;T&gt;</a> provides structured access to the allocated unmanaged memory.</li>
 </ol>
-<p>All unmanaged data types are not thread-safe. However, there are various extension methods in <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.1.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Threading/AtomicPointer">AtomicPointer</a> class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
-<p><code>IUnmanagedMemoryOwner&lt;T&gt;</code>implements <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.1.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedMemory">IUnmanagedMemory</a> and supports direct memory manipulations:</p>
+<p>All unmanaged data types are not thread-safe. However, there are various extension methods in <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Threading/AtomicPointer">AtomicPointer</a> class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
+<p><code>IUnmanagedMemoryOwner&lt;T&gt;</code>implements <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedMemory">IUnmanagedMemory</a> and supports direct memory manipulations:</p>
 <ul>
 <li><code>Pointer</code> property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks</li>
 <li><code>Bytes</code> property provides memory access using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. It is less flexible in comparison with pointer but safe because it implements bound checks</li>
 </ul>
 <h1 id="pointer">Pointer</h1>
 <p>C# programming language supports typed and untyped pointer data types such as <em>int*</em> or <em>void*</em>. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited.</p>
-<p>.NEXT offers <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.1.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/Pointer%601">Pointer&lt;T&gt;</a> value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: <code>memset</code>, <code>memcmp</code> etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> asynchronously. Check out API documentation for detailed information about available methods.</p>
+<p>.NEXT offers <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/Pointer%601">Pointer&lt;T&gt;</a> value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: <code>memset</code>, <code>memcmp</code> etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> asynchronously. Check out API documentation for detailed information about available methods.</p>
 <p>The pointer data type is convertible to/from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">native int</a> so it can be used to simplify interoperation with native code. The size of the pointer depends on underlying platform.</p>
 <p>The following example demonstrates usage of the typed pointer to work with stack-allocated memory:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
@@ -135,7 +135,7 @@ ptr.VolatileWrite(42L);
 var i = ptr.VolatileRead();
 i = ptr.IncrementAndGetValue(); //i == 43
 </code></pre>
-<p>See <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.1.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Threading/AtomicPointer">here</a> for complete list of volatile operations.</p>
+<p>See <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Threading/AtomicPointer">here</a> for complete list of volatile operations.</p>
 </article>
           </div>
           
