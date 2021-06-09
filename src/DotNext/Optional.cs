@@ -547,7 +547,16 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
+        public override int GetHashCode()
+        {
+            if (LibrarySettings.IsUndefinedEqualsNull)
+                return HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
+
+            var result = new HashCode();
+            result.Add(kind);
+            result.Add(value, EqualityComparer<T?>.Default);
+            return result.ToHashCode();
+        }
 
         /// <summary>
         /// Determines whether this container stored the same
