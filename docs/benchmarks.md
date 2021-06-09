@@ -6,11 +6,11 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT |
-| Job | .NET 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT |
+| Host | .NET 5.0.7 (CoreCLR 5.0.721.25508, CoreFX 5.0.721.25508), X64 RyuJIT |
+| Job | .NET 5.0.7 (CoreCLR 5.0.721.25508, CoreFX 5.0.721.25508), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
-| OS | Ubuntu 20.04.1 |
+| OS | Ubuntu 20.04.2 |
 | CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
 | Number of CPUs | 1 |
 | Physical Cores | 4 |
@@ -26,14 +26,14 @@ dotnet run -c Bench
 # Bitwise Equality
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](xref:DotNext.BitwiseComparer`1) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `BitwiseComparer<Guid>.Equals` | 3.4195 ns |  0.0145 ns |  0.0135 ns |
-| `Guid.Equals` | 1.8179 ns |  0.0132 ns |  0.0123 ns |
-| `ReadOnlySpan.SequenceEqual` for `Guid` | 6.1847 ns |  0.0471 ns |  0.0440 ns |
-| `BitwiseComparer<LargeStruct>.Equals` | 9.4089 ns |  0.0481 ns |  0.0426 ns |
-| `LargeStruct.Equals` | 29.6790 ns |  0.1137 ns |  0.0887 ns |
-| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 11.5508 ns |  0.1198 ns |  0.1062 ns |
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- | ---- |
+| `BitwiseComparer<Guid>.Equals` | 4.1255 ns | 0.0350 ns | 0.0292 ns | 4.1218 ns |
+| `Guid.Equals` | 1.9494 ns | 0.0284 ns | 0.0252 ns | 1.9399 ns |
+| `ReadOnlySpan.SequenceEqual` for `Guid` | 5.9802 ns | 0.0306 ns | 0.0271 ns | 5.9869 ns |
+| `BitwiseComparer<LargeStruct>.Equals` | 9.8929 ns | 0.0698 ns | 0.0618 ns | 9.8828 ns |
+| `LargeStruct.Equals` | 28.8117 ns | 0.3003 ns | 0.2662 ns | 28.7669 ns |
+| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 10.4538 ns | 0.0659 ns | 0.0585 ns | 10.4538 ns |
 
 Bitwise equality method has the better performance than field-by-field equality check especially for large value types because `BitwiseEquals` utilizes low-level optimizations performed by .NET according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
 
