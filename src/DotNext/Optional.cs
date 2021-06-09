@@ -539,6 +539,9 @@ namespace DotNext
             _ => value?.ToString()
         };
 
+        private int LegacyGetHashCode()
+            => HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
+
         /// <summary>
         /// Computes hash code of the stored value.
         /// </summary>
@@ -550,7 +553,7 @@ namespace DotNext
         public override int GetHashCode()
         {
             if (LibrarySettings.IsUndefinedEqualsNull)
-                return HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
+                return LegacyGetHashCode();
 
             var result = new HashCode();
             result.Add(kind);
