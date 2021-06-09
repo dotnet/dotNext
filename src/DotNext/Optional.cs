@@ -555,10 +555,12 @@ namespace DotNext
             if (LibrarySettings.IsUndefinedEqualsNull)
                 return LegacyGetHashCode();
 
-            var result = new HashCode();
-            result.Add(kind);
-            result.Add(value, EqualityComparer<T?>.Default);
-            return result.ToHashCode();
+            return kind switch
+            {
+                UndefinedValue => 0,
+                NullValue => NullValue,
+                _ => EqualityComparer<T?>.Default.GetHashCode(value!),
+            };
         }
 
         /// <summary>
