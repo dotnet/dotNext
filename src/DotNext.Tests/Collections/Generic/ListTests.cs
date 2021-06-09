@@ -130,5 +130,34 @@ namespace DotNext.Collections.Generic
             list.RemoveAt(^1);
             Equal(2, list.Count);
         }
+
+#if !NETCOREAPP3_1
+        [Fact]
+        public static void ArraySlice()
+        {
+            var segment = List.Slice(new int[] { 10, 20, 30 }, 0..2);
+            True(segment.TryGetSpan(out var span));
+            Equal(2, span.Length);
+            Equal(10, span[0]);
+            Equal(20, span[1]);
+        }
+
+        [Fact]
+        public static void ListSlice()
+        {
+            var segment = List.Slice(new List<int> { 10, 20, 30 }, 0..2);
+            True(segment.TryGetSpan(out var span));
+            Equal(2, span.Length);
+            Equal(10, span[0]);
+            Equal(20, span[1]);
+        }
+
+        [Fact]
+        public static void EmptySegmentSlice()
+        {
+            var segment = default(ListSegment<int>);
+            False(segment.TryGetSpan(out _));
+        }
+#endif
     }
 }
