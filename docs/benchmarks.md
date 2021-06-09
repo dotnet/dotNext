@@ -151,9 +151,9 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| Atomic | 342.2 us | 7.82 us | 73.57 us | 329.6 us |
-| Synchronized | 962.1 us | 12.04 us | 111.03 us | 944.3 us |
-| SpinLock | 1,456.6 us | 43.64 us | 408.19 us | 1,548.5 us |
+| Atomic | 358.0 us |  9.36 us |  85.54 us | 345.7 us |
+| Synchronized | 961.7 us | 11.80 us | 105.92 us | 946.1 us |
+| SpinLock | 1,586.0 us | 45.64 us | 424.80 us | 1,586.0 us |
 
 # File-buffering Writer
 [This benchmark](https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs) compares performance of [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream) from ASP.NET Core and [FileBufferingWriter](xref:DotNext.IO.FileBufferingWriter) from .NEXT library.
