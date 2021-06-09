@@ -257,5 +257,14 @@ namespace DotNext
             Equal(23, optional.GetReference<int, InvalidOperationException>());
             Equal(23, optional.GetReference(static () => new InvalidOperationException()));
         }
+
+        [Fact]
+        public static void HashCodes()
+        {
+            Equal(Optional.None<int>().GetHashCode(), Optional.None<string>().GetHashCode());
+            Equal(Optional.Null<string>().GetHashCode(), Optional.Null<object>().GetHashCode());
+            NotEqual(Optional.Null<string>().GetHashCode(), Optional.None<string>().GetHashCode());
+            Equal(Optional.Some("Hello, world!"), Optional.Some("Hello, world!"));
+        }
     }
 }
