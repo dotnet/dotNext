@@ -162,10 +162,10 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| `FileBufferingWriter` in synchronous mode | 975.8 us | 18.39 us | 35.43 us | 964.4 us |
-| `FileBufferingWriteStream` in synchronous mode |  4,318.6 us | 37.99 us | 31.72 us | 4,320.9 us |
-| `FileBufferingWriter` in asynchronous mode | 14,108.0 us | 2,021.26 us | 5,928.00 us | 16,238.9 us |
-| `FileBufferingWriteStream` in asynchronous mode | 21,263.8 us | 1,197.22 us | 3,473.35 us | 22,037.2 us |
+| `FileBufferingWriter` in synchronous mode | 950.8 us | 8.58 us | 7.61 us |
+| `FileBufferingWriteStream` in synchronous mode | 14,295.1 us | 838.55 us | 2,351.37 us |
+| `FileBufferingWriter` in asynchronous mode | 7,825.6 us | 337.13 us | 894.03 us |
+| `FileBufferingWriteStream` in asynchronous mode | 18,418.7 us | 993.00 us | 2,896.64 us |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
 
