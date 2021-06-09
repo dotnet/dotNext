@@ -69,7 +69,7 @@
 <h1 id="generic-specialization-with-constant-values">Generic specialization with constant values</h1>
 
 <p>Such kind of specialization <a href="https://en.cppreference.com/w/cpp/language/template_parameters">widely used</a> in C++ to pass a constant known at compile time as template argument. C# and Common Language Runtime do not support this feature directly. DotNext library offers such functionality via conversion of actual generic argument into value using implicit cast conversion. This approach doesn't provide compile time check of constant value passed as generic argument but the type of this constant is controlled by compiler.</p>
-<p>The base class for any constant-value-as-generic-argument is <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Generic/Constant%601">Constant</a>. This type itself is a generic class which type parameter indicates type of the constant value. If you need to pass constant value as generic argument then two restrictions should be satisfied:</p>
+<p>The base class for any constant-value-as-generic-argument is <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Generic/Constant%601">Constant</a>. This type itself is a generic class which type parameter indicates type of the constant value. If you need to pass constant value as generic argument then two restrictions should be satisfied:</p>
 <ol>
 <li>Generic parameter should be of type <strong>Constant</strong></li>
 <li>Generic parameter should have constructor without parameters</li>
@@ -96,11 +96,11 @@ var vector = new IntVector&lt;Ten&gt;();  //creates vector of length 10
 <p>Constant value passed as generic argument is available in static context inside of vector class. Such approach allows to pass custom data into static constructor and avoid passing unecessary data through instance constructor.</p>
 <p>The library offers a few predefined constant types:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst">BooleanConst</a> to pass boolean constant as generic argument</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const">Int32Const</a> to pass integer constant as generic argument</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const">Int64Const</a> to pass long integer constant as generic argument</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst">StringConst</a> to pass string constant as generic argument</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Generic/DefaultConst%601">DefaultConst</a> to pass default value of <code>T</code> as generic argument</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Generic/BooleanConst">BooleanConst</a> to pass boolean constant as generic argument</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int32Const">Int32Const</a> to pass integer constant as generic argument</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Generic/Int64Const">Int64Const</a> to pass long integer constant as generic argument</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Generic/StringConst">StringConst</a> to pass string constant as generic argument</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Generic/DefaultConst%601">DefaultConst</a> to pass default value of <code>T</code> as generic argument</li>
 </ul>
 </article>
           </div>

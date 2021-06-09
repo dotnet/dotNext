@@ -87,8 +87,8 @@ public static class StringBuilderHelpers
 }
 
 </code></pre>
-<p>Type <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/UserDataSlot%601">UserDataSlot</a> represents unique slot for placing user data. Its generic type is the type of user data. Encapsulation is guaranteed through uniqueness of the slot. It is possible to declare slot and limit its lexical scope as in example above. Two slots allocated using method <em>Allocate</em> even of the same type are not equal and provides access to different user data.</p>
-<p>Method <em>GetUserData</em> is available for any reference type and returns <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/UserDataStorage">user data storage</a>. Lifetime of the attached user data is equal to the owner object. There is no way no save user data storage as field.</p>
+<p>Type <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/UserDataSlot%601">UserDataSlot</a> represents unique slot for placing user data. Its generic type is the type of user data. Encapsulation is guaranteed through uniqueness of the slot. It is possible to declare slot and limit its lexical scope as in example above. Two slots allocated using method <em>Allocate</em> even of the same type are not equal and provides access to different user data.</p>
+<p>Method <em>GetUserData</em> is available for any reference type and returns <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/UserDataStorage">user data storage</a>. Lifetime of the attached user data is equal to the owner object. There is no way no save user data storage as field.</p>
 <p>User data slot can be removed from the particular object with the data previously associated with it using <em>Remove</em> method. User data storage provides a set of methods for lazy initialization of the user data. The storage is optimized and it will not be created before calling of mutation methods:</p>
 <ul>
 <li>GetOrSet</li>

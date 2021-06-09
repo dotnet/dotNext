@@ -69,7 +69,7 @@
 <h1 id="path-mtu-discovery">Path MTU Discovery</h1>
 
 <p>If you are not aware about path MTU discovery please read <a href="https://en.wikipedia.org/wiki/Path_MTU_Discovery">this</a> article first.</p>
-<p>Detection of correct MTU size usually is not a problem for connection-oriented network protocols because this ability is supported out-of-the-box. Good example is Transmission Control Protocol (TCP). However, connectionless protocols are not aware about allowed MTU size in the route between two endpoints. .NEXT library provides <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Net.NetworkInformation/MtuDiscovery">MtuDiscovery</a> class for discovery of allowed MTU size.</p>
+<p>Detection of correct MTU size usually is not a problem for connection-oriented network protocols because this ability is supported out-of-the-box. Good example is Transmission Control Protocol (TCP). However, connectionless protocols are not aware about allowed MTU size in the route between two endpoints. .NEXT library provides <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Net.NetworkInformation/MtuDiscovery">MtuDiscovery</a> class for discovery of allowed MTU size.</p>
 <p>The following example demonstrates how to find MTU size between local machine and Internet address <em>1.1.1.1</em>:</p>
 <pre><code class="lang-csharp">using DotNext.Net.NetworkInformation;
 using System.Net;

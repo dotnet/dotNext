@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="optional-type">Optional Type</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional&lt;T&gt;</a> is a container which may or may not contain a value. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a> type can work with value types only. <code>Optional&lt;T&gt;</code> data type can work with reference and value type both.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional&lt;T&gt;</a> is a container which may or may not contain a value. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a> type can work with value types only. <code>Optional&lt;T&gt;</code> data type can work with reference and value type both.</p>
 <p>The following example demonstrates usage of this type:</p>
 <pre><code class="lang-csharp">using DotNext;
 using DotNext.Collections.Generic;
@@ -89,7 +89,7 @@ value = i.Or(-1);   //returns -1 if i has no value
 value = i.OrDefault(); //returns default(int) if i has no value
 value = i.OrInvoke(() =&gt; 10); //calls lambda if i has no value
 </code></pre>
-<p><code>Nullable&lt;T&gt;</code> and <code>Optional&lt;T&gt;</code> are mutually convertible types with help of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Optional">extension methods</a>.</p>
+<p><code>Nullable&lt;T&gt;</code> and <code>Optional&lt;T&gt;</code> are mutually convertible types with help of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/Optional">extension methods</a>.</p>
 <h1 id="null-vs-undefined">Null vs Undefined</h1>
 <p>Let's take a look at the following code:</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -208,7 +208,7 @@ Optional.None&lt;string&gt;() == Optional.Null&lt;string&gt;(); // false
 </tbody>
 </table>
 <h1 id="json-serialization">JSON serialization</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional&lt;T&gt;</a> is compatible with JSON serialization provided by <code>System.Text.Json</code> namespace. You can enable support of this type using <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Text.Json/OptionalConverterFactory">OptionalConverterFactory</a> converter. The converter can be applied to the property or field directly using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonconverterattribute">JsonConverterAttribute</a> attribute or it can be registered via <a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonserializeroptions.converters">Converters</a> property.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional&lt;T&gt;</a> is compatible with JSON serialization provided by <code>System.Text.Json</code> namespace. You can enable support of this type using <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Text.Json/OptionalConverterFactory">OptionalConverterFactory</a> converter. The converter can be applied to the property or field directly using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonconverterattribute">JsonConverterAttribute</a> attribute or it can be registered via <a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonserializeroptions.converters">Converters</a> property.</p>
 <p>If the value of <code>Optional&lt;T&gt;</code> is undefined, then property will be completely removed from serialized JSON document. This is useful when you want to describe Data Transfer Object for your resource in REST API that allows partial updates with <em>PATCH</em> HTTP method. To make this magic work, you also need to apply <a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonignoreattribute">JsonIgnoreAttribute</a> with condition equal to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.json.serialization.jsonignorecondition">JsonIgnoreCondition.WhenWritingDefault</a>. This condition tells JSON serializer to drop the field if its value is equal to default value. As we know, the default value of <code>Optional&lt;T&gt;</code> is always undefined. The following example demonstrates how to design DTO with optional JSON fields:</p>
 <pre><code class="lang-csharp">using DotNext.Text.Json;
 using System.Text.Json;

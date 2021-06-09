@@ -73,11 +73,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT</td>
+<td>.NET 5.0.7 (CoreCLR 5.0.721.25508, CoreFX 5.0.721.25508), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET 5.0.2 (CoreCLR 5.0.220.61120, CoreFX 5.0.220.61120), X64 RyuJIT</td>
+<td>.NET 5.0.7 (CoreCLR 5.0.721.25508, CoreFX 5.0.721.25508), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -89,7 +89,7 @@
 </tr>
 <tr>
 <td>OS</td>
-<td>Ubuntu 20.04.1</td>
+<td>Ubuntu 20.04.2</td>
 </tr>
 <tr>
 <td>CPU</td>
@@ -118,7 +118,7 @@
 dotnet run -c Bench
 </code></pre>
 <h1 id="bitwise-equality">Bitwise Equality</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -126,50 +126,57 @@ dotnet run -c Bench
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
+<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>BitwiseComparer&lt;Guid&gt;.Equals</code></td>
-<td>3.4195 ns</td>
-<td>0.0145 ns</td>
-<td>0.0135 ns</td>
+<td>4.1255 ns</td>
+<td>0.0350 ns</td>
+<td>0.0292 ns</td>
+<td>4.1218 ns</td>
 </tr>
 <tr>
 <td><code>Guid.Equals</code></td>
-<td>1.8179 ns</td>
-<td>0.0132 ns</td>
-<td>0.0123 ns</td>
+<td>1.9494 ns</td>
+<td>0.0284 ns</td>
+<td>0.0252 ns</td>
+<td>1.9399 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan.SequenceEqual</code> for <code>Guid</code></td>
-<td>6.1847 ns</td>
-<td>0.0471 ns</td>
-<td>0.0440 ns</td>
+<td>5.9802 ns</td>
+<td>0.0306 ns</td>
+<td>0.0271 ns</td>
+<td>5.9869 ns</td>
 </tr>
 <tr>
 <td><code>BitwiseComparer&lt;LargeStruct&gt;.Equals</code></td>
-<td>9.4089 ns</td>
-<td>0.0481 ns</td>
-<td>0.0426 ns</td>
+<td>9.8929 ns</td>
+<td>0.0698 ns</td>
+<td>0.0618 ns</td>
+<td>9.8828 ns</td>
 </tr>
 <tr>
 <td><code>LargeStruct.Equals</code></td>
-<td>29.6790 ns</td>
-<td>0.1137 ns</td>
-<td>0.0887 ns</td>
+<td>28.8117 ns</td>
+<td>0.3003 ns</td>
+<td>0.2662 ns</td>
+<td>28.7669 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan.SequenceEqual</code> for <code>LargeStruct</code></td>
-<td>11.5508 ns</td>
-<td>0.1198 ns</td>
-<td>0.1062 ns</td>
+<td>10.4538 ns</td>
+<td>0.0659 ns</td>
+<td>0.0585 ns</td>
+<td>10.4538 ns</td>
 </tr>
 </tbody>
 </table>
 <p>Bitwise equality method has the better performance than field-by-field equality check especially for large value types because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET according with underlying hardware such as SIMD. Additionally, it uses <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">aligned memory access</a> in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal">SequenceEqual</a> method.</p>
 <h1 id="equality-of-arrays">Equality of Arrays</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
 <table>
 <thead>
 <tr>
@@ -182,15 +189,15 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, small arrays (~10 elements)</td>
-<td>9.778 ns</td>
-<td>0.2334 ns</td>
-<td>0.3702 ns</td>
+<td>9.196 ns</td>
+<td>0.0628 ns</td>
+<td>0.0490 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, small arrays (~10 elements)</td>
-<td>39.946 ns</td>
-<td>0.1607 ns</td>
-<td>0.1503 ns</td>
+<td>37.417 ns</td>
+<td>0.2111 ns</td>
+<td>0.1872 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, small arrays (~10 elements)</td>
@@ -200,27 +207,27 @@ dotnet run -c Bench
 </tr>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, large arrays (~100 elements)</td>
-<td>68.444 ns</td>
-<td>0.1789 ns</td>
-<td>0.1674 ns</td>
+<td>66.910 ns</td>
+<td>1.3718 ns</td>
+<td>2.2920 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, large arrays (~100 elements)</td>
-<td>377.179 ns</td>
-<td>1.0001 ns</td>
-<td>0.8351 ns</td>
+<td>364.899 ns</td>
+<td>6.3412 ns</td>
+<td>5.2952 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, large arrays (~100 elements)</td>
-<td>677.581 ns</td>
-<td>1.2724 ns</td>
-<td>1.1279 ns</td>
+<td>659.282 ns</td>
+<td>11.3921 ns</td>
+<td>8.8942 ns</td>
 </tr>
 </tbody>
 </table>
 <p>Bitwise equality is an absolute winner for equality check between arrays of any size.</p>
 <h1 id="bitwise-hash-code">Bitwise Hash Code</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -274,58 +281,58 @@ dotnet run -c Bench
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>16 bytes</td>
-<td>64.27 ns</td>
-<td>1.259 ns</td>
-<td>1.051 ns</td>
+<td>60.60 ns</td>
+<td>0.245 ns</td>
+<td>0.217 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>16 bytes</td>
-<td>58.78 ns</td>
-<td>0.219 ns</td>
-<td>0.205 ns</td>
+<td>60.14 ns</td>
+<td>0.375 ns</td>
+<td>0.313 ns</td>
 </tr>
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>64 bytes</td>
-<td>197.94 ns</td>
-<td>0.620 ns</td>
-<td>0.550 ns</td>
+<td>192.31 ns</td>
+<td>0.896 ns</td>
+<td>0.794 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>64 bytes</td>
-<td>134.83 ns</td>
-<td>1.751 ns</td>
-<td>1.638 ns</td>
+<td>122.43 ns</td>
+<td>0.268 ns</td>
+<td>0.209 ns</td>
 </tr>
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>128 bytes</td>
-<td>382.76 ns</td>
-<td>3.908 ns</td>
-<td>3.263 ns</td>
+<td>364.90 ns</td>
+<td>1.764 ns</td>
+<td>1.473 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>128 bytes</td>
-<td>234.62 ns</td>
-<td>1.959 ns</td>
-<td>1.833 ns</td>
+<td>224.62 ns</td>
+<td>0.795 ns</td>
+<td>0.705 ns</td>
 </tr>
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>256 bytes</td>
-<td>745.88 ns</td>
-<td>4.340 ns</td>
-<td>3.847 ns</td>
+<td>725.64 ns</td>
+<td>3.656 ns</td>
+<td>3.420 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>256 bytes</td>
-<td>484.20 ns</td>
-<td>1.768 ns</td>
-<td>1.568 ns</td>
+<td>457.48 ns</td>
+<td>1.321 ns</td>
+<td>1.171 ns</td>
 </tr>
 </tbody>
 </table>
@@ -352,39 +359,39 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Direct call</td>
-<td>11.75 ns</td>
-<td>0.208 ns</td>
-<td>0.163 ns</td>
+<td>11.09 ns</td>
+<td>0.197 ns</td>
+<td>0.154 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>MemberGetter&lt;IndexOfCalculator, int&gt;</code></td>
-<td>13.03 ns</td>
-<td>0.088 ns</td>
-<td>0.073 ns</td>
+<td>11.88 ns</td>
+<td>0.155 ns</td>
+<td>0.145 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using <code>DynamicInvoker</code></td>
-<td>21.71 ns</td>
-<td>0.112 ns</td>
-<td>0.100 ns</td>
+<td>22.40 ns</td>
+<td>0.251 ns</td>
+<td>0.222 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;object, ValueTuple, object&gt;</code></td>
-<td>22.66 ns</td>
-<td>0.407 ns</td>
-<td>0.381 ns</td>
+<td>22.91 ns</td>
+<td>0.364 ns</td>
+<td>0.323 ns</td>
 </tr>
 <tr>
 <td><code>ObjectAccess</code> class from <em>FastMember</em> library</td>
-<td>46.65 ns</td>
-<td>0.095 ns</td>
-<td>0.089 ns</td>
+<td>47.63 ns</td>
+<td>0.358 ns</td>
+<td>0.335 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
-<td>167.05 ns</td>
-<td>0.609 ns</td>
-<td>0.570 ns</td>
+<td>163.44 ns</td>
+<td>2.468 ns</td>
+<td>2.309 ns</td>
 </tr>
 </tbody>
 </table>
@@ -575,7 +582,7 @@ dotnet run -c Bench
 </table>
 <p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
 <h1 id="atomic-access-to-arbitrary-value-type">Atomic Access to Arbitrary Value Type</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
 <table>
 <thead>
 <tr>
@@ -589,29 +596,29 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Atomic</td>
-<td>342.2 us</td>
-<td>7.82 us</td>
-<td>73.57 us</td>
-<td>329.6 us</td>
+<td>358.0 us</td>
+<td>9.36 us</td>
+<td>85.54 us</td>
+<td>345.7 us</td>
 </tr>
 <tr>
 <td>Synchronized</td>
-<td>962.1 us</td>
-<td>12.04 us</td>
-<td>111.03 us</td>
-<td>944.3 us</td>
+<td>961.7 us</td>
+<td>11.80 us</td>
+<td>105.92 us</td>
+<td>946.1 us</td>
 </tr>
 <tr>
 <td>SpinLock</td>
-<td>1,456.6 us</td>
-<td>43.64 us</td>
-<td>408.19 us</td>
-<td>1,548.5 us</td>
+<td>1,586.0 us</td>
+<td>45.64 us</td>
+<td>424.80 us</td>
+<td>1,586.0 us</td>
 </tr>
 </tbody>
 </table>
 <h1 id="file-buffering-writer">File-buffering Writer</h1>
-<p><a href="https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream">FileBufferingWriteStream</a> from ASP.NET Core and <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a> from .NEXT library.</p>
+<p><a href="https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream">FileBufferingWriteStream</a> from ASP.NET Core and <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a> from .NEXT library.</p>
 <p>Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.</p>
 <table>
 <thead>
@@ -626,31 +633,31 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td><code>FileBufferingWriter</code> in synchronous mode</td>
-<td>975.8 us</td>
-<td>18.39 us</td>
-<td>35.43 us</td>
-<td>964.4 us</td>
+<td>950.8 us</td>
+<td>8.58 us</td>
+<td>7.61 us</td>
+<td></td>
 </tr>
 <tr>
 <td><code>FileBufferingWriteStream</code> in synchronous mode</td>
-<td>4,318.6 us</td>
-<td>37.99 us</td>
-<td>31.72 us</td>
-<td>4,320.9 us</td>
+<td>14,295.1 us</td>
+<td>838.55 us</td>
+<td>2,351.37 us</td>
+<td></td>
 </tr>
 <tr>
 <td><code>FileBufferingWriter</code> in asynchronous mode</td>
-<td>14,108.0 us</td>
-<td>2,021.26 us</td>
-<td>5,928.00 us</td>
-<td>16,238.9 us</td>
+<td>7,825.6 us</td>
+<td>337.13 us</td>
+<td>894.03 us</td>
+<td></td>
 </tr>
 <tr>
 <td><code>FileBufferingWriteStream</code> in asynchronous mode</td>
-<td>21,263.8 us</td>
-<td>1,197.22 us</td>
-<td>3,473.35 us</td>
-<td>22,037.2 us</td>
+<td>18,418.7 us</td>
+<td>993.00 us</td>
+<td>2,896.64 us</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -660,9 +667,9 @@ dotnet run -c Bench
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream">MemoryStream</a></li>
 <li><a href="https://github.com/microsoft/Microsoft.IO.RecyclableMemoryStream">RecyclableMemoryStream</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601">SparseBufferWriter&lt;byte&gt;</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;byte&gt;</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601">SparseBufferWriter&lt;byte&gt;</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;byte&gt;</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a></li>
 </ul>
 <table>
 <thead>

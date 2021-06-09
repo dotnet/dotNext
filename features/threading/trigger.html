@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="asynchronous-trigger">Asynchronous Trigger</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncTrigger">AsyncTrigger</a> is the most general implementation of synchronization primitive compatible with asynchronous code. It can be used as a core for broad set of synchronization cases. The magic hides in ability to supply external state and predicate describing condition for resuming suspended callers. Each caller can supply its own condition for resuming and wait for signal. Signaling caller must supply the state that matches to one or more suspended callers. This concept is represented by the following methods:</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncTrigger">AsyncTrigger</a> is the most general implementation of synchronization primitive compatible with asynchronous code. It can be used as a core for broad set of synchronization cases. The magic hides in ability to supply external state and predicate describing condition for resuming suspended callers. Each caller can supply its own condition for resuming and wait for signal. Signaling caller must supply the state that matches to one or more suspended callers. This concept is represented by the following methods:</p>
 <ul>
 <li><code>Signal</code> method and its overloads can be used to signal about changes in external state which is also should be supplied as a parameter</li>
 <li><code>WaitAsync</code> method and its overloads can be used to suspend the caller and specify predicate that describes condition for resuming.</li>

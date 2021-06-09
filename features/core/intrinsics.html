@@ -69,7 +69,7 @@
 <h1 id="intrinsics">Intrinsics</h1>
 
 <p>Intrinsic methods are special kind of methods whose implementation is handled specially by JIT compiler or written in pure IL code to achieve low (or zero, in some situations) overhead. .NET library has good example in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class which is implemented in pure IL. The implementation in pure IL allows to be closer to the bare metal and utilize code patterns recognized by JIT compiler.</p>
-<p>.NEXT library has numerous intrinsics which are exposed by <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class and grouped into the following categories:</p>
+<p>.NEXT library has numerous intrinsics which are exposed by <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class and grouped into the following categories:</p>
 <ul>
 <li>Common intrinsics which have very low or zero runtime overhead</li>
 <li>Low-level memory manipulations</li>
@@ -92,7 +92,7 @@ Intrinsics.IsDefault(1);    //false
 <h5>Important</h5>
 <p>Most of the provided methods are not verifiable in terms of CLR Validation and Verification and can destabilize runtime. Correctness of their usage must be guaranteed by developer. For more information, read <a href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">II.3 Validation and Verification</a> section of ECMA-335 standard.</p>
 </div>
-<p>Memory manipulation methods of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class is grouped into the following blocks:</p>
+<p>Memory manipulation methods of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class is grouped into the following blocks:</p>
 <ol>
 <li>Hash computation</li>
 <li>Memory equality and comparison</li>

@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="enum-enhancements">Enum Enhancements</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext/EnumConverter">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/EnumConverter">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
 
@@ -93,9 +93,9 @@ white == Color.White;   //true
 </code></pre>
 <h1 id="flag">Flag</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">System.Enum</a> class has public instance method <code>HasFlag</code> that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.</p>
-<p>.NEXT library offers fast version of <code>HasFlag</code> method that prevents boxing. It's represented by static method located in <a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class.</p>
+<p>.NEXT library offers fast version of <code>HasFlag</code> method that prevents boxing. It's represented by static method located in <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class.</p>
 <h1 id="attributes">Attributes</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.0/lib/net5.0/DotNext.dll/DotNext.Reflection/EnumType">EnumType</a> static classes exposes access to custom attributes attached to the enum member.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Reflection/EnumType">EnumType</a> static classes exposes access to custom attributes attached to the enum member.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 
 sealed class EnumMemberAttribute : Attribute
