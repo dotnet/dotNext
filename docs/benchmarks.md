@@ -91,12 +91,12 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| Direct call | 11.75 ns | 0.208 ns | 0.163 ns |
-| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 13.03 ns | 0.088 ns | 0.073 ns |
-| Reflection with DotNext using `DynamicInvoker` | 21.71 ns | 0.112 ns | 0.100 ns |
-| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 22.66 ns | 0.407 ns | 0.381 ns |
-| `ObjectAccess` class from _FastMember_ library | 46.65 ns | 0.095 ns | 0.089 ns |
-| .NET reflection | 167.05 ns | 0.609 ns | 0.570 ns |
+| Direct call | 11.09 ns | 0.197 ns | 0.154 ns |
+| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 11.88 ns | 0.155 ns | 0.145 ns |
+| Reflection with DotNext using `DynamicInvoker` | 22.40 ns | 0.251 ns | 0.222 ns |
+| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 22.91 ns | 0.364 ns | 0.323 ns |
+| `ObjectAccess` class from _FastMember_ library | 47.63 ns | 0.358 ns | 0.335 ns |
+| .NET reflection | 163.44 ns | 2.468 ns | 2.309 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
