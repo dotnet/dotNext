@@ -536,7 +536,7 @@ namespace DotNext
         {
             UndefinedValue => "<Undefined>",
             NullValue => "<Null>",
-            _ => value?.ToString()
+            _ => value!.ToString()
         };
 
         private int LegacyGetHashCode()
