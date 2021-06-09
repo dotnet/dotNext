@@ -77,14 +77,17 @@ namespace DotNext.Reflection
         /// <returns>An object containing the return value of the invoked method, or <see langword="null"/> in the case of a constructor.</returns>
         public static Result<object?> TryInvoke(this MethodBase method, object? obj, params object?[] args)
         {
+            Result<object?> result;
             try
             {
-                return method.Invoke(obj, args);
+                result = method.Invoke(obj, args);
             }
             catch (Exception e)
             {
-                return new Result<object?>(e);
+                result = new(e);
             }
+
+            return result;
         }
     }
 }

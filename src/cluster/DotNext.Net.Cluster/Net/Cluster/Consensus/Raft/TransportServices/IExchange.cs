@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         internal static Result<bool> ReadResult(ReadOnlySpan<byte> input)
         {
             var reader = new SpanReader<byte>(input);
-            return new Result<bool>(reader.ReadInt64(true), ValueTypeExtensions.ToBoolean(reader.Read()));
+            return new(reader.ReadInt64(true), ValueTypeExtensions.ToBoolean(reader.Read()));
         }
     }
 }

@@ -102,11 +102,11 @@ namespace DotNext
         {
             Result<T> result;
             if (optional.HasValue)
-                result = new Result<T>(optional.OrDefault()!);
+                result = new(optional.OrDefault()!);
             else if (optional.IsNull)
                 result = default;
             else
-                result = new Result<T>(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
+                result = new(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
 
             return result;
         }
@@ -143,12 +143,12 @@ namespace DotNext
                 }
                 catch (Exception e)
                 {
-                    result = new Result<TResult>(e);
+                    result = new(e);
                 }
             }
             else
             {
-                result = new Result<TResult>(exception);
+                result = new(exception);
             }
 
             return result;
