@@ -8,7 +8,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -58,7 +58,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.2.0, 4)" />
+    <PackageReference Include="DotNext" Version="[3.2.1, 4)" />
   </ItemGroup>
 
   <ItemGroup>
