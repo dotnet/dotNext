@@ -623,6 +623,9 @@ namespace DotNext
         public bool Equals(object? other, IEqualityComparer comparer)
             => !IsUndefined && comparer.Equals(value, other);
 
+        private int LegacyGetHashCode(IEqualityComparer comparer)
+            => HasValue ? comparer.GetHashCode(value!) : 0;
+
         /// <summary>
         /// Computes hash code for the stored value
         /// using method <see cref="IEqualityComparer.GetHashCode(object)"/>.
@@ -630,7 +633,17 @@ namespace DotNext
         /// <param name="comparer">The comparer implementing hash code function.</param>
         /// <returns>The hash code of <see cref="Value"/>.</returns>
         public int GetHashCode(IEqualityComparer comparer)
-            => HasValue ? comparer.GetHashCode(value!) : 0;
+        {
+            if (LibrarySettings.IsUndefinedEqualsNull)
+                return LegacyGetHashCode(comparer);
+
+            return kind switch
+            {
+                UndefinedValue => 0,
+                NullValue => NullValue,
+                _ => comparer.GetHashCode(value!),
+            };
+        }
 
         /// <summary>
         /// Wraps value into Optional container.
