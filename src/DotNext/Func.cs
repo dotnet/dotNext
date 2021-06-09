@@ -126,7 +126,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -150,7 +150,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -176,7 +176,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -204,7 +204,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -234,7 +234,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -266,7 +266,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -300,7 +300,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -336,7 +336,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -374,7 +374,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -414,7 +414,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -456,7 +456,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;

@@ -1,5 +1,4 @@
 ﻿using System;
-using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -177,7 +176,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<bool>(e);
+                result = new(e);
             }
 
             return result;

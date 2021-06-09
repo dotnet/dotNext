@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     term = -1L;
                 }
 
-                return new Result<VotingResult>(term, result);
+                return new(term, result);
             }
 
             internal VotingState(IRaftClusterMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)

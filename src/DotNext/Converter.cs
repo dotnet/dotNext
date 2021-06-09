@@ -80,7 +80,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                result = new Result<TOutput>(e);
+                result = new(e);
             }
 
             return result;

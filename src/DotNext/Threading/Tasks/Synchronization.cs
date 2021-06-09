@@ -27,11 +27,11 @@ namespace DotNext.Threading.Tasks
             Result<TResult> result;
             try
             {
-                result = task.Wait(timeout) ? task.Result : new Result<TResult>(new TimeoutException());
+                result = task.Wait(timeout) ? new(task.Result) : new(new TimeoutException());
             }
             catch (Exception e)
             {
-                result = new Result<TResult>(e);
+                result = new(e);
             }
 
             return result;
@@ -46,15 +46,18 @@ namespace DotNext.Threading.Tasks
         /// <returns>Task result.</returns>
         public static Result<TResult> GetResult<TResult>(this Task<TResult> task, CancellationToken token)
         {
+            Result<TResult> result;
             try
             {
                 task.Wait(token);
-                return task.Result;
+                result = task.Result;
             }
             catch (Exception e)
             {
-                return new Result<TResult>(e);
+                result = new(e);
             }
+
+            return result;
         }
 
         /// <summary>
@@ -70,11 +73,11 @@ namespace DotNext.Threading.Tasks
             {
                 task.Wait(token);
                 var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
-                result = new Result<object?>(awaiter.GetRawResult());
+                result = new(awaiter.GetRawResult());
             }
             catch (Exception e)
             {
-                result = new Result<object?>(e);
+                result = new(e);
             }
 
             return result;
@@ -95,16 +98,16 @@ namespace DotNext.Threading.Tasks
                 if (task.Wait(timeout))
                 {
                     var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
-                    result = new Result<object?>(awaiter.GetRawResult());
+                    result = new(awaiter.GetRawResult());
                 }
                 else
                 {
-                    result = new Result<object?>(new TimeoutException());
+                    result = new(new TimeoutException());
                 }
             }
             catch (Exception e)
             {
-                result = new Result<object?>(e);
+                result = new(e);
             }
 
             return result;

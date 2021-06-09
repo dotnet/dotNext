@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var result = await HttpMessage.ParseBoolResponse(response, token).ConfigureAwait(false);
             var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
-            return new Result<bool>(term, result);
+            return new(term, result);
         }
 
         private protected static Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token)

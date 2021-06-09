@@ -75,14 +75,17 @@ namespace DotNext
         public static Result<TResult?> TryInvoke<TArgs, TResult>(this Function<TArgs, TResult> function, in TArgs arguments)
             where TArgs : struct
         {
+            Result<TResult?> result;
             try
             {
-                return function(in arguments);
+                result = function(in arguments);
             }
             catch (Exception e)
             {
-                return new Result<TResult?>(e);
+                result = new(e);
             }
+
+            return result;
         }
 
         /// <summary>
@@ -99,14 +102,17 @@ namespace DotNext
         public static Result<TResult?> TryInvoke<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull] in T @this, in TArgs arguments)
             where TArgs : struct
         {
+            Result<TResult?> result;
             try
             {
-                return function(in @this, in arguments);
+                result = function(in @this, in arguments);
             }
             catch (Exception e)
             {
-                return new Result<TResult?>(e);
+                result = new(e);
             }
+
+            return result;
         }
 
         /// <summary>
