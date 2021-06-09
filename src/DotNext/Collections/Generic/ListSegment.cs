@@ -72,6 +72,31 @@ namespace DotNext.Collections.Generic
             return ToRelativeIndex(ref index) ? index : -1;
         }
 
+#if !NETSTANDARD2_1
+        /// <summary>
+        /// Attempts to get span over elements in this segment.
+        /// </summary>
+        /// <param name="span">The span over elements in this segment.</param>
+        /// <returns><see langword="true"/> if the underlying list supports conversion to span; otherwise <see langword="false"/>.</returns>
+        public bool TryGetSpan(out Span<T> span)
+        {
+            switch (list)
+            {
+                case List<T> typedList:
+                    span = CollectionsMarshal.AsSpan(typedList).Slice(startIndex, Count);
+                    break;
+                case T[] array:
+                    span = new Span<T>(array, startIndex, Count);
+                    break;
+                default:
+                    span = default;
+                    return false;
+            }
+
+            return true;
+        }
+#endif
+
         /// <inheritdoc/>
         void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
 
