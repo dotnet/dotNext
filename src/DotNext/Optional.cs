@@ -341,7 +341,7 @@ namespace DotNext
         /// <param name="value">Extracted value.</param>
         /// <param name="isNull"><see langword="true"/> if underlying value is <see langword="null"/>; otherwise, <see langword="false"/>.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([NotNullWhen(true)] out T value, out bool isNull)
+        public bool TryGet([MaybeNullWhen(false)] out T value, out bool isNull)
         {
             value = this.value!;
             switch (kind)
