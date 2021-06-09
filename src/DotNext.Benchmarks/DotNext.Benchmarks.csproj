@@ -7,7 +7,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <IsPackable>false</IsPackable>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>

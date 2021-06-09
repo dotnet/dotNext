@@ -6,7 +6,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <StartupObject>RaftNode.Program</StartupObject>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
