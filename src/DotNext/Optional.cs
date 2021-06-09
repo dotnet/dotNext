@@ -547,8 +547,8 @@ namespace DotNext
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
         /// <remarks>
-        /// This method calls <see cref="object.GetHashCode()"/>
-        /// for the object <see cref="Value"/>.
+        /// This method uses <see cref="EqualityComparer{T}"/> type
+        /// to get hash code of <see cref="Value"/>.
         /// </remarks>
         public override int GetHashCode()
         {
