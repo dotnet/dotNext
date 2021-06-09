@@ -32,7 +32,7 @@ namespace DotNext.Collections.Generic
                 /// </summary>
                 /// <exception cref="InvalidOperationException">The enumerator is empty.</exception>
                 public readonly T Current
-                    => current.TryGet(out var result, out var isNull) || isNull ? result : throw new InvalidOperationException();
+                    => current.TryGet(out var result, out var isNull) || isNull ? result! : throw new InvalidOperationException();
 
                 /// <summary>
                 /// Advances the enumerator to the next element.
