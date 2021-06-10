@@ -7,13 +7,13 @@
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <Version>3.2.1</Version>
     <IsPackable>false</IsPackable>
-    <Authors>Roman Sakno</Authors>
+    <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Unit tests for .NEXT Familiy of Libraries</Description>
     <Copyright>2018-2020</Copyright>
-    <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/dotnet/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/dotnet/DotNext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dotnet/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 

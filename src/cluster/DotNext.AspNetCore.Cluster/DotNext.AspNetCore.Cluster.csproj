@@ -6,17 +6,17 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <Version>3.2.1</Version>
-    <Authors>Roman Sakno</Authors>
+    <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
-    <Copyright>Copyright © Roman Sakno 2021</Copyright>
+    <Copyright>Copyright © .NEXT Project 2021</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
+    <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>consensus;raft;aspnetcore</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
-    <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
