@@ -29,10 +29,11 @@
       <div class="icon">
         <i aria-hidden="true">☾</i>
       </div>
-      <script type="text/javascript" src="{{_rel}}styles/toggle-theme.js"></script>
     </div>
 
     <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+    <h5>{{__global.inThisArticle}}</h5>
+    <div></div>
     <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
     </nav>
   </div>

@@ -24,7 +24,7 @@
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "../darkFX"
+      "../darkfx"
     ],
     "postProcessors": [
       "ExtractSearchIndex"
