@@ -19,4 +19,4 @@ The list of supported features:
 Useful links:
 * [Overview of Cluster Programming Model](https://dotnet.github.io/dotNext/features/cluster/index.html)
 * [Cluster Programming using Raft](https://dotnet.github.io/dotNext/features/cluster/raft.html)
-* [API Reference](https://www.fuget.org/packages/DotNext.Net.Cluster/3.1.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft)
+* [API Reference](https://www.fuget.org/packages/DotNext.Net.Cluster/latest/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft)
