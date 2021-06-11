@@ -1,11 +1,11 @@
 API Reference
 ====
 
-* [DotNext](https://www.fuget.org/packages/DotNext/3.2.1/lib/net5.0/)
-* [DotNext.IO](https://www.fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/)
-* [DotNext.Metaprogramming](https://www.fuget.org/packages/DotNext.Metaprogramming/3.2.1/lib/net5.0/)
-* [DotNext.Reflection](https://www.fuget.org/packages/DotNext.Reflection/3.2.1/lib/net5.0/)
-* [DotNext.Threading](https://www.fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/)
-* [DotNext.Unsafe](https://www.fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/)
-* [DotNext.Net.Cluster](https://www.fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/)
-* [DotNext.AspNetCore.Cluster](https://www.fuget.org/packages/DotNext.AspNetCore.Cluster/3.2.1/lib/net5.0/)
+* [DotNext](https://www.fuget.org/packages/DotNext/)
+* [DotNext.IO](https://www.fuget.org/packages/DotNext.IO/)
+* [DotNext.Metaprogramming](https://www.fuget.org/packages/DotNext.Metaprogramming/)
+* [DotNext.Reflection](https://www.fuget.org/packages/DotNext.Reflection/)
+* [DotNext.Threading](https://www.fuget.org/packages/DotNext.Threading/)
+* [DotNext.Unsafe](https://www.fuget.org/packages/DotNext.Unsafe/)
+* [DotNext.Net.Cluster](https://www.fuget.org/packages/DotNext.Net.Cluster/)
+* [DotNext.AspNetCore.Cluster](https://www.fuget.org/packages/DotNext.AspNetCore.Cluster/)
