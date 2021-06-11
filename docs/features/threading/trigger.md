@@ -13,4 +13,4 @@ Signaling method behaves in two ways:
 
 Fairness policy for dequeuing can be passed as **bool** parameter to `Signal` and `SignalAndWaitAsync` methods.
 
-You can check [this](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.LockManager.cs) class as an example of complex asynchronous lock constructed on top of `AsyncTrigger`. The implementation is used by persistent Write-Ahead Log to allow multiple writers co-exist without blocking in some specific cirtumstances.
+You can check [this](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.LockManager.cs) class as an example of complex asynchronous lock constructed on top of `AsyncTrigger`. The implementation is used by persistent Write-Ahead Log to allow multiple writers co-exist without blocking in some specific cirtumstances.

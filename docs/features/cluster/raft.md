@@ -134,7 +134,7 @@ UDP transport is WAN unfriendly. It should not be used in unreliable networks. H
 * Cluster nodes are in Docker/LXC/Windows containers running on the same physical host
 
 ## Example
-There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`, `udp`.
+There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/dotnet/dotNext/tree/master/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`, `udp`.
 
 Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
@@ -200,8 +200,8 @@ Transport-agnostic implementation of Raft is represented by [RaftCluster&lt;TMem
 
 ## Existing Implementations
 .NEXT library ships multiple network transports: 
-* [RaftHttpCluster](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs) as a part of `DotNext.AspNetCore.Cluster` library offers HTTP 1.1/HTTP 2 implementations adopted for ASP.NET Core framework. 
-* [TransportServices](https://github.com/sakno/dotNext/tree/develop/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/TransportServices) as a part of `DotNext.Net.Cluster` library contains reusable network transport layer for UDP and TCP transport shipped as a part of this library.
+* [RaftHttpCluster](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs) as a part of `DotNext.AspNetCore.Cluster` library offers HTTP 1.1/HTTP 2 implementations adopted for ASP.NET Core framework. 
+* [TransportServices](https://github.com/dotnet/dotNext/tree/develop/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/TransportServices) as a part of `DotNext.Net.Cluster` library contains reusable network transport layer for UDP and TCP transport shipped as a part of this library.
 
 All these implementations can be used as examples of transport for Raft messages.
 
@@ -238,7 +238,7 @@ The default implementation for ASP.NET Core covers both cases. It uses multipart
 
 `ResignAsync` method sends the message to the leader node and receiver should downgrade itself to the follower state. This is service message type not related to Raft but can be useful to force leader election.
 
-You can use [this](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterMember.cs) code as an example of HTTP-specific implementation.
+You can use [this](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterMember.cs) code as an example of HTTP-specific implementation.
 
 ## Derivation from RaftCluster
 `RaftCluster` class contains all necessary methods for handling deserialized Raft messages:
@@ -251,11 +251,11 @@ You can use [this](https://github.com/sakno/dotNext/blob/master/src/cluster/DotN
 The underlying code responsible for listening network requests must restore Raft messages from transport-specific representation and call the necessary handler for particular message type. 
 
 It is recommended to use **partial class** feature of C# language to separate different parts of the derived class. The recommended layout is:
-* Main part with `StartAsync` and `StopAsync` methods containing initialization logic, configuration and other infrastructure-related aspects. The example is [here](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs)
-* Raft-related messaging. The example is [here](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.Messaging.cs)
+* Main part with `StartAsync` and `StopAsync` methods containing initialization logic, configuration and other infrastructure-related aspects. The example is [here](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs)
+* Raft-related messaging. The example is [here](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.Messaging.cs)
 * General-purpose messaging (if you need it)
 
-`ReceiveEntries` and `ReceiveSnapshot` expecting access to the log entries deserialized from the underlying transport. This is where `IDataTransformObject` concept comes again. `GetObjectData` method of this interface responsible for deserialization of DTO payload. Transport-specific implementation of `IRaftLogEntry` should be present on the receiver side. Everything you need is just wrap section of underlying stream into instance of [IAsyncBinaryReader](xref:DotNext.IO.IAsyncBinaryReader) and pass the reader to [Transformation](xref:DotNext.IO.IDataTransferObject.ITransformation`1) that comes through the parameter of `TransformAsync` method. The example is [here](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/AppendEntriesMessage.cs). `IAsyncBinaryReader` has static factory methods for wrapping [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader).
+`ReceiveEntries` and `ReceiveSnapshot` expecting access to the log entries deserialized from the underlying transport. This is where `IDataTransformObject` concept comes again. `GetObjectData` method of this interface responsible for deserialization of DTO payload. Transport-specific implementation of `IRaftLogEntry` should be present on the receiver side. Everything you need is just wrap section of underlying stream into instance of [IAsyncBinaryReader](xref:DotNext.IO.IAsyncBinaryReader) and pass the reader to [Transformation](xref:DotNext.IO.IDataTransferObject.ITransformation`1) that comes through the parameter of `TransformAsync` method. The example is [here](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/AppendEntriesMessage.cs). `IAsyncBinaryReader` has static factory methods for wrapping [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader).
 
 Another important extensibility points are `StartAsync` and `StopAsync` virtual methods. They are responsible for lifecycle management of `RaftCluster` instance. You can override them for the following reasons:
 * Opening and closing sockets
