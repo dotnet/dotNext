@@ -1,7 +1,7 @@
 .NEXT
 ====
 [![Build Status](https://dev.azure.com/rvsakno/dotNext/_apis/build/status/sakno.dotNext?branchName=master)](https://dev.azure.com/rvsakno/dotNext/_build/latest?definitionId=1&branchName=master)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sakno/dotNext/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnet/dotNext/blob/master/LICENSE)
 ![Test Coverage](https://img.shields.io/azure-devops/coverage/rvsakno/dotnext/1/master)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/sakno/dotNext.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sakno/dotNext/alerts/)
 [![Join the chat](https://badges.gitter.im/dot_next/community.svg)](https://gitter.im/dot_next/community)
