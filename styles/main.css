@@ -31,6 +31,10 @@ body {
   background-color: var(--color-background);
 }
 
+.btn.focus, .btn:focus, .btn:hover {
+  color: var(--color-foreground);
+}
+
 h1 {
   font-weight: 600;
   font-size: 32px;
@@ -74,6 +78,10 @@ article h4 {
 .subnav {
   border-top: 1px solid var(--color-underline);
   background-color: var(--color-background-subnav);
+}
+
+.sidenav, .fixed_header, .toc {
+  background-color: var(--color-background);
 }
 
 .navbar-inverse {
