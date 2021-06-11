@@ -63,7 +63,7 @@ namespace DotNext.Linq.Expressions
             {
                 switch (arg.Value)
                 {
-                    case Expression expr:
+                    case System.Linq.Expressions.Expression:
                         restrictions = BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(arg.Expression, typeof(Expression))).Merge(arg.Restrictions);
                         return Expression.Call(null, AsExpressionMethod, arg.Expression);
                     case ISupplier<Expression> supplier:
