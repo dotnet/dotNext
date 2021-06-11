@@ -1,9 +1,9 @@
 .NEXT
 ====
-[![Build Status](https://dev.azure.com/rvsakno/dotNext/_apis/build/status/sakno.dotNext?branchName=master)](https://dev.azure.com/rvsakno/dotNext/_build/latest?definitionId=1&branchName=master)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sakno/dotNext/blob/master/LICENSE)
-![Test Coverage](https://img.shields.io/azure-devops/coverage/rvsakno/dotnext/1/master)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/sakno/dotNext.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sakno/dotNext/alerts/)
+[![Build Status](https://dev.azure.com/dotnet/dotNext/_apis/build/status/dotnet.dotNext?branchName=master)](https://dev.azure.com/dotnet/dotNext/_build/latest?definitionId=1&branchName=master)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/dotnet/dotNext/blob/master/LICENSE)
+![Test Coverage](https://img.shields.io/azure-devops/coverage/dotnet/dotnext/160/master)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/dotnet/dotNext.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/dotnet/dotNext/alerts/)
 [![Join the chat](https://badges.gitter.im/dot_next/community.svg)](https://gitter.im/dot_next/community)
 
 .NEXT (dotNext) is a set of powerful libraries aimed to improve development productivity and extend .NET API with unique features. Some of these features are planned in future releases of .NET platform but already implemented in the library:
@@ -94,3 +94,16 @@ Philosophy of development process:
 1. Provide high-quality documentation
 1. Stay cross-platform
 1. Provide benchmarks
+
+# Contributing
+This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit https://cla.microsoft.com.
+
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
+
+This project has adopted the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct).
+For more information see the [Code of Conduct FAQ](https://www.contributor-covenant.org/faq/) or
+contact [conduct@dotnetfoundation.org](mailto:conduct@dotnetfoundation.org) with any additional questions or comments.

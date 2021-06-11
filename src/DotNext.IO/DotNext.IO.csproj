@@ -5,21 +5,21 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>DotNext</RootNamespace>
-    <Authors>Roman Sakno</Authors>
+    <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
     <Version>3.2.1</Version>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
+    <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>.netstandard;io;pipe;encoding;decoding;buffer;pipelines;stream;readstring;writestring</PackageTags>
-    <Copyright>Copyright © Roman Sakno 2021</Copyright>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe.</Description>
+    <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe</Description>
     <PackageIcon>logo.png</PackageIcon>
-    <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

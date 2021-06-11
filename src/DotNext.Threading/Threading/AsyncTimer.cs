@@ -241,6 +241,7 @@ namespace DotNext.Threading
             var result = Interlocked.Exchange(ref timerTask, null);
             if (result is null)
             {
+                // already disposed
             }
             else if (result.Task.IsCompleted)
             {

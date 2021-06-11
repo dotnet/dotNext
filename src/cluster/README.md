@@ -7,7 +7,7 @@
 The list of supported features:
 * Network transport: TCP, UDP, HTTP 1.1, HTTP/2, HTTP/3
 * TLS support: TCP, HTTP 1.1, HTTP/2, HTTP/3
-* High-performance, general-purpose [Persistent Write-Ahead Log](https://sakno.github.io/dotNext/features/cluster/wal.html) supporting log compaction
+* High-performance, general-purpose [Persistent Write-Ahead Log](https://dotnet.github.io/dotNext/features/cluster/wal.html) supporting log compaction
 * Replication of log entries across cluster nodes
 * Tight integration with ASP.NET Core framework
 * Friendly to Docker/LXC/Windows containers, e.g. port mapping between the host and the container
@@ -17,6 +17,6 @@ The list of supported features:
     * Cluster members discovery
 
 Useful links:
-* [Overview of Cluster Programming Model](https://sakno.github.io/dotNext/features/cluster/index.html)
-* [Cluster Programming using Raft](https://sakno.github.io/dotNext/features/cluster/raft.html)
+* [Overview of Cluster Programming Model](https://dotnet.github.io/dotNext/features/cluster/index.html)
+* [Cluster Programming using Raft](https://dotnet.github.io/dotNext/features/cluster/raft.html)
 * [API Reference](https://www.fuget.org/packages/DotNext.Net.Cluster/3.1.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft)
