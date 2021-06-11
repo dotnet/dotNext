@@ -48,7 +48,7 @@ Documentation for older versions:
 # What's new
 Release Date: 06-09-2021
 
-<a href="https://www.nuget.org/packages/dotnext/3.2.1">DotNext 3.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext/3.2.1">DotNext 3.2.1</a>
 * Fixed implementation of `Optional<T>.GetHashCode` to distinguish hash code of undefined and null values
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.1">DotNext.Metaprogramming 3.2.1</a>
@@ -60,16 +60,16 @@ Release Date: 06-09-2021
 <a href="https://www.nuget.org/packages/dotnext.unsafe/3.2.1">DotNext.Unsafe 3.2.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/3.2.0">DotNext.Threading 3.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/3.2.1">DotNext.Threading 3.2.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/3.2.0">DotNext.IO 3.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/3.2.1">DotNext.IO 3.2.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.0">DotNext.Net.Cluster 3.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.1">DotNext.Net.Cluster 3.2.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.0">DotNext.AspNetCore.Cluster 3.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.2.1">DotNext.AspNetCore.Cluster 3.2.1</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
