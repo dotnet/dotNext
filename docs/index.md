@@ -1,7 +1,7 @@
 .NEXT 3.x
 ====
 
-.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime.
+.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
 
 > [!NOTE]
 > Use menu _Old Versions_ in the navigation bar to choose documentation for previous versions of .NEXT. Migration guides are [here](./migration/index.md).
