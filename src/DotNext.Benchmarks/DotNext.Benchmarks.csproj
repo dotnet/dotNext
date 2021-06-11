@@ -8,10 +8,10 @@
     <StartupObject>DotNext.Program</StartupObject>
     <IsPackable>false</IsPackable>
     <Version>3.2.1</Version>
-    <Authors>.NET Foundation</Authors>
+    <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
-    <Copyright>2018-2020</Copyright>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/dotnet/dotNext</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>

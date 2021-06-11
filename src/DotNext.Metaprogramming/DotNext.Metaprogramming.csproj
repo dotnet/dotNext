@@ -9,7 +9,7 @@
     <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>
-    <Copyright>Copyright © .NEXT Project 2021</Copyright>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>

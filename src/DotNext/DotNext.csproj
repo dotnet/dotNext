@@ -5,7 +5,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>DotNext</RootNamespace>
-    <Authors>.NET Foundation</Authors>
+    <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
     <Version>3.2.1</Version>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extensions;.netstandard;performance;hashcode;randomstring;valuetype;delegate</PackageTags>
-    <Copyright>Copyright © .NEXT Project 2021</Copyright>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
     <PackageIcon>logo.png</PackageIcon>

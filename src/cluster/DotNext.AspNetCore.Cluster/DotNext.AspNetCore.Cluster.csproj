@@ -6,10 +6,10 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <Version>3.2.1</Version>
-    <Authors>.NET Foundation</Authors>
+    <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
-    <Copyright>Copyright © .NEXT Project 2021</Copyright>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
