@@ -5,7 +5,8 @@
     "globalMetadata": {
       "_appTitle": ".NEXT",
       "_appLogoPath": "doc_logo.png",
-      "_appFaviconPath": "fav.ico"
+      "_appFaviconPath": "fav.ico",
+      "_appFooter": "Supported by the <a href=\"https://dotnetfoundation.org\">.NET Foundation</a>"
     },
     "content": [
       {
