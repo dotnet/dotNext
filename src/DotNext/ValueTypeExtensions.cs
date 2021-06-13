@@ -759,5 +759,47 @@ namespace DotNext
                 v / max.ToDouble(InvariantCulture) :
                 -v / min.ToDouble(InvariantCulture);
         }
+
+        /// <summary>
+        /// Normalizes 64-bit unsigned integer to interval [0..1).
+        /// </summary>
+        /// <param name="value">The value to be normalized.</param>
+        /// <returns>The normalized value in range [0..1).</returns>
+        [CLSCompliant(false)]
+        public static double Normalize(this ulong value)
+        {
+            const ulong fraction = ulong.MaxValue >> (64 - 53);
+            const double exponent = (double)(1UL << 53);
+            return (fraction & value) / exponent;
+        }
+
+        /// <summary>
+        /// Normalizes 64-bit signed integer to interval [0..1).
+        /// </summary>
+        /// <param name="value">The value to be normalized.</param>
+        /// <returns>The normalized value in range [0..1).</returns>
+        public static double Normalize(this long value)
+            => Normalize(unchecked((ulong)value));
+
+        /// <summary>
+        /// Normalizes 32-bit unsigned integer to interval [0..1).
+        /// </summary>
+        /// <param name="value">The value to be normalized.</param>
+        /// <returns>The normalized value in range [0..1).</returns>
+        [CLSCompliant(false)]
+        public static float Normalize(this uint value)
+        {
+            const uint fraction = uint.MaxValue >> (32 - 24);
+            const float exponent = (float)(1U << 24);
+            return (fraction & value) / exponent;
+        }
+
+        /// <summary>
+        /// Normalizes 32-bit signed integer to interval [0..1).
+        /// </summary>
+        /// <param name="value">The value to be normalized.</param>
+        /// <returns>The normalized value in range [0..1).</returns>
+        public static float Normalize(this int value)
+            => Normalize(unchecked((uint)value));
     }
 }
