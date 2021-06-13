@@ -142,12 +142,7 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
         public static double NextDouble(this RandomNumberGenerator random)
-        {
-            double result = random.Next();
-
-            // normalize to range [0, 1)
-            return result / (result + 1D);
-        }
+            => random.Next<ulong>().Normalize();
 
         /// <summary>
         /// Generates random value of blittable type.
