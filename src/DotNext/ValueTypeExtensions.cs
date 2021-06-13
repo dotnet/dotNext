@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using static System.Globalization.CultureInfo;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 
@@ -722,5 +723,41 @@ namespace DotNext
         /// <returns><see cref="int.MaxValue"/> if <paramref name="value"/> is greater than <see cref="int.MaxValue"/>; otherwise, cast <paramref name="value"/> to <see cref="int"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Truncate(this long value) => value > int.MaxValue ? int.MaxValue : (int)value;
+
+        /// <summary>
+        /// Normalizes value in the specified range.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to be normalized.</typeparam>
+        /// <param name="value">The value to be normalized. Must be in range [min..max].</param>
+        /// <param name="min">The lower bound of the value.</param>
+        /// <param name="max">The upper bound of the value.</param>
+        /// <returns>The normalized value in range [-1..1] for signed value and [0..1] for unsigned value.</returns>
+        [CLSCompliant(false)]
+        public static float NormalizeToSingle<T>(this T value, T min, T max)
+            where T : struct, IConvertible, IComparable<T>
+        {
+            var v = value.ToSingle(InvariantCulture);
+            return value.CompareTo(default) > 0 ?
+                v / max.ToSingle(InvariantCulture) :
+                -v / min.ToSingle(InvariantCulture);
+        }
+
+        /// <summary>
+        /// Normalizes value in the specified range.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to be normalized.</typeparam>
+        /// <param name="value">The value to be normalized. Must be in range [min..max].</param>
+        /// <param name="min">The lower bound of the value.</param>
+        /// <param name="max">The upper bound of the value.</param>
+        /// <returns>The normalized value in range [-1..1] for signed value and [0..1] for unsigned value.</returns>
+        [CLSCompliant(false)]
+        public static double NormalizeToDouble<T>(this T value, T min, T max)
+            where T : struct, IConvertible, IComparable<T>
+        {
+            var v = value.ToDouble(InvariantCulture);
+            return value.CompareTo(default) > 0 ?
+                v / max.ToDouble(InvariantCulture) :
+                -v / min.ToDouble(InvariantCulture);
+        }
     }
 }

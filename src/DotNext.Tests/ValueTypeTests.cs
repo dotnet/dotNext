@@ -274,5 +274,19 @@ namespace DotNext
             True(2.IsOneOf(new List<int> { 2, 5, 7 }));
             False(2.IsOneOf(new List<int> { 3, 5, 7 }));
         }
+
+        [Fact]
+        public static void NormalizeToSingle()
+        {
+            Equal(1F, int.MaxValue.NormalizeToSingle(int.MinValue, int.MaxValue));
+            Equal(-1F, int.MinValue.NormalizeToSingle(int.MinValue, int.MaxValue));
+        }
+
+        [Fact]
+        public static void NormalizeToDouble()
+        {
+            Equal(1F, int.MaxValue.NormalizeToDouble(int.MinValue, int.MaxValue));
+            Equal(-1F, int.MinValue.NormalizeToDouble(int.MinValue, int.MaxValue));
+        }
     }
 }
