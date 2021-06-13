@@ -18,9 +18,12 @@ namespace DotNext
         /// </summary>
         internal static readonly int BitwiseHashSalt;
 
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         static unsafe RandomExtensions()
         {
-            var i = default(int);
+            Unsafe.SkipInit(out int i);
             RandomNumberGenerator.Fill(new Span<byte>(&i, sizeof(int)));
             BitwiseHashSalt = i;
         }
@@ -157,10 +160,13 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static unsafe T Next<T>(this Random random)
             where T : unmanaged
         {
-            var result = default(T);
+            Unsafe.SkipInit(out T result);
             random.NextBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
@@ -171,10 +177,13 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static unsafe T Next<T>(this RandomNumberGenerator random)
             where T : unmanaged
         {
-            var result = default(T);
+            Unsafe.SkipInit(out T result);
             random.GetBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
