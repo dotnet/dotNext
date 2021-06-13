@@ -16,7 +16,14 @@ namespace DotNext
         /// <summary>
         /// Represents randomly chosen salt for hash code algorithms.
         /// </summary>
-        internal static readonly int BitwiseHashSalt = new Random().Next();
+        internal static readonly int BitwiseHashSalt;
+
+        static unsafe RandomExtensions()
+        {
+            var i = default(int);
+            RandomNumberGenerator.Fill(new Span<byte>(&i, sizeof(int)));
+            BitwiseHashSalt = i;
+        }
 
         private static void NextString(Random rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
