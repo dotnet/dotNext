@@ -12,6 +12,14 @@ namespace DotNext.Runtime.Serialization
     /// <typeparam name="T">The type to be serialized.</typeparam>
     public interface IFormatter<T>
     {
+        // TODO: This interface can be completely replaced when https://github.com/dotnet/csharplang/issues/4436 will
+        // be implemented
+        // Instead of this interface we can introduce ISerializable<T> as follows
+        // public interface ISerializable<T> : IDataTransferObject
+        // {
+        //   public static abstract T DeserializeAsync<TReader>(TReader reader, CancellationToken token);
+        // }
+
         /// <summary>
         /// Serializes the value asynchronously.
         /// </summary>
