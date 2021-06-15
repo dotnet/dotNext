@@ -63,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc />
-        Task<bool> IReplicationCluster<IRaftLogEntry>.ReplicateAsync<TEntryImpl>(TEntryImpl entry, TimeSpan timeout, CancellationToken token = default)
+        Task<bool> IReplicationCluster<IRaftLogEntry>.ReplicateAsync<TEntryImpl>(TEntryImpl entry, TimeSpan timeout, CancellationToken token)
             => ReplicateAsync(entry, new Timeout(timeout), token);
     }
 }
