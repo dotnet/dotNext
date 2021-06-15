@@ -5,7 +5,7 @@ namespace DotNext.Net.ConsistentHash
     /// <summary>
     /// Represents JUMP consistent hash.
     /// </summary>
-    /// <seealso href="https://arxiv.org/pdf/1406.2294.pdf">JUMP hash.</seealso>
+    /// <seealso href="https://arxiv.org/pdf/1406.2294.pdf">JUMP hash</seealso>
     public static class JumpHash
     {
         /// <summary>
