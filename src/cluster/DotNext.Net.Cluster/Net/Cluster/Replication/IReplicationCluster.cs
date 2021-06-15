@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <param name="timeout">The time to wait until replication ends.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
-        /// <returns><see langword="true"/> if replication is completed; <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if replication is completed; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default);
@@ -47,5 +47,16 @@ namespace DotNext.Net.Cluster.Replication
 
         /// <inheritdoc/>
         IAuditTrail IReplicationCluster.AuditTrail => AuditTrail;
+
+        /// <summary>
+        /// Appends a new log entry and ensures that it is replicated and committed.
+        /// </summary>
+        /// <typeparam name="TEntryImpl">The type of the log entry.</typeparam>
+        /// <param name="entry">The log entry to be added.</param>
+        /// <param name="timeout">The timeout of the operation.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if leader has been changed during the operation.</returns>
+        Task<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, TimeSpan timeout, CancellationToken token = default)
+            where TEntryImpl : notnull, TEntry;
     }
 }
