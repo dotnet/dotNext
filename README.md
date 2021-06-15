@@ -67,8 +67,8 @@ Release Date: 06-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.io/3.2.1">DotNext.IO 3.2.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.2.1">DotNext.Net.Cluster 3.2.1</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
+* Added implementation of [Jump](https://arxiv.org/pdf/1406.2294.pdf) consistent hash
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.3.0">DotNext.AspNetCore.Cluster 3.3.0</a>
 * Added ETW counter for response time of nodes in the cluster
