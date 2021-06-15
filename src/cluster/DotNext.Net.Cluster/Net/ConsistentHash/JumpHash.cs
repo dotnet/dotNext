@@ -21,14 +21,14 @@ namespace DotNext.Net.ConsistentHash
         [CLSCompliant(false)]
         public static int GetBucket(ulong key, int buckets)
         {
-            const double bitMask = (double)(1L << 31);
+            const double bitMask = 1L << 31;
             var result = -1L;
 
             for (var j = 0L; j < buckets; )
             {
                 result = j;
                 key = unchecked((key * 2862933555777941757UL) + 1U);
-                j = (long)((result + 1) * (bitMask / (double)((key >> 33) + 1U)));
+                j = (long)((result + 1) * (bitMask / ((key >> 33) + 1U)));
             }
 
             return (int)result;
