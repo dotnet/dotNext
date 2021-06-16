@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// Represents typed message.
     /// </summary>
     /// <typeparam name="T">The payload of the message.</typeparam>
-    public sealed class Message<T> : IMessage
+    internal sealed class Message<T> : IMessage
     {
         private readonly IFormatter<T> formatter;
 
@@ -24,10 +24,15 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="formatter">The payload serializer.</param>
         /// <param name="type">MIME type of the message.</param>
         public Message(string name, T payload, IFormatter<T> formatter, string? type = null)
+            : this(name, payload, formatter, new ContentType(type.IfNullOrEmpty(MediaTypeNames.Application.Octet)))
+        {
+        }
+
+        internal Message(string name, T payload, IFormatter<T> formatter, ContentType type)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             this.formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
-            Type = new ContentType(type ?? MediaTypeNames.Application.Octet);
+            Type = type;
             Payload = payload;
         }
 
