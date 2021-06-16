@@ -67,10 +67,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal Task Redirect(HttpContext context)
             {
-                var cluster = context.RequestServices.GetService<IRaftCluster>();
                 if (context.Request.Path.StartsWithSegments(pathMatch, StringComparison.OrdinalIgnoreCase))
                 {
+                    var cluster = context.RequestServices.GetService<IRaftCluster>();
                     var leader = cluster?.Leader;
+
                     if (leader is null)
                     {
                         context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
