@@ -1,4 +1,3 @@
-using System;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
