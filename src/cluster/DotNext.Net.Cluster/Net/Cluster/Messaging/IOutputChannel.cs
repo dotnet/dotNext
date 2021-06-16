@@ -32,6 +32,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing execution of this method.</returns>
         /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task SendSignalAsync(IMessage message, CancellationToken token = default);
     }
 }
