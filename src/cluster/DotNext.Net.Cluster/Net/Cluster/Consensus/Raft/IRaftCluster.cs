@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (await ForceReplicationAsync(remaining, token).ConfigureAwait(false))
                 timeout.ThrowIfExpired(out remaining);
             else
-                return false;
+                throw new TimeoutException();
 
             // 3 - wait for commit
             if (!await log.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false))
