@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Concurrent;
 using System.Net.Mime;
 using System.Reflection;
 
@@ -7,10 +5,7 @@ namespace DotNext.Net.Cluster.Messaging
 {
     using Runtime.Serialization;
 
-    /// <summary>
-    /// Represents common infrastructure for typed messengers.
-    /// </summary>
-    public abstract partial class TypedMessenger
+    public partial class MessagingClient
     {
         private abstract class InputMessageFactory
         {
@@ -44,15 +39,6 @@ namespace DotNext.Net.Cluster.Messaging
             internal Message<T> CreateMessage(T payload) => new(MessageName, payload, formatter, MessageType);
         }
 
-        private readonly ConcurrentDictionary<Type, InputMessageFactory> inputs;
-        private readonly ConcurrentDictionary<Type, MulticastDelegate> outputs;
-
-        private protected TypedMessenger()
-        {
-            inputs = new();
-            outputs = new();
-        }
-
         private static MessageReader<TOutput> CreateReader<TOutput>()
         {
             var attr = typeof(TOutput).GetCustomAttribute<MessageAttribute>();
@@ -61,30 +47,6 @@ namespace DotNext.Net.Cluster.Messaging
 
             var formatter = attr.CreateFormatter() as IFormatter<TOutput> ?? throw new GenericArgumentException<TOutput>(ExceptionMessages.MissingMessageFormatter<TOutput>());
             return MessageReader.CreateReader(formatter);
-        }
-
-        private protected Message<TInput> CreateMessage<TInput>(TInput payload)
-        {
-            var key = typeof(TInput);
-
-            if (inputs.TryGetValue(key, out var untyped) is false || untyped is not InputMessageFactory<TInput> factory)
-            {
-                inputs[key] = factory = new();
-            }
-
-            return factory.CreateMessage(payload);
-        }
-
-        private protected MessageReader<TOutput> GetMessageReader<TOutput>()
-        {
-            var key = typeof(TOutput);
-
-            if (outputs.TryGetValue(key, out var untyped) is false || untyped is not MessageReader<TOutput> reader)
-            {
-                outputs[key] = reader = CreateReader<TOutput>();
-            }
-
-            return reader;
         }
     }
 }

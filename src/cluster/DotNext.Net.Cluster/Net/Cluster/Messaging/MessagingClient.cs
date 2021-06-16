@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,9 +8,11 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents typed client for sending messages to the nodes in the cluster.
     /// </summary>
-    public partial class MessagingClient : TypedMessenger
+    public partial class MessagingClient
     {
         private readonly IOutputChannel channel;
+        private readonly ConcurrentDictionary<Type, InputMessageFactory> inputs;
+        private readonly ConcurrentDictionary<Type, MulticastDelegate> outputs;
 
         /// <summary>
         /// Constructs a new typed client for messaging.
@@ -19,6 +22,8 @@ namespace DotNext.Net.Cluster.Messaging
         public MessagingClient(IOutputChannel channel)
         {
             this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
+            inputs = new();
+            outputs = new();
         }
 
         /// <summary>
@@ -68,6 +73,30 @@ namespace DotNext.Net.Cluster.Messaging
             }
 
             return result;
+        }
+
+        private Message<TInput> CreateMessage<TInput>(TInput payload)
+        {
+            var key = typeof(TInput);
+
+            if (inputs.TryGetValue(key, out var untyped) is false || untyped is not InputMessageFactory<TInput> factory)
+            {
+                inputs[key] = factory = new();
+            }
+
+            return factory.CreateMessage(payload);
+        }
+
+        private MessageReader<TOutput> GetMessageReader<TOutput>()
+        {
+            var key = typeof(TOutput);
+
+            if (outputs.TryGetValue(key, out var untyped) is false || untyped is not MessageReader<TOutput> reader)
+            {
+                outputs[key] = reader = CreateReader<TOutput>();
+            }
+
+            return reader;
         }
     }
 }
