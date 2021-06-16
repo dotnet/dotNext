@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents typed message.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The payload of the message.</typeparam>
     public sealed class Message<T> : IMessage
     {
         private readonly IFormatter<T> formatter;
@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="name">The name of the message.</param>
         /// <param name="payload">The payload of the message.</param>
         /// <param name="formatter">The payload serializer.</param>
-        /// <param name="type"></param>
+        /// <param name="type">MIME type of the message.</param>
         public Message(string name, T payload, IFormatter<T> formatter, string? type = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
