@@ -56,6 +56,9 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="timeout">The timeout of the operation.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if retry is required.</returns>
+        /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
+        /// <exception cref="TimeoutException">The operation timed out.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, TimeSpan timeout, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry;
     }
