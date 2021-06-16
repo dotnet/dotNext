@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="entry">The log entry to be added.</param>
         /// <param name="timeout">The timeout of the operation.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if leader has been changed during the operation.</returns>
+        /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if retry is required.</returns>
         Task<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, TimeSpan timeout, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry;
     }
