@@ -182,7 +182,7 @@ namespace DotNext.Threading
             if (IsDisposed)
                 return GetDisposedTask<bool>();
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
+                return Task.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
             if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
             if (manager.TryAcquire())
