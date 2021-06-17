@@ -62,8 +62,8 @@ Release Date: 06-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.unsafe/3.2.1">DotNext.Unsafe 3.2.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/3.2.1">DotNext.Threading 3.2.1</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
+* Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.2.1">DotNext.IO 3.2.1</a>
 * Updated dependencies
