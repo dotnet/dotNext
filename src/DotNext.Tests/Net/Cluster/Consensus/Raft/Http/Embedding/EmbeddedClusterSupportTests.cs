@@ -116,10 +116,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             //ensure that leader is elected
             WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, DefaultTimeout);
 
-            var box1 = host1.Services.GetRequiredService<IInputChannel>() as Mailbox;
-            var box2 = host2.Services.GetRequiredService<IInputChannel>() as Mailbox;
-            var box3 = host3.Services.GetRequiredService<IInputChannel>() as Mailbox;
+            var box1 = host1.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+            NotNull(box1);
 
+            var box2 = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+            NotNull(box2);
+
+            var box3 = host3.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+            NotNull(box3);
 
             await host1.Services.GetRequiredService<IMessageBus>().LeaderRouter.SendSignalAsync(new TextMessage("Message to leader", "simple"));
 
@@ -175,7 +179,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host2.StartAsync();
 
             var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(static member => ((IPEndPoint)member.EndPoint).Port == 3263);
-            var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
+            var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(messageBox);
             //request-reply test
             var response = await client.SendTextMessageAsync<StreamMessage>(CreateBufferedMessageAsync, "Request", "Ping");
@@ -196,6 +200,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             for (var timeout = new Threading.Timeout(TimeSpan.FromMinutes(1)); !messageBox.TryDequeue(out response); timeout.ThrowIfExpired())
                 await Task.Delay(10);
             Equal(1024 * 1024, response.As<IMessage>().Length);
+
+            await host1.StopAsync();
+            await host2.StopAsync();
+        }
+
+        [Fact]
+        public static async Task TypedMessageExchange()
+        {
+            var config1 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"lowerElectionTimeout", "600" },
+                {"upperElectionTimeout", "900" },
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"requestTimeout", "00:01:00"}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"lowerElectionTimeout", "600" },
+                {"upperElectionTimeout", "900" },
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"requestTimeout", "00:01:00"}
+            };
+            using var host1 = CreateHost<Startup>(3262, true, config1);
+            using var host2 = CreateHost<Startup>(3263, true, config2);
+            await host1.StartAsync();
+            await host2.StartAsync();
+
+            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(static member => ((IPEndPoint)member.EndPoint).Port == 3263);
+            var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<TestMessageHandler>()).FirstOrDefault() as TestMessageHandler;
+            NotNull(messageBox);
+
+            var typedClient = new MessagingClient(client);
+
+            // duplex messages
+            var result = await typedClient.SendMessageAsync<AddMessage, ResultMessage>(new() { X = 40, Y = 2 });
+            Equal(42, result.Result);
+
+            result = await typedClient.SendMessageAsync<SubtractMessage, ResultMessage>(new() { X = 40, Y = 2 });
+            Equal(38, result.Result);
+
+            // one-way message
+            Equal(0, messageBox.Result);
+
+            await typedClient.SendSignalAsync<ResultMessage>(new() { Result = 42 });
+            Equal(42, messageBox.Result);
 
             await host1.StopAsync();
             await host2.StopAsync();
