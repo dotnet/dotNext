@@ -26,5 +26,7 @@ namespace DotNext
         internal static string EmptyValueDelegate => (string)Resources.Get();
 
         internal static string TerminatedExchange => (string)Resources.Get();
+
+        internal static string ListenerNoLongerValid => (string)Resources.Get();
     }
 }
