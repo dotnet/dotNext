@@ -8,7 +8,7 @@
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>3.2.1</Version>
+    <Version>3.3.0</Version>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
@@ -58,7 +58,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.2.1, 4)" />
+    <PackageReference Include="DotNext" Version="[3.3.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>

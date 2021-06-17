@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>3.2.1</Version>
+    <Version>3.3.0</Version>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Rich data types to work with unmanaged memory in CLS-compliant way</Description>
@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.2.1, 4)" />
+    <PackageReference Include="DotNext" Version="[3.3.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>
