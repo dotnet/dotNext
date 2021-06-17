@@ -42,6 +42,18 @@ namespace DotNext
             private static bool HasValue(T? nullable) => nullable.HasValue;
         }
 
+        private static class TypeChecker<T>
+        {
+            internal static readonly Predicate<object?> Value = ObjectExtensions.IsTypeOf<T>;
+        }
+
+        /// <summary>
+        /// Gets a predicate that can be used to check whether the specified object is of specific type.
+        /// </summary>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <returns>The predicate instance.</returns>
+        public static Predicate<object?> IsTypeOf<T>() => TypeChecker<T>.Value;
+
         /// <summary>
         /// Returns predicate implementing nullability check.
         /// </summary>

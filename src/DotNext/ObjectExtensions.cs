@@ -15,6 +15,8 @@ namespace DotNext
 
         internal static bool IsNotNull(object? obj) => obj is not null;
 
+        internal static bool IsTypeOf<T>(object? obj) => obj is T;
+
         /// <summary>
         /// Provides ad-hoc approach to associate some data with the object
         /// without modification of it.

@@ -27,6 +27,18 @@ namespace DotNext
             internal static readonly Func<T, bool> Value = ObjectExtensions.IsNotNull;
         }
 
+        private static class TypeChecker<T>
+        {
+            internal static readonly Func<object?, bool> Value = ObjectExtensions.IsTypeOf<T>;
+        }
+
+        /// <summary>
+        /// Gets a predicate that can be used to check whether the specified object is of specific type.
+        /// </summary>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <returns>The predicate instance.</returns>
+        public static Func<object?, bool> IsTypeOf<T>() => TypeChecker<T>.Value;
+
         /// <summary>
         /// Returns predicate implementing nullability check.
         /// </summary>
