@@ -48,9 +48,10 @@ Documentation for older versions:
 # What's new
 Release Date: 06-XX-2021
 
-<a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.2.1</a>
+<a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.3.0</a>
 * Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
 * Improved overall performance of extension methods declaring in `RandomExtensions` class
+* Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.1">DotNext.Metaprogramming 3.2.1</a>
 * Updated dependencies
@@ -69,6 +70,7 @@ Release Date: 06-XX-2021
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
 * Added implementation of [Jump](https://arxiv.org/pdf/1406.2294.pdf) consistent hash
+* Added support of typed message handlers. See `MessagingClient` and `MessageHandler` classes for more information
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.3.0">DotNext.AspNetCore.Cluster 3.3.0</a>
 * Added ETW counter for response time of nodes in the cluster
