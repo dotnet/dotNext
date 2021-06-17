@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -80,6 +81,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// Initializes a new interpreter and discovers methods marked
         /// with <see cref="CommandHandlerAttribute"/> attribute.
         /// </summary>
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(CommandHandler<>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,>))]
+#endif
         protected CommandInterpreter()
         {
             var interpreters = new Dictionary<int, CommandHandler>();
