@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using IO.Log;
+    using Runtime.CompilerServices;
     using Runtime.Serialization;
     using static Reflection.MethodExtensions;
     using static Runtime.Intrinsics;
@@ -85,6 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(CommandHandler<>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,>))]
 #endif
+        [RuntimeFeatures(RuntimeGenericInstantiation = true)]
         protected CommandInterpreter()
         {
             var interpreters = new Dictionary<int, CommandHandler>();
