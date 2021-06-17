@@ -53,6 +53,7 @@ namespace DotNext.Runtime.Serialization
         internal object? CreateFormatter()
             => Formatter is null ? null : CreateFormatter(Formatter, FormatterMember);
 
+        /// <inheritdoc/>
         object? ISupplier<object?>.Invoke() => CreateFormatter();
     }
 }
