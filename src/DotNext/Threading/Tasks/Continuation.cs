@@ -198,7 +198,6 @@ namespace DotNext.Threading.Tasks
         public static Task<T> ContinueWithTimeout<T>(this Task<T> task, TimeSpan timeout, CancellationToken token = default)
         {
             // TODO: Replace with Task.WaitAsync in .NET 6
-
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 return Task.FromException<T>(new ArgumentOutOfRangeException(nameof(timeout)));
             if (token.IsCancellationRequested)

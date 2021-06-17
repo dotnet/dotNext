@@ -41,10 +41,10 @@ namespace DotNext.Threading
             if (concurrencyLevel <= 0L)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            this.buckets = new Bucket[concurrencyLevel];
+            buckets = new Bucket[concurrencyLevel];
 
             for (var i = 0L; i < concurrencyLevel; i++)
-                this.buckets[i] = new();
+                buckets[i] = new();
 
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;
         }
