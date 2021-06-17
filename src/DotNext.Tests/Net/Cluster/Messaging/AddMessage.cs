@@ -1,8 +1,9 @@
 namespace DotNext.Net.Cluster.Messaging
 {
-    [Message("Add", Formatter = typeof(MessageFormatter))]
+    [Message(Name, Formatter = typeof(MessageFormatter))]
     public sealed class AddMessage
     {
+        internal const string Name = "Add";
         internal const int Size = sizeof(int) + sizeof(int);
 
         public int X { get; set; }
