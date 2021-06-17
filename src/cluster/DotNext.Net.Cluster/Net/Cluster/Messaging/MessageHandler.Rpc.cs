@@ -22,10 +22,10 @@ namespace DotNext.Net.Cluster.Messaging
             private RpcHandler(MulticastDelegate handler, out string inputMessageName)
             {
                 // process input type
-                inputFormatter = GetFormatter<TInput>(out inputMessageName);
+                inputFormatter = MessageAttribute.GetFormatter<TInput>(out inputMessageName);
 
                 // process output type
-                outputFormatter = GetFormatter<TOutput>(out outputMessageName, out outputMessageType);
+                outputFormatter = MessageAttribute.GetFormatter<TOutput>(out outputMessageName, out outputMessageType);
 
                 this.handler = handler;
             }

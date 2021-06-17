@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Reflection;
 
 namespace DotNext.Net.Cluster.Messaging
 {
@@ -17,36 +16,22 @@ namespace DotNext.Net.Cluster.Messaging
         private sealed class InputMessageFactory<T> : InputMessageFactory
         {
             private readonly IFormatter<T> formatter;
+            private readonly string messageName;
+            private readonly ContentType messageType;
 
             internal InputMessageFactory()
             {
-                var attr = typeof(T).GetCustomAttribute<MessageAttribute>();
-                if (attr is null)
-                    throw new GenericArgumentException<T>(ExceptionMessages.MissingMessageAttribute<T>());
-
-                MessageName = attr.Name;
-
-                // cache ContentType object for reuse
-                MessageType = new(attr.MimeType);
-
-                formatter = attr.CreateFormatter() as IFormatter<T> ?? throw new GenericArgumentException<T>(ExceptionMessages.MissingMessageFormatter<T>());
+                formatter = MessageAttribute.GetFormatter<T>(out messageName, out messageType);
             }
 
-            internal override string MessageName { get; }
+            internal override string MessageName => messageName;
 
-            internal override ContentType MessageType { get; }
+            internal override ContentType MessageType => messageType;
 
             internal Message<T> CreateMessage(T payload) => new(MessageName, payload, formatter, MessageType);
         }
 
         private static MessageReader<TOutput> CreateReader<TOutput>()
-        {
-            var attr = typeof(TOutput).GetCustomAttribute<MessageAttribute>();
-            if (attr is null)
-                throw new GenericArgumentException<TOutput>(ExceptionMessages.MissingMessageAttribute<TOutput>());
-
-            var formatter = attr.CreateFormatter() as IFormatter<TOutput> ?? throw new GenericArgumentException<TOutput>(ExceptionMessages.MissingMessageFormatter<TOutput>());
-            return MessageReader.CreateReader(formatter);
-        }
+            => MessageReader.CreateReader(MessageAttribute.GetFormatter<TOutput>(out _));
     }
 }

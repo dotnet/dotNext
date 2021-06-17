@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Messaging
 
             private SignalHandler(MulticastDelegate handler, out string inputMessageName)
             {
-                inputFormatter = GetFormatter<TInput>(out inputMessageName);
+                inputFormatter = MessageAttribute.GetFormatter<TInput>(out inputMessageName);
                 this.handler = handler;
             }
 
