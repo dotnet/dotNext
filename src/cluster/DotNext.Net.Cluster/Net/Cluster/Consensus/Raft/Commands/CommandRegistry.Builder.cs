@@ -25,8 +25,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// </summary>
             public Builder()
             {
-                interpreters = new Dictionary<int, CommandHandler>();
-                formatters = new Dictionary<Type, FormatterInfo>();
+                interpreters = new();
+                formatters = new();
             }
 
             /// <summary>
