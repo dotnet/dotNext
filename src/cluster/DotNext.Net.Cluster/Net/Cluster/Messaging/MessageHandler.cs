@@ -6,13 +6,12 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace DotNext.Net.Cluster.Messaging
 {
     using Runtime.CompilerServices;
 
     /// <summary>
-    /// Represents 
+    /// Represents base class for declaring typed message handlers.
     /// </summary>
     public partial class MessageHandler : IInputChannel
     {
