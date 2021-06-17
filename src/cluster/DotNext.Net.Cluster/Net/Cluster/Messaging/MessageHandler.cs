@@ -22,8 +22,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// Task&lt;Result&gt; HandleAsync(InputMessage input, CancellationToken token);
     /// Task&lt;Result&gt; HandleAsync(ISubscriber sender, InputMessage input, CancellationToken token);
     /// Task&lt;Result&gt; HandleAsync(InputMessage input, object? context, CancellationToken token);
-    /// Task&lt;Result&gt; HandleAsync(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
-    /// 
+    /// Task&lt;Result&gt; HandleAsync(ISubscriber sender, InputMessage input, object? context, CancellationToken token); 
     /// // signal message handlers
     /// Task HandleAsync(InputMessage input, CancellationToken token);
     /// Task HandleAsync(ISubscriber sender, InputMessage input, CancellationToken token);
