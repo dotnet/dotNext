@@ -20,9 +20,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
     /// </summary>
     /// <remarks>
     /// The interpreter can be constructed in two ways: using <see cref="CommandInterpreter.Builder"/>
-    /// and through inheritance. If you choose the inheritance then command handlers can be declared
-    /// as public methods marked with <see cref="CommandInterpreter.CommandHandlerAttribute"/> attribute.
-    /// Otherwise, command handlers can be registered through builder.
+    /// and through inheritance. If you choose the inheritance then command handlers must be declared
+    /// as public instance methods marked with <see cref="CommandInterpreter.CommandHandlerAttribute"/> attribute.
+    /// Otherwise, command handlers can be registered through the builder.
     /// Typically, the interpreter is aggregated by the class derived from <see cref="PersistentState"/>.
     /// </remarks>
     public partial class CommandInterpreter : Disposable

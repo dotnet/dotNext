@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// Indicates that the type can be used as message payload.
     /// </summary>
     /// <seealso cref="MessagingClient"/>
+    /// <seealso cref="MessageHandler"/>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
     public sealed class MessageAttribute : SerializableAttribute
     {

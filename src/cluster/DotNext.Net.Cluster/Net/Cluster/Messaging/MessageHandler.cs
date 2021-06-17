@@ -13,6 +13,25 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents base class for declaring typed message handlers.
     /// </summary>
+    /// <remarks>
+    /// The handler can be constructed in two ways: using <see cref="MessageHandler.Builder"/>
+    /// and through inheritance. If you choose the inheritance then message handlers must be declared
+    /// as public instance methods with one of the following signatures:
+    /// <code>
+    /// // duplex message handlers
+    /// Task&lt;Result&gt; HandleAsync(InputMessage input, CancellationToken token);
+    /// Task&lt;Result&gt; HandleAsync(ISubscriber sender, InputMessage input, CancellationToken token);
+    /// Task&lt;Result&gt; HandleAsync(InputMessage input, object? context, CancellationToken token);
+    /// Task&lt;Result&gt; HandleAsync(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
+    /// 
+    /// // signal message handlers
+    /// Task HandleAsync(InputMessage input, CancellationToken token);
+    /// Task HandleAsync(ISubscriber sender, InputMessage input, CancellationToken token);
+    /// Task HandleAsync(InputMessage input, object? context, CancellationToken token);
+    /// Task HandleAsync(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
+    /// </code>
+    /// Otherwise, command handlers can be registered through the builder.
+    /// </remarks>
     public partial class MessageHandler : IInputChannel
     {
         private readonly IReadOnlyDictionary<string, RpcHandler> rpcHandlers;
