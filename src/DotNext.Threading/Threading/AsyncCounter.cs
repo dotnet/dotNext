@@ -33,10 +33,11 @@ namespace DotNext.Threading
             readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
                 => tail is null ? new WaitNode() : new WaitNode(tail);
 
-            bool ILockManager<WaitNode>.TryAcquire()
+            public bool TryAcquire()
             {
                 if (counter == 0)
                     return false;
+
                 counter -= 1;
                 return true;
             }
@@ -108,5 +109,12 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
             => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
+
+        /// <summary>
+        /// Attempts to decrement the counter synchronously.
+        /// </summary>
+        /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryDecrement() => manager.TryAcquire();
     }
 }
