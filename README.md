@@ -66,7 +66,8 @@ Release Date: 06-XX-2021
 * Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.2.1">DotNext.IO 3.2.1</a>
-* Updated dependencies
+* `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
+* `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods ensure that the buffer tail is flushed to the disk
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
 * Added implementation of [Jump](https://arxiv.org/pdf/1406.2294.pdf) consistent hash

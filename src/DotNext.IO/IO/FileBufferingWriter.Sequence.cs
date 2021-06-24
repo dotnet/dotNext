@@ -124,7 +124,10 @@ namespace DotNext.IO
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             if (fileBackend is not null)
+            {
+                await PersistBufferAsync(token).ConfigureAwait(false);
                 await fileBackend.FlushAsync(token).ConfigureAwait(false);
+            }
 
             return new ReadOnlySequenceSource(this, segmentSize);
         }

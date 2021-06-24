@@ -485,14 +485,22 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override void Flush()
-            => fileBackend?.Flush();
+        {
+            if (fileBackend is not null)
+            {
+                PersistBuffer();
+                fileBackend.Flush();
+            }
+        }
 
         /// <inheritdoc/>
-        public override Task FlushAsync(CancellationToken token)
+        public override async Task FlushAsync(CancellationToken token)
         {
-            if (fileBackend is null)
-                return token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
-            return fileBackend.FlushAsync(token);
+            if (fileBackend is not null)
+            {
+                await PersistBufferAsync(token).ConfigureAwait(false);
+                await fileBackend.FlushAsync(token).ConfigureAwait(false);
+            }
         }
 
         /// <inheritdoc/>
