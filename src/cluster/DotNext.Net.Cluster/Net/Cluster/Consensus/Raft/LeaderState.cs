@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal sealed partial class LeaderState : RaftState
     {
-        private sealed class AsyncResultSet : LinkedList<ValueTask<Result<bool>>>
+        private sealed class AsyncResultSet : LinkedList<Task<Result<bool>>>
         {
         }
 
@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                         precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                    tasks.AddLast(new Replicator(member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
+                    tasks.AddLast(new Replicator(auditTrail, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
                 }
             }
 
@@ -73,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 #if NETSTANDARD2_1
             for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
 #else
-            for (var task = tasks.First; task is not null; task.ValueRef = default, task = task.Next)
+            for (var task = tasks.First; task is not null; task.ValueRef = default!, task = task.Next)
 #endif
             {
                 try

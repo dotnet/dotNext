@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
         {
+            private readonly IAuditTrail<IRaftLogEntry> auditTrail;
             private readonly IRaftClusterMember member;
             private readonly long commitIndex, precedingIndex, precedingTerm, term;
             private readonly ILogger logger;
@@ -25,7 +26,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private bool replicatedWithCurrentTerm;
             private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
 
+            // TODO: Replace with required init properties in the next version of C#
             internal Replicator(
+                IAuditTrail<IRaftLogEntry> auditTrail,
                 IRaftClusterMember member,
                 long commitIndex,
                 long currentIndex,
@@ -35,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ILogger logger,
                 CancellationToken token)
             {
+                this.auditTrail = auditTrail;
                 this.member = member;
                 this.precedingIndex = precedingIndex;
                 this.precedingTerm = precedingTerm;
@@ -45,13 +49,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.token = token;
             }
 
-            internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
+            private Task<Result<bool>> StartCoreAsync()
             {
                 logger.ReplicationStarted(member.EndPoint, currentIndex);
-                return currentIndex >= member.NextIndex ?
+                return (currentIndex >= member.NextIndex ?
                     auditTrail.ReadAsync(this, member.NextIndex, token) :
-                    ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token);
+                    ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token)).AsTask();
             }
+
+            // ensure that the replication process is forked
+            internal Task<Result<bool>> ReplicateAsync()
+                => System.Threading.Tasks.Task.Run(StartCoreAsync);
 
             private void Complete()
             {
