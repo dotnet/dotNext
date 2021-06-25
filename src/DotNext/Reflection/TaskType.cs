@@ -26,11 +26,11 @@ namespace DotNext.Reflection
                 Ldnull();
                 Ldftn(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
                 Newobj(Constructor(Type<Func<Task<T>, T>>(), Type<object>(), Type<IntPtr>()));
-                Pop(out ResultGetter);
+                Pop(out Func<Task<T>, T> propertyGetter);
+                ResultGetter = propertyGetter;
             }
         }
 
-        internal static readonly Func<Task, bool> IsCompletedSuccessfully;
         internal static readonly Type CompletedTaskType;
 
         static TaskType()
@@ -40,7 +40,8 @@ namespace DotNext.Reflection
             Ldnull();
             Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
             Newobj(Constructor(Type<Func<Task, bool>>(), Type<object>(), Type<IntPtr>()));
-            Pop(out IsCompletedSuccessfully);
+            Pop(out Func<Task, bool> propertyGetter);
+            IsCompletedSuccessfullyGetter = propertyGetter;
         }
 
         /// <summary>
@@ -114,12 +115,11 @@ namespace DotNext.Reflection
         /// </summary>
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <returns>The delegate representing <see cref="Task{T}.Result"/> property getter.</returns>
-        public static Func<Task<T>, T> GetResultGetter<T>()
-            => Cache<T>.ResultGetter;
+        public static Func<Task<T>, T> GetResultGetter<T>() => Cache<T>.ResultGetter;
 
         /// <summary>
         /// Gets delegate representing getter of <see cref="Task.IsCompletedSuccessfully"/> property.
         /// </summary>
-        public static Func<Task, bool> IsCompletedSuccessfullyGetter => IsCompletedSuccessfully;
+        public static Func<Task, bool> IsCompletedSuccessfullyGetter { get; }
     }
 }
