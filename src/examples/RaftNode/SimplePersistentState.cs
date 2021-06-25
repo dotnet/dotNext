@@ -2,7 +2,6 @@
 using DotNext.Net.Cluster.Consensus.Raft;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Diagnostics.Tracing;
 using System.Threading;
 using System.Threading.Tasks;
 using static DotNext.Threading.AtomicInt64;
