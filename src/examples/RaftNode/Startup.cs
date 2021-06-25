@@ -1,5 +1,4 @@
-﻿using System;
-using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
