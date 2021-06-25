@@ -2,14 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.Threading.Tasks
 {
     using Generic;
+    using static Reflection.TaskType;
     using static Runtime.Intrinsics;
 
     internal static class Continuation<T, TConstant>
@@ -209,13 +206,7 @@ namespace DotNext.Threading.Tasks
             if (timeout > InfiniteTimeSpan)
                 return WaitAsyncImpl<T>(task, timeout, token);
             if (token.CanBeCanceled)
-            {
-                Ldnull();
-                Ldftn(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
-                Newobj(Constructor(Type<Func<Task<T>, T>>(), Type<object>(), Type<IntPtr>()));
-                Pop(out Func<Task<T>, T> continuation);
-                return task.ContinueWith(continuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
-            }
+                return task.ContinueWith(GetResultGetter<T>(), token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
             return task;
         }
