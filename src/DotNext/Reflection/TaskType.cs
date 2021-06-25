@@ -30,7 +30,18 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static readonly Type CompletedTaskType = Task.CompletedTask.GetType();
+        internal static readonly Func<Task, bool> IsCompletedSuccessfully;
+        internal static readonly Type CompletedTaskType;
+
+        static TaskType()
+        {
+            CompletedTaskType = Task.CompletedTask.GetType();
+
+            Ldnull();
+            Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
+            Newobj(Constructor(Type<Func<Task, bool>>(), Type<object>(), Type<IntPtr>()));
+            Pop(out IsCompletedSuccessfully);
+        }
 
         /// <summary>
         /// Returns task type for the specified result type.
@@ -105,5 +116,10 @@ namespace DotNext.Reflection
         /// <returns>The delegate representing <see cref="Task{T}.Result"/> property getter.</returns>
         public static Func<Task<T>, T> GetResultGetter<T>()
             => Cache<T>.ResultGetter;
+
+        /// <summary>
+        /// Gets delegate representing getter of <see cref="Task.IsCompletedSuccessfully"/> property.
+        /// </summary>
+        public static Func<Task, bool> IsCompletedSuccessfullyGetter => IsCompletedSuccessfully;
     }
 }
