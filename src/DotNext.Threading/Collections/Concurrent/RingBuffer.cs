@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Collections.Concurrent
 {
@@ -35,36 +36,33 @@ namespace DotNext.Collections.Concurrent
         /// suitable for writing.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public ref struct Reservation
+        public struct Reservation : IConsumer<T>
         {
-            // TODO: replace with by-ref field when it will be added to C# and CLR
-            private Span<Slot> slot;
-            private Action? publishedCallback;
+            private RingBuffer<T>? buffer;
+            private nint index;
 
-            internal Reservation(ref Slot slot, Action? publishedCallback)
+            internal Reservation(RingBuffer<T> buffer, long writeCursor)
             {
-                this.slot = MemoryMarshal.CreateSpan(ref slot, 1);
-                this.publishedCallback = publishedCallback;
+                this.buffer = buffer;
+                index = (nint)buffer.GetIndex(writeCursor);
             }
 
-            private readonly ref Slot Slot => ref MemoryMarshal.GetReference(slot);
+            private readonly ref Slot Slot
+            {
+                get
+                {
+                    if (buffer is null)
+                        throw new InvalidOperationException(ExceptionMessages.SlotAlreadyPublished);
+
+                    return ref buffer[index];
+                }
+            }
 
             /// <summary>
             /// Gets the value associated with the collection item.
             /// </summary>
             /// <exception cref="InvalidOperationException">The slot is already published.</exception>
-            public readonly ref T Value
-            {
-                get
-                {
-                    ref var slot = ref Slot;
-
-                    if (Unsafe.IsNullRef(ref slot))
-                        throw new InvalidOperationException(ExceptionMessages.SlotAlreadyPublished);
-
-                    return ref slot.Value;
-                }
-            }
+            public readonly ref T Value => ref Slot.Value;
 
             /// <summary>
             /// Advances the write cursor.
@@ -76,13 +74,9 @@ namespace DotNext.Collections.Concurrent
             /// <exception cref="InvalidOperationException">The slot is already published.</exception>
             public void Publish()
             {
-                ref var slot = ref Slot;
-
-                if (Unsafe.IsNullRef(ref slot))
-                    throw new InvalidOperationException(ExceptionMessages.SlotAlreadyPublished);
-
-                slot.Acquire();
-                publishedCallback?.Invoke();
+                Slot.Acquire();
+                Debug.Assert(buffer is not null);
+                buffer.publishedCallback?.Invoke();
                 this = default;
             }
 
@@ -98,14 +92,14 @@ namespace DotNext.Collections.Concurrent
             {
                 ref var slot = ref Slot;
 
-                if (Unsafe.IsNullRef(ref slot))
-                    throw new InvalidOperationException(ExceptionMessages.SlotAlreadyPublished);
-
                 slot.Value = value;
                 slot.Acquire();
-                publishedCallback?.Invoke();
+                buffer?.publishedCallback?.Invoke();
                 this = default;
             }
+
+            /// <inheritdoc/>
+            readonly void IConsumer<T>.Invoke(T arg) => Value = arg;
         }
 
         /// <summary>
@@ -113,17 +107,27 @@ namespace DotNext.Collections.Concurrent
         /// suitable for reading.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public ref struct Acquisition
+        public struct Acquisition : ISupplier<T>
         {
-            private Span<long> cursor;
-            private Span<T> value;
-            private Action? consumedCallback;
+            private RingBuffer<T>? buffer;
+            private nint index;
 
-            internal Acquisition(ref long readCursor, ref Slot slot, Action? consumedCallback)
+            internal Acquisition(RingBuffer<T> buffer, long readCursor, out bool released)
             {
-                cursor = MemoryMarshal.CreateSpan(ref readCursor, 1);
-                value = MemoryMarshal.CreateSpan(ref slot.Value, 1);
-                this.consumedCallback = consumedCallback;
+                this.buffer = buffer;
+                index = (nint)buffer.GetIndex(readCursor);
+                released = buffer[index].TryRelease();
+            }
+
+            private readonly ref Slot Slot
+            {
+                get
+                {
+                    if (buffer is null)
+                        throw new InvalidOperationException(ExceptionMessages.SlotAlreadyConsumed);
+
+                    return ref buffer[index];
+                }
             }
 
             /// <summary>
@@ -136,13 +140,11 @@ namespace DotNext.Collections.Concurrent
             /// <exception cref="InvalidOperationException">The slot is already consumed.</exception>
             public void Consume()
             {
-                ref var readCusor = ref MemoryMarshal.GetReference(cursor);
-
-                if (Unsafe.IsNullRef(ref readCusor))
+                if (buffer is null)
                     throw new InvalidOperationException(ExceptionMessages.SlotAlreadyConsumed);
 
-                readCusor.IncrementAndGet();
-                consumedCallback?.Invoke();
+                buffer.consumed.IncrementAndGet();
+                buffer.consumedCallback?.Invoke();
                 this = default;
             }
 
@@ -157,26 +159,17 @@ namespace DotNext.Collections.Concurrent
             /// <exception cref="InvalidOperationException">The slot is already consumed.</exception>
             public T GetAndConsume()
             {
-                ref var readCursor = ref MemoryMarshal.GetReference(cursor);
+                ref var slot = ref Slot;
 
-                if (Unsafe.IsNullRef(ref readCursor))
-                    throw new InvalidOperationException(ExceptionMessages.SlotAlreadyConsumed);
-
-                T result;
-
+                var result = slot.Value;
                 if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 {
-                    ref var holder = ref MemoryMarshal.GetReference(value);
-                    result = holder;
-                    holder = default!;
-                }
-                else
-                {
-                    result = Value;
+                    slot.Value = default!;
                 }
 
-                readCursor.IncrementAndGet();
-                consumedCallback?.Invoke();
+                Debug.Assert(buffer is not null);
+                buffer.consumed.IncrementAndGet();
+                buffer.consumedCallback?.Invoke();
                 this = default;
                 return result;
             }
@@ -185,18 +178,10 @@ namespace DotNext.Collections.Concurrent
             /// Gets the value associated with the buffer slot.
             /// </summary>
             /// <exception cref="InvalidOperationException">The slot is already consumed.</exception>
-            public readonly ref T Value
-            {
-                get
-                {
-                    ref var result = ref MemoryMarshal.GetReference(value);
+            public readonly ref T Value => ref Slot.Value;
 
-                    if (Unsafe.IsNullRef(ref result))
-                        throw new InvalidOperationException(ExceptionMessages.SlotAlreadyConsumed);
-
-                    return ref result;
-                }
-            }
+            /// <inheritdoc/>
+            readonly T ISupplier<T>.Invoke() => Value;
         }
 
         private readonly Slot[] buffer;
@@ -279,9 +264,7 @@ namespace DotNext.Collections.Concurrent
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private long GetIndex(long value) => value & indexMask;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ref Slot GetSlot(long offset)
-            => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buffer), (nint)GetIndex(offset));
+        private ref Slot this[nint index] => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buffer), index);
 
         /// <summary>
         /// Allocates a new slot in the ring buffer.
@@ -314,7 +297,7 @@ namespace DotNext.Collections.Concurrent
             }
             while (!produced.CompareAndSet(current, next));
 
-            reservation = new(ref GetSlot(current), publishedCallback);
+            reservation = new(this, current);
             return true;
         }
 
@@ -349,12 +332,9 @@ namespace DotNext.Collections.Concurrent
         {
             for (var current = consumed.VolatileRead(); ;)
             {
-                ref var slot = ref GetSlot(current);
-                if (slot.TryRelease())
-                {
-                    cursor = new(ref consumed, ref slot, consumedCallback);
+                cursor = new(this, current, out var released);
+                if (released)
                     return true;
-                }
 
                 var next = consumed.VolatileRead();
 
@@ -370,7 +350,6 @@ namespace DotNext.Collections.Concurrent
                 }
             }
 
-            cursor = default;
             return false;
         }
 
