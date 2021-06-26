@@ -94,7 +94,8 @@ namespace DotNext.Collections.Concurrent
 
                 slot.Value = value;
                 slot.Acquire();
-                buffer?.publishedCallback?.Invoke();
+                Debug.Assert(buffer is not null);
+                buffer.publishedCallback?.Invoke();
                 this = default;
             }
 
@@ -143,8 +144,7 @@ namespace DotNext.Collections.Concurrent
                 if (buffer is null)
                     throw new InvalidOperationException(ExceptionMessages.SlotAlreadyConsumed);
 
-                buffer.consumed.IncrementAndGet();
-                buffer.consumedCallback?.Invoke();
+                buffer.Consume();
                 this = default;
             }
 
@@ -168,8 +168,7 @@ namespace DotNext.Collections.Concurrent
                 }
 
                 Debug.Assert(buffer is not null);
-                buffer.consumed.IncrementAndGet();
-                buffer.consumedCallback?.Invoke();
+                buffer.Consume();
                 this = default;
                 return result;
             }
@@ -313,6 +312,12 @@ namespace DotNext.Collections.Concurrent
 
             reservation.SetAndPublish(value);
             return true;
+        }
+
+        private void Consume()
+        {
+            consumed.IncrementAndGet();
+            consumedCallback?.Invoke();
         }
 
         /// <summary>
