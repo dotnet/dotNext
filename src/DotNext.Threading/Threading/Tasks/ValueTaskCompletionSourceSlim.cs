@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-    internal abstract class ValueTaskCompletionSource<TResult>
+    internal abstract class ValueTaskCompletionSourceSlim<TResult>
     {
         private AsyncValueTaskMethodBuilder<ValueTask<TResult>> builder;
         private AtomicBoolean completed;
 
-        private protected ValueTaskCompletionSource()
+        private protected ValueTaskCompletionSourceSlim()
         {
             builder = AsyncValueTaskMethodBuilder<ValueTask<TResult>>.Create();
             completed = new AtomicBoolean(false);
@@ -23,12 +23,12 @@ namespace DotNext.Threading.Tasks
         internal ValueTask<ValueTask<TResult>> Task => builder.Task;
     }
 
-    internal abstract class ValueTaskCompletionSource
+    internal abstract class ValueTaskCompletionSourceSlim
     {
         private AsyncValueTaskMethodBuilder<ValueTask> builder;
         private AtomicBoolean completed;
 
-        private protected ValueTaskCompletionSource()
+        private protected ValueTaskCompletionSourceSlim()
         {
             builder = AsyncValueTaskMethodBuilder<ValueTask>.Create();
             completed = new AtomicBoolean(false);
@@ -43,7 +43,7 @@ namespace DotNext.Threading.Tasks
         internal ValueTask<ValueTask> Task => builder.Task;
     }
 
-    internal class ValueTaskCompletionSource2<TResult> : ValueTaskCompletionSource<TResult>
+    internal class ValueTaskCompletionSource2<TResult> : ValueTaskCompletionSourceSlim<TResult>
     {
         private readonly ValueTask<TResult> first, second;
 
@@ -58,7 +58,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteSecond() => Complete(second);
     }
 
-    internal class ValueTaskCompletionSource2 : ValueTaskCompletionSource
+    internal class ValueTaskCompletionSource2 : ValueTaskCompletionSourceSlim
     {
         private readonly ValueTask first, second;
 
