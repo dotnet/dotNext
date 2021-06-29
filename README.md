@@ -54,6 +54,7 @@ Release Date: 06-XX-2021
 * Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.1">DotNext.Metaprogramming 3.2.1</a>
+* Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.2.1">DotNext.Reflection 3.2.1</a>
