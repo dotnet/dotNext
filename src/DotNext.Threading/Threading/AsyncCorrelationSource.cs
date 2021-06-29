@@ -27,6 +27,8 @@ namespace DotNext.Threading
     public partial class AsyncCorrelationSource<TKey, TValue>
         where TKey : notnull
     {
+        // TODO: In future versions we can reuse completion sources from object pool. But we need support of CancellationTokenSource.TryReset()
+        // and track the special numeric token for cancellation. Also, we could change the return type from Task to ValueTask
         private readonly Bucket[] buckets;
         private readonly IEqualityComparer<TKey> comparer;
 
