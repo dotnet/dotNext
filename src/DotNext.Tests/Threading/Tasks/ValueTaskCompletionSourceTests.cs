@@ -44,7 +44,7 @@ namespace DotNext.Threading.Tasks
         public static async Task ForceTimeout()
         {
             var source = new ValueTaskCompletionSource<int>();
-            True(source.TryReset());
+            source.Reset();
             var task = source.CreateTask(TimeSpan.FromMilliseconds(20), default);
             await Task.Delay(100);
             True(task.IsCompleted);
@@ -67,12 +67,12 @@ namespace DotNext.Threading.Tasks
         public static async Task Reuse()
         {
             var source = new ValueTaskCompletionSource<int>();
-            True(source.TryReset());
+            source.Reset();
             var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult(42));
             Equal(42, await task);
 
-            True(source.TryReset());
+            source.Reset();
             task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult(43));
             Equal(43, await task);

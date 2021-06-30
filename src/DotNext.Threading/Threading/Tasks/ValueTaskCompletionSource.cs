@@ -203,7 +203,6 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronizedAttribute]
         private void ResetCore()
         {
-            Recycle();
             sourceCore.Reset();
             completed = false;
         }
@@ -290,30 +289,33 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to reset state of this object for reuse.
         /// </summary>
-        /// <returns><see langword="true"/> if this instance can be reused; <see langword="false"/>.</returns>
+        /// <remarks>
+        /// Already linked task will never be completed successfully after calling of this method.
+        /// </remarks>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryReset()
+        public void Reset()
         {
-            if (completed)
-            {
-                ResetCore();
-                return true;
-            }
-
-            return false;
+            Recycle();
+            ResetCore();
         }
 
         /// <summary>
         /// Creates a fresh task linked with this source.
         /// </summary>
         /// <remarks>
-        /// This method must be called after <see cref="TryReset"/> if it returns <see langword="true"/>.
+        /// This method must be called after <see cref="Reset()"/>.
         /// </remarks>
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
         /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Reset()"/> was not called previously.</exception>
         public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
-            => CreateTaskCore(timeout, token);
+        {
+            if (completed)
+                throw new InvalidOperationException();
+
+            return CreateTaskCore(timeout, token);
+        }
 
         /// <summary>
         /// Invokes when the task is almost completed.
