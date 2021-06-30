@@ -290,7 +290,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to reset state of this object for reuse.
         /// </summary>
-        /// <returns><see langword="true"/> if this instance can be reused; <see langword="false"/> </returns>
+        /// <returns><see langword="true"/> if this instance can be reused; <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public bool TryReset()
         {
