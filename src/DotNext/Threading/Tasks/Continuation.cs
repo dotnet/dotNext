@@ -201,14 +201,14 @@ namespace DotNext.Threading.Tasks
                 return Task.FromCanceled<T>(token);
             if (task.IsCompleted)
                 return task;
-            if (timeout == TimeSpan.Zero)
-                return Task.FromException<T>(new TimeoutException());
-            if (timeout > InfiniteTimeSpan)
-                return WaitAsyncImpl<T>(task, timeout, token);
-            if (token.CanBeCanceled)
-                return task.ContinueWith(GetResultGetter<T>(), token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
-            return task;
+            return timeout.CompareTo(TimeSpan.Zero) switch
+            {
+                0 => Task.FromException<T>(new TimeoutException()),
+                > 0 => WaitAsyncImpl(task, timeout, token),
+                _ when token.CanBeCanceled => task.ContinueWith(GetResultGetter<T>(), token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default),
+                _ => task,
+            };
         }
     }
 }
