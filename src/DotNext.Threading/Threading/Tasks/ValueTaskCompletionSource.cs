@@ -8,6 +8,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks
 {
+    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
+
     /// <summary>
     /// Represents the producer side of <see cref="ValueTask{T}"/>.
     /// </summary>
@@ -49,6 +51,8 @@ namespace DotNext.Threading.Tasks
             completed = true;
         }
 
+        private bool IsDerived => GetType() != typeof(ValueTaskCompletionSource<T>);
+
         private void CancellationRequested(object? token)
         {
             if (token is short typedToken)
@@ -85,6 +89,7 @@ namespace DotNext.Threading.Tasks
             }
         }
 
+        [CallerMustBeSynchronizedAttribute]
         private void Cleanup()
         {
             tokenTracker.Dispose();
@@ -101,12 +106,13 @@ namespace DotNext.Threading.Tasks
             }
         }
 
+        [CallerMustBeSynchronizedAttribute]
         private void SetResult(T result)
         {
             Cleanup();
             try
             {
-                // run handler before actual completion to avoid concurrency with ReadyToUse event
+                // run handler before actual completion to avoid concurrency with AfterConsumed event
                 BeforeCompleted(new(result));
             }
             finally
@@ -147,12 +153,13 @@ namespace DotNext.Threading.Tasks
             return true;
         }
 
+        [CallerMustBeSynchronizedAttribute]
         private void SetException(Exception e)
         {
             Cleanup();
             try
             {
-                // run handler before actual completion to avoid concurrency with ReadyToUse event
+                // run handler before actual completion to avoid concurrency with AfterConsumed event
                 BeforeCompleted(new(e));
             }
             finally
@@ -183,6 +190,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public bool TrySetException(short completionToken, Exception e)
         {
             if (completed || completionToken != sourceCore.Version)
@@ -308,7 +316,8 @@ namespace DotNext.Threading.Tasks
             }
             finally
             {
-                ThreadPool.UnsafeQueueUserWorkItem(this, true);
+                if (IsDerived)
+                    ThreadPool.UnsafeQueueUserWorkItem(this, true);
             }
         }
 
