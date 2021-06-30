@@ -89,9 +89,7 @@ namespace DotNext
         /// </remarks>
         public static Func<T, T> Identity<T>() => Identity<T, T>();
 
-#nullable disable
-        private static T Convert<T>(this object obj) => (T)obj;
-#nullable restore
+        private static T Convert<T>(this object? obj) => (T)obj!;
 
         /// <summary>
         /// Constructs <see cref="Func{T}"/> returning the same
