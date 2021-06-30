@@ -94,6 +94,8 @@ namespace DotNext.Threading
 
         private unsafe void PulseAll<T>(T arg, delegate*<Slot, T, void> action)
         {
+            Debug.Assert(action != null);
+
             foreach (var bucket in buckets)
             {
                 lock (bucket)
