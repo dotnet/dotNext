@@ -56,7 +56,7 @@ namespace DotNext.Threading
 
             internal WaitNode? Next => next;
 
-            internal bool IsRoot => previous is null && next is null;
+            internal bool IsNotRoot => previous is not null || next is not null;
         }
 
         private protected interface ILockManager<TNode>
@@ -122,11 +122,20 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected bool RemoveNode(WaitNode node)
         {
-            var inList = ReferenceEquals(head, node) || !node.IsRoot;
+            var inList = false;
             if (ReferenceEquals(head, node))
+            {
                 head = node.Next;
+                inList = true;
+            }
+
             if (ReferenceEquals(tail, node))
+            {
                 tail = node.Previous;
+                inList = true;
+            }
+
+            inList |= node.IsNotRoot;
             node.DetachNode();
             lockDurationCounter?.Invoke(node.Age.TotalMilliseconds);
             return inList;
