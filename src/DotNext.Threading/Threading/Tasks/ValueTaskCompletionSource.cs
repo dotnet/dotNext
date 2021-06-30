@@ -71,7 +71,7 @@ namespace DotNext.Threading.Tasks
                     OnTimeout() :
                     new(new OperationCanceledException(tokenTracker.Token));
 
-                Cleanup();
+                Recycle();
                 try
                 {
                     BeforeCompleted(result);
@@ -90,7 +90,7 @@ namespace DotNext.Threading.Tasks
         }
 
         [CallerMustBeSynchronizedAttribute]
-        private void Cleanup()
+        private void Recycle()
         {
             tokenTracker.Dispose();
             tokenTracker = default;
@@ -109,7 +109,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronizedAttribute]
         private void SetResult(T result)
         {
-            Cleanup();
+            Recycle();
             try
             {
                 // run handler before actual completion to avoid concurrency with AfterConsumed event
@@ -156,7 +156,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronizedAttribute]
         private void SetException(Exception e)
         {
-            Cleanup();
+            Recycle();
             try
             {
                 // run handler before actual completion to avoid concurrency with AfterConsumed event
@@ -200,38 +200,17 @@ namespace DotNext.Threading.Tasks
             return true;
         }
 
-        /// <summary>
-        /// Resets the state of the underlying task and return a fresh uncompleted task.
-        /// </summary>
-        /// <remarks>
-        /// The returned task can be completed in a three ways: through cancellation token, timeout
-        /// or by calling <see cref="TrySetException(Exception)"/> or <see cref="TrySetResult(T)"/>.
-        /// If <paramref name="timeout"/> is <see cref="InfiniteTimeSpan"/> then this source doesn't
-        /// track the timeout. If <paramref name="token"/> is not cancelable then this source
-        /// doesn't track the cancellation. If both conditions are met then this source doesn't allocate
-        /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
-        /// for cancellation registrations.
-        /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="AfterConsumed"/> method.
-        /// </remarks>
-        /// <param name="completionToken">The version of the produced task that can be used later to complete the task without conflicts.</param>
-        /// <param name="timeout">The timeout associated with the task.</param>
-        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-        /// <returns>A fresh uncompleted task.</returns>
-        /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public ValueTask<T> Reset(out short completionToken, TimeSpan timeout, CancellationToken token)
+        [CallerMustBeSynchronizedAttribute]
+        private void ResetCore()
         {
-            if (!completed)
-                throw new InvalidOperationException();
-
+            Recycle();
             sourceCore.Reset();
-            var currentVersion = sourceCore.Version;
-            completionToken = currentVersion;
             completed = false;
+        }
 
-            // we need to allocate token once and only when the completion can be initiated
-            // by timeout or token
+        private ValueTask<T> CreateTaskCore(TimeSpan timeout, CancellationToken token)
+        {
+            var currentVersion = sourceCore.Version;
             object? tokenHolder = null;
             if (timeout != InfiniteTimeSpan)
             {
@@ -247,11 +226,41 @@ namespace DotNext.Threading.Tasks
                 tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder);
             }
 
-            return new(this, sourceCore.Version);
+            return new(this, currentVersion);
         }
 
         /// <summary>
-        /// Resets the state of the underlying task and return a fresh uncompleted task.
+        /// Resets the state of the underlying task and return a fresh incompleted task.
+        /// </summary>
+        /// <remarks>
+        /// The returned task can be completed in a three ways: through cancellation token, timeout
+        /// or by calling <see cref="TrySetException(Exception)"/> or <see cref="TrySetResult(T)"/>.
+        /// If <paramref name="timeout"/> is <see cref="InfiniteTimeSpan"/> then this source doesn't
+        /// track the timeout. If <paramref name="token"/> is not cancelable then this source
+        /// doesn't track the cancellation. If both conditions are met then this source doesn't allocate
+        /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
+        /// for cancellation registrations.
+        /// This method can be called safely in the following circumstances: after construction of a new
+        /// instance of this class or after (or during) the call of <see cref="AfterConsumed"/> method.
+        /// </remarks>
+        /// <param name="completionToken">The version of the produced task that can be used later to complete the task without conflicts.</param>
+        /// <param name="timeout">The timeout associated with the task.</param>
+        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
+        /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public ValueTask<T> Reset(out short completionToken, TimeSpan timeout, CancellationToken token)
+        {
+            if (!completed)
+                throw new InvalidOperationException();
+
+            ResetCore();
+            completionToken = sourceCore.Version;
+            return CreateTaskCore(timeout, token);
+        }
+
+        /// <summary>
+        /// Resets the state of the underlying task and return a fresh incompleted task.
         /// </summary>
         /// <remarks>
         /// The returned task can be completed in a three ways: through cancellation token, timeout
@@ -266,10 +275,45 @@ namespace DotNext.Threading.Tasks
         /// </remarks>
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-        /// <returns>A fresh uncompleted task.</returns>
+        /// <returns>A fresh incompleted task.</returns>
         /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> Reset(TimeSpan timeout, CancellationToken token)
-            => Reset(out _, timeout, token);
+        {
+            if (!completed)
+                throw new InvalidOperationException();
+
+            ResetCore();
+            return CreateTaskCore(timeout, token);
+        }
+
+        /// <summary>
+        /// Attempts to reset state of this object for reuse.
+        /// </summary>
+        /// <returns><see langword="true"/> if this instance can be reused; <see langword="false"/> </returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryReset()
+        {
+            if (completed)
+            {
+                ResetCore();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Creates a fresh task linked with this source.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called after <see cref="TryReset"/> if it returns <see langword="true"/>.
+        /// </remarks>
+        /// <param name="timeout">The timeout associated with the task.</param>
+        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
+        /// <returns>A fresh incompleted task.</returns>
+        public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
+            => CreateTaskCore(timeout, token);
 
         /// <summary>
         /// Invokes when the task is almost completed.
