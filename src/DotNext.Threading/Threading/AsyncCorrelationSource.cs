@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
@@ -19,7 +21,7 @@ namespace DotNext.Threading
     /// so you need to wait for another input message and identify that this message
     /// is a response. These two messages can be correlated with the key.
     /// The consumer and producer of the event must be protected by happens-before semantics.
-    /// It means that the call to <see cref="Listen(TKey)"/> by the consumer must happen
+    /// It means that the call to <see cref="WaitAsync(TKey, TimeSpan, CancellationToken)"/> by the consumer must happen
     /// before the call to <see cref="TrySignal(TKey, TValue)"/> by the producer for the same key.
     /// </remarks>
     /// <typeparam name="TKey">The type of the event identifier.</typeparam>
@@ -74,40 +76,14 @@ namespace DotNext.Threading
         /// <param name="value">The value to be passed to the listener.</param>
         /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
         public bool TrySignal(TKey eventId, TValue value)
-        {
-            var bucket = GetBucket(eventId);
-            lock (bucket)
-            {
-                for (var current = bucket.First; current is not null; current = current.Next)
-                {
-                    // notify the listener and remove it immediately
-                    if (current.Value.TrySetResult(eventId, value))
-                    {
-                        bucket.Remove(current);
-                        return true;
-                    }
-                }
-            }
+            => GetBucket(eventId).Remove(eventId, value);
 
-            return false;
-        }
-
-        private unsafe void PulseAll<T>(T arg, delegate*<Slot, T, void> action)
+        private unsafe void PulseAll<T>(delegate*<WaitNode, T, void> action, T arg)
         {
             Debug.Assert(action != null);
 
             foreach (var bucket in buckets)
-            {
-                lock (bucket)
-                {
-                    for (LinkedListNode<Slot>? current = bucket.First, next; current is not null; current = next)
-                    {
-                        next = current.Next;
-                        action(current.Value, arg);
-                        bucket.Remove(current);
-                    }
-                }
-            }
+                bucket.Drain(action, arg);
         }
 
         /// <summary>
@@ -116,9 +92,9 @@ namespace DotNext.Threading
         /// <param name="value">The value to be passed to all active listeners.</param>
         public unsafe void PulseAll(TValue value)
         {
-            PulseAll(value, &SetResult);
+            PulseAll(&SetResult, value);
 
-            static void SetResult(Slot slot, TValue value) => slot.TrySetResult(value);
+            static void SetResult(WaitNode slot, TValue value) => slot.TrySetResult(value);
         }
 
         /// <summary>
@@ -127,9 +103,9 @@ namespace DotNext.Threading
         /// <param name="e">The exception to be passed to all active listeners.</param>
         public unsafe void PulseAll(Exception e)
         {
-            PulseAll(e, &SetException);
+            PulseAll(&SetException, e);
 
-            static void SetException(Slot slot, Exception e) => slot.TrySetException(e);
+            static void SetException(WaitNode slot, Exception e) => slot.TrySetException(e);
         }
 
         /// <summary>
@@ -138,27 +114,49 @@ namespace DotNext.Threading
         /// <param name="token">The token in the canceled state.</param>
         public unsafe void PulseAll(CancellationToken token)
         {
-            PulseAll(token, &SetCanceled);
+            PulseAll(&SetCanceled, token);
 
-            static void SetCanceled(Slot slot, CancellationToken token) => slot.TrySetCanceled(token);
+            static void SetCanceled(WaitNode slot, CancellationToken token) => slot.TrySetCanceled(token);
         }
 
         /// <summary>
-        /// Creates a listener for a signal with the specified identifier.
+        /// Returns the task linked with the specified event identifier.
         /// </summary>
         /// <param name="eventId">The unique identifier of the event.</param>
-        /// <returns>The listener.</returns>
-        public Listener Listen(TKey eventId)
+        /// <param name="timeout">The time to wait for <see cref="TrySignal(TKey, TValue)"/>.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing the event arrival.</returns>
+        /// <exception cref="TimeoutException">The operation has timed out.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task<TValue> WaitAsync(TKey eventId, TimeSpan timeout, CancellationToken token = default)
         {
+            if (timeout != InfiniteTimeSpan && timeout < TimeSpan.Zero)
+                return Task.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)));
+            if (token.IsCancellationRequested)
+                return Task.FromCanceled<TValue>(token);
+
             var bucket = GetBucket(eventId);
-            LinkedListNode<Slot> slotHolder;
+            var node = bucket.Add(eventId, comparer);
+            if (node.Task.IsCompleted)
+                return node.Task;
 
-            lock (bucket)
+            return timeout.CompareTo(TimeSpan.Zero) switch
             {
-                slotHolder = bucket.AddLast(new Slot(eventId, comparer));
-            }
-
-            return new(slotHolder);
+                0 => Task.FromException<TValue>(new TimeoutException()),
+                > 0 => bucket.WaitAsync(node, timeout, token),
+                _ when token.CanBeCanceled => bucket.WaitAsync(node, token),
+                _ => node.Task,
+            };
         }
+
+        /// <summary>
+        /// Returns the task linked with the specified event identifier.
+        /// </summary>
+        /// <param name="eventId">The unique identifier of the event.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing the event arrival.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task<TValue> WaitAsync(TKey eventId, CancellationToken token = default)
+            => WaitAsync(eventId, InfiniteTimeSpan, token);
     }
 }
