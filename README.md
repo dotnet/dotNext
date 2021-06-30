@@ -65,6 +65,7 @@ Release Date: 06-XX-2021
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
 * Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
+* Added `ValueTaskCompletionSource<T>` as reusable source of tasks
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.2.1">DotNext.IO 3.2.1</a>
 * `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
