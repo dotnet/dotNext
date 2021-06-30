@@ -89,7 +89,7 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        [CallerMustBeSynchronizedAttribute]
+        [CallerMustBeSynchronized]
         private void Recycle()
         {
             tokenTracker.Dispose();
@@ -106,7 +106,7 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        [CallerMustBeSynchronizedAttribute]
+        [CallerMustBeSynchronized]
         private void SetResult(T result)
         {
             Recycle();
@@ -153,7 +153,7 @@ namespace DotNext.Threading.Tasks
             return true;
         }
 
-        [CallerMustBeSynchronizedAttribute]
+        [CallerMustBeSynchronized]
         private void SetException(Exception e)
         {
             Recycle();
@@ -200,7 +200,7 @@ namespace DotNext.Threading.Tasks
             return true;
         }
 
-        [CallerMustBeSynchronizedAttribute]
+        [CallerMustBeSynchronized]
         private void ResetCore()
         {
             sourceCore.Reset();
