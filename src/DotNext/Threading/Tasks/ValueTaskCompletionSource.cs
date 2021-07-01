@@ -236,7 +236,7 @@ namespace DotNext.Threading.Tasks
             if (timeout != InfiniteTimeSpan)
             {
                 timeoutSource ??= new();
-                tokenHolder ??= currentVersion;
+                tokenHolder = currentVersion;
                 timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder);
                 timeoutSource.CancelAfter(timeout);
             }
