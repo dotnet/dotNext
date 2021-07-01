@@ -71,21 +71,7 @@ namespace DotNext.Threading.Tasks
                     OnTimeout() :
                     new(new OperationCanceledException(tokenTracker.Token));
 
-                Recycle();
-                try
-                {
-                    BeforeCompleted(result);
-                }
-                finally
-                {
-                    var error = result.Error;
-                    if (error is null)
-                        sourceCore.SetResult(result.OrDefault());
-                    else
-                        sourceCore.SetException(error);
-
-                    completed = true;
-                }
+                SetResult(result);
             }
         }
 
@@ -103,22 +89,6 @@ namespace DotNext.Threading.Tasks
                 // TODO: Attempt to reuse the source with TryReset
                 timeoutSource.Dispose();
                 timeoutSource = null;
-            }
-        }
-
-        [CallerMustBeSynchronized]
-        private void SetResult(T result)
-        {
-            Recycle();
-            try
-            {
-                // run handler before actual completion to avoid concurrency with AfterConsumed event
-                BeforeCompleted(new(result));
-            }
-            finally
-            {
-                sourceCore.SetResult(result);
-                completed = true;
             }
         }
 
@@ -154,17 +124,21 @@ namespace DotNext.Threading.Tasks
         }
 
         [CallerMustBeSynchronized]
-        private void SetException(Exception e)
+        private void SetResult(Result<T> result)
         {
             Recycle();
             try
             {
                 // run handler before actual completion to avoid concurrency with AfterConsumed event
-                BeforeCompleted(new(e));
+                BeforeCompleted(result);
             }
             finally
             {
-                sourceCore.SetException(e);
+                var error = result.Error;
+                if (error is null)
+                    sourceCore.SetResult(result.OrDefault());
+                else
+                    sourceCore.SetException(error);
                 completed = true;
             }
         }
@@ -180,7 +154,7 @@ namespace DotNext.Threading.Tasks
             if (completed)
                 return false;
 
-            SetException(e);
+            SetResult(new(e));
             return true;
         }
 
@@ -196,7 +170,7 @@ namespace DotNext.Threading.Tasks
             if (completed || completionToken != sourceCore.Version)
                 return false;
 
-            SetException(e);
+            SetResult(new(e));
             return true;
         }
 
@@ -211,6 +185,19 @@ namespace DotNext.Threading.Tasks
         private ValueTask<T> CreateTaskCore(TimeSpan timeout, CancellationToken token)
         {
             var currentVersion = sourceCore.Version;
+
+            if (timeout == TimeSpan.Zero)
+            {
+                SetResult(OnTimeout());
+                goto exit;
+            }
+
+            if (token.IsCancellationRequested)
+            {
+                SetResult(new(new OperationCanceledException(token)));
+                goto exit;
+            }
+
             object? tokenHolder = null;
             if (timeout != InfiniteTimeSpan)
             {
@@ -226,6 +213,7 @@ namespace DotNext.Threading.Tasks
                 tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder);
             }
 
+            exit:
             return new(this, currentVersion);
         }
 
@@ -247,10 +235,14 @@ namespace DotNext.Threading.Tasks
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
         /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
         /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> Reset(out short completionToken, TimeSpan timeout, CancellationToken token)
         {
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+
             if (!completed)
                 throw new InvalidOperationException();
 
@@ -276,10 +268,14 @@ namespace DotNext.Threading.Tasks
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
         /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
         /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> Reset(TimeSpan timeout, CancellationToken token)
         {
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+
             if (!completed)
                 throw new InvalidOperationException();
 
@@ -309,14 +305,14 @@ namespace DotNext.Threading.Tasks
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
         /// <returns>A fresh incompleted task.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Reset()"/> was not called previously.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
         {
-            if (completed)
-                throw new InvalidOperationException();
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            return CreateTaskCore(timeout, token);
+            return completed ? new(this, sourceCore.Version) : CreateTaskCore(timeout, token);
         }
 
         /// <summary>
