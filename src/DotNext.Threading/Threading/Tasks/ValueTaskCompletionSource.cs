@@ -174,6 +174,38 @@ namespace DotNext.Threading.Tasks
             return true;
         }
 
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="token">The canceled token.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TrySetCanceled(CancellationToken token)
+        {
+            if (completed)
+                return false;
+
+            // allocate exception only when needed
+            SetResult(new(new OperationCanceledException(token)));
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="token">The canceled token.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TrySetCanceled(short completionToken, CancellationToken token)
+        {
+            if (completed || completionToken != sourceCore.Version)
+                return false;
+
+            SetResult(new(new OperationCanceledException(token)));
+            return true;
+        }
+
         [CallerMustBeSynchronized]
         private void ResetCore()
         {
