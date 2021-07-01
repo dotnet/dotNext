@@ -1,32 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
-    using Tasks;
     using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     public partial class AsyncCorrelationSource<TKey, TValue>
     {
-        private sealed class WaitNode : TaskCompletionSource<TValue>
+        private sealed partial class WaitNode
         {
-            private readonly TKey expected;
-            private readonly IEqualityComparer<TKey> comparer;
             private WaitNode? previous, next;
-
-            internal WaitNode(TKey value, IEqualityComparer<TKey> comparer)
-                : base(TaskCreationOptions.RunContinuationsAsynchronously)
-            {
-                expected = value;
-                this.comparer = comparer;
-            }
-
-            internal bool TrySetResult(TKey actual, TValue value)
-                => comparer.Equals(expected, actual) && TrySetResult(value);
 
             internal WaitNode? Next => next;
 
@@ -49,33 +33,25 @@ namespace DotNext.Threading
                 next = previous = null;
             }
 
-            internal WaitNode? CleanupAndGotoNext()
-            {
-                var next = this.next;
-                this.next = previous = null;
-                return next;
-            }
+            internal partial WaitNode? CleanupAndGotoNext();
         }
 
-        private sealed class Bucket
+        private sealed partial class Bucket
         {
             private WaitNode? first, last;
 
             [MethodImpl(MethodImplOptions.Synchronized)]
-            internal WaitNode Add(TKey value, IEqualityComparer<TKey> comparer)
+            internal void Add(WaitNode node)
             {
-                var result = new WaitNode(value, comparer);
                 if (last is null)
                 {
-                    first = last = result;
+                    first = last = node;
                 }
                 else
                 {
-                    last.Append(result);
-                    last = result;
+                    last.Append(node);
+                    last = node;
                 }
-
-                return result;
             }
 
             [CallerMustBeSynchronized]
@@ -104,13 +80,16 @@ namespace DotNext.Threading
             internal bool Remove(WaitNode node) => RemoveCore(node);
 
             [MethodImpl(MethodImplOptions.Synchronized)]
-            internal bool Remove(TKey key, TValue value)
+            internal bool Remove(TKey expected, TValue value, IEqualityComparer<TKey> comparer)
             {
                 for (WaitNode? current = first, next; current is not null; current = next)
                 {
                     next = current.Next;
-                    if (current.TrySetResult(key, value))
-                        return RemoveCore(current);
+                    if (comparer.Equals(expected, current.Id))
+                    {
+                        // the node will be removed automatically by consumer
+                        return current.TrySetResult(value);
+                    }
                 }
 
                 return false;
@@ -126,43 +105,6 @@ namespace DotNext.Threading
                     next = current.CleanupAndGotoNext();
                     action(current, arg);
                 }
-            }
-
-            internal async Task<TValue> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
-            {
-                using (var source = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-                {
-                    if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, source.Token)).ConfigureAwait(false)))
-                    {
-                        source.Cancel(); // ensure that timer is cancelled
-                        goto exit;
-                    }
-                }
-
-                if (Remove(node))
-                {
-                    token.ThrowIfCancellationRequested();
-                    throw new TimeoutException();
-                }
-
-                exit:
-                return await node.Task.ConfigureAwait(false);
-            }
-
-            internal async Task<TValue> WaitAsync(WaitNode node, CancellationToken token)
-            {
-                Debug.Assert(token.CanBeCanceled);
-                using (var source = new CancelableCompletionSource<TValue>(TaskCreationOptions.RunContinuationsAsynchronously, token))
-                {
-                    if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, source.Task).ConfigureAwait(false)))
-                        goto exit;
-                }
-
-                if (Remove(node))
-                    token.ThrowIfCancellationRequested();
-
-                exit:
-                return await node.Task.ConfigureAwait(false);
             }
         }
     }

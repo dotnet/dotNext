@@ -14,8 +14,8 @@ namespace DotNext.Threading
             var key2 = Guid.NewGuid();
 
             var source = new AsyncCorrelationSource<Guid, int>(10);
-            using var listener1 = source.WaitAsync(key1);
-            using var listener2 = source.WaitAsync(key2);
+            var listener1 = source.WaitAsync(key1);
+            var listener2 = source.WaitAsync(key2);
 
             True(source.TrySignal(key1, 10));
             True(listener1.IsCompletedSuccessfully);
@@ -35,13 +35,13 @@ namespace DotNext.Threading
             var key2 = Guid.NewGuid();
 
             var source = new AsyncCorrelationSource<Guid, int>(10);
-            using var listener1 = source.WaitAsync(key1);
-            using var listener2 = source.WaitAsync(key2);
+            var listener1 = source.WaitAsync(key1);
+            var listener2 = source.WaitAsync(key2);
 
             source.PulseAll(new ArithmeticException());
 
-            await ThrowsAsync<ArithmeticException>(Func.Constant(listener1));
-            await ThrowsAsync<ArithmeticException>(Func.Constant(listener2));
+            await ThrowsAsync<ArithmeticException>(async () => await listener1);
+            await ThrowsAsync<ArithmeticException>(async () => await listener2);
         }
 
         [Fact]
@@ -51,13 +51,13 @@ namespace DotNext.Threading
             var key2 = Guid.NewGuid();
 
             var source = new AsyncCorrelationSource<Guid, int>(10);
-            using var listener1 = source.WaitAsync(key1);
-            using var listener2 = source.WaitAsync(key2);
+            var listener1 = source.WaitAsync(key1);
+            var listener2 = source.WaitAsync(key2);
 
             source.PulseAll(new CancellationToken(true));
 
-            await ThrowsAnyAsync<OperationCanceledException>(Func.Constant(listener1));
-            await ThrowsAnyAsync<OperationCanceledException>(Func.Constant(listener2));
+            await ThrowsAnyAsync<OperationCanceledException>(async () => await listener1);
+            await ThrowsAnyAsync<OperationCanceledException>(async () => await listener2);
         }
 
         [Fact]
@@ -67,8 +67,8 @@ namespace DotNext.Threading
             var key2 = Guid.NewGuid();
 
             var source = new AsyncCorrelationSource<Guid, int>(10);
-            using var listener1 = source.WaitAsync(key1);
-            using var listener2 = source.WaitAsync(key2);
+            var listener1 = source.WaitAsync(key1);
+            var listener2 = source.WaitAsync(key2);
 
             source.PulseAll(42);
 

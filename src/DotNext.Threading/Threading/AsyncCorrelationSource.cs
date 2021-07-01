@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading
 {
@@ -29,8 +27,6 @@ namespace DotNext.Threading
     public partial class AsyncCorrelationSource<TKey, TValue>
         where TKey : notnull
     {
-        // TODO: In future versions we can reuse completion sources from object pool. But we need support of CancellationTokenSource.TryReset()
-        // and track the special numeric token for cancellation. Also, we could change the return type from Task to ValueTask
         private readonly Bucket[] buckets;
         private readonly IEqualityComparer<TKey> comparer;
 
@@ -53,18 +49,7 @@ namespace DotNext.Threading
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;
         }
 
-        private Bucket GetBucket(TKey eventId)
-        {
-            var bucketIndex = unchecked((uint)comparer.GetHashCode(eventId)) % buckets.LongLength;
-            Debug.Assert(bucketIndex >= 0 && bucketIndex < buckets.LongLength);
-
-#if NETSTANDARD2_1
-            return buckets[bucketIndex];
-#else
-            // skip bounds check
-            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), (nint)bucketIndex);
-#endif
-        }
+        private partial Bucket GetBucket(TKey eventId);
 
         /// <summary>
         /// Informs that the event is occurred.
@@ -76,7 +61,7 @@ namespace DotNext.Threading
         /// <param name="value">The value to be passed to the listener.</param>
         /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
         public bool TrySignal(TKey eventId, TValue value)
-            => GetBucket(eventId).Remove(eventId, value);
+            => GetBucket(eventId).Remove(eventId, value, comparer);
 
         private unsafe void PulseAll<T>(delegate*<WaitNode, T, void> action, T arg)
         {
@@ -119,6 +104,9 @@ namespace DotNext.Threading
             static void SetCanceled(WaitNode slot, CancellationToken token) => slot.TrySetCanceled(token);
         }
 
+        // TODO: Workaround for Roslyn analyzers
+        private partial ValueTask<TValue> WaitCoreAsync(TKey eventId, TimeSpan timeout, CancellationToken token);
+
         /// <summary>
         /// Returns the task linked with the specified event identifier.
         /// </summary>
@@ -128,26 +116,8 @@ namespace DotNext.Threading
         /// <returns>The task representing the event arrival.</returns>
         /// <exception cref="TimeoutException">The operation has timed out.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<TValue> WaitAsync(TKey eventId, TimeSpan timeout, CancellationToken token = default)
-        {
-            if (timeout != InfiniteTimeSpan && timeout < TimeSpan.Zero)
-                return Task.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)));
-            if (token.IsCancellationRequested)
-                return Task.FromCanceled<TValue>(token);
-
-            var bucket = GetBucket(eventId);
-            var node = bucket.Add(eventId, comparer);
-            if (node.Task.IsCompleted)
-                return node.Task;
-
-            return timeout.CompareTo(TimeSpan.Zero) switch
-            {
-                0 => Task.FromException<TValue>(new TimeoutException()),
-                > 0 => bucket.WaitAsync(node, timeout, token),
-                _ when token.CanBeCanceled => bucket.WaitAsync(node, token),
-                _ => node.Task,
-            };
-        }
+        public ValueTask<TValue> WaitAsync(TKey eventId, TimeSpan timeout, CancellationToken token = default)
+            => WaitCoreAsync(eventId, timeout, token);
 
         /// <summary>
         /// Returns the task linked with the specified event identifier.
@@ -156,7 +126,7 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing the event arrival.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<TValue> WaitAsync(TKey eventId, CancellationToken token = default)
-            => WaitAsync(eventId, InfiniteTimeSpan, token);
+        public ValueTask<TValue> WaitAsync(TKey eventId, CancellationToken token = default)
+            => WaitCoreAsync(eventId, InfiniteTimeSpan, token);
     }
 }
