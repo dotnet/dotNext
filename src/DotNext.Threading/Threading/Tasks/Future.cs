@@ -8,7 +8,7 @@ namespace DotNext.Threading.Tasks
     /// <summary>
     /// Represents lightweight version of <see cref="Task"/>.
     /// </summary>
-    public abstract class Future : IFuture, IValueTaskSource
+    public abstract class Future : IFuture, IValueTaskSource // TODO: Remove in future versions
     {
         /// <summary>
         /// Represents awaiter of the asynchronous computation result represented by future object.
