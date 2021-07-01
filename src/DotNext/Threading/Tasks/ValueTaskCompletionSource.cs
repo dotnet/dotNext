@@ -232,6 +232,7 @@ namespace DotNext.Threading.Tasks
                 goto exit;
             }
 
+            // box current token once and only if needed
             object? tokenHolder = null;
             if (timeout != InfiniteTimeSpan)
             {
@@ -243,8 +244,7 @@ namespace DotNext.Threading.Tasks
 
             if (token.CanBeCanceled)
             {
-                tokenHolder ??= currentVersion;
-                tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder);
+                tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? currentVersion);
             }
 
             exit:
