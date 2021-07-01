@@ -207,6 +207,7 @@ namespace DotNext.Threading.Tasks
             completed = false;
         }
 
+        [CallerMustBeSynchronized]
         private ValueTask<T> CreateTaskCore(TimeSpan timeout, CancellationToken token)
         {
             var currentVersion = sourceCore.Version;
@@ -309,6 +310,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
         /// <returns>A fresh incompleted task.</returns>
         /// <exception cref="InvalidOperationException"><see cref="Reset()"/> was not called previously.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
         {
             if (completed)
