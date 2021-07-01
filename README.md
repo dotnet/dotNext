@@ -46,28 +46,28 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 06-XX-2021
+Release Date: 07-XX-2021
 
 <a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.3.0</a>
 * Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
 * Improved overall performance of extension methods declaring in `RandomExtensions` class
 * Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
+* Added `ValueTaskCompletionSource<T>` as reusable source of tasks suitable for pooling
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.1">DotNext.Metaprogramming 3.2.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/3.2.1">DotNext.Reflection 3.2.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/3.2.1">DotNext.Unsafe 3.2.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.3.0">DotNext.Unsafe 3.3.0</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
 * Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
-* Added `ValueTaskCompletionSource<T>` as reusable source of tasks
 
-<a href="https://www.nuget.org/packages/dotnext.io/3.2.1">DotNext.IO 3.2.1</a>
+<a href="https://www.nuget.org/packages/dotnext.io/3.3.0">DotNext.IO 3.3.0</a>
 * `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
 * `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods ensure that the buffer tail is flushed to the disk
 
