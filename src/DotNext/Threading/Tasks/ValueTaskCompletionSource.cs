@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
 {
@@ -55,8 +56,8 @@ namespace DotNext.Threading.Tasks
 
         private void CancellationRequested(object? token)
         {
-            if (token is short typedToken)
-                CancellationRequested(typedToken);
+            Debug.Assert(token is short);
+            CancellationRequested((short)token);
         }
 
         // TODO: Add CancellationToken to the signature of this handler in .NET 6
