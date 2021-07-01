@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -12,8 +13,8 @@ namespace DotNext.Runtime.CompilerServices
     internal sealed class CancellationTokenFuture : Future, Future.IAwaiter
     {
         // cache delegates to avoid allocations
-        private static readonly Action<object?> CancellationCallback = Cancel!;
-        private static readonly Action<object?> CompletionCallback = Complete!;
+        private static readonly Action<object?> CancellationCallback = Cancel;
+        private static readonly Action<object?> CompletionCallback = Complete;
 
         private readonly CancellationTokenRegistration registration;
 
@@ -22,11 +23,17 @@ namespace DotNext.Runtime.CompilerServices
             registration = token.Register(throwIfCanceled ? CancellationCallback : CompletionCallback, this);
         }
 
-        private static void Complete(object state)
-            => Unsafe.As<CancellationTokenFuture>(state).Complete();
+        private static void Complete(object? state)
+        {
+            Debug.Assert(state is CancellationTokenFuture);
+            Unsafe.As<CancellationTokenFuture>(state).Complete();
+        }
 
-        private static void Cancel(object state)
-            => Unsafe.As<CancellationTokenFuture>(state).Cancel();
+        private static void Cancel(object? state)
+        {
+            Debug.Assert(state is CancellationTokenFuture);
+            Unsafe.As<CancellationTokenFuture>(state).Cancel();
+        }
 
         private void Complete()
         {

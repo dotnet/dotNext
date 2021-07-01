@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -12,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     internal sealed class WaitHandleFuture : Future<bool>, Future<bool>.IAwaiter
     {
         // cached to avoid allocations
-        private static readonly WaitOrTimerCallback CompletionCallback = Complete!;
+        private static readonly WaitOrTimerCallback CompletionCallback = Complete;
 
         private readonly RegisteredWaitHandle? handle;
 
@@ -21,8 +22,11 @@ namespace DotNext.Runtime.CompilerServices
         internal WaitHandleFuture(WaitHandle wh, TimeSpan timeout)
             => handle = ThreadPool.RegisterWaitForSingleObject(wh, CompletionCallback, this, timeout, true);
 
-        private static void Complete(object state, bool timedOut)
-            => Unsafe.As<WaitHandleFuture>(state).Complete(timedOut);
+        private static void Complete(object? state, bool timedOut)
+        {
+            Debug.Assert(state is WaitHandleFuture);
+            Unsafe.As<WaitHandleFuture>(state).Complete(timedOut);
+        }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void Complete(bool timedOut)
