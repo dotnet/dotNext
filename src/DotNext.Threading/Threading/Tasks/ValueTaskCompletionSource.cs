@@ -59,6 +59,7 @@ namespace DotNext.Threading.Tasks
                 CancellationRequested(typedToken);
         }
 
+        // TODO: Add CancellationToken to the signature of this handler in .NET 6
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void CancellationRequested(short token)
         {
@@ -69,7 +70,7 @@ namespace DotNext.Threading.Tasks
             {
                 Result<T> result = (timeoutSource?.IsCancellationRequested ?? false) ?
                     OnTimeout() :
-                    new(new OperationCanceledException(tokenTracker.Token));
+                    OnCanceled(tokenTracker.Token);
 
                 SetResult(result);
             }
@@ -226,7 +227,7 @@ namespace DotNext.Threading.Tasks
 
             if (token.IsCancellationRequested)
             {
-                SetResult(new(new OperationCanceledException(token)));
+                SetResult(OnCanceled(token));
                 goto exit;
             }
 
@@ -376,6 +377,16 @@ namespace DotNext.Threading.Tasks
         /// </remarks>
         /// <returns>The result to be assigned to the task.</returns>
         protected virtual Result<T> OnTimeout() => new(new TimeoutException());
+
+        /// <summary>
+        /// Called automatically when cancellation detected.
+        /// </summary>
+        /// <remarks>
+        /// By default, this method assigns <see cref="OperationCanceledException"/> as the task result.
+        /// </remarks>
+        /// <param name="token">The token representing cancellation reason.</param>
+        /// <returns>The result to be assigned to the task.</returns>
+        protected virtual Result<T> OnCanceled(CancellationToken token) => new(new OperationCanceledException(token));
 
         /// <inheritdoc />
         void IThreadPoolWorkItem.Execute() => AfterConsumed();
