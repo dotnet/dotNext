@@ -20,20 +20,13 @@ namespace DotNext.Threading
         {
             private readonly WeakReference<ConcurrentBag<WaitNode>> poolRef;
             internal TKey? Id;
-            internal Bucket? Owner;
+            internal volatile Bucket? Owner;
 
             internal WaitNode(ConcurrentBag<WaitNode> pool)
                 => poolRef = new(pool, false);
 
             protected override void BeforeCompleted(Result<TValue> result)
-            {
-                // safe because this method cannot be called concurrently
-                if (Owner is not null)
-                {
-                    Owner.Remove(this);
-                    Owner = null;
-                }
-            }
+                => Interlocked.Exchange(ref Owner, null)?.Remove(this);
 
             protected override void AfterConsumed()
             {
