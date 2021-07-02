@@ -39,6 +39,9 @@ namespace DotNext.Threading
 
             internal partial WaitNode? CleanupAndGotoNext()
             {
+                // This method can be concurrently called with BeforeCompleted.
+                // However, the method is called inside of monitor acquired on
+                // the whole bucket itself. As a result, Remove method is blocked
                 Owner = null;
                 var next = this.next;
                 this.next = previous = null;
