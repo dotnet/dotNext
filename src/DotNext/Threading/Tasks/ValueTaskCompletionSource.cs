@@ -48,6 +48,7 @@ namespace DotNext.Threading.Tasks
         public ValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
         {
             sourceCore = new() { RunContinuationsAsynchronously = runContinuationsAsynchronously };
+            sourceCore.SetException(new InvalidOperationException(ExceptionMessages.CompletionSourceInitialState));
             cancellationCallback = CancellationRequested;
             completed = true;
         }
