@@ -204,7 +204,7 @@ namespace DotNext.Threading.Tasks
                 goto invalid_token;
 
             if (completed)
-                goto run_in_place;
+                goto execute_inplace;
 
             lock (syncRoot)
             {
@@ -213,7 +213,7 @@ namespace DotNext.Threading.Tasks
                     goto invalid_token;
 
                 if (completed)
-                    goto run_in_place;
+                    goto execute_inplace;
 
                 this.continuation = continuation;
                 continuationState = state;
@@ -222,7 +222,7 @@ namespace DotNext.Threading.Tasks
                 goto exit;
             }
 
-        run_in_place:
+        execute_inplace:
             InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously);
 
         exit:
