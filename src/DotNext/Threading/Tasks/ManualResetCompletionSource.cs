@@ -197,7 +197,10 @@ namespace DotNext.Threading.Tasks
         void IThreadPoolWorkItem.Execute() => AfterConsumed();
 
         private protected void QueueAfterConsumed()
-            => ThreadPool.UnsafeQueueUserWorkItem(this, true);
+        {
+            if (!ThreadPool.UnsafeQueueUserWorkItem(this, true))
+                AfterConsumed();
+        }
 
         private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
         {
