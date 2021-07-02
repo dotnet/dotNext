@@ -35,11 +35,21 @@ namespace DotNext.Threading.Tasks
     /// <typeparam name="T">>The type the task result.</typeparam>
     public class ValueTaskCompletionSource<T> : IValueTaskSource<T>, IThreadPoolWorkItem
     {
+        private static readonly ContextCallback ContinuationExecutor = RunInContext;
+
         private readonly Action<object?> cancellationCallback;
-        private ManualResetValueTaskSourceCore<T> sourceCore;
+        private readonly bool runContinuationsAsynchronously;
+        private readonly object syncRoot;
         private CancellationTokenRegistration tokenTracker, timeoutTracker;
         private CancellationTokenSource? timeoutSource;
-        private bool completed;
+
+        // task management
+        private Action<object?>? continuation;
+        private object? continuationState, capturedContext;
+        private ExecutionContext? context;
+        private Result<T> result;
+        private short version;
+        private volatile bool completed;
 
         /// <summary>
         /// Initializes a new completion source.
@@ -47,10 +57,31 @@ namespace DotNext.Threading.Tasks
         /// <param name="runContinuationsAsynchronously">Indicates that continuations must be executed asynchronously.</param>
         public ValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
         {
-            sourceCore = new() { RunContinuationsAsynchronously = runContinuationsAsynchronously };
-            sourceCore.SetException(new InvalidOperationException(ExceptionMessages.CompletionSourceInitialState));
+            syncRoot = new();
+            this.runContinuationsAsynchronously = runContinuationsAsynchronously;
+            result = new(new InvalidOperationException(ExceptionMessages.CompletionSourceInitialState));
+            version = short.MinValue;
             cancellationCallback = CancellationRequested;
             completed = true;
+        }
+
+        private static void RunInContext(object? source)
+        {
+            Debug.Assert(source is ValueTaskCompletionSource<T>);
+
+            Unsafe.As<ValueTaskCompletionSource<T>>(source).InvokeContinuation();
+        }
+
+        private static object? CaptureContext()
+        {
+            var context = SynchronizationContext.Current;
+            if (context is null || context.GetType() == typeof(SynchronizationContext))
+            {
+                var scheduler = TaskScheduler.Current;
+                return ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
+            }
+
+            return context;
         }
 
         private bool IsDerived => GetType() != typeof(ValueTaskCompletionSource<T>);
@@ -62,19 +93,24 @@ namespace DotNext.Threading.Tasks
         }
 
         // TODO: Add CancellationToken to the signature of this handler in .NET 6
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private void CancellationRequested(short token)
         {
             // due to concurrency, this method can be called after Reset or twice
             // that's why we need to skip the call if token doesn't match (call after Reset)
             // or completed flag is set (call twice with the same token)
-            if (token == sourceCore.Version && !completed)
+            if (!completed)
             {
-                Result<T> result = (timeoutSource?.IsCancellationRequested ?? false) ?
-                    OnTimeout() :
-                    OnCanceled(tokenTracker.Token);
+                lock (syncRoot)
+                {
+                    if (token == version && !completed)
+                    {
+                        Result<T> result = (timeoutSource?.IsCancellationRequested ?? false) ?
+                            OnTimeout() :
+                            OnCanceled(tokenTracker.Token);
 
-                SetResult(result);
+                        SetResult(result);
+                    }
+                }
             }
         }
 
@@ -98,32 +134,108 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task sucessfully.
         /// </summary>
-        /// <param name="result">The value to be returned to the consumer.</param>
+        /// <param name="value">The value to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySetResult(T result)
-        {
-            if (completed)
-                return false;
-
-            SetResult(result);
-            return true;
-        }
+        public unsafe bool TrySetResult(T value)
+            => TrySetResult(&Result.FromValue, value);
 
         /// <summary>
         /// Attempts to complete the task sucessfully.
         /// </summary>
         /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
-        /// <param name="result">The value to be returned to the consumer.</param>
+        /// <param name="value">The value to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySetResult(short completionToken, T result)
-        {
-            if (completed || completionToken != sourceCore.Version)
-                return false;
+        public unsafe bool TrySetResult(short completionToken, T value)
+            => TrySetResult(completionToken, &Result.FromValue, value);
 
-            SetResult(result);
-            return true;
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="e">The exception to be returned to the consumer.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        public unsafe bool TrySetException(Exception e)
+            => TrySetResult(&Result.FromException<T>, e);
+
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="e">The exception to be returned to the consumer.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        public unsafe bool TrySetException(short completionToken, Exception e)
+            => TrySetResult(completionToken, &Result.FromException<T>, e);
+
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="token">The canceled token.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        public unsafe bool TrySetCanceled(CancellationToken token)
+            => TrySetResult(&Result.FromCanceled<T>, token);
+
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="token">The canceled token.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
+            => TrySetResult(completionToken, &Result.FromCanceled<T>, token);
+
+        private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg)
+        {
+            Debug.Assert(func != null);
+
+            bool result;
+            if (completed)
+            {
+                result = false;
+            }
+            else
+            {
+                lock (syncRoot)
+                {
+                    if (completed)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        SetResult(func(arg));
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private unsafe bool TrySetResult<TArg>(short completionToken, delegate*<TArg, Result<T>> func, TArg arg)
+        {
+            Debug.Assert(func != null);
+
+            bool result;
+            if (completed)
+            {
+                result = false;
+            }
+            else
+            {
+                lock (syncRoot)
+                {
+                    if (completed || completionToken != version)
+                    {
+                        result = false;
+                    }
+                    else
+                    {
+                        SetResult(func(arg));
+                        result = true;
+                    }
+                }
+            }
+
+            return result;
         }
 
         [CallerMustBeSynchronized]
@@ -137,90 +249,55 @@ namespace DotNext.Threading.Tasks
             }
             finally
             {
-                var error = result.Error;
-                if (error is null)
-                    sourceCore.SetResult(result.OrDefault());
-                else
-                    sourceCore.SetException(error);
+                this.result = result;
                 completed = true;
+                if (context is null)
+                    InvokeContinuation();
+                else
+                    ExecutionContext.Run(context, ContinuationExecutor, this);
             }
         }
 
-        /// <summary>
-        /// Attempts to complete the task unsuccessfully.
-        /// </summary>
-        /// <param name="e">The exception to be returned to the consumer.</param>
-        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySetException(Exception e)
+        private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously)
         {
-            if (completed)
-                return false;
-
-            SetResult(new(e));
-            return true;
+            switch (capturedContext)
+            {
+                case null:
+                    if (runAsynchronously)
+                        ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false);
+                    else
+                        continuation(state);
+                    break;
+                case SynchronizationContext context:
+                    context.Post(continuation.Invoke, state);
+                    break;
+                case TaskScheduler scheduler:
+                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+                    break;
+            }
         }
 
-        /// <summary>
-        /// Attempts to complete the task unsuccessfully.
-        /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
-        /// <param name="e">The exception to be returned to the consumer.</param>
-        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySetException(short completionToken, Exception e)
+        private void InvokeContinuation()
         {
-            if (completed || completionToken != sourceCore.Version)
-                return false;
-
-            SetResult(new(e));
-            return true;
-        }
-
-        /// <summary>
-        /// Attempts to complete the task unsuccessfully.
-        /// </summary>
-        /// <param name="token">The canceled token.</param>
-        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySetCanceled(CancellationToken token)
-        {
-            if (completed)
-                return false;
-
-            // allocate exception only when needed
-            SetResult(new(new OperationCanceledException(token)));
-            return true;
-        }
-
-        /// <summary>
-        /// Attempts to complete the task unsuccessfully.
-        /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
-        /// <param name="token">The canceled token.</param>
-        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySetCanceled(short completionToken, CancellationToken token)
-        {
-            if (completed || completionToken != sourceCore.Version)
-                return false;
-
-            SetResult(new(new OperationCanceledException(token)));
-            return true;
+            if (continuation is not null)
+                InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
         }
 
         [CallerMustBeSynchronized]
         private void ResetCore()
         {
-            sourceCore.Reset();
+            version += 1;
             completed = false;
+            result = default;
+            context = null;
+            capturedContext = null;
+            continuation = null;
+            continuationState = null;
         }
 
         [CallerMustBeSynchronized]
         private ValueTask<T> CreateTaskCore(TimeSpan timeout, CancellationToken token)
         {
-            var currentVersion = sourceCore.Version;
-
             if (timeout == TimeSpan.Zero)
             {
                 SetResult(OnTimeout());
@@ -238,18 +315,18 @@ namespace DotNext.Threading.Tasks
             if (timeout != InfiniteTimeSpan)
             {
                 timeoutSource ??= new();
-                tokenHolder = currentVersion;
+                tokenHolder = version;
                 timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder);
                 timeoutSource.CancelAfter(timeout);
             }
 
             if (token.CanBeCanceled)
             {
-                tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? currentVersion);
+                tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? version);
             }
 
             exit:
-            return new(this, currentVersion);
+            return new(this, version);
         }
 
         /// <summary>
@@ -272,7 +349,6 @@ namespace DotNext.Threading.Tasks
         /// <returns>A fresh incompleted task.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
         /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> Reset(out short completionToken, TimeSpan timeout, CancellationToken token)
         {
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
@@ -281,9 +357,12 @@ namespace DotNext.Threading.Tasks
             if (!completed)
                 throw new InvalidOperationException();
 
-            ResetCore();
-            completionToken = sourceCore.Version;
-            return CreateTaskCore(timeout, token);
+            lock (syncRoot)
+            {
+                ResetCore();
+                completionToken = version;
+                return CreateTaskCore(timeout, token);
+            }
         }
 
         /// <summary>
@@ -305,7 +384,6 @@ namespace DotNext.Threading.Tasks
         /// <returns>A fresh incompleted task.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
         /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> Reset(TimeSpan timeout, CancellationToken token)
         {
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
@@ -314,8 +392,14 @@ namespace DotNext.Threading.Tasks
             if (!completed)
                 throw new InvalidOperationException();
 
-            ResetCore();
-            return CreateTaskCore(timeout, token);
+            ValueTask<T> result;
+            lock (syncRoot)
+            {
+                ResetCore();
+                result = CreateTaskCore(timeout, token);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -324,11 +408,13 @@ namespace DotNext.Threading.Tasks
         /// <remarks>
         /// Already linked task will never be completed successfully after calling of this method.
         /// </remarks>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Reset()
         {
-            Recycle();
-            ResetCore();
+            lock (syncRoot)
+            {
+                Recycle();
+                ResetCore();
+            }
         }
 
         /// <summary>
@@ -341,13 +427,26 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
         /// <returns>A fresh incompleted task.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
         {
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            return completed ? new(this, sourceCore.Version) : CreateTaskCore(timeout, token);
+            ValueTask<T> result;
+
+            if (completed)
+            {
+                result = new(this, version);
+            }
+            else
+            {
+                lock (syncRoot)
+                {
+                    result = completed ? new(this, version) : CreateTaskCore(timeout, token);
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -396,27 +495,68 @@ namespace DotNext.Threading.Tasks
         /// <inheritdoc />
         T IValueTaskSource<T>.GetResult(short token)
         {
-            if (!completed || token != sourceCore.Version)
+            if (!completed || token != version)
                 throw new InvalidOperationException();
 
-            try
-            {
-                return sourceCore.GetResult(token);
-            }
-            finally
-            {
-                if (IsDerived)
-                    ThreadPool.UnsafeQueueUserWorkItem(this, true);
-            }
+            if (IsDerived)
+                ThreadPool.UnsafeQueueUserWorkItem(this, true);
+
+            return result.Value;
         }
 
         /// <inheritdoc />
         ValueTaskSourceStatus IValueTaskSource<T>.GetStatus(short token)
-            => sourceCore.GetStatus(token);
+        {
+            if (!completed)
+                return ValueTaskSourceStatus.Pending;
+
+            var error = result.Error;
+            if (error is null)
+                return ValueTaskSourceStatus.Succeeded;
+
+            return error is OperationCanceledException ? ValueTaskSourceStatus.Canceled : ValueTaskSourceStatus.Faulted;
+        }
+
+        private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
+        {
+            // fast path - monitor lock is not needed
+            if (token != version)
+                goto invalid_token;
+
+            if (completed)
+                goto run_in_place;
+
+            lock (syncRoot)
+            {
+                // avoid running continuation inside of the lock
+                if (token != version)
+                    goto invalid_token;
+
+                if (completed)
+                    goto run_in_place;
+
+                this.continuation = continuation;
+                continuationState = state;
+                this.capturedContext = capturedContext;
+                this.context = flowExecutionContext ? ExecutionContext.Capture() : null;
+                goto exit;
+            }
+
+        run_in_place:
+            InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously);
+
+        exit:
+            return;
+        invalid_token:
+            throw new InvalidOperationException();
+        }
 
         /// <inheritdoc />
         void IValueTaskSource<T>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-            => sourceCore.OnCompleted(continuation, state, token, flags);
+        {
+            var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) == 0 ? null : CaptureContext();
+            OnCompleted(capturedContext, continuation, state, token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0);
+        }
     }
 }
 #endif
