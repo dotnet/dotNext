@@ -105,6 +105,8 @@ namespace DotNext.Threading
                     next = current.CleanupAndGotoNext();
                     action(current, arg);
                 }
+
+                first = last = null;
             }
         }
     }
