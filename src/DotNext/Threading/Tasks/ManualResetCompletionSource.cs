@@ -106,6 +106,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected void StopTrackingCancellation()
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             tokenTracker.Dispose();
             tokenTracker = default;
 
@@ -161,6 +163,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected virtual void ResetCore()
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             version += 1;
             completed = false;
             context = null;
@@ -272,6 +276,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private T CreateTaskCore(TimeSpan timeout, CancellationToken token)
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             if (timeout == TimeSpan.Zero)
             {
                 CompleteAsTimedOut();

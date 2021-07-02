@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
 {
@@ -58,6 +59,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private void SetResult(Exception? result)
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             StopTrackingCancellation();
             try
             {
@@ -81,6 +84,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected sealed override void ResetCore()
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             base.ResetCore();
             result = null;
         }

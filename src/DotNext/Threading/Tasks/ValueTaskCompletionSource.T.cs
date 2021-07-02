@@ -167,6 +167,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private void SetResult(Result<T> result)
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             StopTrackingCancellation();
             try
             {
@@ -184,6 +186,8 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected sealed override void ResetCore()
         {
+            Debug.Assert(Monitor.IsEntered(syncRoot));
+
             base.ResetCore();
             result = default;
         }
