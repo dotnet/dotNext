@@ -77,6 +77,40 @@ namespace DotNext.Threading.Tasks
             True(source.TrySetResult(43));
             Equal(43, await task);
         }
+
+        [Fact]
+        public static async Task AsyncCompletion()
+        {
+            var source = new ValueTaskCompletionSource<int>();
+            source.Reset();
+
+            var task = source.CreateTask(InfiniteTimeSpan, default);
+            var result = Task.Run(async () => await task);
+            await Task.Delay(10);
+            True(source.TrySetResult(42));
+            Equal(42, await result);
+        }
+
+        [Fact]
+        public static async Task AsyncLocalAccess()
+        {
+            var source = new ValueTaskCompletionSource<int>();
+            source.Reset();
+
+            var task = source.CreateTask(InfiniteTimeSpan, default);
+            var local = new AsyncLocal<int>() { Value = 56 };
+            var result = Task.Run(async () =>
+            {
+                Equal(56, local.Value);
+                var result = await task;
+                Equal(56, local.Value);
+                return result;
+            });
+
+            await Task.Delay(100);
+            True(source.TrySetResult(42));
+            Equal(42, await result);
+        }
     }
 }
 #endif

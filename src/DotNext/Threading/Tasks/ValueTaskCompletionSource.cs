@@ -1,6 +1,5 @@
 #if !NETSTANDARD2_1
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
@@ -29,107 +28,26 @@ namespace DotNext.Threading.Tasks
     /// If completion method returns <see langword="false"/> then the task was canceled or timed out. In this
     /// case you cannot reuse the instance in simple way.
     /// To reuse instance in case of cancellation, you need to override <see cref="BeforeCompleted(Result{T})"/>
-    /// and <see cref="AfterConsumed"/> methods. The first one to remove the source
+    /// and <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/> methods. The first one to remove the source
     /// from the list of active sources. The second one to return the instance back to the pool.
     /// </remarks>
     /// <typeparam name="T">>The type the task result.</typeparam>
-    public class ValueTaskCompletionSource<T> : IValueTaskSource<T>, IThreadPoolWorkItem
+    public class ValueTaskCompletionSource<T> : ValueTaskCompletionSourceBase, IValueTaskSource<T>
     {
-        private static readonly ContextCallback ContinuationExecutor = RunInContext;
-
-        private readonly Action<object?> cancellationCallback;
-        private readonly bool runContinuationsAsynchronously;
-        private readonly object syncRoot;
-        private CancellationTokenRegistration tokenTracker, timeoutTracker;
-        private CancellationTokenSource? timeoutSource;
-
-        // task management
-        private Action<object?>? continuation;
-        private object? continuationState, capturedContext;
-        private ExecutionContext? context;
         private Result<T> result;
-        private short version;
-        private volatile bool completed;
 
         /// <summary>
         /// Initializes a new completion source.
         /// </summary>
         /// <param name="runContinuationsAsynchronously">Indicates that continuations must be executed asynchronously.</param>
         public ValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
+            : base(runContinuationsAsynchronously)
         {
-            syncRoot = new();
-            this.runContinuationsAsynchronously = runContinuationsAsynchronously;
             result = new(new InvalidOperationException(ExceptionMessages.CompletionSourceInitialState));
-            version = short.MinValue;
-            cancellationCallback = CancellationRequested;
             completed = true;
         }
 
-        private static void RunInContext(object? source)
-        {
-            Debug.Assert(source is ValueTaskCompletionSource<T>);
-
-            Unsafe.As<ValueTaskCompletionSource<T>>(source).InvokeContinuation();
-        }
-
-        private static object? CaptureContext()
-        {
-            var context = SynchronizationContext.Current;
-            if (context is null || context.GetType() == typeof(SynchronizationContext))
-            {
-                var scheduler = TaskScheduler.Current;
-                return ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
-            }
-
-            return context;
-        }
-
         private bool IsDerived => GetType() != typeof(ValueTaskCompletionSource<T>);
-
-        private void CancellationRequested(object? token)
-        {
-            Debug.Assert(token is short);
-            CancellationRequested((short)token);
-        }
-
-        // TODO: Add CancellationToken to the signature of this handler in .NET 6
-        private void CancellationRequested(short token)
-        {
-            // due to concurrency, this method can be called after Reset or twice
-            // that's why we need to skip the call if token doesn't match (call after Reset)
-            // or completed flag is set (call twice with the same token)
-            if (!completed)
-            {
-                lock (syncRoot)
-                {
-                    if (token == version && !completed)
-                    {
-                        Result<T> result = (timeoutSource?.IsCancellationRequested ?? false) ?
-                            OnTimeout() :
-                            OnCanceled(tokenTracker.Token);
-
-                        SetResult(result);
-                    }
-                }
-            }
-        }
-
-        [CallerMustBeSynchronized]
-        private void Recycle()
-        {
-            tokenTracker.Dispose();
-            tokenTracker = default;
-
-            timeoutTracker.Dispose();
-            timeoutTracker = default;
-
-            if (timeoutSource is not null)
-            {
-                // TODO: Attempt to reuse the source with TryReset
-                timeoutSource.Dispose();
-                timeoutSource = null;
-            }
-        }
 
         /// <summary>
         /// Attempts to complete the task sucessfully.
@@ -181,6 +99,12 @@ namespace DotNext.Threading.Tasks
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
             => TrySetResult(completionToken, &Result.FromCanceled<T>, token);
+
+        private protected override void CompleteAsTimedOut()
+            => SetResult(OnTimeout());
+
+        private protected override void CompleteAsCanceled(CancellationToken token)
+            => SetResult(OnCanceled(token));
 
         private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg)
         {
@@ -251,48 +175,15 @@ namespace DotNext.Threading.Tasks
             {
                 this.result = result;
                 completed = true;
-                if (context is null)
-                    InvokeContinuation();
-                else
-                    ExecutionContext.Run(context, ContinuationExecutor, this);
+                InvokeContinuation();
             }
-        }
-
-        private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously)
-        {
-            switch (capturedContext)
-            {
-                case null:
-                    if (runAsynchronously)
-                        ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false);
-                    else
-                        continuation(state);
-                    break;
-                case SynchronizationContext context:
-                    context.Post(continuation.Invoke, state);
-                    break;
-                case TaskScheduler scheduler:
-                    Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                    break;
-            }
-        }
-
-        private void InvokeContinuation()
-        {
-            if (continuation is not null)
-                InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
         }
 
         [CallerMustBeSynchronized]
-        private void ResetCore()
+        private protected override void ResetCore()
         {
-            version += 1;
-            completed = false;
+            base.ResetCore();
             result = default;
-            context = null;
-            capturedContext = null;
-            continuation = null;
-            continuationState = null;
         }
 
         [CallerMustBeSynchronized]
@@ -310,22 +201,9 @@ namespace DotNext.Threading.Tasks
                 goto exit;
             }
 
-            // box current token once and only if needed
-            object? tokenHolder = null;
-            if (timeout != InfiniteTimeSpan)
-            {
-                timeoutSource ??= new();
-                tokenHolder = version;
-                timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder);
-                timeoutSource.CancelAfter(timeout);
-            }
+            Configure(timeout, token);
 
-            if (token.CanBeCanceled)
-            {
-                tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? version);
-            }
-
-            exit:
+        exit:
             return new(this, version);
         }
 
@@ -341,7 +219,7 @@ namespace DotNext.Threading.Tasks
         /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
         /// for cancellation registrations.
         /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="AfterConsumed"/> method.
+        /// instance of this class or after (or during) the call of <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/> method.
         /// </remarks>
         /// <param name="completionToken">The version of the produced task that can be used later to complete the task without conflicts.</param>
         /// <param name="timeout">The timeout associated with the task.</param>
@@ -377,7 +255,7 @@ namespace DotNext.Threading.Tasks
         /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
         /// for cancellation registrations.
         /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="AfterConsumed"/> method.
+        /// instance of this class or after (or during) the call of <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/> method.
         /// </remarks>
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
@@ -403,25 +281,10 @@ namespace DotNext.Threading.Tasks
         }
 
         /// <summary>
-        /// Attempts to reset state of this object for reuse.
-        /// </summary>
-        /// <remarks>
-        /// Already linked task will never be completed successfully after calling of this method.
-        /// </remarks>
-        public void Reset()
-        {
-            lock (syncRoot)
-            {
-                Recycle();
-                ResetCore();
-            }
-        }
-
-        /// <summary>
         /// Creates a fresh task linked with this source.
         /// </summary>
         /// <remarks>
-        /// This method must be called after <see cref="Reset()"/>.
+        /// This method must be called after <see cref="ValueTaskCompletionSourceBase.Reset()"/>.
         /// </remarks>
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
@@ -453,20 +316,10 @@ namespace DotNext.Threading.Tasks
         /// Invokes when the task is almost completed.
         /// </summary>
         /// <remarks>
-        /// This method is called before <see cref="AfterConsumed"/>.
+        /// This method is called before <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/>.
         /// </remarks>
         /// <param name="result">The result of the task.</param>
         protected virtual void BeforeCompleted(Result<T> result)
-        {
-        }
-
-        /// <summary>
-        /// Invokes when this source is ready to reuse.
-        /// </summary>
-        /// <remarks>
-        /// This method is called after <see cref="BeforeCompleted(Result{T})"/>.
-        /// </remarks>
-        protected virtual void AfterConsumed()
         {
         }
 
@@ -490,16 +343,13 @@ namespace DotNext.Threading.Tasks
         protected virtual Result<T> OnCanceled(CancellationToken token) => new(new OperationCanceledException(token));
 
         /// <inheritdoc />
-        void IThreadPoolWorkItem.Execute() => AfterConsumed();
-
-        /// <inheritdoc />
         T IValueTaskSource<T>.GetResult(short token)
         {
             if (!completed || token != version)
                 throw new InvalidOperationException();
 
             if (IsDerived)
-                ThreadPool.UnsafeQueueUserWorkItem(this, true);
+                QueueAfterConsumed();
 
             return result.Value;
         }
@@ -515,40 +365,6 @@ namespace DotNext.Threading.Tasks
                 return ValueTaskSourceStatus.Succeeded;
 
             return error is OperationCanceledException ? ValueTaskSourceStatus.Canceled : ValueTaskSourceStatus.Faulted;
-        }
-
-        private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
-        {
-            // fast path - monitor lock is not needed
-            if (token != version)
-                goto invalid_token;
-
-            if (completed)
-                goto run_in_place;
-
-            lock (syncRoot)
-            {
-                // avoid running continuation inside of the lock
-                if (token != version)
-                    goto invalid_token;
-
-                if (completed)
-                    goto run_in_place;
-
-                this.continuation = continuation;
-                continuationState = state;
-                this.capturedContext = capturedContext;
-                this.context = flowExecutionContext ? ExecutionContext.Capture() : null;
-                goto exit;
-            }
-
-        run_in_place:
-            InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously);
-
-        exit:
-            return;
-        invalid_token:
-            throw new InvalidOperationException();
         }
 
         /// <inheritdoc />
