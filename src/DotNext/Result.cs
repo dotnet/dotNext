@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace DotNext
 {
@@ -43,6 +44,25 @@ namespace DotNext
         /// <param name="resultType">Result type.</param>
         /// <returns>Underlying type argument of result type; otherwise, <see langword="null"/>.</returns>
         public static Type? GetUnderlyingType(Type resultType) => IsResult(resultType) ? resultType.GetGenericArguments()[0] : null;
+
+        /// <summary>
+        /// Creates a new instance of <see cref="Result{T}"/> from the specified value.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="value">The value to be placed to the container.</param>
+        /// <returns>The value encapsulated by <see cref="Result{T}"/>.</returns>
+        public static Result<T> FromValue<T>(T value) => new(value);
+
+        /// <summary>
+        /// Creates a new instance of <see cref="Result{T}"/> from the specified exception.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="e">The exception to be placed to the container.</param>
+        /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
+        public static Result<T> FromException<T>(Exception e) => new(e);
+
+        internal static Result<T> FromCanceled<T>(CancellationToken token)
+            => new(new OperationCanceledException(token));
     }
 
     /// <summary>
