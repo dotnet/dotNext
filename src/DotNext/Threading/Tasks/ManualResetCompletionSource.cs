@@ -74,7 +74,7 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        private protected void Configure(TimeSpan timeout, CancellationToken token)
+        private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
         {
             // box current token once and only if needed
             object? tokenHolder = null;
@@ -109,7 +109,7 @@ namespace DotNext.Threading.Tasks
         }
 
         [CallerMustBeSynchronized]
-        private protected void Recycle()
+        private protected void StopTrackingCancellation()
         {
             tokenTracker.Dispose();
             tokenTracker = default;
@@ -179,7 +179,7 @@ namespace DotNext.Threading.Tasks
         {
             lock (syncRoot)
             {
-                Recycle();
+                StopTrackingCancellation();
                 ResetCore();
             }
         }
@@ -281,7 +281,7 @@ namespace DotNext.Threading.Tasks
                 goto exit;
             }
 
-            Configure(timeout, token);
+            StartTrackingCancellation(timeout, token);
 
         exit:
             return Task;

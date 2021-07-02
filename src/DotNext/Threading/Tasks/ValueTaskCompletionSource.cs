@@ -58,7 +58,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private void SetResult(Exception? result)
         {
-            Recycle();
+            StopTrackingCancellation();
             try
             {
                 // run handler before actual completion to avoid concurrency with AfterConsumed event
