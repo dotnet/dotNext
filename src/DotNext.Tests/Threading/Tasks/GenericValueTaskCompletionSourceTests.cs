@@ -7,7 +7,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks
 {
-    public sealed class ValueTaskCompletionSourceTests : Test
+    public sealed class GenericValueTaskCompletionSourceTests : Test
     {
         [Fact]
         public static async Task SuccessfulCompletion()
