@@ -427,7 +427,7 @@ namespace DotNext.Threading
         [CallerMustBeSynchronized]
         private void ProcessReadLocks()
         {
-            var readLock = head as ReadLockNode;
+            var readLock = first as ReadLockNode;
             ref var currentState = ref state.Value;
             for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)
             {
@@ -473,7 +473,7 @@ namespace DotNext.Threading
             currentState.Upgradeable = false;
 
             // no more readers, write lock can be acquired
-            if (--currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
+            if (--currentState.ReadLocks == 0L && first is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.SetResult();
@@ -505,7 +505,7 @@ namespace DotNext.Threading
             if (ProcessDisposeQueue())
                 return;
 
-            if (head is WriteLockNode writeLock)
+            if (first is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.SetResult();
@@ -534,7 +534,7 @@ namespace DotNext.Threading
             if (currentState.WriteLock || currentState.ReadLocks == 1L && currentState.Upgradeable || currentState.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
 
-            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
+            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && first is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.SetResult();

@@ -80,7 +80,7 @@ namespace DotNext.Threading
         }
 
         private Action<double>? contentionCounter, lockDurationCounter;
-        private protected WaitNode? head, tail;
+        private protected WaitNode? first, last;
 
         private protected QueuedSynchronizer()
         {
@@ -117,21 +117,21 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool ISynchronizer.HasAnticipants => head is not null;
+        bool ISynchronizer.HasAnticipants => first is not null;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected bool RemoveNode(WaitNode node)
         {
             var inList = false;
-            if (ReferenceEquals(head, node))
+            if (ReferenceEquals(first, node))
             {
-                head = node.Next;
+                first = node.Next;
                 inList = true;
             }
 
-            if (ReferenceEquals(tail, node))
+            if (ReferenceEquals(last, node))
             {
-                tail = node.Previous;
+                last = node.Previous;
                 inList = true;
             }
 
@@ -198,15 +198,15 @@ namespace DotNext.Threading
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
-            if (tail is null)
-                head = tail = manager.CreateNode(null);
+            if (last is null)
+                first = last = manager.CreateNode(null);
             else
-                tail = manager.CreateNode(tail);
+                last = manager.CreateNode(last);
 
             contentionCounter?.Invoke(1L);
             return timeout == InfiniteTimeSpan ?
-                token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
-                : WaitAsync(tail, timeout, token);
+                token.CanBeCanceled ? WaitAsync(last, token) : last.Task
+                : WaitAsync(last, timeout, token);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -225,19 +225,19 @@ namespace DotNext.Threading
         {
             if (!token.IsCancellationRequested)
                 throw new ArgumentOutOfRangeException(nameof(token));
-            for (WaitNode? current = head, next; current is not null; current = next)
+            for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 current.TrySetCanceled(token);
             }
 
-            head = tail = null;
+            first = last = null;
         }
 
         [CallerMustBeSynchronized]
         private protected bool ProcessDisposeQueue()
         {
-            if (head is DisposeAsyncNode disposeNode)
+            if (first is DisposeAsyncNode disposeNode)
             {
                 disposeNode.SetResult();
                 RemoveNode(disposeNode);
@@ -252,7 +252,7 @@ namespace DotNext.Threading
         {
             var e = new ObjectDisposedException(GetType().Name);
 
-            for (WaitNode? current = head, next; current is not null; current = next)
+            for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 if (current is DisposeAsyncNode disposeNode)
@@ -261,7 +261,7 @@ namespace DotNext.Threading
                     current.TrySetException(e);
             }
 
-            head = tail = null;
+            first = last = null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -272,10 +272,10 @@ namespace DotNext.Threading
         private Task DisposeAsync()
         {
             DisposeAsyncNode disposeNode;
-            if (tail is null)
-                head = tail = disposeNode = new DisposeAsyncNode();
+            if (last is null)
+                first = last = disposeNode = new DisposeAsyncNode();
             else
-                tail = disposeNode = new DisposeAsyncNode(tail);
+                last = disposeNode = new DisposeAsyncNode(last);
 
             return disposeNode.Task;
         }

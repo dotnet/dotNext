@@ -99,14 +99,14 @@ namespace DotNext.Threading
             if (ProcessDisposeQueue())
                 return;
 
-            if (head is null)
+            if (first is null)
             {
                 manager.IsAcquired = false;
             }
             else
             {
-                head.SetResult();
-                RemoveNode(head);
+                first.SetResult();
+                RemoveNode(first);
             }
         }
 

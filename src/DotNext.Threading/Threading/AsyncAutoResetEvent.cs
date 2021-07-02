@@ -62,11 +62,11 @@ namespace DotNext.Threading
             if (manager.IsSignaled)
                 return false;
 
-            if (head is null)
+            if (first is null)
                 return manager.IsSignaled = true;
 
-            head.SetResult();
-            RemoveNode(head);
+            first.SetResult();
+            RemoveNode(first);
             manager.IsSignaled = false;
             return true;
         }

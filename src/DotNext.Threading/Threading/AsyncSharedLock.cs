@@ -164,7 +164,7 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             ref var stateHolder = ref state.Value;
-            for (WaitNode? current = head, next; current is not null && current is not StrongLockNode && !IsTerminalNode(current) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
+            for (WaitNode? current = first, next; current is not null && current is not StrongLockNode && !IsTerminalNode(current) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);
@@ -176,7 +176,7 @@ namespace DotNext.Threading
         private void Release(ref State stateHolder)
         {
             Debug.Assert(Unsafe.AreSame(ref stateHolder, ref state.Value));
-            if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
+            if (stateHolder.IncrementLocks() == ConcurrencyLevel && first is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
                 exclusiveNode.SetResult();

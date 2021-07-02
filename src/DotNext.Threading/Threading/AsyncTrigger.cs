@@ -87,7 +87,7 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             // triggers only stateless nodes
-            for (WaitNode? current = head, next; current is not null; current = next)
+            for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
                 if (IsExactTypeOf<WaitNode>(current))
@@ -99,7 +99,7 @@ namespace DotNext.Threading
         private void ResumePendingCallers<TState>(TState state, bool fairness)
             where TState : class
         {
-            for (WaitNode? current = head, next; current is not null; current = next)
+            for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
                 if (current is ConditionalNode conditional && !conditional.Invoke(state))
@@ -211,14 +211,14 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool IAsyncEvent.IsSet => head is null;
+        bool IAsyncEvent.IsSet => first is null;
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.Synchronized)]
         bool IAsyncEvent.Signal()
         {
             ThrowIfDisposed();
-            var queueNotEmpty = head is not null;
+            var queueNotEmpty = first is not null;
             ResumePendingCallers();
             return queueNotEmpty;
         }
