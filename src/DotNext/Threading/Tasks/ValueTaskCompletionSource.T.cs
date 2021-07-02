@@ -224,10 +224,14 @@ namespace DotNext.Threading.Tasks
             if (!completed || token != version)
                 throw new InvalidOperationException();
 
+            // ensure that instance field access before returning to the pool to avoid
+            // concurrency with Reset()
+            var resultCopy = result;
+
             if (IsDerived)
                 QueueAfterConsumed();
 
-            return result.Value;
+            return resultCopy.Value;
         }
 
         /// <inheritdoc />
