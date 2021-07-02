@@ -125,9 +125,7 @@ namespace DotNext.Threading.Tasks
             switch (capturedContext)
             {
                 case null:
-                    if (runAsynchronously)
-                        ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false);
-                    else
+                    if (!runAsynchronously || !ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false))
                         continuation(state);
                     break;
                 case SynchronizationContext context:
