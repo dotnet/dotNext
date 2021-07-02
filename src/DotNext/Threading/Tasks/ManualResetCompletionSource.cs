@@ -85,8 +85,10 @@ namespace DotNext.Threading.Tasks
             }
         }
 
+        [CallerMustBeSynchronized]
         private protected abstract void CompleteAsTimedOut();
 
+        [CallerMustBeSynchronized]
         private protected abstract void CompleteAsCanceled(CancellationToken token);
 
         private protected static object? CaptureContext()
