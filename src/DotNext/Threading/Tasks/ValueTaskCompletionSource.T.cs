@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
-using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
@@ -17,12 +16,12 @@ namespace DotNext.Threading.Tasks
     /// In constrast to <see cref="TaskCompletionSource{T}"/>, this
     /// source is resettable.
     /// From performance point of view, the type offers minimal or zero memory allocation
-    /// for the task itself (excluding continuations). See <see cref="Reset(TimeSpan, CancellationToken)"/>
+    /// for the task itself (excluding continuations). See <see cref="ManualResetCompletionSource{T}.Reset(TimeSpan, CancellationToken)"/>
     /// for more information.
     /// The instance of this type typically used in combination with object pool pattern because
     /// the instance can be reused for multiple tasks. The first usage pattern allows to reuse the instance
     /// for the multiple completions if the task was not canceled or timed out:
-    /// 1. Retrieve instance of this type from the pool and call <see cref="Reset(TimeSpan, CancellationToken)"/>.
+    /// 1. Retrieve instance of this type from the pool and call <see cref="ManualResetCompletionSource{T}.Reset(TimeSpan, CancellationToken)"/>.
     /// 2. Complete the task with <see cref="TrySetResult(T)"/> or <see cref="TrySetException(Exception)"/>.
     /// 3. If completion method returns <see langword="true"/> then return the instance back to the pool.
     /// If completion method returns <see langword="false"/> then the task was canceled or timed out. In this
@@ -32,7 +31,8 @@ namespace DotNext.Threading.Tasks
     /// from the list of active sources. The second one to return the instance back to the pool.
     /// </remarks>
     /// <typeparam name="T">>The type the task result.</typeparam>
-    public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>
+    /// <seealso cref="ValueTaskCompletionSource"/>
+    public class ValueTaskCompletionSource<T> : ManualResetCompletionSource<ValueTask<T>>, IValueTaskSource<T>
     {
         private Result<T> result;
 
@@ -60,7 +60,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task sucessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="value">The value to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetResult(short completionToken, T value)
@@ -71,13 +71,13 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        public unsafe bool TrySetException(Exception e)
+        public sealed override unsafe bool TrySetException(Exception e)
             => TrySetResult(&Result.FromException<T>, e);
 
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetException(short completionToken, Exception e)
@@ -88,23 +88,25 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        public unsafe bool TrySetCanceled(CancellationToken token)
+        public sealed override unsafe bool TrySetCanceled(CancellationToken token)
             => TrySetResult(&Result.FromCanceled<T>, token);
 
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
             => TrySetResult(completionToken, &Result.FromCanceled<T>, token);
 
-        private protected override void CompleteAsTimedOut()
+        private protected sealed override void CompleteAsTimedOut()
             => SetResult(OnTimeout());
 
-        private protected override void CompleteAsCanceled(CancellationToken token)
+        private protected sealed override void CompleteAsCanceled(CancellationToken token)
             => SetResult(OnCanceled(token));
+
+        private protected sealed override ValueTask<T> Task => new(this, version);
 
         private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg)
         {
@@ -180,136 +182,10 @@ namespace DotNext.Threading.Tasks
         }
 
         [CallerMustBeSynchronized]
-        private protected override void ResetCore()
+        private protected sealed override void ResetCore()
         {
             base.ResetCore();
             result = default;
-        }
-
-        [CallerMustBeSynchronized]
-        private ValueTask<T> CreateTaskCore(TimeSpan timeout, CancellationToken token)
-        {
-            if (timeout == TimeSpan.Zero)
-            {
-                SetResult(OnTimeout());
-                goto exit;
-            }
-
-            if (token.IsCancellationRequested)
-            {
-                SetResult(OnCanceled(token));
-                goto exit;
-            }
-
-            Configure(timeout, token);
-
-        exit:
-            return new(this, version);
-        }
-
-        /// <summary>
-        /// Resets the state of the underlying task and return a fresh incompleted task.
-        /// </summary>
-        /// <remarks>
-        /// The returned task can be completed in a three ways: through cancellation token, timeout
-        /// or by calling <see cref="TrySetException(Exception)"/> or <see cref="TrySetResult(T)"/>.
-        /// If <paramref name="timeout"/> is <see cref="InfiniteTimeSpan"/> then this source doesn't
-        /// track the timeout. If <paramref name="token"/> is not cancelable then this source
-        /// doesn't track the cancellation. If both conditions are met then this source doesn't allocate
-        /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
-        /// for cancellation registrations.
-        /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="ManualResetCompletionSource.AfterConsumed"/> method.
-        /// </remarks>
-        /// <param name="completionToken">The version of the produced task that can be used later to complete the task without conflicts.</param>
-        /// <param name="timeout">The timeout associated with the task.</param>
-        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-        /// <returns>A fresh incompleted task.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
-        /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
-        public ValueTask<T> Reset(out short completionToken, TimeSpan timeout, CancellationToken token)
-        {
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-
-            if (!completed)
-                throw new InvalidOperationException();
-
-            lock (syncRoot)
-            {
-                ResetCore();
-                completionToken = version;
-                return CreateTaskCore(timeout, token);
-            }
-        }
-
-        /// <summary>
-        /// Resets the state of the underlying task and return a fresh incompleted task.
-        /// </summary>
-        /// <remarks>
-        /// The returned task can be completed in a three ways: through cancellation token, timeout
-        /// or by calling <see cref="TrySetException(Exception)"/> or <see cref="TrySetResult(T)"/>.
-        /// If <paramref name="timeout"/> is <see cref="InfiniteTimeSpan"/> then this source doesn't
-        /// track the timeout. If <paramref name="token"/> is not cancelable then this source
-        /// doesn't track cancellation. If both conditions are met then this source doesn't allocate
-        /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
-        /// for cancellation registrations.
-        /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="ManualResetCompletionSource.AfterConsumed"/> method.
-        /// </remarks>
-        /// <param name="timeout">The timeout associated with the task.</param>
-        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-        /// <returns>A fresh incompleted task.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
-        /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
-        public ValueTask<T> Reset(TimeSpan timeout, CancellationToken token)
-        {
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-
-            if (!completed)
-                throw new InvalidOperationException();
-
-            ValueTask<T> result;
-            lock (syncRoot)
-            {
-                ResetCore();
-                result = CreateTaskCore(timeout, token);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Creates a fresh task linked with this source.
-        /// </summary>
-        /// <remarks>
-        /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
-        /// </remarks>
-        /// <param name="timeout">The timeout associated with the task.</param>
-        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-        /// <returns>A fresh incompleted task.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
-        public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
-        {
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-
-            ValueTask<T> result;
-
-            if (completed)
-            {
-                result = new(this, version);
-            }
-            else
-            {
-                lock (syncRoot)
-                {
-                    result = completed ? new(this, version) : CreateTaskCore(timeout, token);
-                }
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -369,10 +245,7 @@ namespace DotNext.Threading.Tasks
 
         /// <inheritdoc />
         void IValueTaskSource<T>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        {
-            var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) == 0 ? null : CaptureContext();
-            OnCompleted(capturedContext, continuation, state, token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0);
-        }
+            => OnCompleted(continuation, state, token, flags);
     }
 }
 #endif

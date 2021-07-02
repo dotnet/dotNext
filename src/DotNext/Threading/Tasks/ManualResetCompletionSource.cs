@@ -5,13 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
+using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks
 {
     using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     /// <summary>
-    /// Represents base class for all producers of value tasks.
+    /// Represents base class for producer of value task.
     /// </summary>
     public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
@@ -196,7 +197,7 @@ namespace DotNext.Threading.Tasks
         private protected void QueueAfterConsumed()
             => ThreadPool.UnsafeQueueUserWorkItem(this, true);
 
-        private protected void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
+        private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
         {
             // fast path - monitor lock is not needed
             if (token != version)
@@ -228,6 +229,167 @@ namespace DotNext.Threading.Tasks
             return;
         invalid_token:
             throw new InvalidOperationException();
+        }
+
+        private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+        {
+            var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) == 0 ? null : CaptureContext();
+            OnCompleted(capturedContext, continuation, state, token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0);
+        }
+
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="e">The exception to be returned to the consumer.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        public abstract bool TrySetException(Exception e);
+
+        /// <summary>
+        /// Attempts to complete the task unsuccessfully.
+        /// </summary>
+        /// <param name="token">The canceled token.</param>
+        /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+        public abstract bool TrySetCanceled(CancellationToken token);
+    }
+
+    /// <summary>
+    /// Represents base class for producer of value task.
+    /// </summary>
+    /// <typeparam name="T">The type of value task.</typeparam>
+    public abstract class ManualResetCompletionSource<T> : ManualResetCompletionSource
+        where T : struct, IEquatable<T>
+    {
+        private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
+            : base(runContinuationsAsynchronously)
+        {
+        }
+
+        private protected abstract T Task { get; }
+
+        [CallerMustBeSynchronized]
+        private T CreateTaskCore(TimeSpan timeout, CancellationToken token)
+        {
+            if (timeout == TimeSpan.Zero)
+            {
+                CompleteAsTimedOut();
+                goto exit;
+            }
+
+            if (token.IsCancellationRequested)
+            {
+                CompleteAsCanceled(token);
+                goto exit;
+            }
+
+            Configure(timeout, token);
+
+        exit:
+            return Task;
+        }
+
+        /// <summary>
+        /// Resets the state of the underlying task and return a fresh incompleted task.
+        /// </summary>
+        /// <remarks>
+        /// The returned task can be completed in a three ways: through cancellation token, timeout
+        /// or by calling <c>TrySetException</c> or <c>TrySetResult</c>.
+        /// If <paramref name="timeout"/> is <see cref="InfiniteTimeSpan"/> then this source doesn't
+        /// track the timeout. If <paramref name="token"/> is not cancelable then this source
+        /// doesn't track the cancellation. If both conditions are met then this source doesn't allocate
+        /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
+        /// for cancellation registrations.
+        /// This method can be called safely in the following circumstances: after construction of a new
+        /// instance of this class or after (or during) the call of <see cref="ManualResetCompletionSource.AfterConsumed"/> method.
+        /// </remarks>
+        /// <param name="completionToken">The version of the produced task that can be used later to complete the task without conflicts.</param>
+        /// <param name="timeout">The timeout associated with the task.</param>
+        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
+        /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
+        /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
+        public T Reset(out short completionToken, TimeSpan timeout, CancellationToken token)
+        {
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+
+            if (!completed)
+                throw new InvalidOperationException();
+
+            lock (syncRoot)
+            {
+                ResetCore();
+                completionToken = version;
+                return CreateTaskCore(timeout, token);
+            }
+        }
+
+        /// <summary>
+        /// Resets the state of the underlying task and return a fresh incompleted task.
+        /// </summary>
+        /// <remarks>
+        /// The returned task can be completed in a three ways: through cancellation token, timeout
+        /// or by calling <c>TrySetException</c> or <c>TrySetResult</c>.
+        /// If <paramref name="timeout"/> is <see cref="InfiniteTimeSpan"/> then this source doesn't
+        /// track the timeout. If <paramref name="token"/> is not cancelable then this source
+        /// doesn't track cancellation. If both conditions are met then this source doesn't allocate
+        /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
+        /// for cancellation registrations.
+        /// This method can be called safely in the following circumstances: after construction of a new
+        /// instance of this class or after (or during) the call of <see cref="ManualResetCompletionSource.AfterConsumed"/> method.
+        /// </remarks>
+        /// <param name="timeout">The timeout associated with the task.</param>
+        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
+        /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
+        /// <exception cref="InvalidOperationException">The task was requested but not yet completed.</exception>
+        public T Reset(TimeSpan timeout, CancellationToken token)
+        {
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+
+            if (!completed)
+                throw new InvalidOperationException();
+
+            T result;
+            lock (syncRoot)
+            {
+                ResetCore();
+                result = CreateTaskCore(timeout, token);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a fresh task linked with this source.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
+        /// </remarks>
+        /// <param name="timeout">The timeout associated with the task.</param>
+        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
+        /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
+        public T CreateTask(TimeSpan timeout, CancellationToken token)
+        {
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+
+            T result;
+
+            if (completed)
+            {
+                result = Task;
+            }
+            else
+            {
+                lock (syncRoot)
+                {
+                    result = completed ? Task : CreateTaskCore(timeout, token);
+                }
+            }
+
+            return result;
         }
     }
 }
