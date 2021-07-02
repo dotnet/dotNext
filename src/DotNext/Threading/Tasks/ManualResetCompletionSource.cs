@@ -16,7 +16,7 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
-        private static readonly ContextCallback ContinuationExecutor = RunInContext;
+        private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
 
         private readonly Action<object?> cancellationCallback;
         private readonly bool runContinuationsAsynchronously;
@@ -39,13 +39,6 @@ namespace DotNext.Threading.Tasks
 
             // cached callback to avoid further allocations
             cancellationCallback = CancellationRequested;
-        }
-
-        private static void RunInContext(object? source)
-        {
-            Debug.Assert(source is ManualResetCompletionSource);
-
-            Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore();
         }
 
         private void CancellationRequested(object? token)
@@ -150,12 +143,19 @@ namespace DotNext.Threading.Tasks
                 InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
         }
 
+        private static void InvokeContinuation(object? source)
+        {
+            Debug.Assert(source is ManualResetCompletionSource);
+
+            Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore();
+        }
+
         private protected void InvokeContinuation()
         {
             if (context is null)
                 InvokeContinuationCore();
             else
-                ExecutionContext.Run(context, ContinuationExecutor, this);
+                ExecutionContext.Run(context, ContinuationInvoker, this);
         }
 
         [CallerMustBeSynchronized]
