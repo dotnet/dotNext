@@ -67,6 +67,10 @@ namespace DotNext.Threading.Tasks
                 // run handler before actual completion to avoid concurrency with AfterConsumed event
                 BeforeCompleted(result);
             }
+            catch (Exception e)
+            {
+                this.result = ExceptionDispatchInfo.Capture(e);
+            }
             finally
             {
                 this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);

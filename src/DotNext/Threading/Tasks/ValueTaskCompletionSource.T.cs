@@ -175,6 +175,10 @@ namespace DotNext.Threading.Tasks
                 // run handler before actual completion to avoid concurrency with AfterConsumed event
                 BeforeCompleted(result);
             }
+            catch (Exception e)
+            {
+                this.result = new(e);
+            }
             finally
             {
                 this.result = result;
