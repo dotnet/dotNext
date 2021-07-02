@@ -59,7 +59,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private void SetResult(Exception? result)
         {
-            Debug.Assert(Monitor.IsEntered(syncRoot));
+            Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             StopTrackingCancellation();
             try
@@ -84,7 +84,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected sealed override void ResetCore()
         {
-            Debug.Assert(Monitor.IsEntered(syncRoot));
+            Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             base.ResetCore();
             result = null;
@@ -130,7 +130,7 @@ namespace DotNext.Threading.Tasks
             }
             else
             {
-                lock (syncRoot)
+                lock (SyncRoot)
                 {
                     if (completed)
                     {
@@ -157,7 +157,7 @@ namespace DotNext.Threading.Tasks
             }
             else
             {
-                lock (syncRoot)
+                lock (SyncRoot)
                 {
                     if (completed || completionToken != version)
                     {

@@ -20,7 +20,6 @@ namespace DotNext.Threading.Tasks
 
         private readonly Action<object?> cancellationCallback;
         private readonly bool runContinuationsAsynchronously;
-        private protected readonly object syncRoot;
         private CancellationTokenRegistration tokenTracker, timeoutTracker;
         private CancellationTokenSource? timeoutSource;
 
@@ -34,12 +33,13 @@ namespace DotNext.Threading.Tasks
         private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
         {
             this.runContinuationsAsynchronously = runContinuationsAsynchronously;
-            syncRoot = new();
             version = short.MinValue;
 
             // cached callback to avoid further allocations
             cancellationCallback = CancellationRequested;
         }
+
+        private protected object SyncRoot => cancellationCallback;
 
         private void CancellationRequested(object? token)
         {
@@ -54,7 +54,7 @@ namespace DotNext.Threading.Tasks
             // or completed flag is set (call twice with the same token)
             if (!completed)
             {
-                lock (syncRoot)
+                lock (SyncRoot)
                 {
                     if (token == version && !completed)
                     {
@@ -106,7 +106,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected void StopTrackingCancellation()
         {
-            Debug.Assert(Monitor.IsEntered(syncRoot));
+            Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             tokenTracker.Dispose();
             tokenTracker = default;
@@ -163,7 +163,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private protected virtual void ResetCore()
         {
-            Debug.Assert(Monitor.IsEntered(syncRoot));
+            Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             version += 1;
             completed = false;
@@ -181,7 +181,7 @@ namespace DotNext.Threading.Tasks
         /// </remarks>
         public void Reset()
         {
-            lock (syncRoot)
+            lock (SyncRoot)
             {
                 StopTrackingCancellation();
                 ResetCore();
@@ -213,7 +213,7 @@ namespace DotNext.Threading.Tasks
             if (completed)
                 goto execute_inplace;
 
-            lock (syncRoot)
+            lock (SyncRoot)
             {
                 // avoid running continuation inside of the lock
                 if (token != version)
@@ -276,7 +276,7 @@ namespace DotNext.Threading.Tasks
         [CallerMustBeSynchronized]
         private T CreateTaskCore(TimeSpan timeout, CancellationToken token)
         {
-            Debug.Assert(Monitor.IsEntered(syncRoot));
+            Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             if (timeout == TimeSpan.Zero)
             {
@@ -324,7 +324,7 @@ namespace DotNext.Threading.Tasks
             if (!completed)
                 throw new InvalidOperationException();
 
-            lock (syncRoot)
+            lock (SyncRoot)
             {
                 ResetCore();
                 completionToken = version;
@@ -360,7 +360,7 @@ namespace DotNext.Threading.Tasks
                 throw new InvalidOperationException();
 
             T result;
-            lock (syncRoot)
+            lock (SyncRoot)
             {
                 ResetCore();
                 result = CreateTaskCore(timeout, token);
@@ -392,7 +392,7 @@ namespace DotNext.Threading.Tasks
             }
             else
             {
-                lock (syncRoot)
+                lock (SyncRoot)
                 {
                     result = completed ? Task : CreateTaskCore(timeout, token);
                 }
