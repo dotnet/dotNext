@@ -13,7 +13,7 @@ namespace DotNext.Threading.Tasks
     /// <summary>
     /// Represents base class for all producers of value tasks.
     /// </summary>
-    public abstract class ValueTaskCompletionSourceBase : IThreadPoolWorkItem
+    public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         private static readonly ContextCallback ContinuationExecutor = RunInContext;
 
@@ -30,7 +30,7 @@ namespace DotNext.Threading.Tasks
         private protected short version;
         private protected volatile bool completed;
 
-        private protected ValueTaskCompletionSourceBase(bool runContinuationsAsynchronously)
+        private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
         {
             this.runContinuationsAsynchronously = runContinuationsAsynchronously;
             syncRoot = new();
@@ -42,9 +42,9 @@ namespace DotNext.Threading.Tasks
 
         private static void RunInContext(object? source)
         {
-            Debug.Assert(source is ValueTaskCompletionSourceBase);
+            Debug.Assert(source is ManualResetCompletionSource);
 
-            Unsafe.As<ValueTaskCompletionSourceBase>(source).InvokeContinuationCore();
+            Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore();
         }
 
         private void CancellationRequested(object? token)

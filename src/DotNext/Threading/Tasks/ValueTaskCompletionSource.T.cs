@@ -28,11 +28,11 @@ namespace DotNext.Threading.Tasks
     /// If completion method returns <see langword="false"/> then the task was canceled or timed out. In this
     /// case you cannot reuse the instance in simple way.
     /// To reuse instance in case of cancellation, you need to override <see cref="BeforeCompleted(Result{T})"/>
-    /// and <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/> methods. The first one to remove the source
+    /// and <see cref="ManualResetCompletionSource.AfterConsumed"/> methods. The first one to remove the source
     /// from the list of active sources. The second one to return the instance back to the pool.
     /// </remarks>
     /// <typeparam name="T">>The type the task result.</typeparam>
-    public class ValueTaskCompletionSource<T> : ValueTaskCompletionSourceBase, IValueTaskSource<T>
+    public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>
     {
         private Result<T> result;
 
@@ -219,7 +219,7 @@ namespace DotNext.Threading.Tasks
         /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
         /// for cancellation registrations.
         /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/> method.
+        /// instance of this class or after (or during) the call of <see cref="ManualResetCompletionSource.AfterConsumed"/> method.
         /// </remarks>
         /// <param name="completionToken">The version of the produced task that can be used later to complete the task without conflicts.</param>
         /// <param name="timeout">The timeout associated with the task.</param>
@@ -255,7 +255,7 @@ namespace DotNext.Threading.Tasks
         /// additional memory on the heap. Otherwise, the allocation is very minimal and needed
         /// for cancellation registrations.
         /// This method can be called safely in the following circumstances: after construction of a new
-        /// instance of this class or after (or during) the call of <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/> method.
+        /// instance of this class or after (or during) the call of <see cref="ManualResetCompletionSource.AfterConsumed"/> method.
         /// </remarks>
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
@@ -284,7 +284,7 @@ namespace DotNext.Threading.Tasks
         /// Creates a fresh task linked with this source.
         /// </summary>
         /// <remarks>
-        /// This method must be called after <see cref="ValueTaskCompletionSourceBase.Reset()"/>.
+        /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
         /// </remarks>
         /// <param name="timeout">The timeout associated with the task.</param>
         /// <param name="token">The cancellation token that can be used to cancel the task.</param>
@@ -316,7 +316,7 @@ namespace DotNext.Threading.Tasks
         /// Invokes when the task is almost completed.
         /// </summary>
         /// <remarks>
-        /// This method is called before <see cref="ValueTaskCompletionSourceBase.AfterConsumed"/>.
+        /// This method is called before <see cref="ManualResetCompletionSource.AfterConsumed"/>.
         /// </remarks>
         /// <param name="result">The result of the task.</param>
         protected virtual void BeforeCompleted(Result<T> result)
