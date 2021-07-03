@@ -6,4 +6,3 @@ TokenNotCancelable=The token is not cancelable
 UnsupportedLockAcquisition=Lock cannot be acquired for this type of object
 EmptyValueDelegate=The value delegate doesn't refer to any method
 TerminatedExchange=The exchange has been terminated
-CompletionSourceInitialState=Completion source is in initial state and must be reset

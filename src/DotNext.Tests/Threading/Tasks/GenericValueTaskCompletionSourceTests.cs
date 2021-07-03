@@ -13,7 +13,7 @@ namespace DotNext.Threading.Tasks
         public static async Task SuccessfulCompletion()
         {
             var source = new ValueTaskCompletionSource<int>();
-            var task = source.Reset(InfiniteTimeSpan, default);
+            var task = source.CreateTask(InfiniteTimeSpan, default);
             False(task.IsCompleted);
             True(source.TrySetResult(42));
             Equal(42, await task);
@@ -23,7 +23,7 @@ namespace DotNext.Threading.Tasks
         public static async Task CompleteWithError()
         {
             var source = new ValueTaskCompletionSource<int>();
-            var task = source.Reset(InfiniteTimeSpan, default);
+            var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetException(new ArithmeticException()));
             await ThrowsAsync<ArithmeticException>(() => task.AsTask());
         }
@@ -33,7 +33,7 @@ namespace DotNext.Threading.Tasks
         {
             var source = new ValueTaskCompletionSource<int>();
             using var cancellation = new CancellationTokenSource();
-            var task = source.Reset(InfiniteTimeSpan, cancellation.Token);
+            var task = source.CreateTask(InfiniteTimeSpan, cancellation.Token);
             False(task.IsCompleted);
             cancellation.Cancel();
             await ThrowsAsync<OperationCanceledException>(() => task.AsTask());
@@ -44,7 +44,6 @@ namespace DotNext.Threading.Tasks
         public static async Task ForceTimeout()
         {
             var source = new ValueTaskCompletionSource<int>();
-            source.Reset();
             var task = source.CreateTask(TimeSpan.FromMilliseconds(20), default);
             await Task.Delay(100);
             True(task.IsCompleted);
@@ -56,7 +55,8 @@ namespace DotNext.Threading.Tasks
         public static async Task CompleteWithToken()
         {
             var source = new ValueTaskCompletionSource<int>();
-            var task = source.Reset(out var completionToken, InfiniteTimeSpan, default);
+            var completionToken = source.Reset();
+            var task = source.CreateTask(InfiniteTimeSpan, default);
             False(source.TrySetResult(short.MaxValue, 42));
             False(task.IsCompleted);
             True(source.TrySetResult(completionToken, 42));

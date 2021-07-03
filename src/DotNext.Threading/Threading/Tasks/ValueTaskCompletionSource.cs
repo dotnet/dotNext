@@ -47,8 +47,6 @@ namespace DotNext.Threading.Tasks
         public ValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
             : base(runContinuationsAsynchronously)
         {
-            result = ExceptionDispatchInfo.Capture(new InvalidOperationException(ExceptionMessages.CompletionSourceInitialState));
-            completed = true;
         }
 
         private bool IsDerived => GetType() != typeof(ValueTaskCompletionSource);
@@ -186,7 +184,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
@@ -203,7 +201,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetException(short completionToken, Exception e)
@@ -219,7 +217,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task sucessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.Reset(out short, TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public bool TrySetResult(short completionToken)
             => TrySetResult(completionToken, NullSupplier);
