@@ -27,10 +27,6 @@ namespace DotNext
 
         internal static string TerminatedExchange => (string)Resources.Get();
 
-        internal static string ListenerNoLongerValid => (string)Resources.Get();
-
-        internal static string SlotAlreadyConsumed => (string)Resources.Get();
-
-        internal static string SlotAlreadyPublished => (string)Resources.Get();
+        internal static string CompletionSourceInitialState => (string)Resources.Get();
     }
 }

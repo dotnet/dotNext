@@ -49,6 +49,9 @@ namespace DotNext.Threading.Tasks
 
         private bool IsDerived => GetType() != typeof(ValueTaskCompletionSource<T>);
 
+        private static Result<T> FromCanceled(CancellationToken token)
+            => new(new OperationCanceledException(token));
+
         /// <summary>
         /// Attempts to complete the task sucessfully.
         /// </summary>
@@ -89,7 +92,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public sealed override unsafe bool TrySetCanceled(CancellationToken token)
-            => TrySetResult(&Result.FromCanceled<T>, token);
+            => TrySetResult(&FromCanceled, token);
 
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
@@ -98,7 +101,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
-            => TrySetResult(completionToken, &Result.FromCanceled<T>, token);
+            => TrySetResult(completionToken, &FromCanceled, token);
 
         private protected sealed override void CompleteAsTimedOut()
             => SetResult(OnTimeout());

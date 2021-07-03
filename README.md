@@ -52,7 +52,6 @@ Release Date: 07-XX-2021
 * Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
 * Improved overall performance of extension methods declaring in `RandomExtensions` class
 * Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
-* Added `ValueTaskCompletionSource<T>` as reusable source of tasks suitable for pooling
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
@@ -66,6 +65,7 @@ Release Date: 07-XX-2021
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
 * Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
+* Added `ValueTaskCompletionSource<T>` as reusable source of tasks suitable for pooling
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.3.0">DotNext.IO 3.3.0</a>
 * `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk

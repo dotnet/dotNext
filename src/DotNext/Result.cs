@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using CancellationToken = System.Threading.CancellationToken;
 
 namespace DotNext
 {
@@ -60,9 +59,6 @@ namespace DotNext
         /// <param name="e">The exception to be placed to the container.</param>
         /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
         public static Result<T> FromException<T>(Exception e) => new(e);
-
-        internal static Result<T> FromCanceled<T>(CancellationToken token)
-            => new(new OperationCanceledException(token));
     }
 
     /// <summary>
