@@ -10,7 +10,6 @@ namespace DotNext.Threading
 {
     using Generic;
     using Tasks;
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
@@ -141,9 +140,10 @@ namespace DotNext.Threading
             return inList;
         }
 
-        [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             // cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
             {
@@ -163,9 +163,9 @@ namespace DotNext.Threading
             return await node.Task.ConfigureAwait(false);
         }
 
-        [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
+            Debug.Assert(Monitor.IsEntered(this));
             Debug.Assert(token.CanBeCanceled);
 
             using (var cancellationTask = new CancelableCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously, token))
@@ -234,9 +234,10 @@ namespace DotNext.Threading
             first = last = null;
         }
 
-        [CallerMustBeSynchronized]
         private protected bool ProcessDisposeQueue()
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             if (first is DisposeAsyncNode disposeNode)
             {
                 disposeNode.SetResult();
@@ -268,9 +269,10 @@ namespace DotNext.Threading
         private protected static bool IsTerminalNode(WaitNode? node)
             => node is DisposeAsyncNode;
 
-        [CallerMustBeSynchronized]
         private Task DisposeAsync()
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             DisposeAsyncNode disposeNode;
             if (last is null)
                 first = last = disposeNode = new DisposeAsyncNode();

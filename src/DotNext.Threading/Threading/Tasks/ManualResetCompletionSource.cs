@@ -9,8 +9,6 @@ using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTask
 
 namespace DotNext.Threading.Tasks
 {
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
-
     /// <summary>
     /// Represents base class for producer of value task.
     /// </summary>
@@ -85,10 +83,8 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        [CallerMustBeSynchronized]
         private protected abstract void CompleteAsTimedOut();
 
-        [CallerMustBeSynchronized]
         private protected abstract void CompleteAsCanceled(CancellationToken token);
 
         private protected static object? CaptureContext()
@@ -103,7 +99,6 @@ namespace DotNext.Threading.Tasks
             return context;
         }
 
-        [CallerMustBeSynchronized]
         private protected void StopTrackingCancellation()
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -160,7 +155,6 @@ namespace DotNext.Threading.Tasks
                 ExecutionContext.Run(context, ContinuationInvoker, this);
         }
 
-        [CallerMustBeSynchronized]
         private protected virtual void ResetCore()
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -273,7 +267,6 @@ namespace DotNext.Threading.Tasks
 
         private protected abstract T Task { get; }
 
-        [CallerMustBeSynchronized]
         private T CreateTaskCore(TimeSpan timeout, CancellationToken token)
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));

@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
     using Runtime;
-    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.
@@ -424,9 +424,10 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task EnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterUpgradeableReadLockAsync(timeout, token).CheckOnTimeout();
 
-        [CallerMustBeSynchronized]
         private void ProcessReadLocks()
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             var readLock = first as ReadLockNode;
             ref var currentState = ref state.Value;
             for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)

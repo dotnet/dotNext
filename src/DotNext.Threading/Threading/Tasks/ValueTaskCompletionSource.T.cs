@@ -7,8 +7,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
 {
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
-
     /// <summary>
     /// Represents the producer side of <see cref="ValueTask{T}"/>.
     /// </summary>
@@ -167,7 +165,6 @@ namespace DotNext.Threading.Tasks
             return result;
         }
 
-        [CallerMustBeSynchronized]
         private void SetResult(Result<T> result)
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -190,7 +187,6 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        [CallerMustBeSynchronized]
         private protected sealed override void ResetCore()
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));

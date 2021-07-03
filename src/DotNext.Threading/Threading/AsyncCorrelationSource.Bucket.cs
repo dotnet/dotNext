@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
+using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
@@ -54,11 +55,11 @@ namespace DotNext.Threading
                 }
             }
 
-            [CallerMustBeSynchronized]
             private bool RemoveCore(WaitNode node)
             {
-                var inList = false;
+                Debug.Assert(Monitor.IsEntered(this));
 
+                var inList = false;
                 if (ReferenceEquals(first, node))
                 {
                     first = node.Next;

@@ -52,6 +52,7 @@ Release Date: 07-XX-2021
 * Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
 * Improved overall performance of extension methods declaring in `RandomExtensions` class
 * Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
+* Deprecation of `CallerMustBeSynchronizedAttribute`
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees

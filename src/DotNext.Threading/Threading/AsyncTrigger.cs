@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
     using static Runtime.Intrinsics;
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     /// <summary>
     /// Represents asynchronous trigger which allows to resume suspended
@@ -75,17 +75,19 @@ namespace DotNext.Threading
         /// <inheritdoc/>
         bool IAsyncEvent.Reset() => false;
 
-        [CallerMustBeSynchronized]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ResumeAndRemove(WaitNode node)
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             node.SetResult();
             RemoveNode(node);
         }
 
-        [CallerMustBeSynchronized]
         private void ResumePendingCallers()
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             // triggers only stateless nodes
             for (WaitNode? current = first, next; current is not null; current = next)
             {
@@ -95,10 +97,11 @@ namespace DotNext.Threading
             }
         }
 
-        [CallerMustBeSynchronized]
         private void ResumePendingCallers<TState>(TState state, bool fairness)
             where TState : class
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.Next;

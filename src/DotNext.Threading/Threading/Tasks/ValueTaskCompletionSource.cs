@@ -9,7 +9,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
 {
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
     using NullExceptionConstant = Generic.DefaultConst<Exception?>;
 
     /// <summary>
@@ -56,7 +55,6 @@ namespace DotNext.Threading.Tasks
 
         private protected sealed override ValueTask Task => new(this, version);
 
-        [CallerMustBeSynchronized]
         private void SetResult(Exception? result)
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -85,7 +83,6 @@ namespace DotNext.Threading.Tasks
         private protected sealed override void CompleteAsCanceled(CancellationToken token)
             => SetResult(OnCanceled(token));
 
-        [CallerMustBeSynchronized]
         private protected sealed override void ResetCore()
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));
