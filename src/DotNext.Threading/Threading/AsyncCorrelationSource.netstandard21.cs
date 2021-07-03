@@ -1,7 +1,5 @@
 #if NETSTANDARD2_1
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
@@ -10,7 +8,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading
 {
     using Tasks;
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     public partial class AsyncCorrelationSource<TKey, TValue>
     {

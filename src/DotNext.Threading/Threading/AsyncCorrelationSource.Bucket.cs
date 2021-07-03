@@ -5,8 +5,6 @@ using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
-    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
-
     public partial class AsyncCorrelationSource<TKey, TValue>
     {
         private sealed partial class WaitNode
