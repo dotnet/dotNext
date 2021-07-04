@@ -1,6 +1,7 @@
 #if !NETSTANDARD2_1
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,6 +87,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Removes all cached tasks.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void ClearCache() => pool.Clear();
     }
 }
