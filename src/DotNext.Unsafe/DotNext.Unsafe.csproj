@@ -45,14 +45,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'!='Release'">
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[3.3.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>
