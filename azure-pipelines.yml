@@ -53,7 +53,7 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
-  - stage: Build Packages
+  - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:
       - job: Pack on Linux
@@ -74,8 +74,8 @@ stages:
           - publish: $(Build.ArtifactStagingDirectory)/artifacts
             displayName: Publish artifacts
             artifact: BuildPackages
-  - stage: Sign Packages
-    condition: succeeded('Build Packages')
+  - stage: SignPackages
+    condition: succeeded('BuildPackages')
     jobs:
       - deployment: CodeSign
         displayName: Code Signing
