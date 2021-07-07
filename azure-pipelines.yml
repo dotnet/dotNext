@@ -11,7 +11,7 @@ trigger:
 stages:
   - stage: Tests
     jobs:
-      - job: Test on Windows
+      - job: Windows
         pool:
           vmImage: windows-latest
         steps:
@@ -31,8 +31,7 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
-              
-      - job: Test on Linux
+      - job: Linux
         pool:
           vmImage: ubuntu-latest
         steps:
@@ -56,7 +55,7 @@ stages:
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:
-      - job: Pack on Linux
+      - job: PackAndPublish
         pool:
           vmImage: ubuntu-latest
         steps:
