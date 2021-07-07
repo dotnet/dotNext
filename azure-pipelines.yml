@@ -86,30 +86,30 @@ stages:
           - group: Sign Client Credentials
         strategy:
           runOnce:
-        deploy:
-          steps:
-            - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
-              displayName: AntiMalware Scan
-              inputs:
-                EnableServices: true
-                FileDirPath: $(Pipeline.Workspace)\BuildPackages
-            - task: DotNetCoreCLI@2
-              displayName: Install SignTool tool
-              inputs:
-                command: custom
-                custom: tool
-                arguments: install --tool-path . SignClient
-            - pwsh: |
-                .\SignClient "Sign" `
-                --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
-                --input "**/*.nupkg" `
-                --config "$(Pipeline.Workspace)\config\signclient.json" `
-                --user "$(SignClientUser)" `
-                --secret '$(SignClientSecret)' `
-                --name ".NEXT" `
-                --description ".NEXT" `
-                --descriptionUrl "https://github.com/dotnet/dotNext"
-              displayName: Sign packages
-            - publish: $(Pipeline.Workspace)/BuildPackages
-              displayName: Publish Signed Packages
-              artifact: SignedPackages
+            deploy:
+              steps:
+                - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
+                  displayName: AntiMalware Scan
+                  inputs:
+                    EnableServices: true
+                    FileDirPath: $(Pipeline.Workspace)\BuildPackages
+                - task: DotNetCoreCLI@2
+                  displayName: Install SignTool tool
+                  inputs:
+                    command: custom
+                    custom: tool
+                    arguments: install --tool-path . SignClient
+                - pwsh: |
+                    .\SignClient "Sign" `
+                    --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
+                    --input "**/*.nupkg" `
+                    --config "$(Pipeline.Workspace)\config\signclient.json" `
+                    --user "$(SignClientUser)" `
+                    --secret '$(SignClientSecret)' `
+                    --name ".NEXT" `
+                    --description ".NEXT" `
+                    --descriptionUrl "https://github.com/dotnet/dotNext"
+                  displayName: Sign packages
+                - publish: $(Pipeline.Workspace)/BuildPackages
+                  displayName: Publish Signed Packages
+                  artifact: SignedPackages
