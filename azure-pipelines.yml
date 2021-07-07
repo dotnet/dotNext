@@ -63,6 +63,7 @@ stages:
             displayName: Pack
             inputs:
               command: pack
+              nobuild: false
               configuration: Release
               packDirectory: $(Build.ArtifactStagingDirectory)/artifacts
               verbosityPack: Minimal
