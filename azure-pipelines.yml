@@ -87,11 +87,6 @@ stages:
           runOnce:
             deploy:
               steps:
-                - task: ms-codeanalysis.vss-microsoft-security-code-analysis-devops.build-task-antimalware.AntiMalware@3
-                  displayName: AntiMalware Scan
-                  inputs:
-                    EnableServices: true
-                    FileDirPath: $(Pipeline.Workspace)\BuildPackages
                 - task: DotNetCoreCLI@2
                   displayName: Install SignTool tool
                   inputs:
