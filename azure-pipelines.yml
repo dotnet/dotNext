@@ -65,15 +65,15 @@ stages:
               command: pack
               nobuild: false
               configuration: Release
-              packDirectory: $(Build.ArtifactStagingDirectory)/artifacts
+              packDirectory: $(Build.ArtifactStagingDirectory)/packages
               verbosityPack: Minimal
               packagesToPack: src/DotNext/DotNext.csproj;src/DotNext.IO/DotNext.IO.csproj;src/DotNext.Metaprogramming/DotNext.Metaprogramming.csproj;src/DotNext.Reflection/DotNext.Reflection.csproj;src/DotNext.Threading/DotNext.Threading.csproj;src/DotNext.Unsafe/DotNext.Unsafe.csproj;src/cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj;src/cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj
           - publish: build
             displayName: Publish signing config
             artifact: config
-          - publish: $(Build.ArtifactStagingDirectory)/artifacts
+          - publish: $(Build.ArtifactStagingDirectory)/packages
             displayName: Publish artifacts
-            artifact: BuildPackages
+            artifact: packages
   - stage: SignPackages
     condition: succeeded('BuildPackages')
     jobs:
@@ -89,9 +89,15 @@ stages:
               command: custom
               custom: tool
               arguments: install --tool-path . SignClient
+          - download: current
+            displayName: Download packages
+            artifact: packages
+          - download: current
+            displayName: Download code sign config
+            artifact: config
           - pwsh: |
               .\SignClient "Sign" `
-              --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
+              --baseDirectory "$(Pipeline.Workspace)\packages" `
               --input "**/*.nupkg" `
               --config "$(Pipeline.Workspace)\config\signclient.json" `
               --user "$(SignClientUser)" `
