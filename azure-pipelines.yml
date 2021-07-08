@@ -81,30 +81,26 @@ stages:
         displayName: Code Signing
         pool:
           vmImage: windows-latest
-        environment: Code Sign - Approvals
         variables:
           - group: Sign Client Credentials
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: DotNetCoreCLI@2
-                  displayName: Install SignTool tool
-                  inputs:
-                    command: custom
-                    custom: tool
-                    arguments: install --tool-path . SignClient
-                - pwsh: |
-                    .\SignClient "Sign" `
-                    --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
-                    --input "**/*.nupkg" `
-                    --config "$(Pipeline.Workspace)\config\signclient.json" `
-                    --user "$(SignClientUser)" `
-                    --secret '$(SignClientSecret)' `
-                    --name ".NEXT" `
-                    --description ".NEXT" `
-                    --descriptionUrl "https://github.com/dotnet/dotNext"
-                  displayName: Sign packages
-                - publish: $(Pipeline.Workspace)/BuildPackages
-                  displayName: Publish Signed Packages
-                  artifact: SignedPackages
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Install SignTool tool
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . SignClient
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
+              --input "**/*.nupkg" `
+              --config "$(Pipeline.Workspace)\config\signclient.json" `
+              --user "$(SignClientUser)" `
+              --secret '$(SignClientSecret)' `
+              --name ".NEXT" `
+              --description ".NEXT" `
+              --descriptionUrl "https://github.com/dotnet/dotNext"
+            displayName: Sign packages
+          - publish: $(Pipeline.Workspace)/BuildPackages
+            displayName: Publish Signed Packages
+            artifact: SignedPackages
