@@ -77,8 +77,7 @@ stages:
   - stage: SignPackages
     condition: succeeded('BuildPackages')
     jobs:
-      - deployment: CodeSign
-        displayName: Code Signing
+      - job: CodeSign
         pool:
           vmImage: windows-latest
         variables:
