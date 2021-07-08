@@ -106,6 +106,6 @@ stages:
               --description ".NEXT" `
               --descriptionUrl "https://github.com/dotnet/dotNext"
             displayName: Sign packages
-          - publish: $(Pipeline.Workspace)/BuildPackages
+          - publish: $(Pipeline.Workspace)/packages
             displayName: Publish Signed Packages
             artifact: SignedPackages
