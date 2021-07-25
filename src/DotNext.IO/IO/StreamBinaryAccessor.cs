@@ -181,7 +181,7 @@ namespace DotNext.IO
         Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
             => stream.CopyToAsync(consumer, buffer, token);
 
-        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
         {
             bytes = default;
             return false;
