@@ -17,6 +17,7 @@ namespace DotNext.Runtime.InteropServices
     public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyList<T>, IEquatable<PinnedArray<T>>
         where T : unmanaged
     {
+        private const string ElementDelimiter = ",";
         private readonly T[]? array;
 
         /// <summary>
@@ -214,7 +215,7 @@ namespace DotNext.Runtime.InteropServices
         /// Returns a string that represents the current array.
         /// </summary>
         /// <returns>A string that represents the current array.</returns>
-        public override string? ToString() => Array.ToString();
+        public override string? ToString() => Pointer.ToString();
 
         /// <summary>
         /// Determines whether the current object references the same array as other object.
