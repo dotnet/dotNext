@@ -54,9 +54,11 @@ Release Date: 07-XX-2021
 * Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
 * Deprecation of `CallerMustBeSynchronizedAttribute`
 * Fixed backward compatibility issues when _DotNext 3.2.x_ or later used in combination with _DotNext.IO 3.1.x_
+* Fixed LGTM warnings
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
+* Fixed LGTM warnings
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
