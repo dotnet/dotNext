@@ -76,7 +76,22 @@ var greeting = Lambda<Action<string>>(fun =>
 	Embed<Action<string>>(str => Console.WriteLine("Hello, {0}", str), fun[0]);
 });
 
-//the generated code is
+// the generated code is
 
 new Action<string>(str => Console.WriteLine("Hello, {0}", str)));
+```
+
+# Statement
+Migration of third-party code from plain _Expression Trees_ to .NEXT Metaprogramming can be challenging due to differences in programming model. The code based on [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) class implements construction of expression trees. The code based on `CodeGenerator` class implements natural flow of the code: each call of static method represents a single statement. `CodeGenerator.Statement` static method bridges the gap between two programming model and simplifies code migration:
+```csharp
+using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+var greeting = Lambda<Func<int, int, int>>(fun =>
+{
+	Statement(Expression.Add(fun[0], fun[1]));
+});
+
+// the generated code is
+new Func<int, int, int>((x, y) => x + y);
 ```
