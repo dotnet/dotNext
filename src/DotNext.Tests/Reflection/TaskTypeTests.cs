@@ -28,5 +28,19 @@ namespace DotNext.Reflection
             Equal(typeof(int), task.GetTaskType());
             Equal(typeof(ValueTask<int>), typeof(int).MakeTaskType(true));
         }
+
+        [Fact]
+        public static void IsCompletedSuccessfullyPropertyGetter()
+        {
+            var task = Task.CompletedTask;
+            True(TaskType.IsCompletedSuccessfullyGetter(task));
+        }
+
+        [Fact]
+        public static void GetResultSynchronously()
+        {
+            var task = Task.FromResult(42);
+            Equal(42, TaskType.GetResultGetter<int>().Invoke(task));
+        }
     }
 }

@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
     using Runtime;
-    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.
@@ -424,10 +424,11 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task EnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterUpgradeableReadLockAsync(timeout, token).CheckOnTimeout();
 
-        [CallerMustBeSynchronized]
         private void ProcessReadLocks()
         {
-            var readLock = head as ReadLockNode;
+            Debug.Assert(Monitor.IsEntered(this));
+
+            var readLock = first as ReadLockNode;
             ref var currentState = ref state.Value;
             for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)
             {
@@ -473,7 +474,7 @@ namespace DotNext.Threading
             currentState.Upgradeable = false;
 
             // no more readers, write lock can be acquired
-            if (--currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
+            if (--currentState.ReadLocks == 0L && first is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.SetResult();
@@ -505,7 +506,7 @@ namespace DotNext.Threading
             if (ProcessDisposeQueue())
                 return;
 
-            if (head is WriteLockNode writeLock)
+            if (first is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.SetResult();
@@ -534,7 +535,7 @@ namespace DotNext.Threading
             if (currentState.WriteLock || currentState.ReadLocks == 1L && currentState.Upgradeable || currentState.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
 
-            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
+            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && first is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.SetResult();

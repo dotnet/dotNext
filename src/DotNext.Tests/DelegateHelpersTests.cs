@@ -191,6 +191,14 @@ namespace DotNext
         }
 
         [Fact]
+        public static void TypeCheck()
+        {
+            var obj = "Hello, world!";
+            True(Func.IsTypeOf<string>().Invoke(obj));
+            False(Func.IsTypeOf<int>().Invoke(obj));
+        }
+
+        [Fact]
         public static void Conversion()
         {
             var conv = new Converter<string, int>(int.Parse);

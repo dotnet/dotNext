@@ -86,11 +86,37 @@ namespace DotNext
     /// that acts as activator of type with public parameterless constructor.
     /// </summary>
     /// <typeparam name="T">The type with public parameterless constructor.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Activator<T> : ISupplier<T>
         where T : new()
     {
         /// <inheritdoc />
         T ISupplier<T>.Invoke() => new();
+    }
+
+    /// <summary>
+    /// Represents constant value supplier.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to supply.</typeparam>
+    public readonly struct ValueSupplier<T> : ISupplier<T>
+    {
+        private readonly T value;
+
+        /// <summary>
+        /// Creates a new wrapper for the value.
+        /// </summary>
+        /// <param name="value">The value to wrap.</param>
+        public ValueSupplier(T value) => this.value = value;
+
+        /// <inheritdoc />
+        T ISupplier<T>.Invoke() => value;
+
+        /// <summary>
+        /// Creates constant value supplier.
+        /// </summary>
+        /// <param name="value">The value to wrap.</param>
+        /// <returns>The wrapper over the value.</returns>
+        public static implicit operator ValueSupplier<T>(T value) => new(value);
     }
 
     /// <summary>

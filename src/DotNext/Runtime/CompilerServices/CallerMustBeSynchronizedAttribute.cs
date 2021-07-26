@@ -14,6 +14,7 @@ namespace DotNext.Runtime.CompilerServices
     [Conditional("DEBUG")]
     [CLSCompliant(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("Use Debug.Assert(Monitor.IsEntered(obj)) instead", true)]
     public sealed class CallerMustBeSynchronizedAttribute : Attribute
     {
     }

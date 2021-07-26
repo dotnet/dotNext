@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using IO;
-    using IO.Log;
     using Runtime.Serialization;
 
     /// <summary>
@@ -17,7 +16,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
     public readonly struct LogEntry<TCommand> : IRaftLogEntry
         where TCommand : struct
     {
-        private readonly TCommand command;
         private readonly IFormatter<TCommand> formatter;
         private readonly int id;
 
@@ -25,10 +23,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         {
             Term = term;
             Timestamp = DateTimeOffset.Now;
-            this.command = command;
+            Command = command;
             this.formatter = formatter;
             this.id = id;
         }
+
+        /// <summary>
+        /// Gets the command associated with this log entry.
+        /// </summary>
+        public TCommand Command { get; }
 
         /// <inheritdoc />
         public long Term { get; }
@@ -47,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         {
             get
             {
-                var result = formatter.GetLength(command);
+                var result = formatter.GetLength(Command);
                 if (result.TryGetValue(out var length))
                     result = new long?(length + sizeof(int));
 
@@ -55,15 +58,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             }
         }
 
-        private async ValueTask WriteIdAndContentAsync<TWriter>(TWriter writer, CancellationToken token)
-            where TWriter : notnull, IAsyncBinaryWriter
-        {
-            await writer.WriteInt32Async(id, true, token).ConfigureAwait(false);
-            await formatter.SerializeAsync(command, writer, token).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => formatter.SerializeAsync(command, writer, token);
+            => formatter.SerializeAsync(Command, writer, token);
     }
 }

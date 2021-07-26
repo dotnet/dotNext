@@ -12,8 +12,6 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public static class Synchronization
     {
-        private static readonly Func<Task, bool> TrueContinuation = task => true;
-
         /// <summary>
         /// Gets task result synchronously.
         /// </summary>
@@ -206,7 +204,7 @@ namespace DotNext.Threading.Tasks
             else if (!token.CanBeCanceled && task is Task<bool> boolTask)
                 result = boolTask;
             else
-                result = task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                result = task.ContinueWith(static task => true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
             return result;
         }

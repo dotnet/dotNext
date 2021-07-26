@@ -17,10 +17,10 @@ namespace DotNext
         [Fact]
         public static void BetweenTest()
         {
-            True(15M.Between(10M, 20M));
-            False(10M.Between(10M, 20M, BoundType.Open));
-            True(10M.Between(10M, 20M, BoundType.LeftClosed));
-            False(15M.Between(10M, 12M));
+            True(15M.IsBetween(10M, 20M));
+            False(10M.IsBetween(10M, 20M, BoundType.Open));
+            True(10M.IsBetween(10M, 20M, BoundType.LeftClosed));
+            False(15M.IsBetween(10M, 12M));
         }
     }
 }

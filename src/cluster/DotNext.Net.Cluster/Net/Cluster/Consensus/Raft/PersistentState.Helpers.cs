@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if the entry has been committed successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="TimeoutException">The operation has timed out.</exception>
-        public async Task<bool> AppendAndEnsureCommitAsync<TEntry>(TEntry entry, TimeSpan timeout, bool addToCache = false, CancellationToken token = default)
+        public async Task<bool> AppendAndEnsureCommitAsync<TEntry>(TEntry entry, TimeSpan timeout, bool addToCache = true, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             var index = await AppendAsync(entry, addToCache, token).ConfigureAwait(false);

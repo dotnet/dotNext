@@ -67,7 +67,7 @@ namespace DotNext.Collections.Generic
             False(view.ContainsKey("three"));
             True(view.ContainsKey("two"));
             foreach (var (key, value) in view)
-                if (!value.Between(0, 2, BoundType.Closed))
+                if (!value.IsBetween(0, 2, BoundType.Closed))
                     throw new Exception();
         }
 

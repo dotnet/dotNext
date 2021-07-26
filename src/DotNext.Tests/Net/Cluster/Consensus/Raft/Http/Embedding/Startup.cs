@@ -19,6 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             services.AddOptions()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
+                .AddSingleton<IInputChannel, TestMessageHandler>()
                 .AddSingleton<IInputChannel, Mailbox>()
                 .AddSingleton<MetricsCollector, TestMetricsCollector>();
         }

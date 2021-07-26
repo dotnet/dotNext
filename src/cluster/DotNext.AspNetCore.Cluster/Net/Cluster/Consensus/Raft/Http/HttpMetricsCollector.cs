@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Tracing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -20,6 +21,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <param name="value">The response time.</param>
         public virtual void ReportResponseTime(TimeSpan value)
         {
+        }
+
+        /// <inheritdoc/>
+        void IClientMetricsCollector.ReportResponseTime(TimeSpan value)
+        {
+            ResponseTimeCounter?.WriteMetric(value.TotalMilliseconds);
+            ReportResponseTime(value);
+        }
+
+        /// <summary>
+        /// Gets or sets counter that allows to count response time from every cluster node.
+        /// </summary>
+        public EventCounter? ResponseTimeCounter
+        {
+            get;
+            set;
         }
     }
 }

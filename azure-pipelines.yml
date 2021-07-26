@@ -1,50 +1,111 @@
 variables:
-    Solution: src/DotNext.sln
-    TestFolder: src/DotNext.Tests
-    TestProject: $(TestFolder)/DotNext.Tests.csproj
-    InternetAccess: false
+  Solution: src/DotNext.sln
+  TestFolder: src/DotNext.Tests
+  TestProject: $(TestFolder)/DotNext.Tests.csproj
+  InternetAccess: false
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 trigger:
-    - master
-    - develop
-jobs:
-    - job: Windows
-      pool:
-        vmImage: windows-2019
-      steps:
-        - task: DotNetCoreCLI@2
-          inputs:
-            command: 'restore'
-            projects: '$(Solution)'
-            feedsToUse: 'config'
-            nugetConfigPath: 'NuGet.config'
-            arguments: --configuration Debug
-        - task: DotNetCoreCLI@2
-          displayName: Test Debug
-          inputs:
-            command: test
-            projects: $(TestProject)
-            arguments: --configuration Debug --collect "Code coverage"
-            nobuild: false
-            testRunTitle: 'Debug on Windows'
-            publishTestResults: true
-            
-    - job: Linux
-      pool:
-        vmImage: ubuntu-18.04
-      steps:
-        - task: DotNetCoreCLI@2
-          inputs:
-            command: 'restore'
-            projects: '$(Solution)'
-            feedsToUse: 'config'
-            nugetConfigPath: 'NuGet.config'
-            arguments: --configuration Debug
-        - task: DotNetCoreCLI@2
-          displayName: Test Debug
-          inputs:
-            command: test
-            projects: $(TestProject)
-            arguments: --configuration Debug --collect "Code coverage"
-            nobuild: false
-            testRunTitle: 'Debug on Linux'
-            publishTestResults: true
+  - master
+  - develop
+stages:
+  - stage: Tests
+    jobs:
+      - job: Windows
+        pool:
+          vmImage: windows-latest
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Restore Packages
+            inputs:
+              command: restore
+              projects: '$(Solution)'
+              feedsToUse: 'config'
+              nugetConfigPath: 'NuGet.config'
+          - task: DotNetCoreCLI@2
+            displayName: Test Debug
+            inputs:
+              command: test
+              projects: $(TestProject)
+              arguments: --configuration Debug --collect "Code coverage"
+              nobuild: false
+              testRunTitle: 'Debug on Windows'
+              publishTestResults: true
+      - job: Linux
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Restore Packages
+            inputs:
+              command: restore
+              projects: '$(Solution)'
+              feedsToUse: 'config'
+              nugetConfigPath: 'NuGet.config'
+              arguments: --configuration Debug
+          - task: DotNetCoreCLI@2
+            displayName: Test Debug
+            inputs:
+              command: test
+              projects: $(TestProject)
+              arguments: --configuration Debug --collect "Code coverage"
+              nobuild: false
+              testRunTitle: 'Debug on Linux'
+              publishTestResults: true
+  - stage: BuildPackages
+    condition: and(succeeded('Tests'), eq(variables.isMain, true))
+    jobs:
+      - job: PackAndPublish
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Pack
+            inputs:
+              command: pack
+              nobuild: false
+              configuration: Release
+              packDirectory: $(Build.ArtifactStagingDirectory)/packages
+              verbosityPack: Minimal
+              packagesToPack: src/DotNext/DotNext.csproj;src/DotNext.IO/DotNext.IO.csproj;src/DotNext.Metaprogramming/DotNext.Metaprogramming.csproj;src/DotNext.Reflection/DotNext.Reflection.csproj;src/DotNext.Threading/DotNext.Threading.csproj;src/DotNext.Unsafe/DotNext.Unsafe.csproj;src/cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj;src/cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj
+          - publish: build
+            displayName: Publish signing config
+            artifact: config
+          - publish: $(Build.ArtifactStagingDirectory)/packages
+            displayName: Publish artifacts
+            artifact: packages
+  - stage: SignPackages
+    condition: succeeded('BuildPackages')
+    jobs:
+      - job: CodeSign
+        pool:
+          vmImage: windows-latest
+        variables:
+          - group: Sign Client Credentials
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Install SignTool tool
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . SignClient
+          - download: current
+            displayName: Download packages
+            artifact: packages
+          - download: current
+            displayName: Download code sign config
+            artifact: config
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\packages" `
+              --input "**/*.nupkg" `
+              --config "$(Pipeline.Workspace)\config\signclient.json" `
+              --user "$(SignClientUser)" `
+              --secret '$(SignClientSecret)' `
+              --name ".NEXT" `
+              --description ".NEXT" `
+              --descriptionUrl "https://github.com/dotnet/dotNext"
+            displayName: Sign packages
+          - publish: $(Pipeline.Workspace)/packages
+            displayName: Publish Signed Packages
+            artifact: SignedPackages

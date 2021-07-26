@@ -494,8 +494,8 @@ namespace DotNext.IO
         public static void EmptyReader()
         {
             var reader = IAsyncBinaryReader.Empty;
-            True(reader.TryGetSpan(out var span));
-            True(span.IsEmpty);
+            True(reader.TryGetSequence(out var sequence));
+            True(sequence.IsEmpty);
             True(reader.SkipAsync(0).IsCompletedSuccessfully);
             True(reader.CopyToAsync(Stream.Null).IsCompletedSuccessfully);
             True(reader.CopyToAsync(new ArrayBufferWriter<byte>()).IsCompletedSuccessfully);

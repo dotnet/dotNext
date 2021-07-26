@@ -16,7 +16,17 @@ namespace DotNext
         /// <summary>
         /// Represents randomly chosen salt for hash code algorithms.
         /// </summary>
-        internal static readonly int BitwiseHashSalt = new Random().Next();
+        internal static readonly int BitwiseHashSalt;
+
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
+        static unsafe RandomExtensions()
+        {
+            Unsafe.SkipInit(out int i);
+            RandomNumberGenerator.Fill(new Span<byte>(&i, sizeof(int)));
+            BitwiseHashSalt = i;
+        }
 
         private static void NextString(Random rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
@@ -112,7 +122,7 @@ namespace DotNext
         /// <returns>Randomly generated boolean value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
         public static bool NextBoolean(this Random random, double trueProbability = 0.5D)
-            => trueProbability.Between(0D, 1D, BoundType.Closed) ?
+            => trueProbability.IsBetween(0D, 1D, BoundType.Closed) ?
                     random.NextDouble() >= 1.0D - trueProbability :
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
@@ -132,7 +142,7 @@ namespace DotNext
         /// <returns>Randomly generated boolean value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
         public static bool NextBoolean(this RandomNumberGenerator random, double trueProbability = 0.5D)
-            => trueProbability.Between(0D, 1D, BoundType.Closed) ?
+            => trueProbability.IsBetween(0D, 1D, BoundType.Closed) ?
                     random.NextDouble() >= (1.0D - trueProbability) :
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
@@ -142,12 +152,7 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
         public static double NextDouble(this RandomNumberGenerator random)
-        {
-            double result = random.Next();
-
-            // normalize to range [0, 1)
-            return result / (result + 1D);
-        }
+            => random.Next<ulong>().Normalize();
 
         /// <summary>
         /// Generates random value of blittable type.
@@ -155,10 +160,13 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static unsafe T Next<T>(this Random random)
             where T : unmanaged
         {
-            var result = default(T);
+            Unsafe.SkipInit(out T result);
             random.NextBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
@@ -169,10 +177,13 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static unsafe T Next<T>(this RandomNumberGenerator random)
             where T : unmanaged
         {
-            var result = default(T);
+            Unsafe.SkipInit(out T result);
             random.GetBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }

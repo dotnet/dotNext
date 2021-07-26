@@ -125,9 +125,9 @@ namespace DotNext.IO
         ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
             => length == 0 ? new() : EndOfStream();
 
-        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
         {
-            bytes = ReadOnlySpan<byte>.Empty;
+            bytes = ReadOnlySequence<byte>.Empty;
             return true;
         }
 

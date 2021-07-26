@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
@@ -775,8 +774,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The expected type of object.</typeparam>
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsExactTypeOf<T>(object? obj)
-            => obj is not null && obj.GetType() == typeof(T);
+        public static bool IsExactTypeOf<T>(object? obj) => obj?.GetType() == typeof(T);
 
         /// <summary>
         /// Throws arbitrary object as exception.

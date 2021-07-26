@@ -1514,17 +1514,10 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
-        bool IAsyncBinaryReader.TryGetSpan(out ReadOnlySpan<byte> bytes)
+        bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
         {
-            var sequence = RemainingSequence;
-            if (sequence.IsSingleSegment)
-            {
-                bytes = sequence.FirstSpan;
-                return true;
-            }
-
-            bytes = default;
-            return false;
+            bytes = RemainingSequence;
+            return true;
         }
     }
 }

@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using static Buffers.BufferHelpers;
+
     internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
     {
+        // TODO: Move to GetOffset method in .NET 6
         private ReadOnlySequence<byte> sequence;
         private long position;
 
@@ -16,6 +19,8 @@ namespace DotNext.IO
             this.sequence = sequence;
             position = 0L;
         }
+
+        private ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
 
         public override bool CanSeek => true;
 
@@ -35,18 +40,18 @@ namespace DotNext.IO
 
         public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
         {
-            for (var position = sequence.GetPosition(this.position); sequence.TryGet(ref position, out var segment) && !segment.IsEmpty; this.position += segment.Length)
-            {
+            foreach (var segment in RemainingSequence)
                 await destination.WriteAsync(segment, token).ConfigureAwait(false);
-            }
+
+            position = sequence.Length;
         }
 
         public override void CopyTo(Stream destination, int bufferSize)
         {
-            for (var position = sequence.GetPosition(this.position); sequence.TryGet(ref position, out var segment) && !segment.IsEmpty; this.position += segment.Length)
-            {
+            foreach (var segment in RemainingSequence)
                 destination.Write(segment.Span);
-            }
+
+            position = sequence.Length;
         }
 
         public override void SetLength(long value)
@@ -57,15 +62,9 @@ namespace DotNext.IO
 
         public override int Read(Span<byte> buffer)
         {
-            var remaining = sequence.Length - position;
-
-            if (remaining <= 0L || buffer.Length == 0)
-                return 0;
-
-            var count = (int)Math.Min(buffer.Length, remaining);
-            sequence.Slice(position, count).CopyTo(buffer);
-            position += count;
-            return count;
+            RemainingSequence.CopyTo(buffer, out var writtenCount);
+            position += writtenCount;
+            return writtenCount;
         }
 
         public override long Seek(long offset, SeekOrigin origin)

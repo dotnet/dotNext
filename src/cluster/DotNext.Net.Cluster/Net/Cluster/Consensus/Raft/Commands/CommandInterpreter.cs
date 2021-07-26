@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using IO.Log;
+    using Runtime.CompilerServices;
     using Runtime.Serialization;
     using static Reflection.MethodExtensions;
     using static Runtime.Intrinsics;
@@ -18,9 +20,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
     /// </summary>
     /// <remarks>
     /// The interpreter can be constructed in two ways: using <see cref="CommandInterpreter.Builder"/>
-    /// and through inheritance. If you choose the inheritance then command handlers can be declared
-    /// as public methods marked with <see cref="CommandInterpreter.CommandHandlerAttribute"/> attribute.
-    /// Otherwise, command handlers can be registered through builder.
+    /// and through inheritance. If you choose the inheritance then command handlers must be declared
+    /// as public instance methods marked with <see cref="CommandInterpreter.CommandHandlerAttribute"/> attribute.
+    /// Otherwise, command handlers can be registered through the builder.
     /// Typically, the interpreter is aggregated by the class derived from <see cref="PersistentState"/>.
     /// </remarks>
     public partial class CommandInterpreter : Disposable
@@ -80,6 +82,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// Initializes a new interpreter and discovers methods marked
         /// with <see cref="CommandHandlerAttribute"/> attribute.
         /// </summary>
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(CommandHandler<>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,>))]
+#endif
+        [RuntimeFeatures(RuntimeGenericInstantiation = true)]
         protected CommandInterpreter()
         {
             var interpreters = new Dictionary<int, CommandHandler>();

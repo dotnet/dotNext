@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
     using Runtime;
-    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents a lock that can be acquired in exclusive or weak mode.
@@ -160,11 +159,12 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
 
-        [CallerMustBeSynchronized]
         private void ResumePendingCallers()
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             ref var stateHolder = ref state.Value;
-            for (WaitNode? current = head, next; current is not null && current is not StrongLockNode && !IsTerminalNode(current) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
+            for (WaitNode? current = first, next; current is not null && current is not StrongLockNode && !IsTerminalNode(current) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);
@@ -172,11 +172,12 @@ namespace DotNext.Threading
             }
         }
 
-        [CallerMustBeSynchronized]
         private void Release(ref State stateHolder)
         {
+            Debug.Assert(Monitor.IsEntered(this));
             Debug.Assert(Unsafe.AreSame(ref stateHolder, ref state.Value));
-            if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
+
+            if (stateHolder.IncrementLocks() == ConcurrencyLevel && first is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
                 exclusiveNode.SetResult();

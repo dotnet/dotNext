@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
 {
     using Generic;
-    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Represents cache of completed tasks.
@@ -24,7 +24,10 @@ namespace DotNext.Threading.Tasks
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsFaulted(Task<T> task, object? predicate)
-            => task.IsFaulted && Cast<Predicate<AggregateException>>(predicate).Invoke(task.Exception!);
+        {
+            Debug.Assert(predicate is Predicate<AggregateException>);
+            return task.IsFaulted && Unsafe.As<Predicate<AggregateException>>(predicate).Invoke(task.Exception!);
+        }
 
         internal static T WhenFaulted(Task<T> task, object? predicate)
             => IsFaulted(task, predicate) ? Value : task.GetAwaiter().GetResult();

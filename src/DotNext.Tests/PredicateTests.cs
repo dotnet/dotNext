@@ -64,5 +64,13 @@ namespace DotNext
             Equal(true, pred.TryInvoke(11));
             IsType<ArithmeticException>(pred.TryInvoke(9).Error);
         }
+
+        [Fact]
+        public static void TypeCheck()
+        {
+            var obj = "Hello, world!";
+            True(Predicate.IsTypeOf<string>().Invoke(obj));
+            False(Predicate.IsTypeOf<int>().Invoke(obj));
+        }
     }
 }

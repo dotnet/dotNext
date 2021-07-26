@@ -337,7 +337,8 @@ namespace DotNext.Runtime.CompilerServices
             for (var i = arguments.LongLength - 1L; i >= 0L; i--)
             {
                 ref Expression arg = ref arguments[i];
-                if (hasAwait |= ExpressionAttributes.Get(arg)?.ContainsAwait ?? false)
+                hasAwait |= ExpressionAttributes.Get(arg)?.ContainsAwait ?? false;
+                if (hasAwait)
                 {
                     var tempVar = NewStateSlot(arg.Type);
                     codeInsertionPoint(Expression.Assign(tempVar, arg));

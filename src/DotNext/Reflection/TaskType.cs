@@ -1,5 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Reflection
 {
@@ -13,7 +17,32 @@ namespace DotNext.Reflection
     /// <seealso cref="Task{TResult}"/>
     public static class TaskType
     {
-        internal static readonly Type CompletedTaskType = Task.CompletedTask.GetType();
+        private static class Cache<T>
+        {
+            internal static readonly Func<Task<T>, T> ResultGetter;
+
+            static Cache()
+            {
+                Ldnull();
+                Ldftn(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
+                Newobj(Constructor(Type<Func<Task<T>, T>>(), Type<object>(), Type<IntPtr>()));
+                Pop(out Func<Task<T>, T> propertyGetter);
+                ResultGetter = propertyGetter;
+            }
+        }
+
+        internal static readonly Type CompletedTaskType;
+
+        static TaskType()
+        {
+            CompletedTaskType = Task.CompletedTask.GetType();
+
+            Ldnull();
+            Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
+            Newobj(Constructor(Type<Func<Task, bool>>(), Type<object>(), Type<IntPtr>()));
+            Pop(out Func<Task, bool> propertyGetter);
+            IsCompletedSuccessfullyGetter = propertyGetter;
+        }
 
         /// <summary>
         /// Returns task type for the specified result type.
@@ -80,5 +109,17 @@ namespace DotNext.Reflection
 
             return null;
         }
+
+        /// <summary>
+        /// Gets delegate representing getter of <see cref="Task{T}.Result"/> property.
+        /// </summary>
+        /// <typeparam name="T">The type of task result.</typeparam>
+        /// <returns>The delegate representing <see cref="Task{T}.Result"/> property getter.</returns>
+        public static Func<Task<T>, T> GetResultGetter<T>() => Cache<T>.ResultGetter;
+
+        /// <summary>
+        /// Gets delegate representing getter of <see cref="Task.IsCompletedSuccessfully"/> property.
+        /// </summary>
+        public static Func<Task, bool> IsCompletedSuccessfullyGetter { get; }
     }
 }

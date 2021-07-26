@@ -274,5 +274,57 @@ namespace DotNext
             True(2.IsOneOf(new List<int> { 2, 5, 7 }));
             False(2.IsOneOf(new List<int> { 3, 5, 7 }));
         }
+
+        [Fact]
+        public static void NormalizeToSingle()
+        {
+            Equal(1F, int.MaxValue.NormalizeToSingle(int.MinValue, int.MaxValue));
+            Equal(-1F, int.MinValue.NormalizeToSingle(int.MinValue, int.MaxValue));
+        }
+
+        [Fact]
+        public static void NormalizeToDouble()
+        {
+            Equal(1F, int.MaxValue.NormalizeToDouble(int.MinValue, int.MaxValue));
+            Equal(-1F, int.MinValue.NormalizeToDouble(int.MinValue, int.MaxValue));
+        }
+
+        [Fact]
+        public static void WeightOfUInt64()
+        {
+            var weight = 0UL.Normalize();
+            Equal(0D, weight);
+
+            weight = ulong.MaxValue.Normalize();
+            Equal(0.9999999999999999D, weight);
+
+            weight = (ulong.MaxValue - 1UL).Normalize();
+            Equal(0.9999999999999998D, weight);
+        }
+
+        [Fact]
+        public static void WeightOfInt64()
+        {
+            Equal(unchecked((ulong)long.MaxValue).Normalize(), long.MaxValue.Normalize());
+        }
+
+        [Fact]
+        public static void WeightOfUInt32()
+        {
+            var weight = 0U.Normalize();
+            Equal(0F, weight);
+
+            weight = uint.MaxValue.Normalize();
+            Equal(0.99999994F, weight);
+
+            weight = (uint.MaxValue - 1U).Normalize();
+            Equal(0.9999999F, weight);
+        }
+
+        [Fact]
+        public static void WeightOfInt32()
+        {
+            Equal(unchecked((uint)int.MaxValue).Normalize(), int.MaxValue.Normalize());
+        }
     }
 }

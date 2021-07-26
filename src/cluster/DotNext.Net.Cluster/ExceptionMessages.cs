@@ -60,5 +60,11 @@ namespace DotNext
             => Resources.Get().Format(typeof(TCommand));
 
         internal static string MissingCommandId => (string)Resources.Get();
+
+        internal static string MissingMessageAttribute<T>()
+            => Resources.Get().Format(typeof(T));
+
+        internal static string MissingMessageFormatter<T>()
+            => Resources.Get().Format(typeof(T));
     }
 }

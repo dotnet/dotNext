@@ -21,3 +21,5 @@ UnknownCommand=Command with id {0} cannot be recognized by the interpreter
 MissingCommandFormatter=Command of type {0} doesn't have registered formatter
 MissingCommandAttribute=Type {0} is not marked with CommandAttribute
 MissingCommandId=Log entry must have associated command identifier
+MissingMessageAttribute=Type {0} is not marked with MessageAttribute
+MissingMessageFormatter=Message of type {0} doesn't have registered formatter

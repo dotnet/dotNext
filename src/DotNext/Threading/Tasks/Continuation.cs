@@ -2,14 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.Threading.Tasks
 {
     using Generic;
+    using static Reflection.TaskType;
     using static Runtime.Intrinsics;
 
     internal static class Continuation<T, TConstant>
@@ -197,26 +194,21 @@ namespace DotNext.Threading.Tasks
         /// <exception cref="TimeoutException">The timeout has occurred.</exception>
         public static Task<T> ContinueWithTimeout<T>(this Task<T> task, TimeSpan timeout, CancellationToken token = default)
         {
+            // TODO: Replace with Task.WaitAsync in .NET 6
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 return Task.FromException<T>(new ArgumentOutOfRangeException(nameof(timeout)));
             if (token.IsCancellationRequested)
                 return Task.FromCanceled<T>(token);
             if (task.IsCompleted)
                 return task;
-            if (timeout == TimeSpan.Zero)
-                return Task.FromException<T>(new TimeoutException());
-            if (timeout > InfiniteTimeSpan)
-                return WaitAsyncImpl<T>(task, timeout, token);
-            if (token.CanBeCanceled)
-            {
-                Ldnull();
-                Ldftn(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
-                Newobj(Constructor(Type<Func<Task<T>, T>>(), Type<object>(), Type<IntPtr>()));
-                Pop(out Func<Task<T>, T> continuation);
-                return task.ContinueWith(continuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
-            }
 
-            return task;
+            return timeout.CompareTo(TimeSpan.Zero) switch
+            {
+                0 => Task.FromException<T>(new TimeoutException()),
+                > 0 => WaitAsyncImpl(task, timeout, token),
+                _ when token.CanBeCanceled => task.ContinueWith(GetResultGetter<T>(), token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default),
+                _ => task,
+            };
         }
     }
 }
