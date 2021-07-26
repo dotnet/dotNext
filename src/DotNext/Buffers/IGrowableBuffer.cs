@@ -98,7 +98,11 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="block">The block representing written content.</param>
         /// <returns><see langword="true"/> if the written content can be represented as contiguous block of memory; otherwise, <see langword="false"/>.</returns>
-        bool TryGetWrittenContent(out ReadOnlyMemory<T> block);
+        bool TryGetWrittenContent(out ReadOnlyMemory<T> block)
+        {
+            block = default;
+            return false;
+        }
 
         internal static int? GetBufferSize(int sizeHint, int capacity, int writtenCount)
         {
