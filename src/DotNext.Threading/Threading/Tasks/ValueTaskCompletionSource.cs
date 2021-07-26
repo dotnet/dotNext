@@ -119,7 +119,7 @@ namespace DotNext.Threading.Tasks
         /// <returns>The exception representing task result; or <see langword="null"/> to complete successfully.</returns>
         protected virtual Exception? OnCanceled(CancellationToken token) => new OperationCanceledException(token);
 
-        private unsafe bool TrySetResult<TFactory>(TFactory factory)
+        private bool TrySetResult<TFactory>(TFactory factory)
             where TFactory : notnull, ISupplier<Exception?>
         {
             bool result;
@@ -146,7 +146,7 @@ namespace DotNext.Threading.Tasks
             return result;
         }
 
-        private unsafe bool TrySetResult<TFactory>(short completionToken, TFactory factory)
+        private bool TrySetResult<TFactory>(short completionToken, TFactory factory)
             where TFactory : notnull, ISupplier<Exception?>
         {
             bool result;
@@ -178,7 +178,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        public sealed override unsafe bool TrySetCanceled(CancellationToken token)
+        public sealed override bool TrySetCanceled(CancellationToken token)
             => TrySetResult<OperationCanceledExceptionFactory>(token);
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
+        public bool TrySetCanceled(short completionToken, CancellationToken token)
             => TrySetResult<OperationCanceledExceptionFactory>(completionToken, token);
 
          /// <summary>
@@ -195,7 +195,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        public sealed override unsafe bool TrySetException(Exception e)
+        public sealed override bool TrySetException(Exception e)
             => TrySetResult<ValueSupplier<Exception>>(e);
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-        public unsafe bool TrySetException(short completionToken, Exception e)
+        public bool TrySetException(short completionToken, Exception e)
             => TrySetResult<ValueSupplier<Exception>>(completionToken, e);
 
         /// <summary>
