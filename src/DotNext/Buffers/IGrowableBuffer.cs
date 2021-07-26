@@ -100,6 +100,7 @@ namespace DotNext.Buffers
         /// <returns><see langword="true"/> if the written content can be represented as contiguous block of memory; otherwise, <see langword="false"/>.</returns>
         bool TryGetWrittenContent(out ReadOnlyMemory<T> block)
         {
+            // TODO: Default implementation must be removed in .NEXT 4
             block = default;
             return false;
         }
