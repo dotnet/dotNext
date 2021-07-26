@@ -17,7 +17,6 @@ namespace DotNext.Runtime.InteropServices
     public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyList<T>, IEquatable<PinnedArray<T>>
         where T : unmanaged
     {
-        private const string ElementDelimiter = ",";
         private readonly T[]? array;
 
         /// <summary>
