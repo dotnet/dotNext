@@ -93,7 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public double HeartbeatThreshold
             {
                 get => heartbeatThreshold;
-                set => heartbeatThreshold = value.Between(double.Epsilon, 1D, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+                set => heartbeatThreshold = value.IsBetween(double.Epsilon, 1D, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>

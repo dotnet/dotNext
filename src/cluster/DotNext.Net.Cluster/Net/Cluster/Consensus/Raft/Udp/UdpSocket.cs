@@ -97,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         IPEndPoint INetworkTransport.Address => Address;
 
         internal static int ValidateDatagramSize(int value)
-            => value.Between(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            => value.IsBetween(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
 
         internal int DatagramSize
         {
