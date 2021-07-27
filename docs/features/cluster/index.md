@@ -33,6 +33,74 @@ Usually, you don't to implement `IMessage` interface directly due to existence o
 1. [TextMessage](xref:DotNext.Net.Cluster.Messaging.TextMessage) for textual content
 1. [JsonMessage&lt;T&gt;](xref:DotNext.Net.Cluster.Messaging.JsonMessage`1) for JSON-serializable types
 
+## Typed Clients and Listeners
+[IMessage](xref:DotNext.Net.Cluster.Messaging.IMessage) is a low-level interface that requires a lot of boilerplate code for creating and parsing messages. It's much better to concentrate on message handling logic and hide low-level details. The same approach is used in [typed HTTP clients](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests) in ASP.NET Core.
+
+Typed message client or listener consists of the following parts:
+* DTO models
+* Serialization/deserialization logic for DTO models
+* Message handling logic (for listener)
+
+Typed message client is represented by [MessageClient](xref:DotNext.Net.Cluster.Messaging.MessageClient) class. Its methods for sending messages are generic methods. The actual generic argument must represent DTO model describing message payload. The model must be marked with [MessageAttribute](xref:DotNext.Net.Cluster.Messaging.MessageAttribute):
+```csharp
+[Message("Add", MimeType = "application/octet-stream", Formatter = typeof(MessageFormatter))]
+public sealed class AddMessage
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+}
+```
+
+`Formatter` property points to the type that implements [IFormatter](xref:DotNext.Runtime.Serialization.IFormatter`1) interface. This type is responsible for serialization and deserialization of the message type. It must have public parameterless constructor, or public static property/field that exposes instance of this type. If field or property is presented, then its name must be specified via `FormatterMember` property of the attribute.
+
+DTO models can be shared between the client and the listener. Sending messages via typed client is trivial:
+```csharp
+ISubscriber clusterMember;
+var client = new MessageClient(clusterMember);
+await client.SendSignal(new AddMessage { X = 40, Y = 2 }); // send one-way message
+```
+
+Typed listener must inherit from [MessageHandler](xref:DotNext.Net.Cluster.Messaging.MessageHandler) type or instantiate it using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder). Message handling logic is represented by the public instance methods.
+
+For duplex (request-reply) message handler the method must follow to one of the allowed signatures:
+```csharp
+Task<OutputMessage> MethodName(InputMessage input, CancellationToken token);
+
+Task<OutputMessage> MethodName(ISubscriber sender, InputMessage input, CancellationToken token);
+
+Task<OutputMessage> MethodName(InputMessage input, object? context, CancellationToken token);
+
+Task<OutputMessage> MethodName(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
+```
+
+For one-way message handler the method must follow to one of the allowed signatures:
+```csharp
+Task MethodName(InputMessage input, CancellationToken token);
+
+Task MethodName(ISubscriber sender, InputMessage input, CancellationToken token);
+
+Task MethodName(InputMessage input, object? context, CancellationToken token);
+
+Task MethodName(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
+```
+
+`InputMessage` is DTO model for the message. _sender_ parameter allows to obtained information about message sender. _context_ parameter supplies extra information about underlying transport for the message.
+
+The following example demonstrates declaration of typed message listener:
+```csharp
+using DotNext.Net.Cluster.Messaging;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class TestMessageHandler : MessageHandler
+{
+    public Task<ResultMessage> AddAsync(AddMessage message, CancellationToken token)
+    {
+        return Task.FromResult<ResultMessage>(new() { Result = message.X + message.Y });
+    }
+}
+```
+
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
 * [Chandra-Toueg consensus algorithm](https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm)
