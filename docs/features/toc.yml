@@ -53,6 +53,8 @@
       href: threading/barrier.md
     - name: Async Trigger
       href: threading/trigger.md
+    - name: Correlation Source
+      href: threading/correl.md
     - name: Exchanger
       href: threading/exchanger.md
     - name: Interop with Other Asynchronous Patterns
