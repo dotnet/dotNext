@@ -1,6 +1,6 @@
 Async Lazy
 ====
-[AsyncLazy&lt;T&gt;](xref:DotNext.Threading.AsyncLazy`1) provides support for asynchronous lazy initialization. This is asynchronous alternative to [Lazy&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1) from .NET library. 
+[AsyncLazy&lt;T&gt;](xref:DotNext.Threading.AsyncLazy`1) provides support for asynchronous lazy initialization. This is asynchronous alternative to [Lazy&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1) from .NET library.
 
 This class is useful when some object requires resource-intensive asynchronous initialization. Additionally, it is possible to erase initialized object and force initialization again using `Reset` method. To do that, `AsyncLazy` should be created as _resettable_ object through passing appropriate argument into its constructor.
 
