@@ -1,6 +1,6 @@
 Correlation Source
 ====
-In asynchronous world sometimes you need to correlate two events logically representing the same operation. For instance, you need to communicate with remote microservice using Message Queue and identify that the incoming message is a reply to previously sent request message, and wrap this correlation into convenient asynchronous method. [AsyncCorrelationSource](xref:DotNext.Threading.AsyncCorrelationSource) is especially designed for that case.
+In asynchronous world sometimes you need to correlate two events logically representing the same operation. For instance, you need to communicate with remote microservice using Message Queue and identify that the incoming message is a reply to previously sent request message, and wrap this correlation into convenient asynchronous method. [AsyncCorrelationSource](xref:DotNext.Threading.AsyncCorrelationSource`2) is especially designed for that case.
 
 The correlation contains of two steps:
 * Start waiting for the signal (event) with the specified identifier
