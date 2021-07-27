@@ -1,5 +1,41 @@
 Release Notes
 ====
+
+# 07-28-2021
+<a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.3.0</a>
+* Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
+* Improved overall performance of extension methods declaring in `RandomExtensions` class
+* Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
+* Deprecation of `CallerMustBeSynchronizedAttribute`
+* Fixed backward compatibility issues when _DotNext 3.2.x_ or later used in combination with _DotNext.IO 3.1.x_
+* Fixed LGTM warnings
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
+* Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
+* Fixed LGTM warnings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.3.0">DotNext.Unsafe 3.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
+* Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
+* Added `ValueTaskCompletionSource<T>` as reusable source of tasks suitable for pooling
+
+<a href="https://www.nuget.org/packages/dotnext.io/3.3.0">DotNext.IO 3.3.0</a>
+* `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
+* `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods ensure that the buffer tail is flushed to the disk
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
+* Added implementation of [Jump](https://arxiv.org/pdf/1406.2294.pdf) consistent hash
+* Added support of typed message handlers. See `MessagingClient` and `MessageHandler` classes for more information
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.3.0">DotNext.AspNetCore.Cluster 3.3.0</a>
+* Added ETW counter for response time of nodes in the cluster
+
 # 06-09-2021
 <a href="https://www.nuget.org/packages/dotnext/3.2.1">DotNext 3.2.1</a>
 * Fixed implementation of `Optional<T>.GetHashCode` to distinguish hash code of undefined and null values

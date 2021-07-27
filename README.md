@@ -46,7 +46,7 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 07-XX-2021
+Release Date: 07-28-2021
 
 <a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.3.0</a>
 * Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
