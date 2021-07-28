@@ -122,7 +122,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal()
+        public void Signal() // TODO: Rename to Pulse to be aligned with AsyncCorrelationSource
         {
             ThrowIfDisposed();
             ResumePendingCallers();
@@ -146,7 +146,7 @@ namespace DotNext.Threading
         /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal<TState>(TState state, bool fairness)
+        public void Signal<TState>(TState state, bool fairness) // TODO: Split to Pulse and PulseAll
             where TState : class
         {
             ThrowIfDisposed();

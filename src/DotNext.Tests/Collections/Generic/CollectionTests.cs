@@ -40,7 +40,7 @@ namespace DotNext.Collections.Generic
             Equal(3, view.Count);
             NotEmpty(view);
             foreach (var value in view)
-                if (!value.Between(0, 3, BoundType.Closed))
+                if (!value.IsBetween(0, 3, BoundType.Closed))
                     throw new Exception();
         }
     }

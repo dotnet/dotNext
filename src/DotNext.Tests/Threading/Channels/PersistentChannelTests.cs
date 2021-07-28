@@ -145,7 +145,7 @@ namespace DotNext.Threading.Channels
             const decimal LowerBound = 0M;
             const decimal UpperBound = 500M;
             for (decimal i = LowerBound; i < UpperBound; i++)
-                True((await reader.ReadAsync()).Between(LowerBound, UpperBound, BoundType.LeftClosed));
+                True((await reader.ReadAsync()).IsBetween(LowerBound, UpperBound, BoundType.LeftClosed));
         }
 
         [Theory]

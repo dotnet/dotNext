@@ -467,12 +467,20 @@ namespace DotNext.IO
         Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
         {
             Task result;
-            if (TryGetSpan(out var span))
+            if (TryGetSequence(out var sequence))
             {
                 result = Task.CompletedTask;
                 try
                 {
-                    writer.Write(span);
+                    foreach (var segment in sequence)
+                    {
+                        writer.Write(segment.Span);
+                        token.ThrowIfCancellationRequested();
+                    }
+                }
+                catch (OperationCanceledException e)
+                {
+                    result = Task.FromCanceled(e.CancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -499,12 +507,20 @@ namespace DotNext.IO
         Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
         {
             Task result;
-            if (TryGetSpan(out var span))
+            if (TryGetSequence(out var sequence))
             {
                 result = Task.CompletedTask;
                 try
                 {
-                    consumer(span, arg);
+                    foreach (var segment in sequence)
+                    {
+                        consumer(segment.Span, arg);
+                        token.ThrowIfCancellationRequested();
+                    }
+                }
+                catch (OperationCanceledException e)
+                {
+                    result = Task.FromCanceled(e.CancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -550,7 +566,28 @@ namespace DotNext.IO
         /// </remarks>
         /// <param name="bytes">The content represented by this reader.</param>
         /// <returns><see langword="true"/> if the content is available synchronously; otherwise, <see langword="false"/>.</returns>
+        [Obsolete("Use TryGetSequence method instead")]
         bool TryGetSpan(out ReadOnlySpan<byte> bytes)
+        {
+            if (TryGetSequence(out var sequence) && sequence.IsSingleSegment)
+            {
+                bytes = sequence.FirstSpan;
+                return true;
+            }
+
+            bytes = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to get the entire content represented by this reader.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used for efficient synchronous decoding.
+        /// </remarks>
+        /// <param name="bytes">The content represented by this reader.</param>
+        /// <returns><see langword="true"/> if the content is available synchronously; otherwise, <see langword="false"/>.</returns>
+        bool TryGetSequence(out ReadOnlySequence<byte> bytes)
         {
             bytes = default;
             return false;

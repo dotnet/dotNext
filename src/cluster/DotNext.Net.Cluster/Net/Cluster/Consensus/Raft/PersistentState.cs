@@ -995,7 +995,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, ref Partition? partition)
             {
                 builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
-                return currentIndex.Between(startIndex, endIndex, BoundType.Closed) && this.TryGetPartition(currentIndex, ref partition);
+                return currentIndex.IsBetween(startIndex, endIndex, BoundType.Closed) && this.TryGetPartition(currentIndex, ref partition);
             }
         }
 

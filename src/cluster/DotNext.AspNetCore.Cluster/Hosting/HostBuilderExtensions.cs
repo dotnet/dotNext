@@ -12,7 +12,7 @@ namespace DotNext.Hosting
     public static class HostBuilderExtensions
     {
         private static void ApplyOptions(this HostOptions options, IServiceCollection services)
-            => services.AddSingleton<IOptions<HostOptions>>(new OptionsWrapper<HostOptions>(options));
+            => services.AddSingleton<IOptions<HostOptions>>(Options.Create(options));
 
         /// <summary>
         /// Applies host options.

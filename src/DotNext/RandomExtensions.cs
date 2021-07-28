@@ -122,7 +122,7 @@ namespace DotNext
         /// <returns>Randomly generated boolean value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
         public static bool NextBoolean(this Random random, double trueProbability = 0.5D)
-            => trueProbability.Between(0D, 1D, BoundType.Closed) ?
+            => trueProbability.IsBetween(0D, 1D, BoundType.Closed) ?
                     random.NextDouble() >= 1.0D - trueProbability :
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
@@ -142,7 +142,7 @@ namespace DotNext
         /// <returns>Randomly generated boolean value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
         public static bool NextBoolean(this RandomNumberGenerator random, double trueProbability = 0.5D)
-            => trueProbability.Between(0D, 1D, BoundType.Closed) ?
+            => trueProbability.IsBetween(0D, 1D, BoundType.Closed) ?
                     random.NextDouble() >= (1.0D - trueProbability) :
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 

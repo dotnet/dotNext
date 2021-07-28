@@ -26,7 +26,7 @@ namespace DotNext.Threading
 
             if (token.IsCancellationRequested)
 #if NETSTANDARD2_1
-                return completeAsCanceled ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
+                return completeAsCanceled ? new(Task.FromCanceled(token)) : new();
 #else
                 return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
 #endif
@@ -43,10 +43,10 @@ namespace DotNext.Threading
         public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout)
         {
             if (handle.WaitOne(0))
-                return new ValueTask<bool>(true);
+                return new(true);
 
             if (timeout == TimeSpan.Zero)
-                return new ValueTask<bool>(false);
+                return new(false);
 
             return new WaitHandleFuture(handle, timeout).AsTask();
         }

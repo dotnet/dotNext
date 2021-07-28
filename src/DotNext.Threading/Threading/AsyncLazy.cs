@@ -126,6 +126,15 @@ namespace DotNext.Threading
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The string representing this object.</returns>
-        public override string ToString() => task?.ToString() ?? NotAvailable;
+        public override string? ToString()
+        {
+            var task = this.task;
+            return task?.Status switch
+            {
+                null => NotAvailable,
+                TaskStatus.RanToCompletion => task.Result?.ToString(),
+                TaskStatus status => $"<{status}>",
+            };
+        }
     }
 }

@@ -40,7 +40,12 @@ namespace DotNext.Buffers
         public EventCounter? AllocationCounter
         {
             private protected get => diagObj as EventCounter;
-            set => diagObj = value;
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            => diagObj = value;
         }
 
         /// <summary>
@@ -51,7 +56,12 @@ namespace DotNext.Buffers
         public Action<int>? BufferSizeCallback
         {
             private protected get => diagObj as Action<int>;
-            set => diagObj = value;
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            => diagObj = value;
         }
 
         /// <summary>

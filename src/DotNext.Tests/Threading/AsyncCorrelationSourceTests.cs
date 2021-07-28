@@ -17,13 +17,13 @@ namespace DotNext.Threading
             var listener1 = source.WaitAsync(key1);
             var listener2 = source.WaitAsync(key2);
 
-            True(source.TrySignal(key1, 10));
+            True(source.Pulse(key1, 10));
             True(listener1.IsCompletedSuccessfully);
             Equal(10, listener1.Result);
 
             False(listener2.IsCompleted);
 
-            True(source.TrySignal(key2, 20));
+            True(source.Pulse(key2, 20));
             True(listener2.IsCompletedSuccessfully);
             Equal(20, listener2.Result);
         }
