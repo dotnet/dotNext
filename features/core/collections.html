@@ -8,7 +8,7 @@
     <title>Collection Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Collection Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -73,9 +73,9 @@
 <p>Transformation of collection types can be done in lazy mode when item is converting on-demand without touching entire collection. Lazy converted collection is called <em>mapped view</em>.</p>
 <p>There are several mapped views for different collection types:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyListView%602">Read-only list view</a> for lists and arrays</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyCollectionView%602">Read-only collection view</a> for generic collections without indexer support</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyDictionaryView%603">Read-only dictionary view</a> for generic dictionaries</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyListView%602">Read-only list view</a> for lists and arrays</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyCollectionView%602">Read-only collection view</a> for generic collections without indexer support</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ReadOnlyDictionaryView%603">Read-only dictionary view</a> for generic dictionaries</li>
 </ul>
 <p>The following example demonstrates how to obtain read-only mapped view for the list:</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Generic;
@@ -100,7 +100,7 @@ var array = collection.ToArray();   //array = new [] {&quot;a&quot;, &quot;b&quo
 IReadOnlyList&lt;string&gt; list = List.Singleton(&quot;a&quot;);
 </code></pre>
 <h1 id="collection-items-concatenation">Collection items concatenation</h1>
-<p>Extension method <em>ToString</em> from class <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence">Sequence</a> allows to convert collection items into single plain string. Each item is separated by the specified delimiter.</p>
+<p>Extension method <em>ToString</em> from class <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/Sequence">Sequence</a> allows to convert collection items into single plain string. Each item is separated by the specified delimiter.</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Generic;
 
 var array = new int[] {1, 2, 3};
@@ -115,7 +115,7 @@ IEnumerable&lt;string&gt; list = new[] { &quot;a&quot;, &quot;b&quot;, &quot;c&q
 list.ForEach(item =&gt; Console.WriteLine(item));
 </code></pre>
 <h1 id="list-segments">List segments</h1>
-<p>Generic <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">list</a> from .NET standard library doesn't support <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">range</a> operator. Only one-dimensional arrays support ranges. To bridge this gap, .NEXT library contains <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ListSegment%601">ListSegment</a> data type which has the same meaning as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment</a> but for lists. This type allows to delimit section of a list. The section can be produced using Range syntax in C#:</p>
+<p>Generic <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">list</a> from .NET standard library doesn't support <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">range</a> operator. Only one-dimensional arrays support ranges. To bridge this gap, .NEXT library contains <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Collections.Generic/ListSegment%601">ListSegment</a> data type which has the same meaning as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment</a> but for lists. This type allows to delimit section of a list. The section can be produced using Range syntax in C#:</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Generic;
 using System.Collections.Generic;
 

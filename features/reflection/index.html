@@ -8,7 +8,7 @@
     <title>Advanced Reflection | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Advanced Reflection | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -70,20 +70,20 @@
 
 <p>.NEXT provides additional methods to reflect collection types, delegates and task types. These methods are located in <code>DotNext.Reflection</code> namespace.</p>
 <h1 id="collection">Collection</h1>
-<p>.NET Reflection contains a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.type.getelementtype">method</a> to obtain type of elements in the array. .NEXT provides special class <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Reflection/CollectionType">CollectionType</a> to reflect type of collection elements.</p>
+<p>.NET Reflection contains a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.type.getelementtype">method</a> to obtain type of elements in the array. .NEXT provides special class <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Reflection/CollectionType">CollectionType</a> to reflect type of collection elements.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 
 var itemType = typeof(List&lt;string&gt;).GetItemType();  //itemType == typeof(string)
 </code></pre>
 <p>This method ables to extract item type from any class implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>, even if such class is not generic class itself.</p>
 <h1 id="dispose-pattern">Dispose pattern</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Reflection/DisposableType">DisposableType</a> allows to reflect <code>void Dispose()</code> method from any type. The reflection checks whether the class implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.idisposable">IDisposable</a> method. If not, then it looks for the public instance parameterless method <code>Dispose</code> with <strong>void</strong> return type.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Reflection/DisposableType">DisposableType</a> allows to reflect <code>void Dispose()</code> method from any type. The reflection checks whether the class implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.idisposable">IDisposable</a> method. If not, then it looks for the public instance parameterless method <code>Dispose</code> with <strong>void</strong> return type.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 
 var dispose = typeof(Stream).GetDisposeMethod();
 </code></pre>
 <h1 id="tasks">Tasks</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Reflection/TaskType">TaskType</a> provides a way to obtain actual generic argument of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task</a>.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Reflection/TaskType">TaskType</a> provides a way to obtain actual generic argument of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task</a>.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 
 var t = typeof(Task&lt;int&gt;).GetTaskType();    //t == typeof(int)

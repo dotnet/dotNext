@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -118,7 +118,7 @@
 dotnet run -c Bench
 </code></pre>
 <h1 id="bitwise-equality">Bitwise Equality</h1>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -176,7 +176,7 @@ dotnet run -c Bench
 </table>
 <p>Bitwise equality method has the better performance than field-by-field equality check especially for large value types because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET according with underlying hardware such as SIMD. Additionally, it uses <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">aligned memory access</a> in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal">SequenceEqual</a> method.</p>
 <h1 id="equality-of-arrays">Equality of Arrays</h1>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
+<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext/OneDimensionalArray">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
 <table>
 <thead>
 <tr>
@@ -227,7 +227,7 @@ dotnet run -c Bench
 </table>
 <p>Bitwise equality is an absolute winner for equality check between arrays of any size.</p>
 <h1 id="bitwise-hash-code">Bitwise Hash Code</h1>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -582,7 +582,7 @@ dotnet run -c Bench
 </table>
 <p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
 <h1 id="atomic-access-to-arbitrary-value-type">Atomic Access to Arbitrary Value Type</h1>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
+<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Threading/Atomic%601">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
 <table>
 <thead>
 <tr>
@@ -618,7 +618,7 @@ dotnet run -c Bench
 </tbody>
 </table>
 <h1 id="file-buffering-writer">File-buffering Writer</h1>
-<p><a href="https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream">FileBufferingWriteStream</a> from ASP.NET Core and <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a> from .NEXT library.</p>
+<p><a href="https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream">FileBufferingWriteStream</a> from ASP.NET Core and <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a> from .NEXT library.</p>
 <p>Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.</p>
 <table>
 <thead>
@@ -667,9 +667,9 @@ dotnet run -c Bench
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream">MemoryStream</a></li>
 <li><a href="https://github.com/microsoft/Microsoft.IO.RecyclableMemoryStream">RecyclableMemoryStream</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601">SparseBufferWriter&lt;byte&gt;</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;byte&gt;</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601">SparseBufferWriter&lt;byte&gt;</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;byte&gt;</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter">FileBufferingWriter</a></li>
 </ul>
 <table>
 <thead>

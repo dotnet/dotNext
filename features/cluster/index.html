@@ -8,7 +8,7 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -77,15 +77,15 @@
 </ol>
 <p>The programming model at higher level of abstraction is represented by interfaces:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IClusterMember">IClusterMember</a> represents individual node in the cluster</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ICluster">ICluster</a> represents entire cluster. This is an entry point to work with cluster using .NEXT library.</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IExpandableCluster">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessageBus">IMessageBus</a> optional interface provides message-based communication between nodes in  point-to-point manner</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster%601">IReplicationCluster&lt;T&gt;</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail">IAuditTrail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IClusterMember">IClusterMember</a> represents individual node in the cluster</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ICluster">ICluster</a> represents entire cluster. This is an entry point to work with cluster using .NEXT library.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IExpandableCluster">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessageBus">IMessageBus</a> optional interface provides message-based communication between nodes in  point-to-point manner</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster%601">IReplicationCluster&lt;T&gt;</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail">IAuditTrail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
 </ul>
 <p>Thereby, core model consists of two interfaces: <code>ICluster</code> and <code>IClusterMember</code>. Other interfaces are extensions of the core model.</p>
 <h1 id="messaging">Messaging</h1>
-<p>Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessage">IMessage</a> interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.</p>
+<p>Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessage">IMessage</a> interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.</p>
 <p>There are two types of messages:</p>
 <ol>
 <li><strong>Request-Reply</strong> message is similar to RPC call when caller should wait for the response. The response payload is represented by <code>IMessage</code></li>
@@ -93,14 +93,69 @@
 1.1. With confirmation, when sender waiting for acknowledge from receiver side. As a result, it is possible to ensure that message is processed by receiver.
 1.1. Without confirmation, when sender doesn't wait for acknowledge. Such kind of delivery is not reliable but very performant.</li>
 </ol>
-<p>The message can be transferred to the particular member using <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/ISubscriber">ISubscriber</a> interface which is the extension of <code>IClusterMember</code> interface.</p>
+<p>The message can be transferred to the particular member using <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/ISubscriber">ISubscriber</a> interface which is the extension of <code>IClusterMember</code> interface.</p>
 <p>Usually, you don't to implement <code>IMessage</code> interface directly due to existence of ready-to-use realizations:</p>
 <ol>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage">BinaryMessage</a> for raw binary content</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/StreamMessage">StreamMessage</a> for message which payload is represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>. It it suitable for large payload when it is stored on the disk</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/TextMessage">TextMessage</a> for textual content</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/JsonMessage%601">JsonMessage&lt;T&gt;</a> for JSON-serializable types</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage">BinaryMessage</a> for raw binary content</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/StreamMessage">StreamMessage</a> for message which payload is represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>. It it suitable for large payload when it is stored on the disk</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/TextMessage">TextMessage</a> for textual content</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/JsonMessage%601">JsonMessage&lt;T&gt;</a> for JSON-serializable types</li>
 </ol>
+<h2 id="typed-clients-and-listeners">Typed Clients and Listeners</h2>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessage">IMessage</a> is a low-level interface that requires a lot of boilerplate code for creating and parsing messages. It's much better to concentrate on message handling logic and hide low-level details. The same approach is used in <a href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests">typed HTTP clients</a> in ASP.NET Core.</p>
+<p>Typed message client or listener consists of the following parts:</p>
+<ul>
+<li>DTO models</li>
+<li>Serialization/deserialization logic for DTO models</li>
+<li>Message handling logic (for listener)</li>
+</ul>
+<p>Typed message client is represented by <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessagingClient">MessagingClient</a> class. Its methods for sending messages are generic methods. The actual generic argument must represent DTO model describing message payload. The model must be marked with <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageAttribute">MessageAttribute</a>:</p>
+<pre><code class="lang-csharp">[Message(&quot;Add&quot;, MimeType = &quot;application/octet-stream&quot;, Formatter = typeof(MessageFormatter))]
+public sealed class AddMessage
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+}
+</code></pre>
+<p><code>Formatter</code> property points to the type that implements <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Runtime.Serialization/IFormatter%601">IFormatter</a> interface. This type is responsible for serialization and deserialization of the message type. It must have public parameterless constructor, or public static property/field that exposes instance of this type. If field or property is presented, then its name must be specified via <code>FormatterMember</code> property of the attribute.</p>
+<p>DTO models can be shared between the client and the listener. Sending messages via typed client is trivial:</p>
+<pre><code class="lang-csharp">ISubscriber clusterMember;
+var client = new MessageClient(clusterMember);
+await client.SendSignal(new AddMessage { X = 40, Y = 2 }); // send one-way message
+</code></pre>
+<p>Typed listener must inherit from <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageHandler">MessageHandler</a> type or instantiate it using <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageHandler.Builder">builder</a>. Message handling logic is represented by the public instance methods.</p>
+<p>For duplex (request-reply) message handler the method must follow to one of the allowed signatures:</p>
+<pre><code class="lang-csharp">Task&lt;OutputMessage&gt; MethodName(InputMessage input, CancellationToken token);
+
+Task&lt;OutputMessage&gt; MethodName(ISubscriber sender, InputMessage input, CancellationToken token);
+
+Task&lt;OutputMessage&gt; MethodName(InputMessage input, object? context, CancellationToken token);
+
+Task&lt;OutputMessage&gt; MethodName(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
+</code></pre>
+<p>For one-way message handler the method must follow to one of the allowed signatures:</p>
+<pre><code class="lang-csharp">Task MethodName(InputMessage input, CancellationToken token);
+
+Task MethodName(ISubscriber sender, InputMessage input, CancellationToken token);
+
+Task MethodName(InputMessage input, object? context, CancellationToken token);
+
+Task MethodName(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
+</code></pre>
+<p><code>InputMessage</code> is DTO model for the message. <em>sender</em> parameter allows to obtained information about message sender. <em>context</em> parameter supplies extra information about underlying transport for the message.</p>
+<p>The following example demonstrates declaration of typed message listener:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Messaging;
+using System.Threading;
+using System.Threading.Tasks;
+
+public class TestMessageHandler : MessageHandler
+{
+    public Task&lt;ResultMessage&gt; AddAsync(AddMessage message, CancellationToken token)
+    {
+        return Task.FromResult&lt;ResultMessage&gt;(new() { Result = message.X + message.Y });
+    }
+}
+</code></pre>
 <h1 id="distributed-consensus">Distributed Consensus</h1>
 <p>Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:</p>
 <ul>
@@ -117,8 +172,8 @@
 <li><a href="https://github.com/ongardie/dissertation">Dissertation</a></li>
 </ul>
 <h1 id="replication">Replication</h1>
-<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail%601">IAuditTrail&lt;T&gt;</a> interface or use <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState">PersistentState</a> class.</p>
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster">IReplicationCluster</a> interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.</p>
+<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail%601">IAuditTrail&lt;T&gt;</a> interface or use <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState">PersistentState</a> class.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster">IReplicationCluster</a> interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.</p>
 <h1 id="implementations">Implementations</h1>
 <ul>
 <li><a href="raft.html">.NEXT Raft Suite</a> is a fully-featured implementation of Raft algorithm and related infrastructure.</li>

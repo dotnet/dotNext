@@ -8,7 +8,7 @@
     <title>Asynchronous Locks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Asynchronous Locks | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -71,15 +71,15 @@
 <p>Lock acquisition operation may blocks the caller thread. Reader/writer lock from .NET library doesn't have async versions of lock acquisition methods as well as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a>. To avoid this, DotNext Threading library provides asynchronous non-blocking alternatives of these locks.</p>
 <div class="CAUTION">
 <h5>Caution</h5>
-<p>Non-blocking and blocking locks are two different worlds. It is not recommended to mix these API in the same part of application. The lock acquired with blocking API located in <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Threading/Lock">Lock</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a> is not aware about the lock acquired asynchronously with <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock">AsyncLock</a>, <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock">AsyncExclusiveLock</a> or <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock">AsyncReaderWriterLock</a>. The only exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a> because it contains acquisition methods in blocking and non-blocking manner at the same time.</p>
+<p>Non-blocking and blocking locks are two different worlds. It is not recommended to mix these API in the same part of application. The lock acquired with blocking API located in <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock">Lock</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a> is not aware about the lock acquired asynchronously with <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock">AsyncLock</a>, <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock">AsyncExclusiveLock</a> or <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock">AsyncReaderWriterLock</a>. The only exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a> because it contains acquisition methods in blocking and non-blocking manner at the same time.</p>
 </div>
 <p>All non-blocking synchronization mechanisms are optimized in terms of memory allocations. If lock acquisitions are not caused in the same time from different application tasks running concurrently then heap allocation associated with waiting queue will not happen.</p>
 <p>Asynchronous locks don't rely on the caller thread. The caller thread never blocks so there is no concept of lock owner thread. As a result, these locks are not reentrant.</p>
 <p>It is hard to detect root cause of deadlocks occurred by asynchronous locks so use them carefully.</p>
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock">AsyncLock</a> is a unified representation of the all supported asynchronous locks:</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock">AsyncLock</a> is a unified representation of the all supported asynchronous locks:</p>
 <ul>
 <li>Exclusive lock</li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncSharedLock">Shared lock</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncSharedLock">Shared lock</a></li>
 <li>Reader lock</li>
 <li>Writer lock</li>
 <li>Upgradeable lock</li>
@@ -109,7 +109,7 @@ using(await asyncLock.AcquireAsync(CancellationToken.None))
 <ul>
 <li><a href="exclusive.html">AsyncExclusiveLock</a></li>
 <li><a href="rwlock.html">AsyncReaderWriterLock</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock">AsyncSharedLock</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock">AsyncSharedLock</a></li>
 <li><a href="exchanger.html">AsyncExchanger</a></li>
 </ul>
 <p>Details of graceful shutdown described in related articles.</p>
@@ -139,7 +139,7 @@ using(builder.AcquireWriteLockAsync(CancellationToken.None))
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition">AsyncLockAcquisition</a> class.</p>
+<p>For more information check extension methods inside of <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition">AsyncLockAcquisition</a> class.</p>
 </article>
           </div>
           

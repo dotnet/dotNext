@@ -8,7 +8,7 @@
     <title>Dynamic Buffers | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Dynamic Buffers | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -77,7 +77,7 @@
 </ul>
 <p>With .NEXT, you have this flexibility.</p>
 <h1 id="pooledbufferwriter">PooledBufferWriter</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601">PooledBufferWriter&lt;T&gt;</a> is similar to <code>ArrayBufferWriter</code> but accepts <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">memory allocator</a> that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601">PooledBufferWriter&lt;T&gt;</a> is similar to <code>ArrayBufferWriter</code> but accepts <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">memory allocator</a> that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
 using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared.ToAllocator());
@@ -88,7 +88,7 @@ var result = writer.WrittenMemory;  //length is 512
 </code></pre>
 <p>In contrast to <code>ArrayBufferWriter</code>, you must not use written memory if <code>Dispose</code> is called. When <code>Dispose</code> method is called, the internal buffer returns to the pool.</p>
 <h1 id="pooledarraybufferwriter">PooledArrayBufferWriter</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;T&gt;</a> class exposes the similar functionality to <code>PooledBufferWriter</code> class but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;T&gt;</a> class exposes the similar functionality to <code>PooledBufferWriter</code> class but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 using System;
@@ -102,7 +102,7 @@ ArraySegment&lt;byte&gt; result = writer.WrittenArray;
 </code></pre>
 <p>Additionally, it implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">IList&lt;T&gt;</a> interface so you can use it as fully-functional list which rents the memory instead of allocation on the heap.</p>
 <h1 id="sparse-buffer">Sparse Buffer</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601">SparseBufferWriter&lt;T&gt;</a> represents a writer for the buffer represented by a set of non-contiguous memory blocks. Its main advantage over previously described buffer types is a monotonic growth without reallocations. If the buffer has not enough space to place a new portion of data then it just allocates another contiguous buffer from the pool and attaches it to the end of the chain of buffers. Thus, the buffer growth has deterministic performance.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601">SparseBufferWriter&lt;T&gt;</a> represents a writer for the buffer represented by a set of non-contiguous memory blocks. Its main advantage over previously described buffer types is a monotonic growth without reallocations. If the buffer has not enough space to place a new portion of data then it just allocates another contiguous buffer from the pool and attaches it to the end of the chain of buffers. Thus, the buffer growth has deterministic performance.</p>
 <p>Additionally, sparse buffer allows to import memory blocks without copying them to the rented buffer. For instance, a memory block represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1">ReadOnlyMemory&lt;T&gt;</a> can be intermixed with the memory blocks rented by the sparse buffer internally.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using System;
@@ -113,8 +113,8 @@ writer.Write(array.AsMemory(), false);  // false means that the memory block mus
 </code></pre>
 <p>Sparse buffer writer also implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a> interface as well as other buffer writers mentioned above. However, this interface is implemented explicitly and its methods should be used with care. Major drawback of this buffer type is that it can produce memory holes, i.e. unused memory segments in the middle of the buffer chunks. The holes can be caused by <code>IBufferWriter&lt;T&gt;.GetMemory(int)</code> or <code>IBufferWriter&lt;T&gt;.GetSpan(int)</code> implementations. Therefore these methods are implemented explicitly. All other public methods of <code>SparseBufferWriter&lt;T&gt;</code> class cannot cause memory holes.</p>
 <p>Suppose that sparse buffer has rented memory block of size <em>1024</em> bytes, and <em>1000</em> bytes of them already occupied. If you want to write a block of size <em>100</em> bytes represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a> then use <code>SparseBufferWriter&lt;T&gt;.Write(ReadOnlySpan&lt;T&gt;)</code> method. It writes the first <em>24</em> bytes to the existing memory block and then rents a new segment to store the rest of the input buffer, <em>76</em> bytes. Therefore, <code>Write</code> method cannot cause fragmentation of memory blocks. However, if we want to obtain a memory block for writing via <code>GetMemory(int)</code> method then sparse buffer cannot utilize <em>24</em> bytes of free memory from the existing chunk because the returned buffer must be at least <em>100</em> bytes of contiguous memory. In this case, sparse buffer rents a new chunk with the size of at least <em>100</em> bytes and marks <em>24</em> bytes from the previous chunk as unused.</p>
-<p>The implementation of <code>GetMemory(int)</code> and <code>GetSpan(int)</code> methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601">PooledBufferWriter&lt;T&gt;</a> which requires reallocation when rented memory block is not enough to place a new data.</p>
-<p>Additionally, you can use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>-based API to read from or write to the sparse buffer. <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.IO/StreamSource">StreamSource</a> provides <code>AsStream</code> extension method that can be used to create readable or writable stream over the buffer:</p>
+<p>The implementation of <code>GetMemory(int)</code> and <code>GetSpan(int)</code> methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601">PooledBufferWriter&lt;T&gt;</a> which requires reallocation when rented memory block is not enough to place a new data.</p>
+<p>Additionally, you can use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>-based API to read from or write to the sparse buffer. <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.IO/StreamSource">StreamSource</a> provides <code>AsStream</code> extension method that can be used to create readable or writable stream over the buffer:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 
@@ -135,7 +135,7 @@ using Stream readable = buffer.AsStream(true);  // create readable stream
 using var buffer = new SparseBufferWriter&lt;byte&gt;(256, SparseBufferGrowth.Exponential);
 </code></pre>
 <h1 id="char-buffer">Char Buffer</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder">StringBuilder</a> is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by <code>PooledBufferWriter&lt;T&gt;</code>, <code>PooledArrayBufferWriter&lt;T&gt;</code> and <code>SparseBufferWriter&lt;T&gt;</code> classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of <code>StringBuilder</code>. They are provided as extension methods declared in <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/BufferWriter">BufferWriter</a> class for all objects implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;char&gt;</a> interface:</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder">StringBuilder</a> is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by <code>PooledBufferWriter&lt;T&gt;</code>, <code>PooledArrayBufferWriter&lt;T&gt;</code> and <code>SparseBufferWriter&lt;T&gt;</code> classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of <code>StringBuilder</code>. They are provided as extension methods declared in <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/BufferWriter">BufferWriter</a> class for all objects implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;char&gt;</a> interface:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
 using var writer = new PooledArrayBufferWriter&lt;char&gt;(ArrayPool&lt;char&gt;.Shared);
@@ -151,7 +151,7 @@ writer.Write(4);
 
 string result = writer.BuildString();
 </code></pre>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter">TextWriter</a> is a common way to produce text dynamically and recognizable by many third-party libraries. There is a bridge that allow to use TextWriter API over pooled buffer writer with help of extension methods declared in <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/TextStreamExtensions">TextStreamExtensions</a> class:</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter">TextWriter</a> is a common way to produce text dynamically and recognizable by many third-party libraries. There is a bridge that allow to use TextWriter API over pooled buffer writer with help of extension methods declared in <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/TextStreamExtensions">TextStreamExtensions</a> class:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using System.IO;
 using static DotNext.IO.TextWriterExtensions;
@@ -171,7 +171,7 @@ writer.Write(4);
 string result = buffer.BuildString();
 </code></pre>
 <h1 id="bufferwriterslim">BufferWriterSlim</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601">BufferWriterSlim&lt;T&gt;</a> is a lightweight version of <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601">PooledBufferWriter&lt;T&gt;</a> class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601">BufferWriterSlim&lt;T&gt;</a> is a lightweight version of <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601">PooledBufferWriter&lt;T&gt;</a> class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.</p>
 <p>If initial buffer overflows then <code>BufferWriterSlim&lt;T&gt;</code> obtains rented buffer from the pool and copies the initial buffer into it.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
@@ -204,7 +204,7 @@ ReadOnlySpan&lt;byte&gt; result = builder.WrittenSpan;
 </tr>
 <tr>
 <td><code>PooledBufferWriter&lt;T&gt;</code></td>
-<td>If custom <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">memory allocator</a> is required. For instance, if you want to use <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601">unmanaged memory pool</a></td>
+<td>If custom <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">memory allocator</a> is required. For instance, if you want to use <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601">unmanaged memory pool</a></td>
 <td>Yes</td>
 <td>o(1), O(n)</td>
 </tr>

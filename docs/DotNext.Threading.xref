@@ -1,129 +1,149 @@
 ﻿references:
 - uid: DotNext.Threading.AsyncAutoResetEvent
   name: AsyncAutoResetEvent
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncAutoResetEvent
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncAutoResetEvent
   fullName: DotNext.Threading.AsyncAutoResetEvent
 - uid: DotNext.Threading.AsyncBarrier
   name: AsyncBarrier
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBarrier
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBarrier
   fullName: DotNext.Threading.AsyncBarrier
 - uid: DotNext.Threading.AsyncBridge
   name: AsyncBridge
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBridge
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBridge
   fullName: DotNext.Threading.AsyncBridge
+- uid: DotNext.Threading.AsyncCorrelationSource`2
+  name: AsyncCorrelationSource`2
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncCorrelationSource%602
+  fullName: DotNext.Threading.AsyncCorrelationSource`2
 - uid: DotNext.Threading.AsyncCountdownEvent
   name: AsyncCountdownEvent
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncCountdownEvent
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncCountdownEvent
   fullName: DotNext.Threading.AsyncCountdownEvent
 - uid: DotNext.Threading.AsyncCounter
   name: AsyncCounter
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncCounter
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncCounter
   fullName: DotNext.Threading.AsyncCounter
 - uid: DotNext.Threading.AsyncExchanger`1
   name: AsyncExchanger`1
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExchanger%601
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExchanger%601
   fullName: DotNext.Threading.AsyncExchanger`1
 - uid: DotNext.Threading.AsyncExclusiveLock
   name: AsyncExclusiveLock
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock
   fullName: DotNext.Threading.AsyncExclusiveLock
 - uid: DotNext.Threading.AsyncLazy`1
   name: AsyncLazy`1
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLazy%601
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLazy%601
   fullName: DotNext.Threading.AsyncLazy`1
 - uid: DotNext.Threading.AsyncLock
   name: AsyncLock
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock
   fullName: DotNext.Threading.AsyncLock
 - uid: DotNext.Threading.AsyncLock.Holder
   name: AsyncLock.Holder
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock.Holder
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLock.Holder
   fullName: DotNext.Threading.AsyncLock.Holder
 - uid: DotNext.Threading.AsyncLockAcquisition
   name: AsyncLockAcquisition
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLockAcquisition
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLockAcquisition
   fullName: DotNext.Threading.AsyncLockAcquisition
 - uid: DotNext.Threading.AsyncManualResetEvent
   name: AsyncManualResetEvent
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncManualResetEvent
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncManualResetEvent
   fullName: DotNext.Threading.AsyncManualResetEvent
 - uid: DotNext.Threading.AsyncReaderWriterLock
   name: AsyncReaderWriterLock
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock
   fullName: DotNext.Threading.AsyncReaderWriterLock
 - uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp
   name: AsyncReaderWriterLock.LockStamp
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock.LockStamp
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock.LockStamp
   fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp
 - uid: DotNext.Threading.AsyncSharedLock
   name: AsyncSharedLock
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncSharedLock
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncSharedLock
   fullName: DotNext.Threading.AsyncSharedLock
 - uid: DotNext.Threading.AsyncTimer
   name: AsyncTimer
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncTimer
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncTimer
   fullName: DotNext.Threading.AsyncTimer
 - uid: DotNext.Threading.AsyncTrigger
   name: AsyncTrigger
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncTrigger
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncTrigger
   fullName: DotNext.Threading.AsyncTrigger
 - uid: DotNext.Threading.ExchangeTerminatedException
   name: ExchangeTerminatedException
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/ExchangeTerminatedException
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/ExchangeTerminatedException
   fullName: DotNext.Threading.ExchangeTerminatedException
 - uid: DotNext.Threading.IAsyncEvent
   name: IAsyncEvent
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/IAsyncEvent
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/IAsyncEvent
   fullName: DotNext.Threading.IAsyncEvent
 - uid: DotNext.Threading.AsyncEvent
   name: AsyncEvent
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncEvent
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncEvent
   fullName: DotNext.Threading.AsyncEvent
 - uid: DotNext.Threading.IAsyncResetEvent
   name: IAsyncResetEvent
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/IAsyncResetEvent
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/IAsyncResetEvent
   fullName: DotNext.Threading.IAsyncResetEvent
 - uid: DotNext.Threading.ISynchronizer
   name: ISynchronizer
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/ISynchronizer
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/ISynchronizer
   fullName: DotNext.Threading.ISynchronizer
 - uid: DotNext.Threading.LinkedTokenSourceFactory
   name: LinkedTokenSourceFactory
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/LinkedTokenSourceFactory
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/LinkedTokenSourceFactory
   fullName: DotNext.Threading.LinkedTokenSourceFactory
 - uid: DotNext.Threading.QueuedSynchronizer
   name: QueuedSynchronizer
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/QueuedSynchronizer
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/QueuedSynchronizer
   fullName: DotNext.Threading.QueuedSynchronizer
 - uid: DotNext.Threading.Synchronizer
   name: Synchronizer
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/Synchronizer
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/Synchronizer
   fullName: DotNext.Threading.Synchronizer
 - uid: DotNext.Threading.Tasks.Future
   name: Future
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future
   fullName: DotNext.Threading.Tasks.Future
 - uid: DotNext.Threading.Tasks.Future.IAwaiter
   name: Future.IAwaiter
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future.IAwaiter
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future.IAwaiter
   fullName: DotNext.Threading.Tasks.Future.IAwaiter
 - uid: DotNext.Threading.Tasks.Future`1
   name: Future`1
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future%601
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future%601
   fullName: DotNext.Threading.Tasks.Future`1
 - uid: DotNext.Threading.Tasks.Future`1.IAwaiter
   name: Future`1.IAwaiter
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future%601.IAwaiter
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/Future%601.IAwaiter
   fullName: DotNext.Threading.Tasks.Future`1.IAwaiter
+- uid: DotNext.Threading.Tasks.ManualResetCompletionSource
+  name: ManualResetCompletionSource
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ManualResetCompletionSource
+  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource
+- uid: DotNext.Threading.Tasks.ManualResetCompletionSource`1
+  name: ManualResetCompletionSource`1
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ManualResetCompletionSource%601
+  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource`1
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource
+  name: ValueTaskCompletionSource
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskCompletionSource
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1
+  name: ValueTaskCompletionSource`1
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskCompletionSource%601
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource`1
 - uid: DotNext.Threading.Tasks.ValueTaskSynchronization
   name: ValueTaskSynchronization
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskSynchronization
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskSynchronization
   fullName: DotNext.Threading.Tasks.ValueTaskSynchronization
 - uid: DotNext.Threading.Channels.PersistentChannel`2
   name: PersistentChannel`2
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Channels/PersistentChannel%602
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Channels/PersistentChannel%602
   fullName: DotNext.Threading.Channels.PersistentChannel`2
 - uid: DotNext.Threading.Channels.PersistentChannelOptions
   name: PersistentChannelOptions
-  href: https://fuget.org/packages/DotNext.Threading/3.2.1/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Channels/PersistentChannelOptions
+  href: https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Channels/PersistentChannelOptions
   fullName: DotNext.Threading.Channels.PersistentChannelOptions

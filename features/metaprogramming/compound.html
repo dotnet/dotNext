@@ -8,7 +8,7 @@
     <title>Compound Expressions Construction | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Compound Expressions Construction | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="compound-expressions-construction">Compound Expressions Construction</h1>
 
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">extension methods</a> aimed to simplification of expression tree construction.</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.3.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">extension methods</a> aimed to simplification of expression tree construction.</p>
 <pre><code class="lang-csharp">using DotNext.Metaprogramming;
 
 var expr = 42.Const().Convert&lt;long&gt;().Negate().Add(1L.Const()); // equivalent to -((long)42) + 1L

@@ -1,137 +1,137 @@
 ﻿references:
 - uid: DotNext.Text.DecodingContext
   name: DecodingContext
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.Text/DecodingContext
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.Text/DecodingContext
   fullName: DotNext.Text.DecodingContext
 - uid: DotNext.Text.EncodingContext
   name: EncodingContext
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.Text/EncodingContext
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.Text/EncodingContext
   fullName: DotNext.Text.EncodingContext
 - uid: DotNext.IO.BinaryTransferObject`1
   name: BinaryTransferObject`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/BinaryTransferObject%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/BinaryTransferObject%601
   fullName: DotNext.IO.BinaryTransferObject`1
 - uid: DotNext.IO.BinaryTransferObject
   name: BinaryTransferObject
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/BinaryTransferObject
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/BinaryTransferObject
   fullName: DotNext.IO.BinaryTransferObject
 - uid: DotNext.IO.DataTransferObject
   name: DataTransferObject
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/DataTransferObject
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/DataTransferObject
   fullName: DotNext.IO.DataTransferObject
 - uid: DotNext.IO.FileBufferingWriter
   name: FileBufferingWriter
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter
   fullName: DotNext.IO.FileBufferingWriter
 - uid: DotNext.IO.FileBufferingWriter.Options
   name: FileBufferingWriter.Options
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter.Options
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/FileBufferingWriter.Options
   fullName: DotNext.IO.FileBufferingWriter.Options
 - uid: DotNext.IO.IAsyncBinaryReader
   name: IAsyncBinaryReader
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/IAsyncBinaryReader
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/IAsyncBinaryReader
   fullName: DotNext.IO.IAsyncBinaryReader
 - uid: DotNext.IO.IAsyncBinaryWriter
   name: IAsyncBinaryWriter
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/IAsyncBinaryWriter
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/IAsyncBinaryWriter
   fullName: DotNext.IO.IAsyncBinaryWriter
 - uid: DotNext.IO.IDataTransferObject
   name: IDataTransferObject
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/IDataTransferObject
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/IDataTransferObject
   fullName: DotNext.IO.IDataTransferObject
 - uid: DotNext.IO.IDataTransferObject.ITransformation`1
   name: IDataTransferObject.ITransformation`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/IDataTransferObject.ITransformation%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/IDataTransferObject.ITransformation%601
   fullName: DotNext.IO.IDataTransferObject.ITransformation`1
 - uid: DotNext.IO.LengthFormat
   name: LengthFormat
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/LengthFormat
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/LengthFormat
   fullName: DotNext.IO.LengthFormat
 - uid: DotNext.IO.MemoryTransferObject
   name: MemoryTransferObject
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/MemoryTransferObject
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/MemoryTransferObject
   fullName: DotNext.IO.MemoryTransferObject
 - uid: DotNext.IO.SequenceBinaryReader
   name: SequenceBinaryReader
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/SequenceBinaryReader
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/SequenceBinaryReader
   fullName: DotNext.IO.SequenceBinaryReader
 - uid: DotNext.IO.StreamExtensions
   name: StreamExtensions
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/StreamExtensions
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/StreamExtensions
   fullName: DotNext.IO.StreamExtensions
 - uid: DotNext.IO.StreamSegment
   name: StreamSegment
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/StreamSegment
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/StreamSegment
   fullName: DotNext.IO.StreamSegment
 - uid: DotNext.IO.StreamTransferObject
   name: StreamTransferObject
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/StreamTransferObject
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/StreamTransferObject
   fullName: DotNext.IO.StreamTransferObject
 - uid: DotNext.IO.TextStreamExtensions
   name: TextStreamExtensions
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO/TextStreamExtensions
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/TextStreamExtensions
   fullName: DotNext.IO.TextStreamExtensions
 - uid: DotNext.IO.Pipelines.PipeExtensions
   name: PipeExtensions
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/PipeExtensions
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/PipeExtensions
   fullName: DotNext.IO.Pipelines.PipeExtensions
 - uid: DotNext.IO.Pipelines.ResultExtensions
   name: ResultExtensions
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/ResultExtensions
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/ResultExtensions
   fullName: DotNext.IO.Pipelines.ResultExtensions
 - uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor
   name: ReadOnlySequenceAccessor
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.MemoryMappedFiles/ReadOnlySequenceAccessor
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.MemoryMappedFiles/ReadOnlySequenceAccessor
   fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor
 - uid: DotNext.IO.Log.IAuditTrail
   name: IAuditTrail
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail
   fullName: DotNext.IO.Log.IAuditTrail
 - uid: DotNext.IO.Log.IAuditTrail`1
   name: IAuditTrail`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail%601
   fullName: DotNext.IO.Log.IAuditTrail`1
 - uid: DotNext.IO.Log.ILogCompactionSupport
   name: ILogCompactionSupport
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogCompactionSupport
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogCompactionSupport
   fullName: DotNext.IO.Log.ILogCompactionSupport
 - uid: DotNext.IO.Log.ILogEntry
   name: ILogEntry
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogEntry
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogEntry
   fullName: DotNext.IO.Log.ILogEntry
 - uid: DotNext.IO.Log.ILogEntryConsumer`2
   name: ILogEntryConsumer`2
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogEntryConsumer%602
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogEntryConsumer%602
   fullName: DotNext.IO.Log.ILogEntryConsumer`2
 - uid: DotNext.IO.Log.ILogEntryProducer`1
   name: ILogEntryProducer`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogEntryProducer%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/ILogEntryProducer%601
   fullName: DotNext.IO.Log.ILogEntryProducer`1
 - uid: DotNext.IO.Log.IntegrityException
   name: IntegrityException
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IntegrityException
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IntegrityException
   fullName: DotNext.IO.Log.IntegrityException
 - uid: DotNext.IO.Log.LogEntryConsumer`2
   name: LogEntryConsumer`2
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/LogEntryConsumer%602
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/LogEntryConsumer%602
   fullName: DotNext.IO.Log.LogEntryConsumer`2
 - uid: DotNext.IO.Log.LogEntryProducer`1
   name: LogEntryProducer`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/LogEntryProducer%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/LogEntryProducer%601
   fullName: DotNext.IO.Log.LogEntryProducer`1
 - uid: DotNext.IO.Log.LogEntryReadOptimizationHint
   name: LogEntryReadOptimizationHint
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/LogEntryReadOptimizationHint
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/LogEntryReadOptimizationHint
   fullName: DotNext.IO.Log.LogEntryReadOptimizationHint
 - uid: DotNext.Buffers.BufferWriter
   name: BufferWriter
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/BufferWriter
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/BufferWriter
   fullName: DotNext.Buffers.BufferWriter
 - uid: DotNext.Buffers.IReadOnlySequenceSource`1
   name: IReadOnlySequenceSource`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/IReadOnlySequenceSource%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/IReadOnlySequenceSource%601
   fullName: DotNext.Buffers.IReadOnlySequenceSource`1
 - uid: DotNext.Buffers.SequenceBuilder`1
   name: SequenceBuilder`1
-  href: https://fuget.org/packages/DotNext.IO/3.2.1/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/SequenceBuilder%601
+  href: https://fuget.org/packages/DotNext.IO/3.3.0/lib/net5.0/DotNext.IO.dll/DotNext.Buffers/SequenceBuilder%601
   fullName: DotNext.Buffers.SequenceBuilder`1

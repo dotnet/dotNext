@@ -1,53 +1,53 @@
 ﻿references:
 - uid: DotNext.Threading.AtomicPointer
   name: AtomicPointer
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Threading/AtomicPointer
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Threading/AtomicPointer
   fullName: DotNext.Threading.AtomicPointer
 - uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1
   name: IUnmanagedArray`1
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedArray%601
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedArray%601
   fullName: DotNext.Runtime.InteropServices.IUnmanagedArray`1
 - uid: DotNext.Runtime.InteropServices.IUnmanagedMemory
   name: IUnmanagedMemory
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedMemory
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedMemory
   fullName: DotNext.Runtime.InteropServices.IUnmanagedMemory
 - uid: DotNext.Runtime.InteropServices.IUnmanagedMemory`1
   name: IUnmanagedMemory`1
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedMemory%601
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/IUnmanagedMemory%601
   fullName: DotNext.Runtime.InteropServices.IUnmanagedMemory`1
 - uid: DotNext.Runtime.InteropServices.NullPointerException
   name: NullPointerException
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/NullPointerException
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/NullPointerException
   fullName: DotNext.Runtime.InteropServices.NullPointerException
 - uid: DotNext.Runtime.InteropServices.PinnedArray`1
   name: PinnedArray`1
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/PinnedArray%601
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/PinnedArray%601
   fullName: DotNext.Runtime.InteropServices.PinnedArray`1
 - uid: DotNext.Runtime.InteropServices.Pointer`1
   name: Pointer`1
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/Pointer%601
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/Pointer%601
   fullName: DotNext.Runtime.InteropServices.Pointer`1
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator
   name: Pointer`1.Enumerator
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/Pointer%601.Enumerator
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Runtime.InteropServices/Pointer%601.Enumerator
   fullName: DotNext.Runtime.InteropServices.Pointer`1.Enumerator
 - uid: DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner
   name: IMappedMemoryOwner
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.IO.MemoryMappedFiles/IMappedMemoryOwner
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.IO.MemoryMappedFiles/IMappedMemoryOwner
   fullName: DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner
 - uid: DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor
   name: MemoryMappedDirectAccessor
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.IO.MemoryMappedFiles/MemoryMappedDirectAccessor
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.IO.MemoryMappedFiles/MemoryMappedDirectAccessor
   fullName: DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor
 - uid: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions
   name: MemoryMappedFileExtensions
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.IO.MemoryMappedFiles/MemoryMappedFileExtensions
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.IO.MemoryMappedFiles/MemoryMappedFileExtensions
   fullName: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions
 - uid: DotNext.Buffers.IUnmanagedMemoryOwner`1
   name: IUnmanagedMemoryOwner`1
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/IUnmanagedMemoryOwner%601
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/IUnmanagedMemoryOwner%601
   fullName: DotNext.Buffers.IUnmanagedMemoryOwner`1
 - uid: DotNext.Buffers.UnmanagedMemoryPool`1
   name: UnmanagedMemoryPool`1
-  href: https://fuget.org/packages/DotNext.Unsafe/3.2.1/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601
+  href: https://fuget.org/packages/DotNext.Unsafe/3.3.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601
   fullName: DotNext.Buffers.UnmanagedMemoryPool`1

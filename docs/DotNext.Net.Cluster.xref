@@ -1,289 +1,317 @@
 ﻿references:
 - uid: DotNext.Runtime.Serialization.IFormatter`1
   name: IFormatter`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Runtime.Serialization/IFormatter%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Runtime.Serialization/IFormatter%601
   fullName: DotNext.Runtime.Serialization.IFormatter`1
+- uid: DotNext.Runtime.Serialization.SerializableAttribute
+  name: SerializableAttribute
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Runtime.Serialization/SerializableAttribute
+  fullName: DotNext.Runtime.Serialization.SerializableAttribute
 - uid: DotNext.Net.Security.SslOptions
   name: SslOptions
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Security/SslOptions
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Security/SslOptions
   fullName: DotNext.Net.Security.SslOptions
 - uid: DotNext.Net.Mime.ContentTypeExtensions
   name: ContentTypeExtensions
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Mime/ContentTypeExtensions
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Mime/ContentTypeExtensions
   fullName: DotNext.Net.Mime.ContentTypeExtensions
+- uid: DotNext.Net.ConsistentHash.JumpHash
+  name: JumpHash
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.ConsistentHash/JumpHash
+  fullName: DotNext.Net.ConsistentHash.JumpHash
 - uid: DotNext.Net.Cluster.ClusterChangedEventHandler
   name: ClusterChangedEventHandler
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterChangedEventHandler
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterChangedEventHandler
   fullName: DotNext.Net.Cluster.ClusterChangedEventHandler
 - uid: DotNext.Net.Cluster.ClusterLeaderChangedEventHandler
   name: ClusterLeaderChangedEventHandler
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterLeaderChangedEventHandler
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterLeaderChangedEventHandler
   fullName: DotNext.Net.Cluster.ClusterLeaderChangedEventHandler
 - uid: DotNext.Net.Cluster.ClusterMemberId
   name: ClusterMemberId
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterMemberId
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterMemberId
   fullName: DotNext.Net.Cluster.ClusterMemberId
 - uid: DotNext.Net.Cluster.ClusterMemberStatus
   name: ClusterMemberStatus
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterMemberStatus
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterMemberStatus
   fullName: DotNext.Net.Cluster.ClusterMemberStatus
 - uid: DotNext.Net.Cluster.ClusterMemberStatusChanged
   name: ClusterMemberStatusChanged
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterMemberStatusChanged
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ClusterMemberStatusChanged
   fullName: DotNext.Net.Cluster.ClusterMemberStatusChanged
 - uid: DotNext.Net.Cluster.ICluster
   name: ICluster
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ICluster
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ICluster
   fullName: DotNext.Net.Cluster.ICluster
 - uid: DotNext.Net.Cluster.IClusterMember
   name: IClusterMember
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IClusterMember
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IClusterMember
   fullName: DotNext.Net.Cluster.IClusterMember
 - uid: DotNext.Net.Cluster.IExpandableCluster
   name: IExpandableCluster
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IExpandableCluster
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IExpandableCluster
   fullName: DotNext.Net.Cluster.IExpandableCluster
 - uid: DotNext.Net.Cluster.MemberUnavailableException
   name: MemberUnavailableException
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/MemberUnavailableException
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/MemberUnavailableException
   fullName: DotNext.Net.Cluster.MemberUnavailableException
 - uid: DotNext.Net.Cluster.Replication.IReplicationCluster
   name: IReplicationCluster
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster
   fullName: DotNext.Net.Cluster.Replication.IReplicationCluster
 - uid: DotNext.Net.Cluster.Replication.IReplicationCluster`1
   name: IReplicationCluster`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster%601
   fullName: DotNext.Net.Cluster.Replication.IReplicationCluster`1
 - uid: DotNext.Net.Cluster.Replication.ReplicationCompletedEventHandler
   name: ReplicationCompletedEventHandler
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/ReplicationCompletedEventHandler
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/ReplicationCompletedEventHandler
   fullName: DotNext.Net.Cluster.Replication.ReplicationCompletedEventHandler
 - uid: DotNext.Net.Cluster.Messaging.BinaryMessage`1
   name: BinaryMessage`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage%601
   fullName: DotNext.Net.Cluster.Messaging.BinaryMessage`1
 - uid: DotNext.Net.Cluster.Messaging.BinaryMessage
   name: BinaryMessage
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage
   fullName: DotNext.Net.Cluster.Messaging.BinaryMessage
 - uid: DotNext.Net.Cluster.Messaging.IDisposableMessage
   name: IDisposableMessage
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IDisposableMessage
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IDisposableMessage
   fullName: DotNext.Net.Cluster.Messaging.IDisposableMessage
 - uid: DotNext.Net.Cluster.Messaging.IInputChannel
   name: IInputChannel
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IInputChannel
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IInputChannel
   fullName: DotNext.Net.Cluster.Messaging.IInputChannel
 - uid: DotNext.Net.Cluster.Messaging.IMessage
   name: IMessage
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessage
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessage
   fullName: DotNext.Net.Cluster.Messaging.IMessage
 - uid: DotNext.Net.Cluster.Messaging.IMessageBus
   name: IMessageBus
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessageBus
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessageBus
   fullName: DotNext.Net.Cluster.Messaging.IMessageBus
 - uid: DotNext.Net.Cluster.Messaging.IOutputChannel
   name: IOutputChannel
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IOutputChannel
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IOutputChannel
   fullName: DotNext.Net.Cluster.Messaging.IOutputChannel
 - uid: DotNext.Net.Cluster.Messaging.ISubscriber
   name: ISubscriber
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/ISubscriber
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/ISubscriber
   fullName: DotNext.Net.Cluster.Messaging.ISubscriber
 - uid: DotNext.Net.Cluster.Messaging.JsonMessage`1
   name: JsonMessage`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/JsonMessage%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/JsonMessage%601
   fullName: DotNext.Net.Cluster.Messaging.JsonMessage`1
+- uid: DotNext.Net.Cluster.Messaging.MessageAttribute
+  name: MessageAttribute
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageAttribute
+  fullName: DotNext.Net.Cluster.Messaging.MessageAttribute
+- uid: DotNext.Net.Cluster.Messaging.MessageHandler
+  name: MessageHandler
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageHandler
+  fullName: DotNext.Net.Cluster.Messaging.MessageHandler
+- uid: DotNext.Net.Cluster.Messaging.MessageHandler.Builder
+  name: MessageHandler.Builder
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageHandler.Builder
+  fullName: DotNext.Net.Cluster.Messaging.MessageHandler.Builder
 - uid: DotNext.Net.Cluster.Messaging.MessageReader`1
   name: MessageReader`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageReader%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageReader%601
   fullName: DotNext.Net.Cluster.Messaging.MessageReader`1
+- uid: DotNext.Net.Cluster.Messaging.MessageReader
+  name: MessageReader
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessageReader
+  fullName: DotNext.Net.Cluster.Messaging.MessageReader
+- uid: DotNext.Net.Cluster.Messaging.MessagingClient
+  name: MessagingClient
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/MessagingClient
+  fullName: DotNext.Net.Cluster.Messaging.MessagingClient
 - uid: DotNext.Net.Cluster.Messaging.Messenger
   name: Messenger
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/Messenger
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/Messenger
   fullName: DotNext.Net.Cluster.Messaging.Messenger
 - uid: DotNext.Net.Cluster.Messaging.StreamMessage
   name: StreamMessage
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/StreamMessage
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/StreamMessage
   fullName: DotNext.Net.Cluster.Messaging.StreamMessage
 - uid: DotNext.Net.Cluster.Messaging.TextMessage
   name: TextMessage
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/TextMessage
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/TextMessage
   fullName: DotNext.Net.Cluster.Messaging.TextMessage
 - uid: DotNext.Net.Cluster.Consensus.ConsensusProtocolException
   name: ConsensusProtocolException
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus/ConsensusProtocolException
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus/ConsensusProtocolException
   fullName: DotNext.Net.Cluster.Consensus.ConsensusProtocolException
 - uid: DotNext.Net.Cluster.Consensus.Raft.BufferedRaftLogEntry
   name: BufferedRaftLogEntry
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/BufferedRaftLogEntry
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/BufferedRaftLogEntry
   fullName: DotNext.Net.Cluster.Consensus.Raft.BufferedRaftLogEntry
 - uid: DotNext.Net.Cluster.Consensus.Raft.BufferedRaftLogEntryList
   name: BufferedRaftLogEntryList
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/BufferedRaftLogEntryList
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/BufferedRaftLogEntryList
   fullName: DotNext.Net.Cluster.Consensus.Raft.BufferedRaftLogEntryList
 - uid: DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState
   name: ConsensusOnlyState
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/ConsensusOnlyState
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/ConsensusOnlyState
   fullName: DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState
 - uid: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout
   name: ElectionTimeout
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/ElectionTimeout
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/ElectionTimeout
   fullName: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout
 - uid: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions
   name: ElectionTimeoutExtensions
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/ElectionTimeoutExtensions
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/ElectionTimeoutExtensions
   fullName: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions
 - uid: DotNext.Net.Cluster.Consensus.Raft.EmptyLogEntry
   name: EmptyLogEntry
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/EmptyLogEntry
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/EmptyLogEntry
   fullName: DotNext.Net.Cluster.Consensus.Raft.EmptyLogEntry
 - uid: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration
   name: IClusterMemberConfiguration
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IClusterMemberConfiguration
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IClusterMemberConfiguration
   fullName: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration
 - uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState
   name: IPersistentState
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IPersistentState
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IPersistentState
   fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster
   name: IRaftCluster
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IRaftCluster
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IRaftCluster
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember
   name: IRaftClusterMember
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IRaftClusterMember
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IRaftClusterMember
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry
   name: IRaftLogEntry
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IRaftLogEntry
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/IRaftLogEntry
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry
 - uid: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1
   name: JsonLogEntry`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/JsonLogEntry%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/JsonLogEntry%601
   fullName: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1
 - uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector
   name: MetricsCollector
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/MetricsCollector
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/MetricsCollector
   fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState
   name: PersistentState
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.WriteLockToken
   name: PersistentState.WriteLockToken
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.WriteLockToken
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.WriteLockToken
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.WriteLockToken
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry
   name: PersistentState.LogEntry
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntry
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntry
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.CompactionMode
   name: PersistentState.CompactionMode
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.CompactionMode
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.CompactionMode
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.CompactionMode
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntryCacheEvictionPolicy
   name: PersistentState.LogEntryCacheEvictionPolicy
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntryCacheEvictionPolicy
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntryCacheEvictionPolicy
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntryCacheEvictionPolicy
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options
   name: PersistentState.Options
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.Options
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.Options
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.MissingPartitionException
   name: PersistentState.MissingPartitionException
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.MissingPartitionException
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.MissingPartitionException
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.MissingPartitionException
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder
   name: PersistentState.SnapshotBuilder
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.SnapshotBuilder
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.SnapshotBuilder
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster
   name: RaftCluster
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration
   name: RaftCluster.NodeConfiguration
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster.NodeConfiguration
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster.NodeConfiguration
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UdpConfiguration
   name: RaftCluster.UdpConfiguration
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster.UdpConfiguration
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster.UdpConfiguration
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UdpConfiguration
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration
   name: RaftCluster.TcpConfiguration
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster.TcpConfiguration
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster.TcpConfiguration
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1
   name: RaftCluster`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberHolder
   name: RaftCluster`1.MemberHolder
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberHolder
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberHolder
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberHolder
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionBuilder
   name: RaftCluster`1.MemberCollectionBuilder
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionBuilder
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionBuilder
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionBuilder
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionBuilder.Enumerator
   name: RaftCluster`1.MemberCollectionBuilder.Enumerator
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionBuilder.Enumerator
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionBuilder.Enumerator
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionBuilder.Enumerator
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionMutator
   name: RaftCluster`1.MemberCollectionMutator
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionMutator
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionMutator
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionMutator
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionMutator`1
   name: RaftCluster`1.MemberCollectionMutator`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionMutator%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftCluster%601.MemberCollectionMutator%601
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MemberCollectionMutator`1
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember
   name: RaftClusterMember
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftClusterMember
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftClusterMember
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftLogEntriesBufferingOptions
   name: RaftLogEntriesBufferingOptions
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftLogEntriesBufferingOptions
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftLogEntriesBufferingOptions
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftLogEntriesBufferingOptions
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftLogEntryBufferingOptions
   name: RaftLogEntryBufferingOptions
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftLogEntryBufferingOptions
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftLogEntryBufferingOptions
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftLogEntryBufferingOptions
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftProtocolException
   name: RaftProtocolException
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftProtocolException
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/RaftProtocolException
   fullName: DotNext.Net.Cluster.Consensus.Raft.RaftProtocolException
 - uid: DotNext.Net.Cluster.Consensus.Raft.Result`1
   name: Result`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/Result%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/Result%601
   fullName: DotNext.Net.Cluster.Consensus.Raft.Result`1
 - uid: DotNext.Net.Cluster.Consensus.Raft.Metrics.IClientMetricsCollector
   name: IClientMetricsCollector
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Metrics/IClientMetricsCollector
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Metrics/IClientMetricsCollector
   fullName: DotNext.Net.Cluster.Consensus.Raft.Metrics.IClientMetricsCollector
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandAttribute
   name: CommandAttribute
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandAttribute
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandAttribute
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandAttribute
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter
   name: CommandInterpreter
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.CommandHandlerAttribute
   name: CommandInterpreter.CommandHandlerAttribute
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter.CommandHandlerAttribute
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter.CommandHandlerAttribute
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.CommandHandlerAttribute
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.UnknownCommandException
   name: CommandInterpreter.UnknownCommandException
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter.UnknownCommandException
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter.UnknownCommandException
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.UnknownCommandException
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder
   name: CommandInterpreter.Builder
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter.Builder
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter.Builder
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.LogEntry`1
   name: LogEntry`1
-  href: https://fuget.org/packages/DotNext.Net.Cluster/3.2.1/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/LogEntry%601
+  href: https://fuget.org/packages/DotNext.Net.Cluster/3.3.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/LogEntry%601
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.LogEntry`1

@@ -8,7 +8,7 @@
     <title>Miscellaneous Statements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Miscellaneous Statements | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,7 +69,7 @@
 <h1 id="miscellaneous-statements">Miscellaneous Statements</h1>
 
 <h1 id="writeline-expression">WriteLine Expression</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.2.1/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WriteLineExpression">WriteLineExpression</a> can be used to write line of the text in dynamically generated code. This expression supports several outputs for the text:</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.3.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/WriteLineExpression">WriteLineExpression</a> can be used to write line of the text in dynamically generated code. This expression supports several outputs for the text:</p>
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.console.out">Standard Output Stream</a></li>
 <li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.console.error">Standard Error Stream</a></li>
@@ -128,9 +128,22 @@ var greeting = Lambda&lt;Action&lt;string&gt;&gt;(fun =&gt;
 	Embed&lt;Action&lt;string&gt;&gt;(str =&gt; Console.WriteLine(&quot;Hello, {0}&quot;, str), fun[0]);
 });
 
-//the generated code is
+// the generated code is
 
 new Action&lt;string&gt;(str =&gt; Console.WriteLine(&quot;Hello, {0}&quot;, str)));
+</code></pre>
+<h1 id="statement">Statement</h1>
+<p>Migration of third-party code from plain <em>Expression Trees</em> to .NEXT Metaprogramming can be challenging due to differences in programming model. The code based on <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> class implements construction of expression trees. The code based on <code>CodeGenerator</code> class implements natural flow of the code: each call of static method represents a single statement. <code>CodeGenerator.Statement</code> static method bridges the gap between two programming model and simplifies code migration:</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+var greeting = Lambda&lt;Func&lt;int, int, int&gt;&gt;(fun =&gt;
+{
+	Statement(Expression.Add(fun[0], fun[1]));
+});
+
+// the generated code is
+new Func&lt;int, int, int&gt;((x, y) =&gt; x + y);
 </code></pre>
 </article>
           </div>

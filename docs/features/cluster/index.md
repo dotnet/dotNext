@@ -41,7 +41,7 @@ Typed message client or listener consists of the following parts:
 * Serialization/deserialization logic for DTO models
 * Message handling logic (for listener)
 
-Typed message client is represented by [MessageClient](xref:DotNext.Net.Cluster.Messaging.MessageClient) class. Its methods for sending messages are generic methods. The actual generic argument must represent DTO model describing message payload. The model must be marked with [MessageAttribute](xref:DotNext.Net.Cluster.Messaging.MessageAttribute):
+Typed message client is represented by [MessagingClient](xref:DotNext.Net.Cluster.Messaging.MessagingClient) class. Its methods for sending messages are generic methods. The actual generic argument must represent DTO model describing message payload. The model must be marked with [MessageAttribute](xref:DotNext.Net.Cluster.Messaging.MessageAttribute):
 ```csharp
 [Message("Add", MimeType = "application/octet-stream", Formatter = typeof(MessageFormatter))]
 public sealed class AddMessage

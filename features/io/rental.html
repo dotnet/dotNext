@@ -8,7 +8,7 @@
     <title>Alloc vs Pooling | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Alloc vs Pooling | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -81,11 +81,11 @@
 </ul>
 <p>.NEXT offers convenient wrappers that simplify the rental process and handle situations when renting is optional:</p>
 <ul>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryRental%601">MemoryRental&lt;T&gt;</a> if you need to work with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a></li>
-<li><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601">MemoryOwner&lt;T&gt;</a> if you need universal mechanism to represent pooled memory obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryRental%601">MemoryRental&lt;T&gt;</a> if you need to work with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a></li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601">MemoryOwner&lt;T&gt;</a> if you need universal mechanism to represent pooled memory obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a></li>
 </ul>
 <h1 id="memoryrental">MemoryRental</h1>
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryRental%601">MemoryRental&lt;T&gt;</a> helps to reduce boilerplate code in <code>stackalloc</code> vs memory pooling scenario. The rented memory is only accessible using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryRental%601">MemoryRental&lt;T&gt;</a> helps to reduce boilerplate code in <code>stackalloc</code> vs memory pooling scenario. The rented memory is only accessible using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type.</p>
 <p>The following example demonstrates how to reverse a string and choose temporary buffers allocation method depending on the size of the string.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
@@ -108,7 +108,7 @@ public static unsafe string Reverse(this string str)
 <p>The type is typically used in unsafe context when you need a temporary buffer to perform in-memory transformations.</p>
 <h1 id="memoryowner">MemoryOwner</h1>
 <p>.NET offers two different models for memory pooling: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a> class and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> class. Both are abstract classes so it's not possible to unify memory pooling API. For instance, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipes.pipeoptions">configuration model</a> for I/O pipe from .NET expecting <code>MemoryPool&lt;T&gt;</code> instance. If you want to use custom <code>ArrayPool&lt;T&gt;</code> then you need to write wrapper for it.</p>
-<p>.NEXT library contains <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601">MemoryOwner&lt;T&gt;</a> value type that represents rented memory regardless of the rental method:</p>
+<p>.NEXT library contains <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601">MemoryOwner&lt;T&gt;</a> value type that represents rented memory regardless of the rental method:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using System.Buffers;
 
@@ -118,10 +118,10 @@ rentedArray.Memory.Slice(0, 5);
 rentedMemory.Memory.Slice(0, 5);
 </code></pre>
 <p>The value type implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> interface so you can easly access pooled memory in a uniform way.</p>
-<p>Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">MemoryAllocator&lt;T&gt;</a> delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator">MemoryAllocator</a> static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.</p>
+<p>Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator%601">MemoryAllocator&lt;T&gt;</a> delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryAllocator">MemoryAllocator</a> static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.</p>
 <h1 id="growable-buffers">Growable Buffers</h1>
 <p>If size of the required buffer is not known and can grow dynamically then you need to use <a href="buffers.html">Dynamic Buffers</a> that are based on memory pooling mechanism as well.</p>
-<p>Dynamic buffers can be combined with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> easily using extension methods from <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.IO/StreamSource">StreamSource</a> class. With <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;T&gt;</a> class, it's possible to read/write bytes using stream and utilize memory pooling:</p>
+<p>Dynamic buffers can be combined with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> easily using extension methods from <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.IO/StreamSource">StreamSource</a> class. With <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601">PooledArrayBufferWriter&lt;T&gt;</a> class, it's possible to read/write bytes using stream and utilize memory pooling:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 

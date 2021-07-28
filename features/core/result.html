@@ -8,7 +8,7 @@
     <title>Result Type | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Result Type | .NEXT ">
-    <meta name="generator" content="docfx 2.57.2.0">
+    <meta name="generator" content="docfx 2.58.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="result-type">Result Type</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/Result%601">Result&lt;R&gt;</a> is similar to <a href="https://doc.rust-lang.org/std/result/">std::result</a> data type in Rust programming language and allows to handle method call errors without <code>try-catch</code> block. The value can contain actual result returned from method or error in the form of exception.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext/Result%601">Result&lt;R&gt;</a> is similar to <a href="https://doc.rust-lang.org/std/result/">std::result</a> data type in Rust programming language and allows to handle method call errors without <code>try-catch</code> block. The value can contain actual result returned from method or error in the form of exception.</p>
 <p>.NET library provides <code>TryInvoke</code> extension methods to return <code>Result&lt;T&gt;</code> from popular delegate types such as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-1">Func</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter</a>. The type behaves like monad and the pipeline of calls can be constructed.</p>
 <pre><code class="lang-csharp">using DotNext;
 
@@ -83,7 +83,7 @@ else
     throw result.Error;
 }
 </code></pre>
-<p>This type is paired with <a class="xref" href="https://fuget.org/packages/DotNext/3.2.1/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional</a> data type. <code>Result&lt;T&gt;</code> can be converted to it implicitly. But conversion loses information about exception:</p>
+<p>This type is paired with <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext/Optional%601">Optional</a> data type. <code>Result&lt;T&gt;</code> can be converted to it implicitly. But conversion loses information about exception:</p>
 <pre><code class="lang-csharp">using DotNext;
 
 Func&lt;string, int&gt; parser = int.Parse;
