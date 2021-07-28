@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>ValueTask Completion Source | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="ValueTask Completion Source | .NEXT ">
+    <meta name="generator" content="docfx 2.58.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="valuetask-completion-source">ValueTask Completion Source</h1>
+
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskcompletionsource-1">TaskCompletionSource&lt;T&gt;</a> from .NET standard library represents the producer side of a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task&lt;T&gt;</a>. Once the source is completed, it cannot be reused. It happens because of nature of the <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> type: task instance can be awaited multiple times. This is not true for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">value task</a> because it must be awaited once. See <a href="https://itnext.io/why-can-a-valuetask-only-be-awaited-once-31169b324fa4">this</a> article for detailed explanation.</p>
+<p>The fact that value task must be consumed only once is actively used by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncvaluetaskmethodbuilder">AsyncValueTaskMethodBuilder</a> when constructing state machine for async methods in C#. The actual implementation of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.sources.ivaluetasksource">IValueTaskSource</a> can be reused between multiple instances of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>. When the task is completed, the builder waits for consumption of the task result. When the result is acquired, the source can be reset and placed to the pool for future use. However, .NET standard library doesn't offer this behavior as public API.</p>
+<p>.NEXT Threading library provides the producer side of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;T&gt;</a> suitable for pooling and reuse: <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskCompletionSource">ValueTaskCompletionSource</a> and <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskCompletionSource%601">ValueTaskCompletionSource&lt;T&gt;</a> respectively. In contrast to <code>TaskCompletionSource</code> type from .NET, these types can reused for multiple value tasks. As a result, you can place them to the pool and reduce memory allocation associated with tasks in async context. Additionally, these types support timeout and cancellation tracking.</p>
+<p>Completion source can be in the following states:</p>
+<ul>
+<li><strong>Ready for use</strong> means that the source can be used to obtain a fresh incompleted value task</li>
+<li><strong>Completed</strong> means that the producer turns the source into completed state (completed successfully or with exception, canceled, timed out)</li>
+<li><strong>Consumed</strong> means that the value task is awaited by consumer side. The source can be reused only after this event</li>
+</ul>
+<p>Completion source offers the following extension points:</p>
+<ul>
+<li><code>BeforeCompleted</code> virtual method that is called automatically when producer tries to turn the task source into completed state.</li>
+<li><code>AfterConsumed</code> virtual method that is called automatically when the task is awaited by the consumer. You can override it to return completion source back to the pool.</li>
+<li><code>OnTimeout</code> virtual method that is called when the task is timed out. The method allows to override the result to be passed to the task consumer. By default, it turns the task into failed state with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.timeoutexception">TimeoutException</a> exception.</li>
+<li><code>OnCanceled</code> virtual method that is called when the task is canceled. The method allows to override the result to be passed to the task consumer. By default, it turns the task into failed state with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> exception.</li>
+</ul>
+<p><code>CreateTask(TimeSpan timeout, CancellationToken token)</code> method allows to obtain the task from the source. The method must be called only if previously produced task has been awaited and <code>Reset</code> method has been called. The produced task can be completed using <code>TrySetCanceled</code>, <code>TrySetException</code> or <code>TrySetResult</code> methods.</p>
+<p>The common usage pattern for this kind of completion source:</p>
+<ol>
+<li>Create or obtain instance of completion source from the pool</li>
+<li>Call <code>CreateTask</code> method (timeout and cancellation token are optional)</li>
+<li>Return the task to consumer</li>
+<li>Complete the task with <code>TrySetCanceled</code>, <code>TrySetException</code> or <code>TrySetResult</code> methods</li>
+<li>Override <code>AfterConsumed</code> method and call <code>Reset</code> method on completion source, then return completion source back to the pool</li>
+</ol>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/threading/tasksrc.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
