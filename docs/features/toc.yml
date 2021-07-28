@@ -63,6 +63,8 @@
       href: threading/lazy.md
     - name: Persistent Channels
       href: threading/channel.md
+    - name: ValueTask Completion Source
+      href: threading/tasksrc.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
