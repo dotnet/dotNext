@@ -1,0 +1,7 @@
+paths:
+  - src
+paths-ignore:
+  - src/DotNext.Tests
+  - src/DotNext.Benchmarks
+  - src/examples
+  - src/VisualBasicElements

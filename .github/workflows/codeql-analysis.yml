@@ -5,7 +5,7 @@ on:
     branches: [ master, develop ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ master, develop ]
+    branches: [ develop ]
   schedule:
     - cron: '30 11 * * 4'
 
@@ -32,13 +32,7 @@ jobs:
       uses: github/codeql-action/init@v1
       with:
         languages: ${{ matrix.language }}
-        paths:
-          - src
-        paths-ignore:
-          - src/DotNext.Tests
-          - src/DotNext.Benchmarks
-          - src/examples
-          - src/VisualBasicElements
+        config-file: ./.github/codeql/config.yml
     - name: Autobuild
       uses: github/codeql-action/autobuild@v1
     - name: Perform CodeQL Analysis
