@@ -1,5 +1,0 @@
-path_classifiers:
-  test:
-    - src/DotNext.Tests
-    - src/examples
-    - src/DotNext.Benchmarks
