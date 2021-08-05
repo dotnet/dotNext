@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster
 {
     /// <summary>
-    /// Represents cluster node in distributed environment.
+    /// Represents local view of the entire cluster.
     /// </summary>
     public interface ICluster
     {
