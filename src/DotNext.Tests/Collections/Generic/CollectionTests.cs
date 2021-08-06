@@ -43,5 +43,29 @@ namespace DotNext.Collections.Generic
                 if (!value.IsBetween(0, 3, BoundType.Closed))
                     throw new Exception();
         }
+
+        [Fact]
+        public static void PeekRandomFromEmptyCollection()
+        {
+            False(Array.Empty<int>().PeekRandom(new()).HasValue);
+        }
+
+        [Fact]
+        public static void PeekRandomFromSingletonCollection()
+        {
+            Equal(5, new int[] { 5 }.PeekRandom(new()));
+        }
+
+        [Fact]
+        public static void PeekRandomFromCollection()
+        {
+            IReadOnlyCollection<int> collection = new int[] { 10, 20, 30 };
+            var rnd = new Random();
+            for (var i = 0; i < 3; i++)
+            {
+                var item = collection.PeekRandom(rnd);
+                True(item == 10 || item == 20 || item == 30);
+            }
+        }
     }
 }

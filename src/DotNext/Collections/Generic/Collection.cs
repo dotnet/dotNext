@@ -52,10 +52,30 @@ namespace DotNext.Collections.Generic
         /// <summary>
         /// Adds multiple items into collection.
         /// </summary>
-        /// <typeparam name="T">Type of collection items.</typeparam>
+        /// <typeparam name="T">The type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to modify.</param>
         /// <param name="items">An items to add into collection.</param>
         public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> items)
             => items.ForEach(collection.Add);
+
+        /// <summary>
+        /// Gets the random element from the collection.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the collection.</typeparam>
+        /// <param name="collection">The collection to get the random element.</param>
+        /// <param name="random">The random numbers source.</param>
+        /// <returns>The random element from the collection; or <see cref="Optional{T}.None"/> if collection is empty.</returns>
+        public static Optional<T> PeekRandom<T>(this IReadOnlyCollection<T> collection, Random random)
+        {
+            var index = random.Next(collection.Count);
+            using var enumerator = collection.GetEnumerator();
+            for (var i = 0; enumerator.MoveNext(); i++)
+            {
+                if (i == index)
+                    return enumerator.Current;
+            }
+
+            return Optional<T>.None;
+        }
     }
 }
