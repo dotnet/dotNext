@@ -67,15 +67,25 @@ namespace DotNext.Collections.Generic
         /// <returns>The random element from the collection; or <see cref="Optional{T}.None"/> if collection is empty.</returns>
         public static Optional<T> PeekRandom<T>(this IReadOnlyCollection<T> collection, Random random)
         {
-            var index = random.Next(collection.Count);
-            using var enumerator = collection.GetEnumerator();
-            for (var i = 0; enumerator.MoveNext(); i++)
+            switch (collection.Count)
             {
-                if (i == index)
-                    return enumerator.Current;
-            }
+                case 0:
+                    return Optional<T>.None;
+                case 1:
+                    return collection.FirstOrEmpty();
+                case int index:
+                    index = random.Next(index);
+                    using (var enumerator = collection.GetEnumerator())
+                    {
+                        for (var i = 0; enumerator.MoveNext(); i++)
+                        {
+                            if (i == index)
+                                return enumerator.Current;
+                        }
+                    }
 
-            return Optional<T>.None;
+                    goto case 0;
+            }
         }
     }
 }
