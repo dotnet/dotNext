@@ -5,6 +5,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using static Tasks.Synchronization;
+
     /// <summary>
     /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
     /// </summary>
@@ -101,7 +103,8 @@ namespace DotNext.Threading
         {
             if (participantCount > ParticipantsRemaining)
                 throw new ArgumentOutOfRangeException(nameof(participantCount));
-            countdown.Signal(participantCount, false);
+
+            countdown.Signal(participantCount, false, out _);
             participants.Add(-participantCount);
         }
 
@@ -123,18 +126,21 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
         /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public async Task<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
+        public Task<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
         {
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
+
             if (ParticipantCount == 0L)
-                throw new InvalidOperationException();
+                return Task.FromException<bool>(new InvalidOperationException());
 
-            if (countdown.Signal(1L, true))
-            {
-                await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
-                return true;
-            }
-
-            return await WaitAsync(timeout, token).ConfigureAwait(false);
+            return countdown.Signal(1L, true, out var result)
+                ? PostPhase(currentPhase.Add(1L)).ContinueWith<bool>(static task =>
+                {
+                    task.GetAwaiter().GetResult();
+                    return true;
+                }, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current)
+                : result.WaitAsync(timeout, token);
         }
 
         /// <summary>
