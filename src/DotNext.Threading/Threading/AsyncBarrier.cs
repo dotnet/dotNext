@@ -135,11 +135,15 @@ namespace DotNext.Threading
                 return Task.FromException<bool>(new InvalidOperationException());
 
             return countdown.Signal(1L, true, out var result)
-                ? PostPhase(currentPhase.Add(1L)).ContinueWith<bool>(static task =>
+                ? PostPhase(currentPhase.Add(1L)).ContinueWith<bool>(
+                static task =>
                 {
                     task.GetAwaiter().GetResult();
                     return true;
-                }, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current)
+                },
+                token,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Current)
                 : result.WaitAsync(timeout, token);
         }
 
