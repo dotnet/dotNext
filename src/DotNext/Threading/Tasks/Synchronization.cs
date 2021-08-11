@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks
 {
@@ -196,7 +197,7 @@ namespace DotNext.Threading.Tasks
             else if (token.IsCancellationRequested)
                 result = Task.FromCanceled<bool>(token);
             else if (task.IsCompleted)
-                result = CompletedTask<bool, BooleanConst.True>.Task;
+                result = ToCompleted(task);
             else if (timeout == TimeSpan.Zero)
                 result = CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
             else if (timeout > InfiniteTimeSpan)
@@ -204,9 +205,23 @@ namespace DotNext.Threading.Tasks
             else if (!token.CanBeCanceled && task is Task<bool> boolTask)
                 result = boolTask;
             else
-                result = task.ContinueWith(static task => true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                result = task.ContinueWith<bool>(static task => 
+                {
+                    task.GetAwaiter().GetResult();
+                    return true;
+                }, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
             return result;
+
+            static Task<bool> ToCompleted(Task task)
+            {
+                Debug.Assert(task.IsCompleted);
+
+                var exception = task.Exception;
+                return exception is null ?
+                    CompletedTask<bool, BooleanConst.True>.Task :
+                    Task.FromException<bool>(exception.InnerException ?? exception);
+            }
         }
     }
 }
