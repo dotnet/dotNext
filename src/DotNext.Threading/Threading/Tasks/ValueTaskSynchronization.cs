@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
+    using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
+
     /// <summary>
     /// Provides a set of methods for synchronization and combination of multiple <see cref="ValueTask"/>s.
     /// </summary>
@@ -17,50 +16,6 @@ namespace DotNext.Threading.Tasks
     /// </remarks>
     public static class ValueTaskSynchronization
     {
-        [StructLayout(LayoutKind.Auto)]
-        private struct ExceptionAggregator
-        {
-            private object? exceptionInfo;
-
-            internal void Add(Exception e)
-            {
-                switch (exceptionInfo)
-                {
-                    case null:
-                        exceptionInfo = ExceptionDispatchInfo.Capture(e);
-                        break;
-                    case ExceptionDispatchInfo info:
-                        exceptionInfo = CreateList(info.SourceException, e);
-                        break;
-                    case ICollection<Exception> exceptions:
-                        exceptions.Add(e);
-                        break;
-                }
-
-                static ICollection<Exception> CreateList(Exception first, Exception second)
-                {
-                    ICollection<Exception> result = new LinkedList<Exception>();
-                    result.Add(first);
-                    result.Add(second);
-                    return result;
-                }
-            }
-
-            internal readonly void ThrowIfNeeded()
-            {
-                switch (exceptionInfo)
-                {
-                    case ExceptionDispatchInfo info:
-                        info.Throw();
-                        break;
-                    case ICollection<Exception> exceptions:
-                        var e = new AggregateException(exceptions);
-                        exceptions.Clear(); // help GC
-                        throw e;
-                }
-            }
-        }
-
         private static ValueTask GetTask<T>(in T tuple, int index)
             where T : struct, ITuple
             => Unsafe.Add(ref Unsafe.As<T, ValueTask>(ref Unsafe.AsRef(in tuple)), index);
