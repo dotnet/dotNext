@@ -152,7 +152,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>The task representing waiting operation.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public Task SignalAndWaitAsync() => SignalAndWaitAsync(CancellationToken.None);
+        public Task SignalAndWaitAsync() => SignalAndWaitAsync(CancellationToken.None); // TODO: Replace with default parameter value
 
         /// <inheritdoc/>
         bool IAsyncEvent.Reset() => countdown.Reset();
