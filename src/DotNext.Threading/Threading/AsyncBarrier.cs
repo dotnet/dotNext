@@ -63,7 +63,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="phase">The current phase number.</param>
         /// <returns>A task representing post-phase asynchronous execution.</returns>
-        protected virtual Task PostPhase(long phase) => Task.CompletedTask;
+        protected virtual Task PostPhase(long phase) => Task.CompletedTask; // TODO: Change return type to ValueTask
 
         /// <summary>
         /// Notifies this barrier that there will be additional participants.
