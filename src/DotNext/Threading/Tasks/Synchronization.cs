@@ -205,7 +205,7 @@ namespace DotNext.Threading.Tasks
             else if (!token.CanBeCanceled && task is Task<bool> boolTask)
                 result = boolTask;
             else
-                result = task.ContinueWith<bool>(static task => 
+                result = task.ContinueWith<bool>(static task =>
                 {
                     task.GetAwaiter().GetResult();
                     return true;
