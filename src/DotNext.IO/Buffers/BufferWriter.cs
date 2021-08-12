@@ -223,6 +223,7 @@ namespace DotNext.Buffers
         private static unsafe void Write<T>(IBufferWriter<byte> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
             where T : struct, IFormattable
         {
+            // TODO: Move to public ISpanFormattable and IParseable interfaces in .NET 6
             const int initialCharBufferSize = 128;
 
             // attempt to allocate char buffer on the stack

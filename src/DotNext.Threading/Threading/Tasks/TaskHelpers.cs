@@ -2,9 +2,9 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace DotNext.Threading
+namespace DotNext.Threading.Tasks
 {
-    internal static class AsyncLockHelpers
+    internal static class TaskHelpers
     {
         private static readonly Action<Task<bool>> CheckOnTimeoutAction = CheckOnTimeoutImpl;
 

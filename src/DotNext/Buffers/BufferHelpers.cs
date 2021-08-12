@@ -169,6 +169,7 @@ namespace DotNext.Buffers
         /// <param name="input">The string builder.</param>
         public static void Write(this IBufferWriter<char> writer, StringBuilder input)
         {
+            // TODO: Add support of DefaultInterpolatedStringHandler in .NET 6
             foreach (var chunk in input.GetChunks())
                 writer.Write(chunk.Span);
         }

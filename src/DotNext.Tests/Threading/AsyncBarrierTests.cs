@@ -89,5 +89,27 @@ namespace DotNext.Threading
             await Task.WhenAll(tasks);
             Equal(2, barrier.CurrentPhaseNumber);
         }
+
+        [Fact]
+        public static async Task RegressionIssue73()
+        {
+            using var barrier = new AsyncBarrier(2);
+
+            var task1 = Task.Run(async () =>
+            {
+                await barrier.SignalAndWaitAsync();
+                return 24;
+            });
+
+            var task2 = Task.Run(async () =>
+            {
+                await barrier.SignalAndWaitAsync();
+                return 42;
+            });
+
+            var result = await Task.WhenAll(task1, task2);
+            Equal(24, result[0]);
+            Equal(42, result[1]);
+        }
     }
 }

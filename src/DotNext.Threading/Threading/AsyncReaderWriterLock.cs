@@ -9,6 +9,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading
 {
     using Runtime;
+    using static Tasks.TaskHelpers;
 
     /// <summary>
     /// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.

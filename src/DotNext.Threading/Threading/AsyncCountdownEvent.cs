@@ -1,8 +1,12 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
+    using Generic;
+    using Tasks;
+
     /// <summary>
     /// Represents a synchronization primitive that is signaled when its count reaches zero.
     /// </summary>
@@ -149,14 +153,16 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal bool Signal(long signalCount, bool autoReset)
+        internal bool Signal(long signalCount, bool autoReset, out Task<bool> task)
         {
             ThrowIfDisposed();
             if (signalCount < 1L)
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
+
+            task = CompletedTask<bool, BooleanConst.True>.Task;
             var node = this.node as CounterNode;
             if (node is null) // already in signaled state
-                return false;
+                goto exit;
 
             if (node.Count == 0L || signalCount > node.Count)
                 throw new InvalidOperationException();
@@ -168,6 +174,8 @@ namespace DotNext.Threading
                 return true;
             }
 
+            task = node.Task;
+        exit:
             return false;
         }
 
@@ -179,7 +187,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than 1.</exception>
         /// <exception cref="InvalidOperationException">The current instance is already set; or <paramref name="signalCount"/> is greater than <see cref="CurrentCount"/>.</exception>
-        public bool Signal(long signalCount) => Signal(signalCount, false);
+        public bool Signal(long signalCount) => Signal(signalCount, false, out _);
 
         /// <summary>
         /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by one.

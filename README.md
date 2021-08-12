@@ -12,75 +12,47 @@
 | ---- | ---- |
 | [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://www.fuget.org/packages/DotNext/latest/net5.0/lib/DotNext.dll/DotNext/DelegateHelpers) factory methods |
 | [Check if an instance of T is default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://www.fuget.org/packages/DotNext/latest/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics) |
-| [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
-| [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://sakno.github.io/dotNext/features/metaprogramming/index.html) |
-| [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html) |
-| [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://sakno.github.io/dotNext/features/cluster/wal.html)  |
-| [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://sakno.github.io/dotNext/features/io/mmfile.html) |
+| [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://dotnet.github.io/dotNext/features/concept.html) |
+| [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://dotnet.github.io/dotNext/features/metaprogramming/index.html) |
+| [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://dotnet.github.io/dotNext/features/threading/index.html) |
+| [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)  |
+| [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://dotnet.github.io/dotNext/features/io/mmfile.html) |
 | [Memory-mapped file as ReadOnlySequence&lt;byte&gt;](https://github.com/dotnet/runtime/issues/24805) | [ReadOnlySequenceAccessor](https://www.fuget.org/packages/DotNext.IO/latest/lib/net5.0/DotNext.IO.dll/DotNext.IO.MemoryMappedFiles/ReadOnlySequenceAccessor) |
 
 Quick overview of additional features:
 
-* [Attachment of user data to an arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
-* [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for an arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
-* Extended set of [atomic operations](https://sakno.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
-* [Fast Reflection](https://sakno.github.io/dotNext/features/reflection/fast.html)
+* [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
+* [Automatic generation of Equals/GetHashCode](https://dotnet.github.io/dotNext/features/core/autoeh.html) for an arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
+* Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
+* [Fast Reflection](https://dotnet.github.io/dotNext/features/reflection/fast.html)
 * Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://www.fuget.org/packages/DotNext/latest/lib/net5.0/DotNext.dll/DotNext/Span) static class
-* `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://sakno.github.io/dotNext/features/threading/rwlock.html)
-* [Atomic](https://sakno.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
+* `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
+* [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
 * [PipeExtensions](https://www.fuget.org/packages/DotNext.IO/latest/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/PipeExtensions) provides high-level I/O operations for pipelines such as string encoding and decoding
-* Various high-performance [growable buffers](https://sakno.github.io/dotNext/features/io/buffers.html) for efficient I/O
-* Fully-featured [Raft implementation](https://github.com/sakno/dotNext/tree/master/src/cluster)
+* Various high-performance [growable buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
+* Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
 
 All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
 
 # Quick Links
 
-* [Features](https://sakno.github.io/dotNext/features/core/index.html)
-* [API documentation](https://sakno.github.io/dotNext/api.html)
-* [Benchmarks](https://sakno.github.io/dotNext/benchmarks.html)
+* [Features](https://dotnet.github.io/dotNext/features/core/index.html)
+* [API documentation](https://dotnet.github.io/dotNext/api.html)
+* [Benchmarks](https://dotnet.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 Documentation for older versions:
-* [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
-* [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
+* [1.x](https://dotnet.github.io/dotNext/versions/1.x/index.html)
+* [2.x](https://dotnet.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 07-28-2021
+Release Date: 08-12-2021
 
-<a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.3.0</a>
-* Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
-* Improved overall performance of extension methods declaring in `RandomExtensions` class
-* Added `Func.IsTypeOf<T>()` and `Predicate.IsTypeOf<T>()` cached predicates
-* Deprecation of `CallerMustBeSynchronizedAttribute`
-* Fixed backward compatibility issues when _DotNext 3.2.x_ or later used in combination with _DotNext.IO 3.1.x_
-* Fixed LGTM warnings
+<a href="https://www.nuget.org/packages/dotnext/3.3.1">DotNext 3.3.1</a>
+* `DotNext.Threading.Tasks.Synchronization.WaitAsync` doesn't suspend the exception associated with faulty input task anymore
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
-* Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
-* Fixed LGTM warnings
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/3.3.0">DotNext.Unsafe 3.3.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
-* Introduced a new asynchronous primitive `AsyncCorrelationSource` for synchronization
-* Added `ValueTaskCompletionSource<T>` as reusable source of tasks suitable for pooling
-
-<a href="https://www.nuget.org/packages/dotnext.io/3.3.0">DotNext.IO 3.3.0</a>
-* `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
-* `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods ensure that the buffer tail is flushed to the disk
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
-* Added implementation of [Jump](https://arxiv.org/pdf/1406.2294.pdf) consistent hash
-* Added support of typed message handlers. See `MessagingClient` and `MessageHandler` classes for more information
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.3.0">DotNext.AspNetCore.Cluster 3.3.0</a>
-* Added ETW counter for response time of nodes in the cluster
+<a href="https://www.nuget.org/packages/dotnext.threading/3.3.1">DotNext.Threading 3.3.1</a>
+* Fixed [73](https://github.com/dotnet/dotNext/issues/73)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
