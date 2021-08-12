@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
     using static Tasks.Continuation;
+    using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
 
     /// <summary>
     /// Provides set of methods for asynchronous invocation of various delegates.
@@ -38,15 +37,12 @@ namespace DotNext.Threading
 
             internal void Invoke()
             {
-                // null when no errors
-                // Exception when single error
-                // ICollection<Exception> when multiple errors
-                object? errors = null;
+                var errors = new ExceptionAggregator();
                 foreach (TDelegate target in invocationList.GetInvocationList())
                 {
                     if (token.IsCancellationRequested)
                     {
-                        AddError(ref errors, new OperationCanceledException(token));
+                        errors.Add(new OperationCanceledException(token));
                         break;
                     }
 
@@ -56,43 +52,12 @@ namespace DotNext.Threading
                     }
                     catch (Exception e)
                     {
-                        AddError(ref errors, e);
+                        errors.Add(e);
                     }
                 }
 
                 // aggregate all exceptions
-                switch (errors)
-                {
-                    case Exception e:
-                        ExceptionDispatchInfo.Throw(e);
-                        break;
-                    case IEnumerable<Exception> e:
-                        throw new AggregateException(e);
-                }
-
-                static void AddError(ref object? errors, Exception e)
-                {
-                    switch (errors)
-                    {
-                        case null:
-                            errors = e;
-                            break;
-                        case Exception error:
-                            errors = CreateList(error, e);
-                            break;
-                        case ICollection<Exception> collection:
-                            collection.Add(e);
-                            break;
-                    }
-                }
-
-                static ICollection<Exception> CreateList(Exception first, Exception second)
-                {
-                    ICollection<Exception> result = new LinkedList<Exception>();
-                    result.Add(first);
-                    result.Add(second);
-                    return result;
-                }
+                errors.ThrowIfNeeded();
             }
         }
 
