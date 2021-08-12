@@ -193,23 +193,41 @@ namespace DotNext.Threading.Tasks
             // TODO: Replace with Task.WaitAsync in .NET 6
             Task<bool> result;
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+            {
                 result = Task.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+            }
             else if (token.IsCancellationRequested)
+            {
                 result = Task.FromCanceled<bool>(token);
+            }
             else if (task.IsCompleted)
+            {
                 result = ToCompleted(task);
+            }
             else if (timeout == TimeSpan.Zero)
+            {
                 result = CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
+            }
             else if (timeout > InfiniteTimeSpan)
+            {
                 result = WaitAsyncImpl(task, timeout, token);
+            }
             else if (!token.CanBeCanceled && task is Task<bool> boolTask)
+            {
                 result = boolTask;
+            }
             else
-                result = task.ContinueWith<bool>(static task =>
+            {
+                result = task.ContinueWith<bool>(
+                static task =>
                 {
                     task.GetAwaiter().GetResult();
                     return true;
-                }, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                },
+                token,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Current);
+            }
 
             return result;
 
