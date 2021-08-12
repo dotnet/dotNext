@@ -6,6 +6,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using static Tasks.TaskHelpers;
+
     /// <summary>
     /// Represents asynchronous mutually exclusive lock.
     /// </summary>
