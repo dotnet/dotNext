@@ -17,16 +17,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         bool IsLeader(IRaftClusterMember member);
 
-        Task<Result<bool>> ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        Task<Result<bool>> AppendEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry;
 
-        Task<Result<bool>> ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+        Task<Result<bool>> VoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-        Task<Result<bool>> ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+        Task<Result<bool>> PreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         Task<bool> ResignAsync(CancellationToken token);
 
-        Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry;
 
         ILogger Logger => NullLogger.Instance;

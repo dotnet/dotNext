@@ -527,7 +527,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        protected async Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        protected async Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
@@ -553,6 +553,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Handles InstallSnapshot message received from remote cluster member.
+        /// </summary>
+        /// <typeparam name="TSnapshot">The type of snapshot record.</typeparam>
+        /// <param name="sender">The sender of the snapshot message.</param>
+        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
+        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
+        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
+        [Obsolete("Use InstallSnapshotAsync method instead")]
+        protected Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : notnull, IRaftLogEntry
+            => InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
+
+        /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
         /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
@@ -564,7 +579,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
@@ -616,6 +631,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Handles AppendEntries message received from remote cluster member.
+        /// </summary>
+        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
+        /// <param name="sender">The sender of the replica message.</param>
+        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
+        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
+        /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
+        /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
+        /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
+        [Obsolete("Use AppendEntriesAsync method instead")]
+        protected Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+            => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+
+        /// <summary>
         /// Receives preliminary vote from the potential Candidate in the cluster.
         /// </summary>
         /// <param name="nextTerm">Caller's current term + 1.</param>
@@ -623,7 +655,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
-        protected async Task<Result<bool>> ReceivePreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        protected async Task<Result<bool>> PreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             bool result;
             long currentTerm;
@@ -648,6 +680,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Receives preliminary vote from the potential Candidate in the cluster.
+        /// </summary>
+        /// <param name="nextTerm">Caller's current term + 1.</param>
+        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
+        [Obsolete("Use PreVoteAsync method instead")]
+        protected Task<Result<bool>> ReceivePreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            => PreVoteAsync(nextTerm, lastLogIndex, lastLogTerm, token);
+
+        /// <summary>
         /// Votes for the new candidate.
         /// </summary>
         /// <param name="sender">The vote sender.</param>
@@ -656,7 +700,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        protected async Task<Result<bool>> VoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var currentTerm = auditTrail.Term;
             var result = false;
@@ -703,11 +747,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Votes for the new candidate.
+        /// </summary>
+        /// <param name="sender">The vote sender.</param>
+        /// <param name="senderTerm">Term value provided by sender of the request.</param>
+        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
+        [Obsolete("Use VoteAsync method instead")]
+        protected Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            => VoteAsync(sender, senderTerm, lastLogIndex, lastLogTerm, token);
+
+        /// <summary>
         /// Revokes leadership of the local node.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> ReceiveResignAsync(CancellationToken token)
+        protected async Task<bool> ResignAsync(CancellationToken token)
         {
             if (state is StandbyState)
                 goto resign_denied;
@@ -733,10 +790,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
+        /// <summary>
+        /// Revokes leadership of the local node.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
+        [Obsolete("Use ResignAsync method instead")]
+        protected Task<bool> ReceiveResignAsync(CancellationToken token)
+            => ResignAsync(token);
+
         /// <inheritdoc/>
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
         {
-            if (await ReceiveResignAsync(token).ConfigureAwait(false))
+            if (await ResignAsync(token).ConfigureAwait(false))
             {
                 return true;
             }

@@ -119,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             state = State.AppendEntriesReceived;
             EntriesExchange.ParseAnnouncement(announcement, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount);
             ChangePort(ref sender, remotePort);
-            task = server.ReceiveEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
+            task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         private async ValueTask<bool> BeginReceiveEntry(ReadOnlyMemory<byte> prologue, bool completed, CancellationToken token)

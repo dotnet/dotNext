@@ -202,7 +202,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
-        private async Task ReceiveVoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
+        private async Task VoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchById, request.Sender);
             if (sender is null)
@@ -211,12 +211,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             else
             {
-                await request.SaveResponse(response, await ReceiveVoteAsync(sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
+                await request.SaveResponse(response, await VoteAsync(sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
                 sender.Touch();
             }
         }
 
-        private async Task ReceivePreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
+        private async Task PreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchById, request.Sender);
             if (sender is null)
@@ -225,7 +225,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             else
             {
-                await request.SaveResponse(response, await ReceivePreVoteAsync(request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
+                await request.SaveResponse(response, await PreVoteAsync(request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
                 sender.Touch();
             }
         }
@@ -233,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchById, request.Sender);
-            await request.SaveResponse(response, await ReceiveResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
+            await request.SaveResponse(response, await ResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
             sender?.Touch();
         }
 
@@ -245,7 +245,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return result;
         }
 
-        private async Task ReceiveEntriesAsync(HttpRequest request, HttpResponse response, CancellationToken token)
+        private async Task AppendEntriesAsync(HttpRequest request, HttpResponse response, CancellationToken token)
         {
             var message = new AppendEntriesMessage(request, out var entries);
             await using (entries)
@@ -260,12 +260,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     Result<bool> result;
                     if (bufferingOptions is null)
                     {
-                        result = await ReceiveEntriesAsync(sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
+                        result = await AppendEntriesAsync(sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
                     }
                     else
                     {
                         using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-                        result = await ReceiveEntriesAsync(sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
+                        result = await AppendEntriesAsync(sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
                     }
 
                     await message.SaveResponse(response, result, token).ConfigureAwait(false);
@@ -273,7 +273,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private async Task InstallSnapshot(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
+        private async Task InstallSnapshotAsync(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchById, message.Sender);
             if (sender is null)
@@ -285,12 +285,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 Result<bool> result;
                 if (bufferingOptions is null)
                 {
-                    result = await ReceiveSnapshotAsync(sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
+                    result = await InstallSnapshotAsync(sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
                 }
                 else
                 {
                     using var buffered = await BufferedRaftLogEntry.CopyAsync(message.Snapshot, bufferingOptions, token).ConfigureAwait(false);
-                    result = await ReceiveSnapshotAsync(sender, message.ConsensusTerm, buffered, message.Index, token).ConfigureAwait(false);
+                    result = await InstallSnapshotAsync(sender, message.ConsensusTerm, buffered, message.Index, token).ConfigureAwait(false);
                 }
 
                 await message.SaveResponse(response, result, token).ConfigureAwait(false);
@@ -321,19 +321,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             switch (HttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    return ReceiveVoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
+                    return VoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
                 case PreVoteMessage.MessageType:
-                    return ReceivePreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted);
+                    return PreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted);
                 case ResignMessage.MessageType:
                     return ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted);
                 case MetadataMessage.MessageType:
                     return GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
                 case AppendEntriesMessage.MessageType:
-                    return ReceiveEntriesAsync(context.Request, context.Response, context.RequestAborted);
+                    return AppendEntriesAsync(context.Request, context.Response, context.RequestAborted);
                 case CustomMessage.MessageType:
                     return ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
                 case InstallSnapshotMessage.MessageType:
-                    return InstallSnapshot(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
+                    return InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;

@@ -96,18 +96,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc />
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
-            => ReceiveResignAsync(token);
+            => ResignAsync(token);
 
         private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(RaftClusterMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             Debug.Assert(bufferingOptions is not null);
             using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-            return await ReceiveEntriesAsync(sender, senderTerm, buffered.ToProducer(), prevLogIndex, prevLogTerm, commitIndex, token).ConfigureAwait(false);
+            return await AppendEntriesAsync(sender, senderTerm, buffered.ToProducer(), prevLogIndex, prevLogTerm, commitIndex, token).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             if (member is null)
@@ -115,30 +115,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             member.Touch();
             return bufferingOptions is null ?
-                ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
+                AppendEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
                 BufferizeReceivedEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        Task<Result<bool>> ILocalMember.VoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             if (member is null)
                 return Task.FromResult(new Result<bool>(Term, false));
 
             member.Touch();
-            return ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
+            return VoteAsync(member, term, lastLogIndex, lastLogTerm, token);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        Task<Result<bool>> ILocalMember.PreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             if (member is null)
                 return Task.FromResult(new Result<bool>(Term, false));
 
             member.Touch();
-            return ReceivePreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
+            return PreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
         }
 
         private async Task<Result<bool>> BufferizeSnapshotAsync<TSnapshot>(RaftClusterMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
@@ -146,11 +146,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Debug.Assert(bufferingOptions is not null);
             using var buffered = await BufferedRaftLogEntry.CopyAsync(snapshot, bufferingOptions, token).ConfigureAwait(false);
-            return await ReceiveSnapshotAsync(sender, senderTerm, buffered, snapshotIndex, token).ConfigureAwait(false);
+            return await InstallSnapshotAsync(sender, senderTerm, buffered, snapshotIndex, token).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             if (member is null)
@@ -158,7 +158,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             member.Touch();
             return bufferingOptions is null ?
-                ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token) :
+                InstallSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token) :
                 BufferizeSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
         }
 

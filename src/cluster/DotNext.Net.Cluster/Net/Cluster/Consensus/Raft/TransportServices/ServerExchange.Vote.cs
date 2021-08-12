@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             VoteExchange.Parse(payload.Span, out var remotePort, out var term, out var lastLogIndex, out var lastLogTerm);
             ChangePort(ref sender, remotePort);
-            task = server.ReceiveVoteAsync(sender, term, lastLogIndex, lastLogTerm, token);
+            task = server.VoteAsync(sender, term, lastLogIndex, lastLogTerm, token);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> EndVote(Memory<byte> payload)

@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             HeartbeatExchange.Parse(payload.Span, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
             ChangePort(ref sender, remotePort);
-            task = server.ReceiveEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
+            task = server.AppendEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)

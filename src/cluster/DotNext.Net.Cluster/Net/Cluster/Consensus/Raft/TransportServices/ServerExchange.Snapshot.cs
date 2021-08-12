@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var snapshot = new ReceivedLogEntry(ref input, Reader, out var remotePort, out var senderTerm, out var snapshotIndex);
             var result = await Writer.WriteAsync(input, token).ConfigureAwait(false);
             ChangePort(ref endPoint, remotePort);
-            task = server.ReceiveSnapshotAsync(endPoint, senderTerm, snapshot, snapshotIndex, token);
+            task = server.InstallSnapshotAsync(endPoint, senderTerm, snapshot, snapshotIndex, token);
             if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
