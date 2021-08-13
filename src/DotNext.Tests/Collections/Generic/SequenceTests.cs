@@ -357,5 +357,48 @@ namespace DotNext.Collections.Generic
             var consumer = queue.GetConsumer();
             Collection(consumer, static i => Equal(52, i), static i => Equal(42, i));
         }
+
+        [Fact]
+        public static void CopyArray()
+        {
+            using var copy = new int[] { 10, 20, 30 }.Copy();
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
+        public static void CopyList()
+        {
+            using var copy = new List<int> { 10, 20, 30 }.Copy();
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
+        public static void CopyLinkedList()
+        {
+            using var copy = new LinkedList<int>(new int[] { 10, 20, 30 }).Copy();
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
+        public static void CopyEnumerable()
+        {
+            using var copy = GetElements().Copy();
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+
+            static IEnumerable<int> GetElements()
+            {
+                yield return 10;
+                yield return 20;
+                yield return 30;
+            }
+        }
     }
 }
