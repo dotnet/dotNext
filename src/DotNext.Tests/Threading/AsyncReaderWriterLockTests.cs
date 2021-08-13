@@ -69,18 +69,17 @@ namespace DotNext.Threading
             using var are = new AutoResetEvent(false);
             using var rwLock = new AsyncReaderWriterLock();
             True(await rwLock.TryEnterWriteLockAsync(TimeSpan.Zero));
-            var task = new TaskCompletionSource<bool>();
-            ThreadPool.QueueUserWorkItem(async state =>
+            var task = Task.Run(async () =>
             {
                 False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
                 await rwLock.EnterWriteLockAsync(DefaultTimeout);
                 rwLock.ExitWriteLock();
-                task.SetResult(true);
+                return true;
             });
             are.WaitOne(DefaultTimeout);
             rwLock.ExitWriteLock();
-            await task.Task;
+            True(await task);
         }
 
         [Fact]
@@ -89,18 +88,17 @@ namespace DotNext.Threading
             using var are = new AutoResetEvent(false);
             using var rwLock = new AsyncReaderWriterLock();
             await rwLock.EnterWriteLockAsync(DefaultTimeout);
-            var task = new TaskCompletionSource<bool>();
-            ThreadPool.QueueUserWorkItem(async state =>
+            var task = Task.Run(async () =>
             {
                 False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await rwLock.EnterReadLockAsync(DefaultTimeout);
                 rwLock.ExitReadLock();
-                task.SetResult(true);
+                return true;
             });
             are.WaitOne(DefaultTimeout);
             rwLock.ExitWriteLock();
-            await task.Task;
+            True(await task);
         }
 
         [Fact]
@@ -109,18 +107,17 @@ namespace DotNext.Threading
             using var are = new AutoResetEvent(false);
             using var rwLock = new AsyncReaderWriterLock();
             await rwLock.EnterWriteLockAsync(DefaultTimeout);
-            var task = new TaskCompletionSource<bool>();
-            ThreadPool.QueueUserWorkItem(async state =>
+            var task = Task.Run(async () =>
             {
                 False(await rwLock.TryEnterUpgradeableReadLockAsync(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await rwLock.EnterUpgradeableReadLockAsync(DefaultTimeout);
                 rwLock.ExitUpgradeableReadLock();
-                task.SetResult(true);
+                return true;
             });
             are.WaitOne(DefaultTimeout);
             rwLock.ExitWriteLock();
-            await task.Task;
+            True(await task);
         }
 
         [Fact]

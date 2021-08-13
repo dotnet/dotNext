@@ -26,18 +26,17 @@ namespace DotNext.Threading
             using var are = new AutoResetEvent(false);
             using var @lock = new AsyncExclusiveLock();
             await @lock.AcquireAsync(TimeSpan.Zero);
-            var task = new TaskCompletionSource<bool>();
-            ThreadPool.QueueUserWorkItem(async state =>
+            var task = Task.Run(async () =>
             {
                 False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await @lock.AcquireAsync(DefaultTimeout);
                 @lock.Release();
-                task.SetResult(true);
+                return true;
             });
             True(are.WaitOne(DefaultTimeout));
             @lock.Release();
-            await task.Task;
+            True(await task);
         }
 
         [Fact]
