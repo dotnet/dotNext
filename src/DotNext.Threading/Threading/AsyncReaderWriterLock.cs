@@ -298,7 +298,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered read mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterReadLockAsync(TimeSpan timeout) => TryEnterReadLockAsync(timeout, CancellationToken.None);
+        public Task<bool> TryEnterReadLockAsync(TimeSpan timeout) => TryEnterReadLockAsync(timeout, CancellationToken.None); // TODO: Remove overload in .NEXT 4
 
         /// <summary>
         /// Enters the lock in read mode asynchronously.
