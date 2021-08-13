@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Collections.Generic
 {
@@ -85,8 +85,24 @@ namespace DotNext.Collections.Generic
         /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
-            using var enumerator = seq.GetEnumerator();
-            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
+            switch (seq)
+            {
+#if !NETSTANDARD2_1
+                case List<T> list:
+                    return Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list));
+#endif
+                case T[] array:
+                    return Span.FirstOrEmpty<T>(array);
+                case IList<T> list:
+                    return list.Count > 0 ? list[0] : Optional<T>.None;
+                case IReadOnlyList<T> list:
+                    return list.Count > 0 ? list[0] : Optional<T>.None;
+                default:
+                    using (var enumerator = seq.GetEnumerator())
+                    {
+                        return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
+                    }
+            }
         }
 
         /// <summary>
@@ -99,13 +115,23 @@ namespace DotNext.Collections.Generic
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
             where T : notnull
         {
-            foreach (var item in seq)
+            switch (seq)
             {
-                if (filter.Invoke(item))
-                    return item;
-            }
+                case List<T> list:
+                    var index = list.FindIndex(filter);
+                    return index >= 0 ? list[0] : Optional<T>.None;
+                case T[] array:
+                    index = Array.FindIndex(array, filter);
+                    return index >= 0 ? array[0] : Optional<T>.None;
+                default:
+                    foreach (var item in seq)
+                    {
+                        if (filter.Invoke(item))
+                            return item;
+                    }
 
-            return Optional<T>.None;
+                    return Optional<T>.None;
+            }
         }
 
         /// <summary>

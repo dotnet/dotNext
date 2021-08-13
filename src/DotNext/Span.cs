@@ -827,5 +827,14 @@ namespace DotNext
                 Intrinsics.Swap(ref span[randomIndex], ref span[count]);
             }
         }
+
+        /// <summary>
+        /// Gets first element in the span.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span of elements.</param>
+        /// <returns>The first element in the span; or <see cref="Optiona{T}.None"/> if span is empty.</returns>
+        public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span)
+            => span.Length > 0 ? span[0] : Optional<T>.None;
     }
 }
