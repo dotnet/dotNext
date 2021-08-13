@@ -23,7 +23,7 @@ namespace DotNext.Threading
                 return true;
             }
 
-            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
         }
 
         private LockManager manager;
@@ -45,6 +45,9 @@ namespace DotNext.Threading
             return manager.TryAcquire();
         }
 
+        private Task<bool> AcquireAsync(TimeSpan timeout, bool throwOnTimeout, CancellationToken token)
+            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, throwOnTimeout, token);
+
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
         /// </summary>
@@ -54,7 +57,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
+            => AcquireAsync(timeout, false, token);
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -63,7 +66,8 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquireAsync(TimeSpan timeout) => TryAcquireAsync(timeout, CancellationToken.None);
+        public Task<bool> TryAcquireAsync(TimeSpan timeout)
+            => AcquireAsync(timeout, false, CancellationToken.None); // TODO: Add TryAcquireAsync(CancellationToken) overload
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -74,7 +78,8 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task AcquireAsync(TimeSpan timeout, CancellationToken token = default) => TryAcquireAsync(timeout, token).CheckOnTimeout();
+        public Task AcquireAsync(TimeSpan timeout, CancellationToken token = default)
+            => AcquireAsync(timeout, true, token);
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -83,7 +88,8 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task AcquireAsync(CancellationToken token) => TryAcquireAsync(InfiniteTimeSpan, token);
+        public Task AcquireAsync(CancellationToken token = default)
+            => AcquireAsync(InfiniteTimeSpan, false, token);
 
         /// <summary>
         /// Releases previously acquired exclusive lock.

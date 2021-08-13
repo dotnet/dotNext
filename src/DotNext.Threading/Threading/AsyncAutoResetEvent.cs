@@ -22,7 +22,7 @@ namespace DotNext.Threading
                 set => state.Value = value;
             }
 
-            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
         }
 
         private LockManager manager;
@@ -86,6 +86,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token) => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
+            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, false, token);
     }
 }

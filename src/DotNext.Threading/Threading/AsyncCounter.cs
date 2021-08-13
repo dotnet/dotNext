@@ -30,8 +30,7 @@ namespace DotNext.Threading
 
             internal bool Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
 
-            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
-                => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
 
             public bool TryAcquire()
             {
@@ -108,7 +107,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
+            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, false, token);
 
         /// <summary>
         /// Attempts to decrement the counter synchronously.

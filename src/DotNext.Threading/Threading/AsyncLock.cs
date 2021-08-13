@@ -205,10 +205,8 @@ namespace DotNext.Threading
                     task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token);
                     break;
                 case Type.ReadLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
-                    break;
                 case Type.UpgradeableReadLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLockAsync(timeout, token);
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
                     break;
                 case Type.WriteLock:
                     task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token);

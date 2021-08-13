@@ -51,6 +51,20 @@ namespace DotNext.Threading
                 return next;
             }
 
+            internal void Append(WaitNode node)
+            {
+                node.next = next;
+                node.previous = this;
+                next = node;
+            }
+
+            internal void Prepend(WaitNode node)
+            {
+                node.next = this;
+                node.previous = previous;
+                previous = node;
+            }
+
             internal WaitNode? Previous => previous;
 
             internal WaitNode? Next => next;
@@ -63,7 +77,7 @@ namespace DotNext.Threading
         {
             bool TryAcquire();  // if true then Wait method can be completed synchronously; otherwise, false.
 
-            TNode CreateNode(WaitNode? tail);
+            TNode CreateNode();
         }
 
         private sealed class DisposeAsyncNode : WaitNode
@@ -140,7 +154,7 @@ namespace DotNext.Threading
             return inList;
         }
 
-        private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
+        private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, bool throwOnTimeout, CancellationToken token)
         {
             Debug.Assert(Monitor.IsEntered(this));
 
@@ -160,7 +174,7 @@ namespace DotNext.Threading
                 return false;
             }
 
-            return await node.Task.ConfigureAwait(false);
+            return throwOnTimeout ? throw new TimeoutException() : await node.Task.ConfigureAwait(false);
         }
 
         private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
@@ -184,7 +198,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> WaitAsync<TNode, TManager>(ref TManager manager, TimeSpan timeout, CancellationToken token)
+        private protected Task<bool> WaitAsync<TNode, TManager>(ref TManager manager, TimeSpan timeout, bool throwOnTimeout, CancellationToken token)
             where TNode : WaitNode
             where TManager : struct, ILockManager<TNode>
         {
@@ -198,15 +212,22 @@ namespace DotNext.Threading
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
+
+            var node = manager.CreateNode();
             if (last is null)
-                first = last = manager.CreateNode(null);
+            {
+                first = last = node;
+            }
             else
-                last = manager.CreateNode(last);
+            {
+                last.Append(node);
+                last = node;
+            }
 
             contentionCounter?.Invoke(1L);
             return timeout == InfiniteTimeSpan ?
-                token.CanBeCanceled ? WaitAsync(last, token) : last.Task
-                : WaitAsync(last, timeout, token);
+                token.CanBeCanceled ? WaitAsync(node, token) : node.Task
+                : WaitAsync(node, timeout, throwOnTimeout, token);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

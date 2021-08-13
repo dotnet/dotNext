@@ -21,21 +21,11 @@ namespace DotNext.Threading
         {
             bool ILockManager<WaitNode>.TryAcquire() => false;
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
-                => tail is null ? new WaitNode() : new WaitNode(tail);
+            WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
         }
 
         private abstract class ConditionalNode : WaitNode, ISupplier<object, bool>
         {
-            private protected ConditionalNode()
-            {
-            }
-
-            private protected ConditionalNode(WaitNode parent)
-                : base(parent)
-            {
-            }
-
             public abstract bool Invoke(object state);
         }
 
@@ -45,9 +35,6 @@ namespace DotNext.Threading
             private readonly Predicate<TState> predicate;
 
             internal WaitNode(Predicate<TState> condition) => predicate = condition;
-
-            internal WaitNode(Predicate<TState> condition, WaitNode tail)
-                : base(tail) => predicate = condition;
 
             public override bool Invoke(object state)
                 => state is TState typedState && predicate(typedState);
@@ -68,8 +55,7 @@ namespace DotNext.Threading
 
             bool ILockManager<WaitNode<TState>>.TryAcquire() => condition(state);
 
-            WaitNode<TState> ILockManager<WaitNode<TState>>.CreateNode(WaitNode? tail)
-                => tail is null ? new WaitNode<TState>(condition) : new WaitNode<TState>(condition, tail);
+            WaitNode<TState> ILockManager<WaitNode<TState>>.CreateNode() => new WaitNode<TState>(condition);
         }
 
         /// <inheritdoc/>
@@ -241,7 +227,7 @@ namespace DotNext.Threading
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
         {
             var manager = new LockManager();
-            return WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
+            return WaitAsync<WaitNode, LockManager>(ref manager, timeout, false, token);
         }
 
         /// <summary>
@@ -278,7 +264,7 @@ namespace DotNext.Threading
             where TState : class
         {
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
         }
 
         /// <summary>
@@ -357,7 +343,7 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             ResumePendingCallers(state, fairness);
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
         }
 
         /// <summary>
@@ -434,7 +420,7 @@ namespace DotNext.Threading
             mutator(state, args);
             ResumePendingCallers(state, fairness);
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
         }
 
         /// <summary>
@@ -489,7 +475,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
             where TState : class
-            => SignalAndWaitAsync(state, mutator, condition, timeout, false, token); // TODO: Rename to TrySignalAndWaitAsync and review pattern across all classes in the library
+            => SignalAndWaitAsync(state, mutator, condition, timeout, false, token);
 
         /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
@@ -513,7 +499,7 @@ namespace DotNext.Threading
             mutator(state);
             ResumePendingCallers(state, fairness);
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
         }
 
         /// <summary>
