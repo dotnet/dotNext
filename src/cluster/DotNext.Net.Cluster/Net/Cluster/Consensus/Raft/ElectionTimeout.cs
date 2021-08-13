@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ElectionTimeout(int lowerValue, int upperValue, Random rng)
         {
             LowerValue = lowerValue > 0 ? lowerValue : throw new ArgumentOutOfRangeException(nameof(lowerValue));
-            UpperValue = upperValue > 0 ? upperValue : throw new ArgumentOutOfRangeException(nameof(upperValue));
+            UpperValue = upperValue > 0 && upperValue < int.MaxValue ? upperValue : throw new ArgumentOutOfRangeException(nameof(upperValue));
             random = rng;
         }
 
