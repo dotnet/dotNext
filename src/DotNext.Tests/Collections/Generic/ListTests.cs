@@ -131,7 +131,22 @@ namespace DotNext.Collections.Generic
             Equal(2, list.Count);
         }
 
-#if !NETCOREAPP3_1
+        [Fact]
+        public static void ShuffleArray()
+        {
+            var array = new int[] { 1, 2, 3, 4, 5, 6, 7 };
+            array.Shuffle(new Random());
+            True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
+        }
+
+        [Fact]
+        public static void ShuffleList()
+        {
+            var array = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+            array.Shuffle(new Random());
+            True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
+        }
+
         [Fact]
         public static void ArraySlice()
         {
@@ -143,6 +158,14 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
+        public static void EmptySegmentSlice()
+        {
+            var segment = default(ListSegment<int>);
+            False(segment.TryGetSpan(out _));
+        }
+
+#if !NETCOREAPP3_1
+        [Fact]
         public static void ListSlice()
         {
             var segment = List.Slice(new List<int> { 10, 20, 30 }, 0..2);
@@ -150,13 +173,6 @@ namespace DotNext.Collections.Generic
             Equal(2, span.Length);
             Equal(10, span[0]);
             Equal(20, span[1]);
-        }
-
-        [Fact]
-        public static void EmptySegmentSlice()
-        {
-            var segment = default(ListSegment<int>);
-            False(segment.TryGetSpan(out _));
         }
 #endif
     }

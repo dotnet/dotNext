@@ -812,5 +812,20 @@ namespace DotNext
         /// <returns>The span over items in the tuple.</returns>
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T, T, T, T, T, T) tuple)
             => TupleToSpan<T, (T, T, T, T, T, T, T)>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Shuffles elements in the span.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
+        /// <param name="span">The span of elements to shuffle.</param>
+        /// <param name="random">The source of random values.</param>
+        public static void Shuffle<T>(this Span<T> span, Random random)
+        {
+            for (var count = span.Length; count > 1;)
+            {
+                var randomIndex = random.Next(count--);
+                Intrinsics.Swap(ref span[randomIndex], ref span[count]);
+            }
+        }
     }
 }

@@ -341,5 +341,35 @@ namespace DotNext.Collections.Generic
         /// <returns>The section of the list.</returns>
         public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
             => new(list, range);
+
+        /// <summary>
+        /// Randomizes elements in the list.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the list.</typeparam>
+        /// <param name="list">The list to shuffle.</param>
+        /// <param name="random">The source of random values.</param>
+        public static void Shuffle<T>(this IList<T> list, Random random)
+        {
+            switch (list)
+            {
+#if !NETSTANDARD2_1
+                case List<T> typedList:
+                    CollectionsMarshal.AsSpan(typedList).Shuffle(random);
+                    break;
+#endif
+                case T[] array:
+                    Span.Shuffle<T>(array, random);
+                    break;
+                default:
+                    for (var count = list.Count; count > 1;)
+                    {
+                        var randomIndex = random.Next(count--);
+                        T item = list[randomIndex];
+                        list[randomIndex] = list[count];
+                        list[count] = item;
+                    }
+                    break;
+            }
+        }
     }
 }
