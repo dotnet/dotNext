@@ -1,7 +1,6 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
