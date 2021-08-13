@@ -212,7 +212,7 @@ namespace DotNext.Threading
                     task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token);
                     break;
                 case Type.Semaphore:
-                    task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token).CheckOnTimeout();
+                    task = CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));
                     break;
                 case Type.Strong:
                     task = As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout, token);
@@ -224,6 +224,12 @@ namespace DotNext.Threading
 
             await task.ConfigureAwait(false);
             return CreateHolder();
+
+            static async Task CheckOnTimeoutAsync(Task<bool> task)
+            {
+                if (!await task.ConfigureAwait(false))
+                    throw new TimeoutException();
+            }
         }
 
         /// <summary>
