@@ -489,7 +489,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
             where TState : class
-            => SignalAndWaitAsync(state, mutator, condition, timeout, false, token);
+            => SignalAndWaitAsync(state, mutator, condition, timeout, false, token); // TODO: Rename to TrySignalAndWaitAsync and review pattern across all classes in the library
 
         /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
