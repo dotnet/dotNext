@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
@@ -67,24 +68,28 @@ namespace DotNext.Collections.Generic
         /// <returns>The random element from the collection; or <see cref="Optional{T}.None"/> if collection is empty.</returns>
         public static Optional<T> PeekRandom<T>(this IReadOnlyCollection<T> collection, Random random)
         {
-            switch (collection.Count)
+            return collection.Count switch
             {
-                case 0:
-                    return Optional<T>.None;
-                case 1:
-                    return collection.FirstOrEmpty();
-                case int index:
-                    index = random.Next(index);
-                    using (var enumerator = collection.GetEnumerator())
-                    {
-                        for (var i = 0; enumerator.MoveNext(); i++)
-                        {
-                            if (i == index)
-                                return enumerator.Current;
-                        }
-                    }
+                0 => Optional<T>.None,
+                1 => collection.FirstOrEmpty(),
+                _ when collection is T[] array => Span.PeekRandom<T>(array, random),
+#if !NETSTANDARD2_1
+                _ when collection is List<T> list => Span.PeekRandom<T>(CollectionsMarshal.AsSpan(list), random),
+#endif
+                _ => PeekRandomSlow(collection, random),
+            };
 
-                    goto case 0;
+            static Optional<T> PeekRandomSlow(IReadOnlyCollection<T> collection, Random random)
+            {
+                var index = random.Next(collection.Count);
+                using var enumerator = collection.GetEnumerator();
+                for (var i = 0; enumerator.MoveNext(); i++)
+                {
+                    if (i == index)
+                        return enumerator.Current;
+                }
+
+                return Optional<T>.None;
             }
         }
     }

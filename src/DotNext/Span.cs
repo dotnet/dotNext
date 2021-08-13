@@ -833,8 +833,22 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">The type of elements in the span.</typeparam>
         /// <param name="span">The span of elements.</param>
-        /// <returns>The first element in the span; or <see cref="Optiona{T}.None"/> if span is empty.</returns>
+        /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
         public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span)
             => span.Length > 0 ? span[0] : Optional<T>.None;
+
+        /// <summary>
+        /// Gets random element from the span.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span of elements.</param>
+        /// <param name="random">The source of random values.</param>
+        /// <returns>Randomly selected element from the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+        public static Optional<T> PeekRandom<T>(this ReadOnlySpan<T> span, Random random) => span.Length switch
+        {
+            0 => Optional<T>.None,
+            1 => MemoryMarshal.GetReference(span),
+            int length => span[random.Next(length)], // cannot use MemoryMarshal here because Random.Next is virtual so bounds check required for security reasons
+        };
     }
 }

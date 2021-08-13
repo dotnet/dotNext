@@ -85,23 +85,21 @@ namespace DotNext.Collections.Generic
         /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
-            switch (seq)
+            return seq switch
             {
 #if !NETSTANDARD2_1
-                case List<T> list:
-                    return Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list));
+                List<T> list => Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list)),
+                T[] array => Span.FirstOrEmpty<T>(array),
+                IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
+                IReadOnlyList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
+                _ => FirstOrEmptySlow(seq),
 #endif
-                case T[] array:
-                    return Span.FirstOrEmpty<T>(array);
-                case IList<T> list:
-                    return list.Count > 0 ? list[0] : Optional<T>.None;
-                case IReadOnlyList<T> list:
-                    return list.Count > 0 ? list[0] : Optional<T>.None;
-                default:
-                    using (var enumerator = seq.GetEnumerator())
-                    {
-                        return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
-                    }
+            };
+
+            static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq)
+            {
+                using var enumerator = seq.GetEnumerator();
+                return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
             }
         }
 
