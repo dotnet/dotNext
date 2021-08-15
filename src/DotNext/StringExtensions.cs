@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -55,9 +56,28 @@ namespace DotNext
         /// <param name="str">Source string.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed string value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         [return: NotNullIfNotNull("str")]
         public static string? TrimLength(this string? str, int maxLength)
-            => str is null || str.Length <= maxLength ? str : str.Substring(0, maxLength);
+        {
+            if (maxLength < 0)
+                throw new ArgumentOutOfRangeException(nameof(maxLength));
+
+            if (str is null)
+            {
+                // return null string
+            }
+            else if (maxLength == 0)
+            {
+                str = string.Empty;
+            }
+            else if (str.Length > maxLength)
+            {
+                str = new string(CreateReadOnlySpan(ref Unsafe.AsRef(in str.GetPinnableReference()), maxLength));
+            }
+
+            return str;
+        }
 
         /// <summary>
         /// Extracts substring from the given string.

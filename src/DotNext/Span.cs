@@ -348,8 +348,24 @@ namespace DotNext
         /// <param name="span">A contiguous region of arbitrary memory.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public static Span<T> TrimLength<T>(this Span<T> span, int maxLength)
-            => span.Length <= maxLength ? span : span.Slice(0, maxLength);
+        {
+            switch (maxLength)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(maxLength));
+                case 0:
+                    span = default;
+                    break;
+                default:
+                    if (span.Length > maxLength)
+                        span = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), maxLength);
+                    break;
+            }
+
+            return span;
+        }
 
         /// <summary>
         /// Trims the span to specified length if it exceeds it.
