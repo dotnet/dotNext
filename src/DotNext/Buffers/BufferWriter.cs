@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -134,17 +135,32 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="items">The collection of elements to be copied.</param>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public void AddAll(ICollection<T> items)
+        public virtual void AddAll(ICollection<T> items)
         {
             if (items.Count == 0)
                 return;
 
             var span = GetSpan(items.Count);
             int count;
-            using (var enumerator = items.GetEnumerator())
+            switch (items)
             {
-                for (count = 0; count < items.Count && enumerator.MoveNext(); count++)
-                    span[count] = enumerator.Current;
+#if !NETSTANDARD2_1
+                case List<T> list:
+                    count = list.Count;
+                    CollectionsMarshal.AsSpan(list).CopyTo(span);
+                    break;
+#endif
+                case T[] array:
+                    count = array.Length;
+                    array.AsSpan().CopyTo(span);
+                    break;
+                default:
+                    using (var enumerator = items.GetEnumerator())
+                    {
+                        for (count = 0; count < items.Count && enumerator.MoveNext(); count++)
+                            span[count] = enumerator.Current;
+                    }
+                    break;
             }
 
             Advance(count);
