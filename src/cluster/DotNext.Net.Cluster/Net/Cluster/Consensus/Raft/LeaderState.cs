@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,15 +6,13 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using static Threading.LinkedTokenSourceFactory;
     using static Threading.Tasks.Continuation;
+    using AsyncResultSet = Buffers.PooledArrayBufferWriter<Task<Result<bool>>>;
     using Timestamp = Diagnostics.Timestamp;
 
     internal sealed partial class LeaderState : RaftState
     {
-        private sealed class AsyncResultSet : LinkedList<Task<Result<bool>>>
-        {
-        }
-
         private const int MaxTermCacheSize = 100;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
@@ -37,11 +34,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             precedingTermCache = new TermCache(MaxTermCacheSize);
         }
 
-        private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
+        private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;
-            var tasks = new AsyncResultSet();
-
             long commitIndex = auditTrail.GetLastIndex(true),
                 currentIndex = auditTrail.GetLastIndex(false),
                 term = currentTerm,
@@ -59,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                         precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                    tasks.AddLast(new Replicator(auditTrail, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
+                    taskBuffer.Add(new Replicator(auditTrail, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
                 }
             }
 
@@ -70,19 +65,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 precedingTermCache.RemoveHead(minPrecedingIndex);
 
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
-#if NETSTANDARD2_1
-            for (var task = tasks.First; task is not null; task.Value = default!, task = task.Next)
-#else
-            for (var task = tasks.First; task is not null; task.ValueRef = default!, task = task.Next)
-#endif
+            foreach (var task in taskBuffer)
             {
                 try
                 {
-#if NETSTANDARD2_1
-                    var result = await task.Value.ConfigureAwait(false);
-#else
-                    var result = await task.ValueRef.ConfigureAwait(false);
-#endif
+                    var result = await task.ConfigureAwait(false);
                     term = Math.Max(term, result.Term);
                     quorum += 1;
                     commitQuorum += result.Value ? 1 : -1;
@@ -95,7 +82,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 catch (OperationCanceledException)
                 {
                     // leading was canceled
-                    tasks.Clear();
                     Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
                     return false;
                 }
@@ -105,7 +91,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            tasks.Clear();
             Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
 
             // majority of nodes accept entries with a least one entry from the current term
@@ -134,12 +119,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
-            using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);
-            token = cancellationSource.Token;
-            for (var forced = false; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+            using var cancellationSource = token.LinkTo(timerCancellation.Token);
+
+            // reuse this buffer to place responses from other nodes
+            using var taskBuffer = new AsyncResultSet(stateMachine.Members.Count);
+
+            for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
             {
                 if (forced)
                     DrainReplicationQueue();
+
+                taskBuffer.Clear(true);
             }
         }
 
