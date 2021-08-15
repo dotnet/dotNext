@@ -362,6 +362,7 @@ namespace DotNext.Collections.Generic
         public static void CopyArray()
         {
             using var copy = new int[] { 10, 20, 30 }.Copy();
+            Equal(3, copy.Length);
             Equal(10, copy[0]);
             Equal(20, copy[1]);
             Equal(30, copy[2]);
@@ -371,6 +372,7 @@ namespace DotNext.Collections.Generic
         public static void CopyList()
         {
             using var copy = new List<int> { 10, 20, 30 }.Copy();
+            Equal(3, copy.Length);
             Equal(10, copy[0]);
             Equal(20, copy[1]);
             Equal(30, copy[2]);
@@ -380,6 +382,7 @@ namespace DotNext.Collections.Generic
         public static void CopyLinkedList()
         {
             using var copy = new LinkedList<int>(new int[] { 10, 20, 30 }).Copy();
+            Equal(3, copy.Length);
             Equal(10, copy[0]);
             Equal(20, copy[1]);
             Equal(30, copy[2]);
@@ -389,6 +392,7 @@ namespace DotNext.Collections.Generic
         public static void CopyEnumerable()
         {
             using var copy = GetElements().Copy();
+            Equal(3, copy.Length);
             Equal(10, copy[0]);
             Equal(20, copy[1]);
             Equal(30, copy[2]);
