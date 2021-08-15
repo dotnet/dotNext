@@ -404,5 +404,12 @@ namespace DotNext.Collections.Generic
                 yield return 30;
             }
         }
+
+        [Fact]
+        public static void CopyEmptyCollection()
+        {
+            using var copy = Enumerable.Empty<int>().Copy();
+            True(copy.IsEmpty);
+        }
     }
 }
