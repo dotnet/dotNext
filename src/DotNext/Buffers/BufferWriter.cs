@@ -137,6 +137,8 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public virtual void AddAll(ICollection<T> items)
         {
+            ThrowIfDisposed();
+
             if (items.Count == 0)
                 return;
 

@@ -378,6 +378,8 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         public override void AddAll(ICollection<T> items)
         {
+            ThrowIfDisposed();
+
             var count = items.Count;
             if (count == 0)
                 return;
