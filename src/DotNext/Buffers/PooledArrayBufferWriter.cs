@@ -2,7 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
 {
@@ -100,7 +100,7 @@ namespace DotNext.Buffers
 #if NETSTANDARD2_1
                 return ref buffer[index];
 #else
-                return ref Unsafe.Add(ref GetArrayDataReference(buffer), (nint)index);
+                return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buffer), (nint)index);
 #endif
             }
         }
@@ -154,7 +154,7 @@ namespace DotNext.Buffers
 
         /// <inheritdoc/>
         void IList<T>.Insert(int index, T item)
-            => Insert(index, CreateReadOnlySpan(ref item, 1));
+            => Insert(index, MemoryMarshal.CreateReadOnlySpan(ref item, 1));
 
         /// <summary>
         /// Inserts the elements into this buffer at the specified index.
@@ -373,6 +373,17 @@ namespace DotNext.Buffers
         {
             CheckAndResizeBuffer(sizeHint);
             return new ArraySegment<T>(buffer, position, buffer.Length - position);
+        }
+
+        public override void AddAll(ICollection<T> items)
+        {
+            var count = items.Count;
+            if (count == 0)
+                return;
+
+            CheckAndResizeBuffer(count);
+            items.CopyTo(buffer, position);
+            position += count;
         }
 
         /// <summary>

@@ -146,24 +146,33 @@ namespace DotNext.Buffers
             {
 #if !NETSTANDARD2_1
                 case List<T> list:
-                    count = list.Count;
-                    CollectionsMarshal.AsSpan(list).CopyTo(span);
+                    CollectionsMarshal.AsSpan(list).CopyTo(span, out count);
                     break;
 #endif
                 case T[] array:
-                    count = array.Length;
-                    array.AsSpan().CopyTo(span);
+                    array.AsSpan().CopyTo(span, out count);
+                    break;
+                case ArraySegment<T> segment:
+                    segment.AsSpan().CopyTo(span, out count);
                     break;
                 default:
-                    using (var enumerator = items.GetEnumerator())
-                    {
-                        for (count = 0; count < items.Count && enumerator.MoveNext(); count++)
-                            span[count] = enumerator.Current;
-                    }
+                    count = CopyFromCollection(items, span);
                     break;
             }
 
-            Advance(count);
+            position += count;
+
+            static int CopyFromCollection(ICollection<T> input, Span<T> output)
+            {
+                Debug.Assert(output.Length >= input.Count);
+
+                var count = 0;
+                using var enumerator = input.GetEnumerator();
+                while (count < output.Length && enumerator.MoveNext())
+                    output[count++] = enumerator.Current;
+
+                return count;
+            }
         }
 
         /// <inheritdoc/>
