@@ -375,6 +375,7 @@ namespace DotNext.Buffers
             return new ArraySegment<T>(buffer, position, buffer.Length - position);
         }
 
+        /// <inheritdoc/>
         public override void AddAll(ICollection<T> items)
         {
             var count = items.Count;
