@@ -161,6 +161,28 @@ namespace DotNext.Buffers
             owner.Clear(false);
         }
 
+        /// <summary>
+        /// Trims the memory block to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original block returned.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the span.</typeparam>
+        /// <param name="memory">A contiguous region of arbitrary memory.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed memory block.</returns>
+        public static ReadOnlyMemory<T> TrimLength<T>(this ReadOnlyMemory<T> memory, int maxLength)
+            => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
+
+        /// <summary>
+        /// Trims the memory block to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original block returned.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the span.</typeparam>
+        /// <param name="memory">A contiguous region of arbitrary memory.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed memory block.</returns>
+        public static Memory<T> TrimLength<T>(this Memory<T> memory, int maxLength)
+            => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
+
 #if !NETSTANDARD2_1
         /// <summary>
         /// Writes the contents of string builder to the buffer.
