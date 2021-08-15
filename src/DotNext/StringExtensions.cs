@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -73,7 +72,8 @@ namespace DotNext
             }
             else if (str.Length > maxLength)
             {
-                str = new string(CreateReadOnlySpan(ref Unsafe.AsRef(in str.GetPinnableReference()), maxLength));
+                // TODO: Replace with GetPinnableReference in .NET 6
+                str = new string(CreateReadOnlySpan(ref GetReference(str.AsSpan()), maxLength));
             }
 
             return str;
