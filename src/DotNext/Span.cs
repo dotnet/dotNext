@@ -375,8 +375,24 @@ namespace DotNext
         /// <param name="span">A contiguous region of arbitrary memory.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
         public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
-            => span.Length <= maxLength ? span : span.Slice(0, maxLength);
+        {
+            switch (maxLength)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(maxLength));
+                case 0:
+                    span = default;
+                    break;
+                default:
+                    if (span.Length > maxLength)
+                        span = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(span), maxLength);
+                    break;
+            }
+
+            return span;
+        }
 
         private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
             where TComparer : struct, ISupplier<T, T, bool>
