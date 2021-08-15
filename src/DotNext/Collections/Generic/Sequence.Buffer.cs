@@ -29,6 +29,7 @@ namespace DotNext.Collections.Generic
                 List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
 #endif
                 T[] array => Span.Copy<T>(array, allocator),
+                ArraySegment<T> segment => Span.Copy<T>(segment.AsSpan(), allocator),
                 ICollection<T> collection => collection.Count == 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
                 IReadOnlyCollection<T> collection => collection.Count == 0 ? default : CopySlow(enumerable, collection.Count, allocator),
                 _ => CopySlow(enumerable, sizeHint, allocator),
