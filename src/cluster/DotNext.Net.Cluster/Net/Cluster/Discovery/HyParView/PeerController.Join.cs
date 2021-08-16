@@ -39,9 +39,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
                 await AddPeerToActiveViewAsync(joinedPeer, true, token).ConfigureAwait(false);
 
-                // forwards JOIN request to all neighbors
+                // forwards JOIN request to all neighbors including joined peer
                 tasks = new(activeViewCapacity);
-                foreach (var neighbor in activeView)
+                foreach (var neighbor in activeView.Remove(joinedPeer))
                 {
                     if (!joinedPeer.Equals(neighbor))
                     {
