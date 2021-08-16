@@ -213,10 +213,14 @@ namespace DotNext.Collections.Generic
             Null(collection.FirstOrNull());
             Equal(Optional<int>.None, collection.FirstOrEmpty());
             Equal(Optional<int>.None, collection.FirstOrEmpty(Predicate.True<int>()));
+
             collection = new int[] { 42 };
             Equal(42, collection.FirstOrNull());
             Equal(42, collection.FirstOrEmpty());
             Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
+
+            Equal('a', "ab".FirstOrEmpty());
+            False(string.Empty.FirstOrEmpty().HasValue);
         }
 
         [Fact]

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Collections.Generic
 {
+    using static Runtime.Intrinsics;
+
     /// <summary>
     /// Various methods to work with classes implementing <see cref="IEnumerable{T}"/> interface.
     /// </summary>
@@ -92,6 +94,7 @@ namespace DotNext.Collections.Generic
                 T[] array => Span.FirstOrEmpty<T>(array),
                 IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
                 IReadOnlyList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
+                string str => str.Length > 0 ? ReinterpretCast<char, T>(str[0]) : Optional<T>.None,
                 _ => FirstOrEmptySlow(seq),
 #endif
             };

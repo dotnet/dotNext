@@ -914,5 +914,9 @@ namespace DotNext.Runtime
             Emit.Or();
             return Return<int>();
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static TTo ReinterpretCast<TFrom, TTo>(TFrom input)
+            => Unsafe.As<TFrom, TTo>(ref input);
     }
 }
