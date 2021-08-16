@@ -6,7 +6,7 @@
   <LangVersion>latest</LangVersion>
   <Nullable>enable</Nullable>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>3.3.0</Version>
+	<Version>3.4.0</Version>
 	<Authors>.NET Foundation and Contributors</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
