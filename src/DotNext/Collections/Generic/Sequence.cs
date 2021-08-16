@@ -91,12 +91,12 @@ namespace DotNext.Collections.Generic
             {
 #if !NETSTANDARD2_1
                 List<T> list => Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list)),
+#endif
                 T[] array => Span.FirstOrEmpty<T>(array),
                 IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
                 IReadOnlyList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
                 string str => str.Length > 0 ? ReinterpretCast<char, T>(str[0]) : Optional<T>.None,
                 _ => FirstOrEmptySlow(seq),
-#endif
             };
 
             static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq)

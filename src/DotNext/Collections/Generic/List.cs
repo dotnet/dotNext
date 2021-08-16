@@ -361,14 +361,19 @@ namespace DotNext.Collections.Generic
                     Span.Shuffle<T>(array, random);
                     break;
                 default:
-                    for (var count = list.Count; count > 1;)
-                    {
-                        var randomIndex = random.Next(count--);
-                        T item = list[randomIndex];
-                        list[randomIndex] = list[count];
-                        list[count] = item;
-                    }
+                    ShuffleSlow(list, random);
                     break;
+            }
+
+            static void ShuffleSlow(IList<T> list, Random random)
+            {
+                for (var count = list.Count; count > 1;)
+                {
+                    var randomIndex = random.Next(count--);
+                    T item = list[randomIndex];
+                    list[randomIndex] = list[count];
+                    list[count] = item;
+                }
             }
         }
     }

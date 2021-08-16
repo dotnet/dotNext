@@ -13,8 +13,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <summary>
         /// Sends ForwardJoin request to the peer.
         /// </summary>
+        /// <param name="receiver">The receiver of the message.</param>
         /// <param name="joinedPeer">The joined peer.</param>
-        /// <param name="receiver">The receiver of the .</param>
         /// <param name="timeToLive">TTL value that controlls broadcast of ForwardJoin request.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result of the operation.</returns>

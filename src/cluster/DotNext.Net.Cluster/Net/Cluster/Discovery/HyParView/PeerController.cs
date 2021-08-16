@@ -324,21 +324,23 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 // notify all neighbors from active view
                 foreach (var peer in activeView)
                 {
-                    responses.Add(Task.Run(async () =>
-                    {
-                        await DisconnectAsync(peer, false, token).ConfigureAwait(false);
-                        await DisconnectAsync(peer).ConfigureAwait(false);
-                    },
-                    token));
+                    responses.Add(Task.Run(
+                        async () =>
+                        {
+                            await DisconnectAsync(peer, false, token).ConfigureAwait(false);
+                            await DisconnectAsync(peer).ConfigureAwait(false);
+                        },
+                        token));
                 }
 
                 // destroy all peers from passive view
-                responses.Add(Task.Run(async () =>
-                {
-                    foreach (var peer in passiveView)
-                        await DestroyAsync(peer).ConfigureAwait(false);
-                },
-                token));
+                responses.Add(Task.Run(
+                    async () =>
+                    {
+                        foreach (var peer in passiveView)
+                            await DestroyAsync(peer).ConfigureAwait(false);
+                    },
+                    token));
 
                 await Task.WhenAll(responses).ConfigureAwait(false);
             }
