@@ -9,8 +9,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 {
     using Buffers;
     using Collections.Generic;
-    using AtomicBoolean = Threading.AtomicBoolean;
     using static Threading.LinkedTokenSourceFactory;
+    using AtomicBoolean = Threading.AtomicBoolean;
 
     public partial class PeerController
     {

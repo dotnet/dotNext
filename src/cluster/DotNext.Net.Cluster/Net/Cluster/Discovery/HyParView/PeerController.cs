@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// </summary>
         /// <param name="contactNode">The contact node used to announce the current peer.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of </returns>
+        /// <returns>The task representing asynchronous result of the operation.</returns>
         public async Task StartAsync(EndPoint contactNode, CancellationToken token)
         {
             await JoinAsync(contactNode, token).ConfigureAwait(false);
