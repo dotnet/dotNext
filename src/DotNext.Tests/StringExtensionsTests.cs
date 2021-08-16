@@ -41,6 +41,10 @@ namespace DotNext
         public static void TrimLengthTest()
         {
             Equal("ab", "abcd".TrimLength(2));
+            Null(default(string).TrimLength(2));
+            Equal("ab", "ab".TrimLength(3));
+            Equal(string.Empty, "ab".TrimLength(0));
+            Null(default(string).TrimLength(0));
         }
 
         [Fact]
