@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected async ValueTask OnDisconnectAsync(EndPoint sender, bool isAlive, CancellationToken token)
+        protected async Task OnDisconnectAsync(EndPoint sender, bool isAlive, CancellationToken token)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var lockTaken = false;

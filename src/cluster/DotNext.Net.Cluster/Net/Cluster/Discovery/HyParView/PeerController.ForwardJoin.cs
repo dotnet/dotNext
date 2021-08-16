@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="ForwardJoinAsync(EndPoint, EndPoint, int, CancellationToken)"/>
-        protected async ValueTask OnForwardJoinAsync<TAnnouncement>(EndPoint sender, EndPoint joinedPeer, int timeToLive, CancellationToken token)
+        protected async Task OnForwardJoinAsync<TAnnouncement>(EndPoint sender, EndPoint joinedPeer, int timeToLive, CancellationToken token)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var lockTaken = false;

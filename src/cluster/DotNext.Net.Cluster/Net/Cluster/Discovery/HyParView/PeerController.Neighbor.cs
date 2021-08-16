@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="NeighborAsync(EndPoint, bool, CancellationToken)"></seealso>
-        protected async ValueTask OnNeighborAsync(EndPoint neighbor, bool highPriority, CancellationToken token)
+        protected async Task OnNeighborAsync(EndPoint neighbor, bool highPriority, CancellationToken token)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var lockTaken = false;

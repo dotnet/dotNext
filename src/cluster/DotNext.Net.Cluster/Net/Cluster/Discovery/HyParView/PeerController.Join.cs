@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <returns>The task representing asynchronous execution of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="JoinAsync(EndPoint, CancellationToken)"/>
-        protected async ValueTask OnJoinAsync(EndPoint joinedPeer, CancellationToken token)
+        protected async Task OnJoinAsync(EndPoint joinedPeer, CancellationToken token)
         {
             PooledArrayBufferWriter<Task>? tasks = null;
             var tokenSource = token.LinkTo(LifecycleToken);

@@ -204,7 +204,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="ShuffleAsync(EndPoint, EndPoint?, IReadOnlyCollection{EndPoint}, int, CancellationToken)"/>
-        protected async ValueTask OnShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> announcement, int ttl, CancellationToken token)
+        protected async Task OnShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> announcement, int ttl, CancellationToken token)
         {
             if (announcement.Count == 0)
                 return;
@@ -270,7 +270,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected async ValueTask OnAddPeersToPassiveViewAsync(IReadOnlyCollection<EndPoint> announcement, CancellationToken token)
+        protected async Task OnAddPeersToPassiveViewAsync(IReadOnlyCollection<EndPoint> announcement, CancellationToken token)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var lockTaken = false;
