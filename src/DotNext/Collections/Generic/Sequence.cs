@@ -124,14 +124,33 @@ namespace DotNext.Collections.Generic
                 case T[] array:
                     index = Array.FindIndex(array, filter);
                     return index >= 0 ? array[0] : Optional<T>.None;
+                case LinkedList<T> list:
+                    return FindInLinkedList(list, filter);
                 default:
-                    foreach (var item in seq)
-                    {
-                        if (filter.Invoke(item))
-                            return item;
-                    }
+                    return FirstOrEmptySlow(seq, filter);
+            }
 
-                    return Optional<T>.None;
+            static Optional<T> FindInLinkedList(LinkedList<T> list, Predicate<T> filter)
+            {
+                for (var node = list.First; node is not null; node = node.Next)
+                {
+                    var value = node.Value;
+                    if (filter(value))
+                        return value;
+                }
+
+                return Optional<T>.None;
+            }
+
+            static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq, Predicate<T> filter)
+            {
+                foreach (var item in seq)
+                {
+                    if (filter.Invoke(item))
+                        return item;
+                }
+
+                return Optional<T>.None;
             }
         }
 
