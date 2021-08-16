@@ -11,7 +11,7 @@ namespace DotNext.Net
 {
     using Hosting.Server.Features;
 
-    internal static class Network
+    internal static partial class Network
     {
         internal static bool IsIn(this IPAddress? address, IPNetwork network)
             => address is not null && network.Contains(address);
