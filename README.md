@@ -46,13 +46,41 @@ Documentation for older versions:
 * [2.x](https://dotnet.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 08-12-2021
+Release Date: 08-XX-2021
 
-<a href="https://www.nuget.org/packages/dotnext/3.3.1">DotNext 3.3.1</a>
-* `DotNext.Threading.Tasks.Synchronization.WaitAsync` doesn't suspend the exception associated with faulty input task anymore
+<a href="https://www.nuget.org/packages/dotnext/3.4.0">DotNext 3.4.0</a>
+* Added `DotNext.Span.Shuffle` and `DotNext.Collections.Generic.List.Shuffle` extension methods that allow to randomize position of elements within span/collection
+* Added `DotNext.Collections.Generic.Sequence.Copy` extension method for making copy of the original enumerable collection. The memory for the copy is always rented from the pool
+* Reduced memory allocation for some types of collections in `DotNext.Collections.Generic.Sequence.FirstOrEmpty` extension method
+* Added `DotNext.Collections.Generic.Collection.PeekRandom` extension method that allows to select random element from the collection
+* Improved performance of `DotNext.Span.TrimLength` and `StringExtensions.TrimLength` extension methods
+* Introduced `DotNext.Buffers.BufferHelpers.TrimLength` extension methods for [ReadOnlyMemory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1) and [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) data types
+* Improved performance of `DotNext.Buffers.BufferWriter<T>.AddAll` method
 
-<a href="https://www.nuget.org/packages/dotnext.threading/3.3.1">DotNext.Threading 3.3.1</a>
-* Fixed [73](https://github.com/dotnet/dotNext/issues/73)
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
+* Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
+* Fixed LGTM warnings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.3.0">DotNext.Unsafe 3.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
+* Reduced memory allocations caused by async locks
+
+<a href="https://www.nuget.org/packages/dotnext.io/3.3.0">DotNext.IO 3.3.0</a>
+* `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
+* `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods ensure that the buffer tail is flushed to the disk
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
+* Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
+* Introduced transport-independent implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.3.0">DotNext.AspNetCore.Cluster 3.3.0</a>
+* Added ETW counter for response time of nodes in the cluster
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
