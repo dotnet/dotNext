@@ -13,9 +13,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IMemberDiscoveryService? discoveryService;
         private IDisposable? membershipWatch;
 
-        private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
+        private protected abstract ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync();
 
-        private async Task<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
+        private async ValueTask<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
         {
             var selector = configurator?.LocalMemberSelector;
             RaftClusterMember? member;
