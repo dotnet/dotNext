@@ -350,7 +350,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 responses?.Dispose();
             }
 
-            await shuffleTask;
+            await shuffleTask.ConfigureAwait(false);
         }
 
         /// <inheritdoc />
