@@ -36,7 +36,7 @@ namespace DotNext.Net
             => new(name, port);
 
         // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
-        internal static async Task<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
+        internal static async ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
         {
             var feature = server.Features.Get<IServerAddresses>();
             if (feature is null || feature.Addresses.Count == 0)

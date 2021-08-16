@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             return member;
         }
 
-        private protected override Task<ICollection<EndPoint>> GetHostingAddressesAsync()
+        private protected override ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync()
             => server.GetHostingAddressesAsync();
     }
 }

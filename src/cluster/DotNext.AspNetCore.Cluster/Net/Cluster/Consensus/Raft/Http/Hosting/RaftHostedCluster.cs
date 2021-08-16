@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             await base.StopAsync(token).ConfigureAwait(false);
         }
 
-        private protected override Task<ICollection<EndPoint>> GetHostingAddressesAsync()
+        private protected override ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync()
             => host.Services.GetRequiredService<IServer>().GetHostingAddressesAsync();
 
         protected override void Dispose(bool disposing)
