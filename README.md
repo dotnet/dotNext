@@ -51,11 +51,11 @@ Release Date: 08-XX-2021
 <a href="https://www.nuget.org/packages/dotnext/3.4.0">DotNext 3.4.0</a>
 * Added `DotNext.Span.Shuffle` and `DotNext.Collections.Generic.List.Shuffle` extension methods that allow to randomize position of elements within span/collection
 * Added `DotNext.Collections.Generic.Sequence.Copy` extension method for making copy of the original enumerable collection. The memory for the copy is always rented from the pool
-* Reduced memory allocation for some types of collections in `DotNext.Collections.Generic.Sequence.FirstOrEmpty` extension method
 * Added `DotNext.Collections.Generic.Collection.PeekRandom` extension method that allows to select random element from the collection
 * Improved performance of `DotNext.Span.TrimLength` and `StringExtensions.TrimLength` extension methods
 * Introduced `DotNext.Buffers.BufferHelpers.TrimLength` extension methods for [ReadOnlyMemory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1) and [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) data types
 * Improved performance of `DotNext.Buffers.BufferWriter<T>.AddAll` method
+* Reduced memory allocations by `ElementAt`, `FirstOrEmpty`, `FirstOrNull`, `ForEach` extension methods in `DotNext.Collections.Generic.Sequence` class
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
