@@ -415,5 +415,12 @@ namespace DotNext.Collections.Generic
             using var copy = Enumerable.Empty<int>().Copy();
             True(copy.IsEmpty);
         }
+
+        [Fact]
+        public static void CopyString()
+        {
+            using var copy = "abcd".Copy();
+            Equal("abcd", copy.Memory.ToString());
+        }
     }
 }

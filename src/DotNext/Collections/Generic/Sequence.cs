@@ -93,9 +93,9 @@ namespace DotNext.Collections.Generic
                 List<T> list => Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list)),
 #endif
                 T[] array => Span.FirstOrEmpty<T>(array),
+                string str => str.Length > 0 ? ReinterpretCast<char, T>(str[0]) : Optional<T>.None, // TODO: Workaround for https://github.com/dotnet/runtime/issues/57484
                 IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
                 IReadOnlyList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
-                string str => str.Length > 0 ? ReinterpretCast<char, T>(str[0]) : Optional<T>.None,
                 _ => FirstOrEmptySlow(seq),
             };
 

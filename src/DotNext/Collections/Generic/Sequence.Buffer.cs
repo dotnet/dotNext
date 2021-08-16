@@ -2,10 +2,12 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Generic
 {
     using Buffers;
+    using static Runtime.Intrinsics;
 
     public static partial class Sequence
     {
@@ -29,6 +31,7 @@ namespace DotNext.Collections.Generic
                 List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
 #endif
                 T[] array => Span.Copy<T>(array, allocator),
+                string str => ReinterpretCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
                 ArraySegment<T> segment => Span.Copy<T>(segment.AsSpan(), allocator),
                 ICollection<T> collection => collection.Count == 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
                 IReadOnlyCollection<T> collection => collection.Count == 0 ? default : CopySlow(enumerable, collection.Count, allocator),
