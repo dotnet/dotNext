@@ -25,6 +25,7 @@ namespace DotNext.Collections.Generic
             if (sizeHint < 0)
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
+            // TODO: use Enumerable.TryGetNonEnumeratedCount in .NET 6
             return enumerable switch
             {
 #if !NETSTANDARD2_1

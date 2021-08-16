@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
@@ -434,6 +435,12 @@ namespace DotNext
         [CLSCompliant(false)]
         public static unsafe int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, delegate*<T, T, bool> comparer)
             => IndexOf<T, Supplier<T, T, bool>>(span, value, startIndex, comparer);
+
+        internal static void ForEach<T>(ReadOnlySpan<T> span, Action<T> action)
+        {
+            foreach (var item in span)
+                action(item);
+        }
 
         /// <summary>
         /// Iterates over elements of the span.
@@ -882,5 +889,17 @@ namespace DotNext
             1 => MemoryMarshal.GetReference(span),
             int length => span[random.Next(length)], // cannot use MemoryMarshal here because Random.Next is virtual so bounds check required for security reasons
         };
+
+        internal static bool ElementAt<T>(ReadOnlySpan<T> span, int index, [MaybeNullWhen(false)] out T element)
+        {
+            if (index >= 0 && index < span.Length)
+            {
+                element = span[index];
+                return true;
+            }
+
+            element = default;
+            return false;
+        }
     }
 }

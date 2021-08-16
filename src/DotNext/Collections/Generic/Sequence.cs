@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Generic
 {
@@ -45,8 +46,41 @@ namespace DotNext.Collections.Generic
         /// <param name="action">An action to applied for each element.</param>
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
-            foreach (var item in collection)
-                action.Invoke(item);
+            switch (collection)
+            {
+#if !NETSTANDARD2_1
+                case List<T> list:
+                    Span.ForEach(CollectionsMarshal.AsSpan(list), action);
+                    break;
+#endif
+                case T[] array:
+                    Array.ForEach(array, action);
+                    break;
+                case ArraySegment<T> segment:
+                    Span.ForEach(segment.AsSpan(), action);
+                    break;
+                case LinkedList<T> list:
+                    ForEachNode(list, action);
+                    break;
+                case string str:
+                    Span.ForEach(str.AsSpan(), Unsafe.As<Action<char>>(action));
+                    break;
+                default:
+                    ForEachSlow(collection, action);
+                    break;
+            }
+
+            static void ForEachSlow(IEnumerable<T> collection, Action<T> action)
+            {
+                foreach (var item in collection)
+                    action(item);
+            }
+
+            static void ForEachNode(LinkedList<T> list, Action<T> action)
+            {
+                for (var node = list.First; node is not null; node = node.Next)
+                    action(node.Value);
+            }
         }
 
         /// <summary>
@@ -73,10 +107,7 @@ namespace DotNext.Collections.Generic
         /// <returns>First element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
         public static T? FirstOrNull<T>(this IEnumerable<T> seq)
             where T : struct
-        {
-            using var enumerator = seq.GetEnumerator();
-            return enumerator.MoveNext() ? enumerator.Current : new T?();
-        }
+            => FirstOrEmpty(seq).OrNull();
 
         /// <summary>
         /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
@@ -196,34 +227,6 @@ namespace DotNext.Collections.Generic
             return true;
         }
 
-        private static bool ElementAt<T>(this IList<T> list, int index, [MaybeNullWhen(false)] out T element)
-        {
-            if (index >= 0 && index < list.Count)
-            {
-                element = list[index];
-                return true;
-            }
-            else
-            {
-                element = default!;
-                return false;
-            }
-        }
-
-        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
-        {
-            if (index >= 0 && index < list.Count)
-            {
-                element = list[index];
-                return true;
-            }
-            else
-            {
-                element = default!;
-                return false;
-            }
-        }
-
         /// <summary>
         /// Obtains element at the specified index in the sequence.
         /// </summary>
@@ -238,27 +241,75 @@ namespace DotNext.Collections.Generic
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
         public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
         {
-            switch (collection)
+            return collection switch
             {
-                case IList<T> list:
-                    return ElementAt(list, index, out element);
-                case IReadOnlyList<T> readOnlyList:
-                    return ElementAt(readOnlyList, index, out element);
-                default:
-                    using (var enumerator = collection.GetEnumerator())
+#if !NETSTANDARD2_1
+                List<T> list => Span.ElementAt<T>(CollectionsMarshal.AsSpan(list), index, out element),
+#endif
+                T[] array => Span.ElementAt<T>(array, index, out element),
+                LinkedList<T> list => NodeValueAt(list, index, out element),
+                IList<T> list => ListElementAt(list, index, out element),
+                IReadOnlyList<T> readOnlyList => ReadOnlyListElementAt(readOnlyList, index, out element),
+                _ => ElementAtSlow(collection, index, out element),
+            };
+
+            static bool NodeValueAt(LinkedList<T> list, int matchIndex, [MaybeNullWhen(false)] out T element)
+            {
+                // slow but no memory allocation
+                var index = 0;
+                for (var node = list.First; node is not null; node = node.Next)
+                {
+                    if (index++ == matchIndex)
                     {
-                        enumerator.Skip(index);
-                        if (enumerator.MoveNext())
-                        {
-                            element = enumerator.Current;
-                            return true;
-                        }
-                        else
-                        {
-                            element = default!;
-                            return false;
-                        }
+                        element = node.Value;
+                        return true;
                     }
+                }
+
+                element = default;
+                return false;
+            }
+
+            static bool ElementAtSlow(IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
+            {
+                using var enumerator = collection.GetEnumerator();
+                enumerator.Skip(index);
+                if (enumerator.MoveNext())
+                {
+                    element = enumerator.Current;
+                    return true;
+                }
+
+                element = default!;
+                return false;
+            }
+
+            static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
+            {
+                if (index >= 0 && index < list.Count)
+                {
+                    element = list[index];
+                    return true;
+                }
+                else
+                {
+                    element = default!;
+                    return false;
+                }
+            }
+
+            static bool ReadOnlyListElementAt(IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
+            {
+                if (index >= 0 && index < list.Count)
+                {
+                    element = list[index];
+                    return true;
+                }
+                else
+                {
+                    element = default!;
+                    return false;
+                }
             }
         }
 
