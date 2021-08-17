@@ -79,8 +79,8 @@ Release Date: 08-XX-2021
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
 * Introduced transport-independent implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.3.0">DotNext.AspNetCore.Cluster 3.3.0</a>
-* Added ETW counter for response time of nodes in the cluster
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.4.0">DotNext.AspNetCore.Cluster 3.4.0</a>
+* Added configurable HTTP protocol version selection policy
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
