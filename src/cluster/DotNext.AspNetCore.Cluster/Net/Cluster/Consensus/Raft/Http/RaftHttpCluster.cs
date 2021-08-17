@@ -80,7 +80,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             member.Timeout = requestTimeout;
             member.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
+#if !NETCOREAPP3_1
             member.DefaultVersionPolicy = protocolVersionPolicy;
+#endif
             member.Metrics = Metrics as IClientMetricsCollector;
             member.SetProtocolVersion(protocolVersion);
         }
