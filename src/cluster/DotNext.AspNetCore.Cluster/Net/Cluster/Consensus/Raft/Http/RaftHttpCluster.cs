@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using Net.Http;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
@@ -25,6 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpProtocolVersion protocolVersion;
+        private readonly HttpVersionPolicy protocolVersionPolicy;
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
 
@@ -41,6 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
+            protocolVersionPolicy = config.ProtocolVersionPolicy;
 
             // dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
@@ -73,8 +76,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             member.Timeout = requestTimeout;
             member.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
+            member.DefaultVersionPolicy = protocolVersionPolicy;
             member.Metrics = Metrics as IClientMetricsCollector;
-            member.ProtocolVersion = protocolVersion;
+            member.SetProtocolVersion(protocolVersion);
         }
 
         private protected abstract RaftClusterMember CreateMember(Uri address);

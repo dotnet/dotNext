@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -45,6 +46,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// Gets or sets HTTP version supported by Raft implementation.
         /// </summary>
         public HttpProtocolVersion ProtocolVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets HTTP version policy
+        /// </summary>
+        public HttpVersionPolicy ProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
 
         /// <summary>
         /// Gets or sets request timeout used to communicate with cluster members.

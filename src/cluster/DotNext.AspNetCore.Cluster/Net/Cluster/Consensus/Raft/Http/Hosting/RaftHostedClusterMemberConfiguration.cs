@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         private void ConfigureListener(ListenOptions options)
         {
-            options.SetMaxProtocolVersion(ProtocolVersion);
+            options.SetProtocolVersion(ProtocolVersion, ProtocolVersionPolicy);
         }
 
         internal void ConfigureKestrel(KestrelServerOptions options)

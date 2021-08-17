@@ -28,7 +28,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private ClusterMemberStatusChanged? memberStatusChanged;
         private long nextIndex;
         internal IClientMetricsCollector? Metrics;
-        internal HttpProtocolVersion ProtocolVersion;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -57,8 +56,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             where TMessage : HttpMessage, IHttpMessageReader<TResult>
         {
             context.Logger.SendingRequestToMember(endPoint, message.MessageType);
-            var request = new HttpRequestMessage { RequestUri = resourcePath };
-            request.SetMaxProtocolVersion(ProtocolVersion);
+            var request = new HttpRequestMessage
+            {
+                RequestUri = resourcePath,
+                Version = DefaultRequestVersion,
+                VersionPolicy = DefaultVersionPolicy,
+            };
+
             message.PrepareRequest(request);
 
             // setup additional timeout control token needed if actual timeout
