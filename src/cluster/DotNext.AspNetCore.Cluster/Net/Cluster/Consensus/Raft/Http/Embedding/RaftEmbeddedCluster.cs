@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
             server = services.GetRequiredService<IServer>();
-            config.SetupHostAddressHint(server.Features);
+            config.As<ILocalNodeHints>().SetupHostAddressHint(server.Features);
         }
 
         private protected override RaftClusterMember CreateMember(Uri address)
