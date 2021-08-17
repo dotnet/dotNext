@@ -166,6 +166,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <param name="sender">The announcement of the neighbor peer.</param>
         /// <param name="origin">The initial sender of the request.</param>
         /// <param name="peers">The portion of active and passive view randomly selected by the initial sender.</param>
+        /// <param name="timeToLive">The number of random hops the request is forwarded.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
