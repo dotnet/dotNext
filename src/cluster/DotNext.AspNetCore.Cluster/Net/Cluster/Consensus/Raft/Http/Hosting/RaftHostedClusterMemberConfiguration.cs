@@ -17,7 +17,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         private void ConfigureListener(ListenOptions options)
         {
+#if NETCOREAPP3_1
+            options.SetProtocolVersion(ProtocolVersion);
+#else
             options.SetProtocolVersion(ProtocolVersion, ProtocolVersionPolicy);
+#endif
         }
 
         internal void ConfigureKestrel(KestrelServerOptions options)

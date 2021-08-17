@@ -26,6 +26,23 @@ namespace DotNext.Net.Http
             }
         }
 
+#if NETCOREAPP3_1
+        internal static void SetProtocolVersion(this ListenOptions options, HttpProtocolVersion version)
+        {
+            switch (version)
+            {
+                case HttpProtocolVersion.Http1:
+                    options.Protocols = HttpProtocols.Http1;
+                    break;
+                case HttpProtocolVersion.Http2:
+                    options.Protocols = HttpProtocols.Http2;
+                    break;
+                case HttpProtocolVersion.Http3:
+                    options.Protocols = (HttpProtocols)4;
+                    break;
+            }
+        }
+#else
         internal static void SetProtocolVersion(this ListenOptions options, HttpProtocolVersion version, HttpVersionPolicy policy)
         {
             switch (policy)
@@ -54,11 +71,7 @@ namespace DotNext.Net.Http
                         options.Protocols = HttpProtocols.Http2;
                         break;
                     case HttpProtocolVersion.Http3:
-#if NETCOREAPP3_1
-                        options.Protocols = (HttpProtocols)4;
-#else
                         options.Protocols = HttpProtocols.Http3;
-#endif
                         break;
                 }
             }
@@ -74,11 +87,7 @@ namespace DotNext.Net.Http
                         options.Protocols = HttpProtocols.Http1AndHttp2;
                         break;
                     case HttpProtocolVersion.Http3:
-#if NETCOREAPP3_1
-                        options.Protocols = (HttpProtocols)7;
-#else
                         options.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
-#endif
                         break;
                 }
             }
@@ -94,14 +103,11 @@ namespace DotNext.Net.Http
                         options.Protocols = HttpProtocols.Http2 | HttpProtocols.Http3;
                         break;
                     case HttpProtocolVersion.Http3:
-#if NETCOREAPP3_1
-                        options.Protocols = (HttpProtocols)4;
-#else
                         options.Protocols = HttpProtocols.Http3;
-#endif
                         break;
                 }
             }
         }
+#endif
     }
 }

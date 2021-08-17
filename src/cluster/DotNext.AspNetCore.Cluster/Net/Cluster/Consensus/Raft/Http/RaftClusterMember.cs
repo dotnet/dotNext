@@ -60,7 +60,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 RequestUri = resourcePath,
                 Version = DefaultRequestVersion,
+#if !NETCOREAPP3_1
                 VersionPolicy = DefaultVersionPolicy,
+#endif
             };
 
             message.PrepareRequest(request);

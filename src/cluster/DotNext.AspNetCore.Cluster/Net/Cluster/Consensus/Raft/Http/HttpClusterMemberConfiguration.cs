@@ -47,10 +47,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// </summary>
         public HttpProtocolVersion ProtocolVersion { get; set; }
 
+#if !NETCOREAPP3_1
         /// <summary>
         /// Gets or sets HTTP version policy
         /// </summary>
         public HttpVersionPolicy ProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
+#endif
 
         /// <summary>
         /// Gets or sets request timeout used to communicate with cluster members.

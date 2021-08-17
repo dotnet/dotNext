@@ -26,7 +26,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpProtocolVersion protocolVersion;
+#if !NETCOREAPP3_1
         private readonly HttpVersionPolicy protocolVersionPolicy;
+#endif
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
 
@@ -43,7 +45,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
+#if !NETCOREAPP3_1
             protocolVersionPolicy = config.ProtocolVersionPolicy;
+#endif
 
             // dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
