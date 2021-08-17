@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
 
@@ -10,8 +11,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 {
     using Buffers;
     using Collections.Generic;
-    using Threading;
-    using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
+    using static Threading.LinkedTokenSourceFactory;
 
     /// <summary>
     /// Represents local peer supporting HyParView membership
@@ -26,9 +26,10 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         private readonly int activeViewCapacity, passiveViewCapacity;
         private readonly Random random;
         private readonly CancellationTokenSource lifecycleTokenSource;
-        private readonly AsyncReaderWriterLock accessLock;
+        private readonly Channel<Command> queue;
         private ImmutableHashSet<EndPoint> activeView, passiveView;
         private EventHandler<EndPoint>? peerDiscoveredHandlers, peerGoneHandlers;
+        private Task queueLoopTask;
 
         /// <summary>
         /// Initializes a new HyParView protocol controller.
@@ -59,14 +60,15 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             this.activeViewCapacity = activeViewCapacity;
             this.passiveViewCapacity = passiveViewCapacity;
             random = new();
+            queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(activeViewCapacity + passiveViewCapacity) { FullMode = BoundedChannelFullMode.Wait });
             ActiveRandomWalkLength = activeRandomWalkLength;
             PassiveRandomWalkLength = passiveRandomWalkLength;
             activeView = ImmutableHashSet.Create(peerComparer);
             passiveView = ImmutableHashSet.Create(peerComparer);
-            accessLock = new();
             lifecycleTokenSource = new();
             LifecycleToken = lifecycleTokenSource.Token;
             shuffleTask = Task.CompletedTask;
+            queueLoopTask = Task.CompletedTask;
         }
 
         /// <summary>
@@ -99,8 +101,87 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         {
             await JoinAsync(contactNode, token).ConfigureAwait(false);
 
+            queueLoopTask = CommandLoop();
+
             if (ShufflePeriod.TryGetValue(out var period))
-                shuffleTask = ShuffleAsync(period, LifecycleToken);
+                shuffleTask = ShuffleLoopAsync(period);
+        }
+
+        private async ValueTask EnqueueAsync(Command command, CancellationToken token)
+        {
+            using var tokenSource = token.LinkTo(LifecycleToken);
+            await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+        }
+
+        private async Task CommandLoop()
+        {
+            var reader = queue.Reader;
+
+            do
+            {
+                while (reader.TryRead(out var command))
+                {
+                    try
+                    {
+                        await DoCommand(in command);
+                    }
+                    catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
+                    {
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        // log exception
+                    }
+                    finally
+                    {
+                        command = default;
+                    }
+                }
+            }
+            while (await reader.WaitToReadAsync(LifecycleToken));
+        }
+
+        private Task DoCommand(in Command command)
+        {
+            Task result;
+
+            switch (command.Type)
+            {
+                default:
+                    result = Task.CompletedTask;
+                    break;
+                case CommandType.Join:
+                    Debug.Assert(command.Sender is not null);
+                    result = ProcessJoinAsync(command.Sender);
+                    break;
+                case CommandType.ForwardJoin:
+                    Debug.Assert(command.Sender is not null);
+                    Debug.Assert(command.Origin is not null);
+                    result = ProcessForwardJoinAsync(command.Sender, command.Origin, command.TimeToLive);
+                    break;
+                case CommandType.Neighbor:
+                    Debug.Assert(command.Sender is not null);
+                    result = ProcessNeighborAsync(command.Sender, command.IsAliveOrHighPriority);
+                    break;
+                case CommandType.Disconnect:
+                    Debug.Assert(command.Sender is not null);
+                    result = ProcessDisconnectAsync(command.Sender, command.IsAliveOrHighPriority);
+                    break;
+                case CommandType.ShuffleReply:
+                    result = ProcessShuffleReply(command.Peers);
+                    break;
+                case CommandType.Shuffle:
+                    Debug.Assert(command.Sender is not null);
+                    Debug.Assert(command.Origin is not null);
+                    result = ProcessShuffleAsync(command.Sender, command.Origin, command.Peers, command.TimeToLive);
+                    break;
+                case CommandType.ForceShuffle:
+                    result = ProcessShuffleAsync();
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -140,97 +221,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         {
         }
 
-        /// <summary>
-        /// Spreads rumour to the neighbors.
-        /// </summary>
-        /// <remarks>
-        /// If operation canceled then the peer will not be removed from active view.
-        /// </remarks>
-        /// <typeparam name="TRumour">The type of the rumour.</typeparam>
-        /// <param name="rumourSender">The delegate implementing transport-specific logic for transmitting rumour over the wire.</param>
-        /// <param name="rumour">The rumour to spread.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result of the operation.</returns>
-        /// <exception cref="AggregateException">Two or more peers are unavailable.</exception>
-        public async Task BroadcastAsync<TRumour>(Func<TRumour, EndPoint, CancellationToken, Task> rumourSender, TRumour rumour, CancellationToken token = default)
-        {
-            ICollection<(EndPoint, Task)> responses = new LinkedList<(EndPoint, Task)>();
-            var peersToRemove = new HashSet<EndPoint>(activeView.KeyComparer);
-            var tryAgain = false;
-            ExceptionAggregator exceptions;
-
-            do
-            {
-                // send message in parallel, use read lock
-                await accessLock.EnterReadLockAsync(token).ConfigureAwait(false);
-                try
-                {
-                    foreach (var peer in activeView)
-                    {
-                        var task = Task.Run(() => rumourSender(rumour, peer, token), token);
-                        responses.Add((peer, task));
-                    }
-
-                    exceptions = new ExceptionAggregator();
-                    peersToRemove.EnsureCapacity(responses.Count);
-
-                    // synchronize responses
-                    foreach (var (peer, response) in responses)
-                    {
-                        try
-                        {
-                            await response.ConfigureAwait(false);
-                        }
-                        catch (Exception e)
-                        {
-                            // if operation canceled, keep peer in active view
-                            exceptions.Add(e);
-                            if (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
-                                peersToRemove.Add(peer);
-                        }
-                    }
-
-                    // Handle situation when all peers from active view are unavailable.
-                    // If so, then refill active view with peers from passive view.
-                    tryAgain = activeView.Count > 0 && peersToRemove.Count == activeView.Count;
-                }
-                finally
-                {
-                    accessLock.ExitReadLock();
-                    responses.Clear();
-                }
-
-                // remove failed peers from active view
-                await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
-                try
-                {
-                    foreach (var peer in peersToRemove)
-                    {
-                        try
-                        {
-                            await DisconnectCoreAsync(peer, false, token).ConfigureAwait(false);
-                        }
-                        catch (Exception e)
-                        {
-                            exceptions.Add(e);
-                        }
-                    }
-                }
-                finally
-                {
-                    accessLock.ExitWriteLock();
-                    peersToRemove.Clear();
-                }
-            }
-            while (tryAgain);
-
-            exceptions.ThrowIfNeeded();
-        }
-
         private ValueTask AddPeerToPassiveViewAsync(EndPoint peer)
         {
-            Debug.Assert(accessLock.IsWriteLockHeld);
-
             var result = Optional.None<EndPoint>();
             if (activeView.Contains(peer) || passiveView.Contains(peer))
                 goto exit;
@@ -248,8 +240,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
         private async ValueTask AddPeersToPassiveViewAsync(IEnumerable<EndPoint> peers)
         {
-            Debug.Assert(accessLock.IsWriteLockHeld);
-
             var passiveViewCopy = passiveView.ToBuilder();
 
             foreach (var peer in peers)
@@ -285,10 +275,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 ThreadPool.QueueUserWorkItem<(EventHandler<EndPoint> Handler, object Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, args.Peer), (handlers, this, discoveredPeer), false);
         }
 
-        private async ValueTask AddPeerToActiveViewAsync(EndPoint peer, bool highPriority, CancellationToken token)
+        private async Task AddPeerToActiveViewAsync(EndPoint peer, bool highPriority)
         {
-            Debug.Assert(accessLock.IsWriteLockHeld);
-
             if (activeView.Contains(peer))
                 return;
 
@@ -296,7 +284,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             if (activeView.Count >= activeViewCapacity && activeView.PeekRandom(random).TryGet(out var removedPeer))
             {
                 activeView = activeView.Remove(removedPeer);
-                await DisconnectAsync(removedPeer, true, token).ConfigureAwait(false);
+                await DisconnectAsync(removedPeer, true, LifecycleToken).ConfigureAwait(false);
                 await DisconnectAsync(removedPeer).ConfigureAwait(false);
                 OnPeerGone(removedPeer);
                 await AddPeerToPassiveViewAsync(removedPeer).ConfigureAwait(false);
@@ -304,7 +292,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
             passiveView = passiveView.Remove(peer);
             activeView = activeView.Add(peer);
-            await NeighborAsync(peer, highPriority, token).ConfigureAwait(false);
+            await NeighborAsync(peer, highPriority, LifecycleToken).ConfigureAwait(false);
             OnPeerDiscovered(peer);
         }
 
@@ -315,8 +303,15 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <returns>The task representing asynchronous result of the operation.</returns>
         public virtual async Task StopAsync(CancellationToken token)
         {
+            // terminate loops
+            queue.Writer.Complete();
+            lifecycleTokenSource.Cancel();
+
+            // wait for completion
+            await shuffleTask.ConfigureAwait(false);
+            await queueLoopTask.ConfigureAwait(false);
+
             PooledArrayBufferWriter<Task>? responses = null;
-            await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
             try
             {
                 responses = new(activeViewCapacity + 1);
@@ -348,11 +343,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             {
                 activeView = ImmutableHashSet<EndPoint>.Empty;
                 passiveView = ImmutableHashSet<EndPoint>.Empty;
-                accessLock.ExitWriteLock();
                 responses?.Dispose();
             }
-
-            await shuffleTask.ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -360,6 +352,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         {
             if (disposing)
             {
+                queue.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+
                 // releases all local resources associated with the peer
                 foreach (var peer in Interlocked.Exchange(ref activeView, ImmutableHashSet<EndPoint>.Empty))
                     Destroy(peer);
@@ -368,7 +362,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                     Destroy(peer);
 
                 lifecycleTokenSource.Dispose();
-                accessLock.Dispose();
                 peerDiscoveredHandlers = null;
                 peerGoneHandlers = null;
             }
@@ -379,6 +372,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <inheritdoc />
         protected override async ValueTask DisposeAsyncCore()
         {
+            queue.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+
             // releases all local resources associated with the peer
             foreach (var peer in Interlocked.Exchange(ref activeView, ImmutableHashSet<EndPoint>.Empty))
                 await DestroyAsync(peer).ConfigureAwait(false);
@@ -387,7 +382,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 await DestroyAsync(peer).ConfigureAwait(false);
 
             lifecycleTokenSource.Dispose();
-            await accessLock.DisposeAsync().ConfigureAwait(false);
 
             peerGoneHandlers = null;
             peerDiscoveredHandlers = null;

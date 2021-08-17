@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
-    using static Threading.LinkedTokenSourceFactory;
-
     public partial class PeerController
     {
         /// <summary>
@@ -23,36 +21,21 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         protected abstract Task NeighborAsync(EndPoint neighbor, bool highPriority, CancellationToken token);
 
         /// <summary>
-        /// Must be called by underlying transport layer when Neighbor request is received.
+        /// Must be called by transport layer when Neighbor request is received.
         /// </summary>
-        /// <param name="neighbor">The neighbor announcement.</param>
+        /// <param name="sender">The announcement of the neighbor peer.</param>
         /// <param name="highPriority">
-        /// <see langword="true"/> to add the peer to the active view of receiver even if view
-        /// is full; otherwise, <see langword="false"/>.
+        /// <see langword="true"/> to replace another peer from the current active view with the announced peer;
+        /// <see langword="false"/> to place the announced peer to the current passive view if active view is full.
         /// </param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result of the operation.</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="NeighborAsync(EndPoint, bool, CancellationToken)"></seealso>
-        protected async Task OnNeighborAsync(EndPoint neighbor, bool highPriority, CancellationToken token)
-        {
-            var tokenSource = token.LinkTo(LifecycleToken);
-            var lockTaken = false;
-            try
-            {
-                await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
-                lockTaken = true;
+        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+        protected ValueTask EnqueueNeighborAsync(EndPoint sender, bool highPriority, CancellationToken token = default)
+            => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Neighbor(sender, highPriority), token);
 
-                if (highPriority || activeView.Count < activeViewCapacity)
-                    await AddPeerToActiveViewAsync(neighbor, highPriority, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (lockTaken)
-                    accessLock.ExitWriteLock();
-
-                tokenSource?.Dispose();
-            }
-        }
+        private Task ProcessNeighborAsync(EndPoint neighbor, bool highPriority)
+            => highPriority || activeView.Count < activeViewCapacity ? AddPeerToActiveViewAsync(neighbor, highPriority) : Task.CompletedTask;
     }
 }

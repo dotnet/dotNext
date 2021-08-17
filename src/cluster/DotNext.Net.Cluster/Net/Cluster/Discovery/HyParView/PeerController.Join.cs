@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
     using Buffers;
-    using static Threading.LinkedTokenSourceFactory;
 
     public partial class PeerController
     {
@@ -20,46 +19,32 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         protected abstract Task JoinAsync(EndPoint contactNode, CancellationToken token);
 
         /// <summary>
-        /// Must be called by underlying transport layer when Join request is received.
+        /// Must be called by transport layer when Join request is received.
         /// </summary>
-        /// <param name="joinedPeer">The address of the joined peer.</param>
+        /// <param name="joinedPeer">The joined peer.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="JoinAsync(EndPoint, CancellationToken)"/>
-        protected async Task OnJoinAsync(EndPoint joinedPeer, CancellationToken token)
+        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+        protected ValueTask EnqueueJoinAsync(EndPoint joinedPeer, CancellationToken token = default)
+            => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Join(joinedPeer), token);
+
+        private async Task ProcessJoinAsync(EndPoint joinedPeer)
         {
-            PooledArrayBufferWriter<Task>? tasks = null;
-            var tokenSource = token.LinkTo(LifecycleToken);
-            var lockTaken = false;
-            try
+            using var tasks = new PooledArrayBufferWriter<Task>(activeViewCapacity);
+            await AddPeerToActiveViewAsync(joinedPeer, true).ConfigureAwait(false);
+
+            // forwards JOIN request to all neighbors including joined peer
+            foreach (var neighbor in activeView.Remove(joinedPeer))
             {
-                await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
-                lockTaken = true;
-
-                await AddPeerToActiveViewAsync(joinedPeer, true, token).ConfigureAwait(false);
-
-                // forwards JOIN request to all neighbors including joined peer
-                tasks = new(activeViewCapacity);
-                foreach (var neighbor in activeView.Remove(joinedPeer))
+                if (!joinedPeer.Equals(neighbor))
                 {
-                    if (!joinedPeer.Equals(neighbor))
-                    {
-                        tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, ActiveRandomWalkLength, token), token));
-                    }
+                    tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, ActiveRandomWalkLength), LifecycleToken));
                 }
-
-                // await responses
-                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
-            finally
-            {
-                if (lockTaken)
-                    accessLock.ExitWriteLock();
 
-                tasks?.Dispose();
-                tokenSource?.Dispose();
-            }
+            // await responses
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
 }

@@ -9,12 +9,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 {
     using Buffers;
     using Collections.Generic;
-    using static Threading.LinkedTokenSourceFactory;
-    using AtomicBoolean = Threading.AtomicBoolean;
 
     public partial class PeerController
     {
-        private AtomicBoolean skipShuffle;
         private Task shuffleTask;
         private int? shuffleActiveViewCount, shufflePassiveViewCount, shuffleRandomWalkLength;
 
@@ -49,7 +46,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// Gets or sets shuffle period.
         /// </summary>
         /// <remarks>
-        /// If <see langword="null"/> then <see cref="ShuffleAsync(CancellationToken)"/> must be called
+        /// If <see langword="null"/> then <see cref="EnqueueShuffleAsync(CancellationToken)"/> must be called
         /// manually when needed.
         /// </remarks>
         public TimeSpan? ShufflePeriod { get; set; }
@@ -71,100 +68,55 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         }
 
         // implements Shuffle message passing loop
-        private async Task ShuffleAsync(TimeSpan period, CancellationToken token)
+        private async Task ShuffleLoopAsync(TimeSpan period)
         {
-            do
+            while (!queue.Reader.Completion.IsCompleted)
             {
-                await Task.Delay(period, token).ConfigureAwait(false);
-                if (skipShuffle.TrueToFalse())
-                    continue;
-
-                if (!await ShuffleAsync(false, token).ConfigureAwait(false))
-                    break;
-            }
-            while (!LifecycleToken.IsCancellationRequested);
-        }
-
-        private async Task<bool> ShuffleAsync(bool throwOnCanceled, CancellationToken token)
-        {
-            var failedPeer = Optional<EndPoint>.None;
-            using var tokenSource = token.LinkTo(LifecycleToken);
-            var lockTaken = false;
-            try
-            {
-                await accessLock.EnterReadLockAsync(token).ConfigureAwait(false);
-                lockTaken = true;
-
-                if (activeView.PeekRandom(random).TryGet(out var activePeer))
-                {
-                    PooledArrayBufferWriter<EndPoint> peersToSend;
-
-                    using (var activeViewCopy = activeView.Remove(activePeer).Copy())
-                    {
-                        activeViewCopy.Memory.Span.Shuffle(random);
-
-                        using var passiveViewCopy = passiveView.Copy();
-                        passiveViewCopy.Memory.Span.Shuffle(random);
-
-                        // add randomly selected peers from active and passive views
-                        peersToSend = new PooledArrayBufferWriter<EndPoint>(ShuffleActiveViewCount + ShufflePassiveViewCount);
-                        peersToSend.Write(activeViewCopy.Memory.Span.TrimLength(ShuffleActiveViewCount));
-                        peersToSend.Write(passiveViewCopy.Memory.Span.TrimLength(ShufflePassiveViewCount));
-                    }
-
-                    // attempts to send Shuffle message to the randomly selected peer
-                    try
-                    {
-                        await ShuffleAsync(activePeer, null, peersToSend, ShuffleRandomWalkLength, token).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        // if canceled then just leave the loop
-                        if (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == token)
-                            return throwOnCanceled ? false : throw canceledEx;
-
-                        // remember failed peer and remove it from active view later
-                        failedPeer = activePeer;
-                    }
-                    finally
-                    {
-                        peersToSend.Dispose();
-                    }
-                }
-            }
-            catch (OperationCanceledException) when (throwOnCanceled)
-            {
-                return false;
-            }
-            finally
-            {
-                if (lockTaken)
-                    accessLock.ExitReadLock();
-            }
-
-            // remove failed peer inside of separated lock
-            if (failedPeer.TryGet(out var peerToRemove))
-            {
-                lockTaken = false;
                 try
                 {
-                    await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
-                    lockTaken = true;
-
-                    await DisconnectCoreAsync(peerToRemove, false, token).ConfigureAwait(false);
+                    await Task.Delay(period, LifecycleToken).ConfigureAwait(false);
+                    await queue.Writer.WriteAsync(Command.ForceShuffle(), LifecycleToken).ConfigureAwait(false);
                 }
-                catch (OperationCanceledException) when (throwOnCanceled)
+                catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
                 {
-                    return false;
+                    break;
+                }
+            }
+        }
+
+        private async Task ProcessShuffleAsync()
+        {
+            if (activeView.PeekRandom(random).TryGet(out var activePeer))
+            {
+                PooledArrayBufferWriter<EndPoint> peersToSend;
+
+                using (var activeViewCopy = activeView.Remove(activePeer).Copy())
+                {
+                    activeViewCopy.Memory.Span.Shuffle(random);
+
+                    using var passiveViewCopy = passiveView.Copy();
+                    passiveViewCopy.Memory.Span.Shuffle(random);
+
+                    // add randomly selected peers from active and passive views
+                    peersToSend = new PooledArrayBufferWriter<EndPoint>(ShuffleActiveViewCount + ShufflePassiveViewCount);
+                    peersToSend.Write(activeViewCopy.Memory.Span.TrimLength(ShuffleActiveViewCount));
+                    peersToSend.Write(passiveViewCopy.Memory.Span.TrimLength(ShufflePassiveViewCount));
+                }
+
+                // attempts to send Shuffle message to the randomly selected peer
+                try
+                {
+                    await ShuffleAsync(activePeer, null, peersToSend, ShuffleRandomWalkLength, LifecycleToken).ConfigureAwait(false);
+                }
+                catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != LifecycleToken)
+                {
+                    await ProcessDisconnectAsync(activePeer, false).ConfigureAwait(false);
                 }
                 finally
                 {
-                    if (lockTaken)
-                        accessLock.ExitWriteLock();
+                    peersToSend.Dispose();
                 }
             }
-
-            return true;
         }
 
         /// <summary>
@@ -174,9 +126,24 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// Use this method only if <see cref="ShufflePeriod"/> is set to <see langword="null"/>.
         /// </remarks>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task ShuffleAsync(CancellationToken token) => ShuffleAsync(true, token);
+        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+        /// <exception cref="InvalidOperationException">Manual shuffle is not allowed.</exception>
+        public ValueTask EnqueueShuffleAsync(CancellationToken token = default)
+        {
+            if (IsDisposed)
+                return new(DisposedTask);
+
+            if (ShufflePeriod is not null)
+#if NETSTANDARD2_1
+                return new(Task.FromException(new InvalidOperationException()));
+#else
+                return ValueTask.FromException(new InvalidOperationException());
+#endif
+
+            return EnqueueAsync(Command.ForceShuffle(), token);
+        }
 
         /// <summary>
         /// Sends Shuffle message to the specified peer.
@@ -187,107 +154,70 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// or <see langword="null"/> if the current peer is the sender of the message.
         /// </param>
         /// <param name="peers">The collection of peers to announce.</param>
-        /// <param name="ttl">The number of hops to reach the receiver of the message.</param>
+        /// <param name="timeToLive">The number of hops to reach the receiver of the message.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected abstract Task ShuffleAsync(EndPoint receiver, EndPoint? origin, IReadOnlyCollection<EndPoint> peers, int ttl, CancellationToken token);
+        protected abstract Task ShuffleAsync(EndPoint receiver, EndPoint? origin, IReadOnlyCollection<EndPoint> peers, int timeToLive, CancellationToken token = default);
 
         /// <summary>
-        /// Must be called by underlying transport layer when Shuffle request is received.
+        /// Must be called by transport layer when Shuffle request is received.
         /// </summary>
-        /// <param name="sender">The immediate sender of the message.</param>
-        /// <param name="origin">The original sender of the message.</param>
-        /// <param name="announcement">A portion active and passive views from the original sender.</param>
-        /// <param name="ttl">The number of hops to reach the receiver of the message.</param>
+        /// <param name="sender">The announcement of the neighbor peer.</param>
+        /// <param name="origin">The initial sender of the request.</param>
+        /// <param name="peers">The portion of active and passive view randomly selected by the initial sender.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result of the operation.</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="ShuffleAsync(EndPoint, EndPoint?, IReadOnlyCollection{EndPoint}, int, CancellationToken)"/>
-        protected async Task OnShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> announcement, int ttl, CancellationToken token)
+        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+        protected ValueTask EnqueueShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int timeToLive, CancellationToken token = default)
+            => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Shuffle(sender, origin, peers, timeToLive), token);
+
+        private async Task ProcessShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> announcement, int ttl)
         {
             if (announcement.Count == 0)
                 return;
 
-            // skip background shuffle operation
-            skipShuffle.Value = true;
-
-            using var tokenSource = token.LinkTo(LifecycleToken);
-
             // add announced peers to the local passive view
             if (ttl == 0)
             {
-                await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
-                PooledArrayBufferWriter<EndPoint>? randomizedPassiveView = null;
-                try
-                {
-                    // send random part of passive view back to origin
-                    randomizedPassiveView = new();
-                    randomizedPassiveView.AddAll(passiveView);
-                    randomizedPassiveView.WrittenArray.AsSpan().Shuffle(random);
-                    if (randomizedPassiveView.WrittenCount > announcement.Count)
-                        randomizedPassiveView.RemoveLast(randomizedPassiveView.WrittenCount - announcement.Count);
-                    await AddPeersToPassiveViewAsync(origin, randomizedPassiveView, token).ConfigureAwait(false);
+                using var randomizedPassiveView = new PooledArrayBufferWriter<EndPoint>();
 
-                    await AddPeersToPassiveViewAsync(announcement).ConfigureAwait(false);
-                }
-                finally
-                {
-                    accessLock.ExitWriteLock();
-                    randomizedPassiveView?.Dispose();
-                }
+                // send random part of passive view back to origin
+                randomizedPassiveView.AddAll(passiveView);
+                randomizedPassiveView.WrittenArray.AsSpan().Shuffle(random);
+                if (randomizedPassiveView.WrittenCount > announcement.Count)
+                    randomizedPassiveView.RemoveLast(randomizedPassiveView.WrittenCount - announcement.Count);
+                await ShuffleReplyAsync(origin, randomizedPassiveView, LifecycleToken).ConfigureAwait(false);
+
+                await AddPeersToPassiveViewAsync(announcement).ConfigureAwait(false);
             }
-            else
-            {
-                // resend announcement
-                await accessLock.EnterReadLockAsync(token).ConfigureAwait(false);
-                try
-                {
-                    if (activeView.Except(new[] { sender, origin }).PeekRandom(random).TryGet(out var activePeer))
-                        await ShuffleAsync(activePeer, origin, announcement, ttl - 1, token).ConfigureAwait(false);
-                }
-                finally
-                {
-                    accessLock.ExitReadLock();
-                }
-            }
+            else if (activeView.Except(new[] { sender, origin }).PeekRandom(random).TryGet(out var activePeer)) // resend announcement
+                await ShuffleAsync(activePeer, origin, announcement, ttl - 1, LifecycleToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Sends ShuffleReply to the original sender of Shuffle message.
+        /// Sends reply to the original sender of Shuffle message.
         /// </summary>
         /// <param name="receiver">The original sender of Shuffle message.</param>
         /// <param name="peers">The portion of peers from local passive view.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected abstract Task AddPeersToPassiveViewAsync(EndPoint receiver, IReadOnlyCollection<EndPoint> peers, CancellationToken token);
+        protected abstract Task ShuffleReplyAsync(EndPoint receiver, IReadOnlyCollection<EndPoint> peers, CancellationToken token = default);
 
         /// <summary>
-        /// Must be called by underlying transport layer when Shuffle request is received.
+        /// Must be called by transport layer when Shuffle reply is received.
         /// </summary>
-        /// <param name="announcement">The portion of passive view of the peer that has received a Shuffle message with TTL = 0.</param>
+        /// <param name="peers">The portion of passive view randomly selected by the final receiver of Shuffle request.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result of the operation.</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected async Task OnAddPeersToPassiveViewAsync(IReadOnlyCollection<EndPoint> announcement, CancellationToken token)
-        {
-            var tokenSource = token.LinkTo(LifecycleToken);
-            var lockTaken = false;
-            try
-            {
-                await accessLock.EnterWriteLockAsync(token).ConfigureAwait(false);
-                lockTaken = true;
+        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+        protected ValueTask EnqueueShuffleReplyAsync(IReadOnlyCollection<EndPoint> peers, CancellationToken token = default)
+            => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.ShuffleReply(peers), token);
 
-                await AddPeersToPassiveViewAsync(announcement).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (lockTaken)
-                    accessLock.ExitReadLock();
-
-                tokenSource?.Dispose();
-            }
-        }
+        private Task ProcessShuffleReply(IReadOnlyCollection<EndPoint> announcement)
+            => AddPeersToPassiveViewAsync(announcement).AsTask();
     }
 }
