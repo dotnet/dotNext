@@ -37,6 +37,17 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         protected ValueTask EnqueueDisconnectAsync(EndPoint sender, bool isAlive, CancellationToken token = default)
             => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Disconnect(sender, isAlive), token);
 
+        /// <summary>
+        /// Reports failed peer.
+        /// </summary>
+        /// <param name="failedPeer">The address of the failed peer.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous result.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+        public ValueTask ReportFailedPeerAsync(EndPoint failedPeer, CancellationToken token = default)
+            => EnqueueDisconnectAsync(failedPeer, false, token);
+
         private async Task ProcessDisconnectAsync(EndPoint sender, bool isAlive)
         {
             // remove disconnected peer from active view
@@ -48,21 +59,36 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             await DisconnectAsync(sender).ConfigureAwait(false);
             OnPeerGone(sender);
 
-            try
+            // move random peer from passive view to active view
+            while (passiveView.PeekRandom(random).TryGet(out var candidate))
             {
-                // move random peer from passive view to active view
-                if (passiveView.PeekRandom(random).TryGet(out var activePeer))
-                    await AddPeerToActiveViewAsync(activePeer, activeView.IsEmpty).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (isAlive)
-                    passiveView = passiveView.Add(sender);
-                else
-                    await DestroyAsync(sender).ConfigureAwait(false);
+                try
+                {
+                    await AddPeerToActiveViewAsync(candidate, activeView.IsEmpty).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
+                {
+                    // peer controller has stopped, leave the loop without furher actions
+                    goto exit;
+                }
+                catch (Exception e)
+                {
+                    // peer has failed, destroy it and try another one
+                    OnError(candidate, e);
+                    await DestroyAsync(candidate).ConfigureAwait(false);
+                    continue;
+                }
+
+                // the node has added successfully to the active view, abort the loop
+                break;
             }
 
-        exit:
+            if (isAlive)
+                passiveView = passiveView.Add(sender);
+            else
+                await DestroyAsync(sender).ConfigureAwait(false);
+
+            exit:
             return;
         }
 

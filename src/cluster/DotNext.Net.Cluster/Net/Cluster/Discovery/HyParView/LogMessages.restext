@@ -1,0 +1,2 @@
+FailedToProcessCommand=Command {CommandType} processing failed
+PeerCommunicationFailed=Communication with peer {PeerAddress} has failed

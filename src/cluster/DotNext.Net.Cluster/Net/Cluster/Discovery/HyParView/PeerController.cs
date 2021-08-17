@@ -5,6 +5,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
@@ -24,6 +26,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
     public abstract partial class PeerController : Disposable, IAsyncDisposable
     {
         private readonly int activeViewCapacity, passiveViewCapacity;
+        private readonly int activeRandomWalkLength, passiveRandomWalkLength, shuffleRandomWalkLength;
+        private readonly int shuffleActiveViewCount, shufflePassiveViewCount;
+        private readonly TimeSpan? shufflePeriod;
         private readonly Random random;
         private readonly CancellationTokenSource lifecycleTokenSource;
         private readonly Channel<Command> queue;
@@ -34,35 +39,37 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <summary>
         /// Initializes a new HyParView protocol controller.
         /// </summary>
-        /// <param name="activeViewCapacity">The capacity of active view representing resolved peers.</param>
-        /// <param name="passiveViewCapacity">The capacity of backlog for peers.</param>
-        /// <param name="activeRandomWalkLength">The number of hops a ForwardJoin request is propagated.</param>
-        /// <param name="passiveRandomWalkLength">The number that specifies at which point in the walk the peer is inserted into passive view.</param>
-        /// <param name="peerComparer">The comparer used to check identity of peer address.</param>
+        /// <param name="configuration">The configuration of the algorithm.</param>
+        /// <param name="peerComparer">The peer comparison algorithm.</param>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="activeViewCapacity"/> is less than or equal to 1;
-        /// or <paramref name="passiveViewCapacity"/> is less than <paramref name="activeViewCapacity"/>;
-        /// or <paramref name="activeRandomWalkLength"/> is less than or equal to zero;
-        /// or <paramref name="passiveRandomWalkLength"/> is greater than <paramref name="activeRandomWalkLength"/>;
-        /// or <paramref name="passiveRandomWalkLength"/> is less than or equal to zero.
+        /// <see name="IPeerConfiguration.ActiveViewCapacity"/> is less than or equal to 1;
+        /// or <see name="IPeerConfiguration.PassiveViewCapacity"/> is less than <see name="IPeerConfiguration.ActiveViewCapacity"/>;
+        /// or <see name="IPeerConfiguration.ActiveRandomWalkLength"/> is less than or equal to zero;
+        /// or <see name="IPeerConfiguration.PassiveRandomWalkLength"/> is greater than <see name="IPeerConfiguration.ActiveRandomWalkLength"/>;
+        /// or <see name="IPeerConfiguration.PassiveRandomWalkLength"/> is less than or equal to zero.
         /// </exception>
-        protected PeerController(int activeViewCapacity, int passiveViewCapacity, int activeRandomWalkLength, int passiveRandomWalkLength, IEqualityComparer<EndPoint>? peerComparer)
+        protected PeerController(IPeerConfiguration configuration, IEqualityComparer<EndPoint>? peerComparer = null)
         {
-            if (activeViewCapacity <= 1)
-                throw new ArgumentOutOfRangeException(nameof(activeViewCapacity));
-            if (passiveViewCapacity < activeViewCapacity)
-                throw new ArgumentOutOfRangeException(nameof(passiveViewCapacity));
-            if (activeRandomWalkLength <= 0)
-                throw new ArgumentOutOfRangeException(nameof(activeRandomWalkLength));
-            if (passiveRandomWalkLength > activeRandomWalkLength || passiveRandomWalkLength <= 0)
-                throw new ArgumentOutOfRangeException(nameof(passiveRandomWalkLength));
+            if (configuration.ActiveViewCapacity <= 1)
+                throw new ArgumentOutOfRangeException(nameof(configuration));
+            if (configuration.PassiveViewCapacity < configuration.ActiveViewCapacity)
+                throw new ArgumentOutOfRangeException(nameof(configuration));
 
-            this.activeViewCapacity = activeViewCapacity;
-            this.passiveViewCapacity = passiveViewCapacity;
+            if (configuration.ActiveRandomWalkLength <= 0)
+                throw new ArgumentOutOfRangeException(nameof(configuration));
+            if (configuration.PassiveRandomWalkLength > configuration.ActiveRandomWalkLength || configuration.PassiveRandomWalkLength <= 0)
+                throw new ArgumentOutOfRangeException(nameof(configuration));
+
+            activeViewCapacity = configuration.ActiveViewCapacity;
+            passiveViewCapacity = configuration.PassiveViewCapacity;
+            activeRandomWalkLength = configuration.ActiveRandomWalkLength;
+            passiveRandomWalkLength = configuration.PassiveRandomWalkLength;
+            shuffleActiveViewCount = configuration.ShuffleActiveViewCount;
+            shufflePassiveViewCount = configuration.ShufflePassiveViewCount;
+            shuffleRandomWalkLength = configuration.ShuffleRandomWalkLength;
+            shufflePeriod = configuration.ShufflePeriod;
             random = new();
-            queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(activeViewCapacity + passiveViewCapacity) { FullMode = BoundedChannelFullMode.Wait });
-            ActiveRandomWalkLength = activeRandomWalkLength;
-            PassiveRandomWalkLength = passiveRandomWalkLength;
+            queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
             activeView = ImmutableHashSet.Create(peerComparer);
             passiveView = ImmutableHashSet.Create(peerComparer);
             lifecycleTokenSource = new();
@@ -70,6 +77,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             shuffleTask = Task.CompletedTask;
             queueLoopTask = Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Gets the logger associated with this controller.
+        /// </summary>
+        [CLSCompliant(false)]
+        protected virtual ILogger Logger => NullLogger.Instance;
 
         /// <summary>
         /// Gets the token associated with the lifecycle of this object.
@@ -80,16 +93,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// Gets a collection of discovered peers.
         /// </summary>
         public IReadOnlyCollection<EndPoint> Neighbors => activeView; // TODO: Use IReadOnlySet in .NET 6
-
-        /// <summary>
-        /// Gets the maximum number of hops a ForwardJoin request is propagated.
-        /// </summary>
-        public int ActiveRandomWalkLength { get; }
-
-        /// <summary>
-        /// Gets the value specifies at which point in the walk the peer is inserted into passive view.
-        /// </summary>
-        public int PassiveRandomWalkLength { get; }
 
         /// <summary>
         /// Starts serving HyParView messages and join to the cluster.
@@ -103,7 +106,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
             queueLoopTask = CommandLoop();
 
-            if (ShufflePeriod.TryGetValue(out var period))
+            if (shufflePeriod.TryGetValue(out var period))
                 shuffleTask = ShuffleLoopAsync(period);
         }
 
@@ -123,7 +126,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 {
                     try
                     {
-                        await DoCommand(in command);
+                        await DoCommand(in command).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
                     {
@@ -131,7 +134,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                     }
                     catch (Exception e)
                     {
-                        // log exception
+                        Logger.FailedToProcessCommand((int)command.Type, e);
                     }
                     finally
                     {
@@ -139,7 +142,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                     }
                 }
             }
-            while (await reader.WaitToReadAsync(LifecycleToken));
+            while (await reader.WaitToReadAsync(LifecycleToken).ConfigureAwait(false));
         }
 
         private Task DoCommand(in Command command)
@@ -178,6 +181,10 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                     break;
                 case CommandType.ForceShuffle:
                     result = ProcessShuffleAsync();
+                    break;
+                case CommandType.Broadcast:
+                    Debug.Assert(command.RumourTransport is not null);
+                    result = ProcessBroadcastAsync(command.RumourTransport);
                     break;
             }
 
@@ -280,19 +287,27 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             if (activeView.Contains(peer))
                 return;
 
+            passiveView = passiveView.Remove(peer);
+
             // allocate space in active view if it is full
             if (activeView.Count >= activeViewCapacity && activeView.PeekRandom(random).TryGet(out var removedPeer))
             {
                 activeView = activeView.Remove(removedPeer);
-                await DisconnectAsync(removedPeer, true, LifecycleToken).ConfigureAwait(false);
-                await DisconnectAsync(removedPeer).ConfigureAwait(false);
-                OnPeerGone(removedPeer);
+                try
+                {
+                    await DisconnectAsync(removedPeer, true, LifecycleToken).ConfigureAwait(false);
+                    await DisconnectAsync(removedPeer).ConfigureAwait(false);
+                }
+                finally
+                {
+                    OnPeerGone(removedPeer);
+                }
+
                 await AddPeerToPassiveViewAsync(removedPeer).ConfigureAwait(false);
             }
 
-            passiveView = passiveView.Remove(peer);
-            activeView = activeView.Add(peer);
             await NeighborAsync(peer, highPriority, LifecycleToken).ConfigureAwait(false);
+            activeView = activeView.Add(peer);
             OnPeerDiscovered(peer);
         }
 

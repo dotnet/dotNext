@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             {
                 if (!joinedPeer.Equals(neighbor))
                 {
-                    tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, ActiveRandomWalkLength), LifecycleToken));
+                    tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, activeRandomWalkLength), LifecycleToken));
                 }
             }
 

@@ -24,22 +24,33 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             ShuffleReply,
 
             ForceShuffle,
+
+            Broadcast,
         }
 
         // we use this struct as a placeholder for all HyParView commands to reduce GC pressure
         [StructLayout(LayoutKind.Auto)]
         private readonly struct Command // TODO: Migrate to init-only properties
         {
-            private readonly IReadOnlyCollection<EndPoint>? peers;
+            private readonly object? peersOrMessageTransport;
             private readonly int ttlOrHighPriority;
 
-            private Command(CommandType type, EndPoint? sender, EndPoint? origin, IReadOnlyCollection<EndPoint>? endPoints, int ttlOrHighPriority)
+            private Command(CommandType type, EndPoint? sender, EndPoint? origin, IReadOnlyCollection<EndPoint>? peers, int ttlOrHighPriority)
             {
                 Type = type;
                 Sender = sender;
                 Origin = origin;
-                this.peers = endPoints;
+                peersOrMessageTransport = peers;
                 this.ttlOrHighPriority = ttlOrHighPriority;
+            }
+
+            private Command(IRumourSender sender)
+            {
+                Type = CommandType.Broadcast;
+                Sender = null;
+                Origin = null;
+                peersOrMessageTransport = sender;
+                ttlOrHighPriority = default;
             }
 
             internal CommandType Type { get; }
@@ -53,7 +64,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
             internal int TimeToLive => ttlOrHighPriority;
 
-            internal IReadOnlyCollection<EndPoint> Peers => peers ?? Array.Empty<EndPoint>();
+            internal IRumourSender? RumourTransport => peersOrMessageTransport as IRumourSender;
+
+            internal IReadOnlyCollection<EndPoint> Peers => peersOrMessageTransport as IReadOnlyCollection<EndPoint> ?? Array.Empty<EndPoint>();
 
             internal static Command Join(EndPoint joinedPeer) => new(CommandType.Join, joinedPeer, null, null, default);
 
@@ -68,6 +81,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             internal static Command ForceShuffle() => new(CommandType.ForceShuffle, null, null, null, default);
 
             internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new(CommandType.ShuffleReply, null, null, peers, default);
+
+            internal static Command Broadcast(IRumourSender sender) => new(sender);
         }
     }
 }

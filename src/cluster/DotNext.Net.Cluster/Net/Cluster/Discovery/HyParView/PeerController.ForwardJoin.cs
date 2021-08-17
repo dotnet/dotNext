@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             }
             else
             {
-                if (timeToLive == PassiveRandomWalkLength)
+                if (timeToLive == passiveRandomWalkLength)
                     await AddPeerToPassiveViewAsync(joinedPeer).ConfigureAwait(false);
 
                 await (activeView.Remove(sender).PeekRandom(random).TryGet(out var randomActivePeer)
