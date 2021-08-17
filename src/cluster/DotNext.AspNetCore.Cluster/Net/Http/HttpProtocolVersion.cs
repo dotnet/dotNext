@@ -3,7 +3,7 @@
 namespace DotNext.Net.Http
 {
     /// <summary>
-    /// Represents supported HTTP version by Raft-over-HTTP implementation.
+    /// Represents supported HTTP version by the cluster.
     /// </summary>
     [Serializable]
     public enum HttpProtocolVersion
