@@ -11,11 +11,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents configuration of cluster member.
     /// </summary>
-    public class ClusterMemberConfiguration : IClusterMemberConfiguration
+    public class ClusterMemberConfiguration : IClusterMemberConfiguration, ILocalNodeHints
     {
-        // default port for Hosted Mode
-        private protected const int DefaultPort = 32999;
-
         static ClusterMemberConfiguration() => IPAddressConverter.Register();
 
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
