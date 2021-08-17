@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+    using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
@@ -23,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly TimeSpan requestTimeout, raftRpcTimeout, connectTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
-        private readonly HttpVersion protocolVersion;
+        private readonly HttpProtocolVersion protocolVersion;
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
 

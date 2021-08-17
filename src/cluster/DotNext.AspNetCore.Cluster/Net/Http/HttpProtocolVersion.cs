@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+namespace DotNext.Net.Http
 {
     /// <summary>
     /// Represents supported HTTP version by Raft-over-HTTP implementation.
     /// </summary>
     [Serializable]
-    public enum HttpVersion
+    public enum HttpProtocolVersion
     {
         /// <summary>
         /// Automatically selects HTTP version.

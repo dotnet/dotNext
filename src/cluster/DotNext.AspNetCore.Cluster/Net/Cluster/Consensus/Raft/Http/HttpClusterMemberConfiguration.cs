@@ -5,6 +5,7 @@ using System.Net;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using ComponentModel;
+    using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
     internal class HttpClusterMemberConfiguration : ClusterMemberConfiguration
     {
@@ -43,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <summary>
         /// Gets or sets HTTP version supported by Raft implementation.
         /// </summary>
-        public HttpVersion ProtocolVersion { get; set; }
+        public HttpProtocolVersion ProtocolVersion { get; set; }
 
         /// <summary>
         /// Gets or sets request timeout used to communicate with cluster members.

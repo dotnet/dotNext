@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
+    using Net.Http;
+
     internal sealed class RaftHostedClusterMemberConfiguration : HttpClusterMemberConfiguration
     {
         private const int DefaultPort = 32999;
@@ -15,22 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         private void ConfigureListener(ListenOptions options)
         {
-            switch (ProtocolVersion)
-            {
-                case HttpVersion.Http1:
-                    options.Protocols = HttpProtocols.Http1;
-                    break;
-                case HttpVersion.Http2:
-                    options.Protocols = HttpProtocols.Http2;
-                    break;
-                case HttpVersion.Http3:
-#if NETCOREAPP3_1
-                    options.Protocols = (HttpProtocols)4;
-#else
-                    options.Protocols = HttpProtocols.Http3;
-#endif
-                    break;
-            }
+            options.SetMaxProtocolVersion(ProtocolVersion);
         }
 
         internal void ConfigureKestrel(KestrelServerOptions options)
