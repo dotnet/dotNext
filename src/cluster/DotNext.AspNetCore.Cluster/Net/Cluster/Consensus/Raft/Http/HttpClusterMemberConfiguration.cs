@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
 #if !NETCOREAPP3_1
         /// <summary>
-        /// Gets or sets HTTP version policy
+        /// Gets or sets HTTP version policy.
         /// </summary>
         public HttpVersionPolicy ProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
 #endif
