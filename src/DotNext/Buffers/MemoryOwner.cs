@@ -13,7 +13,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
+    public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<ReadOnlyMemory<T>>
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
@@ -254,6 +254,9 @@ namespace DotNext.Buffers
 
         /// <inheritdoc/>
         readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
+
+        /// <inheritdoc/>
+        readonly ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => Memory;
 
         internal readonly ref T First
         {
