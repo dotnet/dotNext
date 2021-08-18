@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Reflection;
 using System.Resources;
 
@@ -66,5 +67,8 @@ namespace DotNext
 
         internal static string MissingMessageFormatter<T>()
             => Resources.Get().Format(typeof(T));
+
+        internal static string InvalidPeerAddress(EndPoint peer)
+            => Resources.Get().Format(peer);
     }
 }
