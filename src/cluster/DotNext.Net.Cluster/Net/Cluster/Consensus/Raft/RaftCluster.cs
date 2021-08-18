@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
     /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
-    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
+    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IPeerMesh<TMember>, IRaftStateMachine, IAsyncDisposable
         where TMember : class, IRaftClusterMember, IDisposable
     {
         private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
@@ -928,6 +929,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
             => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+
+        /// <inheritdoc />
+        TMember IPeerMesh<TMember>.GetPeer(EndPoint peer)
+        {
+            foreach (var member in members)
+            {
+                if (Equals(member.EndPoint, peer))
+                    return member;
+            }
+
+            throw new InvalidPeerAddressException(nameof(peer), peer);
+        }
 
         private void Cleanup()
         {

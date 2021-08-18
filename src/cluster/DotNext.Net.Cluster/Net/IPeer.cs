@@ -1,9 +1,9 @@
 using System.Net;
 
-namespace DotNext.Net.Cluster
+namespace DotNext.Net
 {
     /// <summary>
-    /// Represents peer in network communication.
+    /// Represents a peer in network communication.
     /// </summary>
     public interface IPeer
     {
