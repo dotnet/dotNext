@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <param name="cluster">The instance to be configured.</param>
         /// <param name="metadata">The metadata of the local cluster member to fill.</param>
-        void Initialize(IRaftCluster cluster, IDictionary<string, string> metadata);
+        void Initialize(IRaftCluster cluster, IDictionary<string, string> metadata); // TODO: Rename to OnStart
 
         /// <summary>
         /// Configures instance of <see cref="IRaftCluster"/> before its destruction.
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// This method can be used to detach all event handlers attached in <see cref="Initialize"/> method.
         /// </remarks>
         /// <param name="cluster">The instance to be configured.</param>
-        void Shutdown(IRaftCluster cluster);
+        void Shutdown(IRaftCluster cluster); // TODO: Rename to OnStop
 
         /// <summary>
         /// Gets predicate that can be used to override default logic for searching of local cluster member.
