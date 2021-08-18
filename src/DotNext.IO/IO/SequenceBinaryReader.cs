@@ -96,14 +96,33 @@ namespace DotNext.IO
         /// <returns>The decoded value.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public T Read<T>()
-            where T : unmanaged => Read<T, ValueReader<T>>(new());
+            where T : unmanaged
+        {
+            var result = default(T);
+            Read(Span.AsBytes(ref result));
+            return result;
+        }
 
         /// <summary>
         /// Copies the bytes from the sequence into contiguous block of memory.
         /// </summary>
         /// <param name="output">The block of memory to fill.</param>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-        public void Read(Memory<byte> output) => Read<Missing, MemoryReader>(new MemoryReader(output));
+        public void Read(Memory<byte> output) => Read(output.Span);
+
+        /// <summary>
+        /// Copies the bytes from the sequence into contiguous block of memory.
+        /// </summary>
+        /// <param name="output">The block of memory to fill.</param>
+        /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+        public void Read(Span<byte> output)
+        {
+            RemainingSequence.CopyTo(output, out var writtenCount);
+            if (writtenCount != output.Length)
+                throw new EndOfStreamException();
+
+            position = sequence.GetPosition(writtenCount, position);
+        }
 
         /// <summary>
         /// Skips the specified number of bytes.
