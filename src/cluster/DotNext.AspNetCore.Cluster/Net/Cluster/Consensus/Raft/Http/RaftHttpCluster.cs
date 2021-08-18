@@ -89,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected abstract RaftClusterMember CreateMember(Uri address);
 
-        protected override ILogger Logger { get; }
+        protected sealed override ILogger Logger { get; }
 
         ILogger IHostingContext.Logger => Logger;
 
