@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
     /// This controller implements core logic of HyParView algorithm without transport-specific details.
     /// </remarks>
     /// <seealso href="https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf">HyParView: a membership protocol for reliable gossip-based broadcast</seealso>
-    public abstract partial class PeerController : Disposable, IAsyncDisposable
+    public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisposable
     {
         private readonly int activeViewCapacity, passiveViewCapacity;
         private readonly int activeRandomWalkLength, passiveRandomWalkLength, shuffleRandomWalkLength;
@@ -94,15 +94,19 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// </summary>
         public IReadOnlyCollection<EndPoint> Neighbors => activeView; // TODO: Use IReadOnlySet in .NET 6
 
+        /// <inheritdoc />
+        IReadOnlyCollection<EndPoint> IPeerMesh.Peers => Neighbors;
+
         /// <summary>
         /// Starts serving HyParView messages and join to the cluster.
         /// </summary>
         /// <param name="contactNode">The contact node used to announce the current peer.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result of the operation.</returns>
-        public async Task StartAsync(EndPoint contactNode, CancellationToken token)
+        public async Task StartAsync(EndPoint? contactNode, CancellationToken token)
         {
-            await JoinAsync(contactNode, token).ConfigureAwait(false);
+            if (contactNode is not null)
+                await JoinAsync(contactNode, token).ConfigureAwait(false);
 
             queueLoopTask = CommandLoop();
 

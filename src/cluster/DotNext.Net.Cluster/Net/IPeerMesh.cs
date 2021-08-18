@@ -11,7 +11,7 @@ namespace DotNext.Net
         /// <summary>
         /// Gets a collection of visible peers.
         /// </summary>
-        IReadOnlyCollection<EndPoint> Peers { get; }
+        IReadOnlyCollection<EndPoint> Peers { get; } // TODO: Use IReadOnlySet in .NET 6
     }
 
     /// <summary>
