@@ -230,7 +230,7 @@ namespace DotNext.Buffers
             Span<char> charBuffer = stackalloc char[initialCharBufferSize];
             if (!WriteString(writer, value, formatter, charBuffer, lengthFormat, in context, format, provider, bufferSize))
             {
-                for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
+                for (var charBufferSize = checked(initialCharBufferSize * 2); ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = new MemoryRental<char>(charBufferSize, false);
                     if (WriteString(writer, value, formatter, owner.Span, lengthFormat, in context, format, provider, bufferSize))

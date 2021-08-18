@@ -77,7 +77,7 @@ namespace DotNext.IO
             where TDecoder : struct, ISpanDecoder<TResult>
         {
             var length = ReadLength(lengthFormat);
-            if (length > MemoryRental<char>.StackallocThreshold)
+            if ((uint)length > MemoryRental<char>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<char>(length);
                 return Read<TResult, TDecoder, ArrayBuffer<char>>(ref decoder, in context, buffer);
@@ -531,7 +531,7 @@ namespace DotNext.IO
             {
                 result = BigInteger.Zero;
             }
-            else if (length > MemoryRental<byte>.StackallocThreshold)
+            else if ((uint)length > MemoryRental<byte>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<byte>(length);
                 result = Read<BigInteger, BigIntegerReader<ArrayBuffer<byte>>>(new BigIntegerReader<ArrayBuffer<byte>>(buffer, littleEndian));
@@ -573,7 +573,7 @@ namespace DotNext.IO
             {
                 result = string.Empty;
             }
-            else if (length > MemoryRental<char>.StackallocThreshold)
+            else if ((uint)length > MemoryRental<char>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<char>(length);
                 result = Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));

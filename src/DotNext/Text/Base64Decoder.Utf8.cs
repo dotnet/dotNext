@@ -43,7 +43,7 @@ namespace DotNext.Text
         private void CopyAndDecode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
         {
             var newSize = reservedBufferSize + utf8Chars.Length;
-            using var tempBuffer = newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
+            using var tempBuffer = (uint)newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
             ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
             utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
             DecodeCore(tempBuffer.Span, output);
@@ -115,7 +115,7 @@ namespace DotNext.Text
             where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             var newSize = reservedBufferSize + utf8Chars.Length;
-            using var tempBuffer = newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
+            using var tempBuffer = (uint)newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
             ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
             utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
             DecodeCore(tempBuffer.Span, output);

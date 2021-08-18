@@ -64,8 +64,9 @@ namespace DotNext.IO
             where TDecoder : ISpanDecoder<TResult>
         {
             var length = ReadLength(stream, lengthFormat);
-            if (length == 0)
+            if (length <= 0)
                 throw new EndOfStreamException();
+
             using var result = length <= MemoryRental<char>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
             length = ReadString(stream, result.Span, in context, buffer);
             return decoder.Decode(result.Span.Slice(0, length));
@@ -108,8 +109,12 @@ namespace DotNext.IO
 #endif
         public static string ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer)
         {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
             if (length == 0)
                 return string.Empty;
+
             using var result = length <= MemoryRental<char>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
             return new string(result.Span.Slice(0, ReadString(stream, result.Span, in context, buffer)));
         }
@@ -149,6 +154,9 @@ namespace DotNext.IO
 #endif
         public static BigInteger ReadBigInteger(this Stream stream, int length, bool littleEndian)
         {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
             if (length == 0)
                 return BigInteger.Zero;
 
@@ -588,6 +596,9 @@ namespace DotNext.IO
 #endif
         public static string ReadString(this Stream stream, int length, Encoding encoding)
         {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
             if (length == 0)
                 return string.Empty;
 
