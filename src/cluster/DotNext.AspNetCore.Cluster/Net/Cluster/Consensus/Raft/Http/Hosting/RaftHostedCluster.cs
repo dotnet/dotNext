@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             : base(services, out var members)
         {
             host = new WebHostConfigurer(services, out var config, ProcessRequest).BuildHost();
-            config.As<ILocalNodeHints>().SetupHostAddressHint(host.Services.GetRequiredService<IServer>().Features);
+            config.SetupHostAddressHint(host.Services.GetRequiredService<IServer>().Features);
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
         }

@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using ComponentModel;
+    using HostAddressHintFeature = Hosting.Server.Features.HostAddressHintFeature;
 
     /// <summary>
     /// Represents configuration of cluster member.
     /// </summary>
-    public class ClusterMemberConfiguration : IClusterMemberConfiguration, ILocalNodeHints
+    public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
         static ClusterMemberConfiguration() => IPAddressConverter.Register();
 
@@ -80,5 +82,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// represents standby node which is never become a leader.
         /// </summary>
         public bool Standby { get; set; }
+
+        internal void SetupHostAddressHint(IFeatureCollection features)
+        {
+            var address = HostAddressHint;
+            var name = HostNameHint;
+            HostAddressHintFeature? feature = null;
+
+            if (!features.IsReadOnly)
+            {
+                if (address is not null)
+                    feature += address.ToEndPoint;
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    feature += name.ToEndPoint;
+            }
+
+            if (feature is not null)
+                features.Set(feature);
+        }
     }
 }
