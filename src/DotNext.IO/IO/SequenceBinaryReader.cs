@@ -47,6 +47,11 @@ namespace DotNext.IO
         /// </summary>
         public ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
 
+        /// <summary>
+        /// Gets position in the underlying sequence.
+        /// </summary>
+        public SequencePosition Position => position;
+
         private TResult Read<TResult, TParser>(TParser parser)
             where TParser : struct, IBufferReader<TResult>
         {

@@ -71,9 +71,8 @@ Release Date: 08-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
 * Reduced memory allocations caused by async locks
 
-<a href="https://www.nuget.org/packages/dotnext.io/3.3.0">DotNext.IO 3.3.0</a>
-* `FileBufferingWriter.GetWrittenContentAsync` overload returning `ReadOnlySequence<T>` now ensures that the buffer tail is flushed to the disk
-* `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods ensure that the buffer tail is flushed to the disk
+<a href="https://www.nuget.org/packages/dotnext.io/3.4.0">DotNext.IO 3.4.0</a>
+* Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
