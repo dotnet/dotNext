@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
     internal static class LogMessages
     {
         private const string EventIdPrefix = "DotNext.Net.Cluster.HyParView";
-        private const int EventIdOffset = 75000;
+        private const int EventIdOffset = 76000;
         private static readonly ResourceManager Resources = new("DotNext.Net.Cluster.Discovery.HyParView.LogMessages", Assembly.GetExecutingAssembly());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
