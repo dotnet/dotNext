@@ -106,9 +106,6 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
         public MemoryRental(int minBufferSize, bool exactSize = true)
         {
-            if (minBufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(minBufferSize));
-
             var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
             memory = exactSize ? owner.AsSpan(0, minBufferSize) : new(owner);
             this.owner = owner;

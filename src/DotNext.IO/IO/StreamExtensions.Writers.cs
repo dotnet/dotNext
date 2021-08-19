@@ -186,7 +186,7 @@ namespace DotNext.IO
         {
             var bytesCount = value.GetByteCount();
             stream.WriteLength(bytesCount, lengthFormat);
-            if (bytesCount <= 0)
+            if (bytesCount == 0)
                 return;
 
             using MemoryRental<byte> buffer = (uint)bytesCount <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
@@ -239,7 +239,7 @@ namespace DotNext.IO
             Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
             if (!WriteString(stream, in value, formatter, charBuffer, lengthFormat, encoding, format, provider))
             {
-                for (var charBufferSize = checked(InitialCharBufferSize * 2); ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
+                for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = new MemoryRental<char>(charBufferSize, false);
                     if (WriteString(stream, in value, formatter, owner.Span, lengthFormat, encoding, format, provider))
