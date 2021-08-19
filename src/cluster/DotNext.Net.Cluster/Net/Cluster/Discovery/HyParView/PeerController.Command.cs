@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
+    using IRumourSender = Messaging.Gossip.IRumourSender;
+
     public partial class PeerController
     {
         private enum CommandType

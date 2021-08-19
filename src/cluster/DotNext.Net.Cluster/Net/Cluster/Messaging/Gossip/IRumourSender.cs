@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Net.Cluster.Discovery.HyParView
+namespace DotNext.Net.Cluster.Messaging.Gossip
 {
     /// <summary>
     /// Represents broadcast command.

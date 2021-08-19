@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
     using Buffers;
+    using IRumourSender = Messaging.Gossip.IRumourSender;
 
     public partial class PeerController
     {
