@@ -27,7 +27,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .AddSingleton<IMessageBus>(clusterNodeCast)
                 .AddSingleton<IReplicationCluster>(clusterNodeCast)
                 .AddSingleton<IReplicationCluster<IRaftLogEntry>>(clusterNodeCast)
-                .AddSingleton<IExpandableCluster>(clusterNodeCast);
+                .AddSingleton<IExpandableCluster>(clusterNodeCast)
+                .AddSingleton<IPeerMesh<IClusterMember>>(clusterNodeCast)
+                .AddSingleton<IPeerMesh<IRaftClusterMember>>(clusterNodeCast);
         }
 
         // TODO: Add support of Action<HttpClusterMemberConfiguration> and merge it with RaftEmbeddedClusterMemberConfiguration
