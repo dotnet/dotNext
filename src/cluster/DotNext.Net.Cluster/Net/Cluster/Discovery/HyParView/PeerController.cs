@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         private readonly CancellationTokenSource lifecycleTokenSource;
         private readonly Channel<Command> queue;
         private ImmutableHashSet<EndPoint> activeView, passiveView;
-        private EventHandler<EndPoint>? peerDiscoveredHandlers, peerGoneHandlers;
+        private EventHandler<PeerEventArgs>? peerDiscoveredHandlers, peerGoneHandlers;
         private Task queueLoopTask;
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <summary>
         /// An event raised when the visible neighbor becomes unavailable.
         /// </summary>
-        public event EventHandler<EndPoint> PeerGone
+        public event EventHandler<PeerEventArgs> PeerGone
         {
             add => peerGoneHandlers += value;
             remove => peerGoneHandlers -= value;
@@ -208,7 +208,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         {
             var handlers = peerGoneHandlers;
             if (handlers is not null)
-                ThreadPool.QueueUserWorkItem<(EventHandler<EndPoint> Handler, object Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, args.Peer), (handlers, this, peer), false);
+                ThreadPool.QueueUserWorkItem<(EventHandler<PeerEventArgs> Handler, object Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, peer), false);
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <summary>
         /// An event raised when a new remote peer has been discovered.
         /// </summary>
-        public event EventHandler<EndPoint> PeerDiscovered
+        public event EventHandler<PeerEventArgs> PeerDiscovered
         {
             add => peerDiscoveredHandlers += value;
             remove => peerDiscoveredHandlers -= value;
@@ -283,7 +283,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         {
             var handlers = peerDiscoveredHandlers;
             if (handlers is not null)
-                ThreadPool.QueueUserWorkItem<(EventHandler<EndPoint> Handler, object Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, args.Peer), (handlers, this, discoveredPeer), false);
+                ThreadPool.QueueUserWorkItem<(EventHandler<PeerEventArgs> Handler, object Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, discoveredPeer), false);
         }
 
         private async Task AddPeerToActiveViewAsync(EndPoint peer, bool highPriority)
