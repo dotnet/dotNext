@@ -5,7 +5,7 @@ using System.Net;
 namespace DotNext.Net
 {
     /// <summary>
-    /// Provides local view of peer mesh. 
+    /// Provides local view of peer mesh.
     /// </summary>
     public interface IPeerMesh
     {
@@ -26,8 +26,9 @@ namespace DotNext.Net
     }
 
     /// <summary>
-    /// Provides local view of peer mesh. 
+    /// Provides local view of peer mesh.
     /// </summary>
+    /// <typeparam name="TPeer">The type that represents the peer client.</typeparam>
     public interface IPeerMesh<out TPeer> : IPeerMesh
         where TPeer : class, IPeer
     {

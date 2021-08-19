@@ -59,7 +59,6 @@ namespace DotNext.Net.Http
                     break;
             }
 
-
             static void SetExactVersion(ListenOptions options, HttpProtocolVersion version)
             {
                 switch (version)
