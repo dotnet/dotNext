@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else if (holder.Member.IsRemote)
                 {
                     using var member = holder.Remove();
-                    MemberRemoved?.Invoke(this, member);
+                    memberRemovedHandlers?.Invoke(this, member);
                     member.CancelPendingRequests();
                 }
             }
@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {
                     var member = CreateMember(memberUri);
                     builder.Add(member);
-                    MemberAdded?.Invoke(this, member);
+                    memberAddedHandlers?.Invoke(this, member);
                 }
             }
 

@@ -13,8 +13,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Net.Http;
-    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
+    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
@@ -31,6 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 #endif
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
+        private ClusterChangedEventHandler? memberAddedHandlers, memberRemovedHandlers;
 
         // TODO: Replace IServiceProvider with nullable parameters to use optional dependency injection
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -121,9 +122,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
 
-        public event ClusterChangedEventHandler? MemberAdded;
+        public event ClusterChangedEventHandler MemberAdded
+        {
+            add => memberAddedHandlers += value;
+            remove => memberAddedHandlers -= value;
+        }
 
-        public event ClusterChangedEventHandler? MemberRemoved;
+        public event ClusterChangedEventHandler MemberRemoved
+        {
+            add => memberAddedHandlers += value;
+            remove => memberRemovedHandlers -= value;
+        }
 
         public override async Task StartAsync(CancellationToken token)
         {

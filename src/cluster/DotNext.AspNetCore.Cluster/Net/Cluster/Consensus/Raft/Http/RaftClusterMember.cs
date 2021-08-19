@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using Net.Http;
     using Threading;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Timestamp = Diagnostics.Timestamp;
@@ -18,7 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private const string UserAgent = "Raft.NET";
 
-        private static readonly Version Http3 = new(3, 0);
         private readonly Uri resourcePath;
         private readonly IHostingContext context;
         private readonly EndPoint endPoint;
