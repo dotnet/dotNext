@@ -14,16 +14,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal partial class RaftHttpCluster
     {
-        internal static IServiceCollection AddClusterAsSingleton<TCluster, TConfig>(IServiceCollection services, IConfiguration memberConfig)
+        private static IServiceCollection AddClusterAsSingleton<TCluster>(IServiceCollection services)
             where TCluster : RaftHttpCluster
-            where TConfig : HttpClusterMemberConfiguration, new()
         {
-            Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
-                ServiceProviderServiceExtensions.GetRequiredService<TCluster>;
-            Func<IServiceProvider, IOptionsMonitor<HttpClusterMemberConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptionsMonitor<TConfig>>;
-            return services.Configure<TConfig>(memberConfig)
-                .AddSingleton(configCast)
-                .AddSingleton<TCluster>()
+            Func<IServiceProvider, RaftHttpCluster> clusterNodeCast = ServiceProviderServiceExtensions.GetRequiredService<TCluster>;
+
+            return services.AddSingleton<TCluster>()
                 .AddSingleton(clusterNodeCast)
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
@@ -32,6 +28,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .AddSingleton<IReplicationCluster>(clusterNodeCast)
                 .AddSingleton<IReplicationCluster<IRaftLogEntry>>(clusterNodeCast)
                 .AddSingleton<IExpandableCluster>(clusterNodeCast);
+        }
+
+        // TODO: Add support of Action<HttpClusterMemberConfiguration> and merge it with RaftEmbeddedClusterMemberConfiguration
+        internal static IServiceCollection AddClusterAsSingleton<TCluster, TConfig>(IServiceCollection services, IConfiguration memberConfig)
+            where TCluster : RaftHttpCluster
+            where TConfig : HttpClusterMemberConfiguration, new()
+        {
+            Func<IServiceProvider, IOptionsMonitor<HttpClusterMemberConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptionsMonitor<TConfig>>;
+            return AddClusterAsSingleton<TCluster>(services.Configure<TConfig>(memberConfig).AddSingleton(configCast));
         }
 
         internal static Task WriteExceptionContent(HttpContext context)
