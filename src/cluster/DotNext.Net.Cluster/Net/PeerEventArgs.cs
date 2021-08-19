@@ -24,7 +24,7 @@ namespace DotNext.Net
 
     internal sealed class SimplePeerEventArgs : PeerEventArgs
     {
-        internal SimplePeerEventArgs(EndPoint peer) => PeerAddress = peer;
+        internal SimplePeerEventArgs(EndPoint peer) => PeerAddress = peer ?? throw new ArgumentNullException(nameof(peer));
 
         public override EndPoint PeerAddress { get; }
     }
