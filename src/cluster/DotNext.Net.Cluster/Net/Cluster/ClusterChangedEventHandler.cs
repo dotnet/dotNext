@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 
 namespace DotNext.Net.Cluster
 {
@@ -12,7 +11,7 @@ namespace DotNext.Net.Cluster
 
     internal static class PeerMeshEventsBridge
     {
-        internal static void Invoke(this EventHandler<EndPoint> handler, ICluster cluster, IClusterMember member)
-            => handler(cluster, member.EndPoint);
+        internal static void Invoke(this EventHandler<PeerEventArgs> handler, ICluster cluster, IClusterMember member)
+            => handler(cluster, new ClusterMemberEventArgs(member));
     }
 }

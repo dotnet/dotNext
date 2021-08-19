@@ -17,12 +17,12 @@ namespace DotNext.Net
         /// <summary>
         /// An event raised when a new remote peer has been discovered.
         /// </summary>
-        event EventHandler<EndPoint> PeerDiscovered;
+        event EventHandler<PeerEventArgs> PeerDiscovered;
 
         /// <summary>
         /// An event raised when the visible neighbor becomes unavailable.
         /// </summary>
-        event EventHandler<EndPoint> PeerGone;
+        event EventHandler<PeerEventArgs> PeerGone;
     }
 
     /// <summary>

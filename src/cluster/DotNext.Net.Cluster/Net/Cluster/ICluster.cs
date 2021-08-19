@@ -49,14 +49,14 @@ namespace DotNext.Net.Cluster
         }
 
         /// <inheritdoc/>
-        event EventHandler<EndPoint> IPeerMesh.PeerDiscovered
+        event EventHandler<PeerEventArgs> IPeerMesh.PeerDiscovered
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        event EventHandler<EndPoint> IPeerMesh.PeerGone
+        event EventHandler<PeerEventArgs> IPeerMesh.PeerGone
         {
             add => throw new NotImplementedException();
             remove => throw new NotImplementedException();

@@ -19,14 +19,14 @@ namespace DotNext.Net.Cluster
         event ClusterChangedEventHandler MemberRemoved;
 
         /// <inheritdoc/>
-        event EventHandler<EndPoint> IPeerMesh.PeerDiscovered
+        event EventHandler<PeerEventArgs> IPeerMesh.PeerDiscovered
         {
             add => MemberAdded += value.Invoke;
             remove => MemberAdded -= value.Invoke;
         }
 
         /// <inheritdoc/>
-        event EventHandler<EndPoint> IPeerMesh.PeerGone
+        event EventHandler<PeerEventArgs> IPeerMesh.PeerGone
         {
             add => MemberRemoved += value.Invoke;
             remove => MemberRemoved -= value.Invoke;
