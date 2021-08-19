@@ -108,6 +108,7 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="output">The block of memory to fill.</param>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+        [Obsolete("Use Read(Span<byte>) method instead")]
         public void Read(Memory<byte> output) => Read(output.Span);
 
         /// <summary>
@@ -159,7 +160,7 @@ namespace DotNext.IO
             if (length > 0)
             {
                 result = allocator.Invoke(length, true);
-                Read(result.Memory);
+                Read(result.Memory.Span);
             }
             else
             {
@@ -673,7 +674,7 @@ namespace DotNext.IO
                 result = new ValueTask();
                 try
                 {
-                    Read(output);
+                    Read(output.Span);
                 }
                 catch (Exception e)
                 {
