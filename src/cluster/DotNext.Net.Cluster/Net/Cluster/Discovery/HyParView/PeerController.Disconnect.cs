@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-        public ValueTask ReportFailedPeerAsync(EndPoint failedPeer, CancellationToken token = default)
+        public ValueTask ReportFailedPeerAsync(EndPoint failedPeer, CancellationToken token)
             => EnqueueDisconnectAsync(failedPeer, false, token);
 
         private async Task ProcessDisconnectAsync(EndPoint sender, bool isAlive)
