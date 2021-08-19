@@ -14,7 +14,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
     using Buffers;
     using Collections.Generic;
     using static Threading.LinkedTokenSourceFactory;
-    using IRumourSender = Messaging.Gossip.IRumourSender;
 
     /// <summary>
     /// Represents local peer supporting HyParView membership
