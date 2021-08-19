@@ -13,6 +13,16 @@ namespace DotNext.Net
         /// Gets a collection of visible peers.
         /// </summary>
         IReadOnlyCollection<EndPoint> Peers { get; } // TODO: Use IReadOnlySet in .NET 6
+
+        /// <summary>
+        /// An event raised when a new remote peer has been discovered.
+        /// </summary>
+        event EventHandler<EndPoint> PeerDiscovered;
+
+        /// <summary>
+        /// An event raised when the visible neighbor becomes unavailable.
+        /// </summary>
+        event EventHandler<EndPoint> PeerGone;
     }
 
     /// <summary>

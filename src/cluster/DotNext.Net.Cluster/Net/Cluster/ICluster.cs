@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -45,6 +46,20 @@ namespace DotNext.Net.Cluster
             }
 
             return null;
+        }
+
+        /// <inheritdoc/>
+        event EventHandler<EndPoint> IPeerMesh.PeerDiscovered
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        event EventHandler<EndPoint> IPeerMesh.PeerGone
+        {
+            add => throw new NotImplementedException();
+            remove => throw new NotImplementedException();
         }
     }
 }
