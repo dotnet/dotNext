@@ -516,11 +516,11 @@ namespace DotNext
 #endif
         public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
         {
-            var count = checked(bytes.Length * 2);
+            var count = bytes.Length * 2;
             if (count == 0)
                 return string.Empty;
 
-            using MemoryRental<char> buffer = count <= MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
+            using MemoryRental<char> buffer = (uint)count <= MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
             count = ToHex(bytes, buffer.Span, lowercased);
             return new string(buffer.Span.Slice(0, count));
         }
