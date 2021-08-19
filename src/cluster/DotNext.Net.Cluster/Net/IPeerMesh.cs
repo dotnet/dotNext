@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -18,14 +19,14 @@ namespace DotNext.Net
     /// Provides local view of peer mesh. 
     /// </summary>
     public interface IPeerMesh<out TPeer> : IPeerMesh
-        where TPeer : IPeer
+        where TPeer : class, IPeer
     {
         /// <summary>
         /// Gets a client used to communucate with remote peer.
         /// </summary>
         /// <param name="peer">The address of the peer.</param>
-        /// <returns>The peer client.</returns>
-        /// <exception cref="InvalidPeerAddressException"><paramref name="peer"/> is not reachable from the current peer.</exception>
-        TPeer GetPeer(EndPoint peer);
+        /// <returns>The peer client; or <see langword="null"/> if the specified peer is not visible from the current peer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="peer"/> is <see langword="null"/>.</exception>
+        TPeer? TryGetPeer(EndPoint peer);
     }
 }

@@ -931,7 +931,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
         /// <inheritdoc />
-        TMember IPeerMesh<TMember>.GetPeer(EndPoint peer)
+        TMember? IPeerMesh<TMember>.TryGetPeer(EndPoint peer)
         {
             foreach (var member in members)
             {
@@ -939,7 +939,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return member;
             }
 
-            throw new InvalidPeerAddressException(nameof(peer), peer);
+            return null;
         }
 
         private void Cleanup()

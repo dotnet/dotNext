@@ -23,4 +23,3 @@ MissingCommandAttribute=Type {0} is not marked with CommandAttribute
 MissingCommandId=Log entry must have associated command identifier
 MissingMessageAttribute=Type {0} is not marked with MessageAttribute
 MissingMessageFormatter=Message of type {0} doesn't have registered formatter
-InvalidPeerAddress=The peer with address {0} is not visible by the current peer
