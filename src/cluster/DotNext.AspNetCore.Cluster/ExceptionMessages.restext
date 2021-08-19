@@ -7,3 +7,6 @@ LeaderIsUnavailable=Leader node is not yet elected
 InvalidRpcTimeout=Raft RPC timeout cannot be larger than HTTP request timeout
 UnsupportedRedirection=Redirection is not suppported because the underlying network transport for Raft cannot provide correct resolution of the leader address compatible with HTTP protocol
 ReadLogEntryTwice=Attempt to read the log entry twice while it's not reusable
+InvalidDnsEndPointFormat=DNS endpoint is in incorrect format
+UnknownLocalNodeAddress=The address of the local node is not defined
+UnknownContactNodeAddress=The address of the contact node is not defined

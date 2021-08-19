@@ -19,7 +19,7 @@ namespace DotNext.Net
         internal static EndPoint? ToEndPoint(this Uri memberUri) => memberUri.HostNameType switch
         {
             UriHostNameType.IPv4 or UriHostNameType.IPv6 => new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port),
-            UriHostNameType.Dns => memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : new DnsEndPoint(memberUri.IdnHost, memberUri.Port),
+            UriHostNameType.Dns or UriHostNameType.Basic => memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : new DnsEndPoint(memberUri.IdnHost, memberUri.Port),
             _ => null
         };
 

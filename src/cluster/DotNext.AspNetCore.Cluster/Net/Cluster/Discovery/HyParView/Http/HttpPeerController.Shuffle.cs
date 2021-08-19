@@ -1,0 +1,183 @@
+using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Debug = System.Diagnostics.Debug;
+
+namespace DotNext.Net.Cluster.Discovery.HyParView.Http
+{
+    using Buffers;
+    using IO;
+    using IO.Pipelines;
+
+    internal partial class HttpPeerController
+    {
+        private const string ShuffleMessageType = "Shuffle";
+        private const string ShuffleReplyMessageType = "ShuffleReply";
+
+        private async Task ProcessShuffleReplyAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
+        {
+            IReadOnlyCollection<EndPoint> peers;
+
+            if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+            {
+                peers = DeserializeShuffleReply(result.Buffer, out var position);
+                request.BodyReader.AdvanceTo(position);
+            }
+            else
+            {
+                using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
+                await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
+                peers = DeserializeShuffleReply(buffer.WrittenMemory);
+            }
+
+            await EnqueueShuffleReplyAsync(peers, token).ConfigureAwait(false);
+            response.StatusCode = StatusCodes.Status204NoContent;
+        }
+
+        private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ref SequenceBinaryReader reader)
+        {
+            var count = reader.ReadInt32(true);
+            var result = new List<EndPoint>(count);
+
+            while (count-- > 0)
+                result.Add(Network.DeserializeEndPoint(ref reader));
+
+            result.TrimExcess();
+            return result;
+        }
+
+        private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ReadOnlyMemory<byte> buffer)
+        {
+            var reader = IAsyncBinaryReader.Create(buffer);
+            return DeserializeShuffleReply(ref reader);
+        }
+
+        private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ReadOnlySequence<byte> buffer, out SequencePosition position)
+        {
+            var reader = IAsyncBinaryReader.Create(buffer);
+            var result = DeserializeShuffleReply(ref reader);
+            position = reader.Position;
+            return result;
+        }
+
+        protected sealed override async Task ShuffleReplyAsync(EndPoint receiver, IReadOnlyCollection<EndPoint> peers, CancellationToken token = default)
+        {
+            using var request = SerializeShuffleReply(peers);
+            await PostAsync(receiver, ShuffleReplyMessageType, request, token).ConfigureAwait(false);
+        }
+
+        private MemoryOwner<byte> SerializeShuffleReply(IReadOnlyCollection<EndPoint> peers)
+        {
+            MemoryOwner<byte> result;
+            var writer = new BufferWriterSlim<byte>(256, allocator);
+
+            try
+            {
+                writer.WriteInt32(peers.Count, true);
+                foreach (var peer in peers)
+                    Network.SerializeEndPoint(peer, ref writer);
+
+                if(!writer.TryDetachBuffer(out result))
+                    result = writer.WrittenSpan.Copy(allocator);
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+
+            return result;
+        }
+
+        private async Task ProcessShuffleRequestAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
+        {
+            EndPoint sender, origin;
+            IReadOnlyCollection<EndPoint> peers;
+            int timeToLive;
+
+            if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+            {
+                (sender, origin, timeToLive, peers) = DeserializeShuffleRequest(result.Buffer, out var position);
+                request.BodyReader.AdvanceTo(position);
+            }
+            else
+            {
+                using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
+                await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
+                (sender, origin, timeToLive, peers) = DeserializeShuffleRequest(buffer.WrittenMemory);
+            }
+
+            await EnqueueShuffleAsync(sender, origin, peers, timeToLive, token).ConfigureAwait(false);
+            response.StatusCode = StatusCodes.Status204NoContent;
+        }
+
+        private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ref SequenceBinaryReader reader)
+        {
+            var sender = Network.DeserializeEndPoint(ref reader);
+            var origin = Network.DeserializeEndPoint(ref reader);
+            var timeToLive = reader.ReadInt32(true);
+
+            var count = reader.ReadInt32(true);
+            var peers = new List<EndPoint>(count);
+
+            while (count-- > 0)
+                peers.Add(Network.DeserializeEndPoint(ref reader));
+
+            peers.TrimExcess();
+            return (sender, origin, timeToLive, peers);
+        }
+
+        private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ReadOnlyMemory<byte> buffer)
+        {
+            var reader = IAsyncBinaryReader.Create(buffer);
+            return DeserializeShuffleRequest(ref reader);
+        }
+
+        private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ReadOnlySequence<byte> buffer, out SequencePosition position)
+        {
+            var reader = IAsyncBinaryReader.Create(buffer);
+            var result = DeserializeShuffleRequest(ref reader);
+            position = reader.Position;
+            return result;
+        }
+
+        protected sealed override async Task ShuffleAsync(EndPoint receiver, EndPoint? origin, IReadOnlyCollection<EndPoint> peers, int timeToLive, CancellationToken token = default)
+        {
+            Debug.Assert(localNode is not null);
+
+            using var request = SerializeShuffleRequest(origin ?? localNode, peers, timeToLive);
+            await PostAsync(receiver, ShuffleMessageType, request, token).ConfigureAwait(false);
+        }
+
+        private MemoryOwner<byte> SerializeShuffleRequest(EndPoint origin, IReadOnlyCollection<EndPoint> peers, int timeToLive)
+        {
+            Debug.Assert(localNode is not null);
+
+            MemoryOwner<byte> result;
+            var writer = new BufferWriterSlim<byte>(256, allocator);
+
+            try
+            {
+                Network.SerializeEndPoint(localNode, ref writer);
+                Network.SerializeEndPoint(origin, ref writer);
+                writer.WriteInt32(timeToLive, true);
+
+                writer.WriteInt32(peers.Count, true);
+                foreach (var peer in peers)
+                    Network.SerializeEndPoint(peer, ref writer);
+
+                if(!writer.TryDetachBuffer(out result))
+                    result = writer.WrittenSpan.Copy(allocator);
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+
+            return result;
+        }
+    }
+}

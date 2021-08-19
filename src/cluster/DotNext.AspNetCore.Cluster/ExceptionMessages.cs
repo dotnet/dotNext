@@ -30,5 +30,11 @@ namespace DotNext
         internal static string UnsupportedRedirection => (string)Resources.Get();
 
         internal static string ReadLogEntryTwice => (string)Resources.Get();
+
+        internal static string InvalidDnsEndPointFormat => (string)Resources.Get();
+
+        internal static string UnknownLocalNodeAddress => (string)Resources.Get();
+
+        internal static string UnknownContactNodeAddress => (string)Resources.Get();
     }
 }

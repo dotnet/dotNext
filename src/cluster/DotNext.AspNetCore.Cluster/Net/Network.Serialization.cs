@@ -1,10 +1,12 @@
 using System;
+using System.Buffers;
 using System.Net;
 using System.Text;
 
 namespace DotNext.Net
 {
     using Buffers;
+    using IO;
 
     // EndPoint serialization engine is primarily used by HyParView and SWIM membership protocols internally
     internal static partial class Network
@@ -14,7 +16,7 @@ namespace DotNext.Net
         private const byte IPEndPointPrefix = 1;
         private const byte DnsEndPointPrefix = 2;
 
-        internal static void Serialize(this EndPoint endPoint, ref BufferWriterSlim<byte> writer)
+        internal static void SerializeEndPoint(EndPoint endPoint, ref BufferWriterSlim<byte> writer)
         {
             switch (endPoint)
             {
@@ -50,10 +52,8 @@ namespace DotNext.Net
             if (!address.TryWriteBytes(addressBytes, out var bytesWritten) || bytesWritten > byte.MaxValue)
                 throw new NotSupportedException();
 
-            addressBytes = addressBytes.Slice(0, bytesWritten);
             writer.Add((byte)bytesWritten);
-
-            addressBytes.CopyTo(writer.GetSpan(bytesWritten));
+            addressBytes.Slice(0, bytesWritten).CopyTo(writer.GetSpan(bytesWritten));
             writer.Advance(bytesWritten);
         }
 
@@ -68,25 +68,35 @@ namespace DotNext.Net
             writer.Advance(count);
         }
 
-        internal static EndPoint Deserialize(ref SpanReader<byte> reader) => reader.Read() switch
+        internal static EndPoint DeserializeEndPoint(ref SequenceBinaryReader reader) => reader.Read<byte>() switch
         {
             IPEndPointPrefix => DeserializeIP(ref reader),
             DnsEndPointPrefix => DeserializeHost(ref reader),
             _ => throw new NotSupportedException(),
         };
 
-        private static IPEndPoint DeserializeIP(ref SpanReader<byte> reader)
+        private static IPEndPoint DeserializeIP(ref SequenceBinaryReader reader)
         {
             var port = reader.ReadInt32(true);
-            var address = reader.Read(reader.Read());
+            var bytesCount = reader.Read<byte>();
 
-            return new IPEndPoint(new IPAddress(address), port);
+            Span<byte> bytes = stackalloc byte[bytesCount];
+            reader.Read(bytes);
+
+            return new IPEndPoint(new IPAddress(bytes), port);
         }
 
-        private static DnsEndPoint DeserializeHost(ref SpanReader<byte> reader)
+        private static DnsEndPoint DeserializeHost(ref SequenceBinaryReader reader)
         {
             var port = reader.ReadInt32(true);
-            var hostName = HostNameEncoding.GetString(reader.Read(reader.ReadInt32(true)));
+            var length = reader.ReadInt32(true);
+
+            string hostName;
+            using (var hostNameBuffer = (uint)length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true))
+            {
+                reader.Read(hostNameBuffer.Span);
+                hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
+            }
 
             return new DnsEndPoint(hostName, port);
         }
