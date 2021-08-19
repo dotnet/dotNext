@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
     /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
-    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IPeerMesh<TMember>, IRaftStateMachine, IAsyncDisposable
+    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
         where TMember : class, IRaftClusterMember, IDisposable
     {
         private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
@@ -930,8 +930,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
             => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
-        /// <inheritdoc />
-        TMember? IPeerMesh<TMember>.TryGetPeer(EndPoint peer)
+        private TMember? TryGetPeer(EndPoint peer)
         {
             foreach (var member in members)
             {
@@ -941,6 +940,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             return null;
         }
+
+        /// <inheritdoc />
+        IRaftClusterMember? IPeerMesh<IRaftClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
+
+        /// <inheritdoc />
+        IClusterMember? IPeerMesh<IClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
 
         private void Cleanup()
         {
