@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     /// </summary>
     /// <seealso cref="IDedicatedHostBuilder"/>
     [CLSCompliant(false)]
-    public static class ConfigurationExtensions
+    public static class ConfigurationExtensions // TODO: Removed in .NEXT 4
     {
         /// <summary>
         /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
