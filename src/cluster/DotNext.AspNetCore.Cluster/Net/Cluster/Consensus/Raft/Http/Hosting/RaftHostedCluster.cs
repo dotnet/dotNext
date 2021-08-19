@@ -14,6 +14,7 @@ using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
+    using Net.Http;
     using static DotNext.Hosting.HostBuilderExtensions;
 
     [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
@@ -35,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             }
 
             private void Configure(IApplicationBuilder app)
-                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpCluster.WriteExceptionContent }).Run(raftProcessor);
+                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = HttpUtils.WriteExceptionContent }).Run(raftProcessor);
 
             private void Configure(IWebHostBuilder webHost)
             {
