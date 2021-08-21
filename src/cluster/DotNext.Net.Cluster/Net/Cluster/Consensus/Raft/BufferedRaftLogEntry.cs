@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
+    using BitVector = Numerics.BitVector;
 
     /// <summary>
     /// Represents buffered log entry.
@@ -23,60 +24,61 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     {
+        private const byte InMemoryFlag = 0x01;
+        private const byte SnapshotFlag = InMemoryFlag << 1;
+        private const byte IdentifierFlag = SnapshotFlag << 1;
+
         // possible values are:
         // null - empty content
         // FileStream - file
         // IGrowableBuffer<byte> - in-memory copy of the log entry
         [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
         private readonly IDisposable? content;
-        private readonly int? commandId;
+        private readonly int commandId;
+        private readonly byte flags;
 
         private BufferedRaftLogEntry(string fileName, int bufferSize, long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
             Timestamp = timestamp;
-            commandId = id;
-            IsSnapshot = snapshot;
+            flags = BitVector.ToByte(stackalloc bool[] { false, snapshot, id.HasValue });
+            commandId = id.GetValueOrDefault();
             content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-            InMemory = false;
         }
 
         private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
             Timestamp = timestamp;
-            commandId = id;
+            flags = BitVector.ToByte(stackalloc bool[] { false, snapshot, id.HasValue });
+            commandId = id.GetValueOrDefault();
             content = file;
-            IsSnapshot = snapshot;
-            InMemory = false;
         }
 
         private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
             Timestamp = timestamp;
-            commandId = id;
+            flags = BitVector.ToByte(stackalloc bool[] { true, snapshot, id.HasValue });
+            commandId = id.GetValueOrDefault();
             content = buffer;
-            IsSnapshot = snapshot;
-            InMemory = true;
         }
 
         private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
             Timestamp = timestamp;
-            commandId = id;
+            flags = BitVector.ToByte(stackalloc bool[] { true, snapshot, id.HasValue });
+            commandId = id.GetValueOrDefault();
             content = null;
-            IsSnapshot = snapshot;
-            InMemory = true;
         }
 
-        internal bool InMemory { get; }
+        internal bool InMemory => (flags & InMemoryFlag) != 0U;
 
         /// <summary>
         /// Gets a value indicating whether the current log entry is a snapshot.
         /// </summary>
-        public bool IsSnapshot { get; }
+        public bool IsSnapshot => (flags & SnapshotFlag) != 0U;
 
         /// <summary>
         /// Gets date/time of when log entry was created.
@@ -89,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long Term { get; }
 
         /// <inheritdoc/>
-        int? IRaftLogEntry.CommandId => commandId;
+        int? IRaftLogEntry.CommandId => (flags & IdentifierFlag) == 0U ? null : commandId;
 
         /// <summary>
         /// Gets length of this log entry, in bytes.

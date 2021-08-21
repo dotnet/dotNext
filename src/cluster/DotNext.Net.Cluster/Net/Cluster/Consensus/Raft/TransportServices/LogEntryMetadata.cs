@@ -4,14 +4,14 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using Buffers;
+    using BitVector = Numerics.BitVector;
 
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct LogEntryMetadata
     {
         internal const int Size = sizeof(long) + sizeof(long) + sizeof(long) + sizeof(byte) + sizeof(int);
-        private const byte NoFlags = 0;
-        private const byte HasIdentifier = 0x01;
-        private const byte IsSnapshotFlag = HasIdentifier << 1;
+        private const byte IdentifierFlag = 0x01;
+        private const byte SnapshotFlag = IdentifierFlag << 1;
 
         private readonly long length, timestamp;
         private readonly byte flags;
@@ -21,12 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             Term = term;
             this.timestamp = timestamp.UtcTicks;
-            flags = NoFlags;
-            if (isSnapshot)
-                flags |= IsSnapshotFlag;
-            if (commandId.HasValue)
-                flags |= HasIdentifier;
-
+            flags = BitVector.ToByte(stackalloc bool[] { commandId.HasValue, isSnapshot });
             identifier = commandId.GetValueOrDefault();
             this.length = length.GetValueOrDefault(-1L);
         }
@@ -50,9 +45,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal long? Length => length >= 0L ? length : null;
 
-        internal int? CommandId => (flags & HasIdentifier) != 0 ? identifier : null;
+        internal int? CommandId => (flags & IdentifierFlag) != 0 ? identifier : null;
 
-        internal bool IsSnapshot => (flags & IsSnapshotFlag) != 0;
+        internal bool IsSnapshot => (flags & SnapshotFlag) != 0;
 
         internal void Serialize(ref SpanWriter<byte> writer)
         {
