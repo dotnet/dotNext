@@ -33,6 +33,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc/>
+        int? IRaftLogEntry.CommandId => null;
+
+        /// <inheritdoc/>
         bool ILogEntry.IsSnapshot => isSnapshot;
 
         /// <inheritdoc/>
