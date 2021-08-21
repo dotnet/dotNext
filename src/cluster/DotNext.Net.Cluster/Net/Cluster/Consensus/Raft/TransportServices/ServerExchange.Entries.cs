@@ -38,6 +38,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         long IRaftLogEntry.Term => metadata.Term;
 
+        int? IRaftLogEntry.CommandId => metadata.CommandId;
+
         DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
 
         bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
