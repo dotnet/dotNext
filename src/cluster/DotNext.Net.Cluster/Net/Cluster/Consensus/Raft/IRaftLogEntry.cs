@@ -6,6 +6,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public interface IRaftLogEntry : IO.Log.ILogEntry
     {
         /// <summary>
+        /// Represents reserved command identifier for AddServer command.
+        /// </summary>
+        public const int AddServerCommandId = int.MinValue;
+
+        /// <summary>
+        /// Represents reserved command identifier for RemoveServer command.
+        /// </summary>
+        public const int RemoveServerCommandId = int.MinValue + 1;
+
+        /// <summary>
         /// Gets Term value associated with this log entry.
         /// </summary>
         long Term { get; }
