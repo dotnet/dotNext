@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return await responseReader(responseMsg, token).ConfigureAwait(false);
             }
 
-            var tokenSource = token.LinkTo(Token);
+            var tokenSource = token.LinkTo(LifecycleToken);
             try
             {
                 do
@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             // keep the same message between retries for correct identification of duplicate messages
             var signal = new CustomMessage(in localMember.GetReference(UnresolvedLocalMemberExceptionFactory), message, true) { RespectLeadership = true };
-            var tokenSource = token.LinkTo(Token);
+            var tokenSource = token.LinkTo(LifecycleToken);
             try
             {
                 do

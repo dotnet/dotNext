@@ -203,7 +203,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
-            Token = transitionCancellation.Token;
+            LifecycleToken = transitionCancellation.Token;
             auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
             standbyNode = config.Standby;
@@ -245,7 +245,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
         /// </summary>
-        protected CancellationToken Token { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
+        [Obsolete("Use LifecycleToken property instead")]
+        protected CancellationToken Token => LifecycleToken;
+
+        /// <summary>
+        /// Gets token that can be used for all internal asynchronous operations.
+        /// </summary>
+        protected CancellationToken LifecycleToken { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
 
         private void ChangeMembers<T>(MemberCollectionMutator<T> mutator, T arg)
         {
@@ -264,7 +270,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
         {
-            using var tokenSource = token.LinkTo(Token);
+            using var tokenSource = token.LinkTo(LifecycleToken);
             using var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (transitionLock)
                 ChangeMembers(mutator, arg);
@@ -344,7 +350,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private RaftState CreateInitialState()
-            => state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
+            => state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
 
         /// <summary>
         /// Starts serving local member.
@@ -378,7 +384,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ThrowIfDisposed();
             if (standbyNode && state is StandbyState)
             {
-                using var tokenSource = token.LinkTo(Token);
+                using var tokenSource = token.LinkTo(LifecycleToken);
                 using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
                 standbyNode = false;
                 state = CreateInitialState();
@@ -442,14 +448,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 case LeaderState leaderState:
                     var newState = new FollowerState(this) { Metrics = Metrics };
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(ElectionTimeout, Token);
+                    state = newState.StartServing(ElectionTimeout, LifecycleToken);
                     leaderState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
                 case CandidateState candidateState:
                     newState = new FollowerState(this) { Metrics = Metrics };
                     await candidateState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(ElectionTimeout, Token);
+                    state = newState.StartServing(ElectionTimeout, LifecycleToken);
                     candidateState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
@@ -515,7 +521,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry
         {
-            using var tokenSource = token.LinkTo(Token);
+            using var tokenSource = token.LinkTo(LifecycleToken);
             using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             var currentTerm = auditTrail.Term;
             if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
@@ -559,7 +565,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            using var tokenSource = token.LinkTo(Token);
+            using var tokenSource = token.LinkTo(LifecycleToken);
             using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             var result = false;
             var currentTerm = auditTrail.Term;
@@ -630,7 +636,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long currentTerm;
 
             // PreVote doesn't cause transition to another Raft state so locking not needed
-            var tokenSource = token.LinkTo(Token);
+            var tokenSource = token.LinkTo(LifecycleToken);
             try
             {
                 currentTerm = auditTrail.Term;
@@ -676,7 +682,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (currentTerm > senderTerm)
                 return new(currentTerm, false);
 
-            using var tokenSource = token.LinkTo(Token);
+            using var tokenSource = token.LinkTo(LifecycleToken);
             using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             var result = false;
             if (currentTerm != senderTerm)
@@ -730,13 +736,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (state is StandbyState)
                 return false;
 
-            using var tokenSource = token.LinkTo(Token);
+            using var tokenSource = token.LinkTo(LifecycleToken);
             using var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             bool result;
             if (state is LeaderState leaderState)
             {
                 await leaderState.StopAsync().ConfigureAwait(false);
-                state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
+                state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
                 leaderState.Dispose();
                 Leader = null;
                 result = true;
@@ -776,7 +782,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             Debug.Assert(state is not StandbyState);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder)
             {
                 if (randomizeTimeout)
@@ -792,7 +798,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
             {
                 Logger.TransitionToCandidateStateStarted();
@@ -815,7 +821,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     // resume follower state
-                    followerState.StartServing(ElectionTimeout, Token);
+                    followerState.StartServing(ElectionTimeout, LifecycleToken);
                     Logger.DowngradedToFollowerState();
                 }
             }
@@ -824,11 +830,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async Task<bool> PreVoteAsync(long currentTerm)
             {
                 var lastIndex = auditTrail.GetLastIndex(false);
-                var lastTerm = await auditTrail.GetTermAsync(lastIndex, Token).ConfigureAwait(false);
+                var lastTerm = await auditTrail.GetTermAsync(lastIndex, LifecycleToken).ConfigureAwait(false);
 
                 ICollection<Task<Result<bool>>> responses = new LinkedList<Task<Result<bool>>>();
                 foreach (var member in Members)
-                    responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, Token));
+                    responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, LifecycleToken));
 
                 var votes = 0;
 
@@ -863,15 +869,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Debug.Assert(state is not StandbyState);
             Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
             if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
                 state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }
-                    .StartLeading(HeartbeatTimeout, auditTrail, Token);
-                await auditTrail.AppendNoOpEntry(Token).ConfigureAwait(false);
+                    .StartLeading(HeartbeatTimeout, auditTrail, LifecycleToken);
+                await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
             }
