@@ -84,6 +84,18 @@ namespace DotNext.Net.Cluster
         }
 
         /// <summary>
+        /// Initializes a new random unique identifier.
+        /// </summary>
+        /// <param name="random">The source of random values.</param>
+        public ClusterMemberId(Random random)
+        {
+            address = random.Next<Guid>();
+            port = random.Next();
+            length = random.Next();
+            family = random.Next();
+        }
+
+        /// <summary>
         /// Constructs cluster member id from its endpoint address.
         /// </summary>
         /// <param name="ep">The address of the cluster member.</param>
