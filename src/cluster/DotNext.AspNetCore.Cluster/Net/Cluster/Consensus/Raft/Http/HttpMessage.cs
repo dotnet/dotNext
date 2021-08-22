@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected static readonly ValueParser<long> Int64Parser = long.TryParse;
         private protected static readonly ValueParser<int> Int32Parser = int.TryParse;
-        private static readonly ValueParser<ClusterMemberId> IpAddressParser = ClusterMemberId.TryParse;
+        private static readonly ValueParser<ClusterMemberId> ClusterMemberIdParser = ClusterMemberId.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
         private static readonly Random RequestIdGenerator = new();
 
@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected HttpMessage(HeadersReader<StringValues> headers)
         {
-            Sender = ParseHeader(NodeIdHeader, headers, IpAddressParser);
+            Sender = ParseHeader(NodeIdHeader, headers, ClusterMemberIdParser);
             MessageType = GetMessageType(headers);
             Id = ParseHeader(RequestIdHeader, headers);
         }
