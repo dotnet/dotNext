@@ -37,7 +37,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Generates random election timeout.
         /// </summary>
         /// <returns>The randomized election timeout.</returns>
-        public int RandomTimeout() => random?.Next(LowerValue, UpperValue + 1) ?? 0;
+        [Obsolete("Use overloaded RandomTimeout() method")]
+        public int RandomTimeout() => random is null ? 0 : RandomTimeout(random);
+
+        /// <summary>
+        /// Generates random election timeout.
+        /// </summary>
+        /// <param name="random">The source of random values.</param>
+        /// <returns>The randomized election timeout.</returns>
+        public int RandomTimeout(Random random) => random.Next(LowerValue, UpperValue + 1);
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.

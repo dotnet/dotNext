@@ -177,6 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ElectionTimeout electionTimeoutProvider;
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold;
+        private readonly Random random;
         private volatile IMemberCollection members;
         private bool standbyNode;
 
@@ -197,7 +198,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected RaftCluster(IClusterMemberConfiguration config, out MemberCollectionBuilder members)
         {
             electionTimeoutProvider = config.ElectionTimeout;
-            electionTimeout = electionTimeoutProvider.RandomTimeout();
+            random = new();
+            electionTimeout = electionTimeoutProvider.RandomTimeout(random);
             allowPartitioning = config.Partitioning;
             members = new MemberCollectionBuilder(out var collection);
             this.members = collection;
@@ -786,7 +788,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (lockHolder)
             {
                 if (randomizeTimeout)
-                    electionTimeout = electionTimeoutProvider.RandomTimeout();
+                    electionTimeout = electionTimeoutProvider.RandomTimeout(random);
                 await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
             }
         }
