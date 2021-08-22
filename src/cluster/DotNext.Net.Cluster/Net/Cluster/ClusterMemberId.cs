@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Gets size of this type, in bytes.
         /// </summary>
-        public const int Size = 16 + sizeof(int) * 3;
+        public static int Size => 16 + sizeof(int) * 3;
 
         private const string AddressSerData = "A";
         private const string PortSerData = "P";
@@ -126,6 +126,19 @@ namespace DotNext.Net.Cluster
             writer.WriteInt32(port, true);
             writer.WriteInt32(length, true);
             writer.WriteInt32(family, true);
+        }
+
+        /// <summary>
+        /// Creates buffered copy of the cluster ID.
+        /// </summary>
+        /// <param name="allocator">The buffer allocator.</param>
+        /// <returns>The buffered copy of the cluster ID.</returns>
+        public MemoryOwner<byte> Bufferize(MemoryAllocator<byte>? allocator = null)
+        {
+            var result = allocator.Invoke(Size, true);
+            var writer = new SpanWriter<byte>(result.Memory.Span);
+            WriteTo(ref writer);
+            return result;
         }
 
         /// <summary>
