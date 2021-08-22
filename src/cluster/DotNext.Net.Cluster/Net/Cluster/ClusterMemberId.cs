@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -15,6 +16,11 @@ namespace DotNext.Net.Cluster
     [Serializable]
     public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, ISerializable
     {
+        /// <summary>
+        /// Gets size of this type, in bytes.
+        /// </summary>
+        public const int Size = 16 + sizeof(int) * 3;
+
         private const string AddressSerData = "A";
         private const string PortSerData = "P";
         private const string LengthSerData = "L";
@@ -89,10 +95,37 @@ namespace DotNext.Net.Cluster
         /// <param name="random">The source of random values.</param>
         public ClusterMemberId(Random random)
         {
-            address = random.Next<Guid>();
+            Span<byte> bytes = stackalloc byte[16];
+            random.NextBytes(bytes);
+            address = new(bytes);
             port = random.Next();
             length = random.Next();
             family = random.Next();
+        }
+
+        /// <summary>
+        /// Deserializes the cluster member ID.
+        /// </summary>
+        /// <param name="reader">The memory block reader.</param>
+        public ClusterMemberId(ref SpanReader<byte> reader)
+        {
+            address = new Guid(reader.Read(16));
+            port = reader.ReadInt32(true);
+            length = reader.ReadInt32(true);
+            family = reader.ReadInt32(true);
+        }
+
+        /// <summary>
+        /// Serializes the value as a sequence of bytes.
+        /// </summary>
+        /// <param name="writer">The memory block writer.</param>
+        /// <exception cref="System.IO.InternalBufferOverflowException"><paramref name="writer"/> is not large enough.</exception>
+        public void WriteTo(ref SpanWriter<byte> writer)
+        {
+            address.TryWriteBytes(writer.Slide(16));
+            writer.WriteInt32(port, true);
+            writer.WriteInt32(length, true);
+            writer.WriteInt32(family, true);
         }
 
         /// <summary>
