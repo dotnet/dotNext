@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -82,11 +81,11 @@ namespace DotNext.Net.Cluster
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is too small.</exception>
         public ClusterMemberId(ReadOnlySpan<byte> bytes)
         {
+            if (bytes.Length < Size)
+                throw new ArgumentOutOfRangeException(nameof(bytes));
+
             var reader = new SpanReader<byte>(bytes);
-            address = reader.Read<Guid>();
-            port = reader.Read<int>();
-            length = reader.Read<int>();
-            family = reader.Read<int>();
+            Parse(ref reader, out address, out port, out length, out family);
         }
 
         /// <summary>
@@ -108,6 +107,9 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="reader">The memory block reader.</param>
         public ClusterMemberId(ref SpanReader<byte> reader)
+            => Parse(ref reader, out address, out port, out length, out family);
+
+        private static void Parse(ref SpanReader<byte> reader, out Guid address, out int port, out int length, out int family)
         {
             address = new Guid(reader.Read(16));
             port = reader.ReadInt32(true);
