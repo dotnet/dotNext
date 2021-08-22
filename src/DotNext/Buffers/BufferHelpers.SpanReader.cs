@@ -39,7 +39,7 @@ namespace DotNext.Buffers
         /// <param name="reader">The memory reader.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The value deserialized from bytes.</returns>
-        /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The end of memory block is reached.</exception>
         public static unsafe T Read<T>(this ref SpanReader<byte> reader)
             where T : unmanaged
         {

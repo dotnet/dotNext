@@ -36,7 +36,7 @@ namespace DotNext.Buffers
             {
                 writer.Add(42);
             }
-            catch (EndOfStreamException)
+            catch (InternalBufferOverflowException)
             {
                 exceptionThrown = true;
             }
@@ -126,7 +126,7 @@ namespace DotNext.Buffers
             {
                 reader.Read(10);
             }
-            catch (EndOfStreamException)
+            catch (InternalBufferOverflowException)
             {
                 exceptionThrown = true;
             }
@@ -165,7 +165,7 @@ namespace DotNext.Buffers
             {
                 writer.Slide(2);
             }
-            catch (EndOfStreamException)
+            catch (InternalBufferOverflowException)
             {
                 exceptionThrown = true;
             }

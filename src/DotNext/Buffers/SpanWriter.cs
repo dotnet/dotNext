@@ -164,11 +164,11 @@ namespace DotNext.Buffers
         /// Puts single element into the underlying span.
         /// </summary>
         /// <param name="item">The item to place.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the item.</exception>
+        /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the item.</exception>
         public void Add(T item)
         {
             if (!TryAdd(item))
-                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
+                throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
         }
 
         /// <summary>
@@ -203,9 +203,9 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="count">The size of the segment.</param>
         /// <returns>The portion of the underlying span.</returns>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
+        /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
         public Span<T> Slide(int count)
-            => TrySlide(count, out var result) ? result : throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
+            => TrySlide(count, out var result) ? result : throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
 
         /// <summary>
         /// Writes a portion of data.
@@ -215,7 +215,7 @@ namespace DotNext.Buffers
         /// <param name="count">The number of the elements to be written.</param>
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
+        /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
         [CLSCompliant(false)]
         public unsafe void Write<TArg>(delegate*<Span<T>, TArg, void> action, TArg arg, int count)
         {
@@ -223,7 +223,7 @@ namespace DotNext.Buffers
                 throw new ArgumentNullException(nameof(action));
 
             if (!TrySlide(count, out var buffer))
-                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
+                throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
             action(buffer, arg);
         }
 

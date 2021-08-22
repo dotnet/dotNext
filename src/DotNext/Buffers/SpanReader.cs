@@ -181,17 +181,17 @@ namespace DotNext.Buffers
         /// Reads single element from the underlying span.
         /// </summary>
         /// <returns>The element obtained from the span.</returns>
-        /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
-        public T Read() => TryRead(out var result) ? result : throw new EndOfStreamException();
+        /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
+        public T Read() => TryRead(out var result) ? result : throw new InternalBufferOverflowException();
 
         /// <summary>
         /// Reads the portion of data from the underlying span.
         /// </summary>
         /// <param name="count">The number of elements to read from the underlying span.</param>
         /// <returns>The portion of data within the underlying span.</returns>
-        /// <exception cref="EndOfStreamException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
+        /// <exception cref="InternalBufferOverflowException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
         public ReadOnlySpan<T> Read(int count)
-            => TryRead(count, out var result) ? result : throw new EndOfStreamException();
+            => TryRead(count, out var result) ? result : throw new InternalBufferOverflowException();
 
         /// <summary>
         /// Decodes the value from the block of memory.
@@ -201,7 +201,7 @@ namespace DotNext.Buffers
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <returns>The decoded value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="reader"/> is zero.</exception>
-        /// <exception cref="EndOfStreamException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
+        /// <exception cref="InternalBufferOverflowException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
         [CLSCompliant(false)]
         public unsafe TResult Read<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count)
         {
@@ -209,7 +209,7 @@ namespace DotNext.Buffers
                 throw new ArgumentNullException(nameof(reader));
 
             if (!TryRead(count, out var buffer))
-                throw new EndOfStreamException();
+                throw new InternalBufferOverflowException();
 
             return reader(buffer);
         }

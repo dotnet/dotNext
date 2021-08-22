@@ -47,7 +47,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteInt16(this ref SpanWriter<byte> writer, short value, bool isLittleEndian)
             => writer.Write(isLittleEndian ? &WriteInt16LittleEndian : &WriteInt16BigEndian, value);
@@ -58,7 +58,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe void WriteUInt16(this ref SpanWriter<byte> writer, ushort value, bool isLittleEndian)
@@ -70,7 +70,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteInt32(this ref SpanWriter<byte> writer, int value, bool isLittleEndian)
             => writer.Write(isLittleEndian ? &WriteInt32LittleEndian : &WriteInt32BigEndian, value);
@@ -81,7 +81,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe void WriteUInt32(this ref SpanWriter<byte> writer, uint value, bool isLittleEndian)
@@ -93,7 +93,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteInt64(this ref SpanWriter<byte> writer, long value, bool isLittleEndian)
             => writer.Write(isLittleEndian ? &WriteInt64LittleEndian : &WriteInt64BigEndian, value);
@@ -104,7 +104,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe void WriteUInt64(this ref SpanWriter<byte> writer, ulong value, bool isLittleEndian)
@@ -117,7 +117,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteSingle(this ref SpanWriter<byte> writer, float value, bool isLittleEndian)
             => writer.Write(isLittleEndian ? &WriteSingleLittleEndian : &WriteSingleBigEndian, value);
@@ -128,7 +128,7 @@ namespace DotNext.Buffers
         /// <param name="writer">Memory writer.</param>
         /// <param name="value">The value to be encoded in the block of memory.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Remaining space in the underlying span is not enough to place the value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteDouble(this ref SpanWriter<byte> writer, double value, bool isLittleEndian)
             => writer.Write(isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, value);
