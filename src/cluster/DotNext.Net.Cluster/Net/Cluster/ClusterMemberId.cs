@@ -129,6 +129,20 @@ namespace DotNext.Net.Cluster
         }
 
         /// <summary>
+        /// Serializes the value as a sequence of bytes.
+        /// </summary>
+        /// <param name="output">The output buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is not large enough.</exception>
+        public void WriteTo(Span<byte> output)
+        {
+            if (output.Length < Size)
+                throw new ArgumentOutOfRangeException(nameof(output));
+
+            var writer = new SpanWriter<byte>(output);
+            WriteTo(ref writer);
+        }
+
+        /// <summary>
         /// Creates buffered copy of the cluster ID.
         /// </summary>
         /// <param name="allocator">The buffer allocator.</param>
@@ -136,8 +150,7 @@ namespace DotNext.Net.Cluster
         public MemoryOwner<byte> Bufferize(MemoryAllocator<byte>? allocator = null)
         {
             var result = allocator.Invoke(Size, true);
-            var writer = new SpanWriter<byte>(result.Memory.Span);
-            WriteTo(ref writer);
+            WriteTo(result.Memory.Span);
             return result;
         }
 
