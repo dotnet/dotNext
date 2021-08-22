@@ -1334,7 +1334,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private ValueTask ApplyCoreAsync(LogEntry entry)
         {
-            var handler = MembershipChangeHandler;
+            var handler = MembershipTracker;
             if (handler is null)
                 goto exit;
 
