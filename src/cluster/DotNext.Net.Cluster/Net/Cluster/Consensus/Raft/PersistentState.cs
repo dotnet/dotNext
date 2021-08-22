@@ -130,6 +130,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.Initialize();
 
+            // cluster config
+            memberListStorage = new FileStream(Path.Combine(path.FullName, MembershipStorageFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous);
+
             // counters
             readCounter = ToDelegate(configuration.ReadCounter);
             writeCounter = ToDelegate(configuration.WriteCounter);
@@ -1329,6 +1332,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <seealso cref="Commands.CommandInterpreter"/>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new();
 
+        private ValueTask ApplyCoreAsync(LogEntry entry)
+        {
+            var handler = MembershipChangeHandler;
+            if (handler is null)
+                goto exit;
+
+            // skip special log entry from the log to avoid interpreting issues
+            switch (entry.CommandId)
+            {
+                case IRaftLogEntry.AddServerCommandId:
+                    return UpdateMembershipAsync(entry, true, handler, memberListStorage, bufferManager.BufferAllocator);
+                case IRaftLogEntry.RemoveServerCommandId:
+                    return UpdateMembershipAsync(entry, false, handler, memberListStorage, bufferManager.BufferAllocator);
+            }
+
+        exit:
+            return ApplyAsync(entry);
+        }
+
         /// <summary>
         /// Flushes the underlying data storage.
         /// </summary>
@@ -1515,6 +1537,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 commitEvent.Dispose();
                 syncRoot.Dispose();
                 snapshot.Dispose();
+                memberListStorage.Dispose();
             }
 
             base.Dispose(disposing);
@@ -1535,6 +1558,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent.Dispose();
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
+            await memberListStorage.DisposeAsync().ConfigureAwait(false);
         }
 
         /// <summary>
