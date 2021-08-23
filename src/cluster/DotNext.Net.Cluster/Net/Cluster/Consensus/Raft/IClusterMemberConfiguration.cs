@@ -25,6 +25,14 @@
         ElectionTimeout ElectionTimeout { get; }
 
         /// <summary>
+        /// A bound on clock drift across servers.
+        /// </summary>
+        /// <remarks>
+        /// Over a given time period, no server’s clock increases more than this bound times any other.
+        /// </remarks>
+        double ClockDriftBound => 1D;
+
+        /// <summary>
         /// Gets a value indicating that the cluster member
         /// represents standby node which will never become a leader.
         /// </summary>

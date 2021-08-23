@@ -17,6 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
         private TimeSpan? rpcTimeout;
+        private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
 
         /// <summary>
         /// Gets or sets the address of the local node.
@@ -58,7 +59,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets or sets threshold of the heartbeat timeout.
         /// </summary>
-        public double HeartbeatThreshold { get; set; } = 0.5D;
+        public double HeartbeatThreshold
+        {
+            get => heartbeatThreshold;
+            set => heartbeatThreshold = double.IsFinite(value) && value > 0D ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <summary>
+        /// A bound on clock drift across servers.
+        /// </summary>
+        /// <remarks>
+        /// Over a given time period, no server’s clock increases more than this bound times any other.
+        /// </remarks>
+        public double ClockDriftBound
+        {
+            get => clockDriftBound;
+            set => clockDriftBound = double.IsFinite(value) && value >= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
 
         /// <inheritdoc/>
         ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;

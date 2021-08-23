@@ -176,7 +176,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool allowPartitioning;
         private readonly ElectionTimeout electionTimeoutProvider;
         private readonly CancellationTokenSource transitionCancellation;
-        private readonly double heartbeatThreshold;
+        private readonly double heartbeatThreshold, clockDriftBound;
         private readonly Random random;
         private volatile IMemberCollection members;
         private bool standbyNode;
@@ -209,6 +209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
             standbyNode = config.Standby;
+            clockDriftBound = config.ClockDriftBound;
         }
 
         private static bool IsLocalMember(TMember member) => !member.IsRemote;
@@ -229,10 +230,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
 
+        private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
+
         /// <summary>
         /// Indicates that local member is a leader.
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
+
+        /// <summary>
+        /// Gets the lease that can be used for linearizable read.
+        /// </summary>
+        public ILeaderLease? Lease => state as LeaderState;
+
+        /// <summary>
+        /// Gets the cancellation token that tracks the leader state of the current node.
+        /// </summary>
+        public CancellationToken LeadershipToken => (state as LeaderState)?.LeadershipToken ?? new(true);
 
         /// <summary>
         /// Associates audit trail with the current instance.
@@ -877,7 +890,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
-                state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }
+                state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
                     .StartLeading(HeartbeatTimeout, auditTrail, LifecycleToken);
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
                 Metrics?.MovedToLeaderState();

@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using AsyncResultSet = Buffers.PooledArrayBufferWriter<Task<Result<bool>>>;
     using Timestamp = Diagnostics.Timestamp;
 
-    internal sealed partial class LeaderState : RaftState
+    internal sealed partial class LeaderState : RaftState, ILeaderLease
     {
         private const int MaxTermCacheSize = 100;
         private readonly long currentTerm;
@@ -20,18 +20,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         // key is log entry index, value is log entry term
         private readonly TermCache precedingTermCache;
+        private readonly TimeSpan maxLease;
+        private Timestamp replicatedAt;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
+        internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
+        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term, TimeSpan maxLease)
             : base(stateMachine)
         {
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new();
+            LeadershipToken = timerCancellation.Token;
             replicationEvent = new();
             replicationQueue = new();
             precedingTermCache = new TermCache(MaxTermCacheSize);
+            this.maxLease = maxLease;
         }
 
         private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -96,8 +101,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // majority of nodes accept entries with a least one entry from the current term
             if (commitQuorum > 0)
             {
-                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries started from first uncommitted index to the end
+                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
+                Timestamp.VolatileWrite(ref replicatedAt, Timestamp.Current); // renew lease
                 goto check_term;
             }
 
@@ -119,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
-            using var cancellationSource = token.LinkTo(timerCancellation.Token);
+            using var cancellationSource = token.LinkTo(LeadershipToken);
 
             // reuse this buffer to place responses from other nodes
             using var taskBuffer = new AsyncResultSet(stateMachine.Members.Count);
@@ -146,6 +152,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             heartbeatTask = DoHeartbeats(period, transactionLog, token);
             return this;
         }
+
+        bool ILeaderLease.IsExpired
+            => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt).Elapsed > maxLease;
 
         internal override Task StopAsync()
         {

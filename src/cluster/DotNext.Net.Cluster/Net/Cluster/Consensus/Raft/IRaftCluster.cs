@@ -33,6 +33,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         new IPersistentState AuditTrail { get; set; }
 
+        /// <summary>
+        /// Gets the lease that can be used to perform read with linerizability guarantees.
+        /// </summary>
+        ILeaderLease? Lease { get; }
+
+        /// <summary>
+        /// Gets the token that can be used to track leader state.
+        /// </summary>
+        /// <remarks>
+        /// The token moves to canceled state if the current node downgrades to the follower state.
+        /// </remarks>
+        CancellationToken LeadershipToken { get; }
+
         /// <inheritdoc/>
         IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => AuditTrail;
 
