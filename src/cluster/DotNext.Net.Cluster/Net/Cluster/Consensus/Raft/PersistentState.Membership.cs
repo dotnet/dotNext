@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             octet stream of length N = the address
             ... zero or more repetitions
          */
-        internal sealed class MembershipStateMachine : Dictionary<ClusterMemberId, MemoryOwner<byte>>, IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>>, ISupplier<MemoryOwner<byte>>, IDisposable
+        private sealed class MembershipStateMachine : Dictionary<ClusterMemberId, MemoryOwner<byte>>, IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>>, ISupplier<MemoryOwner<byte>>, IDisposable
         {
             private sealed class AsyncEnumerator : IAsyncEnumerator<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>>
             {
