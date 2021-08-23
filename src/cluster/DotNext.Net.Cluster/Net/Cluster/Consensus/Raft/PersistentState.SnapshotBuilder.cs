@@ -34,8 +34,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 term = Math.Max(entry.Term, term);
 
-                // drop empty log entries during snapshot construction
-                return entry.IsEmpty ? new() : ApplyAsync(entry);
+                // skip special log entries
+                return entry.CommandId switch
+                {
+                    IRaftLogEntry.AddMemberCommandId or IRaftLogEntry.RemoveMemberCommandId => new(),
+                    _ => entry.IsEmpty ? new() : ApplyAsync(entry),
+                };
             }
 
             /// <summary>

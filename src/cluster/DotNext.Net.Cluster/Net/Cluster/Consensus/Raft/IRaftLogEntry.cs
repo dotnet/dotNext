@@ -1,5 +1,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
+
     /// <summary>
     /// Represents log entry in Raft audit trail.
     /// </summary>
@@ -8,12 +10,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents reserved command identifier for AddServer command.
         /// </summary>
-        public const int AddServerCommandId = int.MinValue;
+        /// <seealso cref="Membership.AddMemberLogEntry"/>
+        public const int AddMemberCommandId = int.MinValue;
 
         /// <summary>
         /// Represents reserved command identifier for RemoveServer command.
         /// </summary>
-        public const int RemoveServerCommandId = int.MinValue + 1;
+        /// <seealso cref="Membership.RemoveMemberLogEntry"/>
+        public const int RemoveMemberCommandId = AddMemberCommandId + 1;
 
         /// <summary>
         /// Gets Term value associated with this log entry.
@@ -25,5 +29,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// by this log entry.
         /// </summary>
         int? CommandId => null;
+
+        /// <summary>
+        /// Attempts to extract the list of cluster members in raw format.
+        /// </summary>
+        /// <remarks>
+        /// This method decouples custom payload of the log entry from Raft-specific
+        /// information.
+        /// </remarks>
+        /// <param name="configuration">The buffer containing addresses of cluster members.</param>
+        /// <returns><see langword="true"/> if the list obtained successfully; otherwise, <see langword="false"/>.</returns>
+        bool TryGetClusterConfiguration(out MemoryOwner<byte> configuration)
+        {
+            configuration = default;
+            return false;
+        }
     }
 }

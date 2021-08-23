@@ -96,6 +96,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             sessionManager = new(configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
             syncRoot = new(configuration);
             evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
+            membershipInterpreter = new(bufferManager.BufferAllocator);
+            membershipStorage = new(Path.Combine(location.FullName, MembershipStorageFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous);
 
             var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
@@ -131,7 +133,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             snapshot.Initialize();
 
             // cluster config
-            memberListStorage = new FileStream(Path.Combine(path.FullName, MembershipStorageFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous);
 
             // counters
             readCounter = ToDelegate(configuration.ReadCounter);
@@ -228,7 +229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // try to read snapshot out of the loop
                 if (!snapshot.IsEmpty && startIndex <= snapshot.Index)
                 {
-                    var snapshotEntry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                    var snapshotEntry = await snapshot.ReadAsync(session, membershipInterpreter, token).ConfigureAwait(false);
                     BufferHelpers.GetReference(in list) = snapshotEntry;
 
                     // skip squashed log entries
@@ -261,7 +262,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             async ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, CancellationToken token)
             {
-                var entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                var entry = await snapshot.ReadAsync(session, membershipInterpreter, token).ConfigureAwait(false);
                 return await reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(entry), entry.SnapshotIndex, token).ConfigureAwait(false);
             }
 
@@ -412,6 +413,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<Partition?> UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
             where TSnapshot : notnull, IRaftLogEntry
         {
+            // 0. Install configuration when available
+            if (snapshot.TryGetClusterConfiguration(out var configuration))
+            {
+                using (configuration)
+                {
+                    membershipInterpreter.Clear();
+                    membershipInterpreter.Reload(configuration.Memory);
+
+                    await membershipStorage.WriteAsync(configuration.Memory).ConfigureAwait(false);
+                    await membershipStorage.FlushAsync().ConfigureAwait(false);
+                }
+            }
+
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
             await using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, true))
@@ -447,10 +461,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // 5. Apply snapshot to the underlying state machine
             state.CommitIndex = snapshotIndex;
             state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
+
             var session = sessionManager.OpenSession();
             try
             {
-                await ApplyAsync(await this.snapshot.ReadAsync(in session, CancellationToken.None).ConfigureAwait(false)).ConfigureAwait(false);
+                await ApplyCoreAsync(await this.snapshot.ReadAsync(in session, null, CancellationToken.None).ConfigureAwait(false)).ConfigureAwait(false);
             }
             finally
             {
@@ -982,7 +997,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // Initialize builder with snapshot record
             if (!snapshot.IsEmpty)
             {
-                await builder.ApplyCoreAsync(await snapshot.ReadAsync(in session, token).ConfigureAwait(false)).ConfigureAwait(false);
+                await builder.ApplyCoreAsync(await snapshot.ReadAsync(in session, null, token).ConfigureAwait(false)).ConfigureAwait(false);
             }
 
             Partition? current = head;
@@ -1004,6 +1019,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder snapshot, long snapshotIndex)
         {
+            // Persist configuration
+            await membershipStorage.FlushAsync().ConfigureAwait(false);
+
             // Persist snapshot (cannot be canceled to avoid inconsistency)
             await this.snapshot.WriteAsync(snapshot, snapshotIndex, sessionManager.CompactionBuffer).ConfigureAwait(false);
             await this.snapshot.FlushAsync().ConfigureAwait(false);
@@ -1088,48 +1106,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
             {
-                var builder = CreateSnapshotBuilder();
-                if (builder is null)
-                    return;
-
                 Partition? removedHead;
-                try
+
+                using (var builder = CreateSnapshotBuilder())
                 {
-                    long upperBoundIndex;
+                    var upperBoundIndex = 0L;
 
                     // initialize builder with log entries (read-only)
-                    await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
-                    var session = sessionManager.OpenSession();
-                    try
+                    if (builder is not null)
                     {
-                        // check compaction range again because snapshot index can be modified by snapshot installation method
-                        upperBoundIndex = ComputeUpperBoundIndex(count);
-                        if (!IsCompactionRequired(upperBoundIndex))
-                            return;
+                        await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
+                        var session = sessionManager.OpenSession();
+                        try
+                        {
+                            // check compaction range again because snapshot index can be modified by snapshot installation method
+                            upperBoundIndex = ComputeUpperBoundIndex(count);
+                            if (!IsCompactionRequired(upperBoundIndex))
+                                return;
 
-                        // construct snapshot (read-only operation)
-                        await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
-                    }
-                    finally
-                    {
-                        sessionManager.CloseSession(in session);
-                        syncRoot.Release(LockType.WeakReadLock);
+                            // construct snapshot (read-only operation)
+                            await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            sessionManager.CloseSession(in session);
+                            syncRoot.Release(LockType.WeakReadLock);
+                        }
                     }
 
                     // rewrite snapshot as well as remove log entries (write access required)
                     await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
                     try
                     {
-                        removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+                        removedHead = builder is null
+                            ? null
+                            : await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+
+                        // squash configuration
+                        token.ThrowIfCancellationRequested();
+                        await DumpConfigurationAsync().ConfigureAwait(false);
                     }
                     finally
                     {
                         syncRoot.Release(LockType.CompactionLock);
                     }
-                }
-                finally
-                {
-                    builder.Dispose();
                 }
 
                 await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
@@ -1170,6 +1190,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     state.CommitIndex = commitIndex;
                     await ApplyAsync(session, token).ConfigureAwait(false);
                     removedHead = await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
+
+                    // squash configuration
+                    token.ThrowIfCancellationRequested();
+                    await DumpConfigurationAsync().ConfigureAwait(false);
                 }
                 finally
                 {
@@ -1193,6 +1217,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
                         removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+
+                        // squash configuration
+                        token.ThrowIfCancellationRequested();
+                        await DumpConfigurationAsync().ConfigureAwait(false);
                     }
                     finally
                     {
@@ -1332,24 +1360,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <seealso cref="Commands.CommandInterpreter"/>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new();
 
-        private ValueTask ApplyCoreAsync(LogEntry entry)
+        private ValueTask ApplyCoreAsync(LogEntry entry) => entry.CommandId switch
         {
-            var handler = MembershipTracker;
-            if (handler is null)
-                goto exit;
-
-            // skip special log entry from the log to avoid interpreting issues
-            switch (entry.CommandId)
-            {
-                case IRaftLogEntry.AddServerCommandId:
-                    return UpdateMembershipAsync(entry, true, handler, memberListStorage, bufferManager.BufferAllocator);
-                case IRaftLogEntry.RemoveServerCommandId:
-                    return UpdateMembershipAsync(entry, false, handler, memberListStorage, bufferManager.BufferAllocator);
-            }
-
-        exit:
-            return ApplyAsync(entry);
-        }
+            IRaftLogEntry.AddMemberCommandId => membershipInterpreter.RunningTimestamp < entry.Timestamp ? AddMemberAsync(entry) : new ValueTask(),
+            IRaftLogEntry.RemoveMemberCommandId => membershipInterpreter.RunningTimestamp < entry.Timestamp ? RemoveMemberAsync(entry) : new ValueTask(),
+            _ => entry.IsEmpty ? new() : ApplyAsync(entry), // skip empty log entry
+        };
 
         /// <summary>
         /// Flushes the underlying data storage.
@@ -1365,7 +1381,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (TryGetPartition(startIndex, ref partition))
                 {
                     var entry = partition.Read(in session, startIndex);
-                    await ApplyAsync(entry).ConfigureAwait(false);
+                    await ApplyCoreAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
 
                     // Remove log entry from the cache according to eviction policy
@@ -1404,14 +1420,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession();
             try
             {
+                // 0. Load configuration
+                if (membershipStorage.Length > 0 && membershipInterpreter.Count == 0)
+                    await membershipInterpreter.DeserializeAsync(membershipStorage, token).ConfigureAwait(false);
+
                 LogEntry entry;
                 long startIndex;
 
                 // 1. Apply snapshot if it not empty
                 if (!snapshot.IsEmpty)
                 {
-                    entry = await snapshot.ReadAsync(in session, token).ConfigureAwait(false);
-                    await ApplyAsync(entry).ConfigureAwait(false);
+                    entry = await snapshot.ReadAsync(in session, null, token).ConfigureAwait(false);
+                    await ApplyCoreAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
                     startIndex = snapshot.Index;
                 }
@@ -1537,7 +1557,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 commitEvent.Dispose();
                 syncRoot.Dispose();
                 snapshot.Dispose();
-                memberListStorage.Dispose();
+
+                membershipInterpreter.Dispose();
+                membershipStorage.Dispose();
             }
 
             base.Dispose(disposing);
@@ -1558,7 +1580,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent.Dispose();
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
-            await memberListStorage.DisposeAsync().ConfigureAwait(false);
+
+            membershipInterpreter.Dispose();
+            await membershipStorage.DisposeAsync().ConfigureAwait(false);
         }
 
         /// <summary>

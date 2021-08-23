@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
@@ -14,6 +15,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
+    using Membership;
     using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
@@ -88,6 +90,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var result = new Memory<byte>(new byte[sizeof(long)]);
                 WriteInt64LittleEndian(result.Span, value);
                 return result;
+            }
+        }
+
+        private sealed class ClusterMembershipInterpreter : Dictionary<ClusterMemberId, string>, IClusterConfigurationStorage.IConfigurationInterpreter
+        {
+            internal static Encoding DefaultEncoding => Encoding.UTF8;
+
+            public ValueTask AddMemberAsync(ClusterMemberId id, ReadOnlyMemory<byte> address)
+            {
+                Add(id, DefaultEncoding.GetString(address.Span));
+                return new();
+            }
+
+            public ValueTask RemoveMemberAsync(ClusterMemberId id)
+            {
+                Remove(id);
+                return new();
+            }
+
+            public async ValueTask LoadAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token)
+            {
+                Clear();
+
+                await foreach (var (id, address) in members)
+                {
+                    await AddMemberAsync(id, address);
+                    token.ThrowIfCancellationRequested();
+                }
             }
         }
 
@@ -792,6 +822,80 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             manager.Release(PersistentState.LockType.StrongReadLock);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task ConfigurationManagement(bool useCaching)
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            IClusterConfigurationStorage state = new TestAuditTrail(dir, useCaching);
+            var tracker = new ClusterMembershipInterpreter();
+            state.ConfigurationInterpreter = tracker;
+            await state.LoadConfigurationAsync();
+
+            // generate IDs
+            var random = new Random();
+            var id1 = new ClusterMemberId(random);
+            var id2 = new ClusterMemberId(random);
+            var id3 = new ClusterMemberId(random);
+            var id4 = new ClusterMemberId(random);
+            var id5 = new ClusterMemberId(random);
+
+            // add members
+            await state.AppendAsync(new AddMemberLogEntry(id1, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address1"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id2, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address2"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id3, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address3"), state.Term));
+            await state.CommitAsync();
+
+            Equal("address1", tracker[id1]);
+            Equal("address2", tracker[id2]);
+            Equal("address3", tracker[id3]);
+
+            await state.AppendAsync(new AddMemberLogEntry(id4, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address4"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id5, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address5"), state.Term));
+            await state.CommitAsync();
+
+            Equal("address4", tracker[id4]);
+            Equal("address5", tracker[id5]);
+
+            // WAL should be compacted so obtain snapshot and check its attached config
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, token) =>
+            {
+                NotNull(snapshotIndex);
+                True(entries[0].IsSnapshot);
+                True(entries[0].TryGetClusterConfiguration(out var config));
+                True(config.Length > 0);
+                config.Dispose();
+                return default;
+            };
+
+            await state.ReadAsync(checker, 0, 1);
+
+            // remove members
+            await state.AppendAsync(new RemoveMemberLogEntry(id2, state.Term));
+            await state.AppendAsync(new RemoveMemberLogEntry(id4, state.Term));
+            await state.CommitAsync();
+
+            DoesNotContain(id2, tracker.Keys);
+            DoesNotContain(id4, tracker.Keys);
+
+            ((IDisposable)state).Dispose();
+
+            // ensure that configuration is persisted
+            tracker.Clear();
+            state = new TestAuditTrail(dir, useCaching);
+            state.ConfigurationInterpreter = tracker;
+            await state.LoadConfigurationAsync();
+
+            DoesNotContain(id2, tracker.Keys);
+            DoesNotContain(id4, tracker.Keys);
+            Equal("address1", tracker[id1]);
+            Equal("address3", tracker[id3]);
+            Equal("address5", tracker[id5]);
+
+            ((IDisposable)state).Dispose();
         }
 
 #if !NETCOREAPP3_1

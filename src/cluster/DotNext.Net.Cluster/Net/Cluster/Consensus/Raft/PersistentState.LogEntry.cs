@@ -27,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
+            private readonly ISupplier<MemoryOwner<byte>>? configurationProvider;
 
             // if negative then it's a snapshot index because |snapshotIndex| > 0
             private readonly long index;
@@ -38,6 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = cachedContent;
                 buffer = sharedBuffer;
                 this.index = index;
+                configurationProvider = null;
             }
 
             // for regular log entry cached in memory
@@ -48,16 +50,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = null;
                 buffer = cachedContent.Memory;
                 this.index = index;
+                configurationProvider = null;
             }
 
             // for snapshot
-            internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
+            internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in SnapshotMetadata metadata, ISupplier<MemoryOwner<byte>>? configurationProvider = null)
             {
                 Debug.Assert(metadata.Index > 0L);
+
                 this.metadata = metadata.RecordMetadata;
-                content = cachedContent;
+                if (metadata.RecordMetadata.Length > 0L)
+                {
+                    content = cachedContent;
+                    buffer = sharedBuffer;
+                }
+                else
+                {
+                    content = null;
+                    buffer = Memory<byte>.Empty;
+                }
+
                 buffer = sharedBuffer;
                 index = -metadata.Index;
+                this.configurationProvider = configurationProvider;
             }
 
             internal static LogEntry Initial => new();
@@ -71,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal bool IsBuffered => content is null && !buffer.IsEmpty;
+            internal bool IsBuffered => content is null;
 
             internal long Position => metadata.Offset;
 
@@ -137,6 +152,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets timestamp of this log entry.
             /// </summary>
             public DateTimeOffset Timestamp => new(metadata.Timestamp, TimeSpan.Zero);
+
+            /// <inheritdoc/>
+            bool IRaftLogEntry.TryGetClusterConfiguration(out MemoryOwner<byte> configuration)
+            {
+                if (configurationProvider is not null)
+                {
+                    configuration = configurationProvider.Invoke();
+                    return !configuration.IsEmpty;
+                }
+
+                configuration = default;
+                return false;
+            }
 
             /// <inheritdoc/>
             public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
