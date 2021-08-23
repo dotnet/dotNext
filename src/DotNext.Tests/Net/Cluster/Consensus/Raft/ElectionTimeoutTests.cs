@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var timeout = new ElectionTimeout(10, 20);
             Equal(10, timeout.LowerValue);
             Equal(20, timeout.UpperValue);
-            True(timeout.RandomTimeout().IsBetween(10, 20, BoundType.Closed));
+            True(timeout.RandomTimeout(new Random()).IsBetween(10, 20, BoundType.Closed));
         }
 
         [Fact]
