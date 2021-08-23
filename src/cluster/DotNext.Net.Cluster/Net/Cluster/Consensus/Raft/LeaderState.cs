@@ -41,15 +41,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
-            var timeStamp = Timestamp.Current;
+            var start = Timestamp.Current;
             long commitIndex = auditTrail.GetLastIndex(true),
                 currentIndex = auditTrail.GetLastIndex(false),
                 term = currentTerm,
                 minPrecedingIndex = 0L;
 
+            var leaseCounter = 0;
+
             // send heartbeat in parallel
             foreach (var member in stateMachine.Members)
             {
+                leaseCounter += 1;
+
                 if (member.IsRemote)
                 {
                     long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm;
@@ -69,6 +73,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
                 precedingTermCache.RemoveHead(minPrecedingIndex);
 
+            leaseCounter = (leaseCounter / 2) + 1;
+
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
             foreach (var task in taskBuffer)
             {
@@ -76,8 +82,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var result = await task.ConfigureAwait(false);
                     term = Math.Max(term, result.Term);
-                    quorum += 1;
-                    commitQuorum += result.Value ? 1 : -1;
+                    quorum++;
+
+                    if (result.Value)
+                    {
+                        if (--leaseCounter == 0)
+                            Timestamp.VolatileWrite(ref replicatedAt, start + maxLease); // renew lease
+
+                        commitQuorum++;
+                    }
+                    else
+                    {
+                        commitQuorum--;
+                    }
                 }
                 catch (MemberUnavailableException)
                 {
@@ -87,7 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 catch (OperationCanceledException)
                 {
                     // leading was canceled
-                    Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
+                    Metrics?.ReportBroadcastTime(start.Elapsed);
                     return false;
                 }
                 catch (Exception e)
@@ -96,14 +113,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
+            Metrics?.ReportBroadcastTime(start.Elapsed);
 
             // majority of nodes accept entries with a least one entry from the current term
             if (commitQuorum > 0)
             {
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
-                Timestamp.VolatileWrite(ref replicatedAt, Timestamp.Current); // renew lease
                 goto check_term;
             }
 
@@ -154,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         bool ILeaderLease.IsExpired
-            => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt).Elapsed > maxLease;
+            => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt) < Timestamp.Current;
 
         internal override Task StopAsync()
         {
