@@ -97,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot = new(configuration);
             evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
             membershipInterpreter = new(bufferManager.BufferAllocator);
-            membershipStorage = new(Path.Combine(location.FullName, MembershipStorageFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous);
+            membershipStorage = new(Path.Combine(location.FullName, MembershipStorageFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous);
 
             var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
