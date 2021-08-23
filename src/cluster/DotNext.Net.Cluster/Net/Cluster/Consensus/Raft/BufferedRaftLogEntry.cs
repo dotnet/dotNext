@@ -37,6 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly int commandId;
         private readonly byte flags;
 
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
         private BufferedRaftLogEntry(string fileName, int bufferSize, long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
@@ -46,6 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         }
 
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
         private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
@@ -55,6 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             content = file;
         }
 
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
         private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;
@@ -64,6 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             content = buffer;
         }
 
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
         private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
         {
             Term = term;

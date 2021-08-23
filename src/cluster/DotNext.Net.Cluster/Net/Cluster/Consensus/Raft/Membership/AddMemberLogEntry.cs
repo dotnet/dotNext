@@ -58,6 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             return false;
         }
 
+        /// <inheritdoc />
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             using var serializedId = memberId.Bufferize();

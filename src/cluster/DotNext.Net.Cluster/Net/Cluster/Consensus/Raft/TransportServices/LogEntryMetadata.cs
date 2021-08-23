@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
@@ -17,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private readonly byte flags;
         private readonly int identifier;
 
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
         private LogEntryMetadata(long term, DateTimeOffset timestamp, bool isSnapshot, int? commandId, long? length)
         {
             Term = term;

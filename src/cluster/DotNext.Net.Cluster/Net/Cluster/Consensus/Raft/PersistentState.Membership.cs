@@ -72,6 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             private static readonly string[] TimestampFormats = { "O" };
+
             private static Encoding DefaultEncoding => Encoding.UTF8;
 
             private readonly MemoryAllocator<byte>? allocator;

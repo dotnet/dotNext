@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Gets size of this type, in bytes.
         /// </summary>
-        public static int Size => 16 + sizeof(int) * 3;
+        public static int Size => 16 + (sizeof(int) * 3);
 
         private const string AddressSerData = "A";
         private const string PortSerData = "P";
