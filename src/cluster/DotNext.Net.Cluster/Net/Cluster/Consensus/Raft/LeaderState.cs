@@ -47,12 +47,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 term = currentTerm,
                 minPrecedingIndex = 0L;
 
-            var leaseCounter = 0;
+            var leaseRenewalThreshold = 0;
 
             // send heartbeat in parallel
             foreach (var member in stateMachine.Members)
             {
-                leaseCounter += 1;
+                leaseRenewalThreshold++;
 
                 if (member.IsRemote)
                 {
@@ -73,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
                 precedingTermCache.RemoveHead(minPrecedingIndex);
 
-            leaseCounter = (leaseCounter / 2) + 1;
+            leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
 
             int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
             foreach (var task in taskBuffer)
@@ -86,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                     if (result.Value)
                     {
-                        if (--leaseCounter == 0)
+                        if (--leaseRenewalThreshold == 0)
                             Timestamp.VolatileWrite(ref replicatedAt, start + maxLease); // renew lease
 
                         commitQuorum++;
