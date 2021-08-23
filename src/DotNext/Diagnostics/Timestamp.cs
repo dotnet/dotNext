@@ -27,6 +27,9 @@ namespace DotNext.Diagnostics
         private static long ToTicks(double duration)
             => unchecked((long)(TickFrequency * duration));
 
+        private static long FromTimeSpan(TimeSpan value)
+            => unchecked((long)(value.Ticks / TickFrequency));
+
         /// <summary>
         /// Gets <see cref="TimeSpan"/> representing this timestamp.
         /// </summary>
@@ -123,6 +126,32 @@ namespace DotNext.Diagnostics
         /// <param name="second">The second timestamp to compare.</param>
         /// <returns><see langword="true"/> if <paramref name="first"/> is less than or equal to <paramref name="second"/>.</returns>
         public static bool operator <=(Timestamp first, Timestamp second) => first.ticks <= second.ticks;
+
+        /// <summary>
+        /// Adds the specified duration to the timestamp.
+        /// </summary>
+        /// <param name="x">The timestamp value.</param>
+        /// <param name="y">The delta.</param>
+        /// <returns>The modified timestamp.</returns>
+        /// <exception cref="OverflowException"><paramref name="y"/> is too large.</exception>
+        public static Timestamp operator +(Timestamp x, TimeSpan y)
+        {
+            var ticks = checked(x.ticks + FromTimeSpan(y));
+            return ticks >= 0L ? new(ticks) : throw new OverflowException();
+        }
+
+        /// <summary>
+        /// Subtracts the specified duration from the timestamp.
+        /// </summary>
+        /// <param name="x">The timestamp value.</param>
+        /// <param name="y">The delta.</param>
+        /// <returns>The modified timestamp.</returns>
+        /// <exception cref="OverflowException"><paramref name="y"/> is too large.</exception>
+        public static Timestamp operator -(Timestamp x, TimeSpan y)
+        {
+            var ticks = checked(x.ticks - FromTimeSpan(y));
+            return ticks >= 0L ? new(ticks) : throw new OverflowException();
+        }
 
         /// <summary>
         /// Reads the timestamp and prevents the processor from reordering memory operations.
