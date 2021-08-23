@@ -276,7 +276,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var handler = ConfigurationInterpreter;
             if (handler is not null)
-                await handler.LoadAsync(membershipInterpreter, token).ConfigureAwait(false);
+                await handler.RefreshAsync(membershipInterpreter, token).ConfigureAwait(false);
         }
     }
 }

@@ -32,12 +32,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             ValueTask RemoveMemberAsync(ClusterMemberId id);
 
             /// <summary>
-            /// Loads a list of cluster members.
+            /// Reloads a list of cluster members.
             /// </summary>
             /// <param name="members">A collection of cluster members.</param>
             /// <param name="token">The token that can be used to cancel the operation.</param>
             /// <returns>The task representing asynchronous result.</returns>
-            ValueTask LoadAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token = default);
+            ValueTask RefreshAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token = default);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         IConfigurationInterpreter? ConfigurationInterpreter { get; set; }
 
         /// <summary>
-        /// Restores information about all cluster members and calls <see cref="IConfigurationInterpreter.LoadAsync(IAsyncEnumerable{KeyValuePair{ClusterMemberId, ReadOnlyMemory{byte}}}, CancellationToken)"/>
+        /// Restores information about all cluster members and calls <see cref="IConfigurationInterpreter.RefreshAsync(IAsyncEnumerable{KeyValuePair{ClusterMemberId, ReadOnlyMemory{byte}}}, CancellationToken)"/>
         /// method.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>

@@ -415,16 +415,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             // 0. Install configuration when available
             if (snapshot.TryGetClusterConfiguration(out var configuration))
-            {
-                using (configuration)
-                {
-                    membershipInterpreter.Clear();
-                    membershipInterpreter.Reload(configuration.Memory);
-
-                    await membershipStorage.WriteAsync(configuration.Memory).ConfigureAwait(false);
-                    await membershipStorage.FlushAsync().ConfigureAwait(false);
-                }
-            }
+                await InstallConfigurationAsync(configuration).ConfigureAwait(false);
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
@@ -485,6 +476,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var result = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
                 result.Initialize();
                 return result;
+            }
+
+            async ValueTask InstallConfigurationAsync(MemoryOwner<byte> configuration)
+            {
+                using (configuration)
+                {
+                    // reload in-memory cache
+                    membershipInterpreter.Clear();
+                    membershipInterpreter.Reload(configuration.Memory);
+
+                    // persist configuration
+                    await membershipStorage.WriteAsync(configuration.Memory).ConfigureAwait(false);
+                    await membershipStorage.FlushAsync().ConfigureAwait(false);
+                }
+
+                var interpreter = ConfigurationInterpreter;
+                if (interpreter is not null)
+                    await interpreter.RefreshAsync(membershipInterpreter).ConfigureAwait(false);
             }
         }
 
@@ -1266,7 +1275,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 SnapshotBuilder? builder;
                 if (upperBoundIndex > 0L && (builder = CreateSnapshotBuilder()) is not null)
                 {
-                    await Task.Yield();
                     var session = sessionManager.OpenSession();
                     try
                     {
@@ -1301,7 +1309,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                     var compactionIndex = Math.Min(state.CommitIndex, snapshot.Index + count);
                     state.CommitIndex = commitIndex;
-                    var compaction = ForceIncrementalCompactionAsync(compactionIndex, token);
+                    var compaction = Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token));
                     try
                     {
                         await ApplyAsync(session, token).ConfigureAwait(false);

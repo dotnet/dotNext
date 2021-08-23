@@ -14,6 +14,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
     using Membership;
     using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
@@ -72,6 +73,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry
         {
+            private byte[] configuration;
+
             internal Int64LogEntry(long value, bool snapshot = false)
                 : base(ToMemory(value))
             {
@@ -79,11 +82,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 IsSnapshot = snapshot;
             }
 
+            internal byte[] Configuration
+            {
+                set => configuration = value;
+            }
+
             public long Term { get; set; }
 
             public DateTimeOffset Timestamp { get; }
 
             public bool IsSnapshot { get; }
+
+            bool IRaftLogEntry.TryGetClusterConfiguration(out MemoryOwner<byte> configuration)
+            {
+                if (this.configuration is not null)
+                {
+                    configuration = new(this.configuration);
+                    return true;
+                }
+
+                configuration = default;
+                return false;
+            }
 
             private static ReadOnlyMemory<byte> ToMemory(long value)
             {
@@ -109,10 +129,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new();
             }
 
-            public async ValueTask LoadAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token)
+            public async ValueTask RefreshAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token)
             {
-                Clear();
-
                 await foreach (var (id, address) in members)
                 {
                     await AddMemberAsync(id, address);
@@ -896,6 +914,61 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal("address5", tracker[id5]);
 
             ((IDisposable)state).Dispose();
+        }
+
+        [Fact]
+        public static async Task InstallConfiguration()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            IClusterConfigurationStorage state = new TestAuditTrail(dir, false);
+            var tracker = new ClusterMembershipInterpreter();
+            state.ConfigurationInterpreter = tracker;
+            await state.LoadConfigurationAsync();
+
+            // generate IDs
+            var random = new Random();
+            var id1 = new ClusterMemberId(random);
+            var id2 = new ClusterMemberId(random);
+            var id3 = new ClusterMemberId(random);
+            var id4 = new ClusterMemberId(random);
+            var id5 = new ClusterMemberId(random);
+
+            // add members
+            await state.AppendAsync(new AddMemberLogEntry(id1, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address1"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id2, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address2"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id3, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address3"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id4, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address4"), state.Term));
+            await state.AppendAsync(new AddMemberLogEntry(id5, ClusterMembershipInterpreter.DefaultEncoding.GetBytes("address5"), state.Term));
+            await state.CommitAsync();
+
+            // WAL should be compacted so obtain snapshot and check its attached config
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<MemoryOwner<byte>>> checker = (entries, snapshotIndex, token) =>
+            {
+                NotNull(snapshotIndex);
+                True(entries[0].IsSnapshot);
+                True(entries[0].TryGetClusterConfiguration(out var config));
+                return new(config);
+            };
+
+            Int64LogEntry snapshot;
+            using (var configuration = await state.ReadAsync(checker, 0, 1))
+                snapshot = new(42L, true) { Configuration = configuration.Memory.ToArray() };
+
+            ((IDisposable)state).Dispose();
+
+            dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            state = new TestAuditTrail(dir, false);
+            tracker.Clear();
+            state.ConfigurationInterpreter = tracker;
+
+            // install snapshot with configuration
+            await state.AppendAsync(snapshot, 1L);
+
+            Equal("address1", tracker[id1]);
+            Equal("address2", tracker[id2]);
+            Equal("address3", tracker[id3]);
+            Equal("address4", tracker[id4]);
+            Equal("address5", tracker[id5]);
         }
 
 #if !NETCOREAPP3_1
