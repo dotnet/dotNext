@@ -77,13 +77,15 @@ Release Date: 08-XX-2021
 * Added `DotNext.IO.SequenceBinaryReader.Read(Span<byte>)` method
 * Optimized performance of some `ReadXXX` methods of `DotNext.IO.SequenceBinaryReader` type
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.3.0">DotNext.Net.Cluster 3.3.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.4.0">DotNext.Net.Cluster 3.4.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
 * Introduced transport-independent implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol
 * Fixed compatibility of WAL Interpreter Framework with TCP/UDP transports
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.4.0">DotNext.AspNetCore.Cluster 3.4.0</a>
-* Added configurable HTTP protocol version selection policy
+* Added configurable HTTP protocol version selection policy (.NET 5 or later)
+* Added support of leader lease in Raft implementation for optimized read operations
+* Added `IRaftCluster.LeadershipToken` that allows to track leadership transfer
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
