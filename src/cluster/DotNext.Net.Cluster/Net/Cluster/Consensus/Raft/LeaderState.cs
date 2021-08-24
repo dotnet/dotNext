@@ -17,6 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
+        internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
         // key is log entry index, value is log entry term
         private readonly TermCache precedingTermCache;
@@ -24,7 +25,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Timestamp replicatedAt;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
-        internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term, TimeSpan maxLease)
             : base(stateMachine)

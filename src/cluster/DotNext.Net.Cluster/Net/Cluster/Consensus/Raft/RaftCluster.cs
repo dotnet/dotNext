@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -11,12 +9,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Missing = System.Reflection.Missing;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
     using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
+    using Sequence = Collections.Generic.Sequence;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -26,48 +26,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
         where TMember : class, IRaftClusterMember, IDisposable
     {
-        private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
-
-        internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
-        {
-        }
-
-        private sealed class EmptyMemberCollection : ReadOnlyCollection<TMember>, IMemberCollection
-        {
-            internal EmptyMemberCollection()
-                : base(Array.Empty<TMember>())
-            {
-            }
-        }
-
-        private sealed class MemberCollection : LinkedList<TMember>, IMemberCollection
-        {
-            internal MemberCollection()
-            {
-            }
-
-            internal MemberCollection(IEnumerable<TMember> members)
-                : base(members)
-            {
-            }
-        }
-
         /// <summary>
         /// Represents cluster member.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
         protected readonly ref struct MemberHolder
         {
-            private readonly LinkedListNode<TMember>? node;
+            private readonly Span<MemberList> members;
+            private readonly ClusterMemberId id;
 
-            internal MemberHolder(LinkedListNode<TMember>? node)
-                => this.node = node;
+            internal MemberHolder(ref MemberList list, ClusterMemberId id)
+            {
+                if (Unsafe.IsNullRef(ref list))
+                {
+                    members = default;
+                    this.id = default;
+                }
+                else
+                {
+                    members = MemoryMarshal.CreateSpan(ref list, 1);
+                    this.id = id;
+                }
+            }
 
             /// <summary>
             /// Gets actual cluster member.
             /// </summary>
             /// <exception cref="InvalidOperationException">The member is already removed.</exception>
-            public TMember Member => node?.Value ?? throw new InvalidOperationException();
+            public TMember Member
+            {
+                get
+                {
+                    ref var list = ref MemoryMarshal.GetReference(members);
+                    return !Unsafe.IsNullRef(ref list) && list.TryGetValue(id, out var result) ? result : throw new InvalidOperationException();
+                }
+            }
 
             /// <summary>
             /// Removes the current member from the list.
@@ -79,16 +72,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="InvalidOperationException">Attempt to remove local node; or node is already removed.</exception>
             public TMember Remove()
             {
-                if (node is null || node.Value is null || node.List is null)
+                ref var list = ref MemoryMarshal.GetReference(members);
+                if (Unsafe.IsNullRef(ref list))
                     throw new InvalidOperationException();
 
-                if (!node.Value.IsRemote)
-                    throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
+                if (MemberList.TryRemove(ref list, id, out var member) && member.IsRemote)
+                    return member;
 
-                node.List.Remove(node);
-                var member = node.Value;
-                node.Value = null!;
-                return member;
+                throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
             }
 
             /// <summary>
@@ -108,54 +99,65 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Represents enumerator over cluster members.
             /// </summary>
             [StructLayout(LayoutKind.Auto)]
-            public ref struct Enumerator
+            public readonly ref struct Enumerator
             {
-                private LinkedListNode<TMember>? current, backlog;
+                private readonly Span<MemberList> members;
+                private readonly IEnumerator<ClusterMemberId> enumerator;
 
-                internal Enumerator(LinkedList<TMember> members)
+                internal Enumerator(ref MemberList list)
                 {
-                    current = null;
-                    backlog = members.First;
+                    if (Unsafe.IsNullRef(ref list))
+                    {
+                        members = default;
+                        enumerator = Sequence.GetEmptyEnumerator<ClusterMemberId>();
+                    }
+                    else
+                    {
+                        members = MemoryMarshal.CreateSpan(ref list, 1);
+                        enumerator = list.Keys.GetEnumerator();
+                    }
                 }
 
                 /// <summary>
                 /// Adjusts position of this enumerator.
                 /// </summary>
                 /// <returns><see langword="true"/> if enumerator moved to the next member successfully; otherwise, <see langword="false"/>.</returns>
-                public bool MoveNext()
-                {
-                    current = backlog;
-                    backlog = backlog?.Next;
-                    return current is not null;
-                }
+                public bool MoveNext() => enumerator.MoveNext();
 
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public readonly MemberHolder Current => new(current);
+                public readonly MemberHolder Current => new(ref MemoryMarshal.GetReference(members), enumerator.Current);
+
+                /// <summary>
+                /// Releases all resources associated with this enumerator.
+                /// </summary>
+                public void Dispose() => enumerator.Dispose();
             }
 
-            private readonly MemberCollection members;
+            private readonly Span<MemberList> members;
 
-            internal MemberCollectionBuilder(IEnumerable<TMember> members)
-                => this.members = new MemberCollection(members);
-
-            internal MemberCollectionBuilder(out IMemberCollection members)
-                => members = this.members = new MemberCollection();
+            internal MemberCollectionBuilder(ref MemberList list)
+            {
+                members = MemoryMarshal.CreateSpan(ref list, 1);
+            }
 
             /// <summary>
             /// Adds new cluster member.
             /// </summary>
             /// <param name="member">A new member to be added into in-memory collection.</param>
-            public void Add(TMember member) => members.AddLast(member);
+            public void Add(TMember member)
+            {
+                ref var list = ref MemoryMarshal.GetReference(members);
+                if (!Unsafe.IsNullRef(ref list))
+                    list = list.Add(member);
+            }
 
             /// <summary>
             /// Returns enumerator over cluster members.
             /// </summary>
             /// <returns>The enumerator over cluster members.</returns>
-            public Enumerator GetEnumerator() => new(members);
-
-            internal IMemberCollection Build() => members;
+            public Enumerator GetEnumerator() => new(ref MemoryMarshal.GetReference(members));
         }
 
         /// <summary>
@@ -178,7 +180,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold, clockDriftBound;
         private readonly Random random;
-        private volatile IMemberCollection members;
         private bool standbyNode;
 
         private AsyncLock transitionSync;  // used to synchronize state transitions
@@ -201,8 +202,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             random = new();
             electionTimeout = electionTimeoutProvider.RandomTimeout(random);
             allowPartitioning = config.Partitioning;
-            members = new MemberCollectionBuilder(out var collection);
-            this.members = collection;
+            this.members = MemberList.Empty;
+            members = new MemberCollectionBuilder(ref this.members);
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
             LifecycleToken = transitionCancellation.Token;
@@ -219,6 +220,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         [CLSCompliant(false)]
         protected virtual ILogger Logger => NullLogger.Instance;
+
+        /// <summary>
+        /// Gets information the current member.
+        /// </summary>
+        protected virtual TMember? LocalMember => FindMember(IsLocalMember);
 
         /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
@@ -268,13 +274,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected CancellationToken LifecycleToken { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
 
-        private void ChangeMembers<T>(MemberCollectionMutator<T> mutator, T arg)
-        {
-            var members = new MemberCollectionBuilder(this.members);
-            mutator(in members, arg);
-            this.members = members.Build();
-        }
-
         /// <summary>
         /// Modifies collection of cluster members.
         /// </summary>
@@ -288,7 +287,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var tokenSource = token.LinkTo(LifecycleToken);
             using var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (transitionLock)
-                ChangeMembers(mutator, arg);
+                ChangeMembers();
+
+            void ChangeMembers()
+            {
+                var copy = members;
+                mutator(new MemberCollectionBuilder(ref copy), arg);
+                members = copy;
+            }
         }
 
         /// <summary>
@@ -314,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets members of Raft-based cluster.
         /// </summary>
         /// <returns>A collection of cluster member.</returns>
-        public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
+        public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : members;
 
         /// <inheritdoc />
         IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
@@ -409,7 +415,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task CancelPendingRequestsAsync()
         {
             ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (var member in members)
+            foreach (var member in members.Values)
                 tasks.Add(member.CancelPendingRequestsAsync().AsTask());
 
             try
@@ -477,50 +483,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             Logger.DowngradedToFollowerState();
-        }
-
-        /// <summary>
-        /// Finds cluster member using predicate.
-        /// </summary>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
-        protected TMember? FindMember(Predicate<TMember> criteria)
-            => members.FirstOrDefault(criteria.AsFunc());
-
-        /// <summary>
-        /// Finds cluster member asynchronously using predicate.
-        /// </summary>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected async ValueTask<TMember?> FindMemberAsync(Func<TMember, CancellationToken, ValueTask<bool>> criteria, CancellationToken token)
-        {
-            foreach (var candidate in members)
-            {
-                if (await criteria(candidate, token).ConfigureAwait(false))
-                    return candidate;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Finds cluster member using predicate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the predicate parameter.</typeparam>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <param name="arg">The argument to be passed to the matching function.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if member doesn't exist.</returns>
-        protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
-        {
-            foreach (var member in members)
-            {
-                if (criteria(member, arg))
-                    return member;
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -827,8 +789,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (readyForTransition)
                 {
                     followerState.Dispose();
-                    var localMember = FindMember(IsLocalMember);
-                    await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     // vote for self
+                    await auditTrail.UpdateVotedForAsync(LocalMember).ConfigureAwait(false);     // vote for self
                     state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
                     Metrics?.MovedToCandidateState();
                     Logger.TransitionToCandidateStateCompleted();
@@ -911,7 +872,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private TMember? TryGetPeer(EndPoint peer)
         {
-            foreach (var member in members)
+            foreach (var member in members.Values)
             {
                 if (Equals(member.EndPoint, peer))
                     return member;
@@ -928,10 +889,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void Cleanup()
         {
-            ICollection<TMember> members = Interlocked.Exchange(ref this.members, EmptyCollection);
-            Dispose(members);
-            if (members.Count > 0)
-                members.Clear();
+            Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
             transitionCancellation.Dispose();
             transitionSync.Dispose();
             leader = null;

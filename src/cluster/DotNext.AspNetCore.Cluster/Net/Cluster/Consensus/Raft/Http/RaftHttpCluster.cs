@@ -98,6 +98,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ISubscriber? IMessageBus.Leader => Leader;
 
+        protected sealed override RaftClusterMember? LocalMember => localMember.TryGet(out var id) && TryGetMember(id, out var result) ? result : null;
+
         private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
