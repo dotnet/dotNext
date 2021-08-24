@@ -43,6 +43,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));
         }
 
+        /// <inheritdoc />
+        protected sealed override ClusterMemberId? LocalMember => localMemberId;
+
         /// <summary>
         /// Starts serving local member.
         /// </summary>
