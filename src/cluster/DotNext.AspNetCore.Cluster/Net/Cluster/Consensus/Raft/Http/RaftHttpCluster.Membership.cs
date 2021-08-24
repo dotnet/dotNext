@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected abstract ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync();
 
+        [Obsolete]
         private async ValueTask<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
         {
             var selector = configurator?.LocalMemberSelector;
@@ -33,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
         }
 
-        // TODO: ISet<Uri> should be replaced with IReadOnlySet<Uri> in .NET 6
+        [Obsolete]
         private void ChangeMembers(in MemberCollectionBuilder builder, ISet<Uri> members)
         {
             var existingMembers = new HashSet<Uri>();
@@ -69,6 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             existingMembers.Clear();
         }
 
+        [Obsolete]
         private async Task DiscoverMembersAsync(IMemberDiscoveryService discovery, CancellationToken token)
         {
             // cache delegate instance to avoid allocations

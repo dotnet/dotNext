@@ -37,5 +37,10 @@
         /// represents standby node which will never become a leader.
         /// </summary>
         bool Standby { get; }
+
+        /// <summary>
+        /// Gets bootstrap mode.
+        /// </summary>
+        ClusterMemberBootstrap BootstrapMode => ClusterMemberBootstrap.Custom; // TODO: Remove default value in .NEXT 4
     }
 }

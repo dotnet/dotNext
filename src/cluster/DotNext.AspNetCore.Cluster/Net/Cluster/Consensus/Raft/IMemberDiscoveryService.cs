@@ -8,10 +8,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Allows to override discovery logic of cluster members.
     /// </summary>
+    [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
     public interface IMemberDiscoveryService
     {
-        // TODO: IReadOnlyCollection<Uri> should be replaced with IReadOnlySet<Uri> in .NET 6
-
         /// <summary>
         /// Discover members asynchronously.
         /// </summary>

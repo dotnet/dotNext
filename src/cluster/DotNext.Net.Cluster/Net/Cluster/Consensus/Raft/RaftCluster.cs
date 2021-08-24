@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Missing = System.Reflection.Missing;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -30,6 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents cluster member.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
+        [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
         protected readonly ref struct MemberHolder
         {
             private readonly Span<MemberList> members;
@@ -99,6 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Represents enumerator over cluster members.
             /// </summary>
             [StructLayout(LayoutKind.Auto)]
+            [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
             public readonly ref struct Enumerator
             {
                 private readonly Span<MemberList> members;
@@ -157,23 +158,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Returns enumerator over cluster members.
             /// </summary>
             /// <returns>The enumerator over cluster members.</returns>
+            [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
             public Enumerator GetEnumerator() => new(ref MemoryMarshal.GetReference(members));
         }
-
-        /// <summary>
-        /// Represents mutator of a collection of cluster members.
-        /// </summary>
-        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        [Obsolete("Use generic version of this delegate")]
-        protected delegate void MemberCollectionMutator(in MemberCollectionBuilder members);
-
-        /// <summary>
-        /// Represents mutator of a collection of cluster members.
-        /// </summary>
-        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        /// <param name="arg">The argument to be passed to the mutator.</param>
-        /// <typeparam name="T">The type of the argument.</typeparam>
-        protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
 
         private readonly bool allowPartitioning;
         private readonly ElectionTimeout electionTimeoutProvider;
@@ -194,16 +181,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Initializes a new cluster manager for the local node.
         /// </summary>
+        /// <remarks>
+        /// Use this constructor for debugging purposes when you have a static configuration of cluster members.
+        /// </remarks>
         /// <param name="config">The configuration of the local node.</param>
         /// <param name="members">The collection of members that can be modified at construction stage.</param>
         protected RaftCluster(IClusterMemberConfiguration config, out MemberCollectionBuilder members)
+            : this(config)
+        {
+            members = new MemberCollectionBuilder(ref this.members);
+        }
+
+        /// <summary>
+        /// Initializes a new cluster manager for the local node.
+        /// </summary>
+        /// <param name="config">The configuration of the local node.</param>
+        protected RaftCluster(IClusterMemberConfiguration config)
         {
             electionTimeoutProvider = config.ElectionTimeout;
             random = new();
             electionTimeout = electionTimeoutProvider.RandomTimeout(random);
             allowPartitioning = config.Partitioning;
             this.members = MemberList.Empty;
-            members = new MemberCollectionBuilder(ref this.members);
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
             LifecycleToken = transitionCancellation.Token;
@@ -283,48 +282,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets token that can be used for all internal asynchronous operations.
         /// </summary>
         protected CancellationToken LifecycleToken { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <typeparam name="T">The type of the argument to be passed to the mutator.</typeparam>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <param name="arg">The argument to be passed to the mutator.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
-        {
-            using var tokenSource = token.LinkTo(LifecycleToken);
-            using var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (transitionLock)
-                ChangeMembers();
-
-            void ChangeMembers()
-            {
-                var copy = members;
-                mutator(new MemberCollectionBuilder(ref copy), arg);
-                members = copy;
-            }
-        }
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use generic version of this method")]
-        protected Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
-            => ChangeMembersAsync((in MemberCollectionBuilder builder, Missing arg) => mutator(in builder), Missing.Value, token);
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use generic version of this method")]
-        protected Task ChangeMembersAsync(MemberCollectionMutator mutator)
-            => ChangeMembersAsync(mutator, CancellationToken.None);
 
         /// <summary>
         /// Gets members of Raft-based cluster.
