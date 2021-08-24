@@ -18,7 +18,7 @@ namespace DotNext.Net
 
         [Theory]
         [MemberData(nameof(GetTestEndPoints))]
-        public static void SerializeDeserializeDns(EndPoint expected)
+        public static void SerializeDeserialize(EndPoint expected)
         {
             byte[] data;
             var writer = new BufferWriterSlim<byte>(32);
@@ -33,6 +33,16 @@ namespace DotNext.Net
             }
 
             var reader = IAsyncBinaryReader.Create(data);
+            Equal(expected, reader.ReadEndPoint());
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTestEndPoints))]
+        public static void BufferizeDeserialize(EndPoint expected)
+        {
+            using var buffer = expected.GetBytes();
+
+            var reader = IAsyncBinaryReader.Create(buffer.Memory);
             Equal(expected, reader.ReadEndPoint());
         }
     }

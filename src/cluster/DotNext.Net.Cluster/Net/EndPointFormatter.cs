@@ -22,7 +22,33 @@ namespace DotNext.Net
         private static Encoding HostNameEncoding => Encoding.UTF8;
 
         /// <summary>
-        /// Serializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/> to the array of bytes.
+        /// Serializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/> to the buffer.
+        /// </summary>
+        /// <param name="endPoint">The value to be serialized.</param>
+        /// <param name="allocator">The buffer allocator.</param>
+        /// <returns>The buffer containing serialized <paramref name="endPoint"/>.</returns>
+        public static MemoryOwner<byte> GetBytes(this EndPoint endPoint, MemoryAllocator<byte>? allocator = null)
+        {
+            MemoryOwner<byte> result;
+            var writer = new BufferWriterSlim<byte>(128, allocator);
+
+            try
+            {
+                WriteEndPoint(ref writer, endPoint);
+
+                if (!writer.TryDetachBuffer(out result))
+                    result = writer.WrittenSpan.Copy(allocator);
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Serializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/> to the buffer.
         /// </summary>
         /// <param name="writer">The output buffer.</param>
         /// <param name="endPoint">The value to be serialized.</param>
