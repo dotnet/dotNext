@@ -251,25 +251,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await using (entries)
             {
                 var sender = FindMember(MatchById, message.Sender);
-                if (sender is null)
+                Result<bool> result;
+                if (bufferingOptions is null)
                 {
-                    response.StatusCode = StatusCodes.Status404NotFound;
+                    result = await AppendEntriesAsync(sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
                 }
                 else
                 {
-                    Result<bool> result;
-                    if (bufferingOptions is null)
-                    {
-                        result = await AppendEntriesAsync(sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-                        result = await AppendEntriesAsync(sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
-                    }
-
-                    await message.SaveResponse(response, result, token).ConfigureAwait(false);
+                    using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
+                    result = await AppendEntriesAsync(sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
                 }
+
+                await message.SaveResponse(response, result, token).ConfigureAwait(false);
             }
         }
 

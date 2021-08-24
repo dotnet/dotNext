@@ -98,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ResignAsync(token);
 
-        private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(RaftClusterMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(RaftClusterMember? sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             Debug.Assert(bufferingOptions is not null);
@@ -110,10 +110,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
-            if (member is null)
-                return Task.FromResult(new Result<bool>(Term, false));
 
-            member.Touch();
+            member?.Touch();
             return bufferingOptions is null ?
                 AppendEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
                 BufferizeReceivedEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);

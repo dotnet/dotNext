@@ -577,7 +577,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(TMember? sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             using var tokenSource = token.LinkTo(LifecycleToken);
@@ -605,7 +605,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (commitIndex <= auditTrail.GetLastIndex(true))
                     {
                         // This node is in sync with the leader and no entries arrived
-                        if (emptySet)
+                        if (emptySet && sender is not null)
                             ReplicationCompleted?.Invoke(this, sender);
 
                         result = true;
