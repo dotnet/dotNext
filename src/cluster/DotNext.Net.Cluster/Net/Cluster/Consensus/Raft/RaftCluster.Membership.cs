@@ -118,6 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="criteria">The predicate used to find appropriate member.</param>
         /// <param name="arg">The argument to be passed to the matching function.</param>
         /// <returns>The cluster member; or <see langword="null"/> if member doesn't exist.</returns>
+        [Obsolete("Use TryGetMember method instead")]
         protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
         {
             foreach (var member in members.Values)
