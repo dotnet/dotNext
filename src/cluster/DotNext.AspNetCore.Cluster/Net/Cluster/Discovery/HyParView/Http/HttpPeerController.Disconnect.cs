@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         }
 
         private static (EndPoint, bool) DeserializeDisconnectRequest(ref SequenceBinaryReader reader)
-            => (Network.DeserializeEndPoint(ref reader), ValueTypeExtensions.ToBoolean(reader.Read<byte>()));
+            => (reader.ReadEndPoint(), ValueTypeExtensions.ToBoolean(reader.Read<byte>()));
 
         private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlyMemory<byte> buffer)
         {
@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
             try
             {
-                Network.SerializeEndPoint(localNode, ref writer);
+                writer.WriteEndPoint(localNode);
                 writer.Add(isAlive.ToByte());
 
                 if (!writer.TryDetachBuffer(out result))

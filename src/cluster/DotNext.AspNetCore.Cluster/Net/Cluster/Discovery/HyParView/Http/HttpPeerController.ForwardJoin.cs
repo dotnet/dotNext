@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         }
 
         private static (EndPoint, EndPoint, int) DeserializeForwardJoinRequest(ref SequenceBinaryReader reader)
-            => (Network.DeserializeEndPoint(ref reader), Network.DeserializeEndPoint(ref reader), reader.ReadInt32(true));
+            => (reader.ReadEndPoint(), reader.ReadEndPoint(), reader.ReadInt32(true));
 
         private static (EndPoint, EndPoint, int) DeserializeForwardJoinRequest(ReadOnlyMemory<byte> content)
         {
@@ -71,8 +71,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
             try
             {
-                Network.SerializeEndPoint(localNode, ref writer);
-                Network.SerializeEndPoint(joinedPeer, ref writer);
+                writer.WriteEndPoint(localNode);
+                writer.WriteEndPoint(joinedPeer);
                 writer.WriteInt32(timeToLive, true);
 
                 if (!writer.TryDetachBuffer(out result))

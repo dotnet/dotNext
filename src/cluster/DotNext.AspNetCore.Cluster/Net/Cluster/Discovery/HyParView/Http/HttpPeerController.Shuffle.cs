@@ -44,7 +44,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             var result = new List<EndPoint>(count);
 
             while (count-- > 0)
-                result.Add(Network.DeserializeEndPoint(ref reader));
+                result.Add(reader.ReadEndPoint());
 
             result.TrimExcess();
             return result;
@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             {
                 writer.WriteInt32(peers.Count, true);
                 foreach (var peer in peers)
-                    Network.SerializeEndPoint(peer, ref writer);
+                    writer.WriteEndPoint(peer);
 
                 if(!writer.TryDetachBuffer(out result))
                     result = writer.WrittenSpan.Copy(allocator);
@@ -116,15 +116,15 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
         private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ref SequenceBinaryReader reader)
         {
-            var sender = Network.DeserializeEndPoint(ref reader);
-            var origin = Network.DeserializeEndPoint(ref reader);
+            var sender = reader.ReadEndPoint();
+            var origin = reader.ReadEndPoint();
             var timeToLive = reader.ReadInt32(true);
 
             var count = reader.ReadInt32(true);
             var peers = new List<EndPoint>(count);
 
             while (count-- > 0)
-                peers.Add(Network.DeserializeEndPoint(ref reader));
+                peers.Add(reader.ReadEndPoint());
 
             peers.TrimExcess();
             return (sender, origin, timeToLive, peers);
@@ -161,13 +161,13 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
             try
             {
-                Network.SerializeEndPoint(localNode, ref writer);
-                Network.SerializeEndPoint(origin, ref writer);
+                writer.WriteEndPoint(localNode);
+                writer.WriteEndPoint(origin);
                 writer.WriteInt32(timeToLive, true);
 
                 writer.WriteInt32(peers.Count, true);
                 foreach (var peer in peers)
-                    Network.SerializeEndPoint(peer, ref writer);
+                    writer.WriteEndPoint(peer);
 
                 if(!writer.TryDetachBuffer(out result))
                     result = writer.WrittenSpan.Copy(allocator);

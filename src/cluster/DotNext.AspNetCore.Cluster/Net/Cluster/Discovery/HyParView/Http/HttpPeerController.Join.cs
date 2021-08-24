@@ -40,13 +40,13 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         private static EndPoint DeserializeJoinRequest(ReadOnlyMemory<byte> buffer)
         {
             var reader = IAsyncBinaryReader.Create(buffer);
-            return Network.DeserializeEndPoint(ref reader);
+            return reader.ReadEndPoint();
         }
 
         private static EndPoint DeserializeJoinRequest(ReadOnlySequence<byte> buffer, out SequencePosition position)
         {
             var reader = IAsyncBinaryReader.Create(buffer);
-            var result = Network.DeserializeEndPoint(ref reader);
+            var result = reader.ReadEndPoint();
             position = reader.Position;
             return result;
         }
@@ -67,7 +67,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
             try
             {
-                Network.SerializeEndPoint(localNode, ref writer);
+                writer.WriteEndPoint(localNode);
 
                 if (!writer.TryDetachBuffer(out result))
                     result = writer.WrittenSpan.Copy(allocator);

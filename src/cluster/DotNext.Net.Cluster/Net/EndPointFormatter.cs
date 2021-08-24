@@ -1,5 +1,5 @@
 using System;
-using System.Buffers;
+using System.ComponentModel;
 using System.Net;
 using System.Text;
 
@@ -8,15 +8,26 @@ namespace DotNext.Net
     using Buffers;
     using IO;
 
-    // EndPoint serialization engine is primarily used by HyParView and SWIM membership protocols internally
-    internal static partial class Network
+    /// <summary>
+    /// Provides methods for serialization/deserialization of <see cref="EndPoint"/> derived types.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public static class EndPointFormatter
     {
         private const int IPv6AddressSize = 16;
 
         private const byte IPEndPointPrefix = 1;
         private const byte DnsEndPointPrefix = 2;
 
-        internal static void SerializeEndPoint(EndPoint endPoint, ref BufferWriterSlim<byte> writer)
+        private static Encoding HostNameEncoding => Encoding.UTF8;
+
+        /// <summary>
+        /// Serializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/> to the array of bytes.
+        /// </summary>
+        /// <param name="writer">The output buffer.</param>
+        /// <param name="endPoint">The value to be serialized.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Unsupported type of <paramref name="endPoint"/>.</exception>
+        public static void WriteEndPoint(this ref BufferWriterSlim<byte> writer, EndPoint endPoint)
         {
             switch (endPoint)
             {
@@ -28,7 +39,7 @@ namespace DotNext.Net
                     // address bytes = N bytes
                     writer.Add(IPEndPointPrefix);
                     writer.WriteInt32(ip.Port, true);
-                    SerializeIP(ip.Address, ref writer);
+                    Serialize(ip.Address, ref writer);
                     break;
                 case DnsEndPoint dns:
                     // the format is:
@@ -38,14 +49,14 @@ namespace DotNext.Net
                     // host name = N bytes
                     writer.Add(DnsEndPointPrefix);
                     writer.WriteInt32(dns.Port, true);
-                    SerializeHost(dns.Host, ref writer);
+                    Serialize(dns.Host, ref writer);
                     break;
                 default:
-                    throw new NotSupportedException();
+                    throw new ArgumentOutOfRangeException(nameof(endPoint));
             }
         }
 
-        private static void SerializeIP(IPAddress address, ref BufferWriterSlim<byte> writer)
+        private static void Serialize(IPAddress address, ref BufferWriterSlim<byte> writer)
         {
             Span<byte> addressBytes = stackalloc byte[IPv6AddressSize];
 
@@ -57,9 +68,7 @@ namespace DotNext.Net
             writer.Advance(bytesWritten);
         }
 
-        private static Encoding HostNameEncoding => Encoding.UTF8;
-
-        private static void SerializeHost(ReadOnlySpan<char> hostName, ref BufferWriterSlim<byte> writer)
+        private static void Serialize(ReadOnlySpan<char> hostName, ref BufferWriterSlim<byte> writer)
         {
             var count = HostNameEncoding.GetByteCount(hostName);
             writer.WriteInt32(count, true);
@@ -68,7 +77,12 @@ namespace DotNext.Net
             writer.Advance(count);
         }
 
-        internal static EndPoint DeserializeEndPoint(ref SequenceBinaryReader reader) => reader.Read<byte>() switch
+        /// <summary>
+        /// Deserializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/>.
+        /// </summary>
+        /// <param name="reader">The binary reader.</param>
+        /// <returns>The deserialized network endpoint address.</returns>
+        public static EndPoint ReadEndPoint(this ref SequenceBinaryReader reader) => reader.Read<byte>() switch
         {
             IPEndPointPrefix => DeserializeIP(ref reader),
             DnsEndPointPrefix => DeserializeHost(ref reader),
