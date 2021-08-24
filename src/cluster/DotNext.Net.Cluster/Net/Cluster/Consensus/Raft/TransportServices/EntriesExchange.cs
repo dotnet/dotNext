@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipelines;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -54,11 +53,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return LogEntryMetadata.Size;
         }
 
-        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
+        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ClusterMemberId sender, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
         {
             var reader = new SpanReader<byte>(input);
 
-            remotePort = reader.ReadUInt16(true);
+            sender = new(ref reader);
             term = reader.ReadInt64(true);
             prevLogIndex = reader.ReadInt64(true);
             prevLogTerm = reader.ReadInt64(true);
@@ -70,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            writer.WriteUInt16(myPort, true);
+            sender.WriteTo(ref writer);
             writer.WriteInt64(term, true);
             writer.WriteInt64(prevLogIndex, true);
             writer.WriteInt64(prevLogTerm, true);
@@ -216,7 +215,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             writeSession = WriteEntryAsync(token);
         }
 
-        public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
             switch (headers.Type)
             {

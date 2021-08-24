@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
@@ -10,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         Task Task { get; }
 
-        ushort MyPort { set; }
+        ClusterMemberId Sender { set; }
     }
 
     internal interface IClientExchange<T> : IClientExchange
@@ -22,19 +21,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExchange<T>
     {
-        private protected ushort myPort;
+        private protected ClusterMemberId sender;
 
         private protected ClientExchange()
             : base(TaskCreationOptions.RunContinuationsAsynchronously)
         {
         }
 
-        ushort IClientExchange.MyPort
+        ClusterMemberId IClientExchange.Sender
         {
-            set => myPort = value;
+            set => sender = value;
         }
 
-        public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
+        public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token);
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
 
@@ -65,7 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected ClientExchange(long term) => currentTerm = term;
 
-        public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
+        public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
             Debug.Assert(headers.Control == FlowControl.Ack, "Unexpected response", $"Message type {headers.Type} control {headers.Control}");
             TrySetResult(IExchange.ReadResult(payload.Span));

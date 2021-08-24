@@ -1,6 +1,5 @@
 using System;
 using System.IO.Pipelines;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,20 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         internal ServerExchange(ILocalMember server, PipeOptions? options = null)
             : base(options) => this.server = server;
 
-        private static void ChangePort(ref EndPoint endPoint, ushort port)
-        {
-            switch (endPoint)
-            {
-                case IPEndPoint ip:
-                    endPoint = ip.Port == port ? ip : new IPEndPoint(ip.Address, port);
-                    break;
-                case DnsEndPoint dns:
-                    endPoint = dns.Port == port ? dns : new DnsEndPoint(dns.Host, port, dns.AddressFamily);
-                    break;
-            }
-        }
-
-        public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
             var result = new ValueTask<bool>(true);
             switch (headers.Type)
@@ -56,11 +42,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     break;
                 case MessageType.Vote:
                     state = State.VoteRequestReceived;
-                    BeginVote(payload, endpoint, token);
+                    BeginVote(payload, token);
                     break;
                 case MessageType.PreVote:
                     state = State.PreVoteRequestReceived;
-                    BeginPreVote(payload, endpoint, token);
+                    BeginPreVote(payload, token);
                     break;
                 case MessageType.Metadata:
                     if (headers.Control == FlowControl.None)
@@ -80,13 +66,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     break;
                 case MessageType.Heartbeat:
                     state = State.HeartbeatRequestReceived;
-                    BeginProcessHeartbeat(payload, endpoint, token);
+                    BeginProcessHeartbeat(payload, token);
                     break;
                 case MessageType.AppendEntries:
                     switch (state)
                     {
                         case State.Ready:
-                            BeginReceiveEntries(endpoint, payload.Span, token);
+                            BeginReceiveEntries(payload.Span, token);
                             break;
                         case State.ReadyToReceiveEntry:
                             result = BeginReceiveEntry(payload, headers.Control == FlowControl.StreamEnd, token);
@@ -105,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     {
                         case State.Ready:
                             state = State.SnapshotReceived;
-                            result = BeginReceiveSnapshot(payload, endpoint, headers.Control == FlowControl.StreamEnd, token);
+                            result = BeginReceiveSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
                             break;
                         case State.SnapshotReceived:
                             result = ReceivingSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);

@@ -64,13 +64,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Metadata = metadata.ToImmutableDictionary();
             }
 
-            IPEndPoint ILocalMember.Address => throw new NotImplementedException();
+            ref readonly ClusterMemberId ILocalMember.Id => throw new NotImplementedException();
 
             bool ILocalMember.IsLeader(IRaftClusterMember member) => throw new NotImplementedException();
 
             Task<bool> ILocalMember.ResignAsync(CancellationToken token) => Task.FromResult(true);
 
-            async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(1, prevLogIndex);
@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return new Result<bool>(43L, true);
             }
 
-            async Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            async Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(10, snapshotIndex);
@@ -115,7 +115,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return new Result<bool>(43L, true);
             }
 
-            Task<Result<bool>> ILocalMember.VoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(42L, term);
@@ -124,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<bool>(43L, true));
             }
 
-            Task<Result<bool>> ILocalMember.PreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<bool>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(10L, term);

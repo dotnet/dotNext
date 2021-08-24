@@ -107,10 +107,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets the member by its identifier.
         /// </summary>
         /// <param name="id">The identifier of the cluster member.</param>
-        /// <param name="member">The cluster member.</param>
         /// <returns><see langword="true"/> if member found; otherwise, <see langword="false"/>.</returns>
-        protected bool TryGetMember(ClusterMemberId id, [NotNullWhen(true)] out TMember? member)
-            => members.TryGetValue(id, out member);
+        protected TMember? TryGetMember(ClusterMemberId id)
+            => members.TryGetValue(id, out var result) ? result : null;
 
         /// <summary>
         /// Finds cluster member using predicate.

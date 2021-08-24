@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,10 +11,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private static readonly ILogEntryProducer<ReceivedLogEntry> EmptyProducer = new LogEntryProducer<ReceivedLogEntry>();
 
-        private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
+        private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, CancellationToken token)
         {
-            HeartbeatExchange.Parse(payload.Span, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
-            ChangePort(ref sender, remotePort);
+            HeartbeatExchange.Parse(payload.Span, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
             task = server.AppendEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 

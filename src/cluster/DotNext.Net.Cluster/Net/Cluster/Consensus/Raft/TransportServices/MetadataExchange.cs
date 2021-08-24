@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipelines;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private static Encoding Encoding => Encoding.UTF8;
 
         // port announcement is not used for this request
-        ushort IClientExchange.MyPort
+        ClusterMemberId IClientExchange.Sender
         {
             set { }
         }
@@ -73,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public Task<IReadOnlyDictionary<string, string>> Task => ReadAsync(Reader, readToken);
 
-        public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
             var flushResult = await Writer.WriteAsync(payload, token).ConfigureAwait(false);
             return !(flushResult.IsCanceled || flushResult.IsCompleted || headers.Control == FlowControl.StreamEnd);

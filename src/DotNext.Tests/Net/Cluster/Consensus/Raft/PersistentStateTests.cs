@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
@@ -23,54 +22,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     [ExcludeFromCodeCoverage]
     public sealed class PersistentStateTests : Test
     {
-        private sealed class ClusterMemberMock : IRaftClusterMember
-        {
-            internal ClusterMemberMock(IPEndPoint endpoint) => EndPoint = endpoint;
-
-            Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-                => throw new NotImplementedException();
-
-            ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
-
-            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new(Task.FromException(new NotImplementedException()));
-
-            public EndPoint EndPoint { get; }
-
-            bool IClusterMember.IsLeader => false;
-
-            bool IClusterMember.IsRemote => false;
-
-            event ClusterMemberStatusChanged IClusterMember.MemberStatusChanged
-            {
-                add => throw new NotImplementedException();
-                remove => throw new NotImplementedException();
-            }
-
-            ClusterMemberStatus IClusterMember.Status => ClusterMemberStatus.Unknown;
-
-            ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<bool> IClusterMember.ResignAsync(CancellationToken token) => throw new NotImplementedException();
-
-            public bool Equals(IClusterMember other) => Equals(EndPoint, other?.EndPoint);
-
-            public override bool Equals(object other) => Equals(other as IClusterMember);
-
-            public override int GetHashCode() => EndPoint.GetHashCode();
-
-            public override string ToString() => EndPoint.ToString();
-        }
-
         private sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry
         {
             private byte[] configuration;
@@ -174,14 +125,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
-            var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+            var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
             {
                 Equal(0, state.Term);
                 Equal(1, await state.IncrementTermAsync());
-                True(state.IsVotedFor(null));
+                True(state.IsVotedFor(default(ClusterMemberId?)));
                 await state.UpdateVotedForAsync(member);
-                False(state.IsVotedFor(null));
+                False(state.IsVotedFor(default(ClusterMemberId?)));
                 True(state.IsVotedFor(member));
             }
             finally
@@ -193,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 Equal(1, state.Term);
-                False(state.IsVotedFor(null));
+                False(state.IsVotedFor(default(ClusterMemberId?)));
                 True(state.IsVotedFor(member));
             }
             finally
@@ -727,7 +678,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var backupFile = Path.GetTempFileName();
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
-            var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+            var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
             {
                 //define node state

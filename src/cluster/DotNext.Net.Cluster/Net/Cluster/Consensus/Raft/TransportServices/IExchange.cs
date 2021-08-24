@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,10 +16,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// </summary>
         /// <param name="headers">Received packet headers.</param>
         /// <param name="payload">Received packet payload.</param>
-        /// <param name="endPoint">The sender of the packet.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> to call <see cref="CreateOutboundMessageAsync"/> afterwards and continues communication with remote peer; <see langword="false"/> to finalize communication.</returns>
-        ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endPoint, CancellationToken token);
+        ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token);
 
         /// <summary>
         /// Creates a packet to send to the remote peer.

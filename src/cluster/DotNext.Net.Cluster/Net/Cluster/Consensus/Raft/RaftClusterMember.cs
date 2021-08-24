@@ -17,7 +17,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private long nextIndex;
         private protected readonly IClientMetricsCollector? metrics;
-        private readonly ILocalMember localMember;
+        private protected readonly ILocalMember localMember;
+        internal readonly ClusterMemberId Id;
         private volatile IReadOnlyDictionary<string, string>? metadataCache;
         private AtomicEnum<ClusterMemberStatus> status;
 
@@ -27,9 +28,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.metrics = metrics;
             EndPoint = endPoint;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
+            Id = ClusterMemberId.FromEndPoint(endPoint);
         }
 
-        private protected int LocalPort => localMember.Address.Port;
+        /// <inheritdoc />
+        ClusterMemberId IClusterMember.Id => Id;
 
         private protected ILogger Logger => localMember.Logger;
 
@@ -46,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Determines whether this member is not a local node.
         /// </summary>
-        public bool IsRemote => !EndPoint.Equals(localMember.Address);
+        public bool IsRemote => Id != localMember.Id;
 
         /// <summary>
         /// Gets the status of this member.
@@ -76,17 +79,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => EndPoint.Equals(localMember.Address) ?
-                Task.FromResult(new Result<bool>(term, true)) :
-                VoteAsync(term, lastLogIndex, lastLogTerm, token);
+            => Id == localMember.Id ? Task.FromResult(new Result<bool>(term, true)) : VoteAsync(term, lastLogIndex, lastLogTerm, token);
 
         private protected abstract Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => EndPoint.Equals(localMember.Address) ?
-                Task.FromResult(new Result<bool>(term, true)) :
-                PreVoteAsync(term, lastLogIndex, lastLogTerm, token);
+            => Id == localMember.Id ? Task.FromResult(new Result<bool>(term, true)) : PreVoteAsync(term, lastLogIndex, lastLogTerm, token);
 
         private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : IRaftLogEntry
@@ -94,21 +93,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-        {
-            if (EndPoint.Equals(localMember.Address))
-                return Task.FromResult(new Result<bool>(term, true));
-            return AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token);
-        }
+            => Id == localMember.Id ? Task.FromResult(new Result<bool>(term, true)) : AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token);
 
         private protected abstract Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        {
-            if (EndPoint.Equals(localMember.Address))
-                return Task.FromResult(new Result<bool>(term, true));
-            return InstallSnapshotAsync(term, snapshot, snapshotIndex, token);
-        }
+            => localMember.Id == Id ? Task.FromResult(new Result<bool>(term, true)) : InstallSnapshotAsync(term, snapshot, snapshotIndex, token);
 
         private protected abstract Task<bool> ResignAsync(CancellationToken token);
 
@@ -120,10 +111,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
         {
-            if (EndPoint.Equals(localMember.Address))
+            if (localMember.Id == Id)
                 return localMember.Metadata;
+
             if (metadataCache is null || refresh)
                 metadataCache = await GetMetadataAsync(token).ConfigureAwait(false);
+
             return metadataCache;
         }
     }

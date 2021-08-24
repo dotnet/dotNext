@@ -98,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ISubscriber? IMessageBus.Leader => Leader;
 
-        protected sealed override RaftClusterMember? LocalMember => localMember.TryGet(out var id) && TryGetMember(id, out var result) ? result : null;
+        protected sealed override ClusterMemberId? LocalMember => localMember.OrNull();
 
         private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
         {
@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        ref readonly ClusterMemberId IHostingContext.LocalEndpoint
+        ref readonly ClusterMemberId IHostingContext.LocalMember
             => ref localMember.GetReference(UnresolvedLocalMemberExceptionFactory);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()

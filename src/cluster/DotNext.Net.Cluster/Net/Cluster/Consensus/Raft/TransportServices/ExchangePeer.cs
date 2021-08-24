@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             where TExchange : class, IClientExchange<TResult>
         {
             ThrowIfDisposed();
-            exchange.MyPort = (ushort)LocalPort;
+            exchange.Sender = localMember.Id;
             var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
             timeoutSource.CancelAfter(requestTimeout);
             var timeStamp = Timestamp.Current;

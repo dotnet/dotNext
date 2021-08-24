@@ -13,20 +13,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         IReadOnlyDictionary<string, string> Metadata { get; }
 
-        IPEndPoint Address { get; }
+        ref readonly ClusterMemberId Id { get; }
 
         bool IsLeader(IRaftClusterMember member);
 
-        Task<Result<bool>> AppendEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry;
 
-        Task<Result<bool>> VoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+        Task<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-        Task<Result<bool>> PreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+        Task<Result<bool>> PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         Task<bool> ResignAsync(CancellationToken token);
 
-        Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry;
 
         ILogger Logger => NullLogger.Instance;

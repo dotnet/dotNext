@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipelines;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,9 +26,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             this.reader = reader;
         }
 
-        internal ReceivedLogEntry(ref ReadOnlyMemory<byte> announcement, PipeReader reader, out ushort remotePort, out long term, out long snapshotIndex)
+        internal ReceivedLogEntry(ref ReadOnlyMemory<byte> announcement, PipeReader reader, out ClusterMemberId sender, out long term, out long snapshotIndex)
         {
-            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out remotePort, out term, out snapshotIndex, out metadata);
+            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out sender, out term, out snapshotIndex, out metadata);
             announcement = announcement.Slice(count);
             this.reader = reader;
         }
@@ -115,12 +114,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return await transmissionStateTrigger.SignalAndWaitAsync(this, SetStateAction, State.ReadyToReceiveEntry, IsReadyToReadEntryPredicate, InfiniteTimeSpan).ConfigureAwait(false);
         }
 
-        private void BeginReceiveEntries(EndPoint sender, ReadOnlySpan<byte> announcement, CancellationToken token)
+        private void BeginReceiveEntries(ReadOnlySpan<byte> announcement, CancellationToken token)
         {
             lookupIndex = -1;
             state = State.AppendEntriesReceived;
-            EntriesExchange.ParseAnnouncement(announcement, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount);
-            ChangePort(ref sender, remotePort);
+            EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount);
             task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 

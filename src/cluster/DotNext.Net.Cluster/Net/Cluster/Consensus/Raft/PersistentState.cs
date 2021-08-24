@@ -1493,7 +1493,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
 
         /// <inheritdoc/>
-        bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Id);
+        bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);
 
         /// <summary>
         /// Gets the current term.
@@ -1532,12 +1532,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc/>
-        async ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
+        async ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId? id)
         {
             await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
             try
             {
-                state.UpdateVotedFor(member?.Id);
+                state.UpdateVotedFor(id);
             }
             finally
             {

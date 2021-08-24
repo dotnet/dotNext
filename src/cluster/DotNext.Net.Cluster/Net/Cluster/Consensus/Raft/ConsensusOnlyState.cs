@@ -82,7 +82,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncReaderWriterLock syncRoot = new();
         private readonly AsyncManualResetEvent commitEvent = new(false);
         private long term, commitIndex, lastTerm, index;
-        private volatile IRaftClusterMember? votedFor;
+
+        // boxed ClusterMemberId or null if there is not last vote stored
+        private volatile object? lastVote;
         private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries
 
         /// <inheritdoc/>
@@ -259,11 +261,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
         /// <inheritdoc/>
-        bool IPersistentState.IsVotedFor(IRaftClusterMember? member)
-        {
-            var lastVote = votedFor;
-            return lastVote is null || ReferenceEquals(lastVote, member);
-        }
+        bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => IPersistentState.IsVotedFor(lastVote, id);
 
         private ValueTask<TResult> ReadCoreAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
         {
@@ -341,15 +339,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             term.VolatileWrite(value);
             if (resetLastVote)
-                votedFor = null;
+                lastVote = null;
 
             return new();
         }
 
         /// <inheritdoc/>
-        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
+        ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId? id)
         {
-            votedFor = member;
+            lastVote = id;
             return new();
         }
 

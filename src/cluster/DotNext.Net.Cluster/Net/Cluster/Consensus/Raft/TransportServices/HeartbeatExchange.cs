@@ -18,11 +18,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             this.commitIndex = commitIndex;
         }
 
-        internal static void Parse(ReadOnlySpan<byte> payload, out ushort remotePort, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex)
+        internal static void Parse(ReadOnlySpan<byte> payload, out ClusterMemberId sender, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex)
         {
             var reader = new SpanReader<byte>(payload);
 
-            remotePort = reader.ReadUInt16(true);
+            sender = new(ref reader);
             term = reader.ReadInt64(true);
             prevLogIndex = reader.ReadInt64(true);
             prevLogTerm = reader.ReadInt64(true);
@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(payload);
 
-            writer.WriteUInt16(myPort, true);
+            sender.WriteTo(ref writer);
             writer.WriteInt64(currentTerm, true);
             writer.WriteInt64(prevLogIndex, true);
             writer.WriteInt64(prevLogTerm, true);

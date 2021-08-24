@@ -56,8 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                     timeoutTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
                     timeoutTracker.CancelAfter(receiveTimeout);
-                    Debug.Assert(RemoteEndPoint is not null);
-                    while (await exchange.ProcessInboundMessageAsync(headers, request, RemoteEndPoint, timeoutTracker.Token).ConfigureAwait(false))
+                    while (await exchange.ProcessInboundMessageAsync(headers, request, timeoutTracker.Token).ConfigureAwait(false))
                     {
                         bool waitForInput;
                         int count;

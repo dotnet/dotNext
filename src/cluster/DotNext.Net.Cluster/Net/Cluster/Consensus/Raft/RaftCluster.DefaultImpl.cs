@@ -17,10 +17,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
-        private static readonly Func<RaftClusterMember, EndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
-
         private readonly ImmutableDictionary<string, string> metadata;
-        private readonly IPEndPoint publicEndPoint;
+        private readonly ClusterMemberId localMemberId;
         private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
@@ -34,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             : base(configuration, out var members)
         {
             Metrics = configuration.Metrics;
-            publicEndPoint = configuration.PublicEndPoint;
+            localMemberId = ClusterMemberId.FromEndPoint(configuration.PublicEndPoint);
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
@@ -45,9 +43,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));
         }
 
-        private static bool IsMatchedByEndPoint(RaftClusterMember member, EndPoint endPoint)
-            => member.EndPoint.Equals(endPoint);
-
         /// <summary>
         /// Starts serving local member.
         /// </summary>
@@ -55,8 +50,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public override Task StartAsync(CancellationToken token = default)
         {
-            if (FindMember(MatchByEndPoint, publicEndPoint) is null)
+            if (TryGetMember(localMemberId) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+
             server = serverFactory(this);
             server.Start();
             return base.StartAsync(token);
@@ -89,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
         /// <inheritdoc />
-        IPEndPoint ILocalMember.Address => publicEndPoint;
+        ref readonly ClusterMemberId ILocalMember.Id => ref localMemberId;
 
         /// <inheritdoc />
         IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;
@@ -98,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ResignAsync(token);
 
-        private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(RaftClusterMember? sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             Debug.Assert(bufferingOptions is not null);
@@ -107,39 +103,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
-            var member = FindMember(MatchByEndPoint, sender);
+            TryGetMember(sender)?.Touch();
 
-            member?.Touch();
             return bufferingOptions is null ?
-                AppendEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
-                BufferizeReceivedEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+                AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
+                BufferizeReceivedEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.VoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        Task<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
-            var member = FindMember(MatchByEndPoint, sender);
+            var member = TryGetMember(sender);
             if (member is null)
                 return Task.FromResult(new Result<bool>(Term, false));
 
             member.Touch();
-            return VoteAsync(member, term, lastLogIndex, lastLogTerm, token);
+            return VoteAsync(sender, term, lastLogIndex, lastLogTerm, token);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.PreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        Task<Result<bool>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
-            var member = FindMember(MatchByEndPoint, sender);
-            if (member is null)
-                return Task.FromResult(new Result<bool>(Term, false));
-
-            member.Touch();
+            TryGetMember(sender)?.Touch();
             return PreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
         }
 
-        private async Task<Result<bool>> BufferizeSnapshotAsync<TSnapshot>(RaftClusterMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        private async Task<Result<bool>> BufferizeSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry
         {
             Debug.Assert(bufferingOptions is not null);
@@ -148,16 +139,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
-            var member = FindMember(MatchByEndPoint, sender);
-            if (member is null)
-                return Task.FromResult(new Result<bool>(Term, false));
+            TryGetMember(sender)?.Touch();
 
-            member.Touch();
             return bufferingOptions is null ?
-                InstallSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token) :
-                BufferizeSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
+                InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token) :
+                BufferizeSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
         }
 
         private void Cleanup()

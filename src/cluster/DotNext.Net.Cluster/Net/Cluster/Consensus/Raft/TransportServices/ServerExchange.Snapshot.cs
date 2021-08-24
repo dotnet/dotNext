@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,12 +8,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     internal partial class ServerExchange
     {
-        private async ValueTask<bool> BeginReceiveSnapshot(ReadOnlyMemory<byte> input, EndPoint endPoint, bool completed, CancellationToken token)
+        private async ValueTask<bool> BeginReceiveSnapshot(ReadOnlyMemory<byte> input, bool completed, CancellationToken token)
         {
-            var snapshot = new ReceivedLogEntry(ref input, Reader, out var remotePort, out var senderTerm, out var snapshotIndex);
+            var snapshot = new ReceivedLogEntry(ref input, Reader, out var sender, out var senderTerm, out var snapshotIndex);
             var result = await Writer.WriteAsync(input, token).ConfigureAwait(false);
-            ChangePort(ref endPoint, remotePort);
-            task = server.InstallSnapshotAsync(endPoint, senderTerm, snapshot, snapshotIndex, token);
+            task = server.InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
             if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);

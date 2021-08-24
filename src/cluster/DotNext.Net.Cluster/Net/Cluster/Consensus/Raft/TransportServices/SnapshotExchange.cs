@@ -25,11 +25,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             pipe = new Pipe(options ?? PipeOptions.Default);
         }
 
-        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out LogEntryMetadata metadata)
+        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ClusterMemberId sender, out long term, out long snapshotIndex, out LogEntryMetadata metadata)
         {
             var reader = new SpanReader<byte>(input);
 
-            remotePort = reader.ReadUInt16(true);
+            sender = new(ref reader);
             term = reader.ReadInt64(true);
             snapshotIndex = reader.ReadInt64(true);
             metadata = new LogEntryMetadata(ref reader);
@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            writer.WriteUInt16(myPort, true);
+            sender.WriteTo(ref writer);
             writer.WriteInt64(term, true);
             writer.WriteInt64(snapshotIndex, true);
             LogEntryMetadata.Create(snapshot).Serialize(ref writer);
@@ -76,7 +76,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return (new PacketHeaders(MessageType.InstallSnapshot, control), count, true);
         }
 
-        public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
             ValueTask<bool> result;
             if (headers.Type == MessageType.Continue)

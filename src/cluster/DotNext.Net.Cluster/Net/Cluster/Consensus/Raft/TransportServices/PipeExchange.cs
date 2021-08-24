@@ -1,6 +1,5 @@
 using System;
 using System.IO.Pipelines;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using IOException = System.IO.IOException;
@@ -37,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             await pipe.Reader.CompleteAsync(e).ConfigureAwait(false);
         }
 
-        public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
+        public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token);
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
 

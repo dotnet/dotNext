@@ -213,8 +213,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             clockDriftBound = config.ClockDriftBound;
         }
 
-        private static bool IsLocalMember(TMember member) => !member.IsRemote;
-
         /// <summary>
         /// Gets logger used by this object.
         /// </summary>
@@ -224,7 +222,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets information the current member.
         /// </summary>
-        protected virtual TMember? LocalMember => FindMember(IsLocalMember);
+        protected virtual ClusterMemberId? LocalMember
+        {
+            get
+            {
+                foreach (var member in members.Values)
+                {
+                    if (!member.IsRemote)
+                        return member.Id;
+                }
+
+                return null;
+            }
+        }
 
         /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
@@ -495,7 +505,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        protected async Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        protected async Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry
         {
             using var tokenSource = token.LinkTo(LifecycleToken);
@@ -504,7 +514,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
             {
                 await StepDown(senderTerm).ConfigureAwait(false);
-                Leader = sender;
+                Leader = TryGetMember(sender);
                 await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
                 return new Result<bool>(currentTerm, true);
             }
@@ -525,7 +535,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Obsolete("Use InstallSnapshotAsync method instead")]
         protected Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry
-            => InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
+            => InstallSnapshotAsync(sender.Id, senderTerm, snapshot, snapshotIndex, token);
 
         /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
@@ -539,7 +549,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(TMember? sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             using var tokenSource = token.LinkTo(LifecycleToken);
@@ -550,7 +560,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
                 await StepDown(senderTerm).ConfigureAwait(false);
-                Leader = sender;
+                var senderMember = TryGetMember(sender);
+                Leader = senderMember;
                 if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
                 {
                     var emptySet = entries.RemainingCount > 0L;
@@ -567,8 +578,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (commitIndex <= auditTrail.GetLastIndex(true))
                     {
                         // This node is in sync with the leader and no entries arrived
-                        if (emptySet && sender is not null)
-                            ReplicationCompleted?.Invoke(this, sender);
+                        if (emptySet && senderMember is not null)
+                            ReplicationCompleted?.Invoke(this, senderMember);
 
                         result = true;
                     }
@@ -597,7 +608,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Obsolete("Use AppendEntriesAsync method instead")]
         protected Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
-            => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+            => AppendEntriesAsync(sender.Id, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
 
         /// <summary>
         /// Receives preliminary vote from the potential Candidate in the cluster.
@@ -652,7 +663,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<Result<bool>> VoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        protected async Task<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var currentTerm = auditTrail.Term;
 
@@ -701,7 +712,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
         [Obsolete("Use VoteAsync method instead")]
         protected Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => VoteAsync(sender, senderTerm, lastLogIndex, lastLogTerm, token);
+            => VoteAsync(sender.Id, senderTerm, lastLogIndex, lastLogTerm, token);
 
         /// <summary>
         /// Revokes leadership of the local node.

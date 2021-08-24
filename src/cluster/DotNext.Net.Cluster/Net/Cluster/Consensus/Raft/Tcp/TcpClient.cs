@@ -51,7 +51,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 int count;
                 bool waitForInput;
                 ReadOnlyMemory<byte> response;
-                Debug.Assert(RemoteEndPoint is not null);
                 do
                 {
                     (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
@@ -64,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     // read response
                     (headers, response) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 }
-                while (await exchange.ProcessInboundMessageAsync(headers, response, RemoteEndPoint, token).ConfigureAwait(false));
+                while (await exchange.ProcessInboundMessageAsync(headers, response, token).ConfigureAwait(false));
             }
 
             internal Task ShutdownAsync() => ssl is null ? Task.CompletedTask : ssl.ShutdownAsync();

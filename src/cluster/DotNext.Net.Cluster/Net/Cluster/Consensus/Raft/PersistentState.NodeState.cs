@@ -115,13 +115,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return result;
             }
 
-            internal bool IsVotedFor(ClusterMemberId? expected)
-            {
-                var actual = votedFor;
-
-                // avoid placing value type on the stack
-                return actual is null || (expected.HasValue && Unsafe.Unbox<ClusterMemberId>(actual).Equals(expected.GetValueOrDefault()));
-            }
+            internal bool IsVotedFor(in ClusterMemberId? expected) => IPersistentState.IsVotedFor(votedFor, expected);
 
             internal void UpdateVotedFor(ClusterMemberId? member)
             {
