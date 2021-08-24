@@ -119,12 +119,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Generates a new unique cluster member identifier.
-        /// </summary>
-        /// <returns>Generated cluster member identifier.</returns>
-        protected ClusterMemberId NewClusterMemberId() => new(random);
-
-        /// <summary>
         /// Gets the member by its identifier.
         /// </summary>
         /// <param name="id">The identifier of the cluster member.</param>
