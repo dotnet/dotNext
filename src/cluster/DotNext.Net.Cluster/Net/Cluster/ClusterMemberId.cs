@@ -198,7 +198,11 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <returns>The hexadecimal representation of this identifier.</returns>
         public override string ToString()
-            => Span.AsReadOnlyBytes(this).ToHex();
+        {
+            Span<byte> bytes = stackalloc byte[Size];
+            WriteTo(bytes);
+            return Span.ToHex(bytes);
+        }
 
         /// <summary>
         /// Attempts to parse cluster member identifier.
@@ -208,9 +212,15 @@ namespace DotNext.Net.Cluster
         /// <returns><see langword="true"/> if identifier parsed successfully; otherwise, <see langword="false"/>.</returns>
         public static bool TryParse(ReadOnlySpan<char> identifier, out ClusterMemberId value)
         {
+            Span<byte> bytes = stackalloc byte[Size];
+            if (identifier.FromHex(bytes) == bytes.Length)
+            {
+                value = new(bytes);
+                return true;
+            }
+
             value = default;
-            var bytes = Span.AsBytes(ref value);
-            return identifier.FromHex(bytes) == bytes.Length;
+            return false;
         }
 
         /// <summary>
