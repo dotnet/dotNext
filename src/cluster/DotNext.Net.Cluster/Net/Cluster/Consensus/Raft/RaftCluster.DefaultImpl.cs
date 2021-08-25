@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private readonly IPEndPoint publicEndPoint;
         private readonly MemoryAllocator<byte>? allocator;
-        private readonly Func<IPEndPoint, ClusterMemberId, CancellationToken, Task>? announcer;
+        private readonly ClusterMemberAnnouncer<IPEndPoint>? announcer;
         private readonly int warmupRounds;
         private IServer? server;
 
@@ -44,6 +44,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bufferingOptions = configuration.BufferingOptions;
             publicEndPoint = configuration.PublicEndPoint;
             allocator = configuration.MemoryAllocator;
+            announcer = configuration.Announcer;
+            warmupRounds = configuration.WarmupRounds;
 
             // create members without starting clients
             foreach (var member in configuration.Members)
@@ -107,10 +109,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <remarks>
         /// This method must be called on leade node.
         /// </remarks>
-        /// <param name="id">The identifier.</param>
-        /// <param name="address"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
+        /// <param name="id">The identifier of the node.</param>
+        /// <param name="address">IP address of the node.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// <see langword="true"/> if the node has been added to the cluster successfully;
+        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
+        /// </returns>
         public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
         {
             using var buffer = address.GetBytes(allocator);
@@ -119,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc />
         protected sealed override Task AnnounceAsync(CancellationToken token = default)
-            => announcer?.Invoke(publicEndPoint, LocalMemberId, token) ?? Task.CompletedTask;
+            => announcer?.Invoke(LocalMemberId, publicEndPoint, token) ?? Task.CompletedTask;
 
         /// <inheritdoc />
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);

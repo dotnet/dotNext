@@ -96,6 +96,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             await base.StopAsync(token).ConfigureAwait(false);
         }
 
+        [Obsolete]
         private protected override ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync()
             => host.Services.GetRequiredService<IServer>().GetHostingAddressesAsync();
 

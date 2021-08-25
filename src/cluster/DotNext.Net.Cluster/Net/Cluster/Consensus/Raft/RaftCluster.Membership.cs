@@ -10,8 +10,8 @@ using Missing = System.Reflection.Missing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Threading;
     using Membership;
+    using Threading;
 
     public partial class RaftCluster<TMember> : IClusterConfigurationStorage.IConfigurationInterpreter, IExpandableCluster
     {
@@ -202,7 +202,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// The identifier of the local node to be announced is available via <see cref="LocalMemberId"/> property.
         /// </remarks>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         protected abstract Task AnnounceAsync(CancellationToken token = default);
 
         /// <summary>
@@ -317,6 +317,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected void OnMemberRemoved(TMember member) // TODO: Must be private in .NEXT 4
             => memberRemovedHandlers?.Invoke(this, member);
 
+        /// <inheritdoc />
         async ValueTask IClusterConfigurationStorage.IConfigurationInterpreter.RefreshAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token)
         {
             var fresh = new Dictionary<ClusterMemberId, TMember>();
@@ -424,7 +425,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <see langword="true"/> if node removed successfully;
         /// <see langword="false"/> if the current node is unable to commit removal command.
         /// </returns>
-        protected async Task<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+        public async Task<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
         {
             using var tokenSource = token.LinkTo(LeadershipToken);
 

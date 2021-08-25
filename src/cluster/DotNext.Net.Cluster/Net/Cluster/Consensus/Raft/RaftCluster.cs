@@ -211,7 +211,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             random = new();
             electionTimeout = electionTimeoutProvider.RandomTimeout(random);
             allowPartitioning = config.Partitioning;
-            this.members = MemberList.Empty;
+            members = MemberList.Empty;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
             LifecycleToken = transitionCancellation.Token;
@@ -433,13 +433,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // audit trail is initialized so it is expected that the internal state machine initialized as well (through ReplayAsync call)
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
-            await (bootstrapMode switch
+            var task = bootstrapMode switch
             {
                 ClusterMemberBootstrap.Announcement => JoinClusterAsync(token),
                 ClusterMemberBootstrap.ColdStart => ColdStartAsync(token),
                 _ => RecoverAsync(),
-            })
-            .ConfigureAwait(false);
+            };
+
+            await task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -953,7 +954,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="entry">The log entry to append.</param>
         /// <param name="timeout">The timeout for the operation.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns></returns>
+        /// <returns>
+        /// <see langword="true"/> if the has been replicated successfully;
+        /// otherwise, <see langword="false"/>.
+        /// </returns>
         public Task<bool> ReplicateAsync<TEntry>(TEntry entry, TimeSpan timeout, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
             => ReplicateAsync(entry, new(timeout), token);
