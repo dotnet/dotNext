@@ -37,6 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             endPoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             Id = id ?? ClusterMemberId.FromEndPoint(endPoint);
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
+            IsRemote = true;
         }
 
         event ClusterMemberStatusChanged? IClusterMember.MemberStatusChanged

@@ -54,6 +54,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (localNode is null && bootstrapMode != ClusterMemberBootstrap.Recovery)
                 throw new ArgumentException(ExceptionMessages.UnknownLocalNodeAddress, nameof(config));
 
+            if (raftRpcTimeout > requestTimeout)
+                throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
+
             // dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
             messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IInputChannel>());
@@ -133,9 +136,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public override async Task StartAsync(CancellationToken token)
         {
-            if (raftRpcTimeout > requestTimeout)
-                throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
-
             if (bootstrapMode == ClusterMemberBootstrap.Recovery)
             {
                 // discover members
