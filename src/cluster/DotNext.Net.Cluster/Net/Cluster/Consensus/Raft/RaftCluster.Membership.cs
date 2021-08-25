@@ -389,10 +389,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             using var tokenSource = token.LinkTo(LeadershipToken);
 
-            // this client is used only for warmup process
+            // catch up node
             using (var tempClient = CreateMember(id, address))
             {
-                // catch up node
                 long currentIndex;
 
                 do
