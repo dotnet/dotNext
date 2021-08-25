@@ -985,6 +985,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             if (announcementEvent is not null)
                 TrySetDisposedException(announcementEvent);
+
+            memberAddedHandlers = memberRemovedHandlers = null;
         }
 
         /// <summary>
