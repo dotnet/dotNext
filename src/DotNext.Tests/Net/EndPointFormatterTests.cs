@@ -18,7 +18,7 @@ namespace DotNext.Net
 
         [Theory]
         [MemberData(nameof(GetTestEndPoints))]
-        public static void SerializeDeserialize(EndPoint expected)
+        public static void SerializeDeserializeEndPoint(EndPoint expected)
         {
             byte[] data;
             var writer = new BufferWriterSlim<byte>(32);
@@ -38,7 +38,7 @@ namespace DotNext.Net
 
         [Theory]
         [MemberData(nameof(GetTestEndPoints))]
-        public static void BufferizeDeserialize(EndPoint expected)
+        public static void BufferizeDeserializeEndPoint(EndPoint expected)
         {
             using var buffer = expected.GetBytes();
 
