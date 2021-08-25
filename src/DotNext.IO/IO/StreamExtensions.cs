@@ -14,7 +14,6 @@ namespace DotNext.IO
     using Buffers;
     using Text;
     using static Buffers.BufferReader;
-    using static Buffers.BufferWriter;
 
     /// <summary>
     /// Represents high-level read/write methods for the stream.
@@ -27,7 +26,6 @@ namespace DotNext.IO
     {
         private const int BufferSizeForLength = 5;
         private const int DefaultBufferSize = 256;
-        private const MemoryAllocator<char>? DefaultCharAllocator = null;
 
         private static int Read7BitEncodedInt(this Stream stream)
         {
@@ -637,7 +635,7 @@ namespace DotNext.IO
             var length = await ReadLengthAsync(stream, lengthFormat, buffer, token).ConfigureAwait(false);
             if (length == 0)
                 throw new EndOfStreamException();
-            using var result = DefaultCharAllocator.Invoke(length, true);
+            using var result = MemoryAllocator.Allocate<char>(length, true);
             length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
             return decoder.Decode(result.Memory.Slice(0, length).Span);
         }
@@ -648,12 +646,14 @@ namespace DotNext.IO
         {
             int length;
             MemoryOwner<byte> buffer;
-            using (buffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false))
+            using (buffer = MemoryAllocator.Allocate<byte>(BufferSizeForLength, false))
                 length = await ReadLengthAsync(stream, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
+
             if (length == 0)
                 throw new EndOfStreamException();
-            using var result = DefaultCharAllocator.Invoke(length, true);
-            using (buffer = DefaultByteAllocator.Invoke(length, false))
+
+            using var result = MemoryAllocator.Allocate<char>(length, true);
+            using (buffer = MemoryAllocator.Allocate<byte>(length, false))
             {
                 length = await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
                 return decoder.Decode(result.Memory.Slice(0, length).Span);
@@ -717,7 +717,7 @@ namespace DotNext.IO
             if (length == 0)
                 return BigInteger.Zero;
 
-            using var buffer = DefaultByteAllocator.Invoke(length, true);
+            using var buffer = MemoryAllocator.Allocate<byte>(length, true);
             await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
             return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
         }
@@ -751,7 +751,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
         {
-            using var lengthDecodingBuffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false);
+            using var lengthDecodingBuffer = MemoryAllocator.Allocate<byte>(BufferSizeForLength, false);
             return await ReadBigIntegerAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), littleEndian, token).ConfigureAwait(false);
         }
 
@@ -775,7 +775,7 @@ namespace DotNext.IO
         {
             if (length == 0)
                 return string.Empty;
-            using var result = DefaultCharAllocator.Invoke(length, true);
+            using var result = MemoryAllocator.Allocate<char>(length, true);
             length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
             return new string(result.Memory.Slice(0, length).Span);
         }
@@ -815,10 +815,10 @@ namespace DotNext.IO
             if (length == 0)
                 return string.Empty;
 
-            using var charBuffer = DefaultCharAllocator.Invoke(length, true);
+            using var charBuffer = MemoryAllocator.Allocate<char>(length, true);
             int charCount;
 
-            using (var bytesBuffer = DefaultByteAllocator.Invoke(length, true))
+            using (var bytesBuffer = MemoryAllocator.Allocate<byte>(length, true))
             {
                 await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
                 charCount = encoding.GetChars(bytesBuffer.Memory.Span, charBuffer.Memory.Span);
@@ -844,7 +844,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, Encoding encoding, CancellationToken token = default)
         {
-            using var lengthDecodingBuffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false);
+            using var lengthDecodingBuffer = MemoryAllocator.Allocate<byte>(BufferSizeForLength, false);
             return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token).ConfigureAwait(false);
         }
 
@@ -1666,7 +1666,7 @@ namespace DotNext.IO
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
+            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
             await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
             return MemoryMarshal.Read<T>(buffer.Memory.Span);
         }
@@ -1800,7 +1800,7 @@ namespace DotNext.IO
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-            using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
+            using var owner = MemoryAllocator.Allocate<byte>(bufferSize, false);
             await CopyToAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
         }
 
@@ -1836,7 +1836,7 @@ namespace DotNext.IO
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-            using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
+            using var owner = MemoryAllocator.Allocate<byte>(bufferSize, false);
             await CopyToAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
         }
 

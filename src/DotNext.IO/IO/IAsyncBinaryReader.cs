@@ -37,7 +37,7 @@ namespace DotNext.IO
         async ValueTask<T> ReadAsync<T>(CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
+            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
             await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             Unsafe.SkipInit(out T result);
             buffer.Memory.Span.CopyTo(Span.AsBytes(ref result));
@@ -342,7 +342,7 @@ namespace DotNext.IO
             if (length == 0)
                 return BigInteger.Zero;
 
-            using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+            using var buffer = MemoryAllocator.Allocate<byte>(length, true);
             await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
         }
@@ -387,7 +387,7 @@ namespace DotNext.IO
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length > 0)
             {
-                using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+                using var buffer = MemoryAllocator.Allocate<byte>(length, true);
                 await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             }
         }
@@ -417,7 +417,7 @@ namespace DotNext.IO
             if (length == 0)
                 return string.Empty;
 
-            using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+            using var buffer = MemoryAllocator.Allocate<byte>(length, true);
             await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return context.Encoding.GetString(buffer.Memory.Span);
         }

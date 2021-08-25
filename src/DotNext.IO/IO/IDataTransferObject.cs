@@ -138,7 +138,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
             where TTransformation : notnull, ITransformation<TResult>
-            => TransformAsync<TResult, TTransformation>(input, transformation, resetStream, BufferWriter.DefaultByteAllocator, token);
+            => TransformAsync<TResult, TTransformation>(input, transformation, resetStream, default(MemoryAllocator<byte>), token);
 
         /// <summary>
         /// Decodes the data using pipe reader.
@@ -170,7 +170,7 @@ namespace DotNext.IO
             where TTransformation : notnull, ITransformation<TResult>
         {
             await using var output = new FileBufferingWriter(asyncIO: true);
-            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(DefaultBufferSize, false);
+            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
@@ -192,7 +192,7 @@ namespace DotNext.IO
             await using var fs = new FileStream(tempFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, DefaultBufferSize, tempFileOptions);
             fs.SetLength(length);
 
-            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(DefaultBufferSize, false);
+            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);

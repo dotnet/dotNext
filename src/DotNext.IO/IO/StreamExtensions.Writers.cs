@@ -614,7 +614,7 @@ namespace DotNext.IO
         public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, LengthFormat? lengthFormat = null, CancellationToken token = default)
         {
             var bytesCount = encoding.GetByteCount(value.Span);
-            using var buffer = DefaultByteAllocator.Invoke(bytesCount, true);
+            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
             await stream.WriteLengthAsync(bytesCount, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
             if (bytesCount == 0)
                 return;
@@ -628,7 +628,7 @@ namespace DotNext.IO
         {
             for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
-                using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
+                using var owner = MemoryAllocator.Allocate<char>(charBufferSize, false);
 
                 if (value.TryFormat(owner.Memory, out var charsWritten, format, provider))
                 {
@@ -643,7 +643,7 @@ namespace DotNext.IO
         private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
         {
-            using var owner = DefaultByteAllocator.Invoke(DefaultBufferSize, false);
+            using var owner = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
             await WriteAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
         }
 
@@ -1246,7 +1246,7 @@ namespace DotNext.IO
         public static async ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), false);
+            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), false);
             await WriteAsync(stream, value, buffer.Memory, token).ConfigureAwait(false);
         }
 

@@ -71,7 +71,7 @@ namespace DotNext.Buffers
             MemoryOwner<T> result;
             if (allocator is null)
             {
-                result = new MemoryOwner<T>(ArrayPool<T>.Shared, length, exactSize);
+                result = Allocate<T>(length, exactSize);
             }
             else
             {
@@ -99,5 +99,19 @@ namespace DotNext.Buffers
                 => new(GC.AllocateUninitializedArray<T>(length, false));
 #endif
         }
+
+        /// <summary>
+        /// Rents a block of memory from <see cref="ArrayPool{T}.Shared"/> pool.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+        /// <param name="length">The number of items in the rented memory.</param>
+        /// <param name="exactSize">
+        /// <see langword="true"/> to ask allocator to allocate exactly <paramref name="length"/>;
+        /// <see langword="false"/> to allocate at least <paramref name="length"/>.
+        /// </param>
+        /// <returns>The allocated memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static MemoryOwner<T> Allocate<T>(int length, bool exactSize)
+            => new(ArrayPool<T>.Shared, length, exactSize);
     }
 }
