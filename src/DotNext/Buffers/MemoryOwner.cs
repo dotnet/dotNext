@@ -69,10 +69,17 @@ namespace DotNext.Buffers
         /// <param name="length">The number of elements to rent; or <c>-1</c> to rent default amount of memory.</param>
         public MemoryOwner(MemoryPool<T> pool, int length = -1)
         {
-            array = null;
-            IMemoryOwner<T> owner;
-            this.owner = owner = pool.Rent(length);
-            this.length = length < 0 ? owner.Memory.Length : length;
+            if (length == 0)
+            {
+                this = default;
+            }
+            else
+            {
+                array = null;
+                IMemoryOwner<T> owner;
+                this.owner = owner = pool.Rent(length);
+                this.length = length < 0 ? owner.Memory.Length : length;
+            }
         }
 
         /// <summary>
@@ -82,10 +89,17 @@ namespace DotNext.Buffers
         /// <param name="length">The number of elements to rent.</param>
         public MemoryOwner(Func<int, IMemoryOwner<T>> provider, int length)
         {
-            array = null;
-            IMemoryOwner<T> owner;
-            this.owner = owner = provider(length);
-            this.length = Math.Min(owner.Memory.Length, length);
+            if (length == 0)
+            {
+                this = default;
+            }
+            else
+            {
+                array = null;
+                IMemoryOwner<T> owner;
+                this.owner = owner = provider(length);
+                this.length = Math.Min(owner.Memory.Length, length);
+            }
         }
 
         /// <summary>
@@ -110,6 +124,7 @@ namespace DotNext.Buffers
         {
             if (length > array.Length || length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
+
             this.array = array;
             this.length = length;
             owner = null;
@@ -145,7 +160,7 @@ namespace DotNext.Buffers
             if (provider == null)
                 throw new ArgumentNullException(nameof(provider));
 
-            return new(provider(length, arg), exactSize ? length : null);
+            return length == 0 ? default : new(provider(length, arg), exactSize ? length : null);
         }
 
         /// <summary>
