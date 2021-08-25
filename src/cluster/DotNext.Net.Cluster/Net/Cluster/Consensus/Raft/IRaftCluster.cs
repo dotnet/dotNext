@@ -49,8 +49,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => AuditTrail;
 
-        private async Task<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, Timeout timeout, CancellationToken token)
-            where TEntryImpl : notnull, IRaftLogEntry
+        private async Task<bool> ReplicateAsync<TEntry>(TEntry entry, Timeout timeout, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
         {
             var log = AuditTrail;
 
