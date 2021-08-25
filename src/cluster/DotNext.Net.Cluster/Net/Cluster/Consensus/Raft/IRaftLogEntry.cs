@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
@@ -36,9 +38,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <remarks>
         /// This method decouples custom payload of the log entry from Raft-specific
         /// information.
+        /// It is useful only if the underlying audit trail decouples configuration and the rest of the snapshot.
+        /// If you are using custom implementation of audit trail then just store the configuration inside
+        /// of the same snapshot with custom data and implement <see cref="Membership.IClusterConfigurationStorage"/>
+        /// interface.
         /// </remarks>
         /// <param name="configuration">The buffer containing addresses of cluster members.</param>
         /// <returns><see langword="true"/> if the list obtained successfully; otherwise, <see langword="false"/>.</returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         bool TryGetClusterConfiguration(out MemoryOwner<byte> configuration)
         {
             configuration = default;
