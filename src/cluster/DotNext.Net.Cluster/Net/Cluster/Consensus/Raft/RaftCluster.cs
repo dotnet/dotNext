@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets information the current member.
         /// </summary>
-        protected ref readonly ClusterMemberId LocalMember => ref localMemberId;
+        protected ref readonly ClusterMemberId LocalMemberId => ref localMemberId;
 
         /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
@@ -415,7 +415,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new RaftProtocolException(ExceptionMessages.AuditTrailNoMembershipSupport(auditTrail.GetType()));
 
             // append entry with local member
-            await AddLocalMemberAsync(storage.AppendAsync<Membership.AddMemberLogEntry>, token);
+            await AddLocalMemberAsync(storage.AppendAsync<Membership.AddMemberLogEntry>, token).ConfigureAwait(false);
             await storage.CommitAsync(token).ConfigureAwait(false);
 
             // now check that there is only one local member in the list
@@ -843,7 +843,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (readyForTransition)
                 {
                     followerState.Dispose();
-                    await auditTrail.UpdateVotedForAsync(LocalMember).ConfigureAwait(false);     // vote for self
+                    await auditTrail.UpdateVotedForAsync(LocalMemberId).ConfigureAwait(false);     // vote for self
                     state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
                     Metrics?.MovedToCandidateState();
                     Logger.TransitionToCandidateStateCompleted();

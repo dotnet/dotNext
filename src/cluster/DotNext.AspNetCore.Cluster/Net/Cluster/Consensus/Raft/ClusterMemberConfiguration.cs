@@ -13,21 +13,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        static ClusterMemberConfiguration() => IPAddressConverter.Register();
+        static ClusterMemberConfiguration()
+        {
+            IPAddressConverter.Register();
+            DnsEndPointConverter.Register();
+        }
 
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
         private TimeSpan? rpcTimeout;
         private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
+        private string? hostNameHint;
 
         /// <summary>
         /// Gets or sets the address of the local node.
         /// </summary>
+        [Obsolete("Use PublicEndPoint property instead")]
         public IPAddress? HostAddressHint { get; set; }
 
         /// <summary>
         /// Gets or sets DNS name of the local node visible to other nodes in the network.
         /// </summary>
-        public string? HostNameHint { get; set; }
+        [Obsolete("Use PublicEndPoint property instead")]
+        public string? HostNameHint
+        {
+            get => hostNameHint ?? PublicEndPoint?.Host;
+            set => hostNameHint = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the address of the local node visible to the entire cluster.
+        /// </summary>
+        public Uri? PublicEndPoint { get; set; }
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -100,6 +116,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public bool Standby { get; set; }
 
+        /// <summary>
+        /// Gets or sets bootstrap mode.
+        /// </summary>
+        public ClusterMemberBootstrap BootstrapMode { get; set; } = ClusterMemberBootstrap.Recovery;
+
+        [Obsolete]
         internal void SetupHostAddressHint(IFeatureCollection features)
         {
             var address = HostAddressHint;

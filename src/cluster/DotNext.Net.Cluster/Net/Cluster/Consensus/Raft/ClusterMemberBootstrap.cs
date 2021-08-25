@@ -1,5 +1,3 @@
-using System;
-
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
@@ -8,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public enum ClusterMemberBootstrap
     {
         /// <summary>
-        /// The node was shutted down accidentally so no need to join the cluster is a special way. 
+        /// The node was shutted down accidentally so no need to join the cluster is a special way.
         /// </summary>
         Recovery = 0,
 

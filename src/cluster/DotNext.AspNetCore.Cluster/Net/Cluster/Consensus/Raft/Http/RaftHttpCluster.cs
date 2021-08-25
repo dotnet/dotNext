@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -16,9 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
-    internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
+    internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IMessageBus
     {
-        private static readonly Func<RaftProtocolException> UnresolvedLocalMemberExceptionFactory = CreateUnresolvedLocalMemberException;
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
@@ -30,8 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HttpVersionPolicy protocolVersionPolicy;
 #endif
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
-        private Optional<ClusterMemberId> localMember;
-        private ClusterChangedEventHandler? memberAddedHandlers, memberRemovedHandlers;
+        private Uri? localNode; // TODO: Must be non-nullable and readonly in .NEXT 4
 
         // TODO: Replace IServiceProvider with nullable parameters to use optional dependency injection
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -49,6 +49,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 #if !NETCOREAPP3_1
             protocolVersionPolicy = config.ProtocolVersionPolicy;
 #endif
+            localNode = config.PublicEndPoint;
+
+            if (localNode is null && bootstrapMode != ClusterMemberBootstrap.Recovery)
+                throw new ArgumentException(ExceptionMessages.UnknownLocalNodeAddress, nameof(config));
 
             // dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
@@ -59,6 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Metrics = dependencies.GetService<MetricsCollector>();
             bufferingOptions = dependencies.GetBufferingOptions();
             discoveryService = dependencies.GetService<IMemberDiscoveryService>();
+            announcer = dependencies.GetService<ClusterMemberAnnouncer<Uri>>();
 
             // track changes in configuration, do not track membership if discovery service is enabled
             configurationTracker = configTracker(discoveryService is null ? ConfigurationAndMembershipChanged : ConfigurationChanged);
@@ -74,9 +79,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        private static RaftProtocolException CreateUnresolvedLocalMemberException()
-            => new(ExceptionMessages.UnresolvedLocalMember);
-
         private protected void ConfigureMember(RaftClusterMember member)
         {
             member.Timeout = requestTimeout;
@@ -88,7 +90,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             member.SetProtocolVersion(protocolVersion);
         }
 
-        private protected abstract RaftClusterMember CreateMember(Uri address);
+        private protected abstract RaftClusterMember CreateMember(Uri address, ClusterMemberId? id);
+
+        protected sealed override RaftClusterMember CreateMember(in ClusterMemberId id, ReadOnlyMemory<byte> address)
+        {
+            var result = CreateMember(new(Encoding.UTF8.GetString(address.Span), UriKind.Absolute), id);
+            result.IsRemote = !Equals(result.BaseAddress, localNode);
+            return result;
+        }
 
         protected sealed override ILogger Logger { get; }
 
@@ -98,14 +107,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ISubscriber? IMessageBus.Leader => Leader;
 
-        protected sealed override ClusterMemberId? LocalMember => localMember.OrNull();
-
         private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
         }
 
+        [Obsolete]
         private async void ConfigurationAndMembershipChanged(HttpClusterMemberConfiguration configuration, string name)
         {
             ConfigurationChanged(configuration, name);
@@ -116,37 +124,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        ref readonly ClusterMemberId IHostingContext.LocalMember
-            => ref localMember.GetReference(UnresolvedLocalMemberExceptionFactory);
+        ref readonly ClusterMemberId IHostingContext.LocalMember => ref LocalMemberId;
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
 
         bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
 
-        public event ClusterChangedEventHandler MemberAdded
-        {
-            add => memberAddedHandlers += value;
-            remove => memberAddedHandlers -= value;
-        }
-
-        public event ClusterChangedEventHandler MemberRemoved
-        {
-            add => memberAddedHandlers += value;
-            remove => memberRemovedHandlers -= value;
-        }
-
         public override async Task StartAsync(CancellationToken token)
         {
             if (raftRpcTimeout > requestTimeout)
                 throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
 
-            // discover members
-            if (discoveryService is not null)
-                await DiscoverMembersAsync(discoveryService, token).ConfigureAwait(false);
+            if (bootstrapMode == ClusterMemberBootstrap.Recovery)
+            {
+                // discover members
+                if (discoveryService is not null)
+                    await DiscoverMembersAsync(discoveryService, token).ConfigureAwait(false);
 
-            // detect local member
-            localMember = await DetectLocalMemberAsync(token).ConfigureAwait(false);
+                // detect local member
+                localNode = await DetectLocalMemberAsync(token).ConfigureAwait(false) ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
+            }
+            else
+            {
+                Debug.Assert(localNode is not null);
+            }
+
             configurator?.Initialize(this, metadata);
             await base.StartAsync(token).ConfigureAwait(false);
         }
@@ -170,7 +173,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (disposing)
             {
                 membershipWatch?.Dispose();
-                localMember = default;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
                 messageHandlers = ImmutableList<IInputChannel>.Empty;

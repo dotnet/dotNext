@@ -19,8 +19,6 @@ namespace DotNext
 
         internal static string IncorrectResponse => (string)Resources.Get();
 
-        internal static string UnresolvedLocalMember => (string)Resources.Get();
-
         internal static string UnavailableMember => (string)Resources.Get();
 
         internal static string LeaderIsUnavailable => (string)Resources.Get();

@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     /// dedicated web host and separated port for Raft endpoint.
     /// </summary>
     /// <seealso cref="IDedicatedHostBuilder"/>
+    [Obsolete("Use embedded mode instead")]
     [CLSCompliant(false)]
     public static class ConfigurationExtensions // TODO: Removed in .NEXT 4
     {
@@ -25,6 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="services">The collection of services.</param>
         /// <param name="memberConfig">The configuration of local cluster node.</param>
         /// <returns>The modified collection of services.</returns>
+        [Obsolete("Use embedded mode instead")]
         public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
             => RaftHttpCluster.AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(services, memberConfig);
 
@@ -37,6 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// </summary>
         /// <param name="builder">The builder of main application host.</param>
         /// <returns>The builder of the application host.</returns>
+        [Obsolete("Use embedded mode instead")]
         public static IHostBuilder JoinCluster(this IHostBuilder builder)
             => builder.ConfigureServices(ConfigureClusterMember);
 
@@ -50,6 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="builder">The builder of main application host.</param>
         /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
         /// <returns>The builder of the application host.</returns>
+        [Obsolete("Use embedded mode instead")]
         public static IHostBuilder JoinCluster(this IHostBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig)
             => builder.ConfigureServices(memberConfig.JoinCluster);
 
@@ -63,6 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="builder">The builder of main application host.</param>
         /// <param name="memberConfigSection">The name of local member configuration section.</param>
         /// <returns>The builder of the application host.</returns>
+        [Obsolete("Use embedded mode instead")]
         public static IHostBuilder JoinCluster(this IHostBuilder builder, string memberConfigSection)
             => builder.ConfigureServices(memberConfigSection.JoinCluster);
     }

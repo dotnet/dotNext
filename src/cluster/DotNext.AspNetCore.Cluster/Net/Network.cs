@@ -23,6 +23,7 @@ namespace DotNext.Net
             _ => null
         };
 
+        [Obsolete]
         private static void Resolve(this HostAddressHintFeature feature, ICollection<EndPoint> endPoints, int port)
         {
             foreach (HostAddressHintFeature f in feature.GetInvocationList())
@@ -35,7 +36,7 @@ namespace DotNext.Net
         internal static DnsEndPoint ToEndPoint(this string name, int port)
             => new(name, port);
 
-        // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
+        [Obsolete]
         internal static async ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
         {
             var feature = server.Features.Get<IServerAddresses>();

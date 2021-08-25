@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets or sets the delegate that can be used to announce the node to the cluster
             /// if <see cref="BootstrapMode"/> is <see cref="ClusterMemberBootstrap.Announcement"/>.
             /// </summary>
-            public Func<IPEndPoint, ClusterMemberId, CancellationToken, Task>? Announcer
+            public ClusterMemberAnnouncer<IPEndPoint>? Announcer
             {
                 get;
                 set;

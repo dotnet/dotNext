@@ -83,6 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <typeparam name="TService">The type implementing custom discovery service.</typeparam>
         /// <param name="services">A collection of services provided by DI container.</param>
         /// <returns>A modified collection of services.</returns>
+        [Obsolete("Use Raft self-managing cluster feature instead")]
         public static IServiceCollection UseDiscoveryService<TService>(this IServiceCollection services)
             where TService : class, IMemberDiscoveryService
             => services.AddSingleton<IMemberDiscoveryService, TService>();

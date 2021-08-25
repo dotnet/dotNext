@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private long nextIndex;
         internal IClientMetricsCollector? Metrics;
 
-        internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
+        internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath, ClusterMemberId? id)
             : base(context.CreateHttpHandler(), true)
         {
             this.resourcePath = resourcePath;
@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
             BaseAddress = remoteMember;
             endPoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
-            Id = ClusterMemberId.FromEndPoint(endPoint);
+            Id = id ?? ClusterMemberId.FromEndPoint(endPoint);
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
         }
 
@@ -198,7 +198,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IClusterMember.IsLeader => context.IsLeader(this);
 
-        public bool IsRemote => Id != context.LocalMember;
+        public bool IsRemote
+        {
+            get;
+            internal set;
+        }
 
         ClusterMemberStatus IClusterMember.Status
             => Id == context.LocalMember ? ClusterMemberStatus.Available : status.Value;

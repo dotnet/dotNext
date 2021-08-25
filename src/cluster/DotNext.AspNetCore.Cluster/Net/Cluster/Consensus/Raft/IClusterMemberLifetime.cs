@@ -32,6 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets predicate that can be used to override default logic for searching of local cluster member.
         /// </summary>
+        [Obsolete("Use ClusterMemberConfiguration.PublicEndPoint instead")]
         Func<IRaftClusterMember, CancellationToken, ValueTask<bool>>? LocalMemberSelector => null;
     }
 }

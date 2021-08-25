@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     /// The service implementing this interface should be registered
     /// as singleton service in DI container.
     /// </remarks>
+    [Obsolete("Use embedded mode instead")]
     [CLSCompliant(false)]
     public interface IDedicatedHostBuilder : IHostingStartup
     {

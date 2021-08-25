@@ -2,21 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Net.Cluster.Consensus.Raft.Membership;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Text;
+
     internal partial class RaftHttpCluster
     {
+        [Obsolete]
         private readonly IMemberDiscoveryService? discoveryService;
+        private readonly ClusterMemberAnnouncer<Uri>? announcer;
         private IDisposable? membershipWatch;
 
+        [Obsolete]
         private protected abstract ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync();
 
         [Obsolete]
-        private async ValueTask<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
+        private async ValueTask<Uri?> DetectLocalMemberAsync(CancellationToken token)
         {
             var selector = configurator?.LocalMemberSelector;
             RaftClusterMember? member;
@@ -31,7 +38,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 member = await FindMemberAsync(selector, token).ConfigureAwait(false);
             }
 
-            return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            if (member is not null)
+            {
+                member.IsRemote = false;
+                return member.BaseAddress;
+            }
+
+            return null;
         }
 
         [Obsolete]
@@ -50,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else if (holder.Member.IsRemote)
                 {
                     using var member = holder.Remove();
-                    memberRemovedHandlers?.Invoke(this, member);
+                    OnMemberRemoved(member);
                     member.CancelPendingRequests();
                 }
             }
@@ -60,9 +73,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 if (!existingMembers.Contains(memberUri))
                 {
-                    var member = CreateMember(memberUri);
+                    var member = CreateMember(memberUri, null);
                     builder.Add(member);
-                    memberAddedHandlers?.Invoke(this, member);
+                    OnMemberAdded(member);
                 }
             }
 
@@ -85,5 +98,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Task ApplyChanges(IReadOnlyCollection<Uri> members, CancellationToken token)
                 => ChangeMembersAsync(mutator, members.ToImmutableHashSet(), token);
         }
+
+        protected sealed override async ValueTask AddLocalMemberAsync(Func<AddMemberLogEntry, CancellationToken, ValueTask<long>> appender, CancellationToken token)
+        {
+            if (localNode is not null)
+            {
+                using var buffer = Encoding.UTF8.GetBytes(localNode.ToString().AsSpan());
+                await appender(new(LocalMemberId, buffer.Memory, Term), token).ConfigureAwait(false);
+            }
+        }
+
+        // TODO: Remove localNode condition in .NEXT 4
+        protected sealed override Task AnnounceAsync(CancellationToken token = default)
+            => localNode is null || announcer is null ? Task.CompletedTask : announcer(LocalMemberId, localNode, token);
     }
 }

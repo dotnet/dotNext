@@ -41,6 +41,6 @@
         /// <summary>
         /// Gets bootstrap mode.
         /// </summary>
-        ClusterMemberBootstrap BootstrapMode => ClusterMemberBootstrap.Recovery; // TODO: Remove default value in .NEXT 4
+        ClusterMemberBootstrap BootstrapMode => ClusterMemberBootstrap.Recovery;
     }
 }

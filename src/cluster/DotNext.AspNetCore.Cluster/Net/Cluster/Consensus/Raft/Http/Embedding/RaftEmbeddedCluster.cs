@@ -22,18 +22,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config = services.GetRequiredService<IOptions<RaftEmbeddedClusterMemberConfiguration>>().Value;
             ProtocolPath = config.ResourcePath;
             foreach (var memberUri in config.Members)
-                members.Add(CreateMember(memberUri));
+                members.Add(CreateMember(memberUri, null));
             server = services.GetRequiredService<IServer>();
             config.SetupHostAddressHint(server.Features);
         }
 
-        private protected override RaftClusterMember CreateMember(Uri address)
+        private protected override RaftClusterMember CreateMember(Uri address, ClusterMemberId? id)
         {
-            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value.IfNullOrEmpty(RaftEmbeddedClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative));
+            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value.IfNullOrEmpty(RaftEmbeddedClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative), id);
             ConfigureMember(member);
             return member;
         }
 
+        [Obsolete]
         private protected override ValueTask<ICollection<EndPoint>> GetHostingAddressesAsync()
             => server.GetHostingAddressesAsync();
     }

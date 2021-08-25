@@ -33,51 +33,44 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
+            using var tokenSource = token.LinkTo(LifecycleToken);
+            do
+            {
+                var leader = Leader;
+                if (leader is null)
+                    throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+                try
+                {
+                    return await (leader.IsRemote ?
+                        leader.SendMessageAsync(message, responseReader, true, token) :
+                        TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
+                        .ConfigureAwait(false);
+                }
+                catch (MemberUnavailableException e)
+                {
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    // keep in sync with ReceiveMessage behavior
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+            }
+            while (!token.IsCancellationRequested);
+
+            throw new OperationCanceledException(token);
+
             static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, MessageReader<TResponse> responseReader, CancellationToken token)
             {
                 var responseMsg = await (handlers.TryReceiveMessage(sender, message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException())).ConfigureAwait(false);
                 return await responseReader(responseMsg, token).ConfigureAwait(false);
             }
-
-            var tokenSource = token.LinkTo(LifecycleToken);
-            try
-            {
-                do
-                {
-                    var leader = Leader;
-                    if (leader is null)
-                        throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-                    try
-                    {
-                        return await (leader.IsRemote ?
-                            leader.SendMessageAsync(message, responseReader, true, token) :
-                            TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
-                            .ConfigureAwait(false);
-                    }
-                    catch (MemberUnavailableException e)
-                    {
-                        Logger.FailedToRouteMessage(message.Name, e);
-                    }
-                    catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        // keep in sync with ReceiveMessage behavior
-                        Logger.FailedToRouteMessage(message.Name, e);
-                    }
-                }
-                while (!token.IsCancellationRequested);
-            }
-            finally
-            {
-                tokenSource?.Dispose();
-            }
-
-            throw new OperationCanceledException(token);
         }
 
         async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
         {
             // keep the same message between retries for correct identification of duplicate messages
-            var signal = new CustomMessage(in localMember.GetReference(UnresolvedLocalMemberExceptionFactory), message, true) { RespectLeadership = true };
+            var signal = new CustomMessage(LocalMemberId, message, true) { RespectLeadership = true };
             var tokenSource = token.LinkTo(LifecycleToken);
             try
             {
@@ -285,13 +278,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal Task ProcessRequest(HttpContext context)
         {
-            // this check allows to prevent situation when request comes earlier than initialization
-            if (!localMember.HasValue)
-            {
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, context.RequestAborted);
-            }
-
             var networks = allowedNetworks;
 
             // checks whether the client's address is allowed

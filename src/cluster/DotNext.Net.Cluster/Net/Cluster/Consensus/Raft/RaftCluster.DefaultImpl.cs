@@ -98,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected sealed override async ValueTask AddLocalMemberAsync(Func<AddMemberLogEntry, CancellationToken, ValueTask<long>> appender, CancellationToken token)
         {
             using var address = publicEndPoint.GetBytes(allocator);
-            await appender(new AddMemberLogEntry(LocalMember, address.Memory, Term), token).ConfigureAwait(false);
+            await appender(new AddMemberLogEntry(LocalMemberId, address.Memory, Term), token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -119,13 +119,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc />
         protected sealed override Task AnnounceAsync(CancellationToken token = default)
-            => announcer?.Invoke(publicEndPoint, LocalMember, token) ?? Task.CompletedTask;
+            => announcer?.Invoke(publicEndPoint, LocalMemberId, token) ?? Task.CompletedTask;
 
         /// <inheritdoc />
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
         /// <inheritdoc />
-        ref readonly ClusterMemberId ILocalMember.Id => ref LocalMember;
+        ref readonly ClusterMemberId ILocalMember.Id => ref LocalMemberId;
 
         /// <inheritdoc />
         IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;

@@ -18,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     using static DotNext.Hosting.HostBuilderExtensions;
 
     [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
+    [Obsolete]
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
         private sealed class WebHostConfigurer
@@ -73,12 +74,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             host = new WebHostConfigurer(services, out var config, ProcessRequest).BuildHost();
             config.SetupHostAddressHint(host.Services.GetRequiredService<IServer>().Features);
             foreach (var memberUri in config.Members)
-                members.Add(CreateMember(memberUri));
+                members.Add(CreateMember(memberUri, null));
         }
 
-        private protected override RaftClusterMember CreateMember(Uri address)
+        private protected override RaftClusterMember CreateMember(Uri address, ClusterMemberId? id)
         {
-            var member = new RaftClusterMember(this, address, Root);
+            var member = new RaftClusterMember(this, address, Root, id);
             ConfigureMember(member);
             return member;
         }

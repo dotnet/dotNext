@@ -199,7 +199,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Announces a new node.
         /// </summary>
         /// <remarks>
-        /// The identifier of the local node to be announced is available via <see cref="LocalMember"/> property.
+        /// The identifier of the local node to be announced is available via <see cref="LocalMemberId"/> property.
         /// </remarks>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result</returns>
@@ -209,7 +209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Commits the local member to the storage.
         /// </summary>
         /// <remarks>
-        /// The identifier of the local node to be committed is available via <see cref="LocalMember"/> property.
+        /// The identifier of the local node to be committed is available via <see cref="LocalMemberId"/> property.
         /// You can use <see cref="Membership.AddMemberLogEntry"/> log entry to commit the address of the local member.
         /// </remarks>
         /// <param name="appender">The delegate that can be used to add the address of the local member.</param>
@@ -251,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             catch (Exception e)
             {
-#if !NETSTANDARD2_1
+#if NETSTANDARD2_1
                 result = new(Task.FromException(e));
 #else
                 result = ValueTask.FromException(e);
