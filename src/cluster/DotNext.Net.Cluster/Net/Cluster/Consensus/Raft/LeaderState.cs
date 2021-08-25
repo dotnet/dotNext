@@ -175,6 +175,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
+            replicationEvent.TrySetCanceled(timerCancellation.Token);
             return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
         }
 
