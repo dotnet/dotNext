@@ -20,8 +20,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private readonly PipeOptions pipeConfig;
         private readonly TimeSpan requestTimeout;
 
-        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
-            : base(localMember, address, metrics)
+        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, bool isRemote, ClusterMemberId? id, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
+            : base(localMember, address, isRemote, id, metrics)
         {
             client = clientFactory(address);
             this.requestTimeout = requestTimeout;

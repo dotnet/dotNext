@@ -8,12 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using static System.Threading.Timeout;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
+    using static Threading.Tasks.Synchronization;
     using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
     using Sequence = Collections.Generic.Sequence;
     using Timestamp = Diagnostics.Timestamp;
@@ -151,7 +153,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 ref var list = ref MemoryMarshal.GetReference(members);
                 if (!Unsafe.IsNullRef(ref list))
-                    list = list.Add(member);
+                    list = list.Add(member, out _);
             }
 
             /// <summary>
@@ -167,6 +169,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold, clockDriftBound;
         private readonly Random random;
+
+        /// <summary>
+        /// Gets bootstrap mode.
+        /// </summary>
+        protected readonly ClusterMemberBootstrap bootstrapMode;
+        private ClusterMemberId localMemberId;
+
         private bool standbyNode;
 
         private AsyncLock transitionSync;  // used to synchronize state transitions
@@ -210,13 +219,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             heartbeatThreshold = config.HeartbeatThreshold;
             standbyNode = config.Standby;
             clockDriftBound = config.ClockDriftBound;
+            bootstrapMode = config.BootstrapMode;
         }
 
         /// <summary>
         /// Generates a new unique cluster member identifier.
         /// </summary>
         /// <returns>Generated cluster member identifier.</returns>
-        protected ClusterMemberId NewClusterMemberId() => new(random);
+        public ClusterMemberId NewClusterMemberId() => new(random);
 
         /// <summary>
         /// Gets logger used by this object.
@@ -227,19 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets information the current member.
         /// </summary>
-        protected virtual ClusterMemberId? LocalMember
-        {
-            get
-            {
-                foreach (var member in members.Values)
-                {
-                    if (!member.IsRemote)
-                        return member.Id;
-                }
-
-                return null;
-            }
-        }
+        protected ref readonly ClusterMemberId LocalMember => ref localMemberId;
 
         /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
@@ -343,23 +341,105 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private RaftState CreateInitialState()
-            => state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
+        private FollowerState CreateInitialState()
+            => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
 
-        /// <summary>
-        /// Starts serving local member.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel initialization process.</param>
-        /// <returns>The task representing asynchronous execution of the methodC.</returns>
-        public virtual async Task StartAsync(CancellationToken token)
+        private Task RecoverAsync()
         {
-            await auditTrail.InitializeAsync(token).ConfigureAwait(false);
+            // in case of recovery bootstrap we expect that the local node is already presented
+            ClusterMemberId? localId = null;
+
+            foreach (var member in members.Values)
+            {
+                if (!member.IsRemote)
+                {
+                    localId = member.Id;
+                    break;
+                }
+            }
+
+            localMemberId = localId ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
             // start active node in Follower state;
             // otherwise use ephemeral state
             state = standbyNode ?
                 new StandbyState(this) :
                 CreateInitialState();
+
+            return Task.CompletedTask;
+        }
+
+        private async Task JoinClusterAsync(CancellationToken token)
+        {
+            localMemberId = NewClusterMemberId();
+            state = new StandbyState(this);
+
+            if (auditTrail is Membership.IClusterConfigurationStorage storage)
+                storage.ConfigurationInterpreter = this;
+            else
+                throw new RaftProtocolException(ExceptionMessages.AuditTrailNoMembershipSupport(auditTrail.GetType()));
+
+            announcementEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            await AnnounceAsync(token).ConfigureAwait(false);
+
+            // now wait for the reply from the cluster
+            await announcementEvent.Task.WaitAsync(InfiniteTimeSpan, token).ConfigureAwait(false);
+
+            // verify that local node is here
+            foreach (var member in members.Values)
+            {
+                if (member.Id == localMemberId)
+                    goto success;
+            }
+
+            throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+
+        success:
+            if (!standbyNode)
+            {
+                var current = state;
+                state = CreateInitialState();
+                current.Dispose();
+            }
+        }
+
+        private async Task ColdStartAsync(CancellationToken token)
+        {
+            // in a cold start it's expected that the local member should be committed to the log
+            localMemberId = NewClusterMemberId();
+
+            var storage = auditTrail as Membership.IClusterConfigurationStorage;
+
+            if (storage is null)
+                throw new RaftProtocolException(ExceptionMessages.AuditTrailNoMembershipSupport(auditTrail.GetType()));
+
+            // append entry with local member
+            await AddLocalMemberAsync(storage.AppendAsync<Membership.AddMemberLogEntry>, token);
+            await storage.CommitAsync(token).ConfigureAwait(false);
+
+            // now check that there is only one local member in the list
+            if (members.Count != 1 && !members.ContainsKey(localMemberId))
+                throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        }
+
+        /// <summary>
+        /// Starts serving local member.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel initialization process.</param>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
+        public virtual async Task StartAsync(CancellationToken token)
+        {
+            // audit trail is initialized so it is expected that the internal state machine initialized as well (through ReplayAsync call)
+            await auditTrail.InitializeAsync(token).ConfigureAwait(false);
+
+            await (bootstrapMode switch
+            {
+                ClusterMemberBootstrap.Announcement => JoinClusterAsync(token),
+                ClusterMemberBootstrap.ColdStart => ColdStartAsync(token),
+                _ => RecoverAsync(),
+            })
+            .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -844,6 +924,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
             => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
+        private async Task<bool> ReplicateAsync<TEntry>(TEntry entry, Timeout timeout, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            using var tokenSource = token.LinkTo(LifecycleToken);
+
+            // 1 - append entry to the log
+            var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
+            timeout.ThrowIfExpired(out var remaining);
+
+            // 2 - force replication
+            if (await ForceReplicationAsync(remaining, token).ConfigureAwait(false))
+                timeout.ThrowIfExpired(out remaining);
+            else
+                throw new TimeoutException();
+
+            // 3 - wait for commit
+            if (!await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false))
+                throw new TimeoutException();
+
+            return Term == entry.Term;
+        }
+
+        /// <summary>
+        /// Appends and replicates the log entry.
+        /// </summary>
+        /// <typeparam name="TEntry">The type of the log entry.</typeparam>
+        /// <param name="entry">The log entry to append.</param>
+        /// <param name="timeout">The timeout for the operation.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns></returns>
+        public Task<bool> ReplicateAsync<TEntry>(TEntry entry, TimeSpan timeout, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+            => ReplicateAsync(entry, new(timeout), token);
+
         private TMember? TryGetPeer(EndPoint peer)
         {
             foreach (var member in members.Values)
@@ -868,6 +982,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionSync.Dispose();
             leader = null;
             Interlocked.Exchange(ref state, null)?.Dispose();
+
+            if (announcementEvent is not null)
+                TrySetDisposedException(announcementEvent);
         }
 
         /// <summary>

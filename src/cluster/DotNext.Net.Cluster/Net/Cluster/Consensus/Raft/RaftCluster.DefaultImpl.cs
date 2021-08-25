@@ -8,8 +8,11 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
+    using IO;
     using IO.Log;
     using TransportServices;
+    using AddMemberLogEntry = Membership.AddMemberLogEntry;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     /// <summary>
@@ -18,10 +21,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         private readonly ImmutableDictionary<string, string> metadata;
-        private readonly ClusterMemberId localMemberId;
-        private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
+        private readonly Func<ILocalMember, IPEndPoint, ClusterMemberId?, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
         private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
+        private readonly IPEndPoint publicEndPoint;
+        private readonly MemoryAllocator<byte>? allocator;
+        private readonly Func<IPEndPoint, ClusterMemberId, CancellationToken, Task>? announcer;
+        private readonly int warmupRounds;
         private IServer? server;
 
         /// <summary>
@@ -32,19 +38,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             : base(configuration, out var members)
         {
             Metrics = configuration.Metrics;
-            localMemberId = ClusterMemberId.FromEndPoint(configuration.PublicEndPoint);
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
-            clientFactory = configuration.CreateMemberClient;
+            clientFactory = configuration.CreateMemberClient; // TODO: Remove this assignment in .NEXT 4
             serverFactory = configuration.CreateServer;
             bufferingOptions = configuration.BufferingOptions;
+            publicEndPoint = configuration.PublicEndPoint;
+            allocator = configuration.MemoryAllocator;
 
             // create members without starting clients
             foreach (var member in configuration.Members)
-                members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));
+                members.Add(configuration.CreateMemberClient(this, member, null, configuration.Metrics as IClientMetricsCollector));
         }
-
-        /// <inheritdoc />
-        protected sealed override ClusterMemberId? LocalMember => localMemberId;
 
         /// <summary>
         /// Starts serving local member.
@@ -53,9 +57,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public override Task StartAsync(CancellationToken token = default)
         {
-            if (TryGetMember(localMemberId) is null)
-                throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-
             server = serverFactory(this);
             server.Start();
             return base.StartAsync(token);
@@ -81,14 +82,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <param name="address">The address of the cluster member.</param>
         /// <returns>A new client for communication with cluster member.</returns>
+        [Obsolete("Applicable for Custom bootstrap mode where dynamic membership changes are not recommended")]
         protected RaftClusterMember CreateClient(IPEndPoint address)
-            => clientFactory(this, address, Metrics as IClientMetricsCollector);
+            => clientFactory(this, address, null, Metrics as IClientMetricsCollector);
+
+        /// <inheritdoc />
+        protected sealed override RaftClusterMember CreateMember(in ClusterMemberId id, ReadOnlyMemory<byte> address)
+        {
+            var reader = IAsyncBinaryReader.Create(address);
+            var endPoint = (IPEndPoint)reader.ReadEndPoint();
+            return clientFactory(this, endPoint, id, Metrics as IClientMetricsCollector);
+        }
+
+        /// <inheritdoc />
+        protected sealed override async ValueTask AddLocalMemberAsync(Func<AddMemberLogEntry, CancellationToken, ValueTask<long>> appender, CancellationToken token)
+        {
+            using var address = publicEndPoint.GetBytes(allocator);
+            await appender(new AddMemberLogEntry(LocalMember, address.Memory, Term), token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Registers a new cluster member.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called on leade node.
+        /// </remarks>
+        /// <param name="id">The identifier.</param>
+        /// <param name="address"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
+        {
+            using var buffer = address.GetBytes(allocator);
+            return await AddMemberAsync(id, buffer.Memory, warmupRounds, token).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        protected sealed override Task AnnounceAsync(CancellationToken token = default)
+            => announcer?.Invoke(publicEndPoint, LocalMember, token) ?? Task.CompletedTask;
 
         /// <inheritdoc />
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
         /// <inheritdoc />
-        ref readonly ClusterMemberId ILocalMember.Id => ref localMemberId;
+        ref readonly ClusterMemberId ILocalMember.Id => ref LocalMember;
 
         /// <inheritdoc />
         IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;

@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
     /// Represents a feature of <see cref="IPersistentState"/>
     /// that allows to store cluster membership directly in the log.
     /// </summary>
-    public interface IClusterConfigurationStorage : IPersistentState
+    public interface IClusterConfigurationStorage : IPersistentState // TODO: Merge with IPersistentState in .NEXT 4
     {
         /// <summary>
         /// Allows to track membership commands in Raft log.
@@ -44,13 +44,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// Gets or sets a configuration tracker.
         /// </summary>
         IConfigurationInterpreter? ConfigurationInterpreter { get; set; }
-
-        /// <summary>
-        /// Restores information about all cluster members and calls <see cref="IConfigurationInterpreter.RefreshAsync(IAsyncEnumerable{KeyValuePair{ClusterMemberId, ReadOnlyMemory{byte}}}, CancellationToken)"/>
-        /// method.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result.</returns>
-        ValueTask LoadConfigurationAsync(CancellationToken token = default);
     }
 }

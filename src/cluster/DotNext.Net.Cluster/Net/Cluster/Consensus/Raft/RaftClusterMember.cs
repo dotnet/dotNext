@@ -22,13 +22,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile IReadOnlyDictionary<string, string>? metadataCache;
         private AtomicEnum<ClusterMemberStatus> status;
 
-        private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+        private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, bool isRemote, ClusterMemberId? id, IClientMetricsCollector? metrics)
         {
             this.localMember = localMember;
             this.metrics = metrics;
             EndPoint = endPoint;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
-            Id = ClusterMemberId.FromEndPoint(endPoint);
+            Id = id ?? ClusterMemberId.FromEndPoint(endPoint);
+            IsRemote = isRemote;
         }
 
         /// <inheritdoc />
@@ -49,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Determines whether this member is not a local node.
         /// </summary>
-        public bool IsRemote => Id != localMember.Id;
+        public bool IsRemote { get; }
 
         /// <summary>
         /// Gets the status of this member.
@@ -79,13 +80,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => Id == localMember.Id ? Task.FromResult(new Result<bool>(term, true)) : VoteAsync(term, lastLogIndex, lastLogTerm, token);
+            => IsRemote ? VoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
 
         private protected abstract Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => Id == localMember.Id ? Task.FromResult(new Result<bool>(term, true)) : PreVoteAsync(term, lastLogIndex, lastLogTerm, token);
+            => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
 
         private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : IRaftLogEntry
@@ -93,13 +94,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            => Id == localMember.Id ? Task.FromResult(new Result<bool>(term, true)) : AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+            => IsRemote ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token) : Task.FromResult(new Result<bool>(term, true));
 
         private protected abstract Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-            => localMember.Id == Id ? Task.FromResult(new Result<bool>(term, true)) : InstallSnapshotAsync(term, snapshot, snapshotIndex, token);
+            => IsRemote ? InstallSnapshotAsync(term, snapshot, snapshotIndex, token) : Task.FromResult(new Result<bool>(term, true));
 
         private protected abstract Task<bool> ResignAsync(CancellationToken token);
 
@@ -111,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
         {
-            if (localMember.Id == Id)
+            if (!IsRemote)
                 return localMember.Metadata;
 
             if (metadataCache is null || refresh)

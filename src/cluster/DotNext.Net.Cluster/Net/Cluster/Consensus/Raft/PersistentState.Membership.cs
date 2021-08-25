@@ -264,20 +264,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await membershipInterpreter.SerializeAsync(membershipStorage).ConfigureAwait(false);
             await membershipStorage.FlushAsync().ConfigureAwait(false);
         }
-
-        /// <summary>
-        /// Restores information about all cluster members.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result.</returns>
-        public async ValueTask LoadConfigurationAsync(CancellationToken token = default)
-        {
-            if (membershipStorage.Length > 0 && membershipInterpreter.Count == 0)
-                await membershipInterpreter.DeserializeAsync(membershipStorage, token).ConfigureAwait(false);
-
-            var handler = ConfigurationInterpreter;
-            if (handler is not null)
-                await handler.RefreshAsync(membershipInterpreter, token).ConfigureAwait(false);
-        }
     }
 }

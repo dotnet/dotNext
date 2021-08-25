@@ -799,10 +799,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task ConfigurationManagement(bool useCaching)
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IClusterConfigurationStorage state = new TestAuditTrail(dir, useCaching);
+            TestAuditTrail state = new TestAuditTrail(dir, useCaching);
             var tracker = new ClusterMembershipInterpreter();
             state.ConfigurationInterpreter = tracker;
-            await state.LoadConfigurationAsync();
 
             // generate IDs
             var random = new Random();
@@ -840,7 +839,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return default;
             };
 
-            await state.ReadAsync(checker, 0, 1);
+            await state.ReadAsync<Missing>(new(checker), 0, 1);
 
             // remove members
             await state.AppendAsync(new RemoveMemberLogEntry(id2, state.Term));
@@ -856,7 +855,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             tracker.Clear();
             state = new TestAuditTrail(dir, useCaching);
             state.ConfigurationInterpreter = tracker;
-            await state.LoadConfigurationAsync();
+            await state.ReplayAsync();
 
             DoesNotContain(id2, tracker.Keys);
             DoesNotContain(id4, tracker.Keys);
@@ -874,7 +873,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IClusterConfigurationStorage state = new TestAuditTrail(dir, false);
             var tracker = new ClusterMembershipInterpreter();
             state.ConfigurationInterpreter = tracker;
-            await state.LoadConfigurationAsync();
 
             // generate IDs
             var random = new Random();

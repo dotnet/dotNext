@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
 using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
@@ -31,6 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private int? serverChannels;
             private ILoggerFactory? loggerFactory;
             private TimeSpan? requestTimeout;
+            private int warmupRounds;
             private protected readonly Func<long> applicationIdGenerator;
 
             private protected NodeConfiguration(IPEndPoint hostAddress)
@@ -42,6 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 HostEndPoint = hostAddress;
                 applicationIdGenerator = new Random().Next<long>;
                 TimeToLive = 64;
+                warmupRounds = 10;
             }
 
             /// <summary>
@@ -111,9 +115,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [AllowNull]
             public MemoryAllocator<byte> MemoryAllocator
             {
-                get => allocator ?? PipeConfig.Pool.ToAllocator();
+                get => allocator ??= PipeConfig.Pool.ToAllocator();
                 set => allocator = value;
             }
+
+            /// <summary>
+            /// Gets or sets the delegate that can be used to announce the node to the cluster
+            /// if <see cref="BootstrapMode"/> is <see cref="ClusterMemberBootstrap.Announcement"/>.
+            /// </summary>
+            public Func<IPEndPoint, ClusterMemberId, CancellationToken, Task>? Announcer
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets the numbers of rounds used to warmup a fresh node which wants to join the cluster
+            /// in <see cref="ClusterMemberBootstrap.Announcement"/> state.
+            /// </summary>
+            public int WarmupRounds
+            {
+                get => warmupRounds;
+                set => warmupRounds = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(warmupRounds));
+            }
+
+            /// <summary>
+            /// Gets or sets bootstrap mode.
+            /// </summary>
+            public ClusterMemberBootstrap BootstrapMode { get; set; } = ClusterMemberBootstrap.Recovery;
 
             private protected TimeSpan ConnectTimeout
                 => TimeSpan.FromMilliseconds(LowerElectionTimeout);
@@ -222,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return CreateExchangePool;
             }
 
-            internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics);
+            internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId? id, IClientMetricsCollector? metrics);
 
             internal abstract IServer CreateServer(ILocalMember localMember);
         }
@@ -306,8 +335,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Ttl = TimeToLive,
                 };
 
-            internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
+            internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId? id, IClientMetricsCollector? metrics)
+                => new ExchangePeer(localMember, endPoint, Equals(PublicEndPoint, endPoint), id, CreateClient, RequestTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
                 => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
@@ -392,8 +421,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ConnectTimeout = ConnectTimeout,
             };
 
-            internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
+            internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId? id, IClientMetricsCollector? metrics)
+                => new ExchangePeer(localMember, endPoint, Equals(endPoint, PublicEndPoint), id, CreateClient, RequestTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
             {

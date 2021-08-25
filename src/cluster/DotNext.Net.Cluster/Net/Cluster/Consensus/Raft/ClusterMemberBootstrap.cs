@@ -8,10 +8,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public enum ClusterMemberBootstrap
     {
         /// <summary>
-        /// A list of cluster members are provided by configuration file or other external mechanism.
+        /// The node was shutted down accidentally so no need to join the cluster is a special way. 
         /// </summary>
-        /// <seealso cref="RaftCluster{TMember}.RaftCluster(IClusterMemberConfiguration, out RaftCluster{TMember}.MemberCollectionBuilder)"/>
-        Custom = 0,
+        Recovery = 0,
 
         /// <summary>
         /// The node is started in StandBy mode and wait for confirmation from the leader node.

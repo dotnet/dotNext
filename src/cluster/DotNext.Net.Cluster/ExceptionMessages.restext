@@ -23,3 +23,4 @@ MissingCommandAttribute=Type {0} is not marked with CommandAttribute
 MissingCommandId=Log entry must have associated command identifier
 MissingMessageAttribute=Type {0} is not marked with MessageAttribute
 MissingMessageFormatter=Message of type {0} doesn't have registered formatter
+AuditTrailNoMembershipSupport=Audit trail of type {0} doesn't provide a storage for the list of cluster members

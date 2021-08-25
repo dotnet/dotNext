@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal partial class LeaderState
     {
-        private sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
+        internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
         {
             private readonly IAuditTrail<IRaftLogEntry> auditTrail;
             private readonly IRaftClusterMember member;
@@ -58,8 +58,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             // ensure that the replication process is forked
-            internal Task<Result<bool>> ReplicateAsync()
-                => System.Threading.Tasks.Task.Run(StartCoreAsync);
+            internal Task<Result<bool>> ReplicateAsync(bool fork = true)
+                => fork ? System.Threading.Tasks.Task.Run(StartCoreAsync) : StartCoreAsync();
 
             private void Complete()
             {

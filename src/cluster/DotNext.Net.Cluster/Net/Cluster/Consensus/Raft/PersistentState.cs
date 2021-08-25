@@ -1343,7 +1343,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public ValueTask<long> CommitAsync(long endIndex, CancellationToken token) => CommitAsync(new long?(endIndex), token);
+        public ValueTask<long> CommitAsync(long endIndex, CancellationToken token = default) => CommitAsync(new long?(endIndex), token);
 
         /// <summary>
         /// Commits log entries into the underlying storage and marks these entries as committed.
@@ -1355,7 +1355,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public ValueTask<long> CommitAsync(CancellationToken token) => CommitAsync(null, token);
+        public ValueTask<long> CommitAsync(CancellationToken token = default) => CommitAsync(null, token);
 
         /// <summary>
         /// Applies the command represented by the log entry to the underlying database engine.
@@ -1429,8 +1429,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 // 0. Load configuration
-                if (membershipStorage.Length > 0 && membershipInterpreter.Count == 0)
+                if (membershipStorage.Length > 0)
+                {
+                    membershipInterpreter.Clear();
                     await membershipInterpreter.DeserializeAsync(membershipStorage, token).ConfigureAwait(false);
+                }
 
                 LogEntry entry;
                 long startIndex;
