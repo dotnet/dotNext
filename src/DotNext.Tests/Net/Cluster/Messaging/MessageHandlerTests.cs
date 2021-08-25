@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MessageHandlerTests : Test
     {
         [Fact]

@@ -1,10 +1,12 @@
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Xunit;
 
 namespace DotNext.Buffers
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ReadOnlySpanConsumerTests : Test
     {
         [Fact]

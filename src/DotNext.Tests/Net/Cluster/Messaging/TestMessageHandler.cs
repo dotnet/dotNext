@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    [ExcludeFromCodeCoverage]
     public class TestMessageHandler : MessageHandler
     {
         internal int Result;

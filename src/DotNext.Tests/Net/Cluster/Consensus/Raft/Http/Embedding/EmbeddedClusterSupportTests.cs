@@ -417,6 +417,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         }
 
         [Fact]
+        [Obsolete]
         public static async Task CustomServiceDiscovery()
         {
             var config = new Dictionary<string, string>

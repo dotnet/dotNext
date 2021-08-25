@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,6 +8,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Threading;
 
+    [Obsolete]
+    [ExcludeFromCodeCoverage]
     internal sealed class TestDiscoveryService : HashSet<Uri>, IMemberDiscoveryService, IDisposable
     {
         private readonly AsyncAutoResetEvent trigger = new(false);

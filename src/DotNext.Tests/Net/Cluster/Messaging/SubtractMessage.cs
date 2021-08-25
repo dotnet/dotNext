@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Cluster.Messaging
 {
     [Message(Name, Formatter = typeof(MessageFormatter))]
+    [ExcludeFromCodeCoverage]
     public sealed class SubtractMessage
     {
         internal const string Name = "Subtract";

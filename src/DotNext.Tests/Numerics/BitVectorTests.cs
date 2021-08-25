@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Numerics
 {
+    [ExcludeFromCodeCoverage]
     public sealed class BitVectorTests : Test
     {
         private static ReadOnlySpan<bool> CreateVector(int size, bool value)

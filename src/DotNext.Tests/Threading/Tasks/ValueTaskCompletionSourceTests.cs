@@ -1,5 +1,6 @@
 #if !NETCOREAPP3_1
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -7,6 +8,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ValueTaskCompletionSourceTests : Test
     {
         [Fact]

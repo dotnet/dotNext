@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Buffers
 {
+    [ExcludeFromCodeCoverage]
     public sealed class BufferUtilsTests : Test
     {
         [Fact]

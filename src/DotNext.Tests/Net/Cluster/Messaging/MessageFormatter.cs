@@ -1,11 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    using IO;
     using Runtime.Serialization;
 
+    [ExcludeFromCodeCoverage]
     internal sealed class MessageFormatter : IFormatter<AddMessage>, IFormatter<ResultMessage>, IFormatter<SubtractMessage>
     {
         public MessageFormatter()

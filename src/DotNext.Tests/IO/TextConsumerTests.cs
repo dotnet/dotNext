@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Xunit;
 
@@ -6,6 +7,7 @@ namespace DotNext.IO
 {
     using Buffers;
 
+    [ExcludeFromCodeCoverage]
     public sealed class TextConsumerTests : Test
     {
         [Fact]

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
 namespace DotNext.IO
 {
+    [ExcludeFromCodeCoverage]
     internal static class DictionarySerializer
     {
         internal static void Serialize(IReadOnlyDictionary<string, string> dictionary, Stream output)

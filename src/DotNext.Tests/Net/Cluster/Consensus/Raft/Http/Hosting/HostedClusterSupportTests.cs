@@ -18,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     [ExcludeFromCodeCoverage]
     public sealed class HostedClusterSupportTests : Test
     {
+        [Obsolete]
         private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
             where TStartup : class
         {
@@ -45,6 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         }
 
         [Fact]
+        [Obsolete]
         public static async Task DependencyInjection()
         {
             var config = new Dictionary<string, string>()
