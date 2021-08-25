@@ -258,22 +258,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private async Task InstallSnapshotAsync(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
+        private async Task InstallSnapshotAsync(InstallSnapshotMessage message, Func<CancellationToken, ValueTask> configurationReader, HttpResponse response, CancellationToken token)
         {
             Result<bool> result;
             TryGetMember(message.Sender)?.Touch();
 
-            if (bufferingOptions is null)
+            try
             {
+                await configurationReader(token).ConfigureAwait(false);
                 result = await InstallSnapshotAsync(message.Sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
-            }
-            else
-            {
-                using var buffered = await BufferedRaftLogEntry.CopyAsync(message.Snapshot, bufferingOptions, token).ConfigureAwait(false);
-                result = await InstallSnapshotAsync(message.Sender, message.ConsensusTerm, buffered, message.Index, token).ConfigureAwait(false);
-            }
 
-            await message.SaveResponse(response, result, token).ConfigureAwait(false);
+                await message.SaveResponse(response, result, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (message.Snapshot is IDisposable disposable)
+                    disposable.Dispose();
+            }
         }
 
         internal Task ProcessRequest(HttpContext context)
@@ -305,7 +306,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 case CustomMessage.MessageType:
                     return ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
                 case InstallSnapshotMessage.MessageType:
-                    return InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
+                    return InstallSnapshotAsync(new InstallSnapshotMessage(context.Request, out var reader), reader, context.Response, context.RequestAborted);
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;

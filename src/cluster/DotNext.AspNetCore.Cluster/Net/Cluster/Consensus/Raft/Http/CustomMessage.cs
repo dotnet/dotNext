@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -29,14 +30,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             RequestReply,
         }
 
-        private sealed class OutboundMessageContent : OutboundTransferObject
+        private sealed class OutboundMessageContent : HttpContent
         {
+            private readonly IDataTransferObject dto;
+
             internal OutboundMessageContent(IMessage message)
-                : base(message)
             {
                 Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
                 Headers.Add(MessageNameHeader, message.Name);
+                dto = message;
             }
+
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+                => SerializeToStreamAsync(stream, context, CancellationToken.None);
+
+#if NETCOREAPP3_1
+            private
+#else
+            protected override
+#endif
+            Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token) => dto.WriteToAsync(stream, token: token).AsTask();
+
+            protected override bool TryComputeLength(out long length)
+                => dto.Length.TryGetValue(out length);
         }
 
         private sealed class InboundMessageContent : IMessage

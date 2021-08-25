@@ -33,26 +33,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
         private static readonly Random RequestIdGenerator = new();
 
-        private protected class OutboundTransferObject : HttpContent
-        {
-            private readonly IDataTransferObject dto;
-
-            internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
-
-            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
-                => SerializeToStreamAsync(stream, context, CancellationToken.None);
-
-#if NETCOREAPP3_1
-            private
-#else
-            protected sealed override
-#endif
-            Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token) => dto.WriteToAsync(stream, token: token).AsTask();
-
-            protected sealed override bool TryComputeLength(out long length)
-                => dto.Length.TryGetValue(out length);
-        }
-
         internal readonly string Id;
         internal readonly ClusterMemberId Sender;
         internal readonly string MessageType;
