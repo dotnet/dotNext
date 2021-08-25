@@ -1,10 +1,12 @@
 #if !NETCOREAPP3_1
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Xunit;
 
 namespace DotNext.Text.Json
 {
+    [ExcludeFromCodeCoverage]
     public sealed class OptionalConverterFactoryTests : Test
     {
         public sealed class JsonObject

@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Resources;
 using Xunit;
 
 namespace DotNext.Resources
 {
+    [ExcludeFromCodeCoverage]
     public sealed class DynamicResourceManagerTests : Test
     {
         private const string ResourceFileName = "DotNext.TestResources";

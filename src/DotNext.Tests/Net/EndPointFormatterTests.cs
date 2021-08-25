@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Xunit;
 
@@ -7,6 +8,7 @@ namespace DotNext.Net
     using Buffers;
     using IO;
 
+    [ExcludeFromCodeCoverage]
     public sealed class EndPointFormatterTests : Test
     {
         public static IEnumerable<object[]> GetTestEndPoints()

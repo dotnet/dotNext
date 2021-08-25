@@ -1,6 +1,7 @@
 #if !NETCOREAPP3_1
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Xunit;
 
@@ -8,6 +9,7 @@ namespace DotNext.Runtime.InteropServices
 {
     using IO;
 
+    [ExcludeFromCodeCoverage]
     public sealed class PinnedArrayTests : Test
     {
         private static void CheckEmptyArray(IUnmanagedArray<int> array)
