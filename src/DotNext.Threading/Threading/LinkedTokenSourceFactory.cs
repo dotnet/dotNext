@@ -66,10 +66,10 @@ namespace DotNext.Threading
         /// Links two cancellation tokens with the given timeout.
         /// </summary>
         /// <param name="first">The first cancellation token. Can be modified by this method.</param>
-        /// <param name="second">The second cancellation token.</param>
         /// <param name="timeout">The timeout to link.</param>
+        /// <param name="second">The second cancellation token.</param>
         /// <returns>The linked token source; or <see langword="null"/> if not needed.</returns>
-        public static CancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second, TimeSpan timeout)
+        public static CancellationTokenSource? LinkTo(this ref CancellationToken first, TimeSpan timeout, CancellationToken second)
         {
             CancellationTokenSource? result;
 
