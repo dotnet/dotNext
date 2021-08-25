@@ -178,6 +178,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
+            internal long GetTerm(long absoluteIndex)
+            {
+                Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
+
+                var relativeIndex = ToRelativeIndex(absoluteIndex);
+                ReadMetadata(relativeIndex, out var metadata);
+                return metadata.Term;
+            }
+
             // We don't need to analyze read optimization hint.
             // Metadata reconstruction is cheap operation.
             internal LogEntry Read(in DataAccessSession session, long absoluteIndex)

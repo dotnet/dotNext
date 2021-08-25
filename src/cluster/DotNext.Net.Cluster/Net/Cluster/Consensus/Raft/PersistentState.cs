@@ -1006,7 +1006,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // Calculate the term of the snapshot
             Partition? current = tail;
             if (this.TryGetPartition(upperBoundIndex, ref current))
-                builder.Term = current.Read(in session, upperBoundIndex).Term;
+                builder.Term = current.GetTerm(upperBoundIndex);
 
             // Initialize builder with snapshot record
             if (!snapshot.IsEmpty)
