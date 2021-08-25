@@ -18,6 +18,11 @@ namespace DotNext.Threading
         private readonly TimeSpan? timeout;
 
         /// <summary>
+        /// Gets infinite timeout.
+        /// </summary>
+        public static Timeout Infinite => default;
+
+        /// <summary>
         /// Constructs a new timeout control object.
         /// </summary>
         /// <param name="timeout">Max duration of operation.</param>

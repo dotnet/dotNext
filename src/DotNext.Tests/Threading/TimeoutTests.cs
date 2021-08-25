@@ -19,7 +19,7 @@ namespace DotNext.Threading
         [Fact]
         public static void DefaultValue()
         {
-            InfiniteTest(default);
+            InfiniteTest(Timeout.Infinite);
             InfiniteTest(new Timeout(InfiniteTimeSpan));
         }
     }
