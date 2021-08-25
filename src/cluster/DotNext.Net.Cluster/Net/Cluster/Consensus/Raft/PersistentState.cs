@@ -1003,13 +1003,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         // this operation doesn't require write lock
         private async ValueTask BuildSnapshotAsync(DataAccessSession session, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
         {
+            // Calculate the term of the snapshot
+            Partition? current = tail;
+            if (this.TryGetPartition(upperBoundIndex, ref current))
+                builder.Term = current.Read(in session, upperBoundIndex).Term;
+
             // Initialize builder with snapshot record
             if (!snapshot.IsEmpty)
             {
                 await builder.ApplyCoreAsync(await snapshot.ReadAsync(in session, null, token).ConfigureAwait(false)).ConfigureAwait(false);
             }
 
-            Partition? current = head;
+            current = head;
             Debug.Assert(current is not null);
             for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
             {
