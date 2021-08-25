@@ -32,6 +32,7 @@ namespace DotNext.Buffers
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
             Debug.Assert(array.Length >= length);
+
             this.array = array;
             owner = pool;
             this.length = length;
@@ -39,9 +40,16 @@ namespace DotNext.Buffers
 
         internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
         {
-            array = pool.Rent(length);
-            owner = pool;
-            this.length = exactSize ? length : array.Length;
+            if (length == 0)
+            {
+                this = default;
+            }
+            else
+            {
+                array = pool.Rent(length);
+                owner = pool;
+                this.length = exactSize ? length : array.Length;
+            }
         }
 
         /// <summary>
