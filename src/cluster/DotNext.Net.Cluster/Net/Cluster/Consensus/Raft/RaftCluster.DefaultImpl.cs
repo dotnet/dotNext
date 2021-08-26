@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Metrics = configuration.Metrics;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
-            clientFactory = configuration.CreateMemberClient; // TODO: Remove this assignment in .NEXT 4
+            clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
             bufferingOptions = configuration.BufferingOptions;
             publicEndPoint = configuration.PublicEndPoint;
