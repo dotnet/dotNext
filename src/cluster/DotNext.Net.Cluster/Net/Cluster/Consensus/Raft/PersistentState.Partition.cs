@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using IO;
     using static Runtime.InteropServices.SafeBufferExtensions;
     using IntegrityException = IO.Log.IntegrityException;
+    using LogEntryReadOptimizationHint = IO.Log.LogEntryReadOptimizationHint;
 
     public partial class PersistentState
     {
@@ -187,14 +188,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.Term;
             }
 
-            // We don't need to analyze read optimization hint.
-            // Metadata reconstruction is cheap operation.
-            internal LogEntry Read(in DataAccessSession session, long absoluteIndex)
+            internal LogEntry Read(in DataAccessSession session, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
             {
                 Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
                 var relativeIndex = ToRelativeIndex(absoluteIndex);
                 ReadMetadata(relativeIndex, out var metadata);
+
+                if (hint == LogEntryReadOptimizationHint.MetadataOnly)
+                    return new(in EmptyBuffer, in metadata, absoluteIndex);
 
                 ref readonly var cachedContent = ref entryCache.IsEmpty ?
                     ref EmptyBuffer :

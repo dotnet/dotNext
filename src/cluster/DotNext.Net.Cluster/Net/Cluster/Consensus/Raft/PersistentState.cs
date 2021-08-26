@@ -255,7 +255,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // enumerate over partitions in search of log entries
                 for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-                    Unsafe.Add(ref first, listIndex) = partition.Read(session, startIndex);
+                    Unsafe.Add(ref first, listIndex) = partition.Read(session, startIndex, reader.OptimizationHint);
 
                 return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
             }
