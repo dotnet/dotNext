@@ -36,48 +36,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal abstract void Return(int sessionId);
         }
 
-        // fast session pool supports no more than 31 readers
-        // and represents concurrent power set.
-        // TODO: Expand to 64 readers in .NET 6 (.NET Standard doesnt CMPXCHG for ulong data type)
         private sealed class FastSessionIdPool : SessionIdPool
         {
-            internal const int MaxReadersCount = 31;
-
-#if NETSTANDARD2_1
-            // https://github.com/dotnet/roslyn/pull/24621
-            private static ReadOnlySpan<byte> TrailingZeroCountDeBruijn => new byte[]
-            {
-                00, 01, 28, 02, 29, 14, 24, 03,
-                30, 22, 20, 15, 25, 17, 04, 08,
-                31, 27, 13, 23, 21, 19, 16, 07,
-                26, 12, 18, 06, 11, 05, 10, 09,
-            };
-#endif
+            internal const int MaxReadersCount = 63;
 
             // all bits are set to 1
             // if bit at position N is 1 then N is available session identifier;
             // otherwise, session identifier N is acquired by another thread
-            private volatile int control = -1;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static int TrailingZeroCount(int value)
-            {
-#if NETSTANDARD2_1
-                ref var first = ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn);
-                return Unsafe.AddByteOffset(ref first, (IntPtr)(int)(((value & (uint)-(int)value) * 0x077CB531U) >> 27));
-#else
-                return BitOperations.TrailingZeroCount(value);
-#endif
-            }
+            private ulong control = ulong.MaxValue;
 
             internal override int Take()
             {
-                int current, newValue, sessionId;
+                int sessionId;
+                ulong current, newValue;
                 do
                 {
                     current = control;
-                    sessionId = TrailingZeroCount(current);
-                    newValue = current ^ (1 << sessionId);
+                    sessionId = BitOperations.TrailingZeroCount(current);
+                    newValue = current ^ (1UL << sessionId);
                 }
                 while (Interlocked.CompareExchange(ref control, newValue, current) != current);
 
@@ -86,11 +62,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal override void Return(int sessionId)
             {
-                int current, newValue;
+                ulong current, newValue;
                 do
                 {
                     current = control;
-                    newValue = current | (1 << sessionId);
+                    newValue = current | (1UL << sessionId);
                 }
                 while (Interlocked.CompareExchange(ref control, newValue, current) != current);
             }

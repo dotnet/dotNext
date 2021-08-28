@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.InteropServices;
 
@@ -32,59 +33,55 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
         // we use this struct as a placeholder for all HyParView commands to reduce GC pressure
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Command // TODO: Migrate to init-only properties
+        private readonly struct Command
         {
             private readonly object? peersOrMessageTransport;
-            private readonly int ttlOrHighPriority;
 
-            private Command(CommandType type, EndPoint? sender, EndPoint? origin, IReadOnlyCollection<EndPoint>? peers, int ttlOrHighPriority)
-            {
-                Type = type;
-                Sender = sender;
-                Origin = origin;
-                peersOrMessageTransport = peers;
-                this.ttlOrHighPriority = ttlOrHighPriority;
-            }
-
-            private Command(IRumourSender sender)
-            {
-                Type = CommandType.Broadcast;
-                Sender = null;
-                Origin = null;
-                peersOrMessageTransport = sender;
-                ttlOrHighPriority = default;
-            }
-
-            internal CommandType Type { get; }
+            internal CommandType Type { get; init; }
 
             // null only if Type is ShuffleReply or ForceShuffle
-            internal EndPoint? Sender { get; }
+            [DisallowNull]
+            internal EndPoint? Sender { get; init; }
 
-            internal EndPoint? Origin { get; }
+            [DisallowNull]
+            internal EndPoint? Origin { get; init; }
 
-            internal bool IsAliveOrHighPriority => ttlOrHighPriority != 0;
+            internal bool IsAliveOrHighPriority
+            {
+                get => TimeToLive != 0;
+                init => TimeToLive = value.ToInt32();
+            }
 
-            internal int TimeToLive => ttlOrHighPriority;
+            internal int TimeToLive { get; init; }
 
-            internal IRumourSender? RumourTransport => peersOrMessageTransport as IRumourSender;
+            [DisallowNull]
+            internal IRumourSender? RumourTransport
+            {
+                get => peersOrMessageTransport as IRumourSender;
+                init => peersOrMessageTransport = value;
+            }
 
-            internal IReadOnlyCollection<EndPoint> Peers => peersOrMessageTransport as IReadOnlyCollection<EndPoint> ?? Array.Empty<EndPoint>();
+            internal IReadOnlyCollection<EndPoint> Peers
+            {
+                get => peersOrMessageTransport as IReadOnlyCollection<EndPoint> ?? Array.Empty<EndPoint>();
+                init => peersOrMessageTransport = value;
+            }
 
-            internal static Command Join(EndPoint joinedPeer) => new(CommandType.Join, joinedPeer, null, null, default);
+            internal static Command Join(EndPoint joinedPeer) => new() { Type = CommandType.Join, Sender = joinedPeer };
 
-            internal static Command ForwardJoin(EndPoint sender, EndPoint joinedPeer, int ttl) => new(CommandType.ForwardJoin, sender, joinedPeer, null, ttl);
+            internal static Command ForwardJoin(EndPoint sender, EndPoint joinedPeer, int ttl) => new() { Type = CommandType.ForwardJoin, Sender = sender, Origin = joinedPeer, TimeToLive = ttl };
 
-            internal static Command Neighbor(EndPoint sender, bool highPriority) => new(CommandType.Neighbor, sender, null, null, highPriority.ToInt32());
+            internal static Command Neighbor(EndPoint sender, bool highPriority) => new() { Type = CommandType.Neighbor, Sender = sender, IsAliveOrHighPriority = highPriority };
 
-            internal static Command Disconnect(EndPoint sender, bool isAlive) => new(CommandType.Disconnect, sender, null, null, isAlive.ToInt32());
+            internal static Command Disconnect(EndPoint sender, bool isAlive) => new() { Type = CommandType.Disconnect, Sender = sender, IsAliveOrHighPriority = isAlive };
 
-            internal static Command Shuffle(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int ttl) => new(CommandType.Shuffle, sender, origin, peers, ttl);
+            internal static Command Shuffle(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int ttl) => new() { Type = CommandType.Shuffle, Sender = sender, Origin = origin, Peers = peers, TimeToLive = ttl };
 
-            internal static Command ForceShuffle() => new(CommandType.ForceShuffle, null, null, null, default);
+            internal static Command ForceShuffle() => new() { Type = CommandType.ForceShuffle };
 
-            internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new(CommandType.ShuffleReply, null, null, peers, default);
+            internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new() { Type = CommandType.ShuffleReply, Peers = peers };
 
-            internal static Command Broadcast(IRumourSender sender) => new(sender);
+            internal static Command Broadcast(IRumourSender sender) => new() { Type = CommandType.Broadcast };
         }
     }
 }

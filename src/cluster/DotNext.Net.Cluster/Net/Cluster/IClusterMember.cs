@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Gets unique identifier of this member.
         /// </summary>
-        ClusterMemberId Id => ClusterMemberId.FromEndPoint(EndPoint); // TODO: Move Id to IPeer interface and rename ClusterMemberId => PeerId
+        ClusterMemberId Id => ClusterMemberId.FromEndPoint(EndPoint);
 
         /// <summary>
         /// Indicates that executing host is a leader node in the cluster.
