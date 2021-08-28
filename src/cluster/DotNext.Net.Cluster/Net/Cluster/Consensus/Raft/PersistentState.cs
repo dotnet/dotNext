@@ -170,18 +170,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
-        /// <summary>
-        /// Gets the buffer that can be used to perform I/O operations.
-        /// </summary>
-        /// <remarks>
-        /// This property throws <see cref="InvalidOperationException"/> if
-        /// the configured compaction mode is not <see cref="CompactionMode.Sequential"/>.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Attempt to obtain buffer without synchronization.</exception>
-        [Obsolete("This property available only if Sequential log compaction is in use. Use your own separated buffers.", true)]
-        protected Memory<byte> Buffer
-            => compaction == CompactionMode.Sequential ? sessionManager.WriteBuffer : throw new InvalidOperationException();
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private partial Partition CreatePartition(long partitionNumber)
             => new(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, sessionManager.Capacity, writeThrough, initialSize);
@@ -583,65 +571,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
         /// </summary>
-        /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
-        /// <param name="writeLock">The acquired lock token.</param>
-        /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
-        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
-        /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or <paramref name="entry"/> is the snapshot.</exception>
-        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
-        public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex)
-            where TEntry : notnull, IRaftLogEntry
-        {
-            ValueTask result;
-            if (IsDisposed)
-            {
-                result = new(DisposedTask);
-            }
-            else if (startIndex <= state.CommitIndex)
-            {
-#if NETSTANDARD2_1
-                result = new(Task.FromException(new InvalidOperationException(ExceptionMessages.InvalidAppendIndex)));
-#else
-                result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.InvalidAppendIndex));
-#endif
-            }
-            else if (startIndex > state.TailIndex)
-            {
-#if NETSTANDARD2_1
-                result = new(Task.FromException(new ArgumentOutOfRangeException(nameof(startIndex))));
-#else
-                result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(startIndex)));
-#endif
-            }
-            else if (entry.IsSnapshot)
-            {
-#if NETSTANDARD2_1
-                result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
-#else
-                result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
-#endif
-            }
-            else if (Validate(in writeLock))
-            {
-                result = UnsafeAppendAsync(entry, startIndex);
-            }
-            else
-            {
-#if NETSTANDARD2_1
-                result = new (Task.FromException(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
-#else
-                result = ValueTask.FromException(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock)));
-#endif
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Adds uncommitted log entry to the end of this log.
-        /// </summary>
         /// <remarks>
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
@@ -715,55 +644,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
             }
-        }
-
-        /// <summary>
-        /// Adds uncommitted log entry to the end of this log.
-        /// </summary>
-        /// <remarks>
-        /// This method cannot be used to append a snapshot.
-        /// It's recommended to pass <see langword="true"/> to <paramref name="flush"/>
-        /// only when you're adding the last log entry in the sequence.
-        /// </remarks>
-        /// <param name="writeLock">The acquired lock token.</param>
-        /// <param name="entry">The entry to add.</param>
-        /// <param name="flush"><see langword="true"/> to flush the internal buffer to the disk.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
-        /// <returns>The index of the added entry.</returns>
-        /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
-        [Obsolete("Batch writes don't allow concurrent reads. Use AppendAsync overload with ILogEntryProducer for batch writes")]
-        public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, bool flush = true, CancellationToken token = default)
-            where TEntry : notnull, IRaftLogEntry
-        {
-            ValueTask<long> result;
-            if (IsDisposed)
-            {
-                result = new(GetDisposedTask<long>());
-            }
-            else if (entry.IsSnapshot)
-            {
-#if NETSTANDARD2_1
-                result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
-#else
-                result = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
-#endif
-            }
-            else if (Validate(in writeLock))
-            {
-                result = UnsafeAppendAsync(entry, flush, token);
-            }
-            else
-            {
-#if NETSTANDARD2_1
-                result = new (Task.FromException<long>(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
-#else
-                result = ValueTask.FromException<long>(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock)));
-#endif
-            }
-
-            return result;
         }
 
         private async ValueTask<long> AppendUncachedAsync<TEntry>(TEntry entry, CancellationToken token)
