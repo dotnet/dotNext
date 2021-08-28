@@ -112,6 +112,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             server = serverFactory(this);
             server.Start();
             await base.StartAsync(token).ConfigureAwait(false);
+
+            if (!coldStart && announcer is not null)
+                await announcer(LocalMemberId, publicEndPoint, token).ConfigureAwait(false);
         }
 
         /// <summary>

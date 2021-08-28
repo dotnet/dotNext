@@ -127,7 +127,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
-            /// Gets or sets the delegate that can be used to announce the node to the cluster.
+            /// Gets or sets the delegate that can be used to announce the node to the cluster
+            /// if <see cref="ColdStart"/> is <see langword="false"/>.
             /// </summary>
             public ClusterMemberAnnouncer<IPEndPoint>? Announcer
             {
