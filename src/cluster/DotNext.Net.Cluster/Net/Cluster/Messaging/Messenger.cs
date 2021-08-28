@@ -23,9 +23,11 @@ namespace DotNext.Net.Cluster.Messaging
         public static Task SendBroadcastSignalAsync(this IMessageBus cluster, IMessage message, bool requiresConfirmation = true)
         {
             ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (var member in cluster.Members)
+            foreach (var address in cluster.Peers)
             {
-                if (member.IsRemote)
+                var member = cluster.As<IPeerMesh<ISubscriber>>().TryGetPeer(address);
+
+                if (member?.IsRemote ?? false)
                     tasks.Add(member.SendSignalAsync(message, requiresConfirmation));
             }
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+    using IClusterConfiguration = Membership.IClusterConfiguration;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -20,8 +21,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private readonly PipeOptions pipeConfig;
         private readonly TimeSpan requestTimeout;
 
-        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, bool isRemote, ClusterMemberId? id, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
-            : base(localMember, address, isRemote, id, metrics)
+        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, ClusterMemberId id, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
+            : base(localMember, address, id, metrics)
         {
             client = clientFactory(address);
             this.requestTimeout = requestTimeout;
@@ -64,10 +65,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private protected override Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => SendAsync<Result<bool>, PreVoteExchange>(new PreVoteExchange(term, lastLogIndex, lastLogTerm), token);
 
-        private protected override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            => entries.Count > 0 ?
-            SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token)
-            : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), token);
+        private protected override async Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        {
+            await SendAsync<bool, ConfigurationExchange>(new ConfigurationExchange(config, applyConfig, pipeConfig), token).ConfigureAwait(false);
+            return await (entries.Count > 0
+                ? SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token)
+                : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), token)).ConfigureAwait(false);
+        }
 
         private protected override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
             => SendAsync<Result<bool>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), token);

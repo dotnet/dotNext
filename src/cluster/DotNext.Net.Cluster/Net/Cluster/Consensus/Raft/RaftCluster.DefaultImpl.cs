@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
     using IO.Log;
+    using Membership;
     using TransportServices;
-    using AddMemberLogEntry = Membership.AddMemberLogEntry;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     /// <summary>
@@ -20,48 +20,98 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
+        [StructLayout(LayoutKind.Auto)]
+        private struct ClusterConfiguration : IClusterConfiguration, IDisposable
+        {
+            private MemoryOwner<byte> configuration;
+
+            internal ClusterConfiguration(MemoryOwner<byte> content, long fingerprint, bool applyConfig)
+            {
+                configuration = content;
+                IsApplied = applyConfig;
+                Fingerprint = fingerprint;
+            }
+
+            public readonly long Fingerprint { get; }
+
+            internal readonly bool IsApplied { get; }
+
+            readonly long IClusterConfiguration.Length => configuration.Length;
+
+            readonly bool IDataTransferObject.IsReusable => true;
+
+            readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => writer.WriteAsync(configuration.Memory, null, token);
+
+            readonly ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+                => transformation.TransformAsync<SequenceBinaryReader>(IAsyncBinaryReader.Create(configuration.Memory), token);
+
+            readonly bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                memory = configuration.Memory;
+                return true;
+            }
+
+            public void Dispose()
+            {
+                configuration.Dispose();
+                this = default;
+            }
+        }
+
         private readonly ImmutableDictionary<string, string> metadata;
-        private readonly Func<ILocalMember, IPEndPoint, ClusterMemberId?, IClientMetricsCollector?, RaftClusterMember> clientFactory;
+        private readonly Func<ILocalMember, IPEndPoint, ClusterMemberId, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
-        private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private readonly IPEndPoint publicEndPoint;
         private readonly MemoryAllocator<byte>? allocator;
         private readonly ClusterMemberAnnouncer<IPEndPoint>? announcer;
         private readonly int warmupRounds;
+        private readonly bool coldStart;
+        private Task pollingLoopTask;
         private IServer? server;
+        private ClusterConfiguration cachedConfig;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
         /// </summary>
         /// <param name="configuration">The configuration of the cluster.</param>
         public RaftCluster(NodeConfiguration configuration)
-            : base(configuration, out var members)
+            : base(configuration)
         {
             Metrics = configuration.Metrics;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
-            bufferingOptions = configuration.BufferingOptions;
             publicEndPoint = configuration.PublicEndPoint;
             allocator = configuration.MemoryAllocator;
             announcer = configuration.Announcer;
             warmupRounds = configuration.WarmupRounds;
-
-            // create members without starting clients
-            foreach (var member in configuration.Members)
-                members.Add(configuration.CreateMemberClient(this, member, null, configuration.Metrics as IClientMetricsCollector));
+            coldStart = configuration.ColdStart;
+            ConfigurationStorage = configuration.ConfigurationStorage ?? new InMemoryClusterConfigurationStorage(allocator);
+            pollingLoopTask = Task.CompletedTask;
         }
+
+        /// <inheritdoc />
+        protected sealed override IClusterConfigurationStorage<IPEndPoint> ConfigurationStorage { get; }
 
         /// <summary>
         /// Starts serving local member.
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public override Task StartAsync(CancellationToken token = default)
+        public override async Task StartAsync(CancellationToken token = default)
         {
+            if (coldStart)
+            {
+                // in case of cold start, add the local member to the configuration
+                await ConfigurationStorage.AddMemberAsync(LocalMemberId, publicEndPoint, token).ConfigureAwait(false);
+                await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
+            }
+
+            pollingLoopTask = ConfigurationPollingLoop();
             server = serverFactory(this);
             server.Start();
-            return base.StartAsync(token);
+            await base.StartAsync(token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -76,55 +126,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return base.StopAsync(token);
         }
 
-        /// <summary>
-        /// Initializes a new client for communication with cluster member.
-        /// </summary>
-        /// <remarks>
-        /// This method is needed if you want to implement dynamic addition of the new cluster members.
-        /// </remarks>
-        /// <param name="address">The address of the cluster member.</param>
-        /// <returns>A new client for communication with cluster member.</returns>
-        [Obsolete("Applicable for Custom bootstrap mode where dynamic membership changes are not recommended")]
-        protected RaftClusterMember CreateClient(IPEndPoint address)
-            => clientFactory(this, address, null, Metrics as IClientMetricsCollector);
-
-        /// <inheritdoc />
-        protected sealed override RaftClusterMember CreateMember(in ClusterMemberId id, ReadOnlyMemory<byte> address)
+        private async Task ConfigurationPollingLoop()
         {
-            var reader = IAsyncBinaryReader.Create(address);
-            var endPoint = (IPEndPoint)reader.ReadEndPoint();
-            return clientFactory(this, endPoint, id, Metrics as IClientMetricsCollector);
+            await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken))
+            {
+                if (eventInfo.IsAdded)
+                {
+                    var member = clientFactory.Invoke(this, eventInfo.Address, eventInfo.Id, Metrics as IClientMetricsCollector);
+                    if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
+                        member.IsRemote = !Equals(eventInfo.Address, publicEndPoint);
+                    else
+                        member.Dispose();
+                }
+                else
+                {
+                    var member = await RemoveMember(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                    member?.Dispose();
+                }
+            }
         }
-
-        /// <inheritdoc />
-        protected sealed override async ValueTask AddLocalMemberAsync(Func<AddMemberLogEntry, CancellationToken, ValueTask<long>> appender, CancellationToken token)
-        {
-            using var address = publicEndPoint.GetBytes(allocator);
-            await appender(new AddMemberLogEntry(LocalMemberId, address.Memory, Term), token).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Registers a new cluster member.
-        /// </summary>
-        /// <remarks>
-        /// This method must be called on leade node.
-        /// </remarks>
-        /// <param name="id">The identifier of the node.</param>
-        /// <param name="address">IP address of the node.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>
-        /// <see langword="true"/> if the node has been added to the cluster successfully;
-        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
-        /// </returns>
-        public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
-        {
-            using var buffer = address.GetBytes(allocator);
-            return await AddMemberAsync(id, buffer.Memory, warmupRounds, token).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc />
-        protected sealed override Task AnnounceAsync(CancellationToken token = default)
-            => announcer?.Invoke(LocalMemberId, publicEndPoint, token) ?? Task.CompletedTask;
 
         /// <inheritdoc />
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
@@ -139,22 +159,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ResignAsync(token);
 
-        private async Task<Result<bool>> BufferizeReceivedEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
+        async Task ILocalMember.InstallConfigurationAsync<TConfiguration>(TConfiguration configuration, bool applyConfig, CancellationToken token)
         {
-            Debug.Assert(bufferingOptions is not null);
-            using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-            return await AppendEntriesAsync(sender, senderTerm, buffered.ToProducer(), prevLogIndex, prevLogTerm, commitIndex, token).ConfigureAwait(false);
+            var buffer = await configuration.ToMemoryAsync(allocator, token).ConfigureAwait(false);
+            cachedConfig.Dispose();
+            cachedConfig = new(buffer, configuration.Fingerprint, applyConfig);
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             TryGetMember(sender)?.Touch();
+            Result<bool> result;
 
-            return bufferingOptions is null ?
-                AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token) :
-                BufferizeReceivedEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+            try
+            {
+                result = await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, cachedConfig, cachedConfig.IsApplied, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                cachedConfig.Dispose();
+            }
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -175,28 +202,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return PreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
         }
 
-        private async Task<Result<bool>> BufferizeSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-            where TSnapshot : notnull, IRaftLogEntry
-        {
-            Debug.Assert(bufferingOptions is not null);
-            using var buffered = await BufferedRaftLogEntry.CopyAsync(snapshot, bufferingOptions, token).ConfigureAwait(false);
-            return await InstallSnapshotAsync(sender, senderTerm, buffered, snapshotIndex, token).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
         Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             TryGetMember(sender)?.Touch();
 
-            return bufferingOptions is null ?
-                InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token) :
-                BufferizeSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
+            return InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
         }
 
         private void Cleanup()
         {
             server?.Dispose();
             server = null;
+
+            cachedConfig.Dispose();
         }
 
         /// <summary>

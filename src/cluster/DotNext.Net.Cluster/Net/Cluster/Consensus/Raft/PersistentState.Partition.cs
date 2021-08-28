@@ -378,15 +378,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await WriteMetadataAsync(this, metadata, buffer, token).ConfigureAwait(false);
             }
 
-            private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, ISupplier<MemoryOwner<byte>>? configurationProvider, CancellationToken token)
+            private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)
             {
                 reader.BaseStream.Position = 0L;
-                return new LogEntry(reader, buffer, await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false), configurationProvider);
+                return new LogEntry(reader, buffer, await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false));
             }
 
             // optimization hint is not supported for snapshots
-            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, ISupplier<MemoryOwner<byte>>? configurationProvider, CancellationToken token)
-                => ReadAsync(GetReadSessionStream(session), session.Buffer, configurationProvider, token);
+            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
+                => ReadAsync(GetReadSessionStream(session), session.Buffer, token);
 
             // cached index of the snapshotted entry
             internal long Index

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Membership;
+
     /// <summary>
     /// Represents cluster member accessible through Raft protocol.
     /// </summary>
@@ -46,10 +48,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">Last entry known to be committed by the local node.</param>
+        /// <param name="config">The list of cluster members.</param>
+        /// <param name="applyConfig">
+        /// <see langword="true"/> to inform that the receiver must apply previously proposed configuration;
+        /// <see langword="false"/> to propose a new configuration.
+        /// </param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns><see langword="true"/> if message is handled successfully by this member; <see langword="false"/> if message is rejected due to invalid Term/Index number.</returns>
         /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-        Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
             where TEntry : IRaftLogEntry
             where TList : IReadOnlyList<TEntry>;
 
@@ -68,6 +75,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Index of next log entry to send to this node.
         /// </summary>
         ref long NextIndex { get; }
+
+        /// <summary>
+        /// Gets fingerprint of the cluster configuration tracked by replication process.
+        /// </summary>
+        ref long ConfigurationFingerprint { get; }
 
         /// <summary>
         /// Aborts all active outbound requests asynchronously.

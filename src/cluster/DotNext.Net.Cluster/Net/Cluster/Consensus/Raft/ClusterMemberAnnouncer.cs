@@ -11,6 +11,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <param name="address">The address of the cluster member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    /// <seealso cref="RaftCluster.AnnounceAsync(CancellationToken)"/>
     public delegate Task ClusterMemberAnnouncer<in TAddress>(ClusterMemberId id, TAddress address, CancellationToken token);
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using Membership;
     using static Threading.LinkedTokenSourceFactory;
     using static Threading.Tasks.Continuation;
     using AsyncResultSet = Buffers.PooledArrayBufferWriter<Task<Result<bool>>>;
@@ -39,13 +40,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.maxLease = maxLease;
         }
 
-        private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
+        private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
         {
             var start = Timestamp.Current;
             long commitIndex = auditTrail.GetLastIndex(true),
                 currentIndex = auditTrail.GetLastIndex(false),
                 term = currentTerm,
                 minPrecedingIndex = 0L;
+
+            var activeConfig = configurationStorage.ActiveConfiguration;
+            var proposedConfig = configurationStorage.ProposedConfiguration;
 
             var leaseRenewalThreshold = 0;
 
@@ -63,7 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                         precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                    taskBuffer.Add(new Replicator(auditTrail, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
+                    taskBuffer.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
                 }
             }
 
@@ -119,6 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (commitQuorum > 0)
             {
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                await configurationStorage.ApplyAsync(token).ConfigureAwait(false); // apply proposed config
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 goto check_term;
             }
@@ -139,14 +144,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
+        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage,CancellationToken token)
         {
             using var cancellationSource = token.LinkTo(LeadershipToken);
 
             // reuse this buffer to place responses from other nodes
             using var taskBuffer = new AsyncResultSet(stateMachine.Members.Count);
 
-            for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+            for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
             {
                 if (forced)
                     DrainReplicationQueue();
@@ -160,12 +165,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="period">Time period of Heartbeats.</param>
         /// <param name="transactionLog">Transaction log.</param>
+        /// <param name="configurationStorage">Cluster configuration storage.</param>
         /// <param name="token">The toke that can be used to cancel the operation.</param>
-        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, CancellationToken token)
+        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
         {
             foreach (var member in stateMachine.Members)
                 member.NextIndex = transactionLog.GetLastIndex(false) + 1;
-            heartbeatTask = DoHeartbeats(period, transactionLog, token);
+            heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
             return this;
         }
 

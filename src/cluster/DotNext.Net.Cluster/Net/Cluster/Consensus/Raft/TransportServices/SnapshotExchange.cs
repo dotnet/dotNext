@@ -1,13 +1,12 @@
 using System;
 using System.IO.Pipelines;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using Buffers;
-    using static IO.DataTransferObject;
+    using IO;
     using static IO.Pipelines.PipeExtensions;
 
     internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDisposable
@@ -48,10 +47,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return writer.WrittenCount;
         }
 
-        private async Task WriteSnapshotAsync(CancellationToken token)
+        private static async Task WriteSnapshotAsync(IDataTransferObject snapshot, PipeWriter writer, CancellationToken token)
         {
-            await snapshot.WriteToAsync(pipe.Writer, token).ConfigureAwait(false);
-            await pipe.Writer.CompleteAsync().ConfigureAwait(false);
+            await snapshot.WriteToAsync(writer, token).ConfigureAwait(false);
+            await writer.CompleteAsync().ConfigureAwait(false);
         }
 
         public override async ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
@@ -63,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 count = WriteAnnouncement(payload.Span);
                 payload = payload.Slice(count);
                 control = FlowControl.StreamStart;
-                transmission = WriteSnapshotAsync(token);
+                transmission = WriteSnapshotAsync(snapshot, pipe.Writer, token);
             }
             else
             {
@@ -79,7 +78,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
             ValueTask<bool> result;
-            if (headers.Type == MessageType.Continue)
+            if (transmission?.IsFaulted ?? false)
+            {
+                result = ValueTask.FromException<bool>(transmission.Exception!);
+            }
+            else if (headers.Type == MessageType.Continue)
             {
                 result = new(true);
             }

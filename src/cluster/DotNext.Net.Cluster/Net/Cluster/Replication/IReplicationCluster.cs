@@ -21,10 +21,10 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <param name="timeout">The time to wait until replication ends.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
-        /// <returns><see langword="true"/> if replication is completed; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default);
+        /// <exception cref="TimeoutException">The operation has timed out.</exception>
+        Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default);
 
         /// <summary>
         /// Represents an event raised when the local node completes its replication with another

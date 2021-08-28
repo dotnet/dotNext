@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Net;
-
 namespace DotNext.Net.Cluster.Messaging
 {
     /// <summary>
@@ -15,14 +12,6 @@ namespace DotNext.Net.Cluster.Messaging
 
         /// <inheritdoc/>
         IClusterMember? ICluster.Leader => Leader;
-
-        /// <summary>
-        /// Represents a collection of nodes in the network.
-        /// </summary>
-        new IReadOnlyCollection<ISubscriber> Members { get; }
-
-        /// <inheritdoc/>
-        IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
         /// Allows to route messages to the leader
@@ -41,17 +30,5 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         /// <param name="handler">The message handler.</param>
         void RemoveListener(IInputChannel handler);
-
-        /// <inheritdoc/>
-        ISubscriber? IPeerMesh<ISubscriber>.TryGetPeer(EndPoint peer)
-        {
-            foreach (var member in Members)
-            {
-                if (Equals(member.EndPoint, peer))
-                    return member;
-            }
-
-            return null;
-        }
     }
 }

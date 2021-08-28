@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private static Encoding Encoding => Encoding.UTF8;
 
-        // port announcement is not used for this request
+        // id announcement is not used for this request
         ClusterMemberId IClientExchange.Sender
         {
             set { }

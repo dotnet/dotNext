@@ -352,11 +352,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc/>
-        Task<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
+        Task IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
 
         /// <inheritdoc/>
-        Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+        ValueTask IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, timeout, token);
 
         private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)

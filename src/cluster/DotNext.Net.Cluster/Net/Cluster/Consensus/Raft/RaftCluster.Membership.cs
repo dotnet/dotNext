@@ -3,17 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Missing = System.Reflection.Missing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Membership;
     using Threading;
 
-    public partial class RaftCluster<TMember> : IClusterConfigurationStorage.IConfigurationInterpreter, IExpandableCluster
+    public partial class RaftCluster<TMember>
     {
         internal sealed class MemberList : IReadOnlyDictionary<ClusterMemberId, TMember>, IReadOnlyCollection<TMember>
         {
@@ -77,53 +75,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IEnumerator IEnumerable.GetEnumerator() => Values.GetEnumerator();
         }
 
-        /// <summary>
-        /// Represents mutator of a collection of cluster members.
-        /// </summary>
-        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        [Obsolete("Use generic version of this delegate")]
-        protected delegate void MemberCollectionMutator(in MemberCollectionBuilder members);
-
-        /// <summary>
-        /// Represents mutator of a collection of cluster members.
-        /// </summary>
-        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        /// <param name="arg">The argument to be passed to the mutator.</param>
-        /// <typeparam name="T">The type of the argument.</typeparam>
-        [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
-        protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
-
         private MemberList members;
-        private TaskCompletionSource<bool>? announcementEvent; // TODO: Use non-generic TaskCompletionSource in .NET 6
-        private ClusterChangedEventHandler? memberAddedHandlers, memberRemovedHandlers;
-
-        /// <summary>
-        /// Finds cluster member using predicate.
-        /// </summary>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
-        [Obsolete("Use TryGetMember method instead")]
-        protected TMember? FindMember(Predicate<TMember> criteria)
-            => members.FirstOrDefault(criteria.AsFunc());
-
-        /// <summary>
-        /// Finds cluster member asynchronously using predicate.
-        /// </summary>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [Obsolete("Use TryGetMember method instead")]
-        protected async ValueTask<TMember?> FindMemberAsync(Func<TMember, CancellationToken, ValueTask<bool>> criteria, CancellationToken token)
-        {
-            foreach (var candidate in members.Values)
-            {
-                if (await criteria(candidate, token).ConfigureAwait(false))
-                    return candidate;
-            }
-
-            return null;
-        }
+        private Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>? memberAddedHandlers, memberRemovedHandlers;
 
         /// <summary>
         /// Gets the member by its identifier.
@@ -134,246 +87,98 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => members.TryGetValue(id, out var result) ? result : null;
 
         /// <summary>
-        /// Finds cluster member using predicate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the predicate parameter.</typeparam>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <param name="arg">The argument to be passed to the matching function.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if member doesn't exist.</returns>
-        [Obsolete("Use TryGetMember method instead")]
-        protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
-        {
-            foreach (var member in members.Values)
-            {
-                if (criteria(member, arg))
-                    return member;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <typeparam name="T">The type of the argument to be passed to the mutator.</typeparam>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <param name="arg">The argument to be passed to the mutator.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
-        protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
-        {
-            using var tokenSource = token.LinkTo(LifecycleToken);
-            using var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (transitionLock)
-                ChangeMembers();
-
-            void ChangeMembers()
-            {
-                var copy = members;
-                mutator(new MemberCollectionBuilder(ref copy), arg);
-                members = copy;
-            }
-        }
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use generic version of this method")]
-        protected Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
-            => ChangeMembersAsync((in MemberCollectionBuilder builder, Missing arg) => mutator(in builder), Missing.Value, token);
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use generic version of this method")]
-        protected Task ChangeMembersAsync(MemberCollectionMutator mutator)
-            => ChangeMembersAsync(mutator, CancellationToken.None);
-
-        /// <summary>
-        /// Announces a new node.
-        /// </summary>
-        /// <remarks>
-        /// The identifier of the local node to be announced is available via <see cref="LocalMemberId"/> property.
-        /// </remarks>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result.</returns>
-        protected abstract Task AnnounceAsync(CancellationToken token = default);
-
-        /// <summary>
-        /// Commits the local member to the storage.
-        /// </summary>
-        /// <remarks>
-        /// The identifier of the local node to be committed is available via <see cref="LocalMemberId"/> property.
-        /// You can use <see cref="Membership.AddMemberLogEntry"/> log entry to commit the address of the local member.
-        /// </remarks>
-        /// <param name="appender">The delegate that can be used to add the address of the local member.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result.</returns>
-        protected abstract ValueTask AddLocalMemberAsync(Func<Membership.AddMemberLogEntry, CancellationToken, ValueTask<long>> appender, CancellationToken token);
-
-        /// <summary>
-        /// Creates a client for the cluster member.
-        /// </summary>
-        /// <remarks>
-        /// This method is called automatically when a new member is added to the log.
-        /// </remarks>
-        /// <param name="id">The identifier of the cluster member.</param>
-        /// <param name="address">The address of the cluster member in raw format.</param>
-        /// <returns>The client for the cluster member.</returns>
-        protected abstract TMember CreateMember(in ClusterMemberId id, ReadOnlyMemory<byte> address);
-
-        /// <inheritdoc />
-        ValueTask IClusterConfigurationStorage.IConfigurationInterpreter.AddMemberAsync(ClusterMemberId id, ReadOnlyMemory<byte> address)
-        {
-            var result = new ValueTask();
-            try
-            {
-                var member = CreateMember(id, address);
-                members = members.Add(member, out var added);
-                if (added)
-                {
-                    if (id == localMemberId)
-                        announcementEvent?.TrySetResult(true);
-
-                    // raise event
-                    OnMemberAdded(member);
-                }
-                else
-                {
-                    member.Dispose();
-                }
-            }
-            catch (Exception e)
-            {
-#if NETSTANDARD2_1
-                result = new(Task.FromException(e));
-#else
-                result = ValueTask.FromException(e);
-#endif
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// An event raised when new cluster member is detected.
         /// </summary>
-        public event ClusterChangedEventHandler MemberAdded
+        public event Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>> MemberAdded
         {
             add => memberAddedHandlers += value;
             remove => memberRemovedHandlers -= value;
         }
 
-        /// <summary>
-        /// Invokes all registered handlers of <see cref="MemberAdded"/> event.
-        /// </summary>
-        /// <param name="member">The added member.</param>
-        protected void OnMemberAdded(TMember member) // TODO: Must be private in .NEXT 4
-            => memberAddedHandlers?.Invoke(this, member);
-
         /// <inheritdoc />
-        async ValueTask IClusterConfigurationStorage.IConfigurationInterpreter.RemoveMemberAsync(ClusterMemberId id)
+        event Action<IPeerMesh, PeerEventArgs> IPeerMesh.PeerDiscovered
         {
-            if (MemberList.TryRemove(ref members, id, out var member))
-            {
-                using (member)
-                {
-                    // local member is to be removed, downgrade it to standby state
-                    if (id == localMemberId)
-                    {
-                        var newState = new StandbyState(this);
-                        using (var currentState = state)
-                        {
-                            await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
-                            state = newState;
-                        }
-                    }
-
-                    // raise event
-                    OnMemberRemoved(member);
-                }
-            }
+            add => memberAddedHandlers += value;
+            remove => memberAddedHandlers -= value;
         }
+
+        private void OnMemberAdded(TMember member)
+            => memberAddedHandlers?.Invoke(this, new(member));
 
         /// <summary>
         /// An event raised when cluster member is removed gracefully.
         /// </summary>
-        public event ClusterChangedEventHandler MemberRemoved
+        public event Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>> MemberRemoved
         {
             add => memberRemovedHandlers += value;
             remove => memberRemovedHandlers -= value;
         }
 
-        /// <summary>
-        /// Invokes all registered handlers of <see cref="MemberRemoved"/> event.
-        /// </summary>
-        /// <param name="member">The added member.</param>
-        protected void OnMemberRemoved(TMember member) // TODO: Must be private in .NEXT 4
-            => memberRemovedHandlers?.Invoke(this, member);
-
         /// <inheritdoc />
-        async ValueTask IClusterConfigurationStorage.IConfigurationInterpreter.RefreshAsync(IAsyncEnumerable<KeyValuePair<ClusterMemberId, ReadOnlyMemory<byte>>> members, CancellationToken token)
+        event Action<IPeerMesh, PeerEventArgs> IPeerMesh.PeerGone
         {
-            var fresh = new Dictionary<ClusterMemberId, TMember>();
+            add => memberRemovedHandlers += value;
+            remove => memberRemovedHandlers -= value;
+        }
 
-            // 1. Add all members from the input
-            await foreach (var (id, address) in members.WithCancellation(token))
+        private void OnMemberRemoved(TMember member)
+            => memberRemovedHandlers?.Invoke(this, new(member));
+
+        /// <summary>
+        /// Adds a new member to the collection of members visible by the current node.
+        /// </summary>
+        /// <param name="member">The member to add.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if the member is addedd successfully; <see langword="false"/> if the member is already in the list.</returns>
+        protected async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
+        {
+            using var tokenHolder = token.LinkTo(LifecycleToken);
+
+            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
-                if (!this.members.TryGetValue(id, out var member))
-                {
-                    member = CreateMember(id, address);
-
-                    if (id == localMemberId)
-                        announcementEvent?.TrySetResult(true);
-
-                    OnMemberAdded(member);
-                }
-
-                if (!fresh.TryAdd(id, member))
-                    member.Dispose();
+                members = members.Add(member, out var added);
+                if (!added)
+                    return false;
             }
 
-            // 2. Destroy members that are not from the fresh list
-            foreach (var member in this.members.Values)
-            {
-                if (!fresh.ContainsKey(member.Id))
-                {
-                    using (member)
-                    {
-                        if (localMemberId == member.Id)
-                        {
-                            var newState = new StandbyState(this);
-                            using (var currentState = state)
-                            {
-                                await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
-                                state = newState;
-                            }
-                        }
-
-                        OnMemberRemoved(member);
-                    }
-                }
-
-                token.ThrowIfCancellationRequested();
-            }
-
-            // 3. Replace the list of members
-            this.members = new(fresh);
-            fresh.Clear();
+            OnMemberAdded(member);
+            return true;
         }
 
         /// <summary>
-        /// Adds member in <see cref="ClusterMemberBootstrap.Announcement"/> state
-        /// to the cluster.
+        /// Removes the member from the collection of members visible by the current node.
         /// </summary>
-        /// <param name="id">The identifier of the cluster node.</param>
-        /// <param name="address">The address of the cluster node, in raw format.</param>
+        /// <param name="id">The identifier of the member.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The removed member.</returns>
+        protected async ValueTask<TMember?> RemoveMember(ClusterMemberId id, CancellationToken token)
+        {
+            TMember? result;
+            using var tokenHolder = token.LinkTo(LifecycleToken);
+
+            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+            {
+                if (MemberList.TryRemove(ref members, id, out result) && !result.IsRemote && state is not null)
+                {
+                    // local member is removed, downgrade it
+                    var newState = new StandbyState(this);
+                    using var currentState = state;
+                    state = newState;
+                }
+            }
+
+            if (result is not null)
+                OnMemberRemoved(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Announces a new member in the cluster.
+        /// </summary>
+        /// <param name="member">The cluster member client used to catch up its state.</param>
+        /// <param name="configurationStorage">The configuration storage.</param>
+        /// <param name="addressProvider">The delegate that allows to get the address of the member.</param>
         /// <param name="rounds">The number of warmup rounds.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>
@@ -382,7 +187,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="rounds"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
-        protected async Task<bool> AddMemberAsync(ClusterMemberId id, ReadOnlyMemory<byte> address, int rounds, CancellationToken token = default)
+        protected async Task<bool> AddMemberAsync<TAddress>(TMember member, int rounds, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
+            where TAddress : notnull
         {
             if (rounds <= 0)
                 throw new ArgumentOutOfRangeException(nameof(rounds));
@@ -390,45 +196,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var tokenSource = token.LinkTo(LeadershipToken);
 
             // catch up node
-            using (var tempClient = CreateMember(id, address))
+            long currentIndex;
+            do
             {
-                long currentIndex;
+                var commitIndex = auditTrail.GetLastIndex(true);
+                currentIndex = auditTrail.GetLastIndex(false);
+                var precedingIndex = Math.Max(0, member.NextIndex - 1);
+                var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
+                var term = Term;
 
-                do
-                {
-                    var commitIndex = auditTrail.GetLastIndex(true);
-                    currentIndex = auditTrail.GetLastIndex(false);
-                    var precedingIndex = Math.Max(0, tempClient.NextIndex - 1);
-                    var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
-                    var term = Term;
+                // do replication
+                var result = await new LeaderState.Replicator(auditTrail, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync(false).ConfigureAwait(false);
 
-                    // do replication
-                    var result = await new LeaderState.Replicator(auditTrail, tempClient, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync(false).ConfigureAwait(false);
-
-                    if (!result.Value)
-                        return false;
-                }
-                while (rounds > 0 && currentIndex >= tempClient.NextIndex);
+                if (!result.Value)
+                    return false;
             }
+            while (rounds > 0 && currentIndex >= member.NextIndex);
 
-            // append new configuration entry to the log, commit and replicate it
-            return await ReplicateAsync(new AddMemberLogEntry(id, address, Term), Timeout.Infinite, token).ConfigureAwait(false);
-        }
+            // ensure that previous configuration has been committed
+            await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
 
-        /// <summary>
-        /// Removes member from the cluster.
-        /// </summary>
-        /// <param name="id">The identifier of the node to be removed.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>
-        /// <see langword="true"/> if node removed successfully;
-        /// <see langword="false"/> if the current node is unable to commit removal command.
-        /// </returns>
-        public async Task<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
-        {
-            using var tokenSource = token.LinkTo(LeadershipToken);
+            // proposes a new member
+            await configurationStorage.AddMemberAsync(member.Id, addressProvider(member), token).ConfigureAwait(false);
+            await ReplicateAsync(new EmptyLogEntry(Term), Timeout.Infinite, token).ConfigureAwait(false);
 
-            return await ReplicateAsync(new RemoveMemberLogEntry(id, Term), Timeout.Infinite, token).ConfigureAwait(false);
+            // ensure that the newly added member has been committed
+            await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+            return true;
         }
     }
 }

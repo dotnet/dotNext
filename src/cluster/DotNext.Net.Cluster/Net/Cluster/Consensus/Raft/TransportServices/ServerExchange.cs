@@ -23,6 +23,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             ReceivingEntriesFinished,
             SnapshotReceived,
             ReceivingSnapshotFinished,
+            ConfigurationReceived,
+            ReceivingConfigurationFinished,
         }
 
         private readonly ILocalMember server;
@@ -95,6 +97,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                             break;
                         case State.SnapshotReceived:
                             result = ReceivingSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
+                            break;
+                        default:
+                            result = default;
+                            break;
+                    }
+
+                    break;
+                case MessageType.Configuration:
+                    switch (state)
+                    {
+                        case State.Ready:
+                            state = State.ConfigurationReceived;
+                            result = BeginReceiveConfiguration(payload, headers.Control == FlowControl.StreamEnd, token);
+                            break;
+                        case State.ConfigurationReceived:
+                            result = ReceivingConfiguration(payload, headers.Control == FlowControl.StreamEnd, token);
                             break;
                         default:
                             result = default;

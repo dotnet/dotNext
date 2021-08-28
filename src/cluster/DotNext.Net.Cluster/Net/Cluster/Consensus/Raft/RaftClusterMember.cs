@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Membership;
     using Threading;
     using TransportServices;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
@@ -15,21 +16,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     {
-        private long nextIndex;
+        private long nextIndex, fingerprint;
         private protected readonly IClientMetricsCollector? metrics;
         private protected readonly ILocalMember localMember;
         internal readonly ClusterMemberId Id;
         private volatile IReadOnlyDictionary<string, string>? metadataCache;
         private AtomicEnum<ClusterMemberStatus> status;
 
-        private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, bool isRemote, ClusterMemberId? id, IClientMetricsCollector? metrics)
+        private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
         {
             this.localMember = localMember;
             this.metrics = metrics;
             EndPoint = endPoint;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
-            Id = id ?? ClusterMemberId.FromEndPoint(endPoint);
-            IsRemote = isRemote;
+            Id = id;
         }
 
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Determines whether this member is not a local node.
         /// </summary>
-        public bool IsRemote { get; }
+        public bool IsRemote { get; internal set; }
 
         /// <summary>
         /// Gets the status of this member.
@@ -64,6 +64,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
+
+        /// <inheritdoc/>
+        ref long IRaftClusterMember.ConfigurationFingerprint => ref fingerprint;
 
         /// <summary>
         /// Cancels pending requests scheduled for this member.
@@ -88,13 +91,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
 
-        private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
             where TEntry : IRaftLogEntry
             where TList : IReadOnlyList<TEntry>;
 
         /// <inheritdoc/>
-        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            => IsRemote ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token) : Task.FromResult(new Result<bool>(term, true));
+        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+            => IsRemote ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, token) : Task.FromResult(new Result<bool>(term, true));
 
         private protected abstract Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
 

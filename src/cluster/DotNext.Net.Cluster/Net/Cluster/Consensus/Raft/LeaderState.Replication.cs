@@ -8,14 +8,17 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using Membership;
     using Threading;
-    using static Threading.Tasks.Synchronization;
+    using Threading.Tasks;
 
     internal partial class LeaderState
     {
         internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
         {
             private readonly IAuditTrail<IRaftLogEntry> auditTrail;
+            private readonly IClusterConfiguration activeConfig;
+            private readonly IClusterConfiguration? proposedConfig;
             private readonly IRaftClusterMember member;
             private readonly long commitIndex, precedingIndex, precedingTerm, term;
             private readonly ILogger logger;
@@ -29,6 +32,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // TODO: Replace with required init properties in the next version of C#
             internal Replicator(
                 IAuditTrail<IRaftLogEntry> auditTrail,
+                IClusterConfiguration activeConfig,
+                IClusterConfiguration? proposedConfig,
                 IRaftClusterMember member,
                 long commitIndex,
                 long currentIndex,
@@ -39,6 +44,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 CancellationToken token)
             {
                 this.auditTrail = auditTrail;
+                this.activeConfig = activeConfig;
+                this.proposedConfig = proposedConfig;
                 this.member = member;
                 this.precedingIndex = precedingIndex;
                 this.precedingTerm = precedingTerm;
@@ -72,6 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                         member.NextIndex.VolatileWrite(currentIndex + 1);
+                        member.ConfigurationFingerprint.VolatileWrite(Fingerprint);
                         result = result.SetValue(replicatedWithCurrentTerm);
                     }
                     else
@@ -91,6 +99,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
+            private long Fingerprint => (proposedConfig ?? activeConfig).Fingerprint;
+
+            private (IClusterConfiguration, bool) GetConfiguration()
+            {
+                bool applyConfig;
+                IClusterConfiguration configuration;
+
+                if (member.ConfigurationFingerprint == Fingerprint)
+                {
+                    applyConfig = activeConfig.Fingerprint == Fingerprint;
+                    configuration = new EmptyClusterConfiguration(Fingerprint);
+                }
+                else
+                {
+                    applyConfig = false;
+                    configuration = proposedConfig ?? activeConfig;
+                }
+
+                return (configuration, applyConfig);
+            }
+
             public ValueTask<Result<bool>> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
                 where TEntry : notnull, IRaftLogEntry
                 where TList : notnull, IReadOnlyList<TEntry>
@@ -103,7 +132,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     logger.ReplicaSize(member.EndPoint, entries.Count, precedingIndex, precedingTerm);
-                    replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
+                    var (config, applyConfig) = GetConfiguration();
+                    replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, config, applyConfig, token).ConfigureAwait(false).GetAwaiter();
                 }
 
                 replicatedWithCurrentTerm = ContainsTerm(entries, term);
@@ -158,7 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return current;
         }
 
-        internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
+        internal Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
             var result = replicationQueue.Task;
 
@@ -166,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             replicationEvent.TrySetResult(true);
 
             // enqueue a new task representing completion callback
-            return result.WaitAsync(timeout, token);
+            return result.ContinueWithTimeout(timeout, token);
         }
     }
 }

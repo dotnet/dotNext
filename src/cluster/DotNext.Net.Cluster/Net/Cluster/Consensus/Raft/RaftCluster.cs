@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Runtime.InteropServices;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using static System.Threading.Timeout;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using static System.Linq.Enumerable;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using Membership;
     using Threading;
-    using static Threading.Tasks.Synchronization;
     using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
-    using Sequence = Collections.Generic.Sequence;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -27,153 +25,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
         where TMember : class, IRaftClusterMember, IDisposable
     {
-        /// <summary>
-        /// Represents cluster member.
-        /// </summary>
-        [StructLayout(LayoutKind.Auto)]
-        [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
-        protected readonly ref struct MemberHolder
-        {
-            private readonly Span<MemberList> members;
-            private readonly ClusterMemberId id;
-
-            internal MemberHolder(ref MemberList list, ClusterMemberId id)
-            {
-                if (Unsafe.IsNullRef(ref list))
-                {
-                    members = default;
-                    this.id = default;
-                }
-                else
-                {
-                    members = MemoryMarshal.CreateSpan(ref list, 1);
-                    this.id = id;
-                }
-            }
-
-            /// <summary>
-            /// Gets actual cluster member.
-            /// </summary>
-            /// <exception cref="InvalidOperationException">The member is already removed.</exception>
-            public TMember Member
-            {
-                get
-                {
-                    ref var list = ref MemoryMarshal.GetReference(members);
-                    return !Unsafe.IsNullRef(ref list) && list.TryGetValue(id, out var result) ? result : throw new InvalidOperationException();
-                }
-            }
-
-            /// <summary>
-            /// Removes the current member from the list.
-            /// </summary>
-            /// <remarks>
-            /// Removed member is not disposed so it can be reused.
-            /// </remarks>
-            /// <returns>The removed member.</returns>
-            /// <exception cref="InvalidOperationException">Attempt to remove local node; or node is already removed.</exception>
-            public TMember Remove()
-            {
-                ref var list = ref MemoryMarshal.GetReference(members);
-                if (Unsafe.IsNullRef(ref list))
-                    throw new InvalidOperationException();
-
-                if (MemberList.TryRemove(ref list, id, out var member) && member.IsRemote)
-                    return member;
-
-                throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
-            }
-
-            /// <summary>
-            /// Obtains actual cluster member.
-            /// </summary>
-            /// <param name="holder">The holder of cluster member.</param>
-            public static implicit operator TMember(MemberHolder holder) => holder.Member;
-        }
-
-        /// <summary>
-        /// Represents collection of cluster members stored in the memory of the current process.
-        /// </summary>
-        [StructLayout(LayoutKind.Auto)]
-        protected readonly ref struct MemberCollectionBuilder
-        {
-            /// <summary>
-            /// Represents enumerator over cluster members.
-            /// </summary>
-            [StructLayout(LayoutKind.Auto)]
-            [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
-            public readonly ref struct Enumerator
-            {
-                private readonly Span<MemberList> members;
-                private readonly IEnumerator<ClusterMemberId> enumerator;
-
-                internal Enumerator(ref MemberList list)
-                {
-                    if (Unsafe.IsNullRef(ref list))
-                    {
-                        members = default;
-                        enumerator = Sequence.GetEmptyEnumerator<ClusterMemberId>();
-                    }
-                    else
-                    {
-                        members = MemoryMarshal.CreateSpan(ref list, 1);
-                        enumerator = list.Keys.GetEnumerator();
-                    }
-                }
-
-                /// <summary>
-                /// Adjusts position of this enumerator.
-                /// </summary>
-                /// <returns><see langword="true"/> if enumerator moved to the next member successfully; otherwise, <see langword="false"/>.</returns>
-                public bool MoveNext() => enumerator.MoveNext();
-
-                /// <summary>
-                /// Gets holder of the member holder at the current position of enumerator.
-                /// </summary>
-                public readonly MemberHolder Current => new(ref MemoryMarshal.GetReference(members), enumerator.Current);
-
-                /// <summary>
-                /// Releases all resources associated with this enumerator.
-                /// </summary>
-                public void Dispose() => enumerator.Dispose();
-            }
-
-            private readonly Span<MemberList> members;
-
-            internal MemberCollectionBuilder(ref MemberList list)
-            {
-                members = MemoryMarshal.CreateSpan(ref list, 1);
-            }
-
-            /// <summary>
-            /// Adds new cluster member.
-            /// </summary>
-            /// <param name="member">A new member to be added into in-memory collection.</param>
-            public void Add(TMember member)
-            {
-                ref var list = ref MemoryMarshal.GetReference(members);
-                if (!Unsafe.IsNullRef(ref list))
-                    list = list.Add(member, out _);
-            }
-
-            /// <summary>
-            /// Returns enumerator over cluster members.
-            /// </summary>
-            /// <returns>The enumerator over cluster members.</returns>
-            [Obsolete("Use appropriate ClusterMemberBootstrap mode in production")]
-            public Enumerator GetEnumerator() => new(ref MemoryMarshal.GetReference(members));
-        }
-
         private readonly bool allowPartitioning;
         private readonly ElectionTimeout electionTimeoutProvider;
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold, clockDriftBound;
         private readonly Random random;
+        private readonly TaskCompletionSource readinessProbe;
 
-        /// <summary>
-        /// Gets bootstrap mode.
-        /// </summary>
-        protected readonly ClusterMemberBootstrap bootstrapMode;
         private ClusterMemberId localMemberId;
 
         private bool standbyNode;
@@ -186,20 +44,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile int electionTimeout;
         private IPersistentState auditTrail;
         private Timestamp lastUpdated; // volatile
-
-        /// <summary>
-        /// Initializes a new cluster manager for the local node.
-        /// </summary>
-        /// <remarks>
-        /// Use this constructor for debugging purposes when you have a static configuration of cluster members.
-        /// </remarks>
-        /// <param name="config">The configuration of the local node.</param>
-        /// <param name="members">The collection of members that can be modified at construction stage.</param>
-        protected RaftCluster(IClusterMemberConfiguration config, out MemberCollectionBuilder members)
-            : this(config)
-        {
-            members = new MemberCollectionBuilder(ref this.members);
-        }
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -219,14 +63,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             heartbeatThreshold = config.HeartbeatThreshold;
             standbyNode = config.Standby;
             clockDriftBound = config.ClockDriftBound;
-            bootstrapMode = config.BootstrapMode;
+            readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            localMemberId = new(random);
         }
-
-        /// <summary>
-        /// Generates a new unique cluster member identifier.
-        /// </summary>
-        /// <returns>Generated cluster member identifier.</returns>
-        public ClusterMemberId NewClusterMemberId() => new(random);
 
         /// <summary>
         /// Gets logger used by this object.
@@ -246,6 +85,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets election timeout used by the local member.
         /// </summary>
         public TimeSpan ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
+
+        /// <summary>
+        /// Represents a task indicating that the current node is ready to serve requests.
+        /// </summary>
+        public Task Readiness => readinessProbe.Task;
 
         private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
 
@@ -277,10 +121,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Gets token that can be used for all internal asynchronous operations.
+        /// Gets configuration storage.
         /// </summary>
-        [Obsolete("Use LifecycleToken property instead")]
-        protected CancellationToken Token => LifecycleToken;
+        protected abstract IClusterConfigurationStorage ConfigurationStorage { get; }
 
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
@@ -295,9 +138,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc />
         IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
-
-        /// <inheritdoc/>
-        IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
         /// Establishes metrics collector.
@@ -344,83 +184,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private FollowerState CreateInitialState()
             => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
 
-        private Task RecoverAsync()
+        private async ValueTask UnfreezeAsync()
         {
-            // in case of recovery bootstrap we expect that the local node is already presented
-            ClusterMemberId? localId = null;
-
-            foreach (var member in members.Values)
-            {
-                if (!member.IsRemote)
-                {
-                    localId = member.Id;
-                    break;
-                }
-            }
-
-            localMemberId = localId ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-
-            // start active node in Follower state;
-            // otherwise use ephemeral state
-            state = standbyNode ?
-                new StandbyState(this) :
-                CreateInitialState();
-
-            return Task.CompletedTask;
-        }
-
-        private async Task JoinClusterAsync(CancellationToken token)
-        {
-            localMemberId = NewClusterMemberId();
-            state = new StandbyState(this);
-
-            if (auditTrail is Membership.IClusterConfigurationStorage storage)
-                storage.ConfigurationInterpreter = this;
-            else
-                throw new RaftProtocolException(ExceptionMessages.AuditTrailNoMembershipSupport(auditTrail.GetType()));
-
-            announcementEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            await AnnounceAsync(token).ConfigureAwait(false);
-
-            // now wait for the reply from the cluster
-            await announcementEvent.Task.WaitAsync(InfiniteTimeSpan, token).ConfigureAwait(false);
-
-            // verify that local node is here
+            // ensure that local member is received
             foreach (var member in members.Values)
             {
                 if (member.Id == localMemberId)
-                    goto success;
+                {
+                    var newState = new FollowerState(this);
+                    using var currentState = state;
+                    await (currentState?.StopAsync() ?? Task.CompletedTask);
+                    state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                    readinessProbe.TrySetResult();
+                }
             }
-
-            throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-
-        success:
-            if (!standbyNode)
-            {
-                var current = state;
-                state = CreateInitialState();
-                current.Dispose();
-            }
-        }
-
-        private async Task ColdStartAsync(CancellationToken token)
-        {
-            // in a cold start it's expected that the local member should be committed to the log
-            localMemberId = NewClusterMemberId();
-
-            var storage = auditTrail as Membership.IClusterConfigurationStorage;
-
-            if (storage is null)
-                throw new RaftProtocolException(ExceptionMessages.AuditTrailNoMembershipSupport(auditTrail.GetType()));
-
-            // append entry with local member
-            await AddLocalMemberAsync(storage.AppendAsync<Membership.AddMemberLogEntry>, token).ConfigureAwait(false);
-            await storage.CommitAsync(token).ConfigureAwait(false);
-
-            // now check that there is only one local member in the list
-            if (members.Count != 1 && !members.ContainsKey(localMemberId))
-                throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
         }
 
         /// <summary>
@@ -428,19 +205,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public virtual async Task StartAsync(CancellationToken token)
+        public virtual Task StartAsync(CancellationToken token)
         {
-            // audit trail is initialized so it is expected that the internal state machine initialized as well (through ReplayAsync call)
-            await auditTrail.InitializeAsync(token).ConfigureAwait(false);
+            var localMember = GetLocalMember();
 
-            var task = bootstrapMode switch
+            // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
+            if (localMember is not null)
             {
-                ClusterMemberBootstrap.Announcement => JoinClusterAsync(token),
-                ClusterMemberBootstrap.ColdStart => ColdStartAsync(token),
-                _ => RecoverAsync(),
-            };
+                localMemberId = localMember.Id;
+                state = standbyNode ? new StandbyState(this) : new FollowerState(this).StartServing(ElectionTimeout, LifecycleToken);
+                readinessProbe.TrySetResult();
+            }
+            else
+            {
+                // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
+                localMemberId = new(random);
+                state = new StandbyState(this);
+            }
 
-            await task.ConfigureAwait(false);
+            return auditTrail.InitializeAsync(token);
+
+            TMember? GetLocalMember()
+            {
+                foreach (var member in members.Values)
+                {
+                    if (!member.IsRemote)
+                        return member;
+                }
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -567,21 +361,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Handles InstallSnapshot message received from remote cluster member.
-        /// </summary>
-        /// <typeparam name="TSnapshot">The type of snapshot record.</typeparam>
-        /// <param name="sender">The sender of the snapshot message.</param>
-        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
-        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
-        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        [Obsolete("Use InstallSnapshotAsync method instead")]
-        protected Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-            where TSnapshot : notnull, IRaftLogEntry
-            => InstallSnapshotAsync(sender.Id, senderTerm, snapshot, snapshotIndex, token);
-
-        /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
         /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
@@ -591,9 +370,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
+        /// <param name="config">The list of cluster members.</param>
+        /// <param name="applyConfig">
+        /// <see langword="true"/> to inform that the receiver must apply previously proposed configuration;
+        /// <see langword="false"/> to propose a new configuration.
+        /// </param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             using var tokenSource = token.LinkTo(LifecycleToken);
@@ -622,8 +406,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (commitIndex <= auditTrail.GetLastIndex(true))
                     {
                         // This node is in sync with the leader and no entries arrived
-                        if (emptySet && senderMember is not null)
-                            ReplicationCompleted?.Invoke(this, senderMember);
+                        if (emptySet)
+                        {
+                            if (senderMember is not null)
+                                ReplicationCompleted?.Invoke(this, senderMember);
+
+                            await UnfreezeAsync().ConfigureAwait(false);
+                        }
 
                         result = true;
                     }
@@ -631,28 +420,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
                     }
+
+                    // process configuration
+                    var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
+                    if (config.Fingerprint == fingerprint)
+                    {
+                        if (applyConfig)
+                            await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                    }
+                    else if (applyConfig is false)
+                    {
+                        await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        result = false;
+                    }
                 }
             }
 
             return new Result<bool>(currentTerm, result);
-        }
 
-        /// <summary>
-        /// Handles AppendEntries message received from remote cluster member.
-        /// </summary>
-        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
-        /// <param name="sender">The sender of the replica message.</param>
-        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
-        /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
-        /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
-        /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        [Obsolete("Use AppendEntriesAsync method instead")]
-        protected Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
-            => AppendEntriesAsync(sender.Id, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+            ValueTask UnfreezeAsync() => standbyNode || state is not StandbyState ? new() : this.UnfreezeAsync();
+        }
 
         /// <summary>
         /// Receives preliminary vote from the potential Candidate in the cluster.
@@ -685,18 +475,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             return new Result<bool>(currentTerm, result);
         }
-
-        /// <summary>
-        /// Receives preliminary vote from the potential Candidate in the cluster.
-        /// </summary>
-        /// <param name="nextTerm">Caller's current term + 1.</param>
-        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
-        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
-        [Obsolete("Use PreVoteAsync method instead")]
-        protected Task<Result<bool>> ReceivePreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => PreVoteAsync(nextTerm, lastLogIndex, lastLogTerm, token);
 
         /// <summary>
         /// Votes for the new candidate.
@@ -746,19 +524,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Votes for the new candidate.
-        /// </summary>
-        /// <param name="sender">The vote sender.</param>
-        /// <param name="senderTerm">Term value provided by sender of the request.</param>
-        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
-        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        [Obsolete("Use VoteAsync method instead")]
-        protected Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => VoteAsync(sender.Id, senderTerm, lastLogIndex, lastLogTerm, token);
-
-        /// <summary>
         /// Revokes leadership of the local node.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -786,15 +551,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             return result;
         }
-
-        /// <summary>
-        /// Revokes leadership of the local node.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        [Obsolete("Use ResignAsync method instead")]
-        protected Task<bool> ReceiveResignAsync(CancellationToken token)
-            => ResignAsync(token);
 
         /// <inheritdoc/>
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
@@ -907,7 +663,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
                 state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
-                    .StartLeading(HeartbeatTimeout, auditTrail, LifecycleToken);
+                    .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
@@ -919,10 +675,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">The time to wait until replication ends.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
-        /// <returns><see langword="true"/> if replication is completed; <see langword="false"/>.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
+        public Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
             => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
         private async Task<bool> ReplicateAsync<TEntry>(TEntry entry, Timeout timeout, CancellationToken token)
@@ -935,14 +690,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timeout.ThrowIfExpired(out var remaining);
 
             // 2 - force replication
-            if (await ForceReplicationAsync(remaining, token).ConfigureAwait(false))
-                timeout.ThrowIfExpired(out remaining);
-            else
-                throw new TimeoutException();
+            await ForceReplicationAsync(remaining, token).ConfigureAwait(false);
+            timeout.ThrowIfExpired(out remaining);
 
             // 3 - wait for commit
-            if (!await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false))
-                throw new TimeoutException();
+            await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false);
 
             return Term == entry.Term;
         }
@@ -979,6 +731,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc />
         IClusterMember? IPeerMesh<IClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
 
+        /// <inheritdoc />
+        IReadOnlyCollection<EndPoint> IPeerMesh.Peers => members.Values.Select(static m => m.EndPoint).ToArray();
+
         private void Cleanup()
         {
             Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
@@ -986,9 +741,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionSync.Dispose();
             leader = null;
             Interlocked.Exchange(ref state, null)?.Dispose();
-
-            if (announcementEvent is not null)
-                TrySetDisposedException(announcementEvent);
+            TrySetDisposedException(readinessProbe);
+            ConfigurationStorage.Dispose();
 
             memberAddedHandlers = memberRemovedHandlers = null;
         }

@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private async ValueTask<(PacketHeaders, int, bool)> EndReceiveSnapshot(Memory<byte> output)
         {
             var result = await Cast<Task<Result<bool>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
-            return (new PacketHeaders(MessageType.None, FlowControl.Ack), IExchange.WriteResult(result, output.Span) + sizeof(byte), false);
+            return (new PacketHeaders(MessageType.None, FlowControl.Ack), IExchange.WriteResult(result, output.Span), false);
         }
     }
 }

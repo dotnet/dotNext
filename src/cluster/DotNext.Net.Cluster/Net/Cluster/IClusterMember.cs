@@ -13,14 +13,6 @@ namespace DotNext.Net.Cluster
     public interface IClusterMember : IPeer
     {
         /// <summary>
-        /// Represents cluster member endpoint that can be used to send messages specific to consensus protocol.
-        /// </summary>
-        new EndPoint EndPoint { get; } // TODO: Remove this property in .NEXT 4
-
-        /// <inheritdoc />
-        EndPoint IPeer.EndPoint => EndPoint;
-
-        /// <summary>
         /// Gets unique identifier of this member.
         /// </summary>
         ClusterMemberId Id => ClusterMemberId.FromEndPoint(EndPoint); // TODO: Move Id to IPeer interface and rename ClusterMemberId => PeerId
@@ -38,7 +30,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// An event raised when cluster member becomes available or unavailable.
         /// </summary>
-        event ClusterMemberStatusChanged? MemberStatusChanged;
+        event ClusterMemberStatusChanged MemberStatusChanged;
 
         /// <summary>
         /// Gets status of this member.

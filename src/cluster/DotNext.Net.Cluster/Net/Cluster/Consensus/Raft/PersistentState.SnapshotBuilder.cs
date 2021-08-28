@@ -35,11 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The task representing asynchronous execution of this method.</returns>
             protected abstract ValueTask ApplyAsync(LogEntry entry);
 
-            internal ValueTask ApplyCoreAsync(LogEntry entry) => entry.CommandId switch
-            {
-                IRaftLogEntry.AddMemberCommandId or IRaftLogEntry.RemoveMemberCommandId => new(),
-                _ => entry.IsEmpty ? new() : ApplyAsync(entry),
-            };
+            internal ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry);
 
             /// <summary>
             /// Allows to adjust the index of the current log entry to be snapshotted.
