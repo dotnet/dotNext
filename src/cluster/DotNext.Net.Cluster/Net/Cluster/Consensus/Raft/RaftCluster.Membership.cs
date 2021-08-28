@@ -165,6 +165,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     using var currentState = state;
                     state = newState;
                 }
+
+                if (ReferenceEquals(result, leader))
+                    Leader = null;
             }
 
             if (result is not null)
