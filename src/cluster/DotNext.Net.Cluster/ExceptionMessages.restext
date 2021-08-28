@@ -15,7 +15,6 @@ UnexpectedUdpSenderBehavior=UDP sender must wait for response
 ExchangeCompleted=Network exchange is completed
 CanceledByRemoteHost=The operation has been canceled by remote host
 UnavailableMember=Member is not reachable through the network
-UnresolvedLocalMember=Configured list of members in cluster doesn't contain address of entire application
 MissingPartition=Log entry index is out of range. Index value is {0}
 UnknownCommand=Command with id {0} cannot be recognized by the interpreter
 MissingCommandFormatter=Command of type {0} doesn't have registered formatter
