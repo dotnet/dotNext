@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Buffers;
 using System.IO;
@@ -139,4 +138,3 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => JsonLogEntry.SerializeAsync<T, TWriter>(writer, TypeId, Content, token);
     }
 }
-#endif

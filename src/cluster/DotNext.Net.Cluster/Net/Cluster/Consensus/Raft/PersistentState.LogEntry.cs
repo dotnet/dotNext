@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-#if !NETSTANDARD2_1
 using System.Text.Json;
-#endif
 using System.Threading;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
@@ -225,7 +223,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return result;
             }
 
-#if !NETSTANDARD2_1
             /// <summary>
             /// Deserializes JSON content represented by this log entry.
             /// </summary>
@@ -260,10 +257,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 return result;
             }
-#endif
         }
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Creates a log entry with JSON-serializable payload.
         /// </summary>
@@ -278,6 +273,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <seealso cref="LogEntry.DeserializeFromJsonAsync"/>
         public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
             => new(Term, content, typeId, options);
-#endif
     }
 }
