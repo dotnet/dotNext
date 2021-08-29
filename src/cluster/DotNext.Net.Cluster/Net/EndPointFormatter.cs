@@ -18,11 +18,12 @@ namespace DotNext.Net
 
         private const byte IPEndPointPrefix = 1;
         private const byte DnsEndPointPrefix = 2;
+        private const byte HttpEndPointPrefix = 3;
 
         private static Encoding HostNameEncoding => Encoding.UTF8;
 
         /// <summary>
-        /// Serializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/> to the buffer.
+        /// Serializes <see cref="IPEndPoint"/>, <see cref="DnsEndPoint"/> or <see cref="HttpEndPoint"/> to the buffer.
         /// </summary>
         /// <param name="endPoint">The value to be serialized.</param>
         /// <param name="allocator">The buffer allocator.</param>
@@ -66,6 +67,18 @@ namespace DotNext.Net
                     writer.Add(IPEndPointPrefix);
                     writer.WriteInt32(ip.Port, true);
                     Serialize(ip.Address, ref writer);
+                    break;
+                case HttpEndPoint http:
+                    // the format is:
+                    // DNS endpoint type = 1 byte
+                    // HTTPS (true/false) = 1 byte
+                    // port = 4 bytes
+                    // host name length, N = 4 bytes
+                    // host name = N bytes
+                    writer.Add(HttpEndPointPrefix);
+                    writer.Add(http.IsSecure.ToByte());
+                    writer.WriteInt32(http.Port, true);
+                    Serialize(http.Host, ref writer);
                     break;
                 case DnsEndPoint dns:
                     // the format is:
@@ -112,6 +125,7 @@ namespace DotNext.Net
         {
             IPEndPointPrefix => DeserializeIP(ref reader),
             DnsEndPointPrefix => DeserializeHost(ref reader),
+            HttpEndPointPrefix => DeserializeHttp(ref reader),
             _ => throw new NotSupportedException(),
         };
 
@@ -126,19 +140,29 @@ namespace DotNext.Net
             return new IPEndPoint(new IPAddress(bytes), port);
         }
 
-        private static DnsEndPoint DeserializeHost(ref SequenceBinaryReader reader)
+        private static void DeserializeHost(ref SequenceBinaryReader reader, out string hostName, out int port)
         {
-            var port = reader.ReadInt32(true);
+            port = reader.ReadInt32(true);
             var length = reader.ReadInt32(true);
 
-            string hostName;
             using (var hostNameBuffer = (uint)length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true))
             {
                 reader.Read(hostNameBuffer.Span);
                 hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
             }
+        }
 
+        private static DnsEndPoint DeserializeHost(ref SequenceBinaryReader reader)
+        {
+            DeserializeHost(ref reader, out var hostName, out var port);
             return new DnsEndPoint(hostName, port);
+        }
+
+        private static HttpEndPoint DeserializeHttp(ref SequenceBinaryReader reader)
+        {
+            var secure = ValueTypeExtensions.ToBoolean(reader.Read<byte>());
+            DeserializeHost(ref reader, out var hostName, out var port);
+            return new HttpEndPoint(hostName, port, secure);
         }
     }
 }
