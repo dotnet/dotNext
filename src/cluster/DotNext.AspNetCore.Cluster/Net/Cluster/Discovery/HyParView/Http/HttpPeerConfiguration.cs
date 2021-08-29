@@ -18,7 +18,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
         static HttpPeerConfiguration()
         {
-            IPNetworkConverter.Register();
             PathStringConverter.Register();
         }
 
@@ -35,12 +34,10 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         /// </summary>
         public HttpProtocolVersion ProtocolVersion { get; set; }
 
-#if !NETCOREAPP3_1
         /// <summary>
         /// Gets or sets HTTP protocol selection policy.
         /// </summary>
         public HttpVersionPolicy ProtocolVersionPolicy { get; set; } = HttpVersionPolicy.RequestVersionOrLower;
-#endif
 
         /// <summary>
         /// Gets or sets HTTP request timeout.

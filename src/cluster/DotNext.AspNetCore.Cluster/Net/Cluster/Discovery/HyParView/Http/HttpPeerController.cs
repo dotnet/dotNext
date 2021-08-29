@@ -17,7 +17,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 {
     using Buffers;
     using Net.Http;
-    using TransportLayerSecurityFeature = Hosting.Server.Features.TransportLayerSecurityFeature;
 
     [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed partial class HttpPeerController : PeerController, IHostedService, IPeerMesh<HttpPeerClient>
@@ -36,7 +35,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         private readonly Uri resourcePath;
         private readonly IServer server;
 
-        private EndPoint? localNode, contactNode;
+        private readonly HttpEndPoint localNode;
+        private HttpEndPoint? contactNode;
 
         // TODO: Use nullable services in .NET 6
         private HttpPeerController(IOptions<HttpPeerConfiguration> configuration, IServiceProvider dependencies)
@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             protocolVersionPolicy = configuration.Value.ProtocolVersionPolicy;
 #endif
             contactNode = configuration.Value.ContactNode;
-            localNode = configuration.Value.LocalNode;
+            localNode = configuration.Value.LocalNode ?? throw new HyParViewProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
             resourcePath = new(configuration.Value.ResourcePath.Value.IfNullOrEmpty(HttpPeerConfiguration.DefaultResourcePath), UriKind.Relative);
 
             // resolve dependencies
@@ -77,37 +77,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
         internal PathString ResourcePath => PathString.FromUriComponent(resourcePath);
 
-        private bool IsTlsEnabled => server.Features.Get<TransportLayerSecurityFeature>()?.IsEnabled ?? true;
-
-        private Uri CreateBaseUri(EndPoint peer)
+        private HttpPeerClient CreateClient(HttpEndPoint endPoint, bool openConnectionForEachRequest)
         {
-            var builder = new UriBuilder() { Scheme = Uri.UriSchemeHttps };
-            builder.Scheme = protocolVersion switch
-            {
-                HttpProtocolVersion.Http1 or HttpProtocolVersion.Auto => IsTlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
-                _ => Uri.UriSchemeHttps,
-            };
-
-            switch (peer)
-            {
-                case IPEndPoint ip:
-                    builder.Host = ip.Address.ToString();
-                    builder.Port = ip.Port;
-                    break;
-                case DnsEndPoint dns:
-                    builder.Host = dns.Host;
-                    builder.Port = dns.Port;
-                    break;
-                default:
-                    throw new NotSupportedException();
-            }
-
-            return builder.Uri;
-        }
-
-        private HttpPeerClient CreateClient(EndPoint endPoint, bool openConnectionForEachRequest)
-        {
-            var baseUri = CreateBaseUri(endPoint);
+            var baseUri = endPoint.CreateUriBuilder().Uri;
             var client = handlerFactory is null
                 ? new HttpPeerClient(baseUri, new SocketsHttpHandler { ConnectTimeout = connectTimeout }, true)
                 : new HttpPeerClient(baseUri, handlerFactory.CreateHandler(clientHandlerName), false);
@@ -122,7 +94,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             return client;
         }
 
-        private HttpPeerClient GetOrCreatePeer(EndPoint peer)
+        private HttpPeerClient GetOrCreatePeer(HttpEndPoint peer)
         {
             if (!clientCache.TryGetValue(peer, out var client))
             {
@@ -150,16 +122,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         /// <returns>The task representing asynchronous result.</returns>
         public async Task StartAsync(CancellationToken token)
         {
-            if (lifetimeService is not null)
-            {
-                localNode ??= await lifetimeService.TryResolveLocalNodeAsync(token).ConfigureAwait(false);
-                contactNode ??= await lifetimeService.TryResolveContactNodeAsync(token).ConfigureAwait(false);
-                lifetimeService.OnStart(this);
-            }
+            lifetimeService?.OnStart(this);
 
             // local node is required parameter
-            if (localNode is null)
-                throw new HyParViewProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
 
             if (contactNode is null)
                 Logger.NoContactNodeProvider();

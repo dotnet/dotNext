@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         static PeerConfiguration()
         {
             IPAddressConverter.Register();
-            DnsEndPointConverter.Register();
+            HttpEndPointConverter.Register();
         }
 
         private readonly Random random = new();
@@ -126,16 +126,11 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         /// <summary>
         /// Gets or sets the address of the contact node.
         /// </summary>
-        public DnsEndPoint? ContactNode { get; set; }
+        public HttpEndPoint? ContactNode { get; set; }
 
         /// <summary>
         /// Gets or sets the address of the local node.
         /// </summary>
-        /// <remarks>
-        /// This is required configuration parameter if implementation of
-        /// <see cref="IPeerLifetime.TryResolveLocalNodeAsync(System.Threading.CancellationToken)"/>
-        /// is not provided.
-        /// </remarks>
-        public DnsEndPoint? LocalNode { get; set; }
+        public HttpEndPoint? LocalNode { get; set; }
     }
 }

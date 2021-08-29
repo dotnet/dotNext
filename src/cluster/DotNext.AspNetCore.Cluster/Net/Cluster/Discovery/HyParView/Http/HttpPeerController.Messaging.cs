@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         private async Task PostAsync<TRequest>(EndPoint peer, string messageType, TRequest content, CancellationToken token)
             where TRequest : notnull, ISupplier<ReadOnlyMemory<byte>>
         {
-            var client = GetOrCreatePeer(peer);
+            var client = GetOrCreatePeer((HttpEndPoint)peer);
 
             using var request = new HttpRequestMessage
             {
