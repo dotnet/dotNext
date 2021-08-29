@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster
 {
@@ -38,30 +39,48 @@ namespace DotNext.Net.Cluster
             family = info.GetInt32(FamilySerData);
         }
 
-        private ClusterMemberId(IPEndPoint endpoint)
+        private ClusterMemberId(IPEndPoint endPoint)
         {
-            address = default;
-            var bytes = Span.AsBytes(ref address);
-            if (!endpoint.Address.TryWriteBytes(bytes, out length))
-                throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endpoint));
-            port = endpoint.Port;
-            family = (int)endpoint.AddressFamily;
+            Span<byte> bytes = stackalloc byte[16];
+            if (endPoint.Address.TryWriteBytes(bytes, out length))
+                address = new(bytes);
+            else
+                throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endPoint));
+            port = endPoint.Port;
+            family = (int)endPoint.AddressFamily;
         }
 
-        private ClusterMemberId(DnsEndPoint endpoint)
+        private ClusterMemberId(DnsEndPoint endPoint)
         {
-            var hostHash = Span.BitwiseHashCode64(endpoint.Host.AsSpan(), false);
-            Intrinsics.Bitcast(in hostHash, out address);
+            Span<byte> bytes = stackalloc byte[16];
+            bytes.Clear();
+            WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
+            address = new(bytes);
 
-            length = endpoint.Host.Length;
-            port = endpoint.Port;
-            family = (int)endpoint.AddressFamily;
+            length = endPoint.Host.Length;
+            port = endPoint.Port;
+            family = (int)endPoint.AddressFamily;
+        }
+
+        private ClusterMemberId(HttpEndPoint endPoint)
+        {
+            Span<byte> bytes = stackalloc byte[16];
+            bytes.Clear();
+            WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
+            bytes[sizeof(long)] = endPoint.IsSecure.ToByte();
+            address = new(bytes);
+
+            length = endPoint.Host.Length;
+            port = endPoint.Port;
+            family = (int)endPoint.AddressFamily;
         }
 
         private ClusterMemberId(SocketAddress address)
         {
-            var hash = Intrinsics.GetHashCode64(SocketAddressByteGetter64, address.Size, address, false);
-            Intrinsics.Bitcast(in hash, out this.address);
+            Span<byte> bytes = stackalloc byte[16];
+            bytes.Clear();
+            WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(SocketAddressByteGetter64, address.Size, address, false));
+            this.address = new(bytes);
 
             port = Intrinsics.GetHashCode32(SocketAddressByteGetter32, address.Size, address, false);
             family = (int)address.Family;
@@ -163,9 +182,10 @@ namespace DotNext.Net.Cluster
         /// <returns>The identifier of the cluster member.</returns>
         public static ClusterMemberId FromEndPoint(EndPoint ep) => ep switch
         {
-            IPEndPoint ip => new ClusterMemberId(ip),
-            DnsEndPoint dns => new ClusterMemberId(dns),
-            _ => new ClusterMemberId(ep.Serialize())
+            IPEndPoint ip => new(ip),
+            HttpEndPoint http => new(http),
+            DnsEndPoint dns => new(dns),
+            _ => new(ep.Serialize())
         };
 
         private bool Equals(in ClusterMemberId other)
