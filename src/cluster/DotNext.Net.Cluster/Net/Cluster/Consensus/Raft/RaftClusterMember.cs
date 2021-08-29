@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile IReadOnlyDictionary<string, string>? metadataCache;
         private AtomicEnum<ClusterMemberStatus> status;
 
-        private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+        private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
         {
             this.localMember = localMember;
             this.metrics = metrics;
@@ -40,7 +40,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets the address of this cluster member.
         /// </summary>
-        public EndPoint EndPoint { get; }
+        public IPEndPoint EndPoint { get; }
+
+        /// <inheritdoc />
+        EndPoint IPeer.EndPoint => EndPoint;
 
         /// <summary>
         /// Determines whether this member is a leader.
