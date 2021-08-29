@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 
 namespace DotNext.Net
@@ -73,21 +74,25 @@ namespace DotNext.Net
                     // DNS endpoint type = 1 byte
                     // HTTPS (true/false) = 1 byte
                     // port = 4 bytes
+                    // address family = 4 bytes
                     // host name length, N = 4 bytes
                     // host name = N bytes
                     writer.Add(HttpEndPointPrefix);
                     writer.Add(http.IsSecure.ToByte());
                     writer.WriteInt32(http.Port, true);
+                    writer.WriteInt32((int)http.AddressFamily, true);
                     Serialize(http.Host, ref writer);
                     break;
                 case DnsEndPoint dns:
                     // the format is:
                     // DNS endpoint type = 1 byte
                     // port = 4 bytes
+                    // address family = 4 bytes
                     // host name length, N = 4 bytes
                     // host name = N bytes
                     writer.Add(DnsEndPointPrefix);
                     writer.WriteInt32(dns.Port, true);
+                    writer.WriteInt32((int)dns.AddressFamily, true);
                     Serialize(dns.Host, ref writer);
                     break;
                 default:
@@ -140,9 +145,10 @@ namespace DotNext.Net
             return new IPEndPoint(new IPAddress(bytes), port);
         }
 
-        private static void DeserializeHost(ref SequenceBinaryReader reader, out string hostName, out int port)
+        private static void DeserializeHost(ref SequenceBinaryReader reader, out string hostName, out int port, out AddressFamily family)
         {
             port = reader.ReadInt32(true);
+            family = (AddressFamily)reader.ReadInt32(true);
             var length = reader.ReadInt32(true);
 
             using (var hostNameBuffer = (uint)length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true))
@@ -154,15 +160,15 @@ namespace DotNext.Net
 
         private static DnsEndPoint DeserializeHost(ref SequenceBinaryReader reader)
         {
-            DeserializeHost(ref reader, out var hostName, out var port);
-            return new DnsEndPoint(hostName, port);
+            DeserializeHost(ref reader, out var hostName, out var port, out var family);
+            return new DnsEndPoint(hostName, port, family);
         }
 
         private static HttpEndPoint DeserializeHttp(ref SequenceBinaryReader reader)
         {
             var secure = ValueTypeExtensions.ToBoolean(reader.Read<byte>());
-            DeserializeHost(ref reader, out var hostName, out var port);
-            return new HttpEndPoint(hostName, port, secure);
+            DeserializeHost(ref reader, out var hostName, out var port, out var family);
+            return new HttpEndPoint(hostName, port, secure, family);
         }
     }
 }

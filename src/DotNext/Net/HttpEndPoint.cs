@@ -96,7 +96,7 @@ namespace DotNext.Net
         /// <param name="other">The object to compare.</param>
         /// <returns><see langword="true"/> if this object represents the same endpoint as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(HttpEndPoint? other)
-            => other is not null && string.Equals(Host, other.Host, StringComparison.OrdinalIgnoreCase) && Port == other.Port && IsSecure == other.IsSecure;
+            => other is not null && string.Equals(Host, other.Host, StringComparison.OrdinalIgnoreCase) && Port == other.Port && IsSecure == other.IsSecure && AddressFamily == other.AddressFamily;
 
         /// <summary>
         /// Determines whether this object represents the same HTTP endpoint as the specified object.
@@ -133,6 +133,7 @@ namespace DotNext.Net
             result.Add(Host, StringComparer.OrdinalIgnoreCase);
             result.Add(Port);
             result.Add(IsSecure);
+            result.Add(AddressFamily);
             return result.ToHashCode();
         }
 
