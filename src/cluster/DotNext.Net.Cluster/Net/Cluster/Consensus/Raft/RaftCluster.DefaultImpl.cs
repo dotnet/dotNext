@@ -129,13 +129,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return base.StopAsync(token);
         }
 
+        private RaftClusterMember CreateMember(ClusterMemberId id, IPEndPoint address)
+            => clientFactory.Invoke(this, address, id, Metrics as IClientMetricsCollector);
+
+        /// <summary>
+        /// Announces a new member in the cluster.
+        /// </summary>
+        /// <param name="id">The identifier of the cluster member.</param>
+        /// <param name="address">The addres of the cluster member.</param>
+        /// <param name="rounds">The number of warmup rounds.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// <see langword="true"/> if the node has been added to the cluster successfully;
+        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="rounds"/> is less than or equal to zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
+        public async Task<bool> AddMemberAsync<TAddress>(ClusterMemberId id, IPEndPoint address, int rounds, CancellationToken token = default)
+        {
+            var member = CreateMember(id, address);
+            if (await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token))
+                return true;
+
+            member.Dispose();
+            return false;
+        }
+
         private async Task ConfigurationPollingLoop()
         {
             await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken))
             {
                 if (eventInfo.IsAdded)
                 {
-                    var member = clientFactory.Invoke(this, eventInfo.Address, eventInfo.Id, Metrics as IClientMetricsCollector);
+                    var member = CreateMember(eventInfo.Id, eventInfo.Address);
                     if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
                         member.IsRemote = !Equals(eventInfo.Address, publicEndPoint);
                     else
