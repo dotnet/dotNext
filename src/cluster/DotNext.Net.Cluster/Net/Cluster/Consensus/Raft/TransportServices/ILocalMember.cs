@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,10 +18,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         bool IsLeader(IRaftClusterMember member);
 
-        Task InstallConfigurationAsync<TConfiguration>(TConfiguration configuration, bool applyConfig, CancellationToken token)
-            where TConfiguration : notnull, IClusterConfiguration;
+        Task ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token);
 
-        Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry;
 
         Task<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);

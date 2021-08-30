@@ -16,7 +16,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     internal partial class RaftHttpCluster : IOutputChannel
     {
         private readonly DuplicateRequestDetector duplicationDetector;
-        private volatile IImmutableSet<IPNetwork> allowedNetworks;
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
 
@@ -239,55 +238,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task AppendEntriesAsync(HttpRequest request, HttpResponse response, CancellationToken token)
         {
-            var message = new AppendEntriesMessage(request, out var entries);
+            var message = new AppendEntriesMessage(request, out var configurationReader, out var entries);
             TryGetMember(message.Sender)?.Touch();
+
+            if (message.ConfigurationLength > int.MaxValue)
+            {
+                response.StatusCode = StatusCodes.Status413RequestEntityTooLarge;
+                return;
+            }
+
+            using var configuration = new ReceivedClusterConfiguration((int)message.ConfigurationLength) { Fingerprint = message.ConfigurationFingerprint };
+            await configurationReader(configuration.Content, token).ConfigureAwait(false);
+
             await using (entries)
             {
-                Result<bool> result;
-                if (bufferingOptions is null)
-                {
-                    result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
-                }
-                else
-                {
-                    using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-                    result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
-                }
-
+                var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, configuration, message.ApplyConfiguration, token).ConfigureAwait(false);
                 await message.SaveResponse(response, result, token).ConfigureAwait(false);
             }
         }
 
-        private async Task InstallSnapshotAsync(InstallSnapshotMessage message, Func<CancellationToken, ValueTask> configurationReader, HttpResponse response, CancellationToken token)
+        private async Task InstallSnapshotAsync(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
         {
-            Result<bool> result;
             TryGetMember(message.Sender)?.Touch();
 
-            try
-            {
-                await configurationReader(token).ConfigureAwait(false);
-                result = await InstallSnapshotAsync(message.Sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
-
-                await message.SaveResponse(response, result, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (message.Snapshot is IDisposable disposable)
-                    disposable.Dispose();
-            }
+            var result = await InstallSnapshotAsync(message.Sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
+            await message.SaveResponse(response, result, token).ConfigureAwait(false);
         }
 
         internal Task ProcessRequest(HttpContext context)
         {
-            var networks = allowedNetworks;
-
-            // checks whether the client's address is allowed
-            if (networks.Count > 0 && !networks.Any(context.Connection.RemoteIpAddress.IsIn))
-            {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                return Task.CompletedTask;
-            }
-
             context.Features.Set(duplicationDetector);
 
             // process request
@@ -306,7 +285,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 case CustomMessage.MessageType:
                     return ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
                 case InstallSnapshotMessage.MessageType:
-                    return InstallSnapshotAsync(new InstallSnapshotMessage(context.Request, out var reader), reader, context.Response, context.RequestAborted);
+                    return InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;

@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return Task.CompletedTask;
             }
 
-            private Task Redirect(HttpContext context, EndPoint leader, bool isEmbeddedMode)
+            private Task Redirect(HttpContext context, EndPoint leader)
             {
                 string targetHost;
                 int port;
@@ -59,8 +59,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 if (applicationPortHint.HasValue)
                     port = applicationPortHint.GetValueOrDefault();
-                else if (!isEmbeddedMode)
-                    port = context.Connection.LocalPort;
 
                 return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = targetHost, Port = port }.Uri);
             }
@@ -79,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     }
 
                     if (leader.IsRemote)
-                        return Redirect(context, leader.EndPoint, cluster is Embedding.RaftEmbeddedCluster);
+                        return Redirect(context, leader.EndPoint);
                 }
 
                 return next(context);

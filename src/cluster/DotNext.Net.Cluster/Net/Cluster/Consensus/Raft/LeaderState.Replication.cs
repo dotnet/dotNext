@@ -109,7 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (member.ConfigurationFingerprint == Fingerprint)
                 {
                     applyConfig = activeConfig.Fingerprint == Fingerprint;
-                    configuration = new EmptyClusterConfiguration(Fingerprint);
+                    configuration = IClusterConfiguration.CreateEmpty(Fingerprint);
                 }
                 else
                 {

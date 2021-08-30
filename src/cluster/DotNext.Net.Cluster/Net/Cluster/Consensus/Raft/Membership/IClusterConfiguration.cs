@@ -19,5 +19,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
         /// <inheritdoc />
         long? IDataTransferObject.Length => Length;
+
+        /// <summary>
+        /// Creates empty configuration.
+        /// </summary>
+        /// <param name="fingerprint">The fingerprint of the configuration.</param>
+        /// <returns>The empty configuration.</returns>
+        public static IClusterConfiguration CreateEmpty(long fingerprint) => new EmptyClusterConfiguration(fingerprint);
     }
 }

@@ -415,8 +415,24 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
-        public static async ValueTask ReadBlockAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
-            => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
+        public static ValueTask ReadBlockAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
+        {
+            if (output.IsEmpty)
+                return ValueTask.CompletedTask;
+
+            if (TryReadBlock(reader, output.Length, out var readResult))
+            {
+                readResult.Buffer.CopyTo(output.Span);
+                reader.AdvanceTo(readResult.Buffer.GetPosition(output.Length));
+
+                return readResult.IsCanceled ? ValueTask.FromCanceled(token.IsCancellationRequested ? token : new(true)) : ValueTask.CompletedTask;
+            }
+
+            return ReadBlockSlowAsync(reader, output, token);
+
+            async ValueTask ReadBlockSlowAsync(PipeReader reader, Memory<byte> output, CancellationToken token)
+                => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Reads length-prefixed block of bytes.

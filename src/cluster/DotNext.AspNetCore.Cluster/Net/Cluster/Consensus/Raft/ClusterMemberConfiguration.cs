@@ -1,49 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using ComponentModel;
-    using HostAddressHintFeature = Hosting.Server.Features.HostAddressHintFeature;
-
     /// <summary>
     /// Represents configuration of cluster member.
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        static ClusterMemberConfiguration()
-        {
-            IPAddressConverter.Register();
-            DnsEndPointConverter.Register();
-        }
-
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
         private TimeSpan? rpcTimeout;
         private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
         private string? hostNameHint;
-
-        /// <summary>
-        /// Gets or sets the address of the local node.
-        /// </summary>
-        [Obsolete("Use PublicEndPoint property instead")]
-        public IPAddress? HostAddressHint { get; set; }
-
-        /// <summary>
-        /// Gets or sets DNS name of the local node visible to other nodes in the network.
-        /// </summary>
-        [Obsolete("Use PublicEndPoint property instead")]
-        public string? HostNameHint
-        {
-            get => hostNameHint ?? PublicEndPoint?.Host;
-            set => hostNameHint = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the address of the local node visible to the entire cluster.
-        /// </summary>
-        public Uri? PublicEndPoint { get; set; }
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -93,6 +61,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             set => clockDriftBound = double.IsFinite(value) && value >= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating that the initial node in the cluster is starting.
+        /// </summary>
+        public bool ColdStart { get; set; } = true;
+
         /// <inheritdoc/>
         ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
 
@@ -115,30 +88,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// represents standby node which is never become a leader.
         /// </summary>
         public bool Standby { get; set; }
-
-        /// <summary>
-        /// Gets or sets bootstrap mode.
-        /// </summary>
-        public ClusterMemberBootstrap BootstrapMode { get; set; } = ClusterMemberBootstrap.Recovery;
-
-        [Obsolete]
-        internal void SetupHostAddressHint(IFeatureCollection features)
-        {
-            var address = HostAddressHint;
-            var name = HostNameHint;
-            HostAddressHintFeature? feature = null;
-
-            if (!features.IsReadOnly)
-            {
-                if (address is not null)
-                    feature += address.ToEndPoint;
-
-                if (!string.IsNullOrWhiteSpace(name))
-                    feature += name.ToEndPoint;
-            }
-
-            if (feature is not null)
-                features.Set(feature);
-        }
     }
 }

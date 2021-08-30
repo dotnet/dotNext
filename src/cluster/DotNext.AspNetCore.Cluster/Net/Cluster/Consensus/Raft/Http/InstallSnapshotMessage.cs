@@ -12,7 +12,6 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Buffers;
     using IO;
     using static IO.Pipelines.PipeExtensions;
 
@@ -21,22 +20,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal new const string MessageType = "InstallSnapshot";
         private const string SnapshotIndexHeader = "X-Raft-Snapshot-Index";
         private const string SnapshotTermHeader = "X-Raft-Snapshot-Term";
-        private const string ConfigurationHeader = "X-Raft-Config-Length";
 
-        private sealed class ReceivedSnapshot : Disposable, IRaftLogEntry
+        private sealed class ReceivedSnapshot : IRaftLogEntry
         {
             private readonly PipeReader reader;
-            private readonly long? totalLength;
-            private readonly int? configurationLength;
-            private MemoryOwner<byte> config;
             private bool touched;
 
-            internal ReceivedSnapshot(PipeReader content, long term, DateTimeOffset timestamp, long? totalLength, int? configurationLength)
+            internal ReceivedSnapshot(PipeReader content, long term, DateTimeOffset timestamp, long? length)
             {
                 Term = term;
                 Timestamp = timestamp;
-                this.totalLength = totalLength;
-                this.configurationLength = configurationLength;
+                Length = length;
                 reader = content;
             }
 
@@ -44,39 +38,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             bool IO.Log.ILogEntry.IsSnapshot => true;
 
-            internal ValueTask ReadConfigurationAsync(CancellationToken token)
-            {
-                ValueTask result;
-
-                if (configurationLength is null)
-                {
-                    result = new();
-                }
-                else
-                {
-                    config = MemoryAllocator.Allocate<byte>(configurationLength.GetValueOrDefault(), true);
-                    result = reader.ReadBlockAsync(config.Memory, token);
-                }
-
-                return result;
-            }
-
-            bool IRaftLogEntry.TryGetClusterConfiguration(out MemoryOwner<byte> configuration)
-            {
-                if (configurationLength is null)
-                {
-                    configuration = default;
-                    return false;
-                }
-
-                configuration = Span.Copy<byte>(config.Memory.Span);
-                return true;
-            }
-
             public DateTimeOffset Timestamp { get; }
 
-            public long? Length
-                => configurationLength is null ? totalLength : totalLength.HasValue ? totalLength.GetValueOrDefault() - configurationLength.GetValueOrDefault() : null;
+            public long? Length { get; }
 
             bool IDataTransferObject.IsReusable => false;
 
@@ -85,11 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ValueTask result;
                 if (touched)
                 {
-#if NETCOREAPP3_1
-                    result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
-#else
                     result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
-#endif
                 }
                 else
                 {
@@ -99,27 +59,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 return result;
             }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    config.Dispose();
-
-                base.Dispose(disposing);
-            }
         }
 
         private sealed class SnapshotContent : HttpContent
         {
             private readonly IDataTransferObject snapshot;
-            private MemoryOwner<byte> configuration;
 
             internal SnapshotContent(IRaftLogEntry snapshot)
             {
                 Headers.LastModified = snapshot.Timestamp;
-                if (snapshot.TryGetClusterConfiguration(out configuration))
-                    Headers.Add(ConfigurationHeader, configuration.Length.ToString(InvariantCulture));
-
                 this.snapshot = snapshot;
             }
 
@@ -132,36 +80,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected override
 #endif
             Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
-                => configuration.IsEmpty ? SerializeSnapshotOnlyAsync(stream, token) : SerializeSnapshotAndConfigurationAsync(stream, token);
-
-            private Task SerializeSnapshotOnlyAsync(Stream stream, CancellationToken token)
                 => snapshot.WriteToAsync(stream, token: token).AsTask();
 
-            private async Task SerializeSnapshotAndConfigurationAsync(Stream stream, CancellationToken token)
-            {
-                await stream.WriteAsync(configuration.Memory, token).ConfigureAwait(false);
-                await snapshot.WriteToAsync(stream, token: token).ConfigureAwait(false);
-            }
-
-            protected override bool TryComputeLength(out long length)
-            {
-                if (snapshot.Length.TryGetValue(out length))
-                {
-                    length += configuration.Length;
-                    return true;
-                }
-
-                length = default;
-                return false;
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    configuration.Dispose();
-
-                base.Dispose(disposing);
-            }
+            protected override bool TryComputeLength(out long length) => snapshot.Length.TryGetValue(out length);
         }
 
         internal readonly IRaftLogEntry Snapshot;
@@ -174,18 +95,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Snapshot = snapshot;
         }
 
-        private InstallSnapshotMessage(HeadersReader<StringValues> headers, PipeReader body, long? length, out Func<CancellationToken, ValueTask> configurationReader)
+        private InstallSnapshotMessage(HeadersReader<StringValues> headers, PipeReader body, long? length)
             : base(headers)
         {
             Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
-            var configurationLength = ParseHeaderAsNullable(ConfigurationHeader, headers, Int32Parser);
-            var snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser), length, configurationLength);
-            configurationReader = snapshot.ReadConfigurationAsync;
-            Snapshot = snapshot;
+            Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser), length);
         }
 
-        internal InstallSnapshotMessage(HttpRequest request, out Func<CancellationToken, ValueTask> configurationReader)
-            : this(request.Headers.TryGetValue, request.BodyReader, request.ContentLength, out configurationReader)
+        internal InstallSnapshotMessage(HttpRequest request)
+            : this(request.Headers.TryGetValue, request.BodyReader, request.ContentLength)
         {
         }
 

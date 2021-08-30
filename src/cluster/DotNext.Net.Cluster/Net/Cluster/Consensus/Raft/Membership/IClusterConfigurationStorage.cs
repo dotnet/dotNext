@@ -21,6 +21,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         IClusterConfiguration? ProposedConfiguration { get; }
 
         /// <summary>
+        /// Loads configuration from the storage.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous result.</returns>
+        ValueTask LoadConfigurationAsync(CancellationToken token);
+
+        /// <summary>
         /// Proposes the configuration.
         /// </summary>
         /// <remarks>

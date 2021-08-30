@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Net;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
-using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 {
     using Buffers;
     using IO;
-    using static Threading.Tasks.Continuation;
 
     /// <summary>
     /// Represents in-memory storage of cluster configuration.
     /// </summary>
     /// <typeparam name="TAddress">The type of cluster member address.</typeparam>
-    public abstract class InMemoryClusterConfigurationStorage<TAddress> : Disposable, IClusterConfigurationStorage<TAddress>
+    public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterConfigurationStorage<TAddress>
         where TAddress : notnull
     {
         private const int InitialBufferSize = 512;
@@ -69,15 +66,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
                 var config = storage.Encode(this);
                 storage.active?.Dispose();
-                storage.active = new(storage.fingerprintSource.Next<long>(), config);
+                storage.active = new(storage.GenerateFingerprint(), config);
             }
         }
 
-        private readonly MemoryAllocator<byte>? allocator;
-        private readonly Random fingerprintSource;
-        private ImmutableDictionary<ClusterMemberId, TAddress> activeCache, proposedCache;
-        private readonly Channel<ClusterConfigurationEvent<TAddress>> events;
-        private volatile TaskCompletionSource<bool> activatedEvent;
         private ClusterConfiguration? active, proposed;
 
         /// <summary>
@@ -85,37 +77,58 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// </summary>
         /// <param name="allocator">The memory allocator.</param>
         protected InMemoryClusterConfigurationStorage(MemoryAllocator<byte>? allocator = null)
+            : base(10, allocator)
         {
-            this.allocator = allocator;
-            fingerprintSource = new();
-            activeCache = ImmutableDictionary<ClusterMemberId, TAddress>.Empty;
-            proposedCache = ImmutableDictionary<ClusterMemberId, TAddress>.Empty;
-            activatedEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            events = Channel.CreateBounded<ClusterConfigurationEvent<TAddress>>(new BoundedChannelOptions(10) { FullMode = BoundedChannelFullMode.Wait });
         }
 
-        private void OnActivated() => Interlocked.Exchange(ref activatedEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).SetResult(true);
+        /// <inheritdoc />
+        public sealed override bool HasProposal => proposed is not null;
 
         /// <summary>
-        /// Encodes the address to its binary representation.
+        /// Gets active configuration.
         /// </summary>
-        /// <param name="address">The address to encode.</param>
-        /// <param name="output">The buffer for the address.</param>
-        protected abstract void Encode(TAddress address, ref BufferWriterSlim<byte> output);
+        public sealed override IClusterConfiguration ActiveConfiguration
+            => active ??= new(GenerateFingerprint(), Encode(activeCache));
 
-        private void Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration, ref BufferWriterSlim<byte> output)
+        /// <summary>
+        /// Gets proposed configuration.
+        /// </summary>
+        public sealed override IClusterConfiguration? ProposedConfiguration => proposed;
+
+        /// <summary>
+        /// Proposes the configuration.
+        /// </summary>
+        /// <param name="configuration">The proposed configuration.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous result.</returns>
+        public sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
         {
-            output.WriteInt32(configuration.Count, true);
+            var config = await configuration.ToMemoryAsync(allocator, token).ConfigureAwait(false);
 
-            foreach (var (id, address) in configuration)
-            {
-                // serialize id
-                id.WriteTo(output.GetSpan(ClusterMemberId.Size));
-                output.Advance(ClusterMemberId.Size);
+            proposed?.Dispose();
+            proposed = new(configuration.Fingerprint, config);
 
-                // serialize address
-                Encode(address, ref output);
-            }
+            proposedCache.Clear();
+            Decode(proposedCache, config.Memory);
+        }
+
+        /// <inheritdoc />
+        public sealed override async ValueTask ApplyAsync(CancellationToken token)
+        {
+            if (proposed is null)
+                return;
+
+            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
+
+            active?.Dispose();
+            active = proposed;
+            activeCache = proposedCache;
+
+            proposed.Dispose();
+            proposed = null;
+            proposedCache = proposedCache.Clear();
+
+            OnActivated();
         }
 
         private MemoryOwner<byte> Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration)
@@ -139,97 +152,46 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         }
 
         /// <summary>
-        /// Decodes the address of the node from its binary representation.
+        /// Proposes a new member.
         /// </summary>
-        /// <param name="reader">The reader of binary data.</param>
-        /// <returns>The decoded address.</returns>
-        protected abstract TAddress Decode(ref SequenceBinaryReader reader);
-
-        private void Decode(IDictionary<ClusterMemberId, TAddress> output, ref SequenceBinaryReader reader)
+        /// <param name="id">The identifier of the cluster member to add.</param>
+        /// <param name="address">The address of the cluster member.</param>
+        /// <returns>
+        /// <see langword="true"/> if the new member is added to the proposed configuration;
+        /// <see langword="false"/> if the storage has the proposed configuration already.
+        /// </returns>
+        public bool AddMember(ClusterMemberId id, TAddress address)
         {
-            Span<byte> memberIdBuffer = stackalloc byte[ClusterMemberId.Size];
+            if (proposed is not null || activeCache.ContainsKey(id))
+                return false;
 
-            for (var count = reader.ReadInt32(true); count > 0; count--)
-            {
-                // deserialize id
-                reader.Read(memberIdBuffer);
-                var id = new ClusterMemberId(memberIdBuffer);
+            var builder = activeCache.ToBuilder();
+            builder.Add(id, address);
+            proposedCache = builder.ToImmutable();
 
-                // deserialize address
-                var address = Decode(ref reader);
+            proposed = new(GenerateFingerprint(), Encode(builder));
+            builder.Clear();
 
-                output.TryAdd(id, address);
-            }
-        }
-
-        private void Decode(IDictionary<ClusterMemberId, TAddress> output, ReadOnlyMemory<byte> memory)
-        {
-            var reader = IAsyncBinaryReader.Create(memory);
-            Decode(output, ref reader);
-        }
-
-        /// <summary>
-        /// Gets active configuration.
-        /// </summary>
-        public IClusterConfiguration ActiveConfiguration
-            => active ??= new(fingerprintSource.Next<long>(), Encode(activeCache));
-
-        /// <summary>
-        /// Gets proposed configuration.
-        /// </summary>
-        public IClusterConfiguration? ProposedConfiguration => proposed;
-
-        /// <summary>
-        /// Proposes the configuration.
-        /// </summary>
-        /// <param name="configuration">The proposed configuration.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result.</returns>
-        public async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token)
-        {
-            var config = await configuration.ToMemoryAsync(allocator, token).ConfigureAwait(false);
-
-            proposed?.Dispose();
-            proposed = new(configuration.Fingerprint, config);
-
-            proposedCache.Clear();
-            Decode(proposedCache, config.Memory);
-        }
-
-        /// <summary>
-        /// Applies proposed configuration as active configuration.
-        /// </summary>
-        public void Apply()
-        {
-            active?.Dispose();
-            active = proposed;
-            activeCache = proposedCache;
-
-            proposed?.Dispose();
-            proposed = null;
-            proposedCache = ImmutableDictionary<ClusterMemberId, TAddress>.Empty;
-
-            OnActivated();
+            return true;
         }
 
         /// <inheritdoc />
-        ValueTask IClusterConfigurationStorage.ApplyAsync(CancellationToken token)
+        public sealed override ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
         {
-            ValueTask result;
+            ValueTask<bool> result;
             if (token.IsCancellationRequested)
             {
-                result = ValueTask.FromCanceled(token);
+                result = ValueTask.FromCanceled<bool>(token);
             }
             else
             {
-                result = new();
                 try
                 {
-                    Apply();
+                    result = new(AddMember(id, address));
                 }
                 catch (Exception e)
                 {
-                    result = ValueTask.FromException(e);
+                    result = ValueTask.FromException<bool>(e);
                 }
             }
 
@@ -237,46 +199,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         }
 
         /// <inheritdoc />
-        Task IClusterConfigurationStorage.WaitForApplyAsync(CancellationToken token)
-            => proposed is null ? Task.CompletedTask : activatedEvent.Task.ContinueWithTimeout(InfiniteTimeSpan, token);
-
-        /// <summary>
-        /// Proposes a new member.
-        /// </summary>
-        /// <param name="id">The identifier of the cluster member to add.</param>
-        /// <param name="address">The address of the cluster member.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>
-        /// <see langword="true"/> if the new member is added to the proposed configuration;
-        /// <see langword="false"/> if the storage has the proposed configuration already.
-        /// </returns>
-        public async ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
-        {
-            if (proposed is not null || activeCache.ContainsKey(id))
-                return false;
-
-            var builder = activeCache.ToBuilder();
-            builder.Add(id, address);
-            activeCache = builder.ToImmutable();
-
-            active?.Dispose();
-            active = new(fingerprintSource.Next<long>(), Encode(builder));
-            builder.Clear();
-
-            await events.Writer.WriteAsync(new() { Id = id, Address = address, IsAdded = true }, token).ConfigureAwait(false);
-            return true;
-        }
-
-        /// <summary>
-        /// Proposes removal of the existing member.
-        /// </summary>
-        /// <param name="id">The identifier of the cluster member to remove.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>
-        /// <see langword="true"/> if the new member is added to the proposed configuration;
-        /// <see langword="false"/> if the storage has the proposed configuration already.
-        /// </returns>
-        public async ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+        public bool RemoveMember(ClusterMemberId id)
         {
             if (proposed is not null || !activeCache.ContainsKey(id))
                 return false;
@@ -284,19 +207,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             var builder = activeCache.ToBuilder();
             if (!builder.Remove(id, out var address))
                 return false;
-            activeCache = builder.ToImmutable();
+            proposedCache = builder.ToImmutable();
 
-            active?.Dispose();
-            active = new(fingerprintSource.Next<long>(), Encode(builder));
+            proposed = new(GenerateFingerprint(), Encode(builder));
             builder.Clear();
 
-            await events.Writer.WriteAsync(new() { Id = id, Address = address, IsAdded = false }, token).ConfigureAwait(false);
             return true;
         }
 
         /// <inheritdoc />
-        IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> IClusterConfigurationStorage<TAddress>.PollChangesAsync(CancellationToken token)
-            => events.Reader.ReadAllAsync(token);
+        public sealed override ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+        {
+            ValueTask<bool> result;
+            if (token.IsCancellationRequested)
+            {
+                result = ValueTask.FromCanceled<bool>(token);
+            }
+            else
+            {
+                try
+                {
+                    result = new(RemoveMember(id));
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<bool>(e);
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Creates a builder that can be used to initialize active configuration.
@@ -310,14 +250,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             if (disposing)
             {
                 active?.Dispose();
-                activeCache.Clear();
                 active = null;
 
                 proposed?.Dispose();
-                proposedCache.Clear();
                 proposed = null;
-
-                events.Writer.TryComplete();
             }
 
             base.Dispose(disposing);

@@ -186,7 +186,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask UnfreezeAsync()
         {
-            // ensure that local member is received
+            // ensure that local member has been received
             foreach (var member in members.Values)
             {
                 if (member.Id == localMemberId)
@@ -219,7 +219,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
             {
                 // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
-                localMemberId = new(random);
                 state = new StandbyState(this);
             }
 

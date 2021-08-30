@@ -8,6 +8,7 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Collections.Generic;
     using IO;
     using IO.Log;
+    using Membership;
     using static IO.Pipelines.PipeExtensions;
     using EncodingContext = Text.EncodingContext;
     using LogEntryMetadata = TransportServices.LogEntryMetadata;
@@ -40,6 +42,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
         private protected const string CommandIdHeader = "X-Raft-Command-Id";
         private protected const string CountHeader = "X-Raft-Entries-Count";
+        private protected const string ConfigurationLengthHeader = "X-Raft-Config-Length";
+        private protected const string ConfigurationFingerprintHeader = "X-Raft-Config-Fingerprint";
+        private protected const string ConfigurationCommitHeader = "X-Raft-Config-Commit";
 
         private sealed class MultipartLogEntry : StreamTransferObject, IRaftLogEntry
         {
@@ -244,28 +249,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
+        internal readonly long ConfigurationFingerprint;
+        internal readonly long ConfigurationLength;
+        internal readonly bool ApplyConfiguration;
 
-        private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
+        private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, long fingerprint, long configurationLength, bool applyConfig)
             : base(MessageType, sender, term)
         {
             PrevLogIndex = prevLogIndex;
             PrevLogTerm = prevLogTerm;
             CommitIndex = commitIndex;
+            ConfigurationFingerprint = fingerprint;
+            ConfigurationLength = configurationLength;
+            ApplyConfiguration = applyConfig;
         }
 
-        private AppendEntriesMessage(HeadersReader<StringValues> headers, out long count)
+        private AppendEntriesMessage(HeadersReader<StringValues> headers, out long entriesCount)
             : base(headers)
         {
             PrevLogIndex = ParseHeader(PrecedingRecordIndexHeader, headers, Int64Parser);
             PrevLogTerm = ParseHeader(PrecedingRecordTermHeader, headers, Int64Parser);
             CommitIndex = ParseHeader(CommitIndexHeader, headers, Int64Parser);
-            count = ParseHeader(CountHeader, headers, Int64Parser);
+            entriesCount = ParseHeader(CountHeader, headers, Int64Parser);
+            ConfigurationFingerprint = ParseHeader(ConfigurationFingerprintHeader, headers, Int64Parser);
+            ConfigurationLength = ParseHeader(ConfigurationLengthHeader, headers, Int64Parser);
+            ApplyConfiguration = ParseHeader(ConfigurationCommitHeader, headers, BooleanParser);
         }
 
-        internal AppendEntriesMessage(HttpRequest request, out ILogEntryProducer<IRaftLogEntry> entries)
-            : this(request.Headers.TryGetValue, out var count)
+        internal AppendEntriesMessage(HttpRequest request, out Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, out ILogEntryProducer<IRaftLogEntry> entries)
+            : this(request.Headers.TryGetValue, out var entriesCount)
         {
-            entries = CreateReader(request, count);
+            entries = CreateReader(request, entriesCount);
+            configurationReader = request.BodyReader.ReadBlockAsync;
         }
 
         private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
@@ -294,6 +309,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
             request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
             request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
+            request.Headers.Add(ConfigurationFingerprintHeader, ConfigurationFingerprint.ToString(InvariantCulture));
+            request.Headers.Add(ConfigurationLengthHeader, ConfigurationLength.ToString(InvariantCulture));
+            request.Headers.Add(ConfigurationCommitHeader, ApplyConfiguration.ToString(InvariantCulture));
             base.PrepareRequest(request);
         }
 
@@ -316,25 +334,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // <payload> - octet string
         private sealed class OctetStreamLogEntriesWriter : HttpContent
         {
-            private TList entries;
+            private readonly long configurationLength;
+            private readonly IDataTransferObject configuration;
+            private readonly Enumerable<TEntry, TList> entries;
 
-            internal OctetStreamLogEntriesWriter(in TList entries)
+            internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration, long configurationLength)
             {
                 Headers.ContentType = new(MediaTypeNames.Application.Octet);
-                this.entries = entries;
+                this.configuration = configuration;
+                this.entries = new(entries);
             }
 
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
                 => SerializeToStreamAsync(stream, context, CancellationToken.None);
 
-#if NETCOREAPP3_1
-            private
-#else
-            protected override
-#endif
-            async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
+            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
             {
                 using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
+                await configuration.WriteToAsync(stream, buffer.Memory, token).ConfigureAwait(false);
+
                 foreach (var entry in entries)
                 {
                     // write metadata
@@ -355,11 +373,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             protected override bool TryComputeLength(out long length)
             {
-                length = 0L;
+                length = configurationLength;
                 foreach (var entry in entries)
                 {
                     Debug.Assert(entry.Length.HasValue);
-                    length += entry.Length.GetValueOrDefault() + LogEntryMetadata.Size;
+                    checked
+                    {
+                        length += entry.Length.GetValueOrDefault() + LogEntryMetadata.Size;
+                    }
                 }
 
                 return true;
@@ -381,14 +402,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             private readonly Enumerable<TEntry, TList> entries;
             private readonly string boundary;
+            private readonly IDataTransferObject configuration;
 
-            internal MultipartLogEntriesWriter(in TList entries)
+            internal MultipartLogEntriesWriter(in TList entries, IDataTransferObject configuration)
             {
                 boundary = Guid.NewGuid().ToString();
                 this.entries = new(in entries);
                 var contentType = new MediaTypeHeaderValue(ContentType);
                 contentType.Parameters.Add(new(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
+                this.configuration = configuration;
             }
 
             internal int Count => entries.Count;
@@ -426,18 +449,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
                 => SerializeToStreamAsync(stream, context, CancellationToken.None);
 
-#if NETCOREAPP3_1
-            private
-#else
-            protected override
-#endif
-            async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
+            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
             {
                 const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
                 using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 using (var builder = new PooledArrayBufferWriter<char>(maxChars))
                 {
+                    // encode configuration in raw format without boundaries
+                    await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);
+
+                    // write 
                     builder.Write(DoubleDash);
                     builder.Write(boundary);
                     builder.Write(CrLf);
@@ -476,21 +498,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        private readonly IDataTransferObject configuration;
         private TList entries;  // not readonly to avoid hidden copies
-        private bool optimizedTransfer;
 
-        internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
-            : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
-            => this.entries = entries;
-
-        internal bool UseOptimizedTransfer
+        internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries, IClusterConfiguration configuration, bool applyConfig)
+            : base(sender, term, prevLogIndex, prevLogTerm, commitIndex, configuration.Fingerprint, configuration.Length, applyConfig)
         {
-#if NETCOREAPP3_1
-            set => optimizedTransfer = value;
-#else
-            init => optimizedTransfer = value;
-#endif
+            this.entries = entries;
+            this.configuration = configuration;
         }
+
+        internal bool UseOptimizedTransfer { private get; init; }
 
         internal override void PrepareRequest(HttpRequestMessage request)
         {
@@ -501,7 +519,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private HttpContent CreateContentProvider()
-            => optimizedTransfer ? new OctetStreamLogEntriesWriter(in entries) : new MultipartLogEntriesWriter(in entries);
+            => UseOptimizedTransfer ? new OctetStreamLogEntriesWriter(in entries, configuration, ConfigurationLength) : new MultipartLogEntriesWriter(in entries, configuration);
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
     }

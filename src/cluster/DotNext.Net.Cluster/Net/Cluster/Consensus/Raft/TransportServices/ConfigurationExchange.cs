@@ -14,13 +14,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private readonly Pipe pipe;
         private readonly IClusterConfiguration configuration;
-        private readonly bool applyConfig;
         private Task? transmission;
 
-        internal ConfigurationExchange(IClusterConfiguration configuration, bool applyConfig, PipeOptions? options = null)
+        internal ConfigurationExchange(IClusterConfiguration configuration, PipeOptions? options = null)
         {
             this.configuration = configuration;
-            this.applyConfig = applyConfig;
             pipe = new Pipe(options ?? PipeOptions.Default);
         }
 
@@ -30,18 +28,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             writer.WriteInt64(configuration.Fingerprint, true);
             writer.WriteInt64(configuration.Length, true);
-            writer.Add(applyConfig.ToByte());
 
             return writer.WrittenCount;
         }
 
-        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out long fingerprint, out long configurationLength, out bool applyConfig)
+        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out long fingerprint, out long configurationLength)
         {
             var reader = new SpanReader<byte>(input);
 
             fingerprint = reader.ReadInt64(true);
             configurationLength = reader.ReadInt64(true);
-            applyConfig = ValueTypeExtensions.ToBoolean(reader.Read());
 
             return reader.ConsumedCount;
         }

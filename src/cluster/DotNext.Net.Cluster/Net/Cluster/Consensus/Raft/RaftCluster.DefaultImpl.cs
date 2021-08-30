@@ -21,41 +21,46 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         [StructLayout(LayoutKind.Auto)]
-        private struct ClusterConfiguration : IClusterConfiguration, IDisposable
+        private sealed class ClusterConfiguration : Disposable, IClusterConfiguration
         {
             private MemoryOwner<byte> configuration;
 
-            internal ClusterConfiguration(MemoryOwner<byte> content, long fingerprint, bool applyConfig)
+            public long Fingerprint { get; private set; }
+
+            internal void Update(MemoryOwner<byte> config, long fingerprint)
             {
-                configuration = content;
-                IsApplied = applyConfig;
+                configuration = config;
                 Fingerprint = fingerprint;
             }
 
-            public readonly long Fingerprint { get; }
+            internal void Clear()
+            {
+                configuration.Dispose();
+                Fingerprint = 0L;
+            }
 
-            internal readonly bool IsApplied { get; }
+            long IClusterConfiguration.Length => configuration.Length;
 
-            readonly long IClusterConfiguration.Length => configuration.Length;
+            bool IDataTransferObject.IsReusable => false;
 
-            readonly bool IDataTransferObject.IsReusable => true;
-
-            readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => writer.WriteAsync(configuration.Memory, null, token);
 
-            readonly ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 => transformation.TransformAsync<SequenceBinaryReader>(IAsyncBinaryReader.Create(configuration.Memory), token);
 
-            readonly bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
             {
                 memory = configuration.Memory;
                 return true;
             }
 
-            public void Dispose()
+            protected override void Dispose(bool disposing)
             {
-                configuration.Dispose();
-                this = default;
+                if (disposing)
+                    Clear();
+
+                base.Dispose(disposing);
             }
         }
 
@@ -67,9 +72,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ClusterMemberAnnouncer<IPEndPoint>? announcer;
         private readonly int warmupRounds;
         private readonly bool coldStart;
+        private readonly ClusterConfiguration cachedConfig;
         private Task pollingLoopTask;
         private IServer? server;
-        private ClusterConfiguration cachedConfig;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -89,6 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             coldStart = configuration.ColdStart;
             ConfigurationStorage = configuration.ConfigurationStorage ?? new InMemoryClusterConfigurationStorage(allocator);
             pollingLoopTask = Task.CompletedTask;
+            cachedConfig = new();
         }
 
         /// <inheritdoc />
@@ -101,14 +107,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public override async Task StartAsync(CancellationToken token = default)
         {
+            pollingLoopTask = ConfigurationPollingLoop();
+
             if (coldStart)
             {
                 // in case of cold start, add the local member to the configuration
                 await ConfigurationStorage.AddMemberAsync(LocalMemberId, publicEndPoint, token).ConfigureAwait(false);
                 await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
             }
+            else
+            {
+                await ConfigurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
+            }
 
-            pollingLoopTask = ConfigurationPollingLoop();
             server = serverFactory(this);
             server.Start();
             await base.StartAsync(token).ConfigureAwait(false);
@@ -188,26 +199,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ResignAsync(token);
 
-        async Task ILocalMember.InstallConfigurationAsync<TConfiguration>(TConfiguration configuration, bool applyConfig, CancellationToken token)
+        async Task ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
         {
-            var buffer = await configuration.ToMemoryAsync(allocator, token).ConfigureAwait(false);
-            cachedConfig.Dispose();
-            cachedConfig = new(buffer, configuration.Fingerprint, applyConfig);
+            var buffer = allocator.Invoke(configurationLength.Truncate(), true);
+            await configurationReader(buffer.Memory, token).ConfigureAwait(false);
+            cachedConfig.Clear();
+            cachedConfig.Update(buffer, fingerprint);
         }
 
         /// <inheritdoc />
-        async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+        async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
         {
             TryGetMember(sender)?.Touch();
             Result<bool> result;
 
             try
             {
-                result = await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, cachedConfig, cachedConfig.IsApplied, token).ConfigureAwait(false);
+                IClusterConfiguration configuration;
+
+                if (fingerprint.HasValue)
+                {
+                    configuration = IClusterConfiguration.CreateEmpty(fingerprint.GetValueOrDefault());
+                }
+                else
+                {
+                    configuration = cachedConfig;
+                    applyConfig = false;
+                }
+
+                result = await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false);
             }
             finally
             {
-                cachedConfig.Dispose();
+                cachedConfig.Clear();
             }
 
             return result;

@@ -13,8 +13,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, CancellationToken token)
         {
-            HeartbeatExchange.Parse(payload.Span, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
-            task = server.AppendEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
+            HeartbeatExchange.Parse(payload.Span, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out var configState);
+            task = server.AppendEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState?.ApplyConfig ?? false, token);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)

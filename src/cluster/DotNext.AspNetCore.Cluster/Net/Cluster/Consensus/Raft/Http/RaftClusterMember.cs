@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Membership;
     using Messaging;
     using Threading;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
@@ -19,23 +20,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private readonly Uri resourcePath;
         private readonly IHostingContext context;
-        private readonly EndPoint endPoint;
         internal readonly ClusterMemberId Id;
+        internal readonly HttpEndPoint EndPoint;
         private AtomicEnum<ClusterMemberStatus> status;
         private volatile MemberMetadata? metadata;
         private ClusterMemberStatusChanged? memberStatusChanged;
-        private long nextIndex;
+        private long nextIndex, fingerprint;
         internal IClientMetricsCollector? Metrics;
 
-        internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath, ClusterMemberId? id)
+        internal RaftClusterMember(IHostingContext context, HttpEndPoint remoteMember, Uri resourcePath, ClusterMemberId? id)
             : base(context.CreateHttpHandler(), true)
         {
             this.resourcePath = resourcePath;
             this.context = context;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
-            BaseAddress = remoteMember;
-            endPoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
-            Id = id ?? ClusterMemberId.FromEndPoint(endPoint);
+            EndPoint = remoteMember;
+            BaseAddress = remoteMember.CreateUriBuilder().Uri;
+            Id = id ?? ClusterMemberId.FromEndPoint(remoteMember);
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
             IsRemote = true;
         }
@@ -54,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task<TResult> SendAsync<TResult, TMessage>(TMessage message, CancellationToken token)
             where TMessage : HttpMessage, IHttpMessageReader<TResult>
         {
-            context.Logger.SendingRequestToMember(endPoint, message.MessageType);
+            context.Logger.SendingRequestToMember(EndPoint, message.MessageType);
             var request = new HttpRequestMessage
             {
                 RequestUri = resourcePath,
@@ -127,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private MemberUnavailableException MemberUnavailable(Exception e)
         {
-            context.Logger.MemberUnavailable(endPoint, e);
+            context.Logger.MemberUnavailable(EndPoint, e);
             ChangeStatus(ClusterMemberStatus.Unavailable);
             return new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
         }
@@ -170,11 +171,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             long prevLogIndex,
             long prevLogTerm,
             long commitIndex,
+            IClusterConfiguration configuration,
+            bool applyConfig,
             CancellationToken token)
         {
             if (Id == context.LocalMember)
                 return Task.FromResult(new Result<bool>(term, true));
-            return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalMember, term, prevLogIndex, prevLogTerm, commitIndex, entries) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token);
+            return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalMember, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token);
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
@@ -193,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return metadata;
         }
 
-        EndPoint IClusterMember.EndPoint => endPoint;
+        EndPoint IPeer.EndPoint => EndPoint;
 
         ClusterMemberId IClusterMember.Id => Id;
 
@@ -224,6 +227,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
+
+        ref long IRaftClusterMember.ConfigurationFingerprint => ref fingerprint;
 
         public override string? ToString() => BaseAddress?.ToString();
     }

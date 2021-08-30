@@ -19,12 +19,12 @@ namespace RaftNode
             Console.WriteLine($"Term of local cluster member is {term}. Election timeout {timeout}");
         }
 
-        public void Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
+        public void OnStart(IRaftCluster cluster, IDictionary<string, string> metadata)
         {
             cluster.LeaderChanged += LeaderChanged;
         }
 
-        public void Shutdown(IRaftCluster cluster)
+        public void OnStop(IRaftCluster cluster)
         {
             cluster.LeaderChanged -= LeaderChanged;
         }

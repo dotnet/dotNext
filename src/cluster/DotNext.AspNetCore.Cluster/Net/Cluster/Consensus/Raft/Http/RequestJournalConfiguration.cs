@@ -2,7 +2,10 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class RequestJournalConfiguration
+    /// <summary>
+    /// Represents configuration of request journal used to avoid duplicate one-way messages.
+    /// </summary>
+    public sealed class RequestJournalConfiguration
     {
         /// <summary>
         /// Gets or sets memory limit (in MB) for the journal of input requests

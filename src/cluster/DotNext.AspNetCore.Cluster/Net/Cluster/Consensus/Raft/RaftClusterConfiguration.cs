@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using Membership;
 
     /// <summary>
     /// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.
@@ -13,12 +13,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     [CLSCompliant(false)]
     public static class RaftClusterConfiguration
     {
-        /// <summary>
-        /// Represents name of configuration options describing <see cref="RaftLogEntryBufferingOptions"/>
-        /// instance used for buffering of log entries when transmitting over the wire.
-        /// </summary>
-        public const string TransportLevelBufferingOptionsName = "RaftBufferingOptions";
-
         /// <summary>
         /// Registers configurator of <see cref="ICluster"/> service registered as a service
         /// in DI container.
@@ -78,28 +72,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Registers cluster members discovery service.
+        /// Registers a service responsible for maintaining a list of cluster members.
         /// </summary>
-        /// <typeparam name="TService">The type implementing custom discovery service.</typeparam>
-        /// <param name="services">A collection of services provided by DI container.</param>
+        /// <typeparam name="TStorage">The type of the storage service.</typeparam>
+        /// <param name="services">A collection of services.</param>
         /// <returns>A modified collection of services.</returns>
-        [Obsolete("Use Raft self-managing cluster feature instead")]
-        public static IServiceCollection UseDiscoveryService<TService>(this IServiceCollection services)
-            where TService : class, IMemberDiscoveryService
-            => services.AddSingleton<IMemberDiscoveryService, TService>();
+        public static IServiceCollection UseConfigurationStorage<TStorage>(this IServiceCollection services)
+            where TStorage : class, IClusterConfigurationStorage<HttpEndPoint>
+            => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>, TStorage>();
+
+        private static PersistentClusterConfigurationStorage CreatePersistentStorageFromPath(this string path, IServiceProvider services)
+            => new(path);
 
         /// <summary>
-        /// Enables buffering of log entries when transferring them over the wire.
+        /// Registers persistent storage service for maintaining a list of cluster members.
         /// </summary>
-        /// <param name="services">A collection of services provided by DI container.</param>
-        /// <param name="options">The delegate used to provide configuration options.</param>
+        /// <param name="services">A collection of services.</param>
+        /// <param name="path">The absolute path to the folder on the local machine to store the list.</param>
         /// <returns>A modified collection of services.</returns>
-        /// <seealso cref="TransportLevelBufferingOptionsName"/>
-        [Obsolete("Buffering is no longer needed because persistent WAL supports concurrent reads/writes")]
-        public static IServiceCollection EnableBuffering(this IServiceCollection services, Action<RaftLogEntriesBufferingOptions> options)
-            => services.Configure(TransportLevelBufferingOptionsName, options);
-
-        internal static RaftLogEntriesBufferingOptions? GetBufferingOptions(this IServiceProvider dependencies)
-            => dependencies.GetService<IOptionsMonitor<RaftLogEntriesBufferingOptions>>()?.Get(RaftClusterConfiguration.TransportLevelBufferingOptionsName);
+        public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string path)
+            => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>>(path.CreatePersistentStorageFromPath);
     }
 }

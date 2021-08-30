@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -67,10 +68,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected override async Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         {
-            await SendAsync<bool, ConfigurationExchange>(new ConfigurationExchange(config, applyConfig, pipeConfig), token).ConfigureAwait(false);
+            EmptyClusterConfiguration? configState;
+            if (config.Length == 0L)
+            {
+                configState = new() { Fingerprint = config.Fingerprint, ApplyConfig = applyConfig };
+            }
+            else
+            {
+                Debug.Assert(applyConfig is false);
+                await SendAsync<bool, ConfigurationExchange>(new ConfigurationExchange(config, pipeConfig), token).ConfigureAwait(false);
+                configState = null;
+            }
+
             return await (entries.Count > 0
-                ? SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token)
-                : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), token)).ConfigureAwait(false);
+                ? SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, configState, pipeConfig), token)
+                : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex, configState), token)).ConfigureAwait(false);
         }
 
         private protected override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)

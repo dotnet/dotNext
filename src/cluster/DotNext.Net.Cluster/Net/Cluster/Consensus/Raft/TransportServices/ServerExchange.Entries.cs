@@ -118,8 +118,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             lookupIndex = -1;
             state = State.AppendEntriesReceived;
-            EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount);
-            task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
+            EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount, out var configState);
+
+            task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState?.ApplyConfig ?? false, token);
         }
 
         private async ValueTask<bool> BeginReceiveEntry(ReadOnlyMemory<byte> prologue, bool completed, CancellationToken token)

@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             {
             }
 
-            void IClusterMemberLifetime.Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
+            void IClusterMemberLifetime.OnStart(IRaftCluster cluster, IDictionary<string, string> metadata)
             {
                 cluster.LeaderChanged += OnLeaderChanged;
             }
@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 Set();
             }
 
-            void IClusterMemberLifetime.Shutdown(IRaftCluster cluster)
+            void IClusterMemberLifetime.OnStop(IRaftCluster cluster)
             {
                 cluster.LeaderChanged -= OnLeaderChanged;
             }

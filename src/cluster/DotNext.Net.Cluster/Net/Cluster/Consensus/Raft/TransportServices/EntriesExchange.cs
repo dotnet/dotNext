@@ -27,17 +27,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             4.REQ(StreamEnd) with the final chunk of record data
             4.REP(Ack) Wait for command: NextEntry to start sending content, None to finalize transmission
         */
-
         private protected readonly Pipe pipe;
         private readonly long term, prevLogIndex, prevLogTerm, commitIndex;
+        private readonly EmptyClusterConfiguration? configuration;
 
-        internal EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
+        internal EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, EmptyClusterConfiguration? configState, PipeOptions? options = null)
         {
             pipe = new Pipe(options ?? PipeOptions.Default);
             this.term = term;
             this.prevLogIndex = prevLogIndex;
             this.prevLogTerm = prevLogTerm;
             this.commitIndex = commitIndex;
+            configuration = configState;
         }
 
         internal static int CreateNextEntryResponse(Span<byte> output, int logEntryIndex)
@@ -53,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return LogEntryMetadata.Size;
         }
 
-        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ClusterMemberId sender, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
+        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ClusterMemberId sender, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount, out EmptyClusterConfiguration? configuration)
         {
             var reader = new SpanReader<byte>(input);
 
@@ -63,6 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             prevLogTerm = reader.ReadInt64(true);
             commitIndex = reader.ReadInt64(true);
             entriesCount = reader.ReadInt32(true);
+            configuration = EmptyClusterConfiguration.ReadFrom(ref reader);
         }
 
         private protected int WriteAnnouncement(Span<byte> output, int entriesCount)
@@ -75,6 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             writer.WriteInt64(prevLogTerm, true);
             writer.WriteInt64(commitIndex, true);
             writer.WriteInt32(entriesCount, true);
+            EmptyClusterConfiguration.WriteTo(in configuration, ref writer);
 
             return writer.WrittenCount;
         }
@@ -108,8 +111,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             WriteLogEntryContent,
         };
 
-        private protected EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
-            : base(term, prevLogIndex, prevLogTerm, commitIndex, options)
+        private protected EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, EmptyClusterConfiguration? configState, PipeOptions? options = null)
+            : base(term, prevLogIndex, prevLogTerm, commitIndex, configState, options)
         {
         }
 
@@ -161,8 +164,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private int currentIndex;
         private bool streamStart;
 
-        internal EntriesExchange(long term, in TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
-            : base(term, prevLogIndex, prevLogTerm, commitIndex, options)
+        internal EntriesExchange(long term, in TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, EmptyClusterConfiguration? configState, PipeOptions? options = null)
+            : base(term, prevLogIndex, prevLogTerm, commitIndex, configState, options)
         {
             this.entries = entries;
             currentIndex = -1;
