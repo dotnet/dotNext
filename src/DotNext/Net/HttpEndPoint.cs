@@ -68,7 +68,7 @@ namespace DotNext.Net
         /// <summary>
         /// Creates a new instance of <see cref="UriBuilder"/> with host, port and scheme imported from this object.
         /// </summary>
-        /// <returns>A new instance of <see cref="UriBuilder"/></returns>
+        /// <returns>A new instance of <see cref="UriBuilder"/>.</returns>
         public UriBuilder CreateUriBuilder()
             => new UriBuilder(Scheme) { Host = Host, Port = Port };
 
@@ -86,7 +86,7 @@ namespace DotNext.Net
         /// Creates a new instance of <see cref="UriBuilder"/> with host, port and scheme imported from this object.
         /// </summary>
         /// <param name="endPoint">The endpoint.</param>
-        /// <returns>A new instance of <see cref="UriBuilder"/></returns>
+        /// <returns>A new instance of <see cref="UriBuilder"/>.</returns>
         [return: NotNullIfNotNull("endPoint")]
         public static explicit operator UriBuilder?(HttpEndPoint? endPoint) => endPoint?.CreateUriBuilder();
 

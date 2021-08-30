@@ -144,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage,CancellationToken token)
+        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
         {
             using var cancellationSource = token.LinkTo(LeadershipToken);
 

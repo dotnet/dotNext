@@ -26,6 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             internal ClusterConfiguration(long fingerprint, MemoryOwner<byte> configuration)
             {
                 payload = configuration;
+                Fingerprint = fingerprint;
             }
 
             public long Fingerprint { get; }
@@ -198,7 +199,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             return result;
         }
 
-        /// <inheritdoc />
+         /// <summary>
+        /// Proposes removal of the existing member.
+        /// </summary>
+        /// <param name="id">The identifier of the cluster member to remove.</param>
+        /// <returns>
+        /// <see langword="true"/> if the new member is added to the proposed configuration;
+        /// <see langword="false"/> if the storage has the proposed configuration already.
+        /// </returns>
         public bool RemoveMember(ClusterMemberId id)
         {
             if (proposed is not null || !activeCache.ContainsKey(id))

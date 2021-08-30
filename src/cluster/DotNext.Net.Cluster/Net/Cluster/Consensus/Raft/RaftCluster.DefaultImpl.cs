@@ -148,18 +148,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="id">The identifier of the cluster member.</param>
         /// <param name="address">The addres of the cluster member.</param>
-        /// <param name="rounds">The number of warmup rounds.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>
         /// <see langword="true"/> if the node has been added to the cluster successfully;
         /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
         /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="rounds"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
-        public async Task<bool> AddMemberAsync<TAddress>(ClusterMemberId id, IPEndPoint address, int rounds, CancellationToken token = default)
+        public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
         {
             var member = CreateMember(id, address);
-            if (await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token))
+            if (await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false))
                 return true;
 
             member.Dispose();
@@ -199,6 +197,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ResignAsync(token);
 
+        /// <inheritdoc />
         async Task ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
         {
             var buffer = allocator.Invoke(configurationLength.Truncate(), true);

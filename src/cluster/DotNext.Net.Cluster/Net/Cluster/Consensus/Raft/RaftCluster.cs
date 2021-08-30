@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -193,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var newState = new FollowerState(this);
                     using var currentState = state;
-                    await (currentState?.StopAsync() ?? Task.CompletedTask);
+                    await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
                     state = newState.StartServing(ElectionTimeout, LifecycleToken);
                     readinessProbe.TrySetResult();
                 }
@@ -674,6 +674,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">The time to wait until replication ends.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)

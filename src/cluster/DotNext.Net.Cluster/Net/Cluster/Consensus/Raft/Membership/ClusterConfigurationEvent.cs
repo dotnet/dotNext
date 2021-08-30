@@ -3,7 +3,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
     /// <summary>
     /// Represents an event related to changes in cluster configuration.
     /// </summary>
-    /// <typeparam name="TAddress"></typeparam>
+    /// <typeparam name="TAddress">The type of the endpoint address.</typeparam>
     public readonly struct ClusterConfigurationEvent<TAddress>
         where TAddress : notnull
     {

@@ -81,7 +81,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
             internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new() { Type = CommandType.ShuffleReply, Peers = peers };
 
-            internal static Command Broadcast(IRumourSender sender) => new() { Type = CommandType.Broadcast };
+            internal static Command Broadcast(IRumourSender sender) => new() { Type = CommandType.Broadcast, RumourTransport = sender };
         }
     }
 }

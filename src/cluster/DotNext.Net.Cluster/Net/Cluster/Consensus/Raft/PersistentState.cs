@@ -840,7 +840,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="TimeoutException">The operation has timed out.</exception>
         public Task WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
 
@@ -850,8 +852,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="index">The index of the log record to be committed.</param>
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
-        /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
+        /// <returns>The task representing asynchronous result.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="TimeoutException">The operation has timed out.</exception>
         public ValueTask WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 

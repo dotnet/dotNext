@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             task = server.ProposeConfigurationAsync(Reader.ReadBlockAsync, length, fingerprint, token);
             if (result.IsCompleted || completed)
             {
-                await Writer.CompleteAsync();
+                await Writer.CompleteAsync().ConfigureAwait(false);
                 state = State.ReceivingConfigurationFinished;
             }
 
@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private static ValueTask<(PacketHeaders, int, bool)> RequestConfigurationChunk()
             => new((new PacketHeaders(MessageType.Continue, FlowControl.Ack), 0, true));
 
-        private async ValueTask<(PacketHeaders, int, bool)> EndReceiveConfiguration(Memory<byte> output)
+        private async ValueTask<(PacketHeaders, int, bool)> EndReceiveConfiguration()
         {
             await (Interlocked.Exchange(ref task, null) ?? Task.CompletedTask).ConfigureAwait(false);
             return (new PacketHeaders(MessageType.None, FlowControl.Ack), 0, false);

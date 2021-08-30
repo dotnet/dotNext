@@ -278,13 +278,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         {
             await active.DisposeAsync().ConfigureAwait(false);
             await proposed.DisposeAsync().ConfigureAwait(false);
-            await base.DisposeAsyncCore();
+            await base.DisposeAsyncCore().ConfigureAwait(false);
         }
 
         /// <summary>
         /// Releases managed resources associated with this object.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The task representing asynchronous result.</returns>
         public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }

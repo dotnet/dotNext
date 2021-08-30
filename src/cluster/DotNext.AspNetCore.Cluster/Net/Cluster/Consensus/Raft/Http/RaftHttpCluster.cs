@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IMessageBus
     {
         private readonly IClusterMemberLifetime? configurator;

@@ -119,7 +119,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             lifetimeService?.OnStart(this);
 
             // local node is required parameter
-
             if (contactNode is null)
                 Logger.NoContactNodeProvider();
 

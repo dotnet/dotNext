@@ -11,7 +11,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
         private TimeSpan? rpcTimeout;
         private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
-        private string? hostNameHint;
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.

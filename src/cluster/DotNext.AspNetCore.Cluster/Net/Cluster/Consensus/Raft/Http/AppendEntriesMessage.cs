@@ -339,6 +339,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 Headers.ContentType = new(MediaTypeNames.Application.Octet);
                 this.configuration = configuration;
                 this.entries = new(entries);
+                this.configurationLength = configurationLength;
             }
 
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
@@ -455,7 +456,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     // encode configuration in raw format without boundaries
                     await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);
 
-                    // write 
+                    // write
                     builder.Write(DoubleDash);
                     builder.Write(boundary);
                     builder.Write(CrLf);

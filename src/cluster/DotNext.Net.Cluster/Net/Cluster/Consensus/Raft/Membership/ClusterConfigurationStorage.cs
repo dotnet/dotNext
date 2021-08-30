@@ -158,7 +158,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// Proposes removal of the existing member.
         /// </summary>
         /// <param name="id">The identifier of the cluster member to remove.</param>
-        /// <param name="token">The token that can be used to cancel the operation</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>
         /// <see langword="true"/> if the new member is added to the proposed configuration;
         /// <see langword="false"/> if the storage has the proposed configuration already.

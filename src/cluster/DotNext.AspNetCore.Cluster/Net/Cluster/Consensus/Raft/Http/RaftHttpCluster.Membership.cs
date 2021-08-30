@@ -2,8 +2,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Membership;
     using IO;
+    using Membership;
 
     internal partial class RaftHttpCluster
     {

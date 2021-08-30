@@ -34,6 +34,7 @@ namespace DotNext.Net.Http
                     break;
             }
         }
+
         internal static void SetProtocolVersion(this ListenOptions options, HttpProtocolVersion version, HttpVersionPolicy policy)
         {
             switch (policy)

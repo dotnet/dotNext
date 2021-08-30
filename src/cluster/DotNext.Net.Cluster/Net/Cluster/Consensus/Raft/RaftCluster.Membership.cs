@@ -179,10 +179,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Announces a new member in the cluster.
         /// </summary>
+        /// <typeparam name="TAddress">The type of the member address.</typeparam>
         /// <param name="member">The cluster member client used to catch up its state.</param>
+        /// <param name="rounds">The number of warmup rounds.</param>
         /// <param name="configurationStorage">The configuration storage.</param>
         /// <param name="addressProvider">The delegate that allows to get the address of the member.</param>
-        /// <param name="rounds">The number of warmup rounds.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>
         /// <see langword="true"/> if the node has been added to the cluster successfully;

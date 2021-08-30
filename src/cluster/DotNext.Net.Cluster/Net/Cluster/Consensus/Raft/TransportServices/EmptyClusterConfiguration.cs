@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private const byte ApplyConfigurationState = 2;
 
         internal long Fingerprint { get; init; }
+
         internal bool ApplyConfig { get; init; }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
