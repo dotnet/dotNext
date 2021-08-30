@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
     {
         private const string NeighborMessageType = "Neighbor";
 
-        private async Task ProcessNeighborAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
+        private async Task ProcessNeighborAsync(HttpRequest request, HttpResponse response, int payloadLength, CancellationToken token)
         {
             EndPoint sender;
             bool highPriority;
@@ -30,9 +30,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             else
             {
                 // slow path, allocate temp buffer
-                using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
-                await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
-                (sender, highPriority) = DeserializeNeighborRequest(buffer.WrittenMemory);
+                using var buffer = allocator.Invoke(payloadLength, true);
+                await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                (sender, highPriority) = DeserializeNeighborRequest(buffer.Memory);
             }
 
             await EnqueueNeighborAsync(sender, highPriority, token).ConfigureAwait(false);

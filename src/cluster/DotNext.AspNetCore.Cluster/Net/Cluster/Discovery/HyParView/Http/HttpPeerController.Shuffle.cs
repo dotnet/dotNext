@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         private const string ShuffleMessageType = "Shuffle";
         private const string ShuffleReplyMessageType = "ShuffleReply";
 
-        private async Task ProcessShuffleReplyAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
+        private async Task ProcessShuffleReplyAsync(HttpRequest request, HttpResponse response, int payloadLength, CancellationToken token)
         {
             IReadOnlyCollection<EndPoint> peers;
 
@@ -29,9 +29,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             }
             else
             {
-                using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
-                await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
-                peers = DeserializeShuffleReply(buffer.WrittenMemory);
+                using var buffer = allocator.Invoke(payloadLength, true);
+                await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                peers = DeserializeShuffleReply(buffer.Memory);
             }
 
             await EnqueueShuffleReplyAsync(peers, token).ConfigureAwait(false);

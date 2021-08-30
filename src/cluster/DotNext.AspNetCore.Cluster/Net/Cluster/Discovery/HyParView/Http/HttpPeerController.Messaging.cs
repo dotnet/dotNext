@@ -17,9 +17,15 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         internal Task ProcessRequest(HttpContext context)
         {
             var length = context.Request.ContentLength;
-            if (length is null || length >= int.MaxValue)
+            if (length is null)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return Task.CompletedTask;
+            }
+
+            if (length.GetValueOrDefault() > int.MaxValue)
+            {
+                context.Response.StatusCode = StatusCodes.Status413PayloadTooLarge;
                 return Task.CompletedTask;
             }
 
@@ -27,22 +33,22 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             switch (GetMessageType(context.Request))
             {
                 case JoinMessageType:
-                    result = ProcessJoinAsync(context.Request, context.Response, length.GetValueOrDefault(), context.RequestAborted);
+                    result = ProcessJoinAsync(context.Request, context.Response, (int)length.GetValueOrDefault(), context.RequestAborted);
                     break;
                 case ForwardJoinMessageType:
-                    result = ProcessForwardJoinAsync(context.Request, context.Response, length.GetValueOrDefault(), context.RequestAborted);
+                    result = ProcessForwardJoinAsync(context.Request, context.Response, (int)length.GetValueOrDefault(), context.RequestAborted);
                     break;
                 case NeighborMessageType:
-                    result = ProcessNeighborAsync(context.Request, context.Response, length.GetValueOrDefault(), context.RequestAborted);
+                    result = ProcessNeighborAsync(context.Request, context.Response, (int)length.GetValueOrDefault(), context.RequestAborted);
                     break;
                 case DisconnectMessageType:
-                    result = ProcessDisconnectAsync(context.Request, context.Response, length.GetValueOrDefault(), context.RequestAborted);
+                    result = ProcessDisconnectAsync(context.Request, context.Response, (int)length.GetValueOrDefault(), context.RequestAborted);
                     break;
                 case ShuffleMessageType:
-                    result = ProcessShuffleRequestAsync(context.Request, context.Response, length.GetValueOrDefault(), context.RequestAborted);
+                    result = ProcessShuffleRequestAsync(context.Request, context.Response, (int)length.GetValueOrDefault(), context.RequestAborted);
                     break;
                 case ShuffleReplyMessageType:
-                    result = ProcessShuffleReplyAsync(context.Request, context.Response, length.GetValueOrDefault(), context.RequestAborted);
+                    result = ProcessShuffleReplyAsync(context.Request, context.Response, (int)length.GetValueOrDefault(), context.RequestAborted);
                     break;
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;

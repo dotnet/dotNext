@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
     {
         private const string ForwardJoinMessageType = "ForwardJoin";
 
-        private async Task ProcessForwardJoinAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
+        private async Task ProcessForwardJoinAsync(HttpRequest request, HttpResponse response, int payloadLength, CancellationToken token)
         {
             EndPoint sender, joinedPeer;
             int timeToLive;
@@ -30,9 +30,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             else
             {
                 // slow path, allocate temp buffer
-                using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
-                await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
-                (sender, joinedPeer, timeToLive) = DeserializeForwardJoinRequest(buffer.WrittenMemory);
+                using var buffer = allocator.Invoke(payloadLength, true);
+                await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                (sender, joinedPeer, timeToLive) = DeserializeForwardJoinRequest(buffer.Memory);
             }
 
             await EnqueueForwardJoinAsync(sender, joinedPeer, timeToLive, token).ConfigureAwait(false);

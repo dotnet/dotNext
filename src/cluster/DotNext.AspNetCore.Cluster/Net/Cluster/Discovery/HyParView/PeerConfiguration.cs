@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
@@ -10,11 +9,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
     /// </summary>
     public class PeerConfiguration : IPeerConfiguration
     {
-        static PeerConfiguration()
-        {
-            IPAddressConverter.Register();
-            HttpEndPointConverter.Register();
-        }
+        static PeerConfiguration() => HttpEndPointConverter.Register();
 
         private readonly Random random = new();
         private int activeViewCapacity = 5;

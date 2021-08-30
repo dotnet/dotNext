@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
     {
         private const string DisconnectMessageType = "Disconnect";
 
-        private async Task ProcessDisconnectAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
+        private async Task ProcessDisconnectAsync(HttpRequest request, HttpResponse response, int payloadLength, CancellationToken token)
         {
             EndPoint sender;
             bool isAlive;
@@ -28,9 +28,9 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             }
             else
             {
-                using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
-                await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
-                (sender, isAlive) = DeserializeDisconnectRequest(buffer.WrittenMemory);
+                using var buffer = allocator.Invoke(payloadLength, true);
+                await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                (sender, isAlive) = DeserializeDisconnectRequest(buffer.Memory);
             }
 
             await EnqueueDisconnectAsync(sender, isAlive, token).ConfigureAwait(false);
