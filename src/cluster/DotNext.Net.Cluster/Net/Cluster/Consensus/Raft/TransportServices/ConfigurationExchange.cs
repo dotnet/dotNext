@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (transmission is null)
             {
                 count = WriteAnnouncement(payload.Span);
-                payload = payload.Slice(0, count);
+                payload = payload.Slice(count);
                 control = FlowControl.StreamStart;
                 transmission = WriteConfigurationAsync(configuration, pipe.Writer, token);
             }

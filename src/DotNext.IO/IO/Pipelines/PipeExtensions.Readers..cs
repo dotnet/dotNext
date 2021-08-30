@@ -420,12 +420,12 @@ namespace DotNext.IO.Pipelines
             if (output.IsEmpty)
                 return ValueTask.CompletedTask;
 
-            if (TryReadBlock(reader, output.Length, out var readResult))
+            if (TryReadBlock(reader, output.Length, out var result))
             {
-                readResult.Buffer.CopyTo(output.Span);
-                reader.AdvanceTo(readResult.Buffer.GetPosition(output.Length));
+                result.Buffer.CopyTo(output.Span);
+                reader.AdvanceTo(result.Buffer.GetPosition(output.Length));
 
-                return readResult.IsCanceled ? ValueTask.FromCanceled(token.IsCancellationRequested ? token : new(true)) : ValueTask.CompletedTask;
+                return result.IsCanceled ? ValueTask.FromCanceled(token.IsCancellationRequested ? token : new(true)) : ValueTask.CompletedTask;
             }
 
             return ReadBlockSlowAsync(reader, output, token);
@@ -479,10 +479,15 @@ namespace DotNext.IO.Pipelines
         /// </returns>
         public static bool TryReadBlock(this PipeReader reader, long length, out ReadResult result)
         {
-            if (reader.TryRead(out result) && length <= result.Buffer.Length)
+            if (reader.TryRead(out result))
             {
-                result = new(result.Buffer.Slice(0L, length), result.IsCanceled, result.IsCompleted);
-                return true;
+                if (length <= result.Buffer.Length)
+                {
+                    result = new(result.Buffer.Slice(0L, length), result.IsCanceled, result.IsCompleted);
+                    return true;
+                }
+
+                reader.AdvanceTo(result.Buffer.Start, result.Buffer.End);
             }
 
             return false;

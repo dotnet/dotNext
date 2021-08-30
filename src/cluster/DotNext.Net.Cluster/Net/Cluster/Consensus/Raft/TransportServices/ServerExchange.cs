@@ -136,6 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             State.AppendEntriesReceived or State.ReadyToReceiveEntry or State.ReceivingEntry or State.ReceivingEntriesFinished or State.EntryReceived => TransmissionControl(output, token),
             State.SnapshotReceived => RequestSnapshotChunk(),
             State.ReceivingSnapshotFinished => EndReceiveSnapshot(output),
+            State.ConfigurationReceived => RequestConfigurationChunk(),
             State.ReceivingConfigurationFinished => EndReceiveConfiguration(),
             _ => default,
         };

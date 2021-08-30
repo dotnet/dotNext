@@ -370,7 +370,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var config = RandomBytes(payloadSize);
             await using var exchange = new ConfigurationExchange(new BufferedClusterConfiguration(config) { Fingerprint = 43L });
             client.Enqueue(exchange, timeoutTokenSource.Token);
-            await exchange.Task;
+            var result = await exchange.Task;
 
             True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config));
         }
