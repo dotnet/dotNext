@@ -13,9 +13,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
     using IO;
-    using Membership;
     using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
