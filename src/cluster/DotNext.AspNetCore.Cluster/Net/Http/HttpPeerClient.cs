@@ -16,6 +16,6 @@ namespace DotNext.Net.Http
         }
 
         /// <inheritdoc />
-        EndPoint IPeer.EndPoint => BaseAddress?.ToEndPoint() ?? throw new NotSupportedException();
+        EndPoint IPeer.EndPoint => new HttpEndPoint(BaseAddress!);
     }
 }
