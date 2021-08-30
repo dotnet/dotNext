@@ -34,24 +34,6 @@ namespace DotNext.Net.Http
                     break;
             }
         }
-
-#if NETCOREAPP3_1
-        internal static void SetProtocolVersion(this ListenOptions options, HttpProtocolVersion version)
-        {
-            switch (version)
-            {
-                case HttpProtocolVersion.Http1:
-                    options.Protocols = HttpProtocols.Http1;
-                    break;
-                case HttpProtocolVersion.Http2:
-                    options.Protocols = HttpProtocols.Http2;
-                    break;
-                case HttpProtocolVersion.Http3:
-                    options.Protocols = (HttpProtocols)4;
-                    break;
-            }
-        }
-#else
         internal static void SetProtocolVersion(this ListenOptions options, HttpProtocolVersion version, HttpVersionPolicy policy)
         {
             switch (policy)
@@ -116,6 +98,5 @@ namespace DotNext.Net.Http
                 }
             }
         }
-#endif
     }
 }

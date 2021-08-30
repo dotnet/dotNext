@@ -68,9 +68,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             {
                 Method = HttpMethod.Post,
                 Version = client.DefaultRequestVersion,
-#if !NETCOREAPP3_1
                 VersionPolicy = client.DefaultVersionPolicy,
-#endif
                 RequestUri = resourcePath,
             };
 

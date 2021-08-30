@@ -28,9 +28,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         private readonly string clientHandlerName;
         private readonly TimeSpan connectTimeout, requestTimeout;
         private readonly HttpProtocolVersion protocolVersion;
-#if !NETCOREAPP3_1
         private readonly HttpVersionPolicy protocolVersionPolicy;
-#endif
         private readonly ConcurrentDictionary<EndPoint, HttpPeerClient> clientCache;
         private readonly Uri resourcePath;
         private readonly IServer server;
@@ -48,9 +46,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             requestTimeout = configuration.Value.RequestTimeout;
             allocator = configuration.Value.Allocator;
             protocolVersion = configuration.Value.ProtocolVersion;
-#if !NETCOREAPP3_1
             protocolVersionPolicy = configuration.Value.ProtocolVersionPolicy;
-#endif
             contactNode = configuration.Value.ContactNode;
             localNode = configuration.Value.LocalNode ?? throw new HyParViewProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
             resourcePath = new(configuration.Value.ResourcePath.Value.IfNullOrEmpty(HttpPeerConfiguration.DefaultResourcePath), UriKind.Relative);
@@ -88,9 +84,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
             client.Timeout = requestTimeout;
             client.SetProtocolVersion(protocolVersion);
-#if !NETCOREAPP3_1
             client.DefaultVersionPolicy = protocolVersionPolicy;
-#endif
             return client;
         }
 
@@ -146,18 +140,14 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
         protected sealed override ValueTask DestroyAsync(EndPoint peer)
         {
-            var result = new ValueTask();
+            var result = ValueTask.CompletedTask;
             try
             {
                 Destroy(peer);
             }
             catch (Exception e)
             {
-#if NETCOREAPP3_1
-                result = new(Task.FromException(e));
-#else
                 result = ValueTask.FromException(e);
-#endif
             }
 
             return result;
@@ -165,7 +155,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
         protected sealed override ValueTask DisconnectAsync(EndPoint peer)
         {
-            var result = new ValueTask();
+            var result = ValueTask.CompletedTask;
             try
             {
                 if (clientCache.TryGetValue(peer, out var client))
@@ -173,11 +163,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             }
             catch (Exception e)
             {
-#if NETCOREAPP3_1
-                result = new(Task.FromException(e));
-#else
                 result = ValueTask.FromException(e);
-#endif
             }
 
             return result;

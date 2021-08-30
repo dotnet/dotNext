@@ -72,11 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
-#if NETCOREAPP3_1
-            => bool.TryParse(await response.Content.ReadAsStringAsync().ConfigureAwait(false), out var result)
-#else
             => bool.TryParse(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)
-#endif
                 ? result
                 : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 

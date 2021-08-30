@@ -135,11 +135,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ValueTask result;
                 if (consumed)
                 {
-#if NETCOREAPP3_1
-                    result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
-#else
                     result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
-#endif
                 }
                 else
                 {

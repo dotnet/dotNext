@@ -74,12 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
                 => SerializeToStreamAsync(stream, context, CancellationToken.None);
 
-#if NETCOREAPP3_1
-            private
-#else
-            protected override
-#endif
-            Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
                 => snapshot.WriteToAsync(stream, token: token).AsTask();
 
             protected override bool TryComputeLength(out long length) => snapshot.Length.TryGetValue(out length);

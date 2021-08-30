@@ -29,11 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task<MemberMetadata> IHttpMessageReader<MemberMetadata>.ParseResponse(HttpResponseMessage response, CancellationToken token)
         {
-#if NETCOREAPP3_1
-            await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-#else
             await using var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
-#endif
             return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, JsonOptions, token).ConfigureAwait(false) ?? new MemberMetadata();
         }
 

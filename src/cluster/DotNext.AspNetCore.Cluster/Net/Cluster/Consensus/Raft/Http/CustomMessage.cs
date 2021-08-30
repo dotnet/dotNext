@@ -44,12 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
                 => SerializeToStreamAsync(stream, context, CancellationToken.None);
 
-#if NETCOREAPP3_1
-            private
-#else
-            protected override
-#endif
-            Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token) => dto.WriteToAsync(stream, token: token).AsTask();
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token) => dto.WriteToAsync(stream, token: token).AsTask();
 
             protected override bool TryComputeLength(out long length)
                 => dto.Length.TryGetValue(out length);
@@ -156,11 +151,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var contentType = response.Content.Headers.ContentType?.ToString();
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-#if NETCOREAPP3_1
-            await using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-#else
             await using var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
-#endif
             return await reader(new InboundMessageContent(content, name, string.IsNullOrEmpty(contentType) ? new ContentType() : new ContentType(contentType), response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }

@@ -60,9 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 RequestUri = resourcePath,
                 Version = DefaultRequestVersion,
-#if !NETCOREAPP3_1
                 VersionPolicy = DefaultVersionPolicy,
-#endif
             };
 
             message.PrepareRequest(request);
@@ -96,11 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             catch (HttpRequestException e)
             {
-#if NETCOREAPP3_1
-                if (response is null || message.IsMemberUnavailable(response.StatusCode))
-#else
                 if (response is null || message.IsMemberUnavailable(e.StatusCode))
-#endif
                     throw MemberUnavailable(e);
 
                 throw new UnexpectedStatusCodeException(response, e);
@@ -135,18 +129,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ValueTask IRaftClusterMember.CancelPendingRequestsAsync()
         {
-            var result = new ValueTask();
+            var result = ValueTask.CompletedTask;
             try
             {
                 CancelPendingRequests();
             }
             catch (Exception e)
             {
-#if NETCOREAPP3_1
-                result = new(Task.FromException(e));
-#else
                 result = ValueTask.FromException(e);
-#endif
             }
 
             return result;
