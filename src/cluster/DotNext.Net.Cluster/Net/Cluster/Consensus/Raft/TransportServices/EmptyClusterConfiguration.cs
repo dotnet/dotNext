@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             }
 
             writer.Add(configState);
-            writer.WriteInt64(configState, true);
+            writer.WriteInt64(fingerprint, true);
         }
 
         internal static EmptyClusterConfiguration? ReadFrom(ref SpanReader<byte> reader)
