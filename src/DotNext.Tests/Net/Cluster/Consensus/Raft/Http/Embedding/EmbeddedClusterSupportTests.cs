@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             }
         }
 
-        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null, IMemberDiscoveryService discovery = null)
+        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
             where TStartup : class
         {
             return new HostBuilder()
@@ -64,8 +64,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     {
                         if (configurator is not null)
                             services.AddSingleton(configurator);
-                        if (discovery is not null)
-                            services.AddSingleton(discovery);
                     })
                     .UseStartup<TStartup>()
                 )
@@ -178,7 +176,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StartAsync();
             await host2.StartAsync();
 
-            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(static member => ((IPEndPoint)member.EndPoint).Port == 3263);
+            // 3263 member expected here
+            var client = default(ISubscriber);
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(messageBox);
             //request-reply test
@@ -231,7 +230,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StartAsync();
             await host2.StartAsync();
 
-            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(static member => ((IPEndPoint)member.EndPoint).Port == 3263);
+            // 3263 member expected here
+            var client = default(ISubscriber);
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<TestMessageHandler>()).FirstOrDefault() as TestMessageHandler;
             NotNull(messageBox);
 
@@ -417,31 +417,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         }
 
         [Fact]
-        [Obsolete]
-        public static async Task CustomServiceDiscovery()
-        {
-            var config = new Dictionary<string, string>
-            {
-                { "partitioning", "true" },
-                { "metadata:nodeName", "TestNode" },
-                { "hostAddressHint", "127.0.0.1" },
-                { "heartbeatThreshold", "0.3" },
-            };
-            using var discovery = new TestDiscoveryService()
-            {
-                new Uri("http://localhost:3262"),
-                new Uri("http://localhost:3263")
-            };
-
-            using var leaderResetEvent = new LeaderChangedEvent();
-            using var host = CreateHost<Startup>(3262, true, config, leaderResetEvent, discovery: discovery);
-            await host.StartAsync();
-            leaderResetEvent.WaitOne(TimeSpan.FromSeconds(5));
-            Null(leaderResetEvent.Leader);
-            await host.StopAsync();
-        }
-
-        [Fact]
         public static async Task SingleNodeWithConsensus()
         {
             var config = new Dictionary<string, string>
@@ -475,12 +450,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host.StartAsync();
             object service = host.Services.GetService<ICluster>();
             NotNull(service);
-            var count = 0;
-            foreach (var member in host.Services.GetService<ICluster>().Members)
-                if (!member.IsRemote)
-                    count += 1;
-            Equal(1, count);
-            service = host.Services.GetService<IExpandableCluster>();
+
+            Equal(2, host.Services.GetService<IPeerMesh>().Peers.Count);
+            service = host.Services.GetService<IPeerMesh<IRaftClusterMember>>();
             NotNull(service);
             service = host.Services.GetService<IRaftCluster>();
             NotNull(service);

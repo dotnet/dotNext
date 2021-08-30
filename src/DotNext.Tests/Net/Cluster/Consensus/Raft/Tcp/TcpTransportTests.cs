@@ -159,7 +159,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 TransmissionBlockSize = 350
             };
+
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
+        }
+
+        [Theory]
+        [InlineData(512)]
+        [InlineData(50)]
+        public Task SendingConfiguration(int payloadSize)
+        {
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            {
+                TransmissionBlockSize = 350,
+                ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
+            };
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+            {
+                TransmissionBlockSize = 350
+            };
+
+            return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
         }
 
         [Theory]

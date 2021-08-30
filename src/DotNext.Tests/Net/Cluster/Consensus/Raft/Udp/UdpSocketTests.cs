@@ -113,7 +113,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
+        }
+
+        [Theory]
+        [InlineData(512)]
+        [InlineData(50)]
+        public Task SendingConfiguration(int payloadSize)
+        {
+            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                ReceiveTimeout = timeout,
+                DontFragment = true
+            };
+            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                DontFragment = true
+            };
+
+            return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
         }
     }
 }
