@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Threading;
 

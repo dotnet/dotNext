@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using static DotNext.Hosting.HostBuilderExtensions;

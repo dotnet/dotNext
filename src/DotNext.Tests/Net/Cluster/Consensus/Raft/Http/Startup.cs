@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
 
