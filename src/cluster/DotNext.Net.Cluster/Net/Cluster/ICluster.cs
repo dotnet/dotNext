@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster
@@ -16,7 +17,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// An event raised when leader has been changed.
         /// </summary>
-        event ClusterLeaderChangedEventHandler LeaderChanged;
+        event Action<ICluster, IClusterMember?> LeaderChanged;
 
         /// <summary>
         /// Revokes leadership and starts new election process.

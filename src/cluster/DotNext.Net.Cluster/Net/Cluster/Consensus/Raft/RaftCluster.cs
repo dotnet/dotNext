@@ -41,6 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
         private volatile RaftState? state;
         private volatile TMember? leader;
+        private Action<RaftCluster<TMember>, TMember?>? leaderChangedHandlers;
         private volatile int electionTimeout;
         private IPersistentState auditTrail;
         private Timestamp lastUpdated; // volatile
@@ -76,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets information the current member.
         /// </summary>
-        protected ref readonly ClusterMemberId LocalMemberId => ref localMemberId;
+        public ref readonly ClusterMemberId LocalMemberId => ref localMemberId;
 
         /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
@@ -156,7 +157,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// An event raised when leader has been changed.
         /// </summary>
-        public event ClusterLeaderChangedEventHandler? LeaderChanged;
+        public event Action<RaftCluster<TMember>, TMember?> LeaderChanged
+        {
+            add => leaderChangedHandlers += value;
+            remove => leaderChangedHandlers -= value;
+        }
+
+        /// <inheritdoc />
+        event Action<ICluster, IClusterMember?> ICluster.LeaderChanged
+        {
+            add => leaderChangedHandlers += value;
+            remove => leaderChangedHandlers -= value;
+        }
 
         /// <summary>
         /// Represents an event raised when the local node completes its replication with another
@@ -177,7 +189,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 var oldLeader = Interlocked.Exchange(ref leader, value);
                 if (!ReferenceEquals(oldLeader, value))
-                    LeaderChanged?.Invoke(this, value);
+                    leaderChangedHandlers?.Invoke(this, value);
             }
         }
 
@@ -391,7 +403,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Leader = senderMember;
                 if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
                 {
-                    var emptySet = entries.RemainingCount > 0L;
+                    var emptySet = entries.RemainingCount == 0L;
 
                     /*
                     * AppendAsync is called with skipCommitted=true because HTTP response from the previous
@@ -745,6 +757,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ConfigurationStorage.Dispose();
 
             memberAddedHandlers = memberRemovedHandlers = null;
+            leaderChangedHandlers = null;
         }
 
         /// <summary>

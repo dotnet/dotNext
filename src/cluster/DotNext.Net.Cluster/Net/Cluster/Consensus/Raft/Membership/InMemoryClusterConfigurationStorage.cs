@@ -89,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// Gets active configuration.
         /// </summary>
         public sealed override IClusterConfiguration ActiveConfiguration
-            => active ??= new(GenerateFingerprint(), Encode(activeCache));
+            => active ??= new(0L, Encode(activeCache));
 
         /// <summary>
         /// Gets proposed configuration.
@@ -110,7 +110,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             proposed = new(configuration.Fingerprint, config);
 
             proposedCache.Clear();
-            Decode(proposedCache, config.Memory);
+            var builder = proposedCache.ToBuilder();
+            Decode(builder, config.Memory);
+            proposedCache = builder.ToImmutable();
         }
 
         /// <inheritdoc />
@@ -125,7 +127,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             active = proposed;
             activeCache = proposedCache;
 
-            proposed.Dispose();
             proposed = null;
             proposedCache = proposedCache.Clear();
 

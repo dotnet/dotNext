@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -119,27 +120,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             Metrics?.ReportBroadcastTime(start.Elapsed);
 
-            // majority of nodes accept entries with a least one entry from the current term
-            if (commitQuorum > 0)
+            if (term <= currentTerm && (quorum > 0 || allowPartitioning))
             {
-                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                await configurationStorage.ApplyAsync(token).ConfigureAwait(false); // apply proposed config
-                stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
-                goto check_term;
+                Debug.Assert(quorum >= commitQuorum);
+
+                if (commitQuorum > 0)
+                {
+                    // majority of nodes accept entries with at least one entry from the current term
+                    var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                    stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
+                }
+                else
+                {
+                    stateMachine.Logger.CommitFailed(quorum, commitIndex);
+                }
+
+                await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                return true;
             }
 
-            stateMachine.Logger.CommitFailed(quorum, commitIndex);
-
-            // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum <= 0 && !allowPartitioning)
-                goto stop_leading;
-
-            check_term:
-            if (term <= currentTerm)
-                return true;
-
             // it is partitioned network with absolute majority, not possible to have more than one leader
-            stop_leading:
             stateMachine.MoveToFollowerState(false, term);
             return false;
         }

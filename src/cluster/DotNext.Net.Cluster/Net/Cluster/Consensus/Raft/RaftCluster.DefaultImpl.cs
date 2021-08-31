@@ -67,7 +67,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ImmutableDictionary<string, string> metadata;
         private readonly Func<ILocalMember, IPEndPoint, ClusterMemberId, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
-        private readonly IPEndPoint publicEndPoint;
         private readonly MemoryAllocator<byte>? allocator;
         private readonly ClusterMemberAnnouncer<IPEndPoint>? announcer;
         private readonly int warmupRounds;
@@ -87,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
-            publicEndPoint = configuration.PublicEndPoint;
+            LocalMemberAddress = configuration.PublicEndPoint;
             allocator = configuration.MemoryAllocator;
             announcer = configuration.Announcer;
             warmupRounds = configuration.WarmupRounds;
@@ -96,6 +95,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             pollingLoopTask = Task.CompletedTask;
             cachedConfig = new();
         }
+
+        /// <summary>
+        /// Gets the address of the local member.
+        /// </summary>
+        public IPEndPoint LocalMemberAddress { get; }
 
         /// <inheritdoc />
         protected sealed override IClusterConfigurationStorage<IPEndPoint> ConfigurationStorage { get; }
@@ -112,7 +116,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (coldStart)
             {
                 // in case of cold start, add the local member to the configuration
-                await ConfigurationStorage.AddMemberAsync(LocalMemberId, publicEndPoint, token).ConfigureAwait(false);
+                await AddMemberAsync(CreateMember(LocalMemberId, LocalMemberAddress), token).ConfigureAwait(false);
+                await ConfigurationStorage.AddMemberAsync(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
                 await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
             }
             else
@@ -125,7 +130,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await base.StartAsync(token).ConfigureAwait(false);
 
             if (!coldStart && announcer is not null)
-                await announcer(LocalMemberId, publicEndPoint, token).ConfigureAwait(false);
+                await announcer(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -156,12 +161,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
         public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
         {
-            var member = CreateMember(id, address);
-            if (await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false))
-                return true;
-
-            member.Dispose();
-            return false;
+            using var member = CreateMember(id, address);
+            member.IsRemote = !Equals(LocalMemberAddress, address);
+            return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
         }
 
         private async Task ConfigurationPollingLoop()
@@ -172,7 +174,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var member = CreateMember(eventInfo.Id, eventInfo.Address);
                     if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
-                        member.IsRemote = !Equals(eventInfo.Address, publicEndPoint);
+                        member.IsRemote = !Equals(eventInfo.Address, LocalMemberAddress);
                     else
                         member.Dispose();
                 }

@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly HttpEndPoint EndPoint;
         private AtomicEnum<ClusterMemberStatus> status;
         private volatile MemberMetadata? metadata;
-        private ClusterMemberStatusChanged? memberStatusChanged;
+        private Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>? memberStatusChanged;
         private long nextIndex, fingerprint;
         internal IClientMetricsCollector? Metrics;
 
@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             IsRemote = true;
         }
 
-        event ClusterMemberStatusChanged? IClusterMember.MemberStatusChanged
+        event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
         {
             add => memberStatusChanged += value;
             remove => memberStatusChanged -= value;

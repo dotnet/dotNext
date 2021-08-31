@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private IPEndPoint? publicAddress;
             private PipeOptions? pipeConfig;
             private MemoryAllocator<byte>? allocator;
-            private int? serverChannels;
+            private int serverChannels = 10;
             private ILoggerFactory? loggerFactory;
             private TimeSpan? requestTimeout;
             private int warmupRounds;
@@ -40,7 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 electionTimeout = Raft.ElectionTimeout.Recommended;
                 heartbeatThreshold = 0.5D;
                 Metadata = new Dictionary<string, string>();
-                Members = new HashSet<IPEndPoint>();
                 HostEndPoint = hostAddress;
                 applicationIdGenerator = new Random().Next<long>;
                 TimeToLive = 64;
@@ -190,7 +189,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="ArgumentOutOfRangeException">Supplied value is equal to or less than zero.</exception>
             public int ServerBacklog
             {
-                get => serverChannels.GetValueOrDefault(Members.Count + 1);
+                get => serverChannels;
                 set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
@@ -221,12 +220,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets metadata associated with local cluster member.
             /// </summary>
             public IDictionary<string, string> Metadata { get; }
-
-            /// <summary>
-            /// Gets collection of cluster members.
-            /// </summary>
-            /// <value>The collection of cluster members.</value>
-            public ICollection<IPEndPoint> Members { get; }
 
             /// <summary>
             /// Gets or sets a value indicating that the cluster member

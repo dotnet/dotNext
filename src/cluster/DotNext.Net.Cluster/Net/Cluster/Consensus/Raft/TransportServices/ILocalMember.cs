@@ -8,7 +8,6 @@ using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using IO.Log;
-    using IClusterConfiguration = Membership.IClusterConfiguration;
 
     internal interface ILocalMember
     {

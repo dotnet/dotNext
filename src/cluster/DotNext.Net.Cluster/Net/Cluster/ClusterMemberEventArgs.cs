@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster
             => Member = member;
 
         /// <summary>
-        /// Gets cluster member.
+        /// Gets a member associated with the event.
         /// </summary>
         public IClusterMember Member { get; }
 

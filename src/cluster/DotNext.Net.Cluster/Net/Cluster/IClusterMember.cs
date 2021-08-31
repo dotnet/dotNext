@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// An event raised when cluster member becomes available or unavailable.
         /// </summary>
-        event ClusterMemberStatusChanged MemberStatusChanged;
+        event Action<ClusterMemberStatusChangedEventArgs> MemberStatusChanged;
 
         /// <summary>
         /// Gets status of this member.
@@ -64,11 +64,12 @@ namespace DotNext.Net.Cluster
         /// <param name="status">The member status holder.</param>
         /// <param name="newState">A new state of the member.</param>
         /// <param name="memberStatusChanged">A collection of event handlers.</param>
-        protected static void OnMemberStatusChanged(IClusterMember member, ref AtomicEnum<ClusterMemberStatus> status, ClusterMemberStatus newState, ClusterMemberStatusChanged? memberStatusChanged)
+        protected static void OnMemberStatusChanged<TMember>(TMember member, ref AtomicEnum<ClusterMemberStatus> status, ClusterMemberStatus newState, Action<ClusterMemberStatusChangedEventArgs<TMember>>? memberStatusChanged)
+            where TMember : class, IClusterMember
         {
             var previousState = status.GetAndSet(newState);
             if (previousState != newState)
-                memberStatusChanged?.Invoke(member, previousState, newState);
+                memberStatusChanged?.Invoke(new(member, previousState, newState));
         }
     }
 }

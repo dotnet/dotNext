@@ -40,17 +40,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public IEnumerable<TMember> Values => dictionary.Values;
 
-            internal MemberList Add(TMember member, out bool added)
+            internal static bool TryAdd(ref MemberList membership, TMember member)
             {
-                var result = dictionary.Add(member.Id, member);
-                if (ReferenceEquals(dictionary, result))
-                {
-                    added = false;
-                    return this;
-                }
+                var dictionary = membership.dictionary;
+                var result = ImmutableInterlocked.TryAdd(ref dictionary, member.Id, member);
+                if (!ReferenceEquals(membership.dictionary, dictionary))
+                    membership = new(dictionary);
 
-                added = true;
-                return new(result);
+                return result;
             }
 
             internal static bool TryRemove(ref MemberList membership, ClusterMemberId id, [NotNullWhen(true)] out TMember? member)
@@ -136,8 +133,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
-                members = members.Add(member, out var added);
-                if (!added)
+                if (!MemberList.TryAdd(ref members, member))
                     return false;
             }
 
@@ -200,6 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var tokenSource = token.LinkTo(LeadershipToken);
 
             // catch up node
+            member.NextIndex = auditTrail.GetLastIndex(false) + 1;
             long currentIndex;
             do
             {
@@ -212,7 +209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // do replication
                 var result = await new LeaderState.Replicator(auditTrail, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync(false).ConfigureAwait(false);
 
-                if (!result.Value)
+                if (!result.Value && result.Term > term)
                     return false;
             }
             while (rounds > 0 && currentIndex >= member.NextIndex);

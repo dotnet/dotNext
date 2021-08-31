@@ -140,7 +140,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             await proposed.UpdateAsync(writer.WrittenMemory, token).ConfigureAwait(false);
 
             proposedCache.Clear();
-            Decode(proposedCache, writer.WrittenMemory.Slice(ClusterConfiguration.PayloadOffset));
+            var builder = proposedCache.ToBuilder();
+            Decode(builder, writer.WrittenMemory.Slice(ClusterConfiguration.PayloadOffset));
+            proposedCache = builder.ToImmutable();
         }
 
         /// <summary>

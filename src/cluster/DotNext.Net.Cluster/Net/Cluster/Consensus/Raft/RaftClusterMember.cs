@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -22,6 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal readonly ClusterMemberId Id;
         private volatile IReadOnlyDictionary<string, string>? metadataCache;
         private AtomicEnum<ClusterMemberStatus> status;
+        private Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>? statusChangedHandlers;
 
         private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
         {
@@ -63,7 +65,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Informs about status change.
         /// </summary>
-        public event ClusterMemberStatusChanged? MemberStatusChanged;
+        public event Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>> MemberStatusChanged
+        {
+            add => statusChangedHandlers += value;
+            remove => statusChangedHandlers -= value;
+        }
+
+        /// <inheritdoc />
+        event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
+        {
+            add => statusChangedHandlers += value;
+            remove => statusChangedHandlers -= value;
+        }
 
         /// <inheritdoc/>
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
@@ -78,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public abstract ValueTask CancelPendingRequestsAsync();
 
         private protected void ChangeStatus(ClusterMemberStatus newState)
-            => IClusterMember.OnMemberStatusChanged(this, ref status, newState, MemberStatusChanged);
+            => IClusterMember.OnMemberStatusChanged(this, ref status, newState, statusChangedHandlers);
 
         internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 

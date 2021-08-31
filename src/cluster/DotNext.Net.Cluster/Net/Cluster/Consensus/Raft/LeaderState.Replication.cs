@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly CancellationToken token;
 
             // state
-            private long currentIndex;
+            private long currentIndex, fingerprint;
             private bool replicatedWithCurrentTerm;
             private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
 
@@ -54,6 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.term = term;
                 this.logger = logger;
                 this.token = token;
+                fingerprint = (proposedConfig ?? activeConfig).Fingerprint;
             }
 
             private Task<Result<bool>> StartCoreAsync()
@@ -79,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                         member.NextIndex.VolatileWrite(currentIndex + 1);
-                        member.ConfigurationFingerprint.VolatileWrite(Fingerprint);
+                        member.ConfigurationFingerprint.VolatileWrite(fingerprint);
                         result = result.SetValue(replicatedWithCurrentTerm);
                     }
                     else
@@ -99,17 +100,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            private long Fingerprint => (proposedConfig ?? activeConfig).Fingerprint;
-
             private (IClusterConfiguration, bool) GetConfiguration()
             {
                 bool applyConfig;
                 IClusterConfiguration configuration;
 
-                if (member.ConfigurationFingerprint == Fingerprint)
+                if (member.ConfigurationFingerprint == fingerprint)
                 {
-                    applyConfig = activeConfig.Fingerprint == Fingerprint;
-                    configuration = IClusterConfiguration.CreateEmpty(Fingerprint);
+                    applyConfig = activeConfig.Fingerprint == fingerprint;
+                    configuration = IClusterConfiguration.CreateEmpty(fingerprint);
                 }
                 else
                 {
@@ -127,6 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (snapshotIndex.HasValue)
                 {
                     logger.InstallingSnapshot(currentIndex = snapshotIndex.GetValueOrDefault());
+                    fingerprint = 0L;
                     replicationAwaiter = member.InstallSnapshotAsync(term, entries[0], currentIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
                 else
