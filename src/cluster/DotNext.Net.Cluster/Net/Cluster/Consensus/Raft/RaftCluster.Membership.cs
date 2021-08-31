@@ -147,7 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="id">The identifier of the member.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The removed member.</returns>
-        protected async ValueTask<TMember?> RemoveMember(ClusterMemberId id, CancellationToken token)
+        protected async ValueTask<TMember?> RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
         {
             TMember? result;
             using var tokenHolder = token.LinkTo(LifecycleToken);
@@ -218,12 +218,46 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
 
             // proposes a new member
-            await configurationStorage.AddMemberAsync(member.Id, addressProvider(member), token).ConfigureAwait(false);
-            await ReplicateAsync(new EmptyLogEntry(Term), Timeout.Infinite, token).ConfigureAwait(false);
+            if (await configurationStorage.AddMemberAsync(member.Id, addressProvider(member), token).ConfigureAwait(false))
+            {
+                await ReplicateAsync(new EmptyLogEntry(Term), Timeout.Infinite, token).ConfigureAwait(false);
 
-            // ensure that the newly added member has been committed
+                // ensure that the newly added member has been committed
+                await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Removes the member from the cluster.
+        /// </summary>
+        /// <typeparam name="TAddress">The type of the member address.</typeparam>
+        /// <param name="id">The cluster member to remove.</param>
+        /// <param name="configurationStorage">The configuration storage.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// <see langword="true"/> if the node has been removed from the cluster successfully;
+        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
+        /// </returns>
+        public async Task<bool> RemoveMemberAsync<TAddress>(ClusterMemberId id, IClusterConfigurationStorage<TAddress> configurationStorage, CancellationToken token = default)
+            where TAddress : notnull
+        {
+            // ensure that previous configuration has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
-            return true;
+
+            // remove the existing member
+            if (await configurationStorage.RemoveMemberAsync(id, token).ConfigureAwait(false))
+            {
+                await ReplicateAsync(new EmptyLogEntry(Term), Timeout.Infinite, token).ConfigureAwait(false);
+
+                // ensure that the removed member has been committed
+                await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+                return true;
+            }
+
+            return false;
         }
     }
 }

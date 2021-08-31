@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
                 else
                 {
-                    var member = await RemoveMember(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                    var member = await RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
                     member?.Dispose();
                 }
             }
@@ -48,6 +48,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var member = CreateMember(id, address);
             member.IsRemote = localNode != address;
             return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
+        }
+
+        Task<bool> IRaftHttpCluster.RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
+            => RemoveMemberAsync(id, ConfigurationStorage, token);
+
+        Task<bool> IRaftHttpCluster.RemoveMemberAsync(HttpEndPoint address, CancellationToken token)
+        {
+            foreach (var member in Members)
+            {
+                if (member.EndPoint == address)
+                    return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
+            }
+
+            return Task.FromResult<bool>(false);
         }
     }
 }

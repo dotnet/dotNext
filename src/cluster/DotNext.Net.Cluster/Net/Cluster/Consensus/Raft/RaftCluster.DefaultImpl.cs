@@ -166,6 +166,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Removes the member from the cluster.
+        /// </summary>
+        /// <param name="address">The cluster member to remove.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// <see langword="true"/> if the node has been removed from the cluster successfully;
+        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
+        /// </returns>
+        public Task<bool> RemoveMemberAsync(IPEndPoint address, CancellationToken token = default)
+        {
+            foreach (var member in Members)
+            {
+                if (Equals(member.EndPoint, address))
+                    return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
+            }
+
+            return Task.FromResult<bool>(false);
+        }
+
         private async Task ConfigurationPollingLoop()
         {
             await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken))
@@ -180,7 +200,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    var member = await RemoveMember(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                    var member = await base.RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
                     member?.Dispose();
                 }
             }

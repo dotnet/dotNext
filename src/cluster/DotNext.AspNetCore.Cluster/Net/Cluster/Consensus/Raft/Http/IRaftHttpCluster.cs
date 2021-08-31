@@ -25,6 +25,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<bool> AddMemberAsync(ClusterMemberId id, HttpEndPoint address, CancellationToken token = default);
 
         /// <summary>
+        /// Removes the member from the cluster.
+        /// </summary>
+        /// <param name="id">The cluster member to remove.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// <see langword="true"/> if the node has been removed from the cluster successfully;
+        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
+        /// </returns>
+        Task<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default);
+
+        /// <summary>
+        /// Removes the member from the cluster.
+        /// </summary>
+        /// <param name="address">The cluster member to remove.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// <see langword="true"/> if the node has been removed from the cluster successfully;
+        /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
+        /// </returns>
+        Task<bool> RemoveMemberAsync(HttpEndPoint address, CancellationToken token = default);
+
+        /// <summary>
         /// Gets the address of the local member.
         /// </summary>
         HttpEndPoint LocalMemberAddress { get; }
