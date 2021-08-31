@@ -1,7 +1,5 @@
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
-
     /// <summary>
     /// Represents log entry in Raft audit trail.
     /// </summary>
