@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
         private TimeSpan? rpcTimeout;
         private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
+        private int warmupRounds = 10;
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -87,5 +88,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// represents standby node which is never become a leader.
         /// </summary>
         public bool Standby { get; set; }
+
+        /// <summary>
+        /// Gets or sets the numbers of rounds used to warmup a fresh node which wants to join the cluster.
+        /// </summary>
+        public int WarmupRounds
+        {
+            get => warmupRounds;
+            set => warmupRounds = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(warmupRounds));
+        }
     }
 }

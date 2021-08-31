@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -40,6 +41,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     member?.Dispose();
                 }
             }
+        }
+
+        async Task<bool> IRaftHttpCluster.AddMemberAsync(ClusterMemberId id, HttpEndPoint address, CancellationToken token)
+        {
+            using var member = CreateMember(id, address);
+            member.IsRemote = localNode != address;
+            return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
         }
     }
 }

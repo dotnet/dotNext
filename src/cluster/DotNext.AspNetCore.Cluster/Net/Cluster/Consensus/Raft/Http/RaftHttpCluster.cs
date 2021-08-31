@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
-    internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IMessageBus
+    internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IRaftHttpCluster, IHostedService, IHostingContext
     {
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
@@ -33,6 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HttpVersionPolicy protocolVersionPolicy;
         private readonly HttpEndPoint localNode;
         private readonly Uri protocolPath;
+        private readonly int warmupRounds;
 
         // TODO: Replace IServiceProvider with nullable parameters to use optional dependency injection
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -50,6 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             localNode = config.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
             protocolPath = new Uri(config.ProtocolPath.Value.IfNullOrEmpty(HttpClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative);
             coldStart = config.ColdStart;
+            warmupRounds = config.WarmupRounds;
 
             if (raftRpcTimeout > requestTimeout)
                 throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
@@ -120,6 +122,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
 
         bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
+
+        HttpEndPoint IRaftHttpCluster.LocalMemberAddress => localNode;
 
         public override async Task StartAsync(CancellationToken token)
         {
