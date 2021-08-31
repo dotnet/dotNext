@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Net.Sockets;
 using Xunit;
 
 namespace DotNext.Net
@@ -16,6 +17,11 @@ namespace DotNext.Net
             yield return new object[] { new DnsEndPoint("host", 3262) };
             yield return new object[] { new IPEndPoint(IPAddress.Parse("192.168.0.1"), 3263) };
             yield return new object[] { new IPEndPoint(IPAddress.Parse("2001:0db8:0000:0000:0000:8a2e:0370:7334"), 3264) };
+            yield return new object[] { new HttpEndPoint("192.168.0.1", 3262, true, AddressFamily.InterNetwork) };
+            yield return new object[] { new HttpEndPoint("192.168.0.1", 3262, false, AddressFamily.InterNetwork) };
+            yield return new object[] { new HttpEndPoint("2001:0db8:0000:0000:0000:8a2e:0370:7334", 3262, true, AddressFamily.InterNetworkV6) };
+            yield return new object[] { new HttpEndPoint("host", 3262, true) };
+            yield return new object[] { new HttpEndPoint("host", 3262, false) };
         }
 
         [Theory]
