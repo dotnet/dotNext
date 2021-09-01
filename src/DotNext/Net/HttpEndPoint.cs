@@ -15,9 +15,9 @@ namespace DotNext.Net
         /// </summary>
         /// <param name="uri">The absolute path to Web resource.</param>
         public HttpEndPoint(Uri uri)
-            : base(uri.Host, uri.Port, ToAddressFamily(uri.HostNameType))
+            : base(uri.IdnHost, GetPort(uri, out var secure), ToAddressFamily(uri.HostNameType))
         {
-            IsSecure = string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+            IsSecure = secure;
         }
 
         /// <summary>
@@ -53,6 +53,15 @@ namespace DotNext.Net
         public HttpEndPoint(IPEndPoint address, bool secure)
             : this(address.Address, address.Port, secure)
         {
+        }
+
+        private static int GetPort(Uri uri, out bool secure)
+        {
+            const int defaultHttpPort = 80;
+            const int defaultHttpsPort = 443;
+
+            secure = string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+            return uri.IsDefaultPort ? secure ? defaultHttpsPort : defaultHttpPort : uri.Port;
         }
 
         /// <summary>
