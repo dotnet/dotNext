@@ -98,10 +98,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// </summary>
         public abstract IClusterConfiguration ActiveConfiguration { get; }
 
+        /// <inheritdoc />
+        IReadOnlyDictionary<ClusterMemberId, TAddress> IClusterConfigurationStorage<TAddress>.ActiveConfiguration
+            => activeCache;
+
         /// <summary>
         /// Represents proposed cluster configuration.
         /// </summary>
         public abstract IClusterConfiguration? ProposedConfiguration { get; }
+
+        /// <inheritdoc />
+        IReadOnlyDictionary<ClusterMemberId, TAddress>? IClusterConfigurationStorage<TAddress>.ProposedConfiguration
+            => HasProposal ? proposedCache : null;
 
         /// <summary>
         /// Proposes the configuration.

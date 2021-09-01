@@ -89,5 +89,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The stream of configuration events.</returns>
         IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> PollChangesAsync(CancellationToken token);
+
+        /// <summary>
+        /// Represents active cluster configuration maintained by the node.
+        /// </summary>
+        new IReadOnlyDictionary<ClusterMemberId, TAddress> ActiveConfiguration { get; }
+
+        /// <summary>
+        /// Represents proposed cluster configuration.
+        /// </summary>
+        new IReadOnlyDictionary<ClusterMemberId, TAddress>? ProposedConfiguration { get; }
     }
 }
