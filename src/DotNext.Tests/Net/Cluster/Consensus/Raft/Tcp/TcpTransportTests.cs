@@ -177,7 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             // first node - cold start
             await using var host1 = CreateCluster(3267, true);
-            var listener1 = new AsyncLeaderChangedEvent();
+            var listener1 = new LeaderChangedEvent();
             host1.LeaderChanged += listener1.OnLeaderChanged;
             await host1.StartAsync();
             True(host1.Readiness.IsCompletedSuccessfully);
@@ -189,14 +189,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             await using var host3 = CreateCluster(3269, false);
             await host3.StartAsync();
 
-            Equal(host1.LocalMemberAddress, (await listener1.Result).EndPoint);
+            True(await listener1.Result.WaitAsync(DefaultTimeout));
+            Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
 
             // add two nodes to the cluster
             True(await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress));
             await host2.Readiness.WaitAsync(DefaultTimeout);
 
             True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
-            await host3.Readiness.WaitAsync(DefaultTimeout);
+            True(await host3.Readiness.WaitAsync(DefaultTimeout));
 
             Equal(host1.Leader.EndPoint, host2.Leader.EndPoint);
             Equal(host1.Leader.EndPoint, host3.Leader.EndPoint);
