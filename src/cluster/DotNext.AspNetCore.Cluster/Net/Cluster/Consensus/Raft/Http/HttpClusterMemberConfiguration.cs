@@ -18,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         static HttpClusterMemberConfiguration()
         {
             PathStringConverter.Register();
+            HttpEndPointConverter.Register();
         }
 
         private string? handlerName;

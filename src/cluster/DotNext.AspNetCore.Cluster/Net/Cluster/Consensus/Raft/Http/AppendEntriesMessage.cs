@@ -8,7 +8,6 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -330,16 +329,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // <payload> - octet string
         private sealed class OctetStreamLogEntriesWriter : HttpContent
         {
-            private readonly long configurationLength;
             private readonly IDataTransferObject configuration;
             private readonly Enumerable<TEntry, TList> entries;
 
-            internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration, long configurationLength)
+            internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration)
             {
                 Headers.ContentType = new(MediaTypeNames.Application.Octet);
                 this.configuration = configuration;
                 this.entries = new(entries);
-                this.configurationLength = configurationLength;
             }
 
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
@@ -370,7 +367,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             protected override bool TryComputeLength(out long length)
             {
-                length = configurationLength;
+                length = configuration.Length.GetValueOrDefault();
                 foreach (var entry in entries)
                 {
                     Debug.Assert(entry.Length.HasValue);
@@ -495,6 +492,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        /*
+         * Used only for transfer non-empty configuration and empty set of log entries
+         */
+        private sealed class ConfigurationWriter : HttpContent
+        {
+            private readonly IDataTransferObject configuration;
+
+            internal ConfigurationWriter(IDataTransferObject configuration)
+                => this.configuration = configuration;
+
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+                => SerializeToStreamAsync(stream, context, CancellationToken.None);
+
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
+                => configuration.WriteToAsync(stream, token: token).AsTask();
+
+            protected override bool TryComputeLength(out long length)
+                => configuration.Length.TryGetValue(out length);
+        }
+
         private readonly IDataTransferObject configuration;
         private TList entries;  // not readonly to avoid hidden copies
 
@@ -510,13 +527,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
-            if (entries.Count > 0)
-                request.Content = CreateContentProvider();
+            request.Content = CreateContentProvider();
             base.PrepareRequest(request);
         }
 
-        private HttpContent CreateContentProvider()
-            => UseOptimizedTransfer ? new OctetStreamLogEntriesWriter(in entries, configuration, ConfigurationLength) : new MultipartLogEntriesWriter(in entries, configuration);
+        private HttpContent? CreateContentProvider()
+        {
+            if (entries.Count > 0)
+                return UseOptimizedTransfer ? new OctetStreamLogEntriesWriter(in entries, configuration) : new MultipartLogEntriesWriter(in entries, configuration);
+
+            return configuration.Length.GetValueOrDefault() > 0L ? new ConfigurationWriter(configuration) : null;
+        }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
     }

@@ -99,7 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return result;
         }
 
-        internal PathString ProtocolPath => PathString.FromUriComponent(protocolPath);
+        internal PathString ProtocolPath => protocolPath.OriginalString;
 
         protected sealed override ILogger Logger { get; }
 

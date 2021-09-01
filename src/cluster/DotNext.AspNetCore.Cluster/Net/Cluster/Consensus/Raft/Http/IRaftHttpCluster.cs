@@ -47,6 +47,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<bool> RemoveMemberAsync(HttpEndPoint address, CancellationToken token = default);
 
         /// <summary>
+        /// Gets the identifier of the local member.
+        /// </summary>
+        ref readonly ClusterMemberId LocalMemberId { get; }
+
+        /// <summary>
         /// Gets the address of the local member.
         /// </summary>
         HttpEndPoint LocalMemberAddress { get; }

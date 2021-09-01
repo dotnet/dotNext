@@ -22,7 +22,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Func<IServiceProvider, RaftHttpCluster> clusterNodeCast = ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
 
             return services.AddSingleton<RaftHttpCluster>()
-                .AddSingleton(clusterNodeCast)
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IRaftHttpCluster>(clusterNodeCast)

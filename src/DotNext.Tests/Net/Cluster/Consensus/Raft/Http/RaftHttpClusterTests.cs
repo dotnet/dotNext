@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,11 +15,21 @@ using Xunit;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using static DotNext.Hosting.HostBuilderExtensions;
+    using static Hosting.HostBuilderExtensions;
+    using static Threading.Tasks.Synchronization;
 
     [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : Test
     {
+        private sealed class AsyncLeaderChangedEvent : DotNext.Net.Cluster.Consensus.Raft.LeaderChangedEvent, IClusterMemberLifetime
+        {
+            void IClusterMemberLifetime.OnStart(IRaftCluster cluster, IDictionary<string, string> metadata)
+                => cluster.LeaderChanged += OnLeaderChanged;
+
+            void IClusterMemberLifetime.OnStop(IRaftCluster cluster)
+                => cluster.LeaderChanged -= OnLeaderChanged;
+        }
+
         private sealed class LeaderChangedEvent : EventWaitHandle, IClusterMemberLifetime
         {
             internal volatile IClusterMember Leader;
@@ -49,17 +58,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
+        private static IHost CreateHost<TStartup>(int port, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
             where TStartup : class
         {
             return new HostBuilder()
-                .ConfigureWebHost(webHost => webHost.UseKestrel(options =>
-                {
-                    if (localhost)
-                        options.ListenLocalhost(port);
-                    else
-                        options.ListenAnyIP(port);
-                })
+                .ConfigureWebHost(webHost => webHost.UseKestrel(options => options.ListenLocalhost(port))
                     .ConfigureServices(services =>
                     {
                         if (configurator is not null)
@@ -104,9 +107,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var listener1 = new LeaderChangedEvent();
             using var listener2 = new LeaderChangedEvent();
             using var listener3 = new LeaderChangedEvent();
-            using var host1 = CreateHost<Startup>(3262, true, config1, listener1);
-            using var host2 = CreateHost<Startup>(3263, true, config2, listener2);
-            using var host3 = CreateHost<Startup>(3264, true, config3, listener3);
+            using var host1 = CreateHost<Startup>(3262, config1, listener1);
+            using var host2 = CreateHost<Startup>(3263, config2, listener2);
+            using var host3 = CreateHost<Startup>(3264, config3, listener3);
             await host1.StartAsync();
             await host2.StartAsync();
             await host3.StartAsync();
@@ -171,8 +174,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"members:1", "http://localhost:3263"},
                 {"requestTimeout", "00:01:00"}
             };
-            using var host1 = CreateHost<Startup>(3262, true, config1);
-            using var host2 = CreateHost<Startup>(3263, true, config2);
+            using var host1 = CreateHost<Startup>(3262, config1);
+            using var host2 = CreateHost<Startup>(3263, config2);
             await host1.StartAsync();
             await host2.StartAsync();
 
@@ -225,8 +228,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"members:1", "http://localhost:3263"},
                 {"requestTimeout", "00:01:00"}
             };
-            using var host1 = CreateHost<Startup>(3262, true, config1);
-            using var host2 = CreateHost<Startup>(3263, true, config2);
+            using var host1 = CreateHost<Startup>(3262, config1);
+            using var host2 = CreateHost<Startup>(3263, config2);
             await host1.StartAsync();
             await host2.StartAsync();
 
@@ -254,142 +257,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host2.StopAsync();
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(50)]
-        [InlineData(100)]
-        [InlineData(200)]
-        [InlineData(300)]
-        [InlineData(400)]
-        [InlineData(500)]
-        public static async Task Leadership(int delay)
-        {
-            static void CheckLeadership(IClusterMember member1, IClusterMember member2)
-                => Equal(member1.EndPoint, member2.EndPoint);
+        private static IRaftHttpCluster GetLocalClusterView(IHost host)
+            => host.Services.GetRequiredService<IRaftHttpCluster>();
 
+        [Fact]
+        public static async Task Leadership()
+        {
             var config1 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
             };
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"}
             };
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"standby", "true"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"}
             };
-            using var listener1 = new LeaderChangedEvent();
-            using var listener2 = new LeaderChangedEvent();
-            using var listener3 = new LeaderChangedEvent();
-            using var host1 = CreateHost<Startup>(3262, true, config1, listener1);
-            using var host2 = CreateHost<Startup>(3263, true, config2, listener2);
-            using var host3 = CreateHost<Startup>(3264, true, config3, listener3);
+
+            var listener = new AsyncLeaderChangedEvent();
+            using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
+            True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
-            await Task.Delay(delay);
+
+            using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, DefaultTimeout);
+            True(await listener.Result.WaitAsync(DefaultTimeout));
+            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
 
-            IClusterMember leader1, leader2, leader3;
+            // add two nodes to the cluster
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
+            await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
-            //wait for stable election
-            for (var timer = Task.Delay(2000); ; await Task.Delay(100))
-            {
-                if (timer.IsCompleted)
-                    throw new RaftProtocolException("Leader election failed");
-                leader1 = host1.Services.GetRequiredService<ICluster>().Leader;
-                leader2 = host2.Services.GetRequiredService<ICluster>().Leader;
-                leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
-                if (leader1 is null || leader2 is null || leader3 is null)
-                    continue;
-                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader3.EndPoint.Equals(leader2.EndPoint))
-                    break;
-            }
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
+            await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-            listener1.Reset();
-            listener2.Reset();
-            listener3.Reset();
-            listener1.Leader = listener2.Leader = listener3.Leader = null;
-
-            //let's shutdown leader node
-
-            var removedNode = default(int?);
-
-            if (!leader1.IsRemote)
-            {
-                removedNode = 1;
-                await host1.StopAsync();
-            }
-
-            if (!leader2.IsRemote)
-            {
-                removedNode = 2;
-                await host2.StopAsync();
-            }
-
-            if (!leader3.IsRemote)
-            {
-                removedNode = 3;
-                await host3.StopAsync();
-            }
-
-            NotNull(removedNode);
-
-            switch (removedNode)
-            {
-                case 1:
-                    //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 }, DefaultTimeout);
-                    NotNull(listener2.Leader);
-                    NotNull(listener3.Leader);
-                    CheckLeadership(listener2.Leader, listener3.Leader);
-                    break;
-                case 2:
-                    //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 }, DefaultTimeout);
-                    NotNull(listener1.Leader);
-                    NotNull(listener3.Leader);
-                    CheckLeadership(listener1.Leader, listener3.Leader);
-                    break;
-                case 3:
-                    //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 }, DefaultTimeout);
-                    NotNull(listener1.Leader);
-                    NotNull(listener2.Leader);
-                    CheckLeadership(listener1.Leader, listener2.Leader);
-                    break;
-                default:
-                    throw new Exception();
-            }
-            //check metrics
-            var numberOfRequests =
-                (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount +
-                (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount +
-                (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount;
-
-            var hasLeader = (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator |
-                (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator |
-                (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator;
-
-            var heartbeats = (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount +
-                (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount +
-                (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount;
-
-            True(hasLeader);
-            True(numberOfRequests > 0);
-            True(heartbeats > 0);
+            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host2).Leader.EndPoint);
+            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host3).Leader.EndPoint);
 
             await host3.StopAsync();
             await host2.StopAsync();
@@ -409,7 +325,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 { "members:1", "http://localhost:3263" }
             };
             using var leaderResetEvent = new LeaderChangedEvent();
-            using var host = CreateHost<Startup>(3262, true, config, leaderResetEvent);
+            using var host = CreateHost<Startup>(3262, config, leaderResetEvent);
             await host.StartAsync();
             leaderResetEvent.WaitOne(TimeSpan.FromSeconds(5));
             Null(leaderResetEvent.Leader);
@@ -426,7 +342,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 { "members:0", "http://localhost:3262" }
             };
             using var leaderResetEvent = new LeaderChangedEvent();
-            using var host = CreateHost<Startup>(3262, true, config, leaderResetEvent);
+            using var host = CreateHost<Startup>(3262, config, leaderResetEvent);
             await host.StartAsync();
             leaderResetEvent.WaitOne(DefaultTimeout);
             NotNull(leaderResetEvent.Leader);
@@ -446,7 +362,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 { "members:1", "http://localhost:3263" },
                 { "allowedNetworks:0", "127.0.0.0" }
             };
-            using var host = CreateHost<Startup>(3262, true, config);
+            using var host = CreateHost<Startup>(3262, config);
             await host.StartAsync();
             object service = host.Services.GetService<ICluster>();
             NotNull(service);

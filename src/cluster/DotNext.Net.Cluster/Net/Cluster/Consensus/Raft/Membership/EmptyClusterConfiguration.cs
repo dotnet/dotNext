@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,5 +19,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => IDataTransferObject.Empty.WriteToAsync(writer, token);
+
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = ReadOnlyMemory<byte>.Empty;
+            return true;
+        }
     }
 }
