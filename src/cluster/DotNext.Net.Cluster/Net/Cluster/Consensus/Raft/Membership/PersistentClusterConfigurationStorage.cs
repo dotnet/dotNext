@@ -36,14 +36,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
             public long Fingerprint { get; set; }
 
-            public long Length => fs.Length;
+            public long Length => Math.Max(fs.Length - PayloadOffset, 0L);
 
-            internal bool IsEmpty => Length <= PayloadOffset;
+            internal bool IsEmpty => Length == 0L;
 
             bool IDataTransferObject.IsReusable => true;
 
             internal async ValueTask UpdateAsync(ReadOnlyMemory<byte> content, CancellationToken token)
             {
+                fs.Position = 0L;
                 fs.SetLength(content.Length);
                 await fs.WriteAsync(content, token).ConfigureAwait(false);
                 await fs.FlushAsync(token).ConfigureAwait(false);
@@ -60,6 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             {
                 output.fs.SetLength(Length);
                 output.Fingerprint = Fingerprint;
+                fs.Position = 0L;
                 await fs.CopyToAsync(output.fs, bufferSize, token).ConfigureAwait(false);
                 await output.fs.FlushAsync(token).ConfigureAwait(false);
             }
@@ -122,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// <summary>
         /// Gets proposed configuration.
         /// </summary>
-        public sealed override IClusterConfiguration? ProposedConfiguration => proposed.Length > 0 ? proposed : null;
+        public sealed override IClusterConfiguration? ProposedConfiguration => proposed.IsEmpty ? null : proposed;
 
         /// <summary>
         /// Proposes the configuration.
@@ -156,6 +158,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
                 return;
 
             await proposed.CopyToAsync(active, bufferSize, token).ConfigureAwait(false);
+            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
             activeCache = proposedCache;
 
             proposed.Clear();
