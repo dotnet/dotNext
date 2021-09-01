@@ -150,7 +150,7 @@ namespace DotNext.Net
         /// Converts endpoint to its string representation.
         /// </summary>
         /// <returns>The string representation of this end point.</returns>
-        public override string ToString() => $"{Scheme}://{Host}:{Port}";
+        public override string ToString() => $"{Scheme}://{Host}:{Port}/";
 
         /// <summary>
         /// Attempts to parse HTTP endpoint.
