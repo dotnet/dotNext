@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -18,38 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
     [ExcludeFromCodeCoverage]
     public sealed class TcpTransportTests : TransportTestSuite
     {
-        private sealed class LeaderChangedEvent : EventWaitHandle
-        {
-            internal volatile IClusterMember Leader;
-
-            internal LeaderChangedEvent()
-                : base(false, EventResetMode.ManualReset)
-            {
-            }
-
-            internal void OnLeaderChanged(ICluster sender, IClusterMember leader)
-            {
-                if (leader is null)
-                    return;
-                Leader = leader;
-                Set();
-            }
-        }
-
-        private sealed class AsyncLeaderChangedEvent
-        {
-            private TaskCompletionSource<RaftClusterMember> source = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            internal void OnLeaderChanged(ICluster sender, RaftClusterMember leader)
-            {
-                if (leader is null)
-                    return;
-                source.TrySetResult(leader);
-            }
-
-            internal Task<RaftClusterMember> Result => source.Task;
-        }
-
         private static X509Certificate2 LoadCertificate()
         {
             using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Test), "node.pfx");
