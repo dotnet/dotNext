@@ -170,7 +170,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
         {
             foreach (var member in stateMachine.Members)
+            {
                 member.NextIndex = transactionLog.GetLastIndex(false) + 1;
+                member.ConfigurationFingerprint = 0L;
+            }
+
             heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
             return this;
         }

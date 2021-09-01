@@ -85,6 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                     else
                     {
+                        member.ConfigurationFingerprint = 0L;
                         logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(static index => index > 0L ? index - 1L : index));
                     }
 
