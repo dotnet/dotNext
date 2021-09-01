@@ -64,6 +64,13 @@ namespace DotNext.Net
             return uri.IsDefaultPort ? secure ? defaultHttpsPort : defaultHttpPort : uri.Port;
         }
 
+        private static AddressFamily ToAddressFamily(UriHostNameType nameType) => nameType switch
+        {
+            UriHostNameType.IPv4 => AddressFamily.InterNetwork,
+            UriHostNameType.IPv6 => AddressFamily.InterNetworkV6,
+            _ => AddressFamily.Unspecified,
+        };
+
         /// <summary>
         /// Gets a value indicating that HTTP over TLS should be used (HTTPS).
         /// </summary>
@@ -83,13 +90,6 @@ namespace DotNext.Net
 
         /// <inheritdoc />
         UriBuilder ISupplier<UriBuilder>.Invoke() => CreateUriBuilder();
-
-        private static AddressFamily ToAddressFamily(UriHostNameType nameType) => nameType switch
-        {
-            UriHostNameType.IPv4 => AddressFamily.InterNetwork,
-            UriHostNameType.IPv6 => AddressFamily.InterNetworkV6,
-            _ => AddressFamily.Unspecified,
-        };
 
         /// <summary>
         /// Creates a new instance of <see cref="UriBuilder"/> with host, port and scheme imported from this object.
