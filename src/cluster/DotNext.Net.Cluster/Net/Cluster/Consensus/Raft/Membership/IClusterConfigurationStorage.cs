@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous result.</returns>
-        Task WaitForApplyAsync(CancellationToken token);
+        Task WaitForApplyAsync(CancellationToken token = default);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The stream of configuration events.</returns>
-        IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> PollChangesAsync(CancellationToken token);
+        IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> PollChangesAsync(CancellationToken token = default);
 
         /// <summary>
         /// Represents active cluster configuration maintained by the node.
