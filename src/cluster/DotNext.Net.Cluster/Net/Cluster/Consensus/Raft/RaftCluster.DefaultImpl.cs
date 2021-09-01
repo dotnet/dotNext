@@ -116,7 +116,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (coldStart)
             {
                 // in case of cold start, add the local member to the configuration
-                await AddMemberAsync(CreateMember(LocalMemberId, LocalMemberAddress), token).ConfigureAwait(false);
+                var localMember = CreateMember(LocalMemberId, LocalMemberAddress);
+                localMember.IsRemote = false;
+                await AddMemberAsync(localMember, token).ConfigureAwait(false);
                 await ConfigurationStorage.AddMemberAsync(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
                 await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
             }
@@ -201,7 +203,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     var member = await base.RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
-                    member?.Dispose();
+                    if (member is not null)
+                    {
+                        await member.CancelPendingRequestsAsync().ConfigureAwait(false);
+                        member.Dispose();
+                    }
                 }
             }
         }

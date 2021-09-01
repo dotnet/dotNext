@@ -38,7 +38,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     var member = await RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
-                    member?.Dispose();
+                    if (member is not null)
+                    {
+                        member.CancelPendingRequests();
+                        member.Dispose();
+                    }
                 }
             }
         }
@@ -58,7 +62,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             foreach (var member in Members)
             {
                 if (member.EndPoint == address)
+                {
+                    member.CancelPendingRequests();
                     return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
+                }
             }
 
             return Task.FromResult<bool>(false);

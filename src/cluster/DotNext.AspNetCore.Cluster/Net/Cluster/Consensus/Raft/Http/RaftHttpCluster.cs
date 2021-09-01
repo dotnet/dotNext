@@ -133,6 +133,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (coldStart)
             {
                 // in case of cold start, add the local member to the configuration
+                var localMember = CreateMember(LocalMemberId, localNode);
+                localMember.IsRemote = false;
+                await AddMemberAsync(localMember, token).ConfigureAwait(false);
                 await ConfigurationStorage.AddMemberAsync(LocalMemberId, localNode, token).ConfigureAwait(false);
                 await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
             }

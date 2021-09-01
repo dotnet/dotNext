@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private long nextIndex, fingerprint;
         internal IClientMetricsCollector? Metrics;
 
-        internal RaftClusterMember(IHostingContext context, HttpEndPoint remoteMember, Uri resourcePath, ClusterMemberId? id)
+        internal RaftClusterMember(IHostingContext context, HttpEndPoint remoteMember, Uri resourcePath, ClusterMemberId id)
             : base(context.CreateHttpHandler(), true)
         {
             this.resourcePath = resourcePath;
@@ -36,9 +36,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
             EndPoint = remoteMember;
             BaseAddress = remoteMember.CreateUriBuilder().Uri;
-            Id = id ?? ClusterMemberId.FromEndPoint(remoteMember);
+            Id = id;
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
-            IsRemote = true;
         }
 
         event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
