@@ -84,6 +84,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         protected override IClusterConfigurationStorage<HttpEndPoint> ConfigurationStorage { get; }
 
+        /// <inheritdoc />
+        IReadOnlyCollection<ISubscriber> IMessageBus.Members => Members;
+
         private RaftClusterMember CreateMember(in ClusterMemberId id, HttpEndPoint address)
         {
             var result = new RaftClusterMember(this, address, protocolPath, id)

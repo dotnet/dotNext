@@ -202,7 +202,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    var member = await base.RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                    var member = await RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
                     if (member is not null)
                     {
                         await member.CancelPendingRequestsAsync().ConfigureAwait(false);

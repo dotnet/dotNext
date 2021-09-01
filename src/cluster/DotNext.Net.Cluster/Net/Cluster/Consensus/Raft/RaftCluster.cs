@@ -138,6 +138,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : members;
 
         /// <inheritdoc />
+        IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
+
+        /// <inheritdoc />
         IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
         /// <summary>

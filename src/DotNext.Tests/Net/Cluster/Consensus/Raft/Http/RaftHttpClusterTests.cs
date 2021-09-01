@@ -15,6 +15,7 @@ using Xunit;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using Replication;
     using static Hosting.HostBuilderExtensions;
     using static Threading.Tasks.Synchronization;
 
@@ -83,39 +84,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var config1 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
                 {"requestTimeout", "00:01:00"}
             };
+
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"},
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
                 {"requestTimeout", "00:01:00"}
             };
+
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"},
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"},
                 {"requestTimeout", "00:01:00"}
             };
-            using var listener1 = new LeaderChangedEvent();
-            using var listener2 = new LeaderChangedEvent();
-            using var listener3 = new LeaderChangedEvent();
-            using var host1 = CreateHost<Startup>(3262, config1, listener1);
-            using var host2 = CreateHost<Startup>(3263, config2, listener2);
-            using var host3 = CreateHost<Startup>(3264, config3, listener3);
+
+            var listener = new AsyncLeaderChangedEvent();
+            using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
+            True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
+
+            using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            //ensure that leader is elected
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, DefaultTimeout);
+            True(await listener.Result.WaitAsync(DefaultTimeout));
+            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+
+            // add two nodes to the cluster
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
+            await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
+            await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
             var box1 = host1.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(box1);
@@ -126,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var box3 = host3.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(box3);
 
-            await host1.Services.GetRequiredService<IMessageBus>().LeaderRouter.SendSignalAsync(new TextMessage("Message to leader", "simple"));
+            await GetLocalClusterView(host1).LeaderRouter.SendSignalAsync(new TextMessage("Message to leader", "simple"));
 
             //ensure that one of the boxes is not empty
             var success = false;
@@ -161,28 +171,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
                 {"requestTimeout", "00:01:00"}
             };
+
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"standby", "true"},
                 {"requestTimeout", "00:01:00"}
             };
-            using var host1 = CreateHost<Startup>(3262, config1);
-            using var host2 = CreateHost<Startup>(3263, config2);
+
+            var listener = new AsyncLeaderChangedEvent();
+            using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
+
+            using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
 
-            // 3263 member expected here
-            var client = default(ISubscriber);
+            True(await listener.Result.WaitAsync(DefaultTimeout));
+            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
+            await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint ep && ep.Port == 3263);
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(messageBox);
+
             //request-reply test
             var response = await client.SendTextMessageAsync<StreamMessage>(CreateBufferedMessageAsync, "Request", "Ping");
             True(response.IsReusable);
@@ -215,26 +236,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
                 {"requestTimeout", "00:01:00"}
             };
+
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"standby", "true"},
                 {"requestTimeout", "00:01:00"}
             };
-            using var host1 = CreateHost<Startup>(3262, config1);
-            using var host2 = CreateHost<Startup>(3263, config2);
+
+            var listener = new AsyncLeaderChangedEvent();
+            using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
+
+            using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
 
-            // 3263 member expected here
-            var client = default(ISubscriber);
+            True(await listener.Result.WaitAsync(DefaultTimeout));
+            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
+            await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint ep && ep.Port == 3263);
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<TestMessageHandler>()).FirstOrDefault() as TestMessageHandler;
             NotNull(messageBox);
 
@@ -271,7 +302,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             };
             var config2 = new Dictionary<string, string>
             {
-                {"partitioning", "false"},
+                {"partitioning", "false" },
                 {"publicEndPoint", "http://localhost:3263"},
                 {"coldStart", "false"}
             };
@@ -313,65 +344,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [Fact]
-        public static async Task SingleNodeWithoutConsensus()
-        {
-            var config = new Dictionary<string, string>
-            {
-                { "partitioning", "true" },
-                { "metadata:nodeName", "TestNode" },
-                { "hostAddressHint", "127.0.0.1" },
-                { "heartbeatThreshold", "0.3" },
-                { "members:0", "http://localhost:3262" },
-                { "members:1", "http://localhost:3263" }
-            };
-            using var leaderResetEvent = new LeaderChangedEvent();
-            using var host = CreateHost<Startup>(3262, config, leaderResetEvent);
-            await host.StartAsync();
-            leaderResetEvent.WaitOne(TimeSpan.FromSeconds(5));
-            Null(leaderResetEvent.Leader);
-            await host.StopAsync();
-        }
-
-        [Fact]
-        public static async Task SingleNodeWithConsensus()
-        {
-            var config = new Dictionary<string, string>
-            {
-                { "partitioning", "true" },
-                { "metadata:nodeName", "TestNode" },
-                { "members:0", "http://localhost:3262" }
-            };
-            using var leaderResetEvent = new LeaderChangedEvent();
-            using var host = CreateHost<Startup>(3262, config, leaderResetEvent);
-            await host.StartAsync();
-            leaderResetEvent.WaitOne(DefaultTimeout);
-            NotNull(leaderResetEvent.Leader);
-            False(leaderResetEvent.Leader.IsRemote);
-            Equal("TestNode", (await leaderResetEvent.Leader.GetMetadataAsync())["nodeName"]);
-            await host.StopAsync();
-        }
-
-        [Fact]
         public static async Task DependencyInjection()
         {
             var config = new Dictionary<string, string>
             {
-                { "partitioning", "false" },
-                { "metadata:nodeName", "TestNode" },
-                { "members:0", "http://localhost:3262" },
-                { "members:1", "http://localhost:3263" },
-                { "allowedNetworks:0", "127.0.0.0" }
+                {"metadata:nodeName", "TestNode"},
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
             };
+
             using var host = CreateHost<Startup>(3262, config);
             await host.StartAsync();
-            object service = host.Services.GetService<ICluster>();
-            NotNull(service);
 
-            Equal(2, host.Services.GetService<IPeerMesh>().Peers.Count);
-            service = host.Services.GetService<IPeerMesh<IRaftClusterMember>>();
-            NotNull(service);
-            service = host.Services.GetService<IRaftCluster>();
-            NotNull(service);
+            NotNull(host.Services.GetService<ICluster>());
+            NotNull(host.Services.GetService<IRaftHttpCluster>());
+            NotNull(host.Services.GetService<IRaftCluster>());
+            NotNull(host.Services.GetService<IMessageBus>());
+            NotNull(host.Services.GetService<IReplicationCluster>());
+            NotNull(host.Services.GetService<IReplicationCluster<IRaftLogEntry>>());
+            NotNull(host.Services.GetService<IPeerMesh<IRaftClusterMember>>());
+            NotNull(host.Services.GetService<IPeerMesh<IClusterMember>>());
+            NotNull(host.Services.GetService<IPeerMesh<ISubscriber>>());
+            NotNull(host.Services.GetService<IInputChannel>());
             await host.StopAsync();
         }
     }

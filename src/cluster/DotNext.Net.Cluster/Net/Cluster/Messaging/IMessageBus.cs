@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DotNext.Net.Cluster.Messaging
 {
     /// <summary>
@@ -9,6 +11,11 @@ namespace DotNext.Net.Cluster.Messaging
         /// Gets the leader node.
         /// </summary>
         new ISubscriber? Leader { get; }
+
+        /// <summary>
+        /// Gets a set of visible cluster members.
+        /// </summary>
+        IReadOnlyCollection<ISubscriber> Members { get; }
 
         /// <inheritdoc/>
         IClusterMember? ICluster.Leader => Leader;

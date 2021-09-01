@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +22,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets election timeout used by local cluster member.
         /// </summary>
         TimeSpan ElectionTimeout { get; }
+
+        /// <summary>
+        /// Gets a set of visible cluster members.
+        /// </summary>
+        IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
         /// <summary>
         /// Establishes metrics collector.

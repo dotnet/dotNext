@@ -60,6 +60,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Helper method for raising <see cref="MemberStatusChanged"/> event.
         /// </summary>
+        /// <typeparam name="TMember">The type of the cluster mmember.</typeparam>
         /// <param name="member">The current member.</param>
         /// <param name="status">The member status holder.</param>
         /// <param name="newState">A new state of the member.</param>
