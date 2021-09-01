@@ -40,6 +40,7 @@ namespace DotNext.Net
             Equal(3232, ep.Port);
             Equal(AddressFamily.Unspecified, ep.AddressFamily);
             Equal("localhost", ep.Host, ignoreCase: true);
+            Equal("https://localhost:3232/", ep.ToString());
 
             ep = new HttpEndPoint(new Uri("HTTP://192.168.0.1", UriKind.Absolute));
             False(ep.IsSecure);
@@ -47,11 +48,13 @@ namespace DotNext.Net
             Equal(80, ep.Port);
             Equal(AddressFamily.InterNetwork, ep.AddressFamily);
             Equal("192.168.0.1", ep.Host, ignoreCase: true);
+            Equal("http://192.168.0.1:80/", ep.ToString());
 
             True(HttpEndPoint.TryParse("https://localhost/", out ep));
             Equal(443, ep.Port);
             True(ep.IsSecure);
             Equal("localhost", ep.Host, ignoreCase: true);
+            Equal("https://localhost:443/", ep.ToString());
 
             False(HttpEndPoint.TryParse("wrong-string", out ep));
             Null(ep);
