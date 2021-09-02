@@ -85,8 +85,7 @@ namespace DotNext.Net
         /// Creates a new instance of <see cref="UriBuilder"/> with host, port and scheme imported from this object.
         /// </summary>
         /// <returns>A new instance of <see cref="UriBuilder"/>.</returns>
-        public UriBuilder CreateUriBuilder()
-            => new UriBuilder(Scheme) { Host = Host, Port = Port };
+        public UriBuilder CreateUriBuilder() => new(Scheme, Host, Port);
 
         /// <inheritdoc />
         UriBuilder ISupplier<UriBuilder>.Invoke() => CreateUriBuilder();

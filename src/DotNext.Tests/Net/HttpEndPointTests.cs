@@ -59,5 +59,14 @@ namespace DotNext.Net
             False(HttpEndPoint.TryParse("wrong-string", out ep));
             Null(ep);
         }
+
+        [Fact]
+        public static void ToUri()
+        {
+            var ep = new HttpEndPoint("localhost", 3262, true);
+            var uri = ep.CreateUriBuilder().Uri;
+            Equal(Uri.UriSchemeHttps, uri.Scheme, ignoreCase: true);
+            Equal(3262, ep.Port);
+        }
     }
 }
