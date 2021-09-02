@@ -20,7 +20,7 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
         {
-            await foreach (var item in collection.WithCancellation(token))
+            await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
                 action(item);
         }
 
@@ -35,7 +35,7 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
         {
-            await foreach (var item in collection.WithCancellation(token))
+            await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
                 await action(item, token).ConfigureAwait(false);
         }
 
@@ -82,7 +82,7 @@ namespace DotNext.Collections.Generic
         public static async ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
             where T : notnull
         {
-            await foreach (var item in seq.WithCancellation(token))
+            await foreach (var item in seq.WithCancellation(token).ConfigureAwait(false))
             {
                 if (filter(item))
                     return item;
