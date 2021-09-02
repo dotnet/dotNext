@@ -222,7 +222,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public virtual async Task StartAsync(CancellationToken token)
         {
-            await auditTrail.InitializeAsync(token);
+            await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
             var localMember = GetLocalMember();
 
