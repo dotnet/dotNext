@@ -145,6 +145,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             else
             {
                 await ConfigurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
+
+                foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
+                {
+                    var member = CreateMember(id, address);
+                    member.IsRemote = address != localNode;
+                    await AddMemberAsync(member, token).ConfigureAwait(false);
+                }
             }
 
             await base.StartAsync(token).ConfigureAwait(false);
