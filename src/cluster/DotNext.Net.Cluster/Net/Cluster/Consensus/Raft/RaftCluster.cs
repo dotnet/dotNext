@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
 
         /// <inheritdoc />
-        IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
+        IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => members;
 
         /// <summary>
         /// Establishes metrics collector.

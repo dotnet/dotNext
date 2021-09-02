@@ -1,13 +1,16 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using DotNext.Net;
+using DotNext.Net.Cluster;
+using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace RaftNode
 {
@@ -38,7 +41,8 @@ namespace RaftNode
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureCluster<ClusterConfigurator>()
+            services.UseInMemoryConfigurationStorage(AddClusterMembers)
+                .ConfigureCluster<ClusterConfigurator>()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddOptions()
                 .AddRouting();
@@ -50,6 +54,19 @@ namespace RaftNode
                 services.UsePersistenceEngine<IValueProvider, SimplePersistentState>()
                     .AddSingleton<IHostedService, DataModifier>();
             }
+        }
+
+        // NOTE: this way of adding members to the cluster is not recommended in production code
+        private static void AddClusterMembers(IDictionary<ClusterMemberId, HttpEndPoint> members)
+        {
+            var address = new HttpEndPoint("localhost", 3262, true);
+            members.Add(ClusterMemberId.FromEndPoint(address), address);
+
+            address = new("localhost", 3263, true);
+            members.Add(ClusterMemberId.FromEndPoint(address), address);
+
+            address = new("localhost", 3264, true);
+            members.Add(ClusterMemberId.FromEndPoint(address), address);
         }
     }
 }

@@ -16,8 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj"/>
-    <ProjectReference Include="..\..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj"/>
     <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
   </ItemGroup>
 

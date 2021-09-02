@@ -142,14 +142,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => Id == context.LocalMember
-                ? Task.FromResult(new Result<bool>(term, true))
-                : SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token);
+            => IsRemote
+                ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
+                : Task.FromResult(new Result<bool>(term, true));
 
         Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => Id == context.LocalMember
-                ? Task.FromResult(new Result<bool>(term, true))
-                : SendAsync<Result<bool>, PreVoteMessage>(new PreVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token);
+            => IsRemote
+                ? SendAsync<Result<bool>, PreVoteMessage>(new PreVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
+                : Task.FromResult(new Result<bool>(term, true));
 
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMember), token);
@@ -164,24 +164,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             bool applyConfig,
             CancellationToken token)
         {
-            if (Id == context.LocalMember)
-                return Task.FromResult(new Result<bool>(term, true));
-            return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalMember, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token);
+            return IsRemote
+                ? SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalMember, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token)
+                : Task.FromResult(new Result<bool>(term, true));
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        {
-            if (Id == context.LocalMember)
-                return Task.FromResult(new Result<bool>(term, true));
-            return SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMember, term, snapshotIndex, snapshot), token);
-        }
+            => IsRemote
+                ? SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMember, term, snapshotIndex, snapshot), token)
+                : Task.FromResult(new Result<bool>(term, true));
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
         {
-            if (Id == context.LocalMember)
+            if (!IsRemote)
                 return context.Metadata;
+
             if (metadata is null || refresh)
                 metadata = await SendAsync<MemberMetadata, MetadataMessage>(new MetadataMessage(context.LocalMember), token).ConfigureAwait(false);
+
             return metadata;
         }
 
@@ -197,8 +197,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal set;
         }
 
-        ClusterMemberStatus IClusterMember.Status
-            => Id == context.LocalMember ? ClusterMemberStatus.Available : status.Value;
+        ClusterMemberStatus IClusterMember.Status => IsRemote ? status.Value : ClusterMemberStatus.Available;
 
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
             => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalMember, message, responseReader) { RespectLeadership = respectLeadership }, token);

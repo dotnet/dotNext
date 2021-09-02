@@ -19,9 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
 
-        private static bool IsMatchedById(RaftClusterMember actual, ClusterMemberId expected)
-            => actual.Id == expected;
-
         [MethodImpl(MethodImplOptions.Synchronized)]
         void IMessageBus.AddListener(IInputChannel handler)
             => messageHandlers = messageHandlers.Add(handler);

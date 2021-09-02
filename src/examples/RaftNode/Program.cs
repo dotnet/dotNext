@@ -1,5 +1,7 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+﻿using DotNext.Net.Cluster;
+using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Net.Cluster.Consensus.Raft.Http;
+using DotNext.Net.Cluster.Consensus.Raft.Membership;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -27,9 +29,9 @@ namespace RaftNode
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "150" },
                 {"upperElectionTimeout", "300" },
-                {"members:0", "https://localhost:3262"},
-                {"members:1", "https://localhost:3263"},
-                {"members:2", "https://localhost:3264"},
+                {"requestTimeout", "00:10:00"},
+                {"publicEndPoint", $"https://localhost:{port}"},
+                {"coldStart", "false"},
                 {"requestJournal:memoryLimit", "5" },
                 {"requestJournal:expiration", "00:01:00" }
             };
@@ -39,11 +41,11 @@ namespace RaftNode
             {
                 webHost.UseKestrel(options =>
                 {
-                    options.ListenLocalhost(port, listener => listener.UseHttps(LoadCertificate()));
+                    options.ListenLocalhost(port, static listener => listener.UseHttps(LoadCertificate()));
                 })
                 .UseStartup<Startup>();
             })
-            .ConfigureLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Error))
+            .ConfigureLogging(static builder => builder.AddConsole().SetMinimumLevel(LogLevel.Error))
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
             .JoinCluster()
             .Build()
@@ -52,9 +54,7 @@ namespace RaftNode
 
         private static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage)
         {
-            config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3262));
-            config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3263));
-            config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3264));
+            AddMembersToCluster(config.UseInMemoryConfigurationStorage());
             var loggerFactory = new LoggerFactory();
             var loggerOptions = new ConsoleLoggerOptions
             {
@@ -62,7 +62,6 @@ namespace RaftNode
             };
             loggerFactory.AddProvider(new ConsoleLoggerProvider(new FakeOptionsMonitor<ConsoleLoggerOptions>(loggerOptions)));
             config.LoggerFactory = loggerFactory;
-
             using var cluster = new RaftCluster(config);
             cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
             var modifier = default(DataModifier?);
@@ -80,6 +79,23 @@ namespace RaftNode
             Console.CancelKeyPress -= handler.Handler;
             await (modifier?.StopAsync(CancellationToken.None) ?? Task.CompletedTask);
             await cluster.StopAsync(CancellationToken.None);
+
+            // NOTE: this way of adding members to the cluster is not recommended in production code
+            static void AddMembersToCluster(InMemoryClusterConfigurationStorage<IPEndPoint> storage)
+            {
+                var builder = storage.CreateActiveConfigurationBuilder();
+
+                var address = new IPEndPoint(IPAddress.Loopback, 3262);
+                builder.Add(ClusterMemberId.FromEndPoint(address), address);
+
+                address = new(IPAddress.Loopback, 3263);
+                builder.Add(ClusterMemberId.FromEndPoint(address), address);
+
+                address = new(IPAddress.Loopback, 3264);
+                builder.Add(ClusterMemberId.FromEndPoint(address), address);
+
+                builder.Build();
+            }
         }
 
         private static Task UseUdpTransport(int port, string? persistentStorage)
