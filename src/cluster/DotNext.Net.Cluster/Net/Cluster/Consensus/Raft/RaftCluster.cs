@@ -220,8 +220,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public virtual Task StartAsync(CancellationToken token)
+        public virtual async Task StartAsync(CancellationToken token)
         {
+            await auditTrail.InitializeAsync(token);
+
             var localMember = GetLocalMember();
 
             // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
@@ -236,8 +238,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
                 state = new StandbyState(this);
             }
-
-            return auditTrail.InitializeAsync(token);
 
             TMember? GetLocalMember()
             {
