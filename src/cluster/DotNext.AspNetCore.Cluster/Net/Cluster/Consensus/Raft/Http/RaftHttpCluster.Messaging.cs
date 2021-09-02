@@ -209,16 +209,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task PreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = TryGetMember(request.Sender);
-            if (sender is null)
-            {
-                await request.SaveResponse(response, new Result<bool>(Term, false), token).ConfigureAwait(false);
-            }
-            else
-            {
-                await request.SaveResponse(response, await PreVoteAsync(request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
-                sender.Touch();
-            }
+            TryGetMember(request.Sender)?.Touch();
+            await request.SaveResponse(response, await PreVoteAsync(request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
         private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
