@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -92,5 +93,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>A modified collection of services.</returns>
         public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string path)
             => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>>(path.CreatePersistentStorageFromPath);
+
+        private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<IDictionary<ClusterMemberId, HttpEndPoint>> configuration, IServiceProvider services)
+        {
+            var storage = new InMemoryClusterConfigurationStorage();
+            var builder = storage.CreateActiveConfigurationBuilder();
+            configuration(builder);
+            builder.Build();
+            return storage;
+        }
+
+        /// <summary>
+        /// Registers in-memory storage service for maintaining a list of cluster members.
+        /// </summary>
+        /// <remarks>
+        /// In-memory storage is not recommended for production use.
+        /// </remarks>
+        /// <param name="services">A collection of services.</param>
+        /// <param name="configuration">The delegate that allows to configure a list of cluster members at startup.</param>
+        /// <returns>A modified collection of services.</returns>
+        public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<IDictionary<ClusterMemberId, HttpEndPoint>> configuration)
+            => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>>(configuration.CreateInMemoryStorage);
     }
 }

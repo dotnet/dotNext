@@ -10,12 +10,12 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
+    using Membership;
     using Net.Security;
     using Tcp;
     using TransportServices;
     using Udp;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
-    using IClusterConfigurationStorage = Membership.IClusterConfigurationStorage<IPEndPoint>;
 
     public partial class RaftCluster
     {
@@ -81,7 +81,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// If not set then use in-memory storage by default.
             /// </remarks>
-            public IClusterConfigurationStorage? ConfigurationStorage { get; set; }
+            public IClusterConfigurationStorage<IPEndPoint>? ConfigurationStorage { get; set; }
+
+            /// <summary>
+            /// Sets <see cref="ConfigurationStorage"/> to in-memory configuration storage.
+            /// </summary>
+            /// <remarks>
+            /// This storage is not recommended for production use.
+            /// </remarks>
+            /// <returns>The constructed storage.</returns>
+            public InMemoryClusterConfigurationStorage<IPEndPoint> UseInMemoryConfigurationStorage()
+            {
+                var storage = new InMemoryClusterConfigurationStorage(MemoryAllocator);
+                ConfigurationStorage = storage;
+                return storage;
+            }
 
             /// <summary>
             /// Indicates that each part of cluster in partitioned network allow to elect its own leader.
