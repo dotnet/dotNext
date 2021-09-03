@@ -36,7 +36,7 @@ namespace DotNext.Threading
         /// <param name="concurrencyLevel">The number of events that can be processed without blocking at the same time.</param>
         /// <param name="comparer">The comparer to be used for comparison of the keys.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-        public AsyncCorrelationSource(long concurrencyLevel, IEqualityComparer<TKey>? comparer = null)
+        public AsyncCorrelationSource(int concurrencyLevel, IEqualityComparer<TKey>? comparer = null)
         {
             if (concurrencyLevel <= 0L)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
@@ -47,9 +47,8 @@ namespace DotNext.Threading
                 buckets[i] = new();
 
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;
+            this.pool = new(concurrencyLevel);
         }
-
-        private partial Bucket GetBucket(TKey eventId);
 
         /// <summary>
         /// Informs that the event is occurred.
@@ -104,9 +103,6 @@ namespace DotNext.Threading
             static void SetCanceled(WaitNode slot, CancellationToken token) => slot.TrySetCanceled(token);
         }
 
-        // TODO: Workaround for Roslyn analyzers
-        private partial ValueTask<TValue> WaitCoreAsync(TKey eventId, TimeSpan timeout, CancellationToken token);
-
         /// <summary>
         /// Returns the task linked with the specified event identifier.
         /// </summary>
@@ -117,7 +113,26 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The operation has timed out.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<TValue> WaitAsync(TKey eventId, TimeSpan timeout, CancellationToken token = default)
-            => WaitCoreAsync(eventId, timeout, token);
+        {
+            if (timeout != InfiniteTimeSpan && timeout < TimeSpan.Zero)
+                return ValueTask.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)));
+            if (token.IsCancellationRequested)
+                return ValueTask.FromCanceled<TValue>(token);
+
+            var bucket = GetBucket(eventId);
+            var node = pool.Get();
+
+            // initialize node
+            node.Owner = bucket;
+            node.Id = eventId;
+            node.Reset();
+
+            // we need to add the node to the list before the task construction
+            // to ensure that completed node will not be added to the list due to cancellation
+            bucket.Add(node);
+
+            return node.CreateTask(timeout, token);
+        }
 
         /// <summary>
         /// Returns the task linked with the specified event identifier.
@@ -127,6 +142,6 @@ namespace DotNext.Threading
         /// <returns>The task representing the event arrival.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<TValue> WaitAsync(TKey eventId, CancellationToken token = default)
-            => WaitCoreAsync(eventId, InfiniteTimeSpan, token);
+            => WaitAsync(eventId, InfiniteTimeSpan, token);
     }
 }

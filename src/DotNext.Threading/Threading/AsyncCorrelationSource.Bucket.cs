@@ -1,41 +1,57 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Debug = System.Diagnostics.Debug;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
+    using DotNext;
+    using Tasks;
+
     public partial class AsyncCorrelationSource<TKey, TValue>
     {
-        private sealed partial class WaitNode
+        private sealed class WaitNode : LinkedValueTaskCompletionSource<TValue, WaitNode>
         {
-            private WaitNode? previous, next;
+            private volatile Bucket? owner;
+            internal TKey? Id;
 
-            internal WaitNode? Next => next;
-
-            internal WaitNode? Previous => previous;
-
-            internal bool IsNotRoot => next is not null || previous is not null;
-
-            internal void Append(WaitNode node)
+            internal WaitNode(Action<WaitNode> backToPool)
+                : base(backToPool)
             {
-                next = node;
-                node.previous = this;
             }
 
-            internal void Detach()
+            internal Bucket Owner
             {
-                if (previous is not null)
-                    previous.next = next;
-                if (next is not null)
-                    next.previous = previous;
-                next = previous = null;
+                set => owner = value;
             }
 
-            internal partial WaitNode? CleanupAndGotoNext();
+            protected override void BeforeCompleted(Result<TValue> result)
+                => Interlocked.Exchange(ref owner, null)?.Remove(this);
+
+            private protected override WaitNode CurrentNode => this;
+
+            internal override WaitNode? CleanupAndGotoNext()
+            {
+                owner = null;
+                return base.CleanupAndGotoNext();
+            }
         }
 
-        private sealed partial class Bucket
+        private sealed class WaitNodePool : ValueTaskPool<TValue, WaitNode>
+        {
+            internal WaitNodePool(int concurrencyLevel)
+                : base(concurrencyLevel)
+            {
+            }
+
+            protected override WaitNode Create(Action<WaitNode> backToPool)
+                => new(backToPool);
+        }
+
+        private sealed class Bucket
         {
             private WaitNode? first, last;
 
@@ -107,6 +123,16 @@ namespace DotNext.Threading
 
                 first = last = null;
             }
+        }
+
+        private readonly WaitNodePool pool;
+
+        private Bucket GetBucket(TKey eventId)
+        {
+            var bucketIndex = unchecked((uint)comparer.GetHashCode(eventId)) % buckets.LongLength;
+            Debug.Assert(bucketIndex >= 0 && bucketIndex < buckets.LongLength);
+
+            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), (nint)bucketIndex);
         }
     }
 }
