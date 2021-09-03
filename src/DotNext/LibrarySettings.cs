@@ -7,9 +7,6 @@ namespace DotNext
         private const string StackallocThresholdEnvar = "DOTNEXT_STACK_ALLOC_THRESHOLD";
         private const int DefaultStackallocThreshold = 511;
 
-        // TODO: Remove this switch in next major version and remove appropriate test for it
-        private const string UndefinedEqualsNullSwitch = "DotNext.Optional.UndefinedEqualsNull";
-
         internal static int StackallocThreshold
         {
             get
@@ -22,9 +19,5 @@ namespace DotNext
                 return result;
             }
         }
-
-        // TODO: Remove this switch in next major version
-        internal static bool IsUndefinedEqualsNull
-            => AppContext.TryGetSwitch(UndefinedEqualsNullSwitch, out var enabled) ? enabled : false;
     }
 }

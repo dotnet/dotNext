@@ -528,9 +528,6 @@ namespace DotNext
             _ => value!.ToString()
         };
 
-        private int LegacyGetHashCode()
-            => HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
-
         /// <summary>
         /// Computes hash code of the stored value.
         /// </summary>
@@ -539,18 +536,12 @@ namespace DotNext
         /// This method uses <see cref="EqualityComparer{T}"/> type
         /// to get hash code of <see cref="Value"/>.
         /// </remarks>
-        public override int GetHashCode()
+        public override int GetHashCode() => kind switch
         {
-            if (LibrarySettings.IsUndefinedEqualsNull)
-                return LegacyGetHashCode();
-
-            return kind switch
-            {
-                UndefinedValue => 0,
-                NullValue => NullValue,
-                _ => EqualityComparer<T?>.Default.GetHashCode(value!),
-            };
-        }
+            UndefinedValue => 0,
+            NullValue => NullValue,
+            _ => EqualityComparer<T?>.Default.GetHashCode(value!),
+        };
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -560,18 +551,8 @@ namespace DotNext
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T? other) => !IsUndefined && EqualityComparer<T?>.Default.Equals(value, other);
 
-        private bool LegacyEquals(in Optional<T> other) => (kind + other.kind) switch
-        {
-            NotEmptyValue or NotEmptyValue + NullValue => false,
-            NotEmptyValue + NotEmptyValue => EqualityComparer<T?>.Default.Equals(value, other.value),
-            _ => true,
-        };
-
         private bool Equals(in Optional<T> other)
         {
-            if (LibrarySettings.IsUndefinedEqualsNull)
-                return LegacyEquals(in other);
-
             if (kind != other.kind)
                 return false;
 
@@ -614,27 +595,18 @@ namespace DotNext
         public bool Equals(object? other, IEqualityComparer comparer)
             => !IsUndefined && comparer.Equals(value, other);
 
-        private int LegacyGetHashCode(IEqualityComparer comparer)
-            => HasValue ? comparer.GetHashCode(value!) : 0;
-
         /// <summary>
         /// Computes hash code for the stored value
         /// using method <see cref="IEqualityComparer.GetHashCode(object)"/>.
         /// </summary>
         /// <param name="comparer">The comparer implementing hash code function.</param>
         /// <returns>The hash code of <see cref="Value"/>.</returns>
-        public int GetHashCode(IEqualityComparer comparer)
+        public int GetHashCode(IEqualityComparer comparer) => kind switch
         {
-            if (LibrarySettings.IsUndefinedEqualsNull)
-                return LegacyGetHashCode(comparer);
-
-            return kind switch
-            {
-                UndefinedValue => 0,
-                NullValue => NullValue,
-                _ => comparer.GetHashCode(value!),
-            };
-        }
+            UndefinedValue => 0,
+            NullValue => NullValue,
+            _ => comparer.GetHashCode(value!),
+        };
 
         /// <summary>
         /// Wraps value into Optional container.

@@ -30,15 +30,6 @@ namespace DotNext.Text.Json
                 => new(reader.TokenType == JsonTokenType.Null ? default : JsonSerializer.Deserialize<T>(ref reader, options));
         }
 
-        /// <summary>
-        /// Initializes a new converter for <see cref="Optional{T}"/> type.
-        /// </summary>
-        public OptionalConverterFactory()
-        {
-            if (LibrarySettings.IsUndefinedEqualsNull)
-                throw new NotSupportedException(ExceptionMessages.UndefinedEqualsNullSwitchEnabled);
-        }
-
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert) => typeToConvert.IsOptional();
 
