@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Net.Http;
     using Membership;
     using Messaging;
     using Threading;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Timestamp = Diagnostics.Timestamp;
 
-    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber
+    internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, ISubscriber
     {
         private const string UserAgent = "Raft.NET";
 
@@ -29,13 +30,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal IClientMetricsCollector? Metrics;
 
         internal RaftClusterMember(IHostingContext context, HttpEndPoint remoteMember, Uri resourcePath, ClusterMemberId id)
-            : base(context.CreateHttpHandler(), true)
+            : base(remoteMember.CreateUriBuilder().Uri, context.CreateHttpHandler(), true)
         {
             this.resourcePath = resourcePath;
             this.context = context;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
             EndPoint = remoteMember;
-            BaseAddress = remoteMember.CreateUriBuilder().Uri;
             Id = id;
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
         }
