@@ -68,30 +68,17 @@ namespace DotNext.Threading
                 }
             }
 
-            private bool RemoveCore(WaitNode node)
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            internal void Remove(WaitNode node)
             {
-                Debug.Assert(Monitor.IsEntered(this));
-
-                var inList = false;
                 if (ReferenceEquals(first, node))
-                {
                     first = node.Next;
-                    inList = true;
-                }
 
                 if (ReferenceEquals(last, node))
-                {
                     last = node.Previous;
-                    inList = true;
-                }
 
-                inList |= node.IsNotRoot;
                 node.Detach();
-                return inList;
             }
-
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            internal bool Remove(WaitNode node) => RemoveCore(node);
 
             [MethodImpl(MethodImplOptions.Synchronized)]
             internal bool Remove(TKey expected, TValue value, IEqualityComparer<TKey> comparer)
