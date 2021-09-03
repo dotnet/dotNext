@@ -12,7 +12,7 @@ namespace DotNext.Threading.Tasks
         protected ValueTaskPool(int concurrencyLevel)
         {
             pool = new(this, (concurrencyLevel / 2) + concurrencyLevel);
-            this.backToPool = pool.Return;
+            backToPool = pool.Return;
         }
 
         internal TNode Get() => pool.Get();

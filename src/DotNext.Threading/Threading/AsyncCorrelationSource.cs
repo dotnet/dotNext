@@ -47,7 +47,7 @@ namespace DotNext.Threading
                 buckets[i] = new();
 
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;
-            this.pool = new(concurrencyLevel);
+            pool = new(concurrencyLevel);
         }
 
         /// <summary>

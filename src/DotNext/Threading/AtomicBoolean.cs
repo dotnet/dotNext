@@ -21,6 +21,7 @@ namespace DotNext.Threading
         {
             bool ISupplier<bool, bool>.Invoke(bool value) => !value;
         }
+
         private int value;
 
         /// <summary>

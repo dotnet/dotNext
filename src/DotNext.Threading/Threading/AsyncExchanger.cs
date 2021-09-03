@@ -51,10 +51,10 @@ namespace DotNext.Threading
         {
         }
 
+        private readonly TaskCompletionSource disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly ExchangePointPool pool = new();
         private ExchangePoint? point;
         private bool disposeRequested;
-        private readonly TaskCompletionSource disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private volatile ExchangeTerminatedException? termination;
 
         private ExchangePoint RentExchangePoint(T value)

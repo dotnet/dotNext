@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Net.Http;
     using Membership;
     using Messaging;
+    using Net.Http;
     using Threading;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Timestamp = Diagnostics.Timestamp;
