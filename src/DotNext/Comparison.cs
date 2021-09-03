@@ -40,20 +40,6 @@ namespace DotNext
         /// <param name="right">Range right bound.</param>
         /// <param name="boundType">Range endpoints bound type.</param>
         /// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
-        [Obsolete("Use IsBetween method instead", true)]
-        public static bool Between<T>(T value, T left, T right, BoundType boundType = BoundType.Open)
-            where T : notnull, IComparable<T>
-            => IsBetween(value, left, right, boundType);
-
-        /// <summary>
-        /// Checks whether specified value is in range.
-        /// </summary>
-        /// <typeparam name="T">Type of value to check.</typeparam>
-        /// <param name="value">Value to check.</param>
-        /// <param name="left">Range left bound.</param>
-        /// <param name="right">Range right bound.</param>
-        /// <param name="boundType">Range endpoints bound type.</param>
-        /// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
         public static bool IsBetween<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
             where T : notnull, IComparable<T>
             => (Math.Sign(value.CompareTo(left)) + Math.Sign(value.CompareTo(right))) switch

@@ -123,15 +123,6 @@ namespace DotNext.Threading
         public static Lock Monitor(object obj) => new(obj ?? throw new ArgumentNullException(nameof(obj)), Type.Monitor, false);
 
         /// <summary>
-        /// Creates monitor-based lock control object but doesn't acquire the lock.
-        /// </summary>
-        /// <param name="obj">Monitor lock target.</param>
-        /// <param name="useSpinWait"><see langword="true"/> to use spin wait when acquiring lock to avoid unnecessary thread parking; otherwise, <see langword="false"/>.</param>
-        /// <returns>The lock representing monitor.</returns>
-        [Obsolete("Spin wait is built-in behavior of the monitor so no need for additional spin. Use Monitor(object) method instead.", true)]
-        public static Lock Monitor(object obj, bool useSpinWait) => Monitor(obj);
-
-        /// <summary>
         /// Creates exclusive lock.
         /// </summary>
         /// <remarks>

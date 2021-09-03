@@ -161,10 +161,10 @@ namespace DotNext.IO
         private readonly BackingFileProvider fileProvider;
         private readonly int memoryThreshold;
         private readonly MemoryAllocator<byte>? allocator;
+        private readonly EventCounter? allocationCounter;
         private MemoryOwner<byte> buffer;
         private int position;
         private FileStream? fileBackend;
-        private EventCounter? allocationCounter;
 
         // If null or .Target is null then there is no active readers.
         // Weak reference allows to track leaked readers when Dispose() was not called on them
@@ -211,15 +211,6 @@ namespace DotNext.IO
             this.memoryThreshold = memoryThreshold;
             fileProvider = new BackingFileProvider(in options);
             allocationCounter = options.AllocationCounter;
-        }
-
-        /// <summary>
-        /// Sets the counter used to report allocation of the internal buffer.
-        /// </summary>
-        [Obsolete("Use Options.AllocationCounter property instead")]
-        public EventCounter? AllocationCounter
-        {
-            set => allocationCounter = value;
         }
 
         private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)

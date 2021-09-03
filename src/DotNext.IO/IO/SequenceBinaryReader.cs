@@ -106,14 +106,6 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="output">The block of memory to fill.</param>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-        [Obsolete("Use Read(Span<byte>) method instead")]
-        public void Read(Memory<byte> output) => Read(output.Span);
-
-        /// <summary>
-        /// Copies the bytes from the sequence into contiguous block of memory.
-        /// </summary>
-        /// <param name="output">The block of memory to fill.</param>
-        /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public void Read(Span<byte> output)
         {
             RemainingSequence.CopyTo(output, out var writtenCount);

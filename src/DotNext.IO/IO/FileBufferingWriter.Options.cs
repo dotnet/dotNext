@@ -56,23 +56,23 @@ namespace DotNext.IO
         /// Represents construction options of the writer.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public struct Options // TODO: Must be readonly struct in .NET 6
+        public readonly struct Options
         {
             internal const int DefaultMemoryThreshold = 32768;
             internal const int DefaultFileBufferSize = 4096;
-            private int memoryThreshold, initialCapacity;
-            private string? path;
-            private bool keepFileAlive;
-            private int? fileBufferSize;
-            private bool synchronousIO;
+            private readonly int memoryThreshold, initialCapacity;
+            private readonly string? path;
+            private readonly bool keepFileAlive;
+            private readonly int? fileBufferSize;
+            private readonly bool synchronousIO;
 
             /// <summary>
             /// The maximum amount of memory in bytes to allocate before switching to a file on disk.
             /// </summary>
             public int MemoryThreshold
             {
-                readonly get => memoryThreshold == 0 ? DefaultMemoryThreshold : memoryThreshold;
-                set => memoryThreshold = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+                get => memoryThreshold == 0 ? DefaultMemoryThreshold : memoryThreshold;
+                init => memoryThreshold = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -80,8 +80,8 @@ namespace DotNext.IO
             /// </summary>
             public int InitialCapacity
             {
-                readonly get => initialCapacity;
-                set => initialCapacity = value >= 0 && value < MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
+                get => initialCapacity;
+                init => initialCapacity = value >= 0 && value < MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -89,8 +89,8 @@ namespace DotNext.IO
             /// </summary>
             public MemoryAllocator<byte>? MemoryAllocator
             {
-                readonly get;
-                set;
+                get;
+                init;
             }
 
             /// <summary>
@@ -101,8 +101,8 @@ namespace DotNext.IO
             /// </remarks>
             public int FileBufferSize
             {
-                readonly get => fileBufferSize.GetValueOrDefault(DefaultFileBufferSize);
-                set => fileBufferSize = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+                get => fileBufferSize.GetValueOrDefault(DefaultFileBufferSize);
+                init => fileBufferSize = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -113,8 +113,8 @@ namespace DotNext.IO
             /// </remarks>
             public bool WriteThrough
             {
-                readonly get;
-                set;
+                get;
+                init;
             }
 
             /// <summary>
@@ -127,8 +127,8 @@ namespace DotNext.IO
             /// </remarks>
             public bool AsyncIO
             {
-                readonly get => !synchronousIO;
-                set => synchronousIO = !value;
+                get => !synchronousIO;
+                init => synchronousIO = !value;
             }
 
             /// <summary>
@@ -141,7 +141,7 @@ namespace DotNext.IO
             /// </remarks>
             public string FileName
             {
-                set
+                init
                 {
                     if (string.IsNullOrEmpty(value))
                         throw new ArgumentNullException(nameof(value));
@@ -160,7 +160,7 @@ namespace DotNext.IO
             /// </remarks>
             public string? TempDir
             {
-                set
+                init
                 {
                     path = value;
                     keepFileAlive = false;
@@ -171,12 +171,12 @@ namespace DotNext.IO
             /// Gets a value indicating that the backing store for the writer
             /// should be represented by temporary file which will be deleted automatically.
             /// </summary>
-            public readonly bool UseTemporaryFile => !keepFileAlive;
+            public bool UseTemporaryFile => !keepFileAlive;
 
             private static string DefaultTempPath
                 => Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(System.IO.Path.GetTempPath());
 
-            internal readonly string Path
+            internal string Path
             {
                 get
                 {
@@ -201,8 +201,8 @@ namespace DotNext.IO
             /// </summary>
             public EventCounter? AllocationCounter
             {
-                readonly get;
-                set;
+                get;
+                init;
             }
         }
     }

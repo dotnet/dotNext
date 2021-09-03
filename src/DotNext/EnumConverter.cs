@@ -249,26 +249,5 @@ namespace DotNext
         public static sbyte ToSByte<T>(this T value)
             where T : struct, Enum
             => EnumConverter<T, sbyte>.Convert(value);
-
-        /// <summary>
-        /// Checks whether the specified value is equal to one
-        /// of the specified values.
-        /// </summary>
-        /// <typeparam name="T">The type of object to compare.</typeparam>
-        /// <param name="value">The value to compare with other.</param>
-        /// <param name="values">Candidate objects.</param>
-        /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-        [Obsolete("Use pattern-matching expression in C#")]
-        public static bool IsOneOf<T>(this T value, params T[] values)
-            where T : struct, Enum
-        {
-            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
-            {
-                if (EqualityComparer<T>.Default.Equals(value, values[i]))
-                    return true;
-            }
-
-            return false;
-        }
     }
 }

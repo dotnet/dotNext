@@ -200,11 +200,8 @@ namespace DotNext.Reflection
         public sealed override void SetValueDirect(TypedReference obj, object value)
             => field.SetValueDirect(obj, value);
 
-        /// <summary>
-        /// Determines whether this field is read-only and cannot be modified.
-        /// </summary>
-        [Obsolete("Use IsInitOnly property")]
-        public bool IsReadOnly => field.IsInitOnly;
+        /// <inheritdoc />
+        bool IField.IsReadOnly => field.IsInitOnly;
 
         /// <inheritdoc/>
         FieldInfo IMember<FieldInfo>.Metadata => field;

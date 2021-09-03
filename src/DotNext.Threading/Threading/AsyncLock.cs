@@ -232,23 +232,6 @@ namespace DotNext.Threading
             }
         }
 
-        /// <summary>
-        /// Tries to acquire the lock asynchronously.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="suppressCancellation"><see langword="true"/> to return empty lock holder instead of throwing <see cref="OperationCanceledException"/>.</param>
-        /// <param name="token">The token that can be used to abort acquisition operation.</param>
-        /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled and <paramref name="suppressCancellation"/> is <see langword="false"/>.</exception>
-        [Obsolete("Use SuppressCancellation() extension method")]
-        public readonly async Task<Holder> TryAcquireAsync(TimeSpan timeout, bool suppressCancellation, CancellationToken token)
-        {
-            var task = TryAcquireCoreAsync(timeout, token);
-            if (suppressCancellation && token.CanBeCanceled)
-                task = task.OnCanceled<bool, BooleanConst.False>();
-            return await task.ConfigureAwait(false) ? CreateHolder() : default;
-        }
-
         private readonly Task<bool> TryAcquireCoreAsync(TimeSpan timeout, CancellationToken token) => type switch
         {
             Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
