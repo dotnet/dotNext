@@ -23,8 +23,9 @@ namespace DotNext.Threading.Tasks
 
         internal void Append(TNode node)
         {
-            next = node;
+            node.next = next;
             node.previous = CurrentNode;
+            next = node;
         }
 
         internal void Prepend(TNode node)
