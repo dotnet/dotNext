@@ -10,7 +10,7 @@ namespace DotNext.Threading
     /// </summary>
     public static partial class AsyncBridge
     {
-        private static volatile int instantiatedTasks = 0;
+        private static volatile int instantiatedTasks;
         private static int maxPoolSize = Environment.ProcessorCount * 2;
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace DotNext.Threading
             // do not keep long references when treshold reached
             if (instantiatedTasks > maxPoolSize)
                 result = new(static t => { });
-            else if (!tokenPool.TryTake(out result))
-                result = new(tokenPool.Add);
+            else if (!TokenPool.TryTake(out result))
+                result = new(TokenPool.Add);
 
             result.CompleteAsCanceled = completeAsCanceled;
             result.Reset();
@@ -60,8 +60,8 @@ namespace DotNext.Threading
             // do not keep long references when treshold reached
             if (instantiatedTasks > maxPoolSize)
                 result = new(static t => { });
-            else if (!handlePool.TryTake(out result))
-                result = new(handlePool.Add);
+            else if (!HandlePool.TryTake(out result))
+                result = new(HandlePool.Add);
 
             var token = result.Reset();
             result.Handle = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, true);

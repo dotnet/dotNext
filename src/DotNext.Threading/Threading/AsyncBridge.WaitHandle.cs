@@ -45,6 +45,6 @@ namespace DotNext.Threading
         {
         }
 
-        private static readonly WaitHandleValueTaskPool handlePool = new();
+        private static readonly WaitHandleValueTaskPool HandlePool = new();
     }
 }

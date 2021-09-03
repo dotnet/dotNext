@@ -201,7 +201,7 @@ namespace DotNext.Threading
 
             if (disposing)
             {
-                Interlocked.Exchange(ref this.point, null)?.TrySetException(new ObjectDisposedException(GetType().Name));
+                Interlocked.Exchange(ref point, null)?.TrySetException(new ObjectDisposedException(GetType().Name));
                 termination = null;
                 pool.Clear();
                 disposeTask.TrySetResult();

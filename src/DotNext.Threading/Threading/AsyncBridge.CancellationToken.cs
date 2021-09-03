@@ -34,6 +34,6 @@ namespace DotNext.Threading
         {
         }
 
-        private static readonly CancellationTokenValueTaskPool tokenPool = new();
+        private static readonly CancellationTokenValueTaskPool TokenPool = new();
     }
 }
