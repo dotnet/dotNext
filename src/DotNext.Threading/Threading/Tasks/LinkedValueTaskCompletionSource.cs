@@ -27,6 +27,13 @@ namespace DotNext.Threading.Tasks
             node.previous = CurrentNode;
         }
 
+        internal void Prepend(TNode node)
+        {
+            node.next = CurrentNode;
+            node.previous = previous;
+            previous = node;
+        }
+
         internal void Detach()
         {
             if (previous is not null)
