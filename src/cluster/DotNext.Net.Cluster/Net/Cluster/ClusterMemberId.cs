@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster
@@ -13,31 +12,18 @@ namespace DotNext.Net.Cluster
     /// Represents unique identifier of cluster member.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    [Serializable]
-    public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, ISerializable
+    public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>
     {
         /// <summary>
         /// Gets size of this type, in bytes.
         /// </summary>
         public static int Size => 16 + (sizeof(int) * 3);
 
-        private const string AddressSerData = "A";
-        private const string PortSerData = "P";
-        private const string LengthSerData = "L";
-        private const string FamilySerData = "F";
         private static readonly Func<SocketAddress, int, long> SocketAddressByteGetter64 = GetAddressByteAsInt64;
         private static readonly Func<SocketAddress, int, int> SocketAddressByteGetter32 = GetAddressByteAsInt32;
 
         private readonly Guid address;
         private readonly int port, length, family;
-
-        private ClusterMemberId(SerializationInfo info, StreamingContext context)
-        {
-            address = (Guid)info.GetValue(AddressSerData, typeof(Guid))!;
-            port = info.GetInt32(PortSerData);
-            length = info.GetInt32(LengthSerData);
-            family = info.GetInt32(FamilySerData);
-        }
 
         private ClusterMemberId(IPEndPoint endPoint)
         {
@@ -269,14 +255,5 @@ namespace DotNext.Net.Cluster
         /// <returns><see langword="true"/> if both identifiers are not equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
             => !x.Equals(in y);
-
-        /// <inheritdoc/>
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(AddressSerData, address);
-            info.AddValue(PortSerData, port);
-            info.AddValue(LengthSerData, length);
-            info.AddValue(FamilySerData, family);
-        }
     }
 }

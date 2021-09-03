@@ -1,11 +1,8 @@
-using System;
-
 namespace DotNext.Reflection
 {
     /// <summary>
     /// Represents operator resolution strategy.
     /// </summary>
-    [Serializable]
     public enum OperatorLookup : byte
     {
         /// <summary>

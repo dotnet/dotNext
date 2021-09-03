@@ -349,13 +349,6 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void Serialization()
-        {
-            True(SerializeDeserialize(new AtomicBoolean(true)).Value);
-            Equal(EnvironmentVariableTarget.Machine, SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
-        }
-
-        [Fact]
         public static void AtomicEnumTest()
         {
             var value = new AtomicEnum<EnvironmentVariableTarget>();

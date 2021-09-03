@@ -27,13 +27,6 @@ namespace DotNext.Net.Cluster
         }
 
         [Fact]
-        public static void SerializationDeserialization()
-        {
-            var id = new Random().Next<ClusterMemberId>();
-            Equal(id, SerializeDeserialize(id));
-        }
-
-        [Fact]
         public static unsafe void RestoreFromBytes()
         {
             var id1 = new Random().Next<ClusterMemberId>();

@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace DotNext.Net.Http
+﻿namespace DotNext.Net.Http
 {
     /// <summary>
     /// Represents supported HTTP version by the cluster.
     /// </summary>
-    [Serializable]
     public enum HttpProtocolVersion
     {
         /// <summary>

@@ -1,11 +1,8 @@
-﻿using System;
-
-namespace DotNext.IO
+﻿namespace DotNext.IO
 {
     /// <summary>
     /// Describes how the length of the octet string should be encoded in binary form.
     /// </summary>
-    [Serializable]
     public enum LengthFormat : byte
     {
         /// <summary>

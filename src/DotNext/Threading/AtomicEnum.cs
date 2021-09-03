@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.IL;
 using static InlineIL.MethodRef;
@@ -96,13 +95,10 @@ namespace DotNext.Threading
     /// Represents atomic enum value.
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
-    [Serializable]
     [SuppressMessage("Usage", "CA2231")]
-    public struct AtomicEnum<TEnum> : IEquatable<TEnum>, ISerializable
+    public struct AtomicEnum<TEnum> : IEquatable<TEnum>
         where TEnum : struct, Enum
     {
-        private const string ValueSerData = "value";
-
         private long value;
 
         /// <summary>
@@ -110,11 +106,6 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicEnum(TEnum value) => this.value = value.ToInt64();
-
-        private AtomicEnum(SerializationInfo info, StreamingContext context)
-        {
-            value = (long)info.GetValue(ValueSerData, typeof(long))!;
-        }
 
         /// <summary>
         /// Gets or sets enum value in volatile manner.
@@ -316,9 +307,5 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>The value in this container converted to string.</returns>
         public override readonly string ToString() => Value.ToString();
-
-        /// <inheritdoc/>
-        readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-            => info.AddValue(ValueSerData, value);
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.FieldRef;
 using static InlineIL.IL;
@@ -14,17 +13,14 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents atomic boolean.
     /// </summary>
-    [Serializable]
     [SuppressMessage("Usage", "CA2231")]
-    public struct AtomicBoolean : IEquatable<bool>, ISerializable
+    public struct AtomicBoolean : IEquatable<bool>
     {
         [StructLayout(LayoutKind.Auto)]
         private readonly struct Negation : ISupplier<bool, bool>
         {
             bool ISupplier<bool, bool>.Invoke(bool value) => !value;
         }
-
-        private const string ValueSerData = "value";
         private int value;
 
         /// <summary>
@@ -32,11 +28,6 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicBoolean(bool value) => this.value = value.ToInt32();
-
-        private AtomicBoolean(SerializationInfo info, StreamingContext context)
-        {
-            value = (int)info.GetValue(ValueSerData, typeof(int))!;
-        }
 
         /// <summary>
         /// Gets or sets boolean value in volatile manner.
@@ -288,9 +279,5 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>Textual representation of stored boolean value.</returns>
         public override readonly string ToString() => value.ToBoolean() ? bool.TrueString : bool.FalseString;
-
-        /// <inheritdoc/>
-        readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-            => info.AddValue(ValueSerData, value);
     }
 }

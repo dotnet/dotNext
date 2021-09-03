@@ -48,15 +48,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void Serialization()
-        {
-            Result<decimal> r = 10M;
-            Equal(10M, SerializeDeserialize(r).Value);
-            r = new Result<decimal>(new ArithmeticException());
-            IsType<ArithmeticException>(SerializeDeserialize(r).Error);
-        }
-
-        [Fact]
         public static void Operators()
         {
             var result = new Result<int>(10);

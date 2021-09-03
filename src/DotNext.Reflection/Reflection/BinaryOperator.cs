@@ -9,7 +9,6 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents binary operator.
     /// </summary>
-    [Serializable]
     public enum BinaryOperator
     {
         /// <summary>

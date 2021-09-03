@@ -122,25 +122,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void Serialization()
-        {
-            Optional<string> opt = default;
-            opt = SerializeDeserialize(opt);
-            False(opt.HasValue);
-            True(opt.IsUndefined);
-            False(opt.IsNull);
-
-            opt = new Optional<string>(null);
-            opt = SerializeDeserialize(opt);
-            False(opt.HasValue);
-            False(opt.IsUndefined);
-            True(opt.IsNull);
-
-            opt = "Hello";
-            Equal("Hello", SerializeDeserialize(opt).Value);
-        }
-
-        [Fact]
         public static void OrDefault()
         {
             var opt = new Optional<int>(10);

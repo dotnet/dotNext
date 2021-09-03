@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace DotNext
@@ -220,13 +219,9 @@ namespace DotNext
     /// A container object which may or may not contain a value.
     /// </summary>
     /// <typeparam name="T">Type of value.</typeparam>
-    [Serializable]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, ISerializable
+    public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
     {
-        private const string KindSerData = "Kind";
-        private const string ValueSerData = "Value";
-
         private const byte UndefinedValue = 0;
         private const byte NullValue = 1;
         private const byte NotEmptyValue = 3;
@@ -267,12 +262,6 @@ namespace DotNext
 
                 return NotEmptyValue;
             }
-        }
-
-        private Optional(SerializationInfo info, StreamingContext context)
-        {
-            value = (T?)info.GetValue(ValueSerData, typeof(T));
-            kind = info.GetByte(KindSerData);
         }
 
         // this method is dangerous and should be used with care
@@ -717,12 +706,5 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
         /// <see cref="HasValue"/>
         public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
-
-        /// <inheritdoc/>
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(ValueSerData, value, typeof(T));
-            info.AddValue(KindSerData, kind);
-        }
     }
 }

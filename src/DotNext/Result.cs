@@ -2,7 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace DotNext
 {
@@ -65,13 +64,9 @@ namespace DotNext
     /// Represents a result of operation which can be actual result or exception.
     /// </summary>
     /// <typeparam name="T">The type of the value stored in the Result monad.</typeparam>
-    [Serializable]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Result<T> : ISerializable
+    public readonly struct Result<T>
     {
-        private const string ExceptionSerData = "Exception";
-        private const string ValueSerData = "Value";
-
         private readonly T value;
         private readonly ExceptionDispatchInfo? exception;
 
@@ -99,14 +94,6 @@ namespace DotNext
         {
             value = default!;
             exception = dispatchInfo;
-        }
-
-        private Result(SerializationInfo info, StreamingContext context)
-        {
-            value = (T)info.GetValue(ValueSerData, typeof(T))!;
-            exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
-                ExceptionDispatchInfo.Capture(e) :
-                null;
         }
 
         /// <summary>
@@ -323,14 +310,6 @@ namespace DotNext
         /// <param name="result">The result to check.</param>
         /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
         public static bool operator false(in Result<T> result) => result.exception is not null;
-
-        /// <inheritdoc/>
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            var exception = this.exception?.SourceException;
-            info.AddValue(ExceptionSerData, exception, exception?.GetType() ?? typeof(Exception));
-            info.AddValue(ValueSerData, value, typeof(T));
-        }
 
         /// <summary>
         /// Returns textual representation of this object.

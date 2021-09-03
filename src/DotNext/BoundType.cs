@@ -9,7 +9,6 @@ namespace DotNext
     /// If a range is unbounded on a side, it is neither open nor closed on that side; the bound simply does not exist.
     /// </remarks>
     [Flags]
-    [Serializable]
     public enum BoundType : byte
     {
         /// <summary>
