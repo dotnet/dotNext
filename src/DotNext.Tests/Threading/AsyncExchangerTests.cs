@@ -88,5 +88,25 @@ namespace DotNext.Threading
                 exchanger.TryExchange(ref tmp);
             });
         }
+
+        [Fact]
+        public static async Task StressTest()
+        {
+            await using var exchanger = new AsyncExchanger<int>();
+
+            var task1 = Task.Run(async () =>
+            {
+                for (var i = 0; i < 200; i++)
+                    Equal(52, await exchanger.ExchangeAsync(42));
+            });
+
+            var task2 = Task.Run(async () =>
+            {
+                for (var i = 0; i < 200; i++)
+                    Equal(42, await exchanger.ExchangeAsync(52));
+            });
+
+            await Task.WhenAll(task1, task2);
+        }
     }
 }
