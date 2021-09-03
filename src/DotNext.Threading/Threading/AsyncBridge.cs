@@ -5,13 +5,14 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
-    using Runtime.CompilerServices;
-
     /// <summary>
     /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
     /// </summary>
-    public static class AsyncBridge
+    public static partial class AsyncBridge
     {
+        private static volatile int instantiatedTasks = 0;
+        private static int maxPoolSize = Environment.ProcessorCount * 2;
+
         /// <summary>
         /// Obtains a task that can be used to await token cancellation.
         /// </summary>
@@ -27,7 +28,17 @@ namespace DotNext.Threading
             if (token.IsCancellationRequested)
                 return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
 
-            return new CancellationTokenFuture(completeAsCanceled, token).AsTask();
+            CancellationTokenValueTask? result;
+
+            // do not keep long references when treshold reached
+            if (instantiatedTasks > maxPoolSize)
+                result = new(static t => { });
+            else if (!tokenPool.TryTake(out result))
+                result = new(tokenPool.Add);
+
+            result.CompleteAsCanceled = completeAsCanceled;
+            result.Reset();
+            return result.CreateTask(InfiniteTimeSpan, token);
         }
 
         /// <summary>
@@ -44,7 +55,17 @@ namespace DotNext.Threading
             if (timeout == TimeSpan.Zero)
                 return new(false);
 
-            return new WaitHandleFuture(handle, timeout).AsTask();
+            WaitHandleValueTask? result;
+
+            // do not keep long references when treshold reached
+            if (instantiatedTasks > maxPoolSize)
+                result = new(static t => { });
+            else if (!handlePool.TryTake(out result))
+                result = new(handlePool.Add);
+
+            var token = result.Reset();
+            result.Handle = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, true);
+            return result.CreateTask(InfiniteTimeSpan, CancellationToken.None);
         }
 
         /// <summary>
@@ -53,5 +74,15 @@ namespace DotNext.Threading
         /// <param name="handle">The handle to await.</param>
         /// <returns>The task that will be completed .</returns>
         public static ValueTask<bool> WaitAsync(this WaitHandle handle) => WaitAsync(handle, InfiniteTimeSpan);
+
+        /// <summary>
+        /// Gets or sets the capacity of the internal pool used to create awaitable tasks returned
+        /// from the public methods in this class.
+        /// </summary>
+        public static int MaxPoolSize
+        {
+            get => maxPoolSize;
+            set => maxPoolSize = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
     }
 }
