@@ -4,7 +4,6 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-    using DotNext;
     using Tasks;
 
     public static partial class AsyncBridge

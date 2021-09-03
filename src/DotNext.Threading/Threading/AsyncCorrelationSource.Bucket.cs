@@ -8,7 +8,6 @@ using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
-    using DotNext;
     using Tasks;
 
     public partial class AsyncCorrelationSource<TKey, TValue>
