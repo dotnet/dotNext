@@ -48,7 +48,7 @@ namespace DotNext.Threading
         {
             await using var exchanger = new AsyncExchanger<int>();
             var task = exchanger.ExchangeAsync(42, new CancellationToken(true));
-            await ThrowsAsync<TaskCanceledException>(task.AsTask);
+            await ThrowsAsync<OperationCanceledException>(task.AsTask);
             task = exchanger.ExchangeAsync(42);
             False(task.IsCompleted);
             Equal(42, await exchanger.ExchangeAsync(56));

@@ -69,7 +69,7 @@ namespace DotNext.Threading.Tasks
             finally
             {
                 this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
-                completed = true;
+                IsCompleted = true;
                 InvokeContinuation();
             }
         }
@@ -122,7 +122,7 @@ namespace DotNext.Threading.Tasks
             where TFactory : notnull, ISupplier<Exception?>
         {
             bool result;
-            if (completed)
+            if (IsCompleted)
             {
                 result = false;
             }
@@ -130,7 +130,7 @@ namespace DotNext.Threading.Tasks
             {
                 lock (SyncRoot)
                 {
-                    if (completed)
+                    if (IsCompleted)
                     {
                         result = false;
                     }
@@ -149,7 +149,7 @@ namespace DotNext.Threading.Tasks
             where TFactory : notnull, ISupplier<Exception?>
         {
             bool result;
-            if (completed)
+            if (IsCompleted)
             {
                 result = false;
             }
@@ -157,7 +157,7 @@ namespace DotNext.Threading.Tasks
             {
                 lock (SyncRoot)
                 {
-                    if (completed || completionToken != version)
+                    if (IsCompleted || completionToken != version)
                     {
                         result = false;
                     }
@@ -224,7 +224,7 @@ namespace DotNext.Threading.Tasks
         /// <inheritdoc />
         void IValueTaskSource.GetResult(short token)
         {
-            if (!completed || token != version)
+            if (!IsCompleted || token != version)
                 throw new InvalidOperationException();
 
             // ensure that instance field access before returning to the pool to avoid
@@ -241,7 +241,7 @@ namespace DotNext.Threading.Tasks
         /// <inheritdoc />
         ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
         {
-            if (!completed)
+            if (!IsCompleted)
                 return ValueTaskSourceStatus.Pending;
 
             if (result is null)

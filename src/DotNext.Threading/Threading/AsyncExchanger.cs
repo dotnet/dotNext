@@ -1,5 +1,5 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,19 +19,26 @@ namespace DotNext.Threading
     /// <typeparam name="T">The type of objects that may be exchanged.</typeparam>
     public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
-        private sealed class ExchangePoint : CancelableCompletionSource<T>
+        private sealed class ExchangePoint : ValueTaskCompletionSource<T>
         {
-            private readonly T producerResult;
+            private readonly Action<ExchangePoint> backToPool;
+            private T? producerResult;
 
-            internal ExchangePoint(T result, TimeSpan timeout, CancellationToken token)
-                : base(TaskCreationOptions.RunContinuationsAsynchronously, timeout, token)
-                => producerResult = result;
+            internal ExchangePoint(Action<ExchangePoint> backToPool)
+                => this.backToPool = backToPool;
+
+            internal T Value
+            {
+                set => producerResult = value;
+            }
+
+            protected override void AfterConsumed() => backToPool(this);
 
             internal bool TryExchange(ref T value)
             {
                 if (TrySetResult(value))
                 {
-                    value = producerResult;
+                    value = producerResult!;
                     return true;
                 }
 
@@ -39,10 +46,25 @@ namespace DotNext.Threading
             }
         }
 
-        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
-        private volatile ExchangePoint? point;
+        // chance of multiple exchange points is very small so use concurrent bag
+        private sealed class ExchangePointPool : ConcurrentBag<ExchangePoint>
+        {
+        }
+
+        private readonly ExchangePointPool pool = new();
+        private ExchangePoint? point;
         private bool disposeRequested;
+        private readonly TaskCompletionSource disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private volatile ExchangeTerminatedException? termination;
+
+        private ExchangePoint RentExchangePoint(T value)
+        {
+            if (!pool.TryTake(out var result))
+                result = new(pool.Add);
+
+            result.Value = value;
+            return result;
+        }
 
         /// <summary>
         /// Waits for another flow to arrive at this exchange point,
@@ -74,20 +96,16 @@ namespace DotNext.Threading
             {
                 result = ValueTask.FromException<T>(termination);
             }
-            else if (point is null)
+            else if (point?.TryExchange(ref value) ?? false)
             {
-                result = new(point = new ExchangePoint(value, timeout, token));
-            }
-            else if (point.TryExchange(ref value))
-            {
-                point.Dispose();
                 point = null;
                 result = new(value);
             }
             else
             {
-                point.Dispose();
-                result = new(point = new ExchangePoint(value, timeout, token));
+                point = RentExchangePoint(value);
+                point.Reset();
+                result = point.CreateTask(timeout, token);
             }
 
             return result;
@@ -138,7 +156,6 @@ namespace DotNext.Threading
             else
             {
                 result = point.TryExchange(ref value);
-                point.Dispose();
                 point = null;
             }
 
@@ -161,10 +178,7 @@ namespace DotNext.Threading
             ExchangeTerminatedException tmp;
             termination = tmp = new ExchangeTerminatedException(exception);
             if (point?.TrySetException(tmp) ?? false)
-            {
-                point.Dispose();
                 point = null;
-            }
         }
 
         /// <summary>
@@ -184,39 +198,37 @@ namespace DotNext.Threading
         protected override void Dispose(bool disposing)
         {
             disposeRequested = true;
+
             if (disposing)
             {
-                var point = Interlocked.Exchange(ref this.point, null);
-                if (point is not null && TrySetDisposedException(point))
-                    point.Dispose();
+                Interlocked.Exchange(ref this.point, null)?.TrySetException(new ObjectDisposedException(GetType().Name));
                 termination = null;
+                pool.Clear();
+                disposeTask.TrySetResult();
             }
 
             base.Dispose(disposing);
         }
 
+        /// <inheritdoc />
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private Task DisposeAsyncImpl()
+        protected override ValueTask DisposeAsyncCore()
         {
             disposeRequested = true;
 
-            if (point is null || point.Task.IsCompleted)
+            if (point?.IsCompleted ?? true)
             {
                 Dispose();
-                return Task.CompletedTask;
+                return ValueTask.CompletedTask;
             }
 
-            return point.Task.ContinueWith(SuppressFaultOrCancellation, point, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
-
-            static void SuppressFaultOrCancellation(Task<T> task, object? state)
-                => (state as IDisposable)?.Dispose();
+            return new(disposeTask.Task);
         }
 
         /// <summary>
         /// Provides graceful shutdown of this instance.
         /// </summary>
         /// <returns>The task representing state of asynchronous graceful shutdown.</returns>
-        public ValueTask DisposeAsync()
-            => new(IsDisposed ? Task.CompletedTask : DisposeAsyncImpl());
+        public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }

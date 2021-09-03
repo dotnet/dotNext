@@ -25,7 +25,7 @@ namespace DotNext.Threading.Tasks
         private object? continuationState, capturedContext;
         private ExecutionContext? context;
         private protected short version;
-        private protected volatile bool completed;
+        private volatile bool completed;
 
         private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
         {
@@ -258,6 +258,15 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public abstract bool TrySetCanceled(CancellationToken token);
+
+        /// <summary>
+        /// Gets a value indicating that the source is in signaled state.
+        /// </summary>
+        public bool IsCompleted
+        {
+            get => completed;
+            private protected set => completed = value;
+        }
     }
 
     /// <summary>
@@ -313,7 +322,7 @@ namespace DotNext.Threading.Tasks
 
             T result;
 
-            if (completed)
+            if (IsCompleted)
             {
                 result = Task;
             }
@@ -321,7 +330,7 @@ namespace DotNext.Threading.Tasks
             {
                 lock (SyncRoot)
                 {
-                    result = completed ? Task : CreateTaskCore(timeout, token);
+                    result = IsCompleted ? Task : CreateTaskCore(timeout, token);
                 }
             }
 
