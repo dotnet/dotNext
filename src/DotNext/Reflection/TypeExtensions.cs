@@ -81,9 +81,7 @@ namespace DotNext.Reflection
         /// <param name="type">The type that contains overridden method.</param>
         /// <param name="abstractMethod">The abstract method definition.</param>
         /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
-#if !NETSTANDARD2_1
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
-#endif
         public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
         {
             if (abstractMethod.IsFinal || !abstractMethod.IsVirtual || abstractMethod.DeclaringType is null)

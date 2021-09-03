@@ -22,38 +22,7 @@ namespace DotNext.IO
         public override Encoding Encoding { get; }
 
         public override void Write(ReadOnlySpan<char> chars)
-        {
-#if NETSTANDARD2_1
-            const int maxInputElements = 1024;
-            int byteCount;
-            Span<byte> output;
-
-            if (chars.Length <= maxInputElements)
-            {
-                // fast path - the input is small enough
-                byteCount = Encoding.GetByteCount(chars);
-                output = writer.GetSpan(byteCount);
-                writer.Advance(Encoding.GetBytes(chars, output));
-            }
-            else
-            {
-                // slow path - decode by chunks
-                for (var encoder = Encoding.GetEncoder(); !chars.IsEmpty; writer.Advance(byteCount))
-                {
-                    byteCount = chars.Length <= maxInputElements ?
-                        encoder.GetByteCount(chars, true) :
-                        encoder.GetByteCount(chars.Slice(0, maxInputElements), false);
-
-                    output = writer.GetSpan(byteCount);
-                    encoder.Convert(chars, output, true, out var charsProduced, out byteCount, out _);
-
-                    chars = chars.Slice(charsProduced);
-                }
-            }
-#else
-            Encoding.GetBytes(chars, writer);
-#endif
-        }
+            => Encoding.GetBytes(chars, writer);
 
         public override void Write(decimal value)
         {

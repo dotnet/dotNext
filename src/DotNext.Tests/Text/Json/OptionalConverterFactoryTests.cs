@@ -1,4 +1,3 @@
-#if !NETCOREAPP3_1
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -74,4 +73,3 @@ namespace DotNext.Text.Json
         }
     }
 }
-#endif

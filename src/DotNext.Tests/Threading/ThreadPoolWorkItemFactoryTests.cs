@@ -1,4 +1,3 @@
-#if !NETCOREAPP3_1
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
@@ -57,4 +56,3 @@ namespace DotNext.Threading
         }
     }
 }
-#endif

@@ -521,11 +521,7 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
-#if NETSTANDARD2_1
-            => new (Task.FromException<int>(new NotSupportedException()));
-#else
             => ValueTask.FromException<int>(new NotSupportedException());
-#endif
 
         /// <inheritdoc/>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)

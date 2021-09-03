@@ -36,11 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public EventCounter? BroadcastTimeCounter
         {
             private get;
-#if NETSTANDARD2_1
-            set;
-#else
             init;
-#endif
         }
 
         /// <inheritdoc />
@@ -62,11 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IncrementingEventCounter? CandidateStateCounter
         {
             private get;
-#if NETSTANDARD2_1
-            set;
-#else
             init;
-#endif
         }
 
         /// <summary>
@@ -81,11 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IncrementingEventCounter? FollowerStateCounter
         {
             private get;
-#if NETSTANDARD2_1
-            set;
-#else
             init;
-#endif
         }
 
         /// <summary>
@@ -100,11 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IncrementingEventCounter? LeaderStateCounter
         {
             private get;
-#if NETSTANDARD2_1
-            set;
-#else
             init;
-#endif
         }
 
         /// <summary>
@@ -120,11 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IncrementingEventCounter? HeartbeatCounter
         {
             private get;
-#if NETSTANDARD2_1
-            set;
-#else
             init;
-#endif
         }
 
         /// <inheritdoc />

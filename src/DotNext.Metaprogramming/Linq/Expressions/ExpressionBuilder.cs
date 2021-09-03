@@ -1148,9 +1148,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="type">The expression representing the type to be instantiated.</param>
         /// <param name="args">The list of arguments to be passed into constructor.</param>
         /// <returns>Instantiation expression.</returns>
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Activator))]
-#endif
         public static MethodCallExpression New(this Expression type, params Expression[] args)
         {
             var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });

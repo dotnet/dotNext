@@ -1,4 +1,3 @@
-#if !NETCOREAPP3_1
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -156,4 +155,3 @@ namespace DotNext.Runtime.InteropServices
         }
     }
 }
-#endif

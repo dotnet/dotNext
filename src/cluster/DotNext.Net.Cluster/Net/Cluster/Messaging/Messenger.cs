@@ -68,7 +68,6 @@ namespace DotNext.Net.Cluster.Messaging
         public static Task<string> ReadAsTextAsync(this IMessage message, CancellationToken token = default)
             => message is TextMessage text ? Task.FromResult(text.Content) : DataTransferObject.ToStringAsync(message, message.Type.GetEncoding(), null, token).AsTask();
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Sends synchronous message with JSON payload.
         /// </summary>
@@ -95,6 +94,5 @@ namespace DotNext.Net.Cluster.Messaging
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public static Task SendJsonSignalAsync<TSignal>(this ISubscriber messenger, string messageName, TSignal signal, bool requiresConfirmation = true, CancellationToken token = default)
             => messenger.SendSignalAsync(new JsonMessage<TSignal>(messageName, signal), requiresConfirmation, token);
-#endif
     }
 }

@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -109,9 +108,7 @@ namespace DotNext.Threading
             return update;
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private static (uint OldValue, uint NewValue) Update<TUpdater>(ref uint value, TUpdater updater)
             where TUpdater : struct, ISupplier<uint, uint>
         {
@@ -124,9 +121,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private static (uint OldValue, uint NewValue) Accumulate<TAccumulator>(ref uint value, uint x, TAccumulator accumulator)
             where TAccumulator : struct, ISupplier<uint, uint, uint>
         {
@@ -449,4 +444,3 @@ namespace DotNext.Threading
             => GetAndUpdate(ref array[index], updater);
     }
 }
-#endif

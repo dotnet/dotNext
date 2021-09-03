@@ -1103,7 +1103,6 @@ namespace DotNext.Threading
         [CLSCompliant(false)]
         public static unsafe IntPtr GetAndUpdateValue(this Pointer<IntPtr> pointer, delegate*<IntPtr, IntPtr> updater) => AtomicIntPtr.GetAndUpdate(ref pointer.Value, updater);
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Increments a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
         /// </summary>
@@ -1431,6 +1430,5 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe uint GetAndUpdateValue(this Pointer<uint> pointer, delegate*<uint, uint> updater) => AtomicUInt32.GetAndUpdate(ref pointer.Value, updater);
-#endif
     }
 }

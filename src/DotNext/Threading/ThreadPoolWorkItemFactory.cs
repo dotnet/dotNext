@@ -3,7 +3,6 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-#if !NETSTANDARD2_1
     /// <summary>
     /// Represents factory of thread pool work items.
     /// </summary>
@@ -94,5 +93,4 @@ namespace DotNext.Threading
             return new ThreadPoolWorkItem<T1, T2, T3>(workItem, arg1, arg2, arg3);
         }
     }
-#endif
 }

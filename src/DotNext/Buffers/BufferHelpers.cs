@@ -183,7 +183,6 @@ namespace DotNext.Buffers
         public static Memory<T> TrimLength<T>(this Memory<T> memory, int maxLength)
             => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Writes the contents of string builder to the buffer.
         /// </summary>
@@ -195,6 +194,5 @@ namespace DotNext.Buffers
             foreach (var chunk in input.GetChunks())
                 writer.Write(chunk.Span);
         }
-#endif
     }
 }

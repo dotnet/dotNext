@@ -200,12 +200,10 @@ namespace DotNext.Buffers
             writer.WriteInt64(long.MinValue, false);
             writer.WriteUInt64(42, true);
             writer.WriteUInt64(ulong.MaxValue, false);
-#if !NETCOREAPP3_1
             writer.WriteSingle(float.MaxValue, true);
             writer.WriteSingle(float.MinValue, false);
             writer.WriteDouble(double.MaxValue, true);
             writer.WriteDouble(double.MinValue, false);
-#endif
 
             var reader = new SpanReader<byte>(buffer);
             Equal(short.MinValue, reader.ReadInt16(true));
@@ -220,12 +218,10 @@ namespace DotNext.Buffers
             Equal(long.MinValue, reader.ReadInt64(false));
             Equal(42UL, reader.ReadUInt64(true));
             Equal(ulong.MaxValue, reader.ReadUInt64(false));
-#if !NETCOREAPP3_1
             Equal(float.MaxValue, reader.ReadSingle(true));
             Equal(float.MinValue, reader.ReadSingle(false));
             Equal(double.MaxValue, reader.ReadDouble(true));
             Equal(double.MinValue, reader.ReadDouble(false));
-#endif
         }
 
         [Fact]

@@ -56,7 +56,6 @@ namespace DotNext
         protected bool TrySetDisposedException<T>(TaskCompletionSource<T> source)
             => source.TrySetException(new ObjectDisposedException(ObjectName));
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
         /// </summary>
@@ -64,7 +63,6 @@ namespace DotNext
         /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
         protected bool TrySetDisposedException(TaskCompletionSource source)
             => source.TrySetException(new ObjectDisposedException(ObjectName));
-#endif
 
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.

@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -260,4 +259,3 @@ namespace DotNext.Runtime.InteropServices
             => !first.Equals(second);
     }
 }
-#endif

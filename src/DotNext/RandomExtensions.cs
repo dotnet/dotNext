@@ -18,9 +18,7 @@ namespace DotNext
         /// </summary>
         internal static readonly int BitwiseHashSalt;
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         static unsafe RandomExtensions()
         {
             Unsafe.SkipInit(out int i);
@@ -35,9 +33,7 @@ namespace DotNext
                 element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
         }
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         private static void NextString(RandomNumberGenerator rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
             var offset = buffer.Length * sizeof(int);
@@ -53,9 +49,7 @@ namespace DotNext
             }
         }
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         private static unsafe string NextString<TGenerator>(TGenerator generator, delegate*<TGenerator, Span<char>, ReadOnlySpan<char>, void> impl, ReadOnlySpan<char> allowedChars, int length)
             where TGenerator : class
         {
@@ -161,9 +155,7 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         public static unsafe T Next<T>(this Random random)
             where T : unmanaged
         {
@@ -178,9 +170,7 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         public static unsafe T Next<T>(this RandomNumberGenerator random)
             where T : unmanaged
         {

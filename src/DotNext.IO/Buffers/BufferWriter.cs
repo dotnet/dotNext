@@ -216,9 +216,7 @@ namespace DotNext.Buffers
             return true;
         }
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         private static unsafe void Write<T>(IBufferWriter<byte> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
             where T : struct, IFormattable
         {

@@ -81,11 +81,9 @@ namespace DotNext.Collections.Generic
         {
             switch (list)
             {
-#if !NETSTANDARD2_1
                 case List<T> typedList:
                     span = CollectionsMarshal.AsSpan(typedList).Slice(startIndex, Count);
                     break;
-#endif
                 case T[] array:
                     span = new Span<T>(array, startIndex, Count);
                     break;

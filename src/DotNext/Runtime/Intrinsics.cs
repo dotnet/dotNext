@@ -277,9 +277,7 @@ namespace DotNext.Runtime
         public static unsafe int Compare([In] void* first, [In] void* second, long length)
             => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         internal static unsafe bool EqualsAligned(ref byte first, ref byte second, long length)
         {
             var result = false;
@@ -495,9 +493,7 @@ namespace DotNext.Runtime
             return ref address.Advance<T>();
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private static unsafe bool IsZero([In] ref byte address, long length)
         {
             var result = false;
@@ -550,9 +546,7 @@ namespace DotNext.Runtime
 
         #region Bitwise Hash Code
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         internal static unsafe long GetHashCode64<THashFunction>([In] ref byte source, long length, long hash, THashFunction hashFunction, bool salted)
             where THashFunction : struct, ISupplier<long, long, long>
         {
@@ -693,9 +687,7 @@ namespace DotNext.Runtime
         public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32<DelegatingSupplier<int, int, int>>(source, length, hash, hashFunction, salted);
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         internal static unsafe int GetHashCode32<THashFunction>([In] ref byte source, long length, int hash, THashFunction hashFunction, bool salted)
             where THashFunction : struct, ISupplier<int, int, int>
         {
@@ -840,79 +832,6 @@ namespace DotNext.Runtime
             Ldlen();
             Conv_I();
             return Return<nint>();
-        }
-
-        /// <summary>
-        /// Gets an element of the array by its index.
-        /// </summary>
-        /// <param name="array">The one-dimensional array.</param>
-        /// <param name="index">The index of the array element.</param>
-        /// <typeparam name="T">The type of the elements in the array.</typeparam>
-        /// <returns>The array element.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if !NETSTANDARD2_1
-        [Obsolete("Use C# to access array element using nint data type")]
-#endif
-        public static T GetElement<T>(T[] array, nint index) => array[index];
-
-        /// <summary>
-        /// Gets the address of the array element.
-        /// </summary>
-        /// <param name="array">The one-dimensional array.</param>
-        /// <param name="index">The index of the array element.</param>
-        /// <typeparam name="T">The type of the elements in the array.</typeparam>
-        /// <returns>The reference to the array element.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if !NETSTANDARD2_1
-        [Obsolete("Use C# to access array element using nint data type")]
-#endif
-        public static ref T GetElementReference<T>(T[] array, nint index) => ref array[index];
-
-        /// <summary>
-        /// Gets an element of the array by its index.
-        /// </summary>
-        /// <param name="array">The one-dimensional array.</param>
-        /// <param name="index">The index of the array element.</param>
-        /// <typeparam name="T">The type of the elements in the array.</typeparam>
-        /// <returns>The array element.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [CLSCompliant(false)]
-#if !NETSTANDARD2_1
-        [Obsolete("Use C# to access array element using nint data type")]
-#endif
-        public static T GetElement<T>(T[] array, nuint index) => GetElement(array, checked((nint)index));
-
-        /// <summary>
-        /// Gets the address of the array element.
-        /// </summary>
-        /// <param name="array">The one-dimensional array.</param>
-        /// <param name="index">The index of the array element.</param>
-        /// <typeparam name="T">The type of the elements in the array.</typeparam>
-        /// <returns>The reference to the array element.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [CLSCompliant(false)]
-#if !NETSTANDARD2_1
-        [Obsolete("Use C# to access array element using nint data type")]
-#endif
-        public static ref T GetElementReference<T>(T[] array, nuint index) => ref GetElementReference<T>(array, checked((nint)index));
-
-        /// <summary>
-        /// Converts two bits to 32-bit signed integer.
-        /// </summary>
-        /// <remarks>
-        /// The result is always in range [0..3].
-        /// </remarks>
-        /// <param name="low">Low bit value.</param>
-        /// <param name="high">High bit value.</param>
-        /// <returns>32-bit signed integer assembled from two bits.</returns>
-        public static int ToInt32(bool low, bool high)
-        {
-            Push(low);
-            Push(high);
-            Ldc_I4_1();
-            Emit.Shl();
-            Emit.Or();
-            return Return<int>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

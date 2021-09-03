@@ -64,18 +64,14 @@ namespace DotNext.Net.Cluster.Messaging
             else
             {
                 // fast path - serialize synchronously
-                result = new();
+                result = ValueTask.CompletedTask;
                 try
                 {
                     bufferWriter.WriteString(Content.AsSpan(), Type.GetEncoding());
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException(e));
-#else
                     result = ValueTask.FromException(e);
-#endif
                 }
             }
 

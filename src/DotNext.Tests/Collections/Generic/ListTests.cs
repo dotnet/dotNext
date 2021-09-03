@@ -164,7 +164,6 @@ namespace DotNext.Collections.Generic
             False(segment.TryGetSpan(out _));
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static void ListSlice()
         {
@@ -174,6 +173,5 @@ namespace DotNext.Collections.Generic
             Equal(10, span[0]);
             Equal(20, span[1]);
         }
-#endif
     }
 }

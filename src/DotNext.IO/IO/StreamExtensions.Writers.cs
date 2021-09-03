@@ -179,9 +179,7 @@ namespace DotNext.IO
         /// <param name="value">The value to encode.</param>
         /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         public static void WriteBigInteger(this Stream stream, in BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null)
         {
             var bytesCount = value.GetByteCount();
@@ -207,9 +205,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat = null)
         {
             var bytesCount = encoding.GetByteCount(value);

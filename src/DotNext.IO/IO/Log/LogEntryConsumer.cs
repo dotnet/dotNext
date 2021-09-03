@@ -71,11 +71,7 @@ namespace DotNext.IO.Log
                 Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> func => func(new LogEntryList<ILogEntry, TEntryImpl, TList>(entries), snapshotIndex, token),
                 Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> func => func(new LogEntryList<TEntry, TEntryImpl, TList>(entries), snapshotIndex, token),
                 ILogEntryConsumer<TEntry, TResult> c => c.ReadAsync<TEntryImpl, TList>(entries, snapshotIndex, token),
-#if NETSTANDARD2_1
-                _ => new ValueTask<TResult>(token.IsCancellationRequested ? Task.FromCanceled<TResult>(token) : Task.FromException<TResult>(new NotSupportedException(ExceptionMessages.NoConsumerProvided)))
-#else
                 _ => token.IsCancellationRequested ? ValueTask.FromCanceled<TResult>(token) : ValueTask.FromException<TResult>(new NotSupportedException(ExceptionMessages.NoConsumerProvided))
-#endif
             };
     }
 }

@@ -3,12 +3,12 @@ using System.IO.MemoryMappedFiles;
 
 namespace DotNext.IO.MemoryMappedFiles
 {
-    using Intrinsics = Runtime.Intrinsics;
+    using static Numerics.BitVector;
 
     internal static class MemoryMappedViewAccessorExtensions
     {
         internal static FileAccess GetFileAccess(this MemoryMappedViewAccessor accessor)
-            => Intrinsics.ToInt32(accessor.CanRead, accessor.CanWrite) switch
+            => ToByte(stackalloc bool[] { accessor.CanRead, accessor.CanWrite }) switch
             {
                 1 => FileAccess.Read,
                 2 => FileAccess.Write,

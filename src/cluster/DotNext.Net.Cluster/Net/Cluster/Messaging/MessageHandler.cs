@@ -40,13 +40,11 @@ namespace DotNext.Net.Cluster.Messaging
         /// Initializes a new typed message handler and discover all methods suitable for handling messages.
         /// </summary>
         [RuntimeFeatures(RuntimeGenericInstantiation = true)]
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RpcHandler<,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SignalHandler<>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,,>))]
-#endif
         protected MessageHandler()
         {
             const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;

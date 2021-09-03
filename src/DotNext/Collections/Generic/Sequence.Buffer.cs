@@ -28,9 +28,7 @@ namespace DotNext.Collections.Generic
             // TODO: use Enumerable.TryGetNonEnumeratedCount in .NET 6
             return enumerable switch
             {
-#if !NETSTANDARD2_1
                 List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
-#endif
                 T[] array => Span.Copy<T>(array, allocator),
                 string str => ReinterpretCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
                 ArraySegment<T> segment => Span.Copy<T>(segment.AsSpan(), allocator),

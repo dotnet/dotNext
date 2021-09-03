@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -330,4 +329,3 @@ namespace DotNext.Threading.Tasks
         }
     }
 }
-#endif

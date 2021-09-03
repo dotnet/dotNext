@@ -122,11 +122,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException(e));
-#else
                     result = ValueTask.FromException(e);
-#endif
                 }
             }
             else
@@ -160,11 +156,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException<string>(e));
-#else
                     result = ValueTask.FromException<string>(e);
-#endif
                 }
             }
             else
@@ -214,11 +206,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException<byte[]>(e));
-#else
                     result = ValueTask.FromException<byte[]>(e);
-#endif
                 }
             }
             else
@@ -268,11 +256,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException<MemoryOwner<byte>>(e));
-#else
                     result = ValueTask.FromException<MemoryOwner<byte>>(e);
-#endif
                 }
             }
             else
@@ -323,11 +307,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new(Task.FromException<TResult>(e));
-#else
                     result = ValueTask.FromException<TResult>(e);
-#endif
                 }
             }
             else

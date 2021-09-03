@@ -16,9 +16,7 @@ namespace DotNext
     {
         private static readonly delegate*<TInput, TOutput> Converter;
 
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Convert))]
-#endif
         static EnumConverter()
         {
             var conversionMethod = System.Type.GetTypeCode(typeof(TOutput)) switch

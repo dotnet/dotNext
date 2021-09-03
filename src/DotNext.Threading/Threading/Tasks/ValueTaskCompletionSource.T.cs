@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -259,4 +258,3 @@ namespace DotNext.Threading.Tasks
             => OnCompleted(continuation, state, token, flags);
     }
 }
-#endif

@@ -24,9 +24,7 @@ namespace DotNext.Runtime.Serialization
         /// <remarks>
         /// The formatter must have public parameterless constructor.
         /// </remarks>
-#if !NETSTANDARD2_1
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
-#endif
         public Type? Formatter { get; set; }
 
         /// <summary>

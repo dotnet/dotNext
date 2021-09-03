@@ -40,14 +40,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 {
                     var error = SocketError;
                     backToPool?.Invoke(this);
-                    return error == SocketError.Success ?
-#if NETSTANDARD2_1
-                        new () :
-                        new (System.Threading.Tasks.Task.FromException(new SocketException((int)error)));
-#else
-                        ValueTask.CompletedTask :
-                        ValueTask.FromException(new SocketException((int)error));
-#endif
+                    return error == SocketError.Success
+                        ? ValueTask.CompletedTask
+                        : ValueTask.FromException(new SocketException((int)error));
                 }
             }
 

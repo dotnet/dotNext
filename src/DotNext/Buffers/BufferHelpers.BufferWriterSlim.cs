@@ -78,7 +78,6 @@ namespace DotNext.Buffers
         public static unsafe void WriteUInt64(this ref BufferWriterSlim<byte> builder, ulong value, bool isLittleEndian)
             => Write<ulong>(ref builder, isLittleEndian ? &WriteUInt64LittleEndian : &WriteUInt64BigEndian, value);
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Encodes single-precision floating-point number as bytes.
         /// </summary>
@@ -107,6 +106,5 @@ namespace DotNext.Buffers
             foreach (var chunk in input.GetChunks())
                 writer.Write(chunk.Span);
         }
-#endif
     }
 }

@@ -21,18 +21,10 @@ namespace DotNext.IO
         }
 
         private static ValueTask<T> EndOfStream<T>()
-#if NETSTANDARD2_1
-            => new (Task.FromException<T>(new EndOfStreamException()));
-#else
             => ValueTask.FromException<T>(new EndOfStreamException());
-#endif
 
         private static ValueTask EndOfStream()
-#if NETSTANDARD2_1
-            => new (Task.FromException(new EndOfStreamException()));
-#else
             => ValueTask.FromException(new EndOfStreamException());
-#endif
 
         private static Task GetCompletedOrCanceledTask(CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;

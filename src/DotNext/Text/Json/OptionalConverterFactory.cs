@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -55,4 +54,3 @@ namespace DotNext.Text.Json
         }
     }
 }
-#endif

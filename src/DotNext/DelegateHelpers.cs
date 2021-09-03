@@ -78,21 +78,6 @@ namespace DotNext
             where T : class, TBase
             => handler.ChangeType<EventHandler<T>>();
 
-#if NETSTANDARD2_1
-        /// <summary>
-        /// Creates a delegate of the specified type with the specified target from this method.
-        /// </summary>
-        /// <typeparam name="TDelegate">The type of the delegate to create.</typeparam>
-        /// <param name="method">The method to be wrapped into delegate.</param>
-        /// <param name="target">The object targeted by the delegate.</param>
-        /// <returns>The delegate for the specified method.</returns>
-        /// <seealso cref="MethodInfo.CreateDelegate(Type, object)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object? target = null)
-            where TDelegate : Delegate
-            => (TDelegate)method.CreateDelegate(typeof(TDelegate), target);
-#endif
-
         /// <summary>
         /// Returns a new delegate of different type which
         /// points to the same method as original delegate.

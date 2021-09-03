@@ -131,9 +131,7 @@ namespace DotNext.Threading
             return update;
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private (bool OldValue, bool NewValue) Update<TUpdater>(TUpdater updater)
             where TUpdater : struct, ISupplier<bool, bool>
         {
@@ -146,9 +144,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private (bool OldValue, bool NewValue) Accumulate<TAccumulator>(bool x, TAccumulator accumulator)
             where TAccumulator : struct, ISupplier<bool, bool, bool>
         {
@@ -253,9 +249,7 @@ namespace DotNext.Threading
         public unsafe bool GetAndUpdate(delegate*<bool, bool> updater)
             => Update<Supplier<bool, bool>>(updater).OldValue;
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         internal void Acquire()
         {
             for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce());

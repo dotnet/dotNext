@@ -89,11 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 // fast path attempt to obtain session ID in o(1)
                 var sessionId = (Environment.CurrentManagedThreadId & int.MaxValue) % tokens.Length;
-#if NETSTANDARD2_1
-                ref var first = ref tokens[0];
-#else
                 ref var first = ref MemoryMarshal.GetArrayDataReference(tokens);
-#endif
                 if (Unsafe.Add(ref first, sessionId).TrueToFalse())
                     goto exit;
 

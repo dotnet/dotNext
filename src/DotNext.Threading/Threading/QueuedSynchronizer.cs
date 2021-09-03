@@ -92,7 +92,7 @@ namespace DotNext.Threading
             }
         }
 
-        private Action<double>? contentionCounter, lockDurationCounter;
+        private readonly Action<double>? contentionCounter, lockDurationCounter;
         private protected WaitNode? first, last;
 
         private protected QueuedSynchronizer()
@@ -104,14 +104,7 @@ namespace DotNext.Threading
         /// </summary>
         public IncrementingEventCounter LockContentionCounter
         {
-#if NETSTANDARD2_1
-            set
-#else
-            init
-#endif
-            {
-                contentionCounter = (value ?? throw new ArgumentNullException(nameof(value))).Increment;
-            }
+            init => contentionCounter = (value ?? throw new ArgumentNullException(nameof(value))).Increment;
         }
 
         /// <summary>
@@ -119,14 +112,7 @@ namespace DotNext.Threading
         /// </summary>
         public EventCounter LockDurationCounter
         {
-#if NETSTANDARD2_1
-            set
-#else
-            init
-#endif
-            {
-                lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
-            }
+            init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
         }
 
         /// <inheritdoc/>
@@ -324,11 +310,7 @@ namespace DotNext.Threading
             }
             catch (Exception e)
             {
-#if NETSTANDARD2_1
-                result = new(Task.FromException(e));
-#else
                 result = ValueTask.FromException(e);
-#endif
             }
             finally
             {
@@ -351,8 +333,6 @@ namespace DotNext.Threading
             if (disposing)
             {
                 NotifyObjectDisposed();
-                lockDurationCounter = null;
-                lockDurationCounter = null;
             }
 
             base.Dispose(disposing);

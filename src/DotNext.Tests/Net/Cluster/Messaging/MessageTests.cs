@@ -70,7 +70,6 @@ namespace DotNext.Net.Cluster.Messaging
             public int Arg { get; set; }
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static async Task JsonMessageSerialization()
         {
@@ -94,6 +93,5 @@ namespace DotNext.Net.Cluster.Messaging
             Equal("Hello, world!", obj.Message);
             Equal(42, obj.Arg);
         }
-#endif
     }
 }

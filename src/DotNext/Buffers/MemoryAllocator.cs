@@ -93,11 +93,7 @@ namespace DotNext.Buffers
             return AllocateArray;
 
             static MemoryOwner<T> AllocateArray(int length)
-#if NETSTANDARD2_1
-                => new (OneDimensionalArray.New<T>(length));
-#else
                 => new(GC.AllocateUninitializedArray<T>(length, false));
-#endif
         }
 
         /// <summary>

@@ -111,9 +111,7 @@ namespace DotNext.Threading
             return update;
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private static (float OldValue, float NewValue) Update<TUpdater>(ref float value, TUpdater updater)
             where TUpdater : struct, ISupplier<float, float>
         {
@@ -126,9 +124,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private static (float OldValue, float NewValue) Accumulate<TAccumulator>(ref float value, float x, TAccumulator accumulator)
             where TAccumulator : struct, ISupplier<float, float, float>
         {

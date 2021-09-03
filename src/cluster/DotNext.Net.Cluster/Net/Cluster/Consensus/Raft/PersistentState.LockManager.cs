@@ -203,40 +203,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal Task AcquireAsync(LockType type, CancellationToken token = default)
-#if NETSTANDARD2_1
-                => WaitAsync(state, lockAcquisition[(int)type], token);
-#else
             {
                 Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
 
                 var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockAcquisition), (int)type);
                 return WaitAsync(state, acquisition, token);
             }
-#endif
 
             internal Task<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
-#if NETSTANDARD2_1
-                => WaitAsync(state, lockAcquisition[(int)type], timeout, token);
-#else
             {
                 Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
 
                 var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockAcquisition), (int)type);
                 return WaitAsync(state, acquisition, timeout, token);
             }
-#endif
 
             internal void Release(LockType type)
-#if NETSTANDARD2_1
-                => Signal(state, lockRelease[(int)type], true);
-#else
             {
                 Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
 
                 var release = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockRelease), (int)type);
                 Signal(state, release, true);
             }
-#endif
 
             long IWriteLock.Version => lockVersion.VolatileRead();
 

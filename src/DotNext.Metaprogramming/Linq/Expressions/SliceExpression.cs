@@ -100,9 +100,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         public Expression Range { get; }
 
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(RuntimeHelpers))]
-#endif
         private static MethodCallExpression SubArray(Expression array, Expression range)
         {
             MethodInfo? subArray = typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetSubArray), 1, new[] { Type.MakeGenericMethodParameter(0).MakeArrayType(), typeof(Range) });

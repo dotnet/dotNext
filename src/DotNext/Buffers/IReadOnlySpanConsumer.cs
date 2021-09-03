@@ -36,11 +36,7 @@ namespace DotNext.Buffers
             ValueTask result;
             if (token.IsCancellationRequested)
             {
-#if NETSTANDARD2_1
-                result = new (Task.FromCanceled(token));
-#else
                 result = ValueTask.FromCanceled(token);
-#endif
             }
             else
             {
@@ -51,11 +47,7 @@ namespace DotNext.Buffers
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException(e));
-#else
                     result = ValueTask.FromException(e);
-#endif
                 }
             }
 
@@ -137,11 +129,7 @@ namespace DotNext.Buffers
             ValueTask result;
             if (token.IsCancellationRequested)
             {
-#if NETSTANDARD2_1
-                result = new (Task.FromCanceled(token));
-#else
                 result = ValueTask.FromCanceled(token);
-#endif
             }
             else
             {
@@ -152,11 +140,7 @@ namespace DotNext.Buffers
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException(e));
-#else
                     result = ValueTask.FromException(e);
-#endif
                 }
             }
 
@@ -195,11 +179,7 @@ namespace DotNext.Buffers
             ValueTask result;
             if (token.IsCancellationRequested)
             {
-#if NETSTANDARD2_1
-                result = new (Task.FromCanceled(token));
-#else
                 result = ValueTask.FromCanceled(token);
-#endif
             }
             else
             {
@@ -210,11 +190,7 @@ namespace DotNext.Buffers
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException(e));
-#else
                     result = ValueTask.FromException(e);
-#endif
                 }
             }
 

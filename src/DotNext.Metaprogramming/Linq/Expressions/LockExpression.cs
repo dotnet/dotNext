@@ -95,9 +95,7 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Monitor))]
-#endif
         public override Expression Reduce()
         {
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });

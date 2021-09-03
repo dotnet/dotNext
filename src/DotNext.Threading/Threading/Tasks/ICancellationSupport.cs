@@ -20,11 +20,7 @@ namespace DotNext.Threading.Tasks
 
         private protected static CancellationTokenRegistration Attach(ICancellationSupport cancellation, CancellationToken token)
         {
-#if NETSTANDARD2_1
-            return token.Register(CancellationCallback, cancellation);
-#else
             return token.UnsafeRegister(CancellationCallback, cancellation);
-#endif
         }
     }
 }

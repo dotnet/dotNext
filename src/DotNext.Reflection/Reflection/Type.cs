@@ -13,11 +13,7 @@ namespace DotNext.Reflection
     /// Provides typed access to class or value type metadata.
     /// </summary>
     /// <typeparam name="T">Reflected type.</typeparam>
-#if NETSTANDARD2_1
-    public static partial class Type<T>
-#else
     public static partial class Type<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>
-#endif
     {
         /// <summary>
         /// Gets reflected type.

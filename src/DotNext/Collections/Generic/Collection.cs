@@ -20,27 +20,22 @@ namespace DotNext.Collections.Generic
         public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> converter)
             => new(collection, converter);
 
-        private static T[] ToArray<TCollection, T>(TCollection collection, int count)
-            where TCollection : class, IEnumerable<T>
-        {
-#if NETSTANDARD2_1
-            var result = new T[count];
-#else
-            var result = GC.AllocateUninitializedArray<T>(count);
-#endif
-            var index = 0L;
-            foreach (var item in collection)
-                result[index++] = item;
-            return result;
-        }
-
         /// <summary>
         /// Converts collection into single-dimensional array.
         /// </summary>
         /// <typeparam name="T">Type of collection items.</typeparam>
         /// <param name="collection">A collection to convert.</param>
         /// <returns>Array of collection items.</returns>
-        public static T[] ToArray<T>(ICollection<T> collection) => ToArray<ICollection<T>, T>(collection, collection.Count);
+        public static T[] ToArray<T>(ICollection<T> collection)
+        {
+            var count = collection.Count;
+            if (count == 0)
+                return Array.Empty<T>();
+
+            var result = GC.AllocateUninitializedArray<T>(count);
+            collection.CopyTo(result, 0);
+            return result;
+        }
 
         /// <summary>
         /// Converts read-only collection into single-dimensional array.
@@ -48,7 +43,20 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of collection items.</typeparam>
         /// <param name="collection">A collection to convert.</param>
         /// <returns>Array of collection items.</returns>
-        public static T[] ToArray<T>(IReadOnlyCollection<T> collection) => ToArray<IReadOnlyCollection<T>, T>(collection, collection.Count);
+        public static T[] ToArray<T>(IReadOnlyCollection<T> collection)
+        {
+            var count = collection.Count;
+            if (count == 0)
+                return Array.Empty<T>();
+
+            var result = GC.AllocateUninitializedArray<T>(count);
+            nuint index = 0;
+
+            foreach (var item in collection)
+                result[index++] = item;
+
+            return result;
+        }
 
         /// <summary>
         /// Adds multiple items into collection.
@@ -73,9 +81,7 @@ namespace DotNext.Collections.Generic
                 0 => Optional<T>.None,
                 1 => collection.FirstOrEmpty(),
                 _ when collection is T[] array => Span.PeekRandom<T>(array, random),
-#if !NETSTANDARD2_1
                 _ when collection is List<T> list => Span.PeekRandom<T>(CollectionsMarshal.AsSpan(list), random),
-#endif
                 _ => PeekRandomSlow(collection, random),
             };
 

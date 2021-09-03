@@ -25,11 +25,7 @@ namespace DotNext.Threading
                 throw new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token));
 
             if (token.IsCancellationRequested)
-#if NETSTANDARD2_1
-                return completeAsCanceled ? new(Task.FromCanceled(token)) : new();
-#else
                 return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
-#endif
 
             return new CancellationTokenFuture(completeAsCanceled, token).AsTask();
         }

@@ -93,9 +93,7 @@ namespace DotNext.Threading
         /// Performs atomic read.
         /// </summary>
         /// <param name="result">The result of atomic read.</param>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public readonly void Read(out T result)
         {
             var spinner = new SpinWait();
@@ -140,9 +138,7 @@ namespace DotNext.Threading
         /// Performs atomic write.
         /// </summary>
         /// <param name="newValue">The value to be stored into this container.</param>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public void Write(in T newValue)
         {
             lockState.Acquire();
@@ -151,9 +147,7 @@ namespace DotNext.Threading
             lockState.Release();
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private bool CompareExchange<TComparer>(TComparer comparer, in T update, in T expected, out T result)
             where TComparer : struct, IEqualityComparer
         {
@@ -201,9 +195,7 @@ namespace DotNext.Threading
         public unsafe bool CompareExchange(delegate*<in T, in T, bool> comparer, in T update, in T expected, out T result)
             => CompareExchange(new EqualityComparer(comparer), in update, in expected, out result);
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
             where TComparer : struct, IEqualityComparer
         {
@@ -251,9 +243,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="update">The value that replaces the stored value.</param>
         /// <param name="previous">The original stored value before modification.</param>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public void Exchange(in T update, out T previous)
         {
             lockState.Acquire();
@@ -269,9 +259,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <param name="result">The updated value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public void UpdateAndGet(Updater updater, out T result)
         {
             if (updater is null)
@@ -296,9 +284,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <param name="result">The original value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public void GetAndUpdate(Updater updater, out T result)
         {
             if (updater is null)
@@ -328,9 +314,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <param name="result">The updated value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
         {
             if (accumulator is null)
@@ -359,9 +343,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <param name="result">The original value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
         {
             if (accumulator is null)

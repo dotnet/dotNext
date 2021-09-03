@@ -114,10 +114,6 @@ namespace DotNext.IO
             => token.IsCancellationRequested ? Task.FromCanceled<int>(token) : Task.FromException<int>(new NotSupportedException());
 
         public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
-#if NETSTANDARD2_1
-            => new (token.IsCancellationRequested ? Task.FromCanceled<int>(token) : Task.FromException<int>(new NotSupportedException()));
-#else
             => token.IsCancellationRequested ? ValueTask.FromCanceled<int>(token) : ValueTask.FromException<int>(new NotSupportedException());
-#endif
     }
 }

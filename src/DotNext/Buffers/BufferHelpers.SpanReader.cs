@@ -126,7 +126,6 @@ namespace DotNext.Buffers
         public static unsafe ulong ReadUInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
             => reader.Read<ulong>(isLittleEndian ? &ReadUInt64LittleEndian : &ReadUInt64BigEndian);
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Decodes single-precision floating-point number.
         /// </summary>
@@ -148,6 +147,5 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe double ReadDouble(this ref SpanReader<byte> reader, bool isLittleEndian)
             => reader.Read<double>(isLittleEndian ? &ReadDoubleLittleEndian : &ReadDoubleBigEndian);
-#endif
     }
 }

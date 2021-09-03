@@ -119,7 +119,6 @@ namespace DotNext.Runtime.InteropServices
             Equal(1, array[1]);
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static unsafe void VolatileReadWriteUInt64()
         {
@@ -167,7 +166,6 @@ namespace DotNext.Runtime.InteropServices
             Equal(32U, ptr.GetAndAccumulateValue(8, &Sum));
             Equal(40U, ptr.Value);
         }
-#endif
 
         [Fact]
         public static unsafe void VolatileReadWriteInt64()

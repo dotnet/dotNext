@@ -166,9 +166,7 @@ namespace DotNext.Threading
             return update;
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private (TEnum OldValue, TEnum NewValue) Update<TUpdater>(TUpdater updater)
             where TUpdater : struct, ISupplier<TEnum, TEnum>
         {
@@ -181,9 +179,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         private (TEnum OldValue, TEnum NewValue) Accumulate<TAccumulator>(TEnum x, TAccumulator accumulator)
             where TAccumulator : struct, ISupplier<TEnum, TEnum, TEnum>
         {

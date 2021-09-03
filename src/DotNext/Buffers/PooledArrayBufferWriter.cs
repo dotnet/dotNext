@@ -97,11 +97,8 @@ namespace DotNext.Buffers
                 ThrowIfDisposed();
                 if (index < 0 || index >= position)
                     throw new ArgumentOutOfRangeException(nameof(index));
-#if NETSTANDARD2_1
-                return ref buffer[index];
-#else
+
                 return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buffer), (nint)index);
-#endif
             }
         }
 

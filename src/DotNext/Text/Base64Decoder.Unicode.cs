@@ -36,9 +36,7 @@ namespace DotNext.Text
             output.Advance(size);
         }
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         private void CopyAndDecode(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
         {
             var newSize = reservedBufferSize + chars.Length;
@@ -74,9 +72,7 @@ namespace DotNext.Text
                 Decode(chunk.Span, output);
         }
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         private void DecodeCore<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
             where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
@@ -122,9 +118,7 @@ namespace DotNext.Text
             }
         }
 
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         private void CopyAndDecode<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
             where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {

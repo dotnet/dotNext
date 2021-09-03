@@ -20,7 +20,7 @@ namespace DotNext.Buffers
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
     public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
-        private object? diagObj;
+        private readonly object? diagObj;
 
         /// <summary>
         /// Represents position of write cursor.
@@ -41,12 +41,7 @@ namespace DotNext.Buffers
         public EventCounter? AllocationCounter
         {
             private protected get => diagObj as EventCounter;
-#if NETSTANDARD2_1
-            set
-#else
-            init
-#endif
-            => diagObj = value;
+            init => diagObj = value;
         }
 
         /// <summary>
@@ -57,12 +52,7 @@ namespace DotNext.Buffers
         public Action<int>? BufferSizeCallback
         {
             private protected get => diagObj as Action<int>;
-#if NETSTANDARD2_1
-            set
-#else
-            init
-#endif
-            => diagObj = value;
+            init => diagObj = value;
         }
 
         /// <summary>
@@ -146,11 +136,9 @@ namespace DotNext.Buffers
             int count;
             switch (items)
             {
-#if !NETSTANDARD2_1
                 case List<T> list:
                     CollectionsMarshal.AsSpan(list).CopyTo(span, out count);
                     break;
-#endif
                 case T[] array:
                     array.AsSpan().CopyTo(span, out count);
                     break;
@@ -279,17 +267,6 @@ namespace DotNext.Buffers
             var newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position);
             if (newSize.HasValue)
                 Resize(newSize.GetValueOrDefault());
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                diagObj = null;
-            }
-
-            base.Dispose(disposing);
         }
 
         /// <summary>

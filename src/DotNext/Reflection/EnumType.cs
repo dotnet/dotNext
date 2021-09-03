@@ -13,12 +13,7 @@ namespace DotNext.Reflection
             where TEnum : struct, Enum
         {
             const BindingFlags publicStaticField = BindingFlags.Public | BindingFlags.Static;
-
-#if NETSTANDARD2_1
-            var fieldName = Enum.GetName(typeof(TEnum), value);
-#else
             var fieldName = Enum.GetName<TEnum>(value);
-#endif
             return string.IsNullOrEmpty(fieldName) ? null : typeof(TEnum).GetField(fieldName, publicStaticField);
         }
 

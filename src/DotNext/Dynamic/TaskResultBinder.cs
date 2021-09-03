@@ -27,10 +27,8 @@ namespace DotNext.Dynamic
             return target.Type.IsValueType ? Expression.Convert(target, typeof(object)) : target;
         }
 
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(Task<>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(ValueTask<>))]
-#endif
         private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
         {
             PropertyInfo? property = targetValue.GetType().GetProperty(ResultPropertyName, ResultPropertyFlags);

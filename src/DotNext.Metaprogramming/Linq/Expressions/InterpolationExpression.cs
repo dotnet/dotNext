@@ -87,9 +87,7 @@ namespace DotNext.Linq.Expressions
             };
         }
 
-#if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(string))]
-#endif
         private Expression MakePlainString()
         {
             // string.Format(format, arguments)

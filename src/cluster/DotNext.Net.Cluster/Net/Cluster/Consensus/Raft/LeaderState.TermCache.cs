@@ -47,11 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var i = Find(index);
                 if (i >= 0)
                 {
-#if NETSTANDARD2_1
-                    term = this[i].Value;
-#else
                     term = Unsafe.Add(ref MemoryMarshal.GetReference(CollectionsMarshal.AsSpan(this)), i).Value;
-#endif
                     return true;
                 }
 

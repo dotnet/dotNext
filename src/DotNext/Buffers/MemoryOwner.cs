@@ -287,11 +287,7 @@ namespace DotNext.Buffers
             get
             {
                 if (array is not null)
-#if NETSTANDARD2_1
-                    return ref array[0];
-#else
                     return ref MemoryMarshal.GetArrayDataReference(array);
-#endif
                 if (owner is not null)
                     return ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
 

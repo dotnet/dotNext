@@ -83,11 +83,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 return new(DisposedTask);
 
             if (shufflePeriod is not null)
-#if NETSTANDARD2_1
-                return new(Task.FromException(new InvalidOperationException()));
-#else
                 return ValueTask.FromException(new InvalidOperationException());
-#endif
 
             return EnqueueAsync(Command.ForceShuffle(), token);
         }

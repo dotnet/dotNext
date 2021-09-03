@@ -40,11 +40,7 @@ namespace DotNext.IO
             ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-#if NETSTANDARD2_1
-                result = new (Task.FromCanceled<int>(token));
-#else
                 result = ValueTask.FromCanceled<int>(token);
-#endif
             }
             else
             {
@@ -54,11 +50,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException<int>(e));
-#else
                     result = ValueTask.FromException<int>(e);
-#endif
                 }
             }
 
@@ -73,11 +65,7 @@ namespace DotNext.IO
             ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-#if NETSTANDARD2_1
-                result = new (Task.FromCanceled<int>(token));
-#else
                 result = ValueTask.FromCanceled<int>(token);
-#endif
             }
             else
             {
@@ -87,11 +75,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException<int>(e));
-#else
                     result = ValueTask.FromException<int>(e);
-#endif
                 }
             }
 

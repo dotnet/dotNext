@@ -79,11 +79,7 @@ namespace DotNext.IO
                 => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
 
             public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
-#if NETSTANDARD2_1
-                => new (token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException()));
-#else
                 => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.FromException(new NotSupportedException());
-#endif
 
             public override void WriteByte(byte value) => throw new NotSupportedException();
 

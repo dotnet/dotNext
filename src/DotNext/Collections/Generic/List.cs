@@ -109,13 +109,14 @@ namespace DotNext.Collections.Generic
         private static TOutput[] ToArray<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
             where TConverter : struct, ISupplier<TInput, TOutput>
         {
-#if NETSTANDARD2_1
-            var output = OneDimensionalArray.New<TOutput>(input.Count);
-#else
-            var output = GC.AllocateUninitializedArray<TOutput>(input.Count);
-#endif
-            for (var i = 0; i < input.Count; i++)
+            var count = input.Count;
+            if (count == 0)
+                return Array.Empty<TOutput>();
+
+            var output = GC.AllocateUninitializedArray<TOutput>(count);
+            for (var i = 0; i < count; i++)
                 output[i] = mapper.Invoke(input[i]);
+
             return output;
         }
 
@@ -147,13 +148,11 @@ namespace DotNext.Collections.Generic
         private static TOutput[] ToArrayWithIndex<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
             where TConverter : struct, ISupplier<int, TInput, TOutput>
         {
-#if NETSTANDARD2_1
-            var output = OneDimensionalArray.New<TOutput>(input.Count);
-#else
-            var output = GC.AllocateUninitializedArray<TOutput>(input.Count);
-#endif
-            for (var i = 0; i < input.Count; i++)
+            var count = input.Count;
+            var output = GC.AllocateUninitializedArray<TOutput>(count);
+            for (var i = 0; i < count; i++)
                 output[i] = mapper.Invoke(i, input[i]);
+
             return output;
         }
 
@@ -201,7 +200,6 @@ namespace DotNext.Collections.Generic
         /// <returns>Read-only list containing single item.</returns>
         public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T>(item);
 
-#if !NETSTANDARD2_1
         /// <summary>
         /// Inserts the item into sorted list.
         /// </summary>
@@ -235,7 +233,6 @@ namespace DotNext.Collections.Generic
             list.Insert(low, item);
             return low;
         }
-#endif
 
         /// <summary>
         /// Inserts the item into sorted list.
@@ -352,11 +349,9 @@ namespace DotNext.Collections.Generic
         {
             switch (list)
             {
-#if !NETSTANDARD2_1
                 case List<T> typedList:
                     CollectionsMarshal.AsSpan(typedList).Shuffle(random);
                     break;
-#endif
                 case T[] array:
                     Span.Shuffle<T>(array, random);
                     break;

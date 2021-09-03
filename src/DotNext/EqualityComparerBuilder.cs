@@ -21,20 +21,11 @@ namespace DotNext
     /// instead of manually written implementation of overridden <see cref="object.GetHashCode"/> and <see cref="object.Equals(object)"/> methods.
     /// </remarks>
     [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true, PrivateReflection = true)]
-#if NETSTANDARD2_1
-    public struct EqualityComparerBuilder<T>
-#else
     public readonly struct EqualityComparerBuilder<T>
-#endif
     {
         private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-#if NETSTANDARD2_1
-        private bool salted;
-        private ICollection<string>? excludedFields;
-#else
-        private readonly bool salted;
-        private readonly IReadOnlySet<string> excludedFields;
-#endif
+
+        private readonly IReadOnlySet<string>? excludedFields;
 
         /// <summary>
         /// Sets an array of excluded field names.
@@ -42,15 +33,10 @@ namespace DotNext
         /// <value>An array of excluded fields.</value>
         public string[] ExcludedFields
         {
-#if NETSTANDARD2_1
-            set
-#else
-            init
-#endif
-            => excludedFields = new HashSet<string>(value);
+            init => excludedFields = new HashSet<string>(value);
         }
 
-        private bool IsIncluded(FieldInfo field) => excludedFields is null || !excludedFields.Contains(field.Name);
+        private bool IsIncluded(FieldInfo field) => excludedFields?.Contains(field.Name) ?? true;
 
         /// <summary>
         /// Set a value indicating that hash code must be unique for each application instance.
@@ -58,12 +44,8 @@ namespace DotNext
         /// <value><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</value>
         public bool SaltedHashCode
         {
-#if NETSTANDARD2_1
-            set
-#else
-            init
-#endif
-            => salted = value;
+            private get;
+            init;
         }
 
         private sealed class ConstructedEqualityComparer : IEqualityComparer<T>
@@ -206,7 +188,7 @@ namespace DotNext
                 return EqualityComparer<T>.Default.GetHashCode!;
             if (inputParam.Type.IsSZArray)
             {
-                expr = HashCodeMethodForArrayElementType(inputParam, Expression.Constant(salted));
+                expr = HashCodeMethodForArrayElementType(inputParam, Expression.Constant(SaltedHashCode));
                 return Expression.Lambda<Func<T, int>>(expr, true, inputParam).Compile();
             }
 
@@ -229,11 +211,11 @@ namespace DotNext
                     }
                     else if (field.FieldType.IsValueType)
                     {
-                        expr = HashCodeMethodForValueType(expr, Expression.Constant(salted));
+                        expr = HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode));
                     }
                     else if (field.FieldType.IsSZArray)
                     {
-                        expr = HashCodeMethodForArrayElementType(expr, Expression.Constant(salted));
+                        expr = HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode));
                     }
                     else
                     {

@@ -38,11 +38,7 @@ namespace DotNext.IO
             ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-#if NETSTANDARD2_1
-                result = new (Task.FromCanceled<int>(token));
-#else
                 result = ValueTask.FromCanceled<int>(token);
-#endif
             }
             else
             {
@@ -52,11 +48,7 @@ namespace DotNext.IO
                 }
                 catch (Exception e)
                 {
-#if NETSTANDARD2_1
-                    result = new (Task.FromException<int>(e));
-#else
                     result = ValueTask.FromException<int>(e);
-#endif
                 }
             }
 
@@ -85,11 +77,7 @@ namespace DotNext.IO
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
 
         public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
-#if NETSTANDARD2_1
-            => new (token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException()));
-#else
             => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.FromException(new NotSupportedException());
-#endif
 
         public sealed override void WriteByte(byte value) => throw new NotSupportedException();
 

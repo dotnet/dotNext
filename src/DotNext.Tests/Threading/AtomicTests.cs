@@ -159,7 +159,6 @@ namespace DotNext.Threading
             Equal(52, array.VolatileRead(0L));
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static void AtomicUIntTest()
         {
@@ -255,7 +254,6 @@ namespace DotNext.Threading
             Equal(42UL, array.GetAndUpdate(0L, static current => 52UL));
             Equal(52UL, array.VolatileRead(0L));
         }
-#endif
 
         [Fact]
         public static void AtomicLongTest()

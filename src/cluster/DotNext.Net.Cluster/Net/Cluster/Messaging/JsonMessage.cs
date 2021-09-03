@@ -1,4 +1,3 @@
-#if !NETSTANDARD2_1
 using System;
 using System.Buffers;
 using System.Net.Mime;
@@ -157,4 +156,3 @@ namespace DotNext.Net.Cluster.Messaging
             => FromJsonAsync(message, null, null, token);
     }
 }
-#endif

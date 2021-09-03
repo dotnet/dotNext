@@ -103,11 +103,7 @@ namespace DotNext.IO.Pipelines
         {
             using var hash = IncrementalHash.CreateHash(name);
             await reader.ReadAsync<Missing, IncrementalHashBuilder>(new IncrementalHashBuilder(hash, count), token).ConfigureAwait(false);
-#if NETSTANDARD2_1
-            if (!hash.TryGetHashAndReset(output.Span, out var bytesWritten))
-#else
             if (!hash.TryGetCurrentHash(output.Span, out var bytesWritten))
-#endif
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(output));
             return bytesWritten;
         }
@@ -558,11 +554,7 @@ namespace DotNext.IO.Pipelines
             return length switch
             {
                 0L => new(),
-#if NETSTANDARD2_1
-                < 0L => new(Task.FromException(new ArgumentOutOfRangeException(nameof(length)))),
-#else
                 < 0L => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
-#endif
                 _ => SkipCoreAsync(reader, length, token),
             };
 

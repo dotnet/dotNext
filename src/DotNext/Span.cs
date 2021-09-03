@@ -18,18 +18,6 @@ namespace DotNext
     /// </summary>
     public static class Span
     {
-#if NETSTANDARD2_1
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct ValueComparer<T> : ISupplier<T, T, int>
-        {
-            private readonly IComparer<T> comparer;
-
-            internal ValueComparer(IComparer<T> comparer) => this.comparer = comparer;
-
-            int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
-        }
-#endif
-
         private static readonly char[] HexTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         /// <summary>
@@ -262,71 +250,6 @@ namespace DotNext
             where T : unmanaged
             => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
-#if NETSTANDARD2_1
-        private static void QuickSort<T, TComparer>(Span<T> span, int startIndex, int endIndex, TComparer comparison)
-            where TComparer : struct, ISupplier<T, T, int>
-        {
-            while (startIndex < endIndex)
-            {
-                var partitionIndex = Partition(span, startIndex, endIndex, ref comparison);
-                QuickSort(span, startIndex, partitionIndex - 1, comparison);
-                startIndex = partitionIndex + 1;
-            }
-
-            static int Partition(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
-            {
-                var pivot = span[endIndex];
-                var i = startIndex - 1;
-                for (var j = startIndex; j < endIndex; j++)
-                {
-                    ref var jptr = ref span[j];
-                    if (comparison.Invoke(jptr, pivot) > 0)
-                        continue;
-                    i += 1;
-                    Intrinsics.Swap(ref span[i], ref jptr);
-                }
-
-                i += 1;
-                Intrinsics.Swap(ref span[endIndex], ref span[i]);
-                return i;
-            }
-        }
-#endif
-
-        /// <summary>
-        /// Sorts the elements.
-        /// </summary>
-        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
-        /// <param name="comparison">The comparer used for sorting.</param>
-        /// <typeparam name="T">The type of the elements.</typeparam>
-#if !NETSTANDARD2_1
-        [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
-#endif
-        public static void Sort<T>(this Span<T> span, IComparer<T>? comparison = null)
-        {
-#if NETSTANDARD2_1
-            QuickSort(span, 0, span.Length - 1, new ValueComparer<T>(comparison ?? Comparer<T>.Default));
-#else
-            MemoryExtensions.Sort(span, comparison ?? Comparer<T>.Default);
-#endif
-        }
-
-        /// <summary>
-        /// Sorts the elements.
-        /// </summary>
-        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
-        /// <param name="comparison">The comparer used for sorting.</param>
-        /// <typeparam name="T">The type of the elements.</typeparam>
-#if !NETSTANDARD2_1
-        [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
-#endif
-        public static void Sort<T>(this Span<T> span, Comparison<T?> comparison)
-#if NETSTANDARD2_1
-            => QuickSort(span, 0, span.Length - 1, new DelegatingComparer<T>(comparison));
-#else
-            => MemoryExtensions.Sort(span, comparison);
-#endif
-
         /// <summary>
         /// Sorts the elements.
         /// </summary>
@@ -335,11 +258,7 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements.</typeparam>
         [CLSCompliant(false)]
         public static unsafe void Sort<T>(this Span<T> span, delegate*<T?, T?, int> comparison)
-#if NETSTANDARD2_1
-            => QuickSort<T, ComparerWrapper<T>>(span, 0, span.Length - 1, comparison);
-#else
             => MemoryExtensions.Sort<T, ComparerWrapper<T>>(span, comparison);
-#endif
 
         /// <summary>
         /// Trims the span to specified length if it exceeds it.
@@ -487,13 +406,9 @@ namespace DotNext
             var bytesCount = Math.Min(bytes.Length, output.Length / 2);
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
-#if NETSTANDARD2_1
-            ref char hexTable = ref HexTable[lowercased ? 0 : 16];
-#else
             ref char hexTable = ref MemoryMarshal.GetArrayDataReference(HexTable);
             if (!lowercased)
                 hexTable = ref Unsafe.Add(ref hexTable, 16);
-#endif
             for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var value = Add(ref firstByte, i);
@@ -511,9 +426,7 @@ namespace DotNext
         /// <param name="bytes">The bytes to convert.</param>
         /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
         /// <returns>The hexadecimal representation of bytes.</returns>
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
         {
             var count = bytes.Length * 2;
@@ -549,9 +462,7 @@ namespace DotNext
         /// </summary>
         /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
         /// <returns>The decoded array of bytes.</returns>
-#if !NETSTANDARD2_1
         [SkipLocalsInit]
-#endif
         public static byte[] FromHex(this ReadOnlySpan<char> chars)
         {
             var count = chars.Length / 2;
@@ -678,9 +589,7 @@ namespace DotNext
         /// <param name="destination">Destination memory.</param>
         /// <param name="writtenCount">The number of copied elements.</param>
         /// <typeparam name="T">The type of the elements in the span.</typeparam>
-#if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public static void CopyTo<T>(this ReadOnlySpan<T> source, Span<T> destination, out int writtenCount)
         {
             if (source.Length > destination.Length)

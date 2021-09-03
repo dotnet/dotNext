@@ -48,11 +48,9 @@ namespace DotNext.Collections.Generic
         {
             switch (collection)
             {
-#if !NETSTANDARD2_1
                 case List<T> list:
                     Span.ForEach(CollectionsMarshal.AsSpan(list), action);
                     break;
-#endif
                 case T[] array:
                     Array.ForEach(array, action);
                     break;
@@ -120,9 +118,7 @@ namespace DotNext.Collections.Generic
         {
             return seq switch
             {
-#if !NETSTANDARD2_1
                 List<T> list => Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list)),
-#endif
                 T[] array => Span.FirstOrEmpty<T>(array),
                 string str => str.Length > 0 ? ReinterpretCast<char, T>(str[0]) : Optional<T>.None, // TODO: Workaround for https://github.com/dotnet/runtime/issues/57484
                 IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
@@ -243,9 +239,7 @@ namespace DotNext.Collections.Generic
         {
             return collection switch
             {
-#if !NETSTANDARD2_1
                 List<T> list => Span.ElementAt<T>(CollectionsMarshal.AsSpan(list), index, out element),
-#endif
                 T[] array => Span.ElementAt<T>(array, index, out element),
                 LinkedList<T> list => NodeValueAt(list, index, out element),
                 IList<T> list => ListElementAt(list, index, out element),
