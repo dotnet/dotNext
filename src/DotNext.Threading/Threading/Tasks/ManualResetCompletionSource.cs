@@ -267,23 +267,8 @@ namespace DotNext.Threading.Tasks
             get => completed;
             private protected set => completed = value;
         }
-    }
 
-    /// <summary>
-    /// Represents base class for producer of value task.
-    /// </summary>
-    /// <typeparam name="T">The type of value task.</typeparam>
-    public abstract class ManualResetCompletionSource<T> : ManualResetCompletionSource
-        where T : struct, IEquatable<T>
-    {
-        private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
-            : base(runContinuationsAsynchronously)
-        {
-        }
-
-        private protected abstract T Task { get; }
-
-        private T CreateTaskCore(TimeSpan timeout, CancellationToken token)
+        private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
         {
             Debug.Assert(Monitor.IsEntered(SyncRoot));
 
@@ -302,39 +287,22 @@ namespace DotNext.Threading.Tasks
             StartTrackingCancellation(timeout, token);
 
         exit:
-            return Task;
+            return;
         }
 
-        /// <summary>
-        /// Creates a fresh task linked with this source.
-        /// </summary>
-        /// <remarks>
-        /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
-        /// </remarks>
-        /// <param name="timeout">The timeout associated with the task.</param>
-        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-        /// <returns>A fresh incompleted task.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is les than zero but not equals to <see cref="InfiniteTimeSpan"/>.</exception>
-        public T CreateTask(TimeSpan timeout, CancellationToken token)
+        private protected void PrepareTask(TimeSpan timeout, CancellationToken token)
         {
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
 
-            T result;
-
-            if (IsCompleted)
-            {
-                result = Task;
-            }
-            else
+            if (!IsCompleted)
             {
                 lock (SyncRoot)
                 {
-                    result = IsCompleted ? Task : CreateTaskCore(timeout, token);
+                    if (!IsCompleted)
+                        PrepareTaskCore(timeout, token);
                 }
             }
-
-            return result;
         }
     }
 }

@@ -13,13 +13,13 @@ namespace DotNext.Threading.Tasks
     /// In constrast to <see cref="TaskCompletionSource{T}"/>, this
     /// source is resettable.
     /// From performance point of view, the type offers minimal or zero memory allocation
-    /// for the task itself (excluding continuations). See <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/>
+    /// for the task itself (excluding continuations). See <see cref="CreateTask(TimeSpan, CancellationToken)"/>
     /// for more information.
     /// The instance of this type typically used in combination with object pool pattern because
     /// the instance can be reused for multiple tasks. The first usage pattern allows to reuse the instance
     /// for the multiple completions if the task was not canceled or timed out:
     /// 1. Retrieve instance of this type from the pool and call <see cref="ManualResetCompletionSource.Reset"/>.
-    /// 2. Obtain the task using <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/>.
+    /// 2. Obtain the task using <see cref="CreateTask(TimeSpan, CancellationToken)"/>.
     /// 2. Complete the task with <see cref="TrySetResult(T)"/> or <see cref="TrySetException(Exception)"/>.
     /// 3. If completion method returns <see langword="true"/> then return the instance back to the pool.
     /// If completion method returns <see langword="false"/> then the task was canceled or timed out. In this
@@ -30,7 +30,7 @@ namespace DotNext.Threading.Tasks
     /// </remarks>
     /// <typeparam name="T">>The type the task result.</typeparam>
     /// <seealso cref="ValueTaskCompletionSource"/>
-    public class ValueTaskCompletionSource<T> : ManualResetCompletionSource<ValueTask<T>>, IValueTaskSource<T>
+    public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask<T>>, ISupplier<TimeSpan, CancellationToken, ValueTask>
     {
         private Result<T> result;
 
@@ -59,7 +59,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task sucessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="value">The value to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetResult(short completionToken, T value)
@@ -76,7 +76,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="e">The exception to be returned to the consumer.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetException(short completionToken, Exception e)
@@ -93,7 +93,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Attempts to complete the task unsuccessfully.
         /// </summary>
-        /// <param name="completionToken">The completion token previously obtained from <see cref="ManualResetCompletionSource{T}.CreateTask(TimeSpan, CancellationToken)"/> method.</param>
+        /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
         /// <param name="token">The canceled token.</param>
         /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
         public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
@@ -104,8 +104,6 @@ namespace DotNext.Threading.Tasks
 
         private protected sealed override void CompleteAsCanceled(CancellationToken token)
             => SetResult(OnCanceled(token));
-
-        private protected sealed override ValueTask<T> Task => new(this, version);
 
         private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg)
         {
@@ -223,8 +221,34 @@ namespace DotNext.Threading.Tasks
         /// <returns>The result to be assigned to the task.</returns>
         protected virtual Result<T> OnCanceled(CancellationToken token) => new(new OperationCanceledException(token));
 
+        /// <summary>
+        /// Creates a fresh task linked with this source.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
+        /// </remarks>
+        /// <param name="timeout">The timeout associated with the task.</param>
+        /// <param name="token">The cancellation token that can be used to cancel the task.</param>
+        /// <returns>A fresh incompleted task.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
+        public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
+        {
+            PrepareTask(timeout, token);
+            return new(this, version);
+        }
+
         /// <inheritdoc />
-        T IValueTaskSource<T>.GetResult(short token)
+        ValueTask<T> ISupplier<TimeSpan, CancellationToken, ValueTask<T>>.Invoke(TimeSpan timeout, CancellationToken token)
+            => CreateTask(timeout, token);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
+        {
+            PrepareTask(timeout, token);
+            return new(this, version);
+        }
+
+        private T GetResult(short token)
         {
             if (!IsCompleted || token != version)
                 throw new InvalidOperationException();
@@ -241,7 +265,12 @@ namespace DotNext.Threading.Tasks
         }
 
         /// <inheritdoc />
-        ValueTaskSourceStatus IValueTaskSource<T>.GetStatus(short token)
+        T IValueTaskSource<T>.GetResult(short token) => GetResult(token);
+
+        /// <inheritdoc />
+        void IValueTaskSource.GetResult(short token) => GetResult(token);
+
+        private ValueTaskSourceStatus GetStatus(short token)
         {
             if (!IsCompleted)
                 return ValueTaskSourceStatus.Pending;
@@ -254,7 +283,17 @@ namespace DotNext.Threading.Tasks
         }
 
         /// <inheritdoc />
+        ValueTaskSourceStatus IValueTaskSource<T>.GetStatus(short token) => GetStatus(token);
+
+        /// <inheritdoc />
+        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => GetStatus(token);
+
+        /// <inheritdoc />
         void IValueTaskSource<T>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+            => OnCompleted(continuation, state, token, flags);
+
+        /// <inheritdoc />
+        void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
             => OnCompleted(continuation, state, token, flags);
     }
 }
