@@ -129,7 +129,7 @@ namespace DotNext.Threading
             contentionCounter?.Invoke(1L);
         }
 
-        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, ISupplier<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
             where TContext : struct
             where TNode : WaitNode
         {
@@ -153,13 +153,13 @@ namespace DotNext.Threading
             if (timeout == TimeSpan.Zero)
                 return ValueTask.FromException(new TimeoutException());
 
-            node = pool.Invoke();
+            node = pool();
             EnqueueNode(node, true);
 
             return node.As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
         }
 
-        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, ISupplier<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
             where TContext : struct
             where TNode : WaitNode
         {
@@ -183,7 +183,7 @@ namespace DotNext.Threading
             if (timeout == TimeSpan.Zero)
                 return new(false);    // if timeout is zero fail fast
 
-            node = pool.Invoke();
+            node = pool();
             EnqueueNode(node, false);
 
             return node.CreateTask(timeout, token);

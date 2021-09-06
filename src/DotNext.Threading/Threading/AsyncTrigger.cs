@@ -12,14 +12,14 @@ namespace DotNext.Threading
     /// </summary>
     public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
-        private readonly ISupplier<DefaultWaitNode> pool;
+        private readonly Func<DefaultWaitNode> pool;
 
         /// <summary>
         /// Initializes a new trigger.
         /// </summary>
         public AsyncTrigger()
         {
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>();
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace DotNext.Threading
             if (concurrencyLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel);
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
         }
 
         /// <inheritdoc/>
@@ -223,14 +223,14 @@ namespace DotNext.Threading
             public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
         }
 
-        private readonly ISupplier<WaitNode> pool;
+        private readonly Func<WaitNode> pool;
 
         /// <summary>
         /// Initializes a new trigger.
         /// </summary>
         public AsyncTrigger()
         {
-            pool = new UnconstrainedValueTaskPool<WaitNode>();
+            pool = new UnconstrainedValueTaskPool<WaitNode>().Get;
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace DotNext.Threading
             if (concurrencyLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel);
+            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel).Get;
         }
 
         private static bool EnsureState(ref (TState, IConditionalAction<TState>) args)

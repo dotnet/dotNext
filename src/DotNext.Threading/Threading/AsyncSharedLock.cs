@@ -75,7 +75,7 @@ namespace DotNext.Threading
             internal void Downgrade() => RemainingLocks = ConcurrencyLevel - 1L;
         }
 
-        private readonly ISupplier<WaitNode> pool;
+        private readonly Func<WaitNode> pool;
         private State state;
 
         /// <summary>
@@ -94,8 +94,8 @@ namespace DotNext.Threading
 
             state = new(concurrencyLevel);
             pool = limitedConcurrency
-                ? new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel.Truncate())
-                : new UnconstrainedValueTaskPool<WaitNode>();
+                ? new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel.Truncate()).Get
+                : new UnconstrainedValueTaskPool<WaitNode>().Get;
         }
 
         private static bool TryAcquireWeakLock(ref State state)

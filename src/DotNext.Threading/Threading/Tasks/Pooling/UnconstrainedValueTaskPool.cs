@@ -10,13 +10,15 @@ internal sealed class UnconstrainedValueTaskPool<TNode> : ConcurrentBag<TNode>, 
     internal UnconstrainedValueTaskPool()
         => backToPool = new WeakReference<UnconstrainedValueTaskPool<TNode>?>(this, false).Consume;
 
-    TNode ISupplier<TNode>.Invoke()
+    internal TNode Get()
     {
         if (!TryTake(out var result))
             result = TNode.CreateSource(backToPool);
 
         return result;
     }
+
+    TNode ISupplier<TNode>.Invoke() => Get();
 
     void IConsumer<TNode>.Invoke(TNode node)
     {

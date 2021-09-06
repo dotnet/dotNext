@@ -163,7 +163,7 @@ namespace DotNext.Threading
                 => !first.Equals(in second);
         }
 
-        private readonly ISupplier<WaitNode> pool;
+        private readonly Func<WaitNode> pool;
         private State state;
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             state = new(long.MinValue);
-            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel);
+            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel).Get;
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace DotNext.Threading
         public AsyncReaderWriterLock()
         {
             state = new(long.MinValue);
-            pool = new UnconstrainedValueTaskPool<WaitNode>();
+            pool = new UnconstrainedValueTaskPool<WaitNode>().Get;
         }
 
         private static bool TryAcquireReadLock(ref State state)

@@ -44,7 +44,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private readonly ISupplier<DefaultWaitNode> pool;
+    private readonly Func<DefaultWaitNode> pool;
     private State state;
 
     /// <summary>
@@ -64,7 +64,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         state = new(initialCount);
-        pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel);
+        pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(initialCount));
 
         state = new(initialCount);
-        pool = new UnconstrainedValueTaskPool<DefaultWaitNode>();
+        pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
     }
 
     private static bool IsEmpty(ref State state) => state.Current == 0L;

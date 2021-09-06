@@ -17,7 +17,7 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
-        private readonly ISupplier<DefaultWaitNode> pool;
+        private readonly Func<DefaultWaitNode> pool;
         private long counter;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             counter = initialValue;
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel);
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(initialValue));
 
             counter = initialValue;
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>();
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
         }
 
         private static bool TryDecrement(ref long counter)

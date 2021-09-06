@@ -21,9 +21,6 @@ namespace DotNext.Threading
         private long participants;
         private long currentPhase;
 
-        /// <inheritdoc/>
-        bool IAsyncEvent.IsSet => countdown.IsSet;
-
         /// <summary>
         /// Initializes a new Barrier withe given number of participating tasks.
         /// </summary>
@@ -37,6 +34,9 @@ namespace DotNext.Threading
             participants = participantCount;
             countdown = new AsyncCountdownEvent(participants);
         }
+
+        /// <inheritdoc/>
+        bool IAsyncEvent.IsSet => countdown.IsSet;
 
         /// <summary>
         /// Gets the number of the barrier's current phase.
