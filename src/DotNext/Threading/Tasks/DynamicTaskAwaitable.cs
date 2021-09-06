@@ -28,7 +28,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
         [RuntimeFeatures(DynamicCodeCompilation = true)]
-        public readonly struct Awaiter : IFuture, ICriticalNotifyCompletion
+        public readonly struct Awaiter : ICriticalNotifyCompletion
         {
             private readonly Task task;
             private readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter;
