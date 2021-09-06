@@ -160,7 +160,7 @@ namespace DotNext.Threading
             await countdown.SignalAndWaitAsync(token).ConfigureAwait(false);
             try
             {
-                await PostPhase(currentPhase.Add(1L));
+                await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
