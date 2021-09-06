@@ -260,6 +260,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Resumes the first suspended caller in the wait queue.
         /// </summary>
+        /// <param name="state">The shared state used for coordination.</param>
         /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -293,6 +294,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Resumes all suspended callers.
         /// </summary>
+        /// <param name="state">The shared state used for coordination.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void PulseAll(TState state)

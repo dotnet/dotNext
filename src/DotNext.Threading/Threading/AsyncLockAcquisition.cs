@@ -2,9 +2,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
-    using Tasks;
-    using DefaultAsyncLockHolder = Generic.DefaultConst<AsyncLock.Holder>;
-
     /// <summary>
     /// Provides a set of methods to acquire different types of asynchronous lock.
     /// </summary>
@@ -12,7 +9,6 @@ namespace DotNext.Threading
     {
         private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = UserDataSlot<AsyncReaderWriterLock>.Allocate();
         private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = UserDataSlot<AsyncExclusiveLock>.Allocate();
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)

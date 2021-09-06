@@ -19,7 +19,7 @@ namespace DotNext.Threading
         {
             Read = 0,
             Upgrade,
-            Exclusive
+            Exclusive,
         }
 
         private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>

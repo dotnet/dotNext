@@ -390,7 +390,7 @@ namespace DotNext.Reflection
         /// Gets or sets instance field value.
         /// </summary>
         /// <remarks>
-        /// If the underlying field is volatile then you need to use static methods from <see cref="Volatile"/> explicitly to
+        /// If the underlying field is volatile then you need to use static methods from <see cref="System.Threading.Volatile"/> explicitly to
         /// implement volatile semantics.
         /// </remarks>
         /// <param name="this"><c>this</c> argument.</param>
@@ -557,7 +557,7 @@ namespace DotNext.Reflection
         /// Obtains managed pointer to the static field.
         /// </summary>
         /// <remarks>
-        /// If the underlying field is volatile then you need to use static methods from <see cref="Volatile"/> explicitly to
+        /// If the underlying field is volatile then you need to use static methods from <see cref="System.Threading.Volatile"/> explicitly to
         /// implement volatile semantics.
         /// </remarks>
         /// <value>The managed pointer to the static field.</value>

@@ -169,18 +169,21 @@ namespace DotNext.IO
         private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
             where TTransformation : notnull, ITransformation<TResult>
         {
-            await using var output = new FileBufferingWriter(asyncIO: true);
-            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
+            var output = new FileBufferingWriter(asyncIO: true);
+            await using (output.ConfigureAwait(false))
+            using (var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false))
+            {
+                // serialize
+                await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
 
-            // serialize
-            await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
+                // deserialize
+                if (output.TryGetWrittenContent(out var memory))
+                    return await parser.TransformAsync(new SequenceBinaryReader(memory), token).ConfigureAwait(false);
 
-            // deserialize
-            if (output.TryGetWrittenContent(out var memory))
-                return await parser.TransformAsync(new SequenceBinaryReader(memory), token).ConfigureAwait(false);
-
-            await using var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
-            return await parser.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+                var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
+                await using (input.ConfigureAwait(false))
+                    return await parser.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+            }
         }
 
         // use disk I/O for large-size object
@@ -189,18 +192,21 @@ namespace DotNext.IO
         {
             var tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             const FileOptions tempFileOptions = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
-            await using var fs = new FileStream(tempFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, DefaultBufferSize, tempFileOptions);
-            fs.SetLength(length);
+            var fs = new FileStream(tempFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, DefaultBufferSize, tempFileOptions);
+            await using (fs.ConfigureAwait(false))
+            {
+                fs.SetLength(length);
 
-            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
+                using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
 
-            // serialize
-            await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
-            await fs.FlushAsync(token).ConfigureAwait(false);
+                // serialize
+                await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+                await fs.FlushAsync(token).ConfigureAwait(false);
 
-            // deserialize
-            fs.Position = 0L;
-            return await parser.TransformAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+                // deserialize
+                fs.Position = 0L;
+                return await parser.TransformAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

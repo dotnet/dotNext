@@ -126,9 +126,17 @@ namespace DotNext.Threading
             if (ParticipantCount == 0L)
                 throw new InvalidOperationException();
 
-            if (await countdown.SignalAndWaitAsync(timeout, token))
+            if (await countdown.SignalAndWaitAsync(timeout, token).ConfigureAwait(false))
             {
-                await PostPhase(currentPhase.Add(1L));
+                try
+                {
+                    await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    throw new BarrierPostPhaseException(e);
+                }
+
                 return true;
             }
 
@@ -149,8 +157,15 @@ namespace DotNext.Threading
             if (ParticipantCount == 0L)
                 throw new InvalidOperationException();
 
-            await countdown.SignalAndWaitAsync(token);
-            await PostPhase(currentPhase.Add(1L));
+            await countdown.SignalAndWaitAsync(token).ConfigureAwait(false);
+            try
+            {
+                await PostPhase(currentPhase.Add(1L));
+            }
+            catch (Exception e)
+            {
+                throw new BarrierPostPhaseException(e);
+            }
         }
 
         /// <inheritdoc/>
