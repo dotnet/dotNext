@@ -51,8 +51,9 @@ namespace DotNext.Collections.Generic
         public static async ValueTask<T?> FirstOrNullAsync<T>(this IAsyncEnumerable<T> seq, CancellationToken token = default)
             where T : struct
         {
-            await using var enumerator = seq.GetAsyncEnumerator(token);
-            return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : new T?();
+            var enumerator = seq.GetAsyncEnumerator(token);
+            await using (enumerator.ConfigureAwait(false))
+                return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : new T?();
         }
 
         /// <summary>
@@ -66,8 +67,9 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, CancellationToken token = default)
         {
-            await using var enumerator = seq.GetAsyncEnumerator(token);
-            return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : Optional<T>.None;
+            var enumerator = seq.GetAsyncEnumerator(token);
+            await using (enumerator.ConfigureAwait(false))
+                return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : Optional<T>.None;
         }
 
         /// <summary>
@@ -122,11 +124,15 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<Optional<T>> ElementAtAsync<T>(this IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
         {
-            await using var enumerator = collection.GetAsyncEnumerator(token);
-            await enumerator.SkipAsync(index).ConfigureAwait(false);
-            return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
-                enumerator.Current :
-                Optional<T>.None;
+            var enumerator = collection.GetAsyncEnumerator(token);
+            await using (enumerator.ConfigureAwait(false))
+            {
+                await enumerator.SkipAsync(index).ConfigureAwait(false);
+
+                return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
+                    enumerator.Current :
+                    Optional<T>.None;
+            }
         }
 
         /// <summary>
