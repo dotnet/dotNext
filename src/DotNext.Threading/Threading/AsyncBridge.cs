@@ -32,9 +32,9 @@ namespace DotNext.Threading
 
             // do not keep long references when treshold reached
             if (instantiatedTasks > maxPoolSize)
-                result = new(static t => { });
+                result = new(static t => t.Reset());
             else if (!TokenPool.TryTake(out result))
-                result = new(TokenPool.Add);
+                result = new(TokenPool.Return);
 
             result.CompleteAsCanceled = completeAsCanceled;
             result.Reset();
@@ -59,12 +59,22 @@ namespace DotNext.Threading
 
             // do not keep long references when treshold reached
             if (instantiatedTasks > maxPoolSize)
-                result = new(static t => { });
+                result = new(static t => t.Reset());
             else if (!HandlePool.TryTake(out result))
-                result = new(HandlePool.Add);
+                result = new(HandlePool.Return);
 
             var token = result.Reset();
-            result.Handle = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, true);
+            var registration = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, true);
+
+            if (result.IsCompleted)
+            {
+                registration.Unregister(null);
+            }
+            else
+            {
+                result.Registration = registration;
+            }
+
             return result.CreateTask(InfiniteTimeSpan, CancellationToken.None);
         }
 

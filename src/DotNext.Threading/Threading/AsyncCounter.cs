@@ -1,10 +1,11 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
+    using Tasks.Pooling;
+
     /// <summary>
     /// Represents a synchronization primitive that is signaled when its count becomes non zero.
     /// </summary>
@@ -16,33 +17,26 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
-        private struct LockManager : ILockManager<WaitNode>
+        private readonly ISupplier<DefaultWaitNode> pool;
+        private long counter;
+
+        /// <summary>
+        /// Initializes a new asynchronous counter.
+        /// </summary>
+        /// <param name="initialValue">The initial value of the counter.</param>
+        /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
+        public AsyncCounter(long initialValue, int concurrencyLevel)
         {
-            private long counter;
+            if (initialValue < 0L)
+                throw new ArgumentOutOfRangeException(nameof(initialValue));
 
-            internal LockManager(long value) => counter = value;
+            if (concurrencyLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            internal readonly long Count => counter.VolatileRead();
-
-            internal long Increment() => counter.IncrementAndGet();
-
-            internal long Decrement() => counter.DecrementAndGet();
-
-            internal bool Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
-
-            readonly WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
-
-            public bool TryAcquire()
-            {
-                if (counter == 0)
-                    return false;
-
-                counter -= 1;
-                return true;
-            }
+            counter = initialValue;
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel);
         }
-
-        private LockManager manager;
 
         /// <summary>
         /// Initializes a new asynchronous counter.
@@ -53,7 +47,18 @@ namespace DotNext.Threading
         {
             if (initialValue < 0L)
                 throw new ArgumentOutOfRangeException(nameof(initialValue));
-            manager = new LockManager(initialValue);
+
+            counter = initialValue;
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>();
+        }
+
+        private static bool TryDecrement(ref long counter)
+        {
+            if (counter.VolatileRead() == 0L)
+                return false;
+
+            counter.DecrementAndGet();
+            return true;
         }
 
         /// <inheritdoc/>
@@ -67,11 +72,11 @@ namespace DotNext.Threading
         /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
         /// blocking.
         /// </remarks>
-        public long Value => manager.Count;
+        public long Value => counter.VolatileRead();
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        bool IAsyncEvent.Reset() => manager.Reset();
+        bool IAsyncEvent.Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
 
         /// <summary>
         /// Increments counter and resume suspended callers.
@@ -81,17 +86,22 @@ namespace DotNext.Threading
         public void Increment()
         {
             ThrowIfDisposed();
-            manager.Increment();
-            for (WaitNode? current = first, next; current is not null && manager.Count > 0L; manager.Decrement(), current = next)
+            counter = checked(counter + 1L);
+
+            for (WaitNode? current = first as WaitNode, next; current is not null && counter.VolatileRead() > 0L; current = next)
             {
-                next = current.Next;
-                RemoveNode(current);
-                current.SetResult();
+                next = current.Next as WaitNode;
+
+                if (current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                    counter.DecrementAndGet();
+                }
             }
         }
 
         /// <inheritdoc/>
-        bool IAsyncEvent.Signal()
+        bool IAsyncEvent.Pulse()
         {
             Increment();
             return true;
@@ -106,14 +116,31 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if counter is decremented successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, false, token);
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+            => WaitNoTimeoutAsync(ref counter, &TryDecrement, pool, out _, timeout, token);
+
+        /// <summary>
+        /// Suspends caller if <see cref="Value"/> is zero
+        /// or just decrements it.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the waiting operation.</param>
+        /// <returns>The task representing asynchronous result.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask WaitAsync(CancellationToken token = default)
+            => WaitWithTimeoutAsync(ref counter, &TryDecrement, pool, out _, InfiniteTimeSpan, token);
 
         /// <summary>
         /// Attempts to decrement the counter synchronously.
         /// </summary>
         /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryDecrement() => manager.TryAcquire();
+        public bool TryDecrement()
+        {
+            ThrowIfDisposed();
+            return TryDecrement(ref counter);
+        }
     }
 }

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -19,16 +17,14 @@ namespace DotNext.Threading
                 Interlocked.Increment(ref instantiatedTasks);
             }
 
-            internal RegisteredWaitHandle Handle
+            internal RegisteredWaitHandle Registration
             {
                 set => handle = value;
             }
 
-            protected override void BeforeCompleted(Result<bool> result)
-                => Interlocked.Exchange(ref handle, null)?.Unregister(null);
-
             protected override void AfterConsumed()
             {
+                Interlocked.Exchange(ref handle, null)?.Unregister(null);
                 Interlocked.Decrement(ref instantiatedTasks);
                 backToPool(this);
             }
@@ -42,6 +38,11 @@ namespace DotNext.Threading
 
         private sealed class WaitHandleValueTaskPool : ConcurrentBag<WaitHandleValueTask>
         {
+            internal void Return(WaitHandleValueTask vt)
+            {
+                vt.Reset();
+                Add(vt);
+            }
         }
 
         private static readonly WaitHandleValueTaskPool HandlePool = new();

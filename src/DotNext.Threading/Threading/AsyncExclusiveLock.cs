@@ -1,37 +1,70 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
+    using Tasks.Pooling;
+
     /// <summary>
     /// Represents asynchronous mutually exclusive lock.
     /// </summary>
     public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
-        private struct LockManager : ILockManager<WaitNode>
+        [StructLayout(LayoutKind.Auto)]
+        private struct State
         {
-            internal volatile bool IsAcquired;
+            private volatile bool state;
 
-            public bool TryAcquire()
-            {
-                if (IsAcquired)
-                    return false;
-                IsAcquired = true;
-                return true;
-            }
+            internal readonly bool Value => state;
 
-            readonly WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
+            internal readonly bool IsLockAllowed => !state;
+
+            internal void AcquireLock() => state = true;
+
+            internal void ExitLock() => state = false;
         }
 
-        private LockManager manager;
+        private readonly ISupplier<DefaultWaitNode> pool;
+        private State state;
+
+        /// <summary>
+        /// Initializes a new asynchronous exclusive lock.
+        /// </summary>
+        /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
+        public AsyncExclusiveLock(int concurrencyLevel)
+        {
+            if (concurrencyLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel);
+        }
+
+        /// <summary>
+        /// Initializes a new asynchronous exclusive lock.
+        /// </summary>
+        public AsyncExclusiveLock()
+        {
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>();
+        }
 
         /// <summary>
         /// Indicates that exclusive lock taken.
         /// </summary>
-        public bool IsLockHeld => manager.IsAcquired;
+        public bool IsLockHeld => state.Value;
+
+        private static bool TryAcquire(ref State state)
+        {
+            if (state.IsLockAllowed)
+            {
+                state.AcquireLock();
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Attempts to obtain exclusive lock synchronously without blocking caller thread.
@@ -42,11 +75,8 @@ namespace DotNext.Threading
         public bool TryAcquire()
         {
             ThrowIfDisposed();
-            return manager.TryAcquire();
+            return TryAcquire(ref state);
         }
-
-        private Task<bool> AcquireAsync(TimeSpan timeout, bool throwOnTimeout, CancellationToken token)
-            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, throwOnTimeout, token);
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -56,18 +86,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token)
-            => AcquireAsync(timeout, false, token);
-
-        /// <summary>
-        /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquireAsync(TimeSpan timeout)
-            => AcquireAsync(timeout, false, CancellationToken.None); // TODO: Add TryAcquireAsync(CancellationToken) overload
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
+            => WaitNoTimeoutAsync(ref state, &TryAcquire, pool, out _, timeout, token);
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -78,8 +100,10 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-            => AcquireAsync(timeout, true, token);
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
+            => WaitWithTimeoutAsync(ref state, &TryAcquire, pool, out _, timeout, token);
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -88,8 +112,36 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task AcquireAsync(CancellationToken token = default)
-            => AcquireAsync(InfiniteTimeSpan, false, token);
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public ValueTask AcquireAsync(CancellationToken token = default)
+            => AcquireAsync(InfiniteTimeSpan, token);
+
+        private protected sealed override void DrainWaitQueue()
+        {
+            Debug.Assert(Monitor.IsEntered(this));
+
+            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+            {
+                next = current.Next as WaitNode;
+
+                if (current.IsCompleted)
+                {
+                    RemoveNode(current);
+                    continue;
+                }
+
+                if (!state.IsLockAllowed)
+                    break;
+
+                // skip dead node
+                if (current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                    state.AcquireLock();
+                    break;
+                }
+            }
+        }
 
         /// <summary>
         /// Releases previously acquired exclusive lock.
@@ -100,35 +152,20 @@ namespace DotNext.Threading
         public void Release()
         {
             ThrowIfDisposed();
-            if (!manager.IsAcquired)
-                throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            if (ProcessDisposeQueue())
-                return;
+            if (!state.Value)
+                throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            if (first is null)
+            state.ExitLock();
+            if (IsDisposeRequested)
             {
-                manager.IsAcquired = false;
+                Dispose(true);
             }
             else
             {
-                first.SetResult();
-                RemoveNode(first);
+                DrainWaitQueue();
             }
         }
 
-        /// <summary>
-        /// Disposes this lock asynchronously and gracefully.
-        /// </summary>
-        /// <remarks>
-        /// If this lock is not acquired then the method just completes synchronously.
-        /// Otherwise, it waits for calling of <see cref="Release"/> method.
-        /// </remarks>
-        /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public unsafe ValueTask DisposeAsync()
-        {
-            return IsDisposed ? new ValueTask() : DisposeAsync(this, &CheckLockState);
-
-            static bool CheckLockState(AsyncExclusiveLock obj) => obj.IsLockHeld;
-        }
+        private protected sealed override bool IsReadyToDispose => state.Value is false;
     }
 }

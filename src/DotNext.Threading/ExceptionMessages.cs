@@ -13,11 +13,7 @@ namespace DotNext
 
         internal static string CollectionIsEmpty => (string)Resources.Get();
 
-        internal static string NotInWriteLock => (string)Resources.Get();
-
-        internal static string NotInReadLock => (string)Resources.Get();
-
-        internal static string NotInUpgradeableReadLock => (string)Resources.Get();
+        internal static string NotInLock => (string)Resources.Get();
 
         internal static string TokenNotCancelable => (string)Resources.Get();
 
@@ -26,5 +22,7 @@ namespace DotNext
         internal static string EmptyValueDelegate => (string)Resources.Get();
 
         internal static string TerminatedExchange => (string)Resources.Get();
+
+        internal static string EmptyWaitQueue => (string)Resources.Get();
     }
 }

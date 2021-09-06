@@ -1,216 +1,89 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
-    using static Runtime.Intrinsics;
+    using Tasks.Pooling;
 
     /// <summary>
-    /// Represents asynchronous trigger which allows to resume suspended
-    /// callers based on registered conditions.
+    /// Represents asynchronous trigger that allows to resume and suspend
+    /// concurrent flows.
     /// </summary>
     public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct LockManager : ILockManager<WaitNode>
-        {
-            bool ILockManager<WaitNode>.TryAcquire() => false;
+        private readonly ISupplier<DefaultWaitNode> pool;
 
-            WaitNode ILockManager<WaitNode>.CreateNode() => new WaitNode();
+        /// <summary>
+        /// Initializes a new trigger.
+        /// </summary>
+        public AsyncTrigger()
+        {
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>();
         }
 
-        private abstract class ConditionalNode : WaitNode, ISupplier<object, bool>
+        /// <summary>
+        /// Initializes a new trigger.
+        /// </summary>
+        /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
+        public AsyncTrigger(int concurrencyLevel)
         {
-            public abstract bool Invoke(object state);
-        }
+            if (concurrencyLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        private sealed class WaitNode<TState> : ConditionalNode
-            where TState : class
-        {
-            private readonly Predicate<TState> predicate;
-
-            internal WaitNode(Predicate<TState> condition) => predicate = condition;
-
-            public override bool Invoke(object state)
-                => state is TState typedState && predicate(typedState);
-        }
-
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct ConditionalLockManager<TState> : ILockManager<WaitNode<TState>>
-            where TState : class
-        {
-            private readonly Predicate<TState> condition;
-            private readonly TState state;
-
-            internal ConditionalLockManager(TState state, Predicate<TState> condition)
-            {
-                this.state = state;
-                this.condition = condition;
-            }
-
-            bool ILockManager<WaitNode<TState>>.TryAcquire() => condition(state);
-
-            WaitNode<TState> ILockManager<WaitNode<TState>>.CreateNode() => new WaitNode<TState>(condition);
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel);
         }
 
         /// <inheritdoc/>
         bool IAsyncEvent.Reset() => false;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ResumeAndRemove(WaitNode node)
+        /// <summary>
+        /// Resumes all suspended callers.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void PulseAll()
         {
-            Debug.Assert(Monitor.IsEntered(this));
+            ThrowIfDisposed();
 
-            node.SetResult();
-            RemoveNode(node);
+            ResumeSuspendedCallers();
         }
 
-        private void ResumePendingCallers()
+        /// <summary>
+        /// Resumes the first suspended caller in the wait queue.
+        /// </summary>
+        /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool Pulse()
         {
-            Debug.Assert(Monitor.IsEntered(this));
+            ThrowIfDisposed();
 
-            // triggers only stateless nodes
-            for (WaitNode? current = first, next; current is not null; current = next)
+            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
             {
-                next = current.Next;
-                if (IsExactTypeOf<WaitNode>(current))
-                    ResumeAndRemove(current);
-            }
-        }
+                next = current.Next as WaitNode;
 
-        private void ResumePendingCallers<TState>(TState state, bool fairness)
-            where TState : class
-        {
-            Debug.Assert(Monitor.IsEntered(this));
-
-            for (WaitNode? current = first, next; current is not null; current = next)
-            {
-                next = current.Next;
-                if (current is ConditionalNode conditional && !conditional.Invoke(state))
+                if (current.IsCompleted)
                 {
-                    if (fairness)
-                        break;
-                    else
-                        continue;
+                    RemoveNode(current);
+                    continue;
                 }
 
-                ResumeAndRemove(current);
+                if (current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                    return true;
+                }
             }
-        }
 
-        /// <summary>
-        /// Signals to all suspended callers that do not rely on state.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal() // TODO: Rename to Pulse to be aligned with AsyncCorrelationSource
-        {
-            ThrowIfDisposed();
-            ResumePendingCallers();
-        }
-
-        /// <summary>
-        /// Signals to all suspended callers about the new state.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <param name="state">The new state of the trigger.</param>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        public void Signal<TState>(TState state) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => Signal(state, false);
-
-        /// <summary>
-        /// Signals to single or all suspended callers about the new state.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <param name="state">The new state of the trigger.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal<TState>(TState state, bool fairness) // TODO: Split to Pulse and PulseAll
-            where TState : class
-        {
-            ThrowIfDisposed();
-            ResumePendingCallers(state, fairness);
-        }
-
-        /// <summary>
-        /// Signals to all suspended callers about the new state.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <typeparam name="TArgs">The type of the arguments of state mutator.</typeparam>
-        /// <param name="state">The state to be modified.</param>
-        /// <param name="mutator">State mutation.</param>
-        /// <param name="args">The arguments to be passed to the mutator.</param>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        public void Signal<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => Signal(state, mutator, args, false);
-
-        /// <summary>
-        /// Signals to all suspended callers about the new state.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <typeparam name="TArgs">The type of the arguments of state mutator.</typeparam>
-        /// <param name="state">The state to be modified.</param>
-        /// <param name="mutator">State mutation.</param>
-        /// <param name="args">The arguments to be passed to the mutator.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, bool fairness)
-            where TState : class
-        {
-            ThrowIfDisposed();
-            mutator(state, args);
-            ResumePendingCallers(state, fairness);
-        }
-
-        /// <summary>
-        /// Signals to all suspended callers about the new state.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <param name="state">The state to be modified.</param>
-        /// <param name="mutator">State mutation.</param>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        public void Signal<TState>(TState state, Action<TState> mutator) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => Signal(state, mutator, false);
-
-        /// <summary>
-        /// Signals to all suspended callers about the new state.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <param name="state">The state to be modified.</param>
-        /// <param name="mutator">State mutation.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal<TState>(TState state, Action<TState> mutator, bool fairness)
-            where TState : class
-        {
-            ThrowIfDisposed();
-            mutator.Invoke(state);
-            ResumePendingCallers(state, fairness);
+            return false;
         }
 
         /// <inheritdoc/>
         bool IAsyncEvent.IsSet => first is null;
 
-        /// <inheritdoc/>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        bool IAsyncEvent.Signal()
-        {
-            ThrowIfDisposed();
-            var queueNotEmpty = first is not null;
-            ResumePendingCallers();
-            return queueNotEmpty;
-        }
+        internal static bool AlwaysFalse(ref ValueTuple timeout) => false;
 
         /// <summary>
         /// Suspends the caller and waits for the signal.
@@ -223,316 +96,401 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="Signal"/>
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        /// <seealso cref="PulseAll"/>
+        /// <seealso cref="Pulse"/>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var manager = new LockManager();
-            return WaitAsync<WaitNode, LockManager>(ref manager, timeout, false, token);
+            var tuple = ValueTuple.Create();
+            return WaitNoTimeoutAsync(ref tuple, &AlwaysFalse, pool, out _, timeout, token);
+        }
+
+        /// <summary>
+        /// Suspends the caller and waits for the signal.
+        /// </summary>
+        /// <remarks>
+        /// This method always suspends the caller.
+        /// </remarks>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <seealso cref="PulseAll"/>
+        /// <seealso cref="Pulse"/>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask WaitAsync(CancellationToken token = default)
+        {
+            var tuple = ValueTuple.Create();
+            return WaitWithTimeoutAsync(ref tuple, &AlwaysFalse, pool, out _, InfiniteTimeSpan, token);
+        }
+
+        /// <summary>
+        /// Resumes the first suspended caller in the queue and suspends the immediate caller.
+        /// </summary>
+        /// <param name="throwOnEmptyQueue">
+        /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
+        /// <see langword="false"/> to suspend the caller.
+        /// </param>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public ValueTask<bool> PulseAndWaitAsync(bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            return !Pulse() && throwOnEmptyQueue
+                ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+                : WaitAsync(timeout, token);
+        }
+
+        /// <summary>
+        /// Resumes the first suspended caller in the queue and suspends the immediate caller.
+        /// </summary>
+        /// <param name="throwOnEmptyQueue">
+        /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
+        /// <see langword="false"/> to suspend the caller.
+        /// </param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public ValueTask PulseAndWaitAsync(bool throwOnEmptyQueue, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            Pulse();
+            return WaitAsync(token);
+        }
+
+        /// <summary>
+        /// Resumes all suspended callers in the queue and suspens the immediate caller.
+        /// </summary>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public ValueTask<bool> PulseAllAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            PulseAll();
+            return WaitAsync(timeout, token);
+        }
+
+        /// <summary>
+        /// Resumes all suspended callers in the queue and suspens the immediate caller.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public ValueTask PulseAllAndWaitAsync(CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            PulseAll();
+            return WaitAsync(token);
+        }
+    }
+
+    /// <summary>
+    /// Represents asynchronous trigger that allows to resume and suspend
+    /// concurrent flows.
+    /// </summary>
+    /// <typeparam name="TState">The external state used for coordination.</typeparam>
+    public class AsyncTrigger<TState> : QueuedSynchronizer
+        where TState : class
+    {
+        private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+        {
+            private readonly Action<WaitNode> backToPool;
+            internal volatile IConditionalAction<TState>? Trigger;
+
+            private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
+
+            protected override void AfterConsumed()
+            {
+                Trigger = null;
+                base.AfterConsumed();
+                backToPool(this);
+            }
+
+            public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
+        }
+
+        private readonly ISupplier<WaitNode> pool;
+
+        /// <summary>
+        /// Initializes a new trigger.
+        /// </summary>
+        public AsyncTrigger()
+        {
+            pool = new UnconstrainedValueTaskPool<WaitNode>();
+        }
+
+        /// <summary>
+        /// Initializes a new trigger.
+        /// </summary>
+        /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
+        public AsyncTrigger(int concurrencyLevel)
+        {
+            if (concurrencyLevel < 1)
+                throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+
+            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel);
+        }
+
+        private static bool EnsureState(ref (TState, IConditionalAction<TState>) args)
+        {
+            if (args.Item2.Test(args.Item1))
+            {
+                args.Item2.Execute(args.Item1);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Resumes the first suspended caller in the wait queue.
+        /// </summary>
+        /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool Pulse(TState state)
+        {
+            ThrowIfDisposed();
+
+            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+            {
+                next = current.Next as WaitNode;
+
+                if (current.IsCompleted)
+                {
+                    RemoveNode(current);
+                    continue;
+                }
+
+                var trigger = current.Trigger;
+
+                if ((trigger?.Test(state) ?? true) && current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                    trigger?.Execute(state);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Resumes all suspended callers.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void PulseAll(TState state)
+        {
+            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+            {
+                next = current.Next as WaitNode;
+
+                if (current.IsCompleted)
+                {
+                    RemoveNode(current);
+                    continue;
+                }
+
+                var trigger = current.Trigger;
+
+                if ((trigger?.Test(state) ?? true) && current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                    trigger?.Execute(state);
+                }
+            }
         }
 
         /// <summary>
         /// Ensures that the object has expected state.
         /// </summary>
         /// <remarks>
-        /// This is synchronous version of <see cref="WaitAsync{TState}(TState, Predicate{TState}, TimeSpan, CancellationToken)"/>
+        /// This is synchronous version of <see cref="WaitAsync(TState, IConditionalAction{TState}, TimeSpan, CancellationToken)"/>
         /// with fail-fast behavior.
         /// </remarks>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
         /// <param name="state">The state to be inspected by predicate.</param>
         /// <param name="condition">The condition to be examined immediately.</param>
         /// <returns>The result of <paramref name="condition"/> invocation.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool EnsureState<TState>(TState state, Predicate<TState> condition)
-            where TState : class
+        public bool EnsureState(TState state, IConditionalAction<TState> condition)
         {
             ThrowIfDisposed();
-            return condition(state);
+
+            var args = (state, condition);
+            return EnsureState(ref args);
         }
 
         /// <summary>
-        /// Suspends the caller and waits for the event that meets to the specified condition.
+        /// Suspends the caller and waits for the signal.
         /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="condition">The condition to wait for.</param>
+        /// <remarks>
+        /// This method always suspends the caller.
+        /// </remarks>
+        /// <param name="state">The shared state used for coordination.</param>
+        /// <param name="condition">The object that describes the action that should be invoked if specific condition met.</param>
         /// <param name="timeout">The time to wait for the signal.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> WaitAsync<TState>(TState state, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
-            where TState : class
-        {
-            var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
-        }
-
-        /// <summary>
-        /// Suspends the caller and waits for the event that meets to the specified condition.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task WaitAsync<TState>(TState state, Predicate<TState> condition, CancellationToken token = default)
-           where TState : class
-           => WaitAsync(state, condition, InfiniteTimeSpan, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the signal.
-        /// </summary>
-        /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <seealso cref="PulseAll"/>
+        /// <seealso cref="Pulse"/>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
+        public unsafe ValueTask<bool> WaitAsync(TState state, IConditionalAction<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
-            ThrowIfDisposed();
-            ResumePendingCallers();
-            return WaitAsync(timeout, token);
+            var args = (state, condition);
+            var result = WaitNoTimeoutAsync(ref args, &EnsureState, pool, out var node, timeout, token);
+            if (node is not null)
+                node.Trigger = condition;
+
+            return result;
         }
 
         /// <summary>
-        /// Signals to all suspended callers and waits for the signal.
+        /// Suspends the caller and waits for the signal.
         /// </summary>
+        /// <remarks>
+        /// This method always suspends the caller.
+        /// </remarks>
+        /// <param name="state">The shared state used for coordination.</param>
+        /// <param name="condition">The object that describes the action that should be invoked if specific condition met.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync(CancellationToken token = default)
-            => SignalAndWaitAsync(InfiniteTimeSpan, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> SignalAndWaitAsync<TState>(TState state, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => SignalAndWaitAsync(state, condition, timeout, false, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <seealso cref="PulseAll"/>
+        /// <seealso cref="Pulse"/>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWaitAsync<TState>(TState state, Predicate<TState> condition, TimeSpan timeout, bool fairness, CancellationToken token = default)
-            where TState : class
+        public unsafe ValueTask WaitAsync(TState state, IConditionalAction<TState> condition, CancellationToken token = default)
         {
-            ThrowIfDisposed();
-            ResumePendingCallers(state, fairness);
-            var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
+            var args = (state, condition);
+            var result = WaitWithTimeoutAsync(ref args, &EnsureState, pool, out var node, InfiniteTimeSpan, token);
+            if (node is not null)
+                node.Trigger = condition;
+
+            return result;
         }
 
         /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
+        /// Resumes the first suspended caller in the queue and suspends the immediate caller.
         /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState>(TState state, Predicate<TState> condition, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => SignalAndWaitAsync(state, condition, false, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState>(TState state, Predicate<TState> condition, bool fairness, CancellationToken token = default)
-            where TState : class
-            => SignalAndWaitAsync(state, condition, InfiniteTimeSpan, fairness, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <typeparam name="TArgs">The type of the arguments of mutation action.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="args">The arguments to be passed to the action.</param>
-        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="state">The shared state used for coordination.</param>
+        /// <param name="condition">The object that describes the action that should be invoked if specific condition met.</param>
+        /// <param name="mutator">The action that is invoked to modify the shared state.</param>
+        /// <param name="throwOnEmptyQueue">
+        /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
+        /// <see langword="false"/> to suspend the caller.
+        /// </param>
         /// <param name="timeout">The time to wait for the signal.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => SignalAndWaitAsync(state, mutator, args, condition, timeout, false, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <typeparam name="TArgs">The type of the arguments of mutation action.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="args">The arguments to be passed to the action.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, TimeSpan timeout, bool fairness, CancellationToken token = default)
-            where TState : class
-        {
-            ThrowIfDisposed();
-            mutator(state, args);
-            ResumePendingCallers(state, fairness);
-            var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
-        }
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <typeparam name="TArgs">The type of the arguments of mutation action.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="args">The arguments to be passed to the action.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
-           where TState : class
-           => SignalAndWaitAsync(state, mutator, args, condition, false, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <typeparam name="TArgs">The type of the arguments of mutation action.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="args">The arguments to be passed to the action.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, bool fairness, CancellationToken token = default)
-           where TState : class
-           => SignalAndWaitAsync(state, mutator, args, condition, InfiniteTimeSpan, fairness, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => SignalAndWaitAsync(state, mutator, condition, timeout, false, token);
-
-        /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
-        /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
-        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, TimeSpan timeout, bool fairness, CancellationToken token = default)
-            where TState : class
+        public unsafe ValueTask<bool> PulseAndWaitAsync(TState state, IConditionalAction<TState> condition, Action<TState> mutator, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
         {
             ThrowIfDisposed();
             mutator(state);
-            ResumePendingCallers(state, fairness);
-            var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, false, token);
+            return !Pulse(state) && throwOnEmptyQueue
+                ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+                : WaitAsync(state, condition, timeout, token);
         }
 
         /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
+        /// Resumes the first suspended caller in the queue and suspends the immediate caller.
         /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="state">The shared state used for coordination.</param>
+        /// <param name="condition">The object that describes the action that should be invoked if specific condition met.</param>
+        /// <param name="mutator">The action that is invoked to modify the shared state.</param>
+        /// <param name="throwOnEmptyQueue">
+        /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
+        /// <see langword="false"/> to suspend the caller.
+        /// </param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, CancellationToken token = default) // TODO: Remove in future versions and add fairness=false as default parameter value
-            where TState : class
-            => SignalAndWaitAsync(state, mutator, condition, false, token);
+        /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask PulseAndWaitAsync(TState state, IConditionalAction<TState> condition, Action<TState> mutator, bool throwOnEmptyQueue, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            mutator(state);
+            return !Pulse(state) && throwOnEmptyQueue
+                ? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+                : WaitAsync(state, condition, token);
+        }
 
         /// <summary>
-        /// Signals to all suspended callers and waits for the event that meets to the specified condition
-        /// atomically.
+        /// Resumes the first suspended caller in the queue and suspends the immediate caller.
         /// </summary>
-        /// <typeparam name="TState">The type of the state to be inspected.</typeparam>
-        /// <param name="state">The state to be inspected by predicate.</param>
-        /// <param name="mutator">State mutation action.</param>
-        /// <param name="condition">The condition to wait for.</param>
-        /// <param name="fairness"><see langword="true"/> to resume suspended callers in order as they were added to the wait queue; <see langword="false"/> to resume all suspended callers regardless of the ordering.</param>
+        /// <typeparam name="TArgs">The type of the arguments to be passed to the state mutator.</typeparam>
+        /// <param name="state">The shared state used for coordination.</param>
+        /// <param name="condition">The object that describes the action that should be invoked if specific condition met.</param>
+        /// <param name="mutator">The action that is invoked to modify the shared state.</param>
+        /// <param name="args">The arguments to be passed to the state mutator.</param>
+        /// <param name="throwOnEmptyQueue">
+        /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
+        /// <see langword="false"/> to suspend the caller.
+        /// </param>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask<bool> PulseAndWaitAsync<TArgs>(TState state, IConditionalAction<TState> condition, Action<TState, TArgs> mutator, TArgs args, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            mutator(state, args);
+            return !Pulse(state) && throwOnEmptyQueue
+                ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+                : WaitAsync(state, condition, timeout, token);
+        }
+
+        /// <summary>
+        /// Resumes the first suspended caller in the queue and suspends the immediate caller.
+        /// </summary>
+        /// <typeparam name="TArgs">The type of the arguments to be passed to the state mutator.</typeparam>
+        /// <param name="state">The shared state used for coordination.</param>
+        /// <param name="condition">The object that describes the action that should be invoked if specific condition met.</param>
+        /// <param name="mutator">The action that is invoked to modify the shared state.</param>
+        /// <param name="args">The arguments to be passed to the state mutator.</param>
+        /// <param name="throwOnEmptyQueue">
+        /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
+        /// <see langword="false"/> to suspend the caller.
+        /// </param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, bool fairness, CancellationToken token = default)
-            where TState : class
-            => SignalAndWaitAsync(state, mutator, condition, InfiniteTimeSpan, fairness, token);
+        /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public unsafe ValueTask PulseAndWaitAsync<TArgs>(TState state, IConditionalAction<TState> condition, Action<TState, TArgs> mutator, TArgs args, bool throwOnEmptyQueue, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            mutator(state, args);
+            return !Pulse(state) && throwOnEmptyQueue
+                ? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+                : WaitAsync(state, condition, token);
+        }
     }
 }

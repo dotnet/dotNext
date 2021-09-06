@@ -1,102 +1,77 @@
-using System;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
-    using Generic;
     using Tasks;
+    using Tasks.Pooling;
+    using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
     /// </summary>
-    /// <remarks>
-    /// Derived synchronization primitives less efficient in terms of memory pressure when compared with <see cref="Synchronizer">non-queued synchronization primitives</see>.
-    /// It provides the individual instance of <see cref="Task{TResult}"/> under contention for each waiter in the queue.
-    /// </remarks>
-    public abstract class QueuedSynchronizer : Disposable, ISynchronizer
+    public class QueuedSynchronizer : Disposable
     {
-        private protected class WaitNode : ISynchronizer.WaitNode
+        private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
         {
-            private WaitNode? previous;
-            private WaitNode? next;
+            private volatile Action<WaitNode>? completedHandler;
+            internal bool ThrowOnTimeout;
+            private Timestamp createdAt;
 
-            internal WaitNode()
+            internal void ResetAge() => createdAt = Timestamp.Current;
+
+            protected sealed override Result<bool> OnTimeout() => ThrowOnTimeout ? base.OnTimeout() : false;
+
+            protected override void AfterConsumed()
+                => Interlocked.Exchange(ref completedHandler, null)?.Invoke(this);
+
+            internal new Action<WaitNode>? OnCompleted
             {
+                set => completedHandler = value;
             }
 
-            internal WaitNode(WaitNode previous)
-            {
-                previous.next = this;
-                this.previous = previous;
-            }
-
-            internal void DetachNode()
-            {
-                if (previous is not null)
-                    previous.next = next;
-                if (next is not null)
-                    next.previous = previous;
-                next = previous = null;
-            }
-
-            internal WaitNode? CleanupAndGotoNext()
-            {
-                var next = this.next;
-                this.next = previous = null;
-                return next;
-            }
-
-            internal void Append(WaitNode node)
-            {
-                node.next = next;
-                node.previous = this;
-                next = node;
-            }
-
-            internal void Prepend(WaitNode node)
-            {
-                node.next = this;
-                node.previous = previous;
-                previous = node;
-            }
-
-            internal WaitNode? Previous => previous;
-
-            internal WaitNode? Next => next;
-
-            internal bool IsNotRoot => previous is not null || next is not null;
+            internal TimeSpan Age => createdAt.Elapsed;
         }
 
-        private protected interface ILockManager<TNode>
-            where TNode : WaitNode
+        private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
         {
-            bool TryAcquire();  // if true then Wait method can be completed synchronously; otherwise, false.
+            private readonly Action<DefaultWaitNode> backToPool;
 
-            TNode CreateNode();
-        }
+            private DefaultWaitNode(Action<DefaultWaitNode> backToPool) => this.backToPool = backToPool;
 
-        private sealed class DisposeAsyncNode : WaitNode
-        {
-            internal DisposeAsyncNode()
+            protected override void AfterConsumed()
             {
+                base.AfterConsumed(); // remove from the linked list
+                backToPool(this);
             }
 
-            internal DisposeAsyncNode(WaitNode previous)
-                : base(previous)
-            {
-            }
+            public static DefaultWaitNode CreateSource(Action<DefaultWaitNode> backToPool) => new(backToPool);
         }
 
         private readonly Action<double>? contentionCounter, lockDurationCounter;
-        private protected WaitNode? first, last;
+        private readonly Action<WaitNode> removeFromList;
+        private readonly TaskCompletionSource disposeTask;
+        private protected LinkedValueTaskCompletionSource<bool>? first, last;
 
         private protected QueuedSynchronizer()
         {
+            disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            removeFromList = RemoveAndDrainWaitQueue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void RemoveAndDrainWaitQueue(WaitNode node)
+        {
+            if (RemoveNode(node))
+                DrainWaitQueue();
+        }
+
+        private protected bool IsDisposeRequested
+        {
+            get;
+            private set;
         }
 
         /// <summary>
@@ -115,91 +90,32 @@ namespace DotNext.Threading
             init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
         }
 
-        /// <inheritdoc/>
-        bool ISynchronizer.HasAnticipants => first is not null;
-
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected bool RemoveNode(WaitNode node)
         {
-            var inList = false;
-            if (ReferenceEquals(first, node))
-            {
+            bool isFirst;
+            if (isFirst = ReferenceEquals(first, node))
                 first = node.Next;
-                inList = true;
-            }
 
             if (ReferenceEquals(last, node))
-            {
                 last = node.Previous;
-                inList = true;
-            }
 
-            inList |= node.IsNotRoot;
-            node.DetachNode();
+            node.Detach();
             lockDurationCounter?.Invoke(node.Age.TotalMilliseconds);
-            return inList;
+
+            return isFirst;
         }
 
-        private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, bool throwOnTimeout, CancellationToken token)
+        private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
+
+        private void EnqueueNode(WaitNode node, bool throwOnTimeout)
         {
             Debug.Assert(Monitor.IsEntered(this));
 
-            // cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-            {
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   // ensure that Delay task is cancelled
-                    return true;
-                }
-            }
+            node.ThrowOnTimeout = throwOnTimeout;
+            node.OnCompleted = removeFromList;
+            node.ResetAge();
 
-            if (RemoveNode(node))
-            {
-                token.ThrowIfCancellationRequested();
-                return false;
-            }
-
-            return throwOnTimeout ? throw new TimeoutException() : await node.Task.ConfigureAwait(false);
-        }
-
-        private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
-        {
-            Debug.Assert(Monitor.IsEntered(this));
-            Debug.Assert(token.CanBeCanceled);
-
-            using (var cancellationTask = new CancelableCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously, token))
-            {
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, cancellationTask).ConfigureAwait(false)))
-                    return true;
-            }
-
-            if (RemoveNode(node))
-            {
-                token.ThrowIfCancellationRequested();
-                return false;
-            }
-
-            return await node.Task.ConfigureAwait(false);
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> WaitAsync<TNode, TManager>(ref TManager manager, TimeSpan timeout, bool throwOnTimeout, CancellationToken token)
-            where TNode : WaitNode
-            where TManager : struct, ILockManager<TNode>
-        {
-            if (IsDisposed)
-                return GetDisposedTask<bool>();
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                return Task.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-            if (token.IsCancellationRequested)
-                return Task.FromCanceled<bool>(token);
-            if (manager.TryAcquire())
-                return CompletedTask<bool, BooleanConst.True>.Task;
-            if (timeout == TimeSpan.Zero)
-                return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
-
-            var node = manager.CreateNode();
             if (last is null)
             {
                 first = last = node;
@@ -211,16 +127,67 @@ namespace DotNext.Threading
             }
 
             contentionCounter?.Invoke(1L);
-            return timeout == InfiniteTimeSpan ?
-                token.CanBeCanceled ? WaitAsync(node, token) : node.Task
-                : WaitAsync(node, timeout, throwOnTimeout, token);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected static bool TryAcquire<TNode, TManager>(ref TManager manager)
+        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, ISupplier<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+            where TContext : struct
             where TNode : WaitNode
-            where TManager : struct, ILockManager<TNode>
-            => manager.TryAcquire();
+        {
+            Debug.Assert(Monitor.IsEntered(this));
+            Debug.Assert(probe != null);
+
+            node = null;
+
+            if (IsDisposed || IsDisposeRequested)
+                return new(DisposedTask);
+
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+
+            if (token.IsCancellationRequested)
+                return ValueTask.FromCanceled(token);
+
+            if (probe(ref context))
+                return ValueTask.CompletedTask;
+
+            if (timeout == TimeSpan.Zero)
+                return ValueTask.FromException(new TimeoutException());
+
+            node = pool.Invoke();
+            EnqueueNode(node, true);
+
+            return node.As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
+        }
+
+        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, ISupplier<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+            where TContext : struct
+            where TNode : WaitNode
+        {
+            Debug.Assert(Monitor.IsEntered(this));
+            Debug.Assert(probe != null);
+
+            node = null;
+
+            if (IsDisposed || IsDisposeRequested)
+                return new(GetDisposedTask<bool>());
+
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+                return ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+
+            if (token.IsCancellationRequested)
+                return ValueTask.FromCanceled<bool>(token);
+
+            if (probe(ref context))
+                return new(true);
+
+            if (timeout == TimeSpan.Zero)
+                return new(false);    // if timeout is zero fail fast
+
+            node = pool.Invoke();
+            EnqueueNode(node, false);
+
+            return node.CreateTask(timeout, token);
+        }
 
         /// <summary>
         /// Cancels all suspended callers.
@@ -232,7 +199,8 @@ namespace DotNext.Threading
         {
             if (!token.IsCancellationRequested)
                 throw new ArgumentOutOfRangeException(nameof(token));
-            for (WaitNode? current = first, next; current is not null; current = next)
+
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 current.TrySetCanceled(token);
@@ -241,84 +209,32 @@ namespace DotNext.Threading
             first = last = null;
         }
 
-        private protected bool ProcessDisposeQueue()
+        private protected void ResumeSuspendedCallers()
         {
             Debug.Assert(Monitor.IsEntered(this));
 
-            if (first is DisposeAsyncNode disposeNode)
+            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
             {
-                disposeNode.SetResult();
-                RemoveNode(disposeNode);
-                Dispose();
-                return true;
-            }
+                next = current.Next as WaitNode;
 
-            return false;
+                if (current.IsCompleted || current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                }
+            }
         }
 
         private void NotifyObjectDisposed()
         {
             var e = new ObjectDisposedException(GetType().Name);
 
-            for (WaitNode? current = first, next; current is not null; current = next)
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
-                if (current is DisposeAsyncNode disposeNode)
-                    disposeNode.SetResult();
-                else
-                    current.TrySetException(e);
+                current.TrySetException(e);
             }
 
             first = last = null;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected static bool IsTerminalNode(WaitNode? node)
-            => node is DisposeAsyncNode;
-
-        private Task DisposeAsync()
-        {
-            Debug.Assert(Monitor.IsEntered(this));
-
-            DisposeAsyncNode disposeNode;
-            if (last is null)
-                first = last = disposeNode = new DisposeAsyncNode();
-            else
-                last = disposeNode = new DisposeAsyncNode(last);
-
-            return disposeNode.Task;
-        }
-
-        private protected static unsafe ValueTask DisposeAsync<T>(T synchronizer, delegate*<T, bool> lockStateChecker)
-            where T : QueuedSynchronizer
-        {
-            ValueTask result;
-            var lockTaken = false;
-            try
-            {
-                Monitor.Enter(synchronizer, ref lockTaken);
-
-                if (lockStateChecker(synchronizer))
-                {
-                    result = new(synchronizer.DisposeAsync());
-                }
-                else
-                {
-                    synchronizer.Dispose();
-                    result = new();
-                }
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException(e);
-            }
-            finally
-            {
-                if (lockTaken)
-                    Monitor.Exit(synchronizer);
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -330,12 +246,38 @@ namespace DotNext.Threading
         /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
+            IsDisposeRequested = true;
+
             if (disposing)
             {
                 NotifyObjectDisposed();
+                disposeTask.TrySetResult();
             }
 
             base.Dispose(disposing);
         }
+
+        private protected virtual bool IsReadyToDispose => true;
+
+        /// <inheritdoc />
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override ValueTask DisposeAsyncCore()
+        {
+            IsDisposeRequested = true;
+
+            if (IsReadyToDispose)
+            {
+                Dispose(true);
+                return ValueTask.CompletedTask;
+            }
+
+            return new(disposeTask.Task);
+        }
+
+        /// <summary>
+        /// Disposes this synchronization primitive gracefully.
+        /// </summary>
+        /// <returns>The task representing asynchronous result.</returns>
+        public ValueTask DisposeAsync() => DisposeAsync(true);
     }
 }

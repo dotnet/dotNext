@@ -49,6 +49,11 @@ namespace DotNext.Threading
         // chance of multiple exchange points is very small so use concurrent bag
         private sealed class ExchangePointPool : ConcurrentBag<ExchangePoint>
         {
+            internal void Return(ExchangePoint point)
+            {
+                point.Reset();
+                Add(point);
+            }
         }
 
         private readonly TaskCompletionSource disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -60,7 +65,7 @@ namespace DotNext.Threading
         private ExchangePoint RentExchangePoint(T value)
         {
             if (!pool.TryTake(out var result))
-                result = new(pool.Add);
+                result = new(pool.Return);
 
             result.Value = value;
             return result;
@@ -104,7 +109,6 @@ namespace DotNext.Threading
             else
             {
                 point = RentExchangePoint(value);
-                point.Reset();
                 result = point.CreateTask(timeout, token);
             }
 
@@ -218,7 +222,7 @@ namespace DotNext.Threading
 
             if (point?.IsCompleted ?? true)
             {
-                Dispose();
+                Dispose(true);
                 return ValueTask.CompletedTask;
             }
 

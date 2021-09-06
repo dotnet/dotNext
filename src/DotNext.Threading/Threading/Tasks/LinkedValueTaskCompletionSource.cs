@@ -1,36 +1,30 @@
-using System;
-
 namespace DotNext.Threading.Tasks
 {
-    internal abstract class LinkedValueTaskCompletionSource<T, TNode> : ValueTaskCompletionSource<T>
-        where TNode : LinkedValueTaskCompletionSource<T, TNode>
+    internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletionSource<T>
     {
-        private readonly Action<TNode> backToPool;
-        private TNode? previous, next;
+        private LinkedValueTaskCompletionSource<T>? previous, next;
 
-        private protected LinkedValueTaskCompletionSource(Action<TNode> backToPool)
+        private protected LinkedValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
+            : base(runContinuationsAsynchronously)
         {
-            this.backToPool = backToPool;
         }
 
-        internal TNode? Next => next;
+        internal LinkedValueTaskCompletionSource<T>? Next => next;
 
-        internal TNode? Previous => previous;
+        internal LinkedValueTaskCompletionSource<T>? Previous => previous;
 
         internal bool IsNotRoot => next is not null || previous is not null;
 
-        private protected abstract TNode CurrentNode { get; }
-
-        internal void Append(TNode node)
+        internal void Append(LinkedValueTaskCompletionSource<T> node)
         {
             node.next = next;
-            node.previous = CurrentNode;
+            node.previous = this;
             next = node;
         }
 
-        internal void Prepend(TNode node)
+        internal void Prepend(LinkedValueTaskCompletionSource<T> node)
         {
-            node.next = CurrentNode;
+            node.next = this;
             node.previous = previous;
             previous = node;
         }
@@ -44,9 +38,7 @@ namespace DotNext.Threading.Tasks
             next = previous = null;
         }
 
-        protected sealed override void AfterConsumed() => backToPool(CurrentNode);
-
-        internal virtual TNode? CleanupAndGotoNext()
+        internal virtual LinkedValueTaskCompletionSource<T>? CleanupAndGotoNext()
         {
             var next = this.next;
             this.next = previous = null;

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
@@ -61,7 +59,7 @@ namespace DotNext.Threading
                         Debug.Assert(t.Exception is not null);
                         return new Result<T>(t.Exception);
                     default:
-                        return new Result<T>?();
+                        return null;
                 }
             }
         }

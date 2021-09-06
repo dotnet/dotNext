@@ -1,12 +1,7 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using static System.Threading.Timeout;
+﻿using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
-    using static Tasks.Synchronization;
-
     /// <summary>
     /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
     /// </summary>
@@ -29,9 +24,6 @@ namespace DotNext.Threading
         /// <inheritdoc/>
         bool IAsyncEvent.IsSet => countdown.IsSet;
 
-        /// <inheritdoc/>
-        bool ISynchronizer.HasAnticipants => !countdown.IsSet;
-
         /// <summary>
         /// Initializes a new Barrier withe given number of participating tasks.
         /// </summary>
@@ -41,6 +33,7 @@ namespace DotNext.Threading
         {
             if (participantCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(participantCount));
+
             participants = participantCount;
             countdown = new AsyncCountdownEvent(participants);
         }
@@ -65,7 +58,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="phase">The current phase number.</param>
         /// <returns>A task representing post-phase asynchronous execution.</returns>
-        protected virtual Task PostPhase(long phase) => Task.CompletedTask; // TODO: Change return type to ValueTask
+        protected virtual ValueTask PostPhase(long phase) => ValueTask.CompletedTask;
 
         /// <summary>
         /// Notifies this barrier that there will be additional participants.
@@ -104,7 +97,7 @@ namespace DotNext.Threading
             if (participantCount > ParticipantsRemaining)
                 throw new ArgumentOutOfRangeException(nameof(participantCount));
 
-            countdown.Signal(participantCount, false, out _);
+            countdown.Signal(participantCount);
             participants.Add(-participantCount);
         }
 
@@ -126,25 +119,20 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
         /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public Task<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
+        public async ValueTask<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            if (IsDisposed)
-                return GetDisposedTask<bool>();
+            ThrowIfDisposed();
 
             if (ParticipantCount == 0L)
-                return Task.FromException<bool>(new InvalidOperationException());
+                throw new InvalidOperationException();
 
-            return countdown.Signal(1L, true, out var result)
-                ? PostPhase(currentPhase.Add(1L)).ContinueWith<bool>(
-                static task =>
-                {
-                    task.GetAwaiter().GetResult();
-                    return true;
-                },
-                token,
-                TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Current)
-                : result.WaitAsync(timeout, token);
+            if (await countdown.SignalAndWaitAsync(timeout, token))
+            {
+                await PostPhase(currentPhase.Add(1L));
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -154,21 +142,22 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
         /// <returns>The task representing waiting operation.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public Task SignalAndWaitAsync(CancellationToken token) => SignalAndWaitAsync(InfiniteTimeSpan, token);
+        public async ValueTask SignalAndWaitAsync(CancellationToken token = default)
+        {
+            ThrowIfDisposed();
 
-        /// <summary>
-        /// Signals that a participant has reached the barrier and waits
-        /// for all other participants to reach the barrier as well.
-        /// </summary>
-        /// <returns>The task representing waiting operation.</returns>
-        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public Task SignalAndWaitAsync() => SignalAndWaitAsync(CancellationToken.None); // TODO: Replace with default parameter value
+            if (ParticipantCount == 0L)
+                throw new InvalidOperationException();
+
+            await countdown.SignalAndWaitAsync(token);
+            await PostPhase(currentPhase.Add(1L));
+        }
 
         /// <inheritdoc/>
         bool IAsyncEvent.Reset() => countdown.Reset();
 
         /// <inheritdoc/>
-        bool IAsyncEvent.Signal() => countdown.Signal();
+        bool IAsyncEvent.Pulse() => countdown.Signal();
 
         /// <summary>
         /// Waits for all other participants to reach the barrier.
@@ -176,21 +165,32 @@ namespace DotNext.Threading
         /// <param name="timeout">The time to wait for phase completion.</param>
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
         /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token) => countdown.WaitAsync(timeout, token);
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+            => countdown.WaitAsync(timeout, token);
 
         /// <summary>
-        /// Releases all resources associated with this barrier.
+        /// Waits for all other participants to reach the barrier.
         /// </summary>
-        /// <remarks>
-        /// This method is not thread-safe and may not be used concurrently with other members of this instance.
-        /// </remarks>
-        /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
+        /// <param name="token">The token that can be used to cancel the waiting operation.</param>
+        /// <returns>The task representing asynchronous result.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public ValueTask WaitAsync(CancellationToken token = default)
+            => countdown.WaitAsync(token);
+
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (disposing)
                 countdown.Dispose();
+
             participants = currentPhase = 0L;
             base.Dispose(disposing);
         }
+
+        /// <inheritdoc />
+        protected override ValueTask DisposeAsyncCore() => countdown.DisposeAsync();
     }
 }

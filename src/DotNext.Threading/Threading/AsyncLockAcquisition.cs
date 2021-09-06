@@ -1,7 +1,4 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
@@ -15,7 +12,7 @@ namespace DotNext.Threading
     {
         private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = UserDataSlot<AsyncReaderWriterLock>.Allocate();
         private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = UserDataSlot<AsyncExclusiveLock>.Allocate();
-        private static readonly Predicate<AggregateException> IsObjectDisposedExceptionPredicate = IsObjectDisposedException;
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)
@@ -75,7 +72,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout)
+        public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout)
             where T : class => obj.GetExclusiveLock().AcquireAsync(timeout);
 
         /// <summary>
@@ -85,7 +82,7 @@ namespace DotNext.Threading
         /// <param name="obj">The object to be locked.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The acquired lock holder.</returns>
-        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token)
+        public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token)
             where T : class => obj.GetExclusiveLock().AcquireAsync(token);
 
         /// <summary>
@@ -96,8 +93,8 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout)
-            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock(), false).AcquireAsync(timeout);
+        public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout)
+            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock()).AcquireAsync(timeout);
 
         /// <summary>
         /// Acquires reader lock associated with the given object.
@@ -106,8 +103,8 @@ namespace DotNext.Threading
         /// <param name="obj">The object to be locked.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The acquired lock holder.</returns>
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token)
-            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock(), false).AcquireAsync(token);
+        public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token)
+            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock()).AcquireAsync(token);
 
         /// <summary>
         /// Acquires writer lock associated with the given object.
@@ -117,7 +114,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout)
+        public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout)
             where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(timeout);
 
         /// <summary>
@@ -127,29 +124,8 @@ namespace DotNext.Threading
         /// <param name="obj">The object to be locked.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The acquired lock holder.</returns>
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token)
+        public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token)
             where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(token);
-
-        /// <summary>
-        /// Acquires upgradeable lock associated with the given object.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to be locked.</typeparam>
-        /// <param name="obj">The object to be locked.</param>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns>The acquired lock holder.</returns>
-        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireUpgradeableReadLockAsync<T>(this T obj, TimeSpan timeout)
-            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock(), true).AcquireAsync(timeout);
-
-        /// <summary>
-        /// Acquires upgradeable lock associated with the given object.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to be locked.</typeparam>
-        /// <param name="obj">The object to be locked.</param>
-        /// <param name="token">The token that can be used to abort acquisition operation.</param>
-        /// <returns>The acquired lock holder.</returns>
-        public static Task<AsyncLock.Holder> AcquireUpgradeableReadLockAsync<T>(this T obj, CancellationToken token)
-            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock(), true).AcquireAsync(token);
 
         private static bool IsObjectDisposedException(this AggregateException e) => e.InnerException is ObjectDisposedException;
 
@@ -165,8 +141,17 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="result">The result of the lock acquisition.</param>
         /// <returns>The task representing the lock acquisition.</returns>
-        public static Task<AsyncLock.Holder> SuppressDisposedState(this Task<AsyncLock.Holder> result)
-            => result.IsFaulted && result.Exception!.IsObjectDisposedException() ? CompletedTask<AsyncLock.Holder, DefaultAsyncLockHolder>.Task : result;
+        public static async ValueTask<AsyncLock.Holder> SuppressDisposedState(this ValueTask<AsyncLock.Holder> result)
+        {
+            try
+            {
+                return await result.ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                return default;
+            }
+        }
 
         /// <summary>
         /// Suspends cancellation of lock acquisition and converts the canceled operation result
@@ -180,8 +165,17 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="result">The result of the lock acquisition.</param>
         /// <returns>The task representing the lock acquisition.</returns>
-        public static Task<AsyncLock.Holder> SuppressCancellation(this Task<AsyncLock.Holder> result)
-            => result.OnCanceled<AsyncLock.Holder, DefaultAsyncLockHolder>();
+        public static async ValueTask<AsyncLock.Holder> SuppressCancellation(this ValueTask<AsyncLock.Holder> result)
+        {
+            try
+            {
+                return await result.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                return default;
+            }
+        }
 
         /// <summary>
         /// Suspends cancellation of lock acquisition or <see cref="ObjectDisposedException"/> if the target lock
@@ -195,7 +189,16 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="result">The result of the lock acquisition.</param>
         /// <returns>The task representing the lock acquisition.</returns>
-        public static Task<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this Task<AsyncLock.Holder> result)
-            => result.OnFaultedOrCanceled<AsyncLock.Holder, DefaultAsyncLockHolder>(IsObjectDisposedExceptionPredicate);
+        public static async ValueTask<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this ValueTask<AsyncLock.Holder> result)
+        {
+            try
+            {
+                return await result.ConfigureAwait(false);
+            }
+            catch (Exception e) when (e is OperationCanceledException or ObjectDisposedException)
+            {
+                return default;
+            }
+        }
     }
 }

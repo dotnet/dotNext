@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
+    using Tasks.Pooling;
+
     /// <summary>
     /// Represents pub/sub synchronization primitive
     /// when each event has unique identifier.
@@ -47,7 +45,7 @@ namespace DotNext.Threading
                 buckets[i] = new();
 
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;
-            pool = new(concurrencyLevel);
+            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel);
         }
 
         /// <summary>
@@ -120,12 +118,11 @@ namespace DotNext.Threading
                 return ValueTask.FromCanceled<TValue>(token);
 
             var bucket = GetBucket(eventId);
-            var node = pool.Get();
+            var node = pool.Invoke();
 
             // initialize node
             node.Owner = bucket;
             node.Id = eventId;
-            node.Reset();
 
             // we need to add the node to the list before the task construction
             // to ensure that completed node will not be added to the list due to cancellation

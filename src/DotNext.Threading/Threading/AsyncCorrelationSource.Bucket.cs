@@ -4,53 +4,50 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Debug = System.Diagnostics.Debug;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
-using Monitor = System.Threading.Monitor;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading
 {
     using Tasks;
+    using Tasks.Pooling;
 
     public partial class AsyncCorrelationSource<TKey, TValue>
     {
-        private sealed class WaitNode : LinkedValueTaskCompletionSource<TValue, WaitNode>
+        private sealed class WaitNode : LinkedValueTaskCompletionSource<TValue>, IPooledManualResetCompletionSource<WaitNode>
         {
-            private volatile Bucket? owner;
+            private readonly Action<WaitNode> backToPool;
+            private volatile IConsumer<WaitNode>? owner;
             internal TKey? Id;
 
-            internal WaitNode(Action<WaitNode> backToPool)
-                : base(backToPool)
-            {
-            }
+            private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
 
-            internal Bucket Owner
+            internal IConsumer<WaitNode>? Owner
             {
                 set => owner = value;
             }
 
-            protected override void BeforeCompleted(Result<TValue> result)
-                => Interlocked.Exchange(ref owner, null)?.Remove(this);
+            internal void Append(WaitNode node) => base.Append(node);
 
-            private protected override WaitNode CurrentNode => this;
+            internal new WaitNode? Next => Unsafe.As<WaitNode>(base.Next);
+
+            internal new WaitNode? Previous => Unsafe.As<WaitNode>(base.Previous);
+
+            protected override void AfterConsumed()
+            {
+                Interlocked.Exchange(ref owner, null)?.Invoke(this);
+                backToPool(this);
+            }
 
             internal override WaitNode? CleanupAndGotoNext()
             {
                 owner = null;
-                return base.CleanupAndGotoNext();
-            }
-        }
-
-        private sealed class WaitNodePool : ValueTaskPool<TValue, WaitNode>
-        {
-            internal WaitNodePool(int concurrencyLevel)
-                : base(concurrencyLevel)
-            {
+                return Unsafe.As<WaitNode>(base.CleanupAndGotoNext());
             }
 
-            protected override WaitNode Create(Action<WaitNode> backToPool)
-                => new(backToPool);
+            public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
         }
 
-        private sealed class Bucket
+        private sealed class Bucket : IConsumer<WaitNode>
         {
             private WaitNode? first, last;
 
@@ -80,15 +77,18 @@ namespace DotNext.Threading
                 node.Detach();
             }
 
+            void IConsumer<WaitNode>.Invoke(WaitNode node) => Remove(node);
+
             [MethodImpl(MethodImplOptions.Synchronized)]
             internal bool Remove(TKey expected, TValue value, IEqualityComparer<TKey> comparer)
             {
-                for (WaitNode? current = first, next; current is not null; current = next)
+                for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
                 {
                     next = current.Next;
                     if (comparer.Equals(expected, current.Id))
                     {
-                        // the node will be removed automatically by consumer
+                        Remove(current);
+                        current.Owner = null;
                         return current.TrySetResult(value);
                     }
                 }
@@ -111,7 +111,7 @@ namespace DotNext.Threading
             }
         }
 
-        private readonly WaitNodePool pool;
+        private readonly ISupplier<WaitNode> pool;
 
         private Bucket GetBucket(TKey eventId)
         {

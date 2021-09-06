@@ -16,17 +16,9 @@ namespace DotNext.Threading.Tasks
     /// for the task itself (excluding continuations). See <see cref="CreateTask(TimeSpan, CancellationToken)"/>
     /// for more information.
     /// The instance of this type typically used in combination with object pool pattern because
-    /// the instance can be reused for multiple tasks. The first usage pattern allows to reuse the instance
-    /// for the multiple completions if the task was not canceled or timed out:
-    /// 1. Retrieve instance of this type from the pool and call <see cref="ManualResetCompletionSource.Reset"/>.
-    /// 2. Obtain the task using <see cref="CreateTask(TimeSpan, CancellationToken)"/>.
-    /// 2. Complete the task with <see cref="TrySetResult(T)"/> or <see cref="TrySetException(Exception)"/>.
-    /// 3. If completion method returns <see langword="true"/> then return the instance back to the pool.
-    /// If completion method returns <see langword="false"/> then the task was canceled or timed out. In this
-    /// case you cannot reuse the instance in simple way.
-    /// To reuse instance in case of cancellation, you need to override <see cref="BeforeCompleted(Result{T})"/>
-    /// and <see cref="ManualResetCompletionSource.AfterConsumed"/> methods. The first one to remove the source
-    /// from the list of active sources. The second one to return the instance back to the pool.
+    /// the instance can be reused for multiple tasks.
+    /// <see cref="ManualResetCompletionSource.AfterConsumed"/> method allows to capture the point in
+    /// time when the source can be reused, e.g. returned to the pool.
     /// </remarks>
     /// <typeparam name="T">>The type the task result.</typeparam>
     /// <seealso cref="ValueTaskCompletionSource"/>
@@ -166,21 +158,9 @@ namespace DotNext.Threading.Tasks
             Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             StopTrackingCancellation();
-            try
-            {
-                // run handler before actual completion to avoid concurrency with AfterConsumed event
-                BeforeCompleted(result);
-            }
-            catch (Exception e)
-            {
-                this.result = new(e);
-            }
-            finally
-            {
-                this.result = result;
-                IsCompleted = true;
-                InvokeContinuation();
-            }
+            this.result = result;
+            IsCompleted = true;
+            InvokeContinuation();
         }
 
         private protected sealed override void ResetCore()
@@ -189,17 +169,6 @@ namespace DotNext.Threading.Tasks
 
             base.ResetCore();
             result = default;
-        }
-
-        /// <summary>
-        /// Invokes when the task is almost completed.
-        /// </summary>
-        /// <remarks>
-        /// This method is called before <see cref="ManualResetCompletionSource.AfterConsumed"/>.
-        /// </remarks>
-        /// <param name="result">The result of the task.</param>
-        protected virtual void BeforeCompleted(Result<T> result)
-        {
         }
 
         /// <summary>

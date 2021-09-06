@@ -55,21 +55,9 @@ namespace DotNext.Threading.Tasks
             Debug.Assert(Monitor.IsEntered(SyncRoot));
 
             StopTrackingCancellation();
-            try
-            {
-                // run handler before actual completion to avoid concurrency with AfterConsumed event
-                BeforeCompleted(result);
-            }
-            catch (Exception e)
-            {
-                this.result = ExceptionDispatchInfo.Capture(e);
-            }
-            finally
-            {
-                this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
-                IsCompleted = true;
-                InvokeContinuation();
-            }
+            this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
+            IsCompleted = true;
+            InvokeContinuation();
         }
 
         private protected sealed override void CompleteAsTimedOut()
@@ -84,17 +72,6 @@ namespace DotNext.Threading.Tasks
 
             base.ResetCore();
             result = null;
-        }
-
-        /// <summary>
-        /// Invokes when the task is almost completed.
-        /// </summary>
-        /// <remarks>
-        /// This method is called before <see cref="ManualResetCompletionSource.AfterConsumed"/>.
-        /// </remarks>
-        /// <param name="e">The exception associated with the task or <see langword="null"/> if completed successfully.</param>
-        protected virtual void BeforeCompleted(Exception? e)
-        {
         }
 
         /// <summary>

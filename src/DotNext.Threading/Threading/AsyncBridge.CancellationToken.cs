@@ -32,6 +32,11 @@ namespace DotNext.Threading
 
         private sealed class CancellationTokenValueTaskPool : ConcurrentBag<CancellationTokenValueTask>
         {
+            internal void Return(CancellationTokenValueTask vt)
+            {
+                vt.Reset();
+                Add(vt);
+            }
         }
 
         private static readonly CancellationTokenValueTaskPool TokenPool = new();
