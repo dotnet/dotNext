@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Threading
@@ -12,7 +9,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task TrivialLock()
         {
-            using var rwLock = new AsyncReaderWriterLock();
+            using var rwLock = new AsyncReaderWriterLock(3);
 
             // read lock
             True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
@@ -126,11 +123,9 @@ namespace DotNext.Threading
             True(@lock.TryEnterReadLock());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition = @lock.EnterWriteLockAsync();
-            False(acquisition.IsCompleted);
+            await ThrowsAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
             @lock.Release();
             await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition.AsTask);
         }
 
         [Fact]
@@ -142,17 +137,15 @@ namespace DotNext.Threading
             False(acquisition1.IsCompleted);
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition2 = @lock.EnterReadLockAsync();
-            False(task.IsCompleted);
+
+            await ThrowsAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
 
             @lock.Release();
             await acquisition1;
-            False(acquisition2.IsCompleted);
             False(task.IsCompleted);
 
             @lock.Release();
             await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition2.AsTask);
         }
     }
 }

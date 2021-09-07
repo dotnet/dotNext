@@ -9,7 +9,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task TrivialLock()
         {
-            using var @lock = new AsyncExclusiveLock();
+            using var @lock = new AsyncExclusiveLock(3);
             True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
             False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
             await ThrowsAsync<TimeoutException>(@lock.AcquireAsync(TimeSpan.FromMilliseconds(100)).AsTask);
@@ -93,11 +93,7 @@ namespace DotNext.Threading
             True(@lock.TryAcquire());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition = @lock.AcquireAsync(CancellationToken.None);
-            False(acquisition.IsCompleted);
-            @lock.Release();
-            await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition.AsTask);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
         }
 
         [Fact]

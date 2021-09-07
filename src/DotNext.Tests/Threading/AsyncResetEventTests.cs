@@ -1,7 +1,4 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading
@@ -51,19 +48,13 @@ namespace DotNext.Threading
         [Fact]
         public static async Task AutoresetForManualEvent()
         {
-            using var resetEvent = new AsyncManualResetEvent(false);
+            using var resetEvent = new AsyncManualResetEvent(false, 3);
             False(resetEvent.IsSet);
-            var t = Task.Run(async () =>
-            {
-                True(await resetEvent.WaitAsync(DefaultTimeout));
-            });
-
-            var spinner = new SpinWait();
-            while (t.Status != TaskStatus.Running)
-                spinner.SpinOnce();
+            var t = resetEvent.WaitAsync(DefaultTimeout);
 
             True(resetEvent.Set(true));
             await t;
+
             False(resetEvent.IsSet);
             False(await resetEvent.WaitAsync(TimeSpan.Zero));
         }

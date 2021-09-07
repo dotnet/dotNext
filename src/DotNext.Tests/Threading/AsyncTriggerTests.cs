@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Xunit;
@@ -91,7 +90,7 @@ namespace DotNext.Threading
             var task1 = trigger.WaitAsync(new TestTransition());
             False(task1.IsCompleted);
 
-            trigger.State.Value = 42;
+            trigger.Signal(static state => state.Value = 42);
 
             var task2 = trigger.WaitAsync(new TestTransition());
             False(task2.IsCompleted);

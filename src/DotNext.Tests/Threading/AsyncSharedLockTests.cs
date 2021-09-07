@@ -27,7 +27,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task StrongLocks()
         {
-            using var sharedLock = new AsyncSharedLock(3);
+            using var sharedLock = new AsyncSharedLock(3, false);
             True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
             False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
             False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
@@ -52,8 +52,6 @@ namespace DotNext.Threading
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
             True(await acquireEvent.WaitAsync(DefaultTimeout));
             await sharedLock.AcquireAsync(true, DefaultTimeout);
-
-            Equal(0, sharedLock.RemainingCount);
         }
 
         private static async void AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
@@ -72,7 +70,6 @@ namespace DotNext.Threading
             AcquireWeakLock(sharedLock, acquireEvent);
             sharedLock.Release();
             True(await acquireEvent.WaitAsync(DefaultTimeout));
-            Equal(1, sharedLock.RemainingCount);
         }
 
         [Fact]
@@ -109,18 +106,6 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void DowgradeWeakLock()
-        {
-            using var sharedLock = new AsyncSharedLock(3);
-            True(sharedLock.TryAcquire(false));
-            Equal(2, sharedLock.RemainingCount);
-            sharedLock.Downgrade();
-            False(sharedLock.IsLockHeld);
-            False(sharedLock.IsStrongLockHeld);
-            Throws<SynchronizationLockException>(sharedLock.Downgrade);
-        }
-
-        [Fact]
         public static void CallDisposeTwice()
         {
             var @lock = new AsyncSharedLock(3);
@@ -154,11 +139,9 @@ namespace DotNext.Threading
             True(@lock.TryAcquire(false));
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition = @lock.AcquireAsync(true, CancellationToken.None);
-            False(acquisition.IsCompleted);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
             @lock.Release();
             await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition.AsTask);
         }
 
         [Fact]
@@ -168,55 +151,11 @@ namespace DotNext.Threading
             True(@lock.TryAcquire(false));
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition = @lock.AcquireAsync(true, CancellationToken.None);
-            False(acquisition.IsCompleted);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
             @lock.Downgrade();
-            await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition.AsTask);
-        }
-
-        [Fact]
-        public static async Task GracefulShutdown4()
-        {
-            using var @lock = new AsyncSharedLock(3);
-            True(@lock.TryAcquire(true));
-            var acquisition1 = @lock.AcquireAsync(false, CancellationToken.None);
-            False(acquisition1.IsCompleted);
-            var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition2 = @lock.AcquireAsync(false, CancellationToken.None);
-            False(task.IsCompleted);
-
-            @lock.Release();
-            await acquisition1;
-            False(acquisition2.IsCompleted);
-            False(task.IsCompleted);
-
             @lock.Release();
             await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition2.AsTask);
-        }
-
-        [Fact]
-        public static async Task GracefulShutdown5()
-        {
-            using var @lock = new AsyncSharedLock(3);
-            True(@lock.TryAcquire(true));
-            var acquisition1 = @lock.AcquireAsync(false, CancellationToken.None);
-            False(acquisition1.IsCompleted);
-            var task = @lock.DisposeAsync();
-            False(task.IsCompleted);
-            var acquisition2 = @lock.AcquireAsync(false, CancellationToken.None);
-            False(task.IsCompleted);
-
-            @lock.Downgrade();
-            await acquisition1;
-            False(acquisition2.IsCompleted);
-            False(task.IsCompleted);
-
-            @lock.Downgrade();
-            await task;
-            await ThrowsAsync<ObjectDisposedException>(acquisition2.AsTask);
         }
     }
 }
