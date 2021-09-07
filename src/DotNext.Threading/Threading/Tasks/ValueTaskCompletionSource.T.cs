@@ -241,6 +241,9 @@ namespace DotNext.Threading.Tasks
 
         private ValueTaskSourceStatus GetStatus(short token)
         {
+            if (token != version)
+                throw new InvalidOperationException();
+
             if (!IsCompleted)
                 return ValueTaskSourceStatus.Pending;
 
