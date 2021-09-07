@@ -1,9 +1,6 @@
-using static System.Threading.Timeout;
-
 namespace DotNext.Threading.Tasks
 {
     using Generic;
-    using static Reflection.TaskType;
     using static Runtime.Intrinsics;
 
     internal static class Continuation<T, TConstant>
