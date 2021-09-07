@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
@@ -12,16 +11,16 @@ namespace DotNext.ComponentModel
         internal static void Register()
             => TypeDescriptor.AddAttributes(typeof(PathString), new TypeConverterAttribute(typeof(PathStringConverter)));
 
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
             => sourceType == typeof(string);
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
             => value is string path ? new PathString(path) : throw new NotSupportedException();
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
             => destinationType == typeof(string);
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
             => value is PathString path ? path.Value! : throw new NotSupportedException();
     }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using static IO.Pipelines.PipeExtensions;
@@ -17,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (result.IsCompleted || completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                state = State.ReceivingConfigurationFinished;
+                CurrentState = State.ReceivingConfigurationFinished;
             }
 
             return true;
@@ -38,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                state = State.ReceivingConfigurationFinished;
+                CurrentState = State.ReceivingConfigurationFinished;
             }
 
             return true;

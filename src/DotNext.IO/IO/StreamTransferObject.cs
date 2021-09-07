@@ -118,6 +118,6 @@ namespace DotNext.IO
         /// Asynchronously releases the resources associated with this object.
         /// </summary>
         /// <returns>A task that represents the asynchronous dispose operation.</returns>
-        public ValueTask DisposeAsync() => DisposeAsync(false);
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 }

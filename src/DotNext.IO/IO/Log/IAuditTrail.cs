@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace DotNext.IO.Log
+﻿namespace DotNext.IO.Log
 {
     using Timeout = Threading.Timeout;
 
@@ -35,16 +29,21 @@ namespace DotNext.IO.Log
         /// <param name="index">The index of the log record to be committed.</param>
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if log entry with the specified <paramref name="index"/> is committed; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        /// <exception cref="TimeoutException">Timeout occurred.</exception>
-        async ValueTask WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default)
+        async ValueTask<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default)
         {
             if (index < 0L)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             for (var timeoutMeasurement = new Timeout(timeout); GetLastIndex(true) < index; await WaitForCommitAsync(timeout, token).ConfigureAwait(false))
-                timeoutMeasurement.ThrowIfExpired();
+            {
+                if (!timeoutMeasurement.RemainingTime.TryGetValue(out timeout))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -52,9 +51,9 @@ namespace DotNext.IO.Log
         /// </summary>
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        /// <exception cref="TimeoutException">The operation has timed out.</exception>
-        Task WaitForCommitAsync(TimeSpan timeout, CancellationToken token);
+        ValueTask<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token);
 
         /// <summary>
         /// Commits log entries into the underlying storage and marks these entries as committed.

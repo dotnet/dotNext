@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -84,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(0, auditTrail.GetLastIndex(true));
             //commit all entries
             Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
-            await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero);
+            True(await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero));
             Equal(2, auditTrail.GetLastIndex(true));
             //check overlapping with committed entries
             await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());

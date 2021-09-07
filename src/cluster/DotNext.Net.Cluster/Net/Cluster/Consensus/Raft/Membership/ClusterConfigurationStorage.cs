@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Threading;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 {
     using Buffers;
     using IO;
-    using static Threading.Tasks.Continuation;
 
     /// <summary>
     /// Represents base class for all implementations of cluster configuration storages.
@@ -26,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         private readonly Random fingerprintSource;
         private readonly Channel<ClusterConfigurationEvent<TAddress>> events;
         private protected ImmutableDictionary<ClusterMemberId, TAddress> activeCache, proposedCache;
-        private volatile TaskCompletionSource<bool> activatedEvent;
+        private volatile TaskCompletionSource activatedEvent;
 
         private protected ClusterConfigurationStorage(int eventQueueCapacity, MemoryAllocator<byte>? allocator)
         {
@@ -39,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
         private protected long GenerateFingerprint() => fingerprintSource.Next<long>();
 
-        private protected void OnActivated() => Interlocked.Exchange(ref activatedEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).SetResult(true);
+        private protected void OnActivated() => Interlocked.Exchange(ref activatedEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).SetResult();
 
         /// <summary>
         /// Encodes the address to its binary representation.
@@ -148,7 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
         /// <inheritdoc />
         Task IClusterConfigurationStorage.WaitForApplyAsync(CancellationToken token)
-            => HasProposal ? activatedEvent.Task.ContinueWithTimeout(InfiniteTimeSpan, token) : Task.CompletedTask;
+            => HasProposal ? activatedEvent.Task.WaitAsync(InfiniteTimeSpan, token) : Task.CompletedTask;
 
         /// <summary>
         /// Proposes a new member.

@@ -39,7 +39,7 @@ namespace DotNext.IO
 
         private ValueTask WriteAsync<T>(in T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
-            => WriteAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
+            => WriteStringAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
 
         /// <summary>
         /// Encodes 64-bit signed integer asynchronously.
@@ -218,7 +218,7 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
-            => WriteAsync(value.ToString(format, InvariantCulture).AsMemory(), context, lengthFormat, token);
+            => WriteStringAsync(value.ToString(format, InvariantCulture).AsMemory(), context, lengthFormat, token);
 
         /// <summary>
         /// Encodes <see cref="DateTime"/> as a string.
@@ -324,7 +324,7 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        async ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
+        async ValueTask WriteStringAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
         {
             using var bytes = context.Encoding.GetBytes(chars.Span);
             await WriteAsync(bytes.Memory, lengthFormat, token).ConfigureAwait(false);

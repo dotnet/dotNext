@@ -65,6 +65,6 @@ namespace DotNext.Net.Cluster.Messaging
             base.Dispose(disposing);
         }
 
-        ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync(false);
+        ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
     }
 }

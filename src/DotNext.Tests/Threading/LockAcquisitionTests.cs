@@ -21,7 +21,7 @@ namespace DotNext.Threading
             if (holder2) { }
             else throw new Exception();
 
-            await ThrowsAsync<TimeoutException>(() => obj.AcquireWriteLockAsync(TimeSpan.Zero));
+            await ThrowsAsync<TimeoutException>(obj.AcquireWriteLockAsync(TimeSpan.Zero).AsTask);
             holder1.Dispose();
             holder2.Dispose();
 
@@ -39,7 +39,7 @@ namespace DotNext.Threading
             if (holder1) { }
             else throw new Exception();
 
-            await ThrowsAsync<TimeoutException>(() => obj.AcquireLockAsync(TimeSpan.Zero));
+            await ThrowsAsync<TimeoutException>(obj.AcquireLockAsync(TimeSpan.Zero).AsTask);
             holder1.Dispose();
         }
 
@@ -73,10 +73,10 @@ namespace DotNext.Threading
             Throws<InvalidOperationException>(() => obj.AcquireWriteLock(DefaultTimeout));
             Throws<InvalidOperationException>(() => obj.AcquireUpgradeableReadLock(DefaultTimeout));
 
-            await ThrowsAsync<InvalidOperationException>(() => obj.AcquireLockAsync(TimeSpan.Zero));
-            await ThrowsAsync<InvalidOperationException>(() => obj.AcquireReadLockAsync(TimeSpan.Zero));
-            await ThrowsAsync<InvalidOperationException>(() => obj.AcquireWriteLockAsync(TimeSpan.Zero));
-            await ThrowsAsync<InvalidOperationException>(() => obj.AcquireUpgradeableReadLockAsync(TimeSpan.Zero));
+            await ThrowsAsync<InvalidOperationException>(async () => await obj.AcquireLockAsync(TimeSpan.Zero));
+            await ThrowsAsync<InvalidOperationException>(async () => await obj.AcquireReadLockAsync(TimeSpan.Zero));
+            await ThrowsAsync<InvalidOperationException>(async () => await obj.AcquireWriteLockAsync(TimeSpan.Zero));
+            Throws<InvalidOperationException>(() => obj.AcquireUpgradeableReadLock(TimeSpan.Zero));
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Threading
@@ -34,18 +31,10 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void IncompletedFuture()
-        {
-            using var ev = new ManualResetEvent(false);
-            var future = ev.WaitAsync(DefaultTimeout).GetAwaiter();
-            ThrowsAny<InvalidOperationException>(() => future.GetResult());
-        }
-
-        [Fact]
-        public static void AlreadySignaled()
+        public static async Task AlreadySignaled()
         {
             using var ev = new ManualResetEvent(true);
-            True(ev.WaitAsync(DefaultTimeout).IsCompleted);
+            True(await ev.WaitAsync(DefaultTimeout));
         }
     }
 }

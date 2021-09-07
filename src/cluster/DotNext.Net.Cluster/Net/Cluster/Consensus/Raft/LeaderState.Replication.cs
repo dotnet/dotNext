@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -10,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using IO.Log;
     using Membership;
     using Threading;
-    using Threading.Tasks;
 
     internal partial class LeaderState
     {
@@ -158,46 +153,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private sealed class WaitNode : TaskCompletionSource<bool>
-        {
-            public WaitNode()
-                : base(TaskCreationOptions.RunContinuationsAsynchronously)
-            {
-            }
-        }
-
-        private volatile WaitNode replicationEvent, replicationQueue;
+        private readonly AsyncTrigger replicationEvent;
+        private volatile TaskCompletionSource replicationQueue;
 
         private void DrainReplicationQueue()
-            => Interlocked.Exchange(ref replicationQueue, new()).SetResult(true);
+            => Interlocked.Exchange(ref replicationQueue, new(TaskCreationOptions.RunContinuationsAsynchronously)).SetResult();
 
-        private Task<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
-        {
-            // This implementation optimized to avoid allocations of a new wait node.
-            // The new node should be created when the current node is in signaled state.
-            // Otherwise, we can keep the existing node
-            var current = replicationEvent.Task;
-            if (current.IsCompleted)
-            {
-                replicationEvent = new();
-            }
-            else
-            {
-                current = current.WaitAsync(period, token);
-            }
-
-            return current;
-        }
+        private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
+            => replicationEvent.WaitAsync(period, token);
 
         internal Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
             var result = replicationQueue.Task;
 
             // resume heartbeat loop to force replication
-            replicationEvent.TrySetResult(true);
+            replicationEvent.Signal();
 
             // enqueue a new task representing completion callback
-            return result.ContinueWithTimeout(timeout, token);
+            return result.WaitAsync(timeout, token);
         }
     }
 }

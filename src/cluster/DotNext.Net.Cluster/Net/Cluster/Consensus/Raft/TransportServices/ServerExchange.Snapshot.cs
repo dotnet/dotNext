@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                state = State.ReceivingSnapshotFinished;
+                CurrentState = State.ReceivingSnapshotFinished;
             }
 
             return true;
@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                state = State.ReceivingSnapshotFinished;
+                CurrentState = State.ReceivingSnapshotFinished;
             }
 
             return true;

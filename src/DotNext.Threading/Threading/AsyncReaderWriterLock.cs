@@ -29,6 +29,12 @@ namespace DotNext.Threading
 
             private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
 
+            protected override void AfterConsumed()
+            {
+                base.AfterConsumed();
+                backToPool(this);
+            }
+
             internal bool IsReadLock => Type != LockType.Exclusive;
 
             internal bool IsUpgradeableLock => Type == LockType.Upgrade;

@@ -83,9 +83,9 @@ namespace DotNext
             return new ValueTask();
         }
 
-        private async ValueTask DisposeAsyncImpl(bool continueOnCapturedContext)
+        private async ValueTask DisposeAsyncImpl()
         {
-            await DisposeAsyncCore().ConfigureAwait(continueOnCapturedContext);
+            await DisposeAsyncCore().ConfigureAwait(false);
             Dispose(false);
             GC.SuppressFinalize(this);
         }
@@ -97,9 +97,8 @@ namespace DotNext
         /// If derived class implements <see cref="IAsyncDisposable"/> then <see cref="IAsyncDisposable.DisposeAsync"/>
         /// can be trivially implemented through delegation of the call to this method.
         /// </remarks>
-        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the captured context; otherwise, <see langword="false"/>.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected ValueTask DisposeAsync(bool continueOnCapturedContext) => disposed ? new ValueTask() : DisposeAsyncImpl(continueOnCapturedContext);
+        protected ValueTask DisposeAsync() => disposed ? new ValueTask() : DisposeAsyncImpl();
 
         /// <summary>
         /// Releases all resources associated with this object.

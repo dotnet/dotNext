@@ -53,7 +53,8 @@ namespace DotNext.Threading
         private readonly Action<double>? contentionCounter, lockDurationCounter;
         private readonly Action<WaitNode> removeFromList;
         private readonly TaskCompletionSource disposeTask;
-        private protected LinkedValueTaskCompletionSource<bool>? first, last;
+        private protected LinkedValueTaskCompletionSource<bool>? first;
+        private LinkedValueTaskCompletionSource<bool>? last;
 
         private protected QueuedSynchronizer()
         {
@@ -61,7 +62,7 @@ namespace DotNext.Threading
             removeFromList = RemoveAndDrainWaitQueue;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private void RemoveAndDrainWaitQueue(WaitNode node)
         {
             if (RemoveNode(node))
@@ -209,19 +210,30 @@ namespace DotNext.Threading
             first = last = null;
         }
 
-        private protected void ResumeSuspendedCallers()
+        private protected long ResumeSuspendedCallers()
         {
             Debug.Assert(Monitor.IsEntered(this));
+
+            var count = 0L;
 
             for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
             {
                 next = current.Next as WaitNode;
 
-                if (current.IsCompleted || current.TrySetResult(true))
+                if (current.IsCompleted)
                 {
                     RemoveNode(current);
+                    continue;
+                }
+
+                if (current.TrySetResult(true))
+                {
+                    RemoveNode(current);
+                    count += 1L;
                 }
             }
+
+            return count;
         }
 
         private void NotifyObjectDisposed()
@@ -278,6 +290,6 @@ namespace DotNext.Threading
         /// Disposes this synchronization primitive gracefully.
         /// </summary>
         /// <returns>The task representing asynchronous result.</returns>
-        public ValueTask DisposeAsync() => DisposeAsync(true);
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 }

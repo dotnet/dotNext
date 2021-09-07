@@ -171,7 +171,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(count));
 
         // in signaled state
-        if (IsEmpty(ref state))
+        if (!IsEmpty(ref state))
             return false;
 
         state.Current = state.Initial = count;
@@ -196,9 +196,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        if (IsEmpty(ref state))
-            return false;
-
         if (state.Decrement(signalCount))
         {
             ResumeSuspendedCallers();
@@ -210,12 +207,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    internal unsafe ValueTask<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token)
-        => SignalAndResetCore(1L) ? new(true) : WaitNoTimeoutAsync(ref state, &IsEmpty, pool, out _, timeout, token);
+    internal unsafe ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+        => (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref state, &IsEmpty, pool, out _, timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    internal unsafe ValueTask SignalAndWaitAsync(CancellationToken token)
-        => SignalAndResetCore(1L) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &IsEmpty, pool, out _, InfiniteTimeSpan, token);
+    internal unsafe ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
+        => (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &IsEmpty, pool, out _, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.
@@ -237,7 +234,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     /// <inheritdoc />
-    bool IAsyncEvent.Pulse() => Signal();
+    bool IAsyncEvent.Signal() => Signal();
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.

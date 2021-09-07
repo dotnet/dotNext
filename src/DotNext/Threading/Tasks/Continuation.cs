@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks
@@ -165,50 +162,5 @@ namespace DotNext.Threading.Tasks
 
         internal static Task AttachState(this Task task, object? state, CancellationToken token = default)
             => task.ContinueWith(WhenFaultedOrCanceledAction, state, token, TaskContinuationOptions.None, TaskScheduler.Default);
-
-        private static async Task<T> WaitAsyncImpl<T>(Task<T> task, TimeSpan timeout, CancellationToken token)
-        {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-            {
-                if (ReferenceEquals(task, await Task.WhenAny(task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   // ensure that Delay task is cancelled
-                    return await task.ConfigureAwait(false);
-                }
-            }
-
-            token.ThrowIfCancellationRequested();
-            throw new TimeoutException();
-        }
-
-        /// <summary>
-        /// Attaches timeout and, optionally, token to the task.
-        /// </summary>
-        /// <param name="task">The source task.</param>
-        /// <param name="timeout">The timeout of the asynchronous task.</param>
-        /// <param name="token">The token that can be used to cancel the constructed task.</param>
-        /// <typeparam name="T">The type of the task.</typeparam>
-        /// <returns>The task with attached timeout and token.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="TimeoutException">The timeout has occurred.</exception>
-        public static Task<T> ContinueWithTimeout<T>(this Task<T> task, TimeSpan timeout, CancellationToken token = default)
-        {
-            // TODO: Replace with Task.WaitAsync in .NET 6
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                return Task.FromException<T>(new ArgumentOutOfRangeException(nameof(timeout)));
-            if (token.IsCancellationRequested)
-                return Task.FromCanceled<T>(token);
-            if (task.IsCompleted)
-                return task;
-
-            return timeout.CompareTo(TimeSpan.Zero) switch
-            {
-                0 => Task.FromException<T>(new TimeoutException()),
-                > 0 => WaitAsyncImpl(task, timeout, token),
-                _ when token.CanBeCanceled => task.ContinueWith(GetResultGetter<T>(), token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default),
-                _ => task,
-            };
-        }
     }
 }

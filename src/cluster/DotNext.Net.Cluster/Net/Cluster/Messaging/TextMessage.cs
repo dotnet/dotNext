@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Messaging
             var bufferWriter = writer.TryGetBufferWriter();
             if (bufferWriter is null)
             {
-                result = writer.WriteAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
+                result = writer.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
             }
             else
             {

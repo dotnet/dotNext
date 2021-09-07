@@ -71,7 +71,7 @@ namespace DotNext.Threading.Channels
         /// <inheritdoc />
         void IChannelWriter<TInput>.MessageReady()
         {
-            readTrigger.Pulse();
+            readTrigger.Signal();
             writeRate?.Increment();
         }
 
@@ -80,8 +80,8 @@ namespace DotNext.Threading.Channels
             => SerializeAsync(input, output, token);
 
         /// <inheritdoc />
-        async Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
-            => await readTrigger.WaitAsync(token).ConfigureAwait(false);
+        Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
+            => readTrigger.WaitAsync(token).AsTask();
 
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
         {

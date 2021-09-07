@@ -22,7 +22,7 @@ public interface IAsyncEvent : IDisposable
     /// </summary>
     /// <returns><see langword="true"/>, if state of this object changed from non-signaled to signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    bool Pulse();
+    bool Signal();
 
     /// <summary>
     /// Suspends the caller until this event is set.

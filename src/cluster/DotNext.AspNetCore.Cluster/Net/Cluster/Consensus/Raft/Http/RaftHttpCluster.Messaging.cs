@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.StatusCode = StatusCodes.Status204NoContent;
 
             // drop duplicated request
-            if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicated(request))
+            if (response.HttpContext.Features.Get<DuplicateRequestDetector>()?.IsDuplicated(request) ?? false)
                 return Task.CompletedTask;
             Task? task = reliable ?
                 handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token) :

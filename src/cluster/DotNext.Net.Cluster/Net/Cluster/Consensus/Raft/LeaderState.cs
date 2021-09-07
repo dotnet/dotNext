@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timerCancellation = new();
             LeadershipToken = timerCancellation.Token;
             replicationEvent = new();
-            replicationQueue = new();
+            replicationQueue = new(TaskCreationOptions.RunContinuationsAsynchronously);
             precedingTermCache = new TermCache(MaxTermCacheSize);
             this.maxLease = maxLease;
         }
@@ -185,7 +185,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
-            replicationEvent.TrySetCanceled(timerCancellation.Token);
+            replicationEvent.CancelSuspendedCallers(timerCancellation.Token);
             return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
         }
 
@@ -198,6 +198,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // cancel replication queue
                 replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+                replicationEvent.Dispose();
 
                 Metrics = null;
             }

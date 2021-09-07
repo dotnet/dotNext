@@ -22,41 +22,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : Test
     {
-        private sealed class AsyncLeaderChangedEvent : DotNext.Net.Cluster.Consensus.Raft.LeaderChangedEvent, IClusterMemberLifetime
+        private sealed class LeaderTracker : LeaderChangedEvent, IClusterMemberLifetime
         {
             void IClusterMemberLifetime.OnStart(IRaftCluster cluster, IDictionary<string, string> metadata)
                 => cluster.LeaderChanged += OnLeaderChanged;
 
             void IClusterMemberLifetime.OnStop(IRaftCluster cluster)
                 => cluster.LeaderChanged -= OnLeaderChanged;
-        }
-
-        private sealed class LeaderChangedEvent : EventWaitHandle, IClusterMemberLifetime
-        {
-            internal volatile IClusterMember Leader;
-
-            internal LeaderChangedEvent()
-                : base(false, EventResetMode.ManualReset)
-            {
-            }
-
-            void IClusterMemberLifetime.OnStart(IRaftCluster cluster, IDictionary<string, string> metadata)
-            {
-                cluster.LeaderChanged += OnLeaderChanged;
-            }
-
-            private void OnLeaderChanged(ICluster sender, IClusterMember leader)
-            {
-                if (leader is null)
-                    return;
-                Leader = leader;
-                Set();
-            }
-
-            void IClusterMemberLifetime.OnStop(IRaftCluster cluster)
-            {
-                cluster.LeaderChanged -= OnLeaderChanged;
-            }
         }
 
         private static IHost CreateHost<TStartup>(int port, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
@@ -105,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"requestTimeout", "00:01:00"}
             };
 
-            var listener = new AsyncLeaderChangedEvent();
+            var listener = new LeaderTracker();
             using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
             True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
@@ -117,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            True(await listener.Result.WaitAsync(DefaultTimeout));
+            await listener.Result.WaitAsync(DefaultTimeout);
             Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
 
             // add two nodes to the cluster
@@ -187,14 +159,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"requestTimeout", "00:01:00"}
             };
 
-            var listener = new AsyncLeaderChangedEvent();
+            var listener = new LeaderTracker();
             using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
 
             using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
 
-            True(await listener.Result.WaitAsync(DefaultTimeout));
+            await listener.Result.WaitAsync(DefaultTimeout);
             Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -252,14 +224,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"requestTimeout", "00:01:00"}
             };
 
-            var listener = new AsyncLeaderChangedEvent();
+            var listener = new LeaderTracker();
             using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
 
             using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
 
-            True(await listener.Result.WaitAsync(DefaultTimeout));
+            await listener.Result.WaitAsync(DefaultTimeout);
             Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -313,7 +285,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"coldStart", "false"}
             };
 
-            var listener = new AsyncLeaderChangedEvent();
+            var listener = new LeaderTracker();
             using var host1 = CreateHost<Startup>(3262, config1, listener);
             await host1.StartAsync();
             True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
@@ -325,7 +297,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            True(await listener.Result.WaitAsync(DefaultTimeout));
+            await listener.Result.WaitAsync(DefaultTimeout);
             Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
 
             // add two nodes to the cluster

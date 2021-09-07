@@ -1,7 +1,4 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
@@ -11,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     public partial class PersistentState
     {
-        private sealed class LockState
+        internal sealed class LockState
         {
             private readonly uint maxReadCount;
             private uint readerCount;
@@ -23,20 +20,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 allowWrite = true;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private bool TryAcquireStrongReadLock()
-            {
-                if (readerCount < maxReadCount && allowWrite)
-                {
-                    allowWrite = false;
-                    readerCount += 1U;
-                    return true;
-                }
+            internal bool IsStrongReadLockAllowed => readerCount < maxReadCount && allowWrite;
 
-                return false;
+            internal void AcquireStrongReadLock()
+            {
+                Debug.Assert(IsStrongReadLockAllowed);
+
+                allowWrite = false;
+                readerCount += 1U;
             }
 
-            private void ReleaseStrongReadLock()
+            internal void ReleaseStrongReadLock()
             {
                 Debug.Assert(readerCount > 0U);
                 Debug.Assert(!allowWrite);
@@ -45,105 +39,65 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 allowWrite = true;
             }
 
-            internal static bool TryAcquireStrongReadLock(LockState state)
-                => state.TryAcquireStrongReadLock();
+            internal bool IsWeakReadLockAllowed => readerCount < maxReadCount;
 
-            internal static void ReleaseStrongReadLock(LockState state)
-                => state.ReleaseStrongReadLock();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private bool TryAcquireWeakReadLock()
+            internal void AcquireWeakReadLock()
             {
-                if (readerCount < maxReadCount)
-                {
-                    readerCount += 1U;
-                    return true;
-                }
+                Debug.Assert(IsWeakReadLockAllowed);
 
-                return false;
+                readerCount += 1U;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ReleaseWeakReadLock()
+            internal void ReleaseWeakReadLock()
             {
                 Debug.Assert(readerCount > 0L);
 
                 readerCount -= 1U;
             }
 
-            internal static bool TryAcquireWeakReadLock(LockState state)
-                => state.TryAcquireWeakReadLock();
+            internal bool IsWriteLockAllowed => allowWrite;
 
-            internal static void ReleaseWeakReadLock(LockState state)
-                => state.ReleaseWeakReadLock();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private bool TryAcquireWriteLock()
+            internal void AcquireWriteLock()
             {
-                if (allowWrite)
-                {
-                    allowWrite = false;
-                    return true;
-                }
+                Debug.Assert(IsWriteLockAllowed);
 
-                return false;
+                allowWrite = false;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ReleaseWriteLock()
+            internal void ReleaseWriteLock()
             {
                 Debug.Assert(!allowWrite);
 
                 allowWrite = true;
             }
 
-            internal static bool TryAcquireWriteLock(LockState state)
-                => state.TryAcquireWriteLock();
+            internal bool IsCompactionLockAllowed => readerCount == 0U;
 
-            internal static void ReleaseWriteLock(LockState state)
-                => state.ReleaseWriteLock();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private bool TryAcquireCompactionLock()
+            internal void AcquireCompactionLock()
             {
-                if (readerCount == 0U)
-                {
-                    readerCount = uint.MaxValue;
-                    return true;
-                }
+                Debug.Assert(IsCompactionLockAllowed);
 
-                return false;
+                readerCount = uint.MaxValue;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ReleaseCompactionLock()
+            internal void ReleaseCompactionLock()
             {
                 Debug.Assert(readerCount == uint.MaxValue);
 
                 readerCount = 0U;
             }
 
-            internal static bool TryAcquireCompactionLock(LockState state)
-                => state.TryAcquireCompactionLock();
+            internal bool IsExclusiveLockAllowed => readerCount == 0L && allowWrite;
 
-            internal static void ReleaseCompactionLock(LockState state)
-                => state.ReleaseCompactionLock();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private bool TryAcquireExclusiveLock()
+            internal void AcquireExclusiveLock()
             {
-                if (readerCount == 0L && allowWrite)
-                {
-                    readerCount = uint.MaxValue;
-                    allowWrite = false;
-                    return true;
-                }
+                Debug.Assert(IsExclusiveLockAllowed);
 
-                return false;
+                readerCount = uint.MaxValue;
+                allowWrite = false;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void ReleaseExclusiveLock()
+            internal void ReleaseExclusiveLock()
             {
                 Debug.Assert(readerCount == uint.MaxValue);
                 Debug.Assert(!allowWrite);
@@ -151,19 +105,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readerCount = 0U;
                 allowWrite = true;
             }
-
-            internal static bool TryAcquireExclusiveLock(LockState state)
-                => state.TryAcquireExclusiveLock();
-
-            internal static void ReleaseExclusiveLock(LockState state)
-                => state.ReleaseExclusiveLock();
-        }
-
-        internal interface IWriteLock
-        {
-            long Version { get; }
-
-            void Release(long version);
         }
 
         internal enum LockType : int
@@ -182,19 +123,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         // Compaction lock  - disallow reads, allow writes (to the end of the log), disallow compaction
         // Exclusive lock   - disallow everything
         // Write lock + Compaction lock = exclusive lock
-        internal sealed class LockManager : AsyncTrigger, IWriteLock
+        internal sealed class LockManager : AsyncTrigger<LockState>
         {
-            private readonly LockState state;
-            private readonly Predicate<LockState>[] lockAcquisition = { LockState.TryAcquireWeakReadLock, LockState.TryAcquireStrongReadLock, LockState.TryAcquireWriteLock, LockState.TryAcquireCompactionLock, LockState.TryAcquireExclusiveLock };
-            private readonly Action<LockState>[] lockRelease = { LockState.ReleaseWeakReadLock, LockState.ReleaseStrongReadLock, LockState.ReleaseWriteLock, LockState.ReleaseCompactionLock, LockState.ReleaseExclusiveLock };
-            private long lockVersion; // volatile
+            private sealed class WeakReadLockTransition : ITransition
+            {
+                bool ITransition.Test(LockState state) => state.IsWeakReadLockAllowed;
+
+                void ITransition.Transit(LockState state) => state.AcquireWeakReadLock();
+
+                internal static void Release(LockState state) => state.ReleaseWeakReadLock();
+            }
+
+            private sealed class StrongReadLockTransition : ITransition
+            {
+                bool ITransition.Test(LockState state) => state.IsStrongReadLockAllowed;
+
+                void ITransition.Transit(LockState state) => state.AcquireStrongReadLock();
+
+                internal static void Release(LockState state) => state.ReleaseStrongReadLock();
+            }
+
+            private sealed class WriteLockTransition : ITransition
+            {
+                bool ITransition.Test(LockState state) => state.IsWriteLockAllowed;
+
+                void ITransition.Transit(LockState state) => state.AcquireWriteLock();
+
+                internal static void Release(LockState state) => state.ReleaseWriteLock();
+            }
+
+            private sealed class ExclusiveLockTransition : ITransition
+            {
+                bool ITransition.Test(LockState state) => state.IsExclusiveLockAllowed;
+
+                void ITransition.Transit(LockState state) => state.AcquireExclusiveLock();
+
+                internal static void Release(LockState state) => state.ReleaseExclusiveLock();
+            }
+
+            private readonly ITransition[] acquisitions = { new WeakReadLockTransition(), new StrongReadLockTransition(), new WriteLockTransition(), new ExclusiveLockTransition() };
+            private readonly Action<LockState>[] exits = { WeakReadLockTransition.Release, StrongReadLockTransition.Release, WriteLockTransition.Release, ExclusiveLockTransition.Release };
 
             internal LockManager(IAsyncLockSettings configuration)
+                : base(new(configuration.ConcurrencyLevel))
             {
-                state = new(configuration.ConcurrencyLevel);
-
-                lockVersion = long.MinValue;
-
                 // setup metrics
                 if (configuration.LockContentionCounter is not null)
                     LockContentionCounter = configuration.LockContentionCounter;
@@ -202,38 +174,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     LockDurationCounter = configuration.LockDurationCounter;
             }
 
-            internal Task AcquireAsync(LockType type, CancellationToken token = default)
+            internal ValueTask AcquireAsync(LockType type, CancellationToken token = default)
             {
                 Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
 
-                var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockAcquisition), (int)type);
-                return WaitAsync(state, acquisition, token);
+                var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(acquisitions), (int)type);
+                return WaitAsync(acquisition, token);
             }
 
-            internal Task<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
+            internal ValueTask<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
             {
                 Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
 
-                var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockAcquisition), (int)type);
-                return WaitAsync(state, acquisition, timeout, token);
+                var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(acquisitions), (int)type);
+                return WaitAsync(acquisition, timeout, token);
             }
 
             internal void Release(LockType type)
             {
                 Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
 
-                var release = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(lockRelease), (int)type);
-                Signal(state, release, true);
-            }
-
-            long IWriteLock.Version => lockVersion.VolatileRead();
-
-            void IWriteLock.Release(long version)
-            {
-                if (lockVersion.CompareAndSet(version, version + 1L))
-                    Release(LockType.ExclusiveLock);
-                else
-                    Debug.Fail(ExceptionMessages.InvalidLockToken);
+                var exit = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(exits), (int)type);
+                Signal(exit);
             }
         }
     }

@@ -27,12 +27,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             ReceivingConfigurationFinished,
         }
 
+        private sealed class StateHolder
+        {
+            internal volatile State Value;
+        }
+
         private readonly ILocalMember server;
         private Task? task;
-        private volatile State state;
 
         internal ServerExchange(ILocalMember server, PipeOptions? options = null)
-            : base(options) => this.server = server;
+            : base(options)
+        {
+            transmissionStateTrigger = new(new());
+            this.server = server;
+        }
+
+        private State CurrentState
+        {
+            get => transmissionStateTrigger.State.Value;
+            set => transmissionStateTrigger.State.Value = value;
+        }
 
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
         {
@@ -43,35 +57,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     result = new ValueTask<bool>(false);
                     break;
                 case MessageType.Vote:
-                    state = State.VoteRequestReceived;
+                    CurrentState = State.VoteRequestReceived;
                     BeginVote(payload, token);
                     break;
                 case MessageType.PreVote:
-                    state = State.PreVoteRequestReceived;
+                    CurrentState = State.PreVoteRequestReceived;
                     BeginPreVote(payload, token);
                     break;
                 case MessageType.Metadata:
                     if (headers.Control == FlowControl.None)
                     {
-                        state = State.MetadataRequestReceived;
+                        CurrentState = State.MetadataRequestReceived;
                         BeginSendMetadata(token);
                     }
                     else
                     {
-                        state = State.SendingMetadata;
+                        CurrentState = State.SendingMetadata;
                     }
 
                     break;
                 case MessageType.Resign:
-                    state = State.ResignRequestReceived;
+                    CurrentState = State.ResignRequestReceived;
                     BeginResign(token);
                     break;
                 case MessageType.Heartbeat:
-                    state = State.HeartbeatRequestReceived;
+                    CurrentState = State.HeartbeatRequestReceived;
                     BeginProcessHeartbeat(payload, token);
                     break;
                 case MessageType.AppendEntries:
-                    switch (state)
+                    switch (CurrentState)
                     {
                         case State.Ready:
                             BeginReceiveEntries(payload.Span, token);
@@ -89,10 +103,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
                     break;
                 case MessageType.InstallSnapshot:
-                    switch (state)
+                    switch (CurrentState)
                     {
                         case State.Ready:
-                            state = State.SnapshotReceived;
+                            CurrentState = State.SnapshotReceived;
                             result = BeginReceiveSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
                             break;
                         case State.SnapshotReceived:
@@ -105,10 +119,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
                     break;
                 case MessageType.Configuration:
-                    switch (state)
+                    switch (CurrentState)
                     {
                         case State.Ready:
-                            state = State.ConfigurationReceived;
+                            CurrentState = State.ConfigurationReceived;
                             result = BeginReceiveConfiguration(payload, headers.Control == FlowControl.StreamEnd, token);
                             break;
                         case State.ConfigurationReceived:
@@ -125,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return result;
         }
 
-        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token) => state switch
+        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token) => CurrentState switch
         {
             State.VoteRequestReceived => EndVote(output),
             State.PreVoteRequestReceived => EndPreVote(output),
@@ -145,7 +159,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             ReusePipe();
             task = null;
-            state = State.Ready;
+            CurrentState = State.Ready;
             transmissionStateTrigger.CancelSuspendedCallers(new CancellationToken(true));
         }
 

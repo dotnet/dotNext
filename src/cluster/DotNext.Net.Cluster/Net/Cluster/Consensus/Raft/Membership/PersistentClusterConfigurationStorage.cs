@@ -85,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
             protected override ValueTask DisposeAsyncCore() => fs.DisposeAsync();
 
-            public ValueTask DisposeAsync() => DisposeAsync(false);
+            public new ValueTask DisposeAsync() => base.DisposeAsync();
         }
 
         private readonly ClusterConfiguration active, proposed;
@@ -290,6 +290,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// Releases managed resources associated with this object.
         /// </summary>
         /// <returns>The task representing asynchronous result.</returns>
-        public ValueTask DisposeAsync() => DisposeAsync(false);
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 }

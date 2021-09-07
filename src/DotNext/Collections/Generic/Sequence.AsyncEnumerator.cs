@@ -40,11 +40,7 @@ namespace DotNext.Collections.Generic
                     base.Dispose(disposing);
                 }
 
-                public ValueTask DisposeAsync()
-                {
-                    Dispose();
-                    return new ValueTask();
-                }
+                public new ValueTask DisposeAsync() => base.DisposeAsync();
             }
 
             private readonly IEnumerable<T> enumerable;

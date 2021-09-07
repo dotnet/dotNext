@@ -421,6 +421,6 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
         }
 
         /// <inheritdoc />
-        public ValueTask DisposeAsync() => DisposeAsync(false);
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 }

@@ -97,7 +97,7 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool IAsyncEvent.Pulse() => Set();
+        bool IAsyncEvent.Signal() => Set();
 
         /// <inheritdoc/>
         EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;

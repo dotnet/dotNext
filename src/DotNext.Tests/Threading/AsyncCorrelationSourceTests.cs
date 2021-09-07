@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading
@@ -8,7 +5,7 @@ namespace DotNext.Threading
     public sealed class AsyncCorrelationSourceTests : Test
     {
         [Fact]
-        public static void RoutingByKey()
+        public static async Task RoutingByKey()
         {
             var key1 = Guid.NewGuid();
             var key2 = Guid.NewGuid();
@@ -18,14 +15,12 @@ namespace DotNext.Threading
             var listener2 = source.WaitAsync(key2);
 
             True(source.Pulse(key1, 10));
-            True(listener1.IsCompletedSuccessfully);
-            Equal(10, listener1.Result);
+            Equal(10, await listener1);
 
             False(listener2.IsCompleted);
 
             True(source.Pulse(key2, 20));
-            True(listener2.IsCompletedSuccessfully);
-            Equal(20, listener2.Result);
+            Equal(20, await listener2);
         }
 
         [Fact]
@@ -40,8 +35,8 @@ namespace DotNext.Threading
 
             source.PulseAll(new ArithmeticException());
 
-            await ThrowsAsync<ArithmeticException>(async () => await listener1);
-            await ThrowsAsync<ArithmeticException>(async () => await listener2);
+            await ThrowsAsync<ArithmeticException>(listener1.AsTask);
+            await ThrowsAsync<ArithmeticException>(listener2.AsTask);
         }
 
         [Fact]
@@ -56,8 +51,8 @@ namespace DotNext.Threading
 
             source.PulseAll(new CancellationToken(true));
 
-            await ThrowsAnyAsync<OperationCanceledException>(async () => await listener1);
-            await ThrowsAnyAsync<OperationCanceledException>(async () => await listener2);
+            await ThrowsAnyAsync<OperationCanceledException>(listener1.AsTask);
+            await ThrowsAnyAsync<OperationCanceledException>(listener2.AsTask);
         }
 
         [Fact]

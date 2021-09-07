@@ -1,12 +1,8 @@
-using System;
 using System.Buffers;
 using System.Globalization;
-using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.IO.Pipelines
 {
@@ -275,7 +271,7 @@ namespace DotNext.IO.Pipelines
             }
         }
 
-        public unsafe ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
+        public unsafe ValueTask WriteStringAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
         {
             if (chars.Length > stringLengthThreshold)
                 return output.WriteStringAsync(chars, context, lengthFormat: lengthFormat, token: token);

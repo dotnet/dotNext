@@ -26,11 +26,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 archive = new(output, ZipArchiveMode.Create, true);
                 foreach (var file in location.EnumerateFiles())
                 {
-                    await using var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, true);
                     var entry = archive.CreateEntry(file.Name, backupCompression);
                     entry.LastWriteTime = file.LastWriteTime;
-                    await using var destination = entry.Open();
-                    await source.CopyToAsync(destination, token).ConfigureAwait(false);
+                    var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, true);
+                    var destination = entry.Open();
+                    await using (source.ConfigureAwait(false))
+                    await using (destination.ConfigureAwait(false))
+                    {
+                        await source.CopyToAsync(destination, token).ConfigureAwait(false);
+                    }
                 }
 
                 await output.FlushAsync(token).ConfigureAwait(false);
@@ -64,9 +68,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var archive = new ZipArchive(backup, ZipArchiveMode.Read, true);
             foreach (var entry in archive.Entries)
             {
-                await using var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true);
-                await using var entryStream = entry.Open();
-                await entryStream.CopyToAsync(fs, token).ConfigureAwait(false);
+                var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true);
+                var entryStream = entry.Open();
+                await using (fs.ConfigureAwait(false))
+                await using (entryStream.ConfigureAwait(false))
+                {
+                    await entryStream.CopyToAsync(fs, token).ConfigureAwait(false);
+                }
             }
         }
     }

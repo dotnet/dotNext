@@ -202,7 +202,7 @@ namespace DotNext.IO.Pipelines
         public static async Task HashEntirePipe()
         {
             byte[] data = { 1, 2, 3, 5, 8, 13 };
-            using var alg = new SHA256Managed();
+            using var alg = SHA256.Create();
             var hash = new byte[alg.HashSize / 8];
             var pipe = new Pipe();
             ThreadPool.QueueUserWorkItem(async state =>
@@ -219,7 +219,7 @@ namespace DotNext.IO.Pipelines
         public static async Task HashPipe()
         {
             byte[] data = { 1, 2, 3, 5, 8, 13 };
-            using var alg = new SHA256Managed();
+            using var alg = SHA256.Create();
             var hash = new byte[alg.HashSize / 8];
             var pipe = new Pipe();
             await pipe.Writer.WriteAsync(data);

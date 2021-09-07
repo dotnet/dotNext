@@ -22,13 +22,6 @@ namespace DotNext.Threading.Tasks
             next = node;
         }
 
-        internal void Prepend(LinkedValueTaskCompletionSource<T> node)
-        {
-            node.next = this;
-            node.previous = previous;
-            previous = node;
-        }
-
         internal void Detach()
         {
             if (previous is not null)

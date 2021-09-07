@@ -1,18 +1,14 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using TransportServices;
-    using static Threading.Tasks.Synchronization;
 
     [ExcludeFromCodeCoverage]
     public sealed class TcpTransportTests : TransportTestSuite
@@ -189,7 +185,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             await using var host3 = CreateCluster(3269, false);
             await host3.StartAsync();
 
-            True(await listener1.Result.WaitAsync(DefaultTimeout));
+            await listener1.Result.WaitAsync(DefaultTimeout);
             Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
 
             // add two nodes to the cluster
@@ -197,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             await host2.Readiness.WaitAsync(DefaultTimeout);
 
             True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
-            True(await host3.Readiness.WaitAsync(DefaultTimeout));
+            await host3.Readiness.WaitAsync(DefaultTimeout);
 
             Equal(host1.Leader.EndPoint, host2.Leader.EndPoint);
             Equal(host1.Leader.EndPoint, host3.Leader.EndPoint);

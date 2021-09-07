@@ -101,7 +101,7 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool IAsyncEvent.Pulse()
+        bool IAsyncEvent.Signal()
         {
             Increment();
             return true;

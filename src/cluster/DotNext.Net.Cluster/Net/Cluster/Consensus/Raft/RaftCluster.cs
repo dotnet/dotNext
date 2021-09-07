@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using static System.Linq.Enumerable;
@@ -709,9 +704,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timeout.ThrowIfExpired(out remaining);
 
             // 3 - wait for commit
-            await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false);
-
-            return Term == entry.Term;
+            return await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false)
+                ? auditTrail.Term == entry.Term
+                : throw new TimeoutException();
         }
 
         /// <summary>
@@ -787,6 +782,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc />
-        public ValueTask DisposeAsync() => DisposeAsync(false);
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 }

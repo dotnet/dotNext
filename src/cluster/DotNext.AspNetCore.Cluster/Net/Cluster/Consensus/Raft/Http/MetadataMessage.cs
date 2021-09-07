@@ -29,8 +29,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task<MemberMetadata> IHttpMessageReader<MemberMetadata>.ParseResponse(HttpResponseMessage response, CancellationToken token)
         {
-            await using var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, JsonOptions, token).ConfigureAwait(false) ?? new MemberMetadata();
+            var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            await using (stream.ConfigureAwait(false))
+                return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, JsonOptions, token).ConfigureAwait(false) ?? new MemberMetadata();
         }
 
         public Task SaveResponse(HttpResponse response, MemberMetadata metadata, CancellationToken token)

@@ -55,7 +55,7 @@ namespace DotNext
         {
             public new bool IsDisposed => base.IsDisposed;
 
-            ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync(false);
+            ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
         }
 
         [Fact]

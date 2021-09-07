@@ -154,7 +154,7 @@ namespace DotNext.IO
             return result;
         }
 
-        ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteStringAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
         {
             ValueTask result;
             if (token.IsCancellationRequested)

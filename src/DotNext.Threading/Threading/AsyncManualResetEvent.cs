@@ -85,7 +85,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     }
 
     /// <inheritdoc/>
-    bool IAsyncEvent.Pulse() => Set();
+    bool IAsyncEvent.Signal() => Set();
 
     private static bool CheckState(ref AtomicBoolean state) => state.Value;
 
@@ -112,4 +112,80 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask WaitAsync(CancellationToken token = default)
         => WaitWithTimeoutAsync(ref state, &CheckState, pool, out _, InfiniteTimeSpan, token);
+
+    /// <summary>
+    /// Suspends the caller until this event is set.
+    /// </summary>
+    /// <remarks>
+    /// If given predicate returns true then caller will not be suspended.
+    /// </remarks>
+    /// <typeparam name="T">The type of predicate parameter.</typeparam>
+    /// <param name="condition">Additional condition that must be checked before suspension.</param>
+    /// <param name="arg">The argument to be passed to the predicate.</param>
+    /// <param name="timeout">The number of time to wait before this event is set.</param>
+    /// <param name="token">The token that can be used to cancel waiting operation.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public unsafe ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
+        => state.Value || condition(arg) ? new(true) : WaitNoTimeoutAsync(ref state, &CheckState, pool, out _, timeout, token);
+
+    /// <summary>
+    /// Suspends the caller until this event is set.
+    /// </summary>
+    /// <remarks>
+    /// If given predicate returns true then caller will not be suspended.
+    /// </remarks>
+    /// <typeparam name="T">The type of predicate parameter.</typeparam>
+    /// <param name="condition">Additional condition that must be checked before suspension.</param>
+    /// <param name="arg">The argument to be passed to the predicate.</param>
+    /// <param name="token">The token that can be used to cancel waiting operation.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public unsafe ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
+        => state.Value || condition(arg) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &CheckState, pool, out _, InfiniteTimeSpan, token);
+
+    /// <summary>
+    /// Suspends the caller until this event is set.
+    /// </summary>
+    /// <remarks>
+    /// If given predicate returns true then caller will not be suspended.
+    /// </remarks>
+    /// <typeparam name="T1">The type of the first predicate parameter.</typeparam>
+    /// <typeparam name="T2">The type of the second predicate parameter.</typeparam>
+    /// <param name="condition">Additional condition that must be checked before suspension.</param>
+    /// <param name="arg1">The first argument to be passed to the predicate.</param>
+    /// <param name="arg2">The second argument to be passed to the predicate.</param>
+    /// <param name="timeout">The number of time to wait before this event is set.</param>
+    /// <param name="token">The token that can be used to cancel waiting operation.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public unsafe ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
+        => state.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeoutAsync(ref state, &CheckState, pool, out _, timeout, token);
+
+    /// <summary>
+    /// Suspends the caller until this event is set.
+    /// </summary>
+    /// <remarks>
+    /// If given predicate returns true then caller will not be suspended.
+    /// </remarks>
+    /// <typeparam name="T1">The type of the first predicate parameter.</typeparam>
+    /// <typeparam name="T2">The type of the second predicate parameter.</typeparam>
+    /// <param name="condition">Additional condition that must be checked before suspension.</param>
+    /// <param name="arg1">The first argument to be passed to the predicate.</param>
+    /// <param name="arg2">The second argument to be passed to the predicate.</param>
+    /// <param name="token">The token that can be used to cancel waiting operation.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public unsafe ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
+        => state.Value || condition(arg1, arg2) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &CheckState, pool, out _, InfiniteTimeSpan, token);
 }

@@ -1,5 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -52,7 +52,7 @@ namespace DotNext.Metaprogramming
             {
                 Match(fun[0])
                     .Case("X", 0L.Const(), static value => "X is zero".Const())
-                    .Case(new { X = long.MaxValue, Y = long.MaxValue }, static value => "MaxValue".Const())
+                    .Case(new { X = long.MaxValue, Y = long.MaxValue }, new MatchBuilder.CaseStatement(static value => "MaxValue".Const()))
                     .Default("Unknown".Const())
                     .OfType<string>()
                 .End();
@@ -77,7 +77,7 @@ namespace DotNext.Metaprogramming
                     {
                         Assign(result, "MaxValue".Const());
                     })
-                    .Default(_ => Assign(result, "Unknown".Const()))
+                    .Default((ParameterExpression _) => Assign(result, "Unknown".Const()))
                 .End();
             }).Compile();
             Equal("X is zero", lambda(new Point { X = 0, Y = 10 }));
@@ -92,7 +92,7 @@ namespace DotNext.Metaprogramming
             {
                 Match(fun[0])
                     .Case("Item1", 0L.Const(), static value => "X is zero".Const())
-                    .Case((long.MaxValue, long.MaxValue), static value => "MaxValue".Const())
+                    .Case((long.MaxValue, long.MaxValue), new MatchBuilder.CaseStatement(static value => "MaxValue".Const()))
                     .Default("Unknown".Const())
                     .OfType<string>()
                 .End();

@@ -108,9 +108,8 @@ namespace DotNext.Threading.Tasks
             timeoutTracker.Dispose();
             timeoutTracker = default;
 
-            if (timeoutSource is not null)
+            if (timeoutSource is not null && !timeoutSource.TryReset())
             {
-                // TODO: Attempt to reuse the source with TryReset
                 timeoutSource.Dispose();
                 timeoutSource = null;
             }

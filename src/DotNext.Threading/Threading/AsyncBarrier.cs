@@ -1,6 +1,4 @@
-﻿using static System.Threading.Timeout;
-
-namespace DotNext.Threading
+﻿namespace DotNext.Threading
 {
     /// <summary>
     /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
@@ -126,7 +124,8 @@ namespace DotNext.Threading
             if (ParticipantCount == 0L)
                 throw new InvalidOperationException();
 
-            if (await countdown.SignalAndWaitAsync(timeout, token).ConfigureAwait(false))
+            var result = await countdown.SignalAndWaitAsync(out bool completedSynchronously, timeout, token).ConfigureAwait(false);
+            if (completedSynchronously)
             {
                 try
                 {
@@ -136,11 +135,9 @@ namespace DotNext.Threading
                 {
                     throw new BarrierPostPhaseException(e);
                 }
-
-                return true;
             }
 
-            return false;
+            return result;
         }
 
         /// <summary>
@@ -157,14 +154,17 @@ namespace DotNext.Threading
             if (ParticipantCount == 0L)
                 throw new InvalidOperationException();
 
-            await countdown.SignalAndWaitAsync(token).ConfigureAwait(false);
-            try
+            await countdown.SignalAndWaitAsync(out var completedSynchronously, token).ConfigureAwait(false);
+            if (completedSynchronously)
             {
-                await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                throw new BarrierPostPhaseException(e);
+                try
+                {
+                    await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    throw new BarrierPostPhaseException(e);
+                }
             }
         }
 
@@ -172,7 +172,7 @@ namespace DotNext.Threading
         bool IAsyncEvent.Reset() => countdown.Reset();
 
         /// <inheritdoc/>
-        bool IAsyncEvent.Pulse() => countdown.Signal();
+        bool IAsyncEvent.Signal() => countdown.Signal();
 
         /// <summary>
         /// Waits for all other participants to reach the barrier.

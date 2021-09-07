@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
@@ -54,38 +50,71 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     {
-        private static readonly Action<ServerExchange, State> SetStateAction;
-        private static readonly Predicate<ServerExchange> IsReadyToReadEntryPredicate, IsValidStateForResponsePredicate, IsValidForTransitionPredicate;
+        private sealed class ReadyToReceiveTransition : AsyncTrigger<StateHolder>.ITransition
+        {
+            internal static readonly ReadyToReceiveTransition Instance = new();
+
+            private ReadyToReceiveTransition()
+            {
+            }
+
+            bool AsyncTrigger<StateHolder>.ITransition.Test(StateHolder state)
+                => state.Value is State.ReceivingEntry or State.EntryReceived or State.AppendEntriesReceived;
+
+            void AsyncTrigger<StateHolder>.ITransition.Transit(StateHolder state)
+                => state.Value = State.ReadyToReceiveEntry;
+        }
+
+        private sealed class ReadyToReadTransition : AsyncTrigger<StateHolder>.ITransition
+        {
+            internal static readonly ReadyToReadTransition Instance = new();
+
+            private ReadyToReadTransition()
+            {
+            }
+
+            bool AsyncTrigger<StateHolder>.ITransition.Test(StateHolder state)
+                => state.Value is State.ReceivingEntry or State.EntryReceived;
+
+            void AsyncTrigger<StateHolder>.ITransition.Transit(StateHolder state)
+            {
+                // do nothing here
+            }
+        }
+
+        private sealed class ReadyToProcessTransition : AsyncTrigger<StateHolder>.ITransition
+        {
+            internal static readonly ReadyToProcessTransition Instance = new();
+
+            private ReadyToProcessTransition()
+            {
+            }
+
+            bool AsyncTrigger<StateHolder>.ITransition.Test(StateHolder state)
+                => state.Value is State.ReceivingEntriesFinished or State.ReadyToReceiveEntry or State.ReceivingEntry;
+
+            void AsyncTrigger<StateHolder>.ITransition.Transit(StateHolder state)
+            {
+                // do nothing here
+            }
+        }
+
+        private static readonly Action<StateHolder, State> SetStateAction;
 
         static ServerExchange()
         {
-            IsReadyToReadEntryPredicate = IsReadyToReadEntry;
-            IsValidStateForResponsePredicate = IsValidStateForResponse;
-            IsValidForTransitionPredicate = IsValidForTransition;
             SetStateAction = SetState;
 
-            static bool IsReadyToReadEntry(ServerExchange server) => server.IsReadyToReadEntry();
-            static bool IsValidStateForResponse(ServerExchange server) => server.IsValidStateForResponse();
-            static bool IsValidForTransition(ServerExchange server) => server.IsValidForTransition();
-            static void SetState(ServerExchange server, State state) => server.SetState(state);
+            static void SetState(StateHolder holder, State state) => holder.Value = state;
         }
 
-        private readonly AsyncTrigger transmissionStateTrigger = new();
+        private readonly AsyncTrigger<StateHolder> transmissionStateTrigger;
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;
 
         long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => remainingCount;
 
         ReceivedLogEntry IAsyncEnumerator<ReceivedLogEntry>.Current => currentEntry;
-
-        private void SetState(State newState) => state = newState;
-
-        private bool IsReadyToReadEntry() => state is State.ReceivingEntry or State.EntryReceived;
-
-        private bool IsValidStateForResponse()
-            => state is State.ReceivingEntriesFinished or State.ReadyToReceiveEntry or State.ReceivingEntry;
-
-        private bool IsValidForTransition() => state is State.AppendEntriesReceived or State.EntryReceived;
 
         async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
         {
@@ -97,27 +126,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (remainingCount <= 0)
             {
                 // resume wait thread to finalize response
-                transmissionStateTrigger.Signal(this, SetStateAction, State.ReceivingEntriesFinished);
+                transmissionStateTrigger.Signal(SetStateAction, State.ReceivingEntriesFinished);
                 return false;
             }
 
-            if (lookupIndex >= 0)
-            {
-                await Reader.CompleteAsync().ConfigureAwait(false);
-                await transmissionStateTrigger.WaitAsync(this, IsValidForTransitionPredicate).ConfigureAwait(false);
-                ReusePipe(false);
-            }
+            // informs that we are ready to receive a new log entry
+            await Reader.CompleteAsync().ConfigureAwait(false);
+            await transmissionStateTrigger.WaitAsync(ReadyToReceiveTransition.Instance).ConfigureAwait(false);
 
-            lookupIndex += 1;
+            // waits for the log entry
+            await transmissionStateTrigger.WaitAsync(ReadyToReadTransition.Instance).ConfigureAwait(false);
             remainingCount -= 1;
-
-            return await transmissionStateTrigger.SignalAndWaitAsync(this, SetStateAction, State.ReadyToReceiveEntry, IsReadyToReadEntryPredicate, InfiniteTimeSpan).ConfigureAwait(false);
+            return true;
         }
 
         private void BeginReceiveEntries(ReadOnlySpan<byte> announcement, CancellationToken token)
         {
             lookupIndex = -1;
-            state = State.AppendEntriesReceived;
+            CurrentState = State.AppendEntriesReceived;
             EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount, out var configState);
 
             task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState?.ApplyConfig ?? false, token);
@@ -130,11 +156,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                transmissionStateTrigger.Signal(this, SetStateAction, State.EntryReceived);
+                transmissionStateTrigger.Signal(SetStateAction, State.EntryReceived);
             }
             else
             {
-                transmissionStateTrigger.Signal(this, SetStateAction, State.ReceivingEntry);
+                transmissionStateTrigger.Signal(SetStateAction, State.ReceivingEntry);
             }
 
             return true;
@@ -155,7 +181,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                transmissionStateTrigger.Signal(this, SetStateAction, State.AppendEntriesReceived);
+                transmissionStateTrigger.Signal(SetStateAction, State.AppendEntriesReceived);
             }
 
             return true;
@@ -167,14 +193,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             int count;
             bool isContinueReceiving;
             var resultTask = Cast<Task<Result<bool>>>(task);
-            var stateTask = transmissionStateTrigger.WaitAsync(this, IsValidStateForResponsePredicate, token);
+            var stateTask = transmissionStateTrigger.WaitAsync(ReadyToProcessTransition.Instance, token).AsTask();
 
             // wait for result or state transition
             if (ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
             {
                 // result obtained, finalize transmission
                 task = null;
-                state = State.ReceivingEntriesFinished;
+                CurrentState = State.ReceivingEntriesFinished;
                 remainingCount = 0;
                 count = IExchange.WriteResult(resultTask.Result, output.Span);
                 isContinueReceiving = false;
@@ -183,7 +209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             else
             {
                 // should be in sync with IsValidStateForResponse
-                switch (state)
+                switch (CurrentState)
                 {
                     case State.ReceivingEntriesFinished:
                         count = IExchange.WriteResult(await resultTask.ConfigureAwait(false), output.Span);
@@ -191,6 +217,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         responseType = MessageType.None;
                         break;
                     case State.ReadyToReceiveEntry:
+                        ReusePipe(false);
                         count = EntriesExchange.CreateNextEntryResponse(output.Span, lookupIndex);
                         isContinueReceiving = true;
                         responseType = MessageType.NextEntry;

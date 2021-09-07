@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Threading
@@ -139,19 +136,19 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void GracefulShutdown()
+        public static async Task GracefulShutdown()
         {
             using var @lock = new AsyncSharedLock(3);
             True(@lock.TryAcquire(false));
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
             @lock.Release();
-            True(task.IsCompletedSuccessfully);
+            await task;
             Throws<ObjectDisposedException>(() => @lock.TryAcquire(true));
         }
 
         [Fact]
-        public static void GracefulShutdown2()
+        public static async Task GracefulShutdown2()
         {
             using var @lock = new AsyncSharedLock(3);
             True(@lock.TryAcquire(false));
@@ -160,13 +157,12 @@ namespace DotNext.Threading
             var acquisition = @lock.AcquireAsync(true, CancellationToken.None);
             False(acquisition.IsCompleted);
             @lock.Release();
-            True(task.IsCompletedSuccessfully);
-            True(acquisition.IsFaulted);
-            Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
+            await task;
+            await ThrowsAsync<ObjectDisposedException>(acquisition.AsTask);
         }
 
         [Fact]
-        public static void GracefulShutdown3()
+        public static async Task GracefulShutdown3()
         {
             using var @lock = new AsyncSharedLock(3);
             True(@lock.TryAcquire(false));
@@ -175,13 +171,12 @@ namespace DotNext.Threading
             var acquisition = @lock.AcquireAsync(true, CancellationToken.None);
             False(acquisition.IsCompleted);
             @lock.Downgrade();
-            True(task.IsCompletedSuccessfully);
-            True(acquisition.IsFaulted);
-            Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
+            await task;
+            await ThrowsAsync<ObjectDisposedException>(acquisition.AsTask);
         }
 
         [Fact]
-        public static void GracefulShutdown4()
+        public static async Task GracefulShutdown4()
         {
             using var @lock = new AsyncSharedLock(3);
             True(@lock.TryAcquire(true));
@@ -193,18 +188,17 @@ namespace DotNext.Threading
             False(task.IsCompleted);
 
             @lock.Release();
-            True(acquisition1.IsCompletedSuccessfully);
+            await acquisition1;
             False(acquisition2.IsCompleted);
             False(task.IsCompleted);
 
             @lock.Release();
-            True(acquisition2.IsFaulted);
-            True(task.IsCompletedSuccessfully);
-            Throws<ObjectDisposedException>(acquisition2.GetAwaiter().GetResult);
+            await task;
+            await ThrowsAsync<ObjectDisposedException>(acquisition2.AsTask);
         }
 
         [Fact]
-        public static void GracefulShutdown5()
+        public static async Task GracefulShutdown5()
         {
             using var @lock = new AsyncSharedLock(3);
             True(@lock.TryAcquire(true));
@@ -216,14 +210,13 @@ namespace DotNext.Threading
             False(task.IsCompleted);
 
             @lock.Downgrade();
-            True(acquisition1.IsCompletedSuccessfully);
+            await acquisition1;
             False(acquisition2.IsCompleted);
             False(task.IsCompleted);
 
             @lock.Downgrade();
-            True(acquisition2.IsFaulted);
-            True(task.IsCompletedSuccessfully);
-            Throws<ObjectDisposedException>(acquisition2.GetAwaiter().GetResult);
+            await task;
+            await ThrowsAsync<ObjectDisposedException>(acquisition2.AsTask);
         }
     }
 }
