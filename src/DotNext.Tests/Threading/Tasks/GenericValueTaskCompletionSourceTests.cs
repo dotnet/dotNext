@@ -1,7 +1,4 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using static System.Threading.Timeout;
 
@@ -37,7 +34,7 @@ namespace DotNext.Threading.Tasks
             var task = source.CreateTask(InfiniteTimeSpan, cancellation.Token);
             False(task.IsCompleted);
             cancellation.Cancel();
-            await ThrowsAsync<OperationCanceledException>(() => task.AsTask());
+            await ThrowsAsync<OperationCanceledException>(task.AsTask);
             False(source.TrySetResult(42));
         }
 
@@ -48,7 +45,7 @@ namespace DotNext.Threading.Tasks
             var task = source.CreateTask(TimeSpan.FromMilliseconds(20), default);
             await Task.Delay(100);
             True(task.IsCompleted);
-            await ThrowsAsync<TimeoutException>(() => task.AsTask());
+            await ThrowsAsync<TimeoutException>(task.AsTask);
             False(source.TrySetResult(42));
         }
 
@@ -68,7 +65,7 @@ namespace DotNext.Threading.Tasks
         public static async Task Reuse()
         {
             var source = new ValueTaskCompletionSource<int>();
-            source.Reset();
+
             var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult(42));
             Equal(42, await task);
@@ -83,7 +80,6 @@ namespace DotNext.Threading.Tasks
         public static async Task AsyncCompletion()
         {
             var source = new ValueTaskCompletionSource<int>();
-            source.Reset();
 
             var task = source.CreateTask(InfiniteTimeSpan, default);
             var result = Task.Run(async () => await task);
@@ -96,7 +92,6 @@ namespace DotNext.Threading.Tasks
         public static async Task AsyncLocalAccess()
         {
             var source = new ValueTaskCompletionSource<int>();
-            source.Reset();
 
             var task = source.CreateTask(InfiniteTimeSpan, default);
             var local = new AsyncLocal<int>() { Value = 56 };
