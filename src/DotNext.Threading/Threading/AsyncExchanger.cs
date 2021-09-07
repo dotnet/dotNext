@@ -21,24 +21,23 @@ namespace DotNext.Threading
     {
         private sealed class ExchangePoint : ValueTaskCompletionSource<T>
         {
-            private readonly Action<ExchangePoint> backToPool;
-            private T? producerResult;
+            private readonly Action<ExchangePoint> consumedCallback;
+            internal T? Value;
 
-            internal ExchangePoint(Action<ExchangePoint> backToPool)
-                => this.backToPool = backToPool;
+            internal ExchangePoint(Action<ExchangePoint> consumedCallback)
+                => this.consumedCallback = consumedCallback;
 
-            internal T Value
+            protected override void AfterConsumed()
             {
-                set => producerResult = value;
+                Value = default;
+                consumedCallback(this);
             }
-
-            protected override void AfterConsumed() => backToPool(this);
 
             internal bool TryExchange(ref T value)
             {
                 if (TrySetResult(value))
                 {
-                    value = producerResult!;
+                    value = Value!;
                     return true;
                 }
 
@@ -46,29 +45,44 @@ namespace DotNext.Threading
             }
         }
 
-        // chance of multiple exchange points is very small so use concurrent bag
-        private sealed class ExchangePointPool : ConcurrentBag<ExchangePoint>
-        {
-            internal void Return(ExchangePoint point)
-            {
-                point.Reset();
-                Add(point);
-            }
-        }
-
-        private readonly TaskCompletionSource disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly ExchangePointPool pool = new();
+        private readonly TaskCompletionSource disposeTask;
+        private readonly ConcurrentBag<ExchangePoint> pool; // chances of multiple exchange points is very small so use concurrent bag
+        private readonly Action<ExchangePoint> consumed;
         private ExchangePoint? point;
         private bool disposeRequested;
         private volatile ExchangeTerminatedException? termination;
 
+        /// <summary>
+        /// Initializes a new asynchronous exchanger.
+        /// </summary>
+        public AsyncExchanger()
+        {
+            pool = new();
+            disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            consumed = OnConsumed;
+        }
+
         private ExchangePoint RentExchangePoint(T value)
         {
             if (!pool.TryTake(out var result))
-                result = new(pool.Return);
+                result = new(consumed);
 
             result.Value = value;
             return result;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void RemoveExchangePoint(ExchangePoint point)
+        {
+            if (ReferenceEquals(this.point, point))
+                this.point = null;
+        }
+
+        private void OnConsumed(ExchangePoint point)
+        {
+            RemoveExchangePoint(point);
+            point.Reset();
+            pool.Add(point);
         }
 
         /// <summary>
