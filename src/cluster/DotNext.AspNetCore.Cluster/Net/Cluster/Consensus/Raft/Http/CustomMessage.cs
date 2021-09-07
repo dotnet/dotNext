@@ -15,7 +15,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using IO;
     using Messaging;
-    using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage?, Generic.DefaultConst<Messaging.IMessage>>;
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage?>
     {
@@ -145,7 +144,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SaveResponse(response, message, token);
 
         // do not parse response because this is one-way message
-        Task<IMessage?> IHttpMessageReader<IMessage?>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
+        Task<IMessage?> IHttpMessageReader<IMessage?>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled<IMessage?>(token) : Task.FromResult<IMessage?>(null);
 
         private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
         {
