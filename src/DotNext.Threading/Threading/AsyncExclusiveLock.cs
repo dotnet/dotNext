@@ -39,7 +39,7 @@ namespace DotNext.Threading
             if (concurrencyLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DotNext.Threading
         /// </summary>
         public AsyncExclusiveLock()
         {
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -156,16 +156,12 @@ namespace DotNext.Threading
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
-            if (IsDisposeRequested)
-            {
+            DrainWaitQueue();
+
+            if (IsDisposeRequested && IsReadyToDispose)
                 Dispose(true);
-            }
-            else
-            {
-                DrainWaitQueue();
-            }
         }
 
-        private protected sealed override bool IsReadyToDispose => state.Value is false;
+        private protected sealed override bool IsReadyToDispose => state.Value is false && first is null;
     }
 }

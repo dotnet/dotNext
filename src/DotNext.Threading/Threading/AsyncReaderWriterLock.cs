@@ -29,11 +29,7 @@ namespace DotNext.Threading
 
             private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
 
-            protected override void AfterConsumed()
-            {
-                base.AfterConsumed();
-                backToPool(this);
-            }
+            protected override void AfterConsumed() => backToPool(this);
 
             internal bool IsReadLock => Type != LockType.Exclusive;
 
@@ -183,7 +179,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             state = new(long.MinValue);
-            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel).Get;
+            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -192,14 +188,14 @@ namespace DotNext.Threading
         public AsyncReaderWriterLock()
         {
             state = new(long.MinValue);
-            pool = new UnconstrainedValueTaskPool<WaitNode>().Get;
+            pool = new UnconstrainedValueTaskPool<WaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
         private static bool TryAcquireReadLock(ref State state)
         {
-            if (state.IsWriteLockAllowed)
+            if (state.IsReadLockAllowed)
             {
-                state.AcquireWriteLock();
+                state.AcquireReadLock();
                 return true;
             }
 
@@ -208,9 +204,9 @@ namespace DotNext.Threading
 
         private static bool TryUpgradeToWriteLock(ref State state)
         {
-            if (state.IsReadLockAllowed)
+            if (state.IsUpgradeToWriteLockAllowed)
             {
-                state.AcquireReadLock();
+                state.AcquireWriteLock();
                 return true;
             }
 
@@ -535,14 +531,10 @@ namespace DotNext.Threading
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
+            DrainWaitQueue();
+
             if (IsDisposeRequested && IsReadyToDispose)
-            {
                 Dispose(true);
-            }
-            else
-            {
-                DrainWaitQueue();
-            }
         }
 
         /// <summary>
@@ -566,6 +558,6 @@ namespace DotNext.Threading
             DrainWaitQueue();
         }
 
-        private protected override bool IsReadyToDispose => state.IsWriteLockAllowed;
+        private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && first is null;
     }
 }

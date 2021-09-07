@@ -19,7 +19,7 @@ namespace DotNext.Threading
         /// </summary>
         public AsyncTrigger()
         {
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace DotNext.Threading
             if (concurrencyLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
         }
 
         /// <inheritdoc/>
@@ -214,7 +214,6 @@ namespace DotNext.Threading
             protected override void AfterConsumed()
             {
                 Transition = null;
-                base.AfterConsumed();
                 backToPool(this);
             }
 
@@ -230,7 +229,7 @@ namespace DotNext.Threading
         public AsyncTrigger(TState state)
         {
             State = state ?? throw new ArgumentNullException(nameof(state));
-            pool = new UnconstrainedValueTaskPool<WaitNode>().Get;
+            pool = new UnconstrainedValueTaskPool<WaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -245,7 +244,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             State = state ?? throw new ArgumentNullException(nameof(state));
-            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel).Get;
+            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -302,6 +301,9 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             transition(State);
             DrainWaitQueue();
+
+            if (IsDisposeRequested && IsReadyToDispose)
+                Dispose(true);
         }
 
         /// <summary>
@@ -316,6 +318,9 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             transition(State, arg);
             DrainWaitQueue();
+
+            if (IsDisposeRequested && IsReadyToDispose)
+                Dispose(true);
         }
 
         /// <summary>
@@ -373,5 +378,7 @@ namespace DotNext.Threading
 
             return result;
         }
+
+        private protected sealed override bool IsReadyToDispose => first is null;
     }
 }

@@ -35,7 +35,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             counter = initialValue;
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
+            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(initialValue));
 
             counter = initialValue;
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
+            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
         private static bool TryDecrement(ref long counter)

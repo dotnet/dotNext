@@ -25,11 +25,7 @@ namespace DotNext.Threading
 
             private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
 
-            protected override void AfterConsumed()
-            {
-                base.AfterConsumed();
-                backToPool(this);
-            }
+            protected override void AfterConsumed() => backToPool(this);
 
             public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
         }
@@ -93,9 +89,10 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             state = new(concurrencyLevel);
+            Action<WaitNode> removeFromList = RemoveAndDrainWaitQueue;
             pool = limitedConcurrency
-                ? new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel.Truncate()).Get
-                : new UnconstrainedValueTaskPool<WaitNode>().Get;
+                ? new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel.Truncate(), removeFromList).Get
+                : new UnconstrainedValueTaskPool<WaitNode>(removeFromList).Get;
         }
 
         private static bool TryAcquireWeakLock(ref State state)
@@ -240,7 +237,7 @@ namespace DotNext.Threading
                         if (current.TrySetResult(true))
                         {
                             RemoveNode(current);
-                            state.AcquireStrongLock();
+                            state.AcquireWeakLock();
                         }
 
                         continue;
@@ -261,7 +258,7 @@ namespace DotNext.Threading
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            state.ExitLock();
+            state.Downgrade();
             DrainWaitQueue();
         }
 
@@ -279,16 +276,12 @@ namespace DotNext.Threading
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
+            DrainWaitQueue();
+
             if (IsDisposeRequested && IsReadyToDispose)
-            {
                 Dispose(true);
-            }
-            else
-            {
-                DrainWaitQueue();
-            }
         }
 
-        private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed;
+        private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && first is null;
     }
 }

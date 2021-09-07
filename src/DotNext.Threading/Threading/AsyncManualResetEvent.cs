@@ -24,7 +24,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel).Get;
+        pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncManualResetEvent(bool initialState)
     {
         state = new(initialState);
-        pool = new UnconstrainedValueTaskPool<DefaultWaitNode>().Get;
+        pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
     }
 
     /// <inheritdoc/>

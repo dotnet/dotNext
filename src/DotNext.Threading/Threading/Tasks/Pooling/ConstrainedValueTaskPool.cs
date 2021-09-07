@@ -20,8 +20,8 @@ internal sealed class ConstrainedValueTaskPool<TNode> : DefaultObjectPool<TNode>
         }
     }
 
-    internal ConstrainedValueTaskPool(int maximumRetained)
-        : base(new PooledNodePolicy(CreateBackToPoolCallback(out var weakRef)), maximumRetained)
+    internal ConstrainedValueTaskPool(int maximumRetained, Action<TNode>? completionCallback = null)
+        : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)), maximumRetained)
         => weakRef.SetTarget(this);
 
     private static Action<TNode> CreateBackToPoolCallback(out WeakReference<ConstrainedValueTaskPool<TNode>?> weakRef)

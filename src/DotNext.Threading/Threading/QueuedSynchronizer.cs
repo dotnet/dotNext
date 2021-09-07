@@ -16,21 +16,12 @@ namespace DotNext.Threading
     {
         private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
         {
-            private volatile Action<WaitNode>? completedHandler;
             internal bool ThrowOnTimeout;
             private Timestamp createdAt;
 
             internal void ResetAge() => createdAt = Timestamp.Current;
 
             protected sealed override Result<bool> OnTimeout() => ThrowOnTimeout ? base.OnTimeout() : false;
-
-            protected override void AfterConsumed()
-                => Interlocked.Exchange(ref completedHandler, null)?.Invoke(this);
-
-            internal new Action<WaitNode>? OnCompleted
-            {
-                set => completedHandler = value;
-            }
 
             internal TimeSpan Age => createdAt.Elapsed;
         }
@@ -41,17 +32,12 @@ namespace DotNext.Threading
 
             private DefaultWaitNode(Action<DefaultWaitNode> backToPool) => this.backToPool = backToPool;
 
-            protected override void AfterConsumed()
-            {
-                base.AfterConsumed(); // remove from the linked list
-                backToPool(this);
-            }
+            protected sealed override void AfterConsumed() => backToPool(this);
 
             public static DefaultWaitNode CreateSource(Action<DefaultWaitNode> backToPool) => new(backToPool);
         }
 
         private readonly Action<double>? contentionCounter, lockDurationCounter;
-        private readonly Action<WaitNode> removeFromList;
         private readonly TaskCompletionSource disposeTask;
         private protected LinkedValueTaskCompletionSource<bool>? first;
         private LinkedValueTaskCompletionSource<bool>? last;
@@ -59,11 +45,10 @@ namespace DotNext.Threading
         private protected QueuedSynchronizer()
         {
             disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            removeFromList = RemoveAndDrainWaitQueue;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void RemoveAndDrainWaitQueue(WaitNode node)
+        private protected void RemoveAndDrainWaitQueue(WaitNode node)
         {
             if (RemoveNode(node))
                 DrainWaitQueue();
@@ -114,7 +99,6 @@ namespace DotNext.Threading
             Debug.Assert(Monitor.IsEntered(this));
 
             node.ThrowOnTimeout = throwOnTimeout;
-            node.OnCompleted = removeFromList;
             node.ResetAge();
 
             if (last is null)

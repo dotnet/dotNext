@@ -7,8 +7,8 @@ internal sealed class UnconstrainedValueTaskPool<TNode> : ConcurrentBag<TNode>, 
 {
     private readonly Action<TNode> backToPool;
 
-    internal UnconstrainedValueTaskPool()
-        => backToPool = new WeakReference<UnconstrainedValueTaskPool<TNode>?>(this, false).Consume;
+    internal UnconstrainedValueTaskPool(Action<TNode>? completionCallback = null)
+        => backToPool = completionCallback + new WeakReference<UnconstrainedValueTaskPool<TNode>?>(this, false).Consume;
 
     internal TNode Get()
     {
