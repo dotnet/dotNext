@@ -1,6 +1,4 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -25,7 +23,6 @@ namespace DotNext.Collections.Generic
             if (sizeHint < 0)
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-            // TODO: use Enumerable.TryGetNonEnumeratedCount in .NET 6
             return enumerable switch
             {
                 List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
@@ -34,7 +31,7 @@ namespace DotNext.Collections.Generic
                 ArraySegment<T> segment => Span.Copy<T>(segment.AsSpan(), allocator),
                 ICollection<T> collection => collection.Count == 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
                 IReadOnlyCollection<T> collection => collection.Count == 0 ? default : CopySlow(enumerable, collection.Count, allocator),
-                _ => CopySlow(enumerable, sizeHint, allocator),
+                _ => CopySlow(enumerable, GetSize(enumerable, sizeHint), allocator),
             };
 
             static MemoryOwner<T> CopyCollection(ICollection<T> collection)
@@ -56,6 +53,9 @@ namespace DotNext.Collections.Generic
 
                 return result;
             }
+
+            static int GetSize(IEnumerable<T> enumerable, int sizeHint)
+                => enumerable.TryGetNonEnumeratedCount(out var result) ? result : sizeHint;
         }
     }
 }
