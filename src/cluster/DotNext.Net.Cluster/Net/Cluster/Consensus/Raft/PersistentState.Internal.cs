@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -120,12 +116,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize, out long actualLength)
             {
-                fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
-                actualLength = fs.Length;
+                fs = new(fileName, new FileStreamOptions
+                {
+                    Mode = FileMode.OpenOrCreate,
+                    Access = FileAccess.ReadWrite,
+                    Share = FileShare.Read,
+                    BufferSize = bufferSize,
+                    Options = options,
+                    PreallocationSize = initialSize,
+                });
 
-                // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6. Also need to change initial size for snapshot
-                if (actualLength == 0L && initialSize > 0L)
-                    fs.SetLength(initialSize);
+                actualLength = fs.Length;
 
                 this.bufferSize = bufferSize;
                 readers = new StreamSegment[readersCount];

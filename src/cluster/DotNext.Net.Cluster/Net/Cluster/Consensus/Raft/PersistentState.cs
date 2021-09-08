@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             partitionTable.Clear();
             state = new(path);
-            snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
+            snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough, initialSize: initialSize);
             snapshot.Initialize();
 
             // cluster config
@@ -377,7 +377,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-            var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, true);
+            var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, tempSnapshot: true, initialSize: snapshot.Length ?? 0L);
             await using (tempSnapshot.ConfigureAwait(false))
             {
                 tempSnapshotFile = tempSnapshot.FileName;

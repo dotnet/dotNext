@@ -313,8 +313,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private new const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
 
-            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool writeThrough, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough), 0L, out var actualLength)
+            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough), initialSize, out var actualLength)
             {
                 IsEmpty = actualLength == 0L;
             }
