@@ -275,6 +275,19 @@ namespace DotNext.Buffers
         [Theory]
         [InlineData(10, 10)]
         [InlineData(int.MaxValue, int.MinValue)]
+        public static async Task WriteInterpolatedStringToBufferWriterAsync(int x, int y)
+        {
+            var xt = Task.FromResult<int>(x);
+            var yt = Task.FromResult<int>(y);
+
+            using var buffer = new PooledArrayBufferWriter<char>();
+            buffer.Write($"{await xt,4:X} = {await yt,-3:X}");
+            Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
+        }
+
+        [Theory]
+        [InlineData(10, 10)]
+        [InlineData(int.MaxValue, int.MinValue)]
         public static void WriteInterpolatedStringToBufferWriterSlim(int x, int y)
         {
             var buffer = new BufferWriterSlim<char>(stackalloc char[4]);

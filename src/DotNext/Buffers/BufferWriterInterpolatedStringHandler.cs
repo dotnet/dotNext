@@ -13,7 +13,7 @@ namespace DotNext.Buffers;
 [InterpolatedStringHandler]
 [EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Auto)]
-public ref struct BufferWriterInterpolatedStringHandler
+public struct BufferWriterInterpolatedStringHandler
 {
     private const int MaxBufferSize = int.MaxValue / 2;
     private const char Whitespace = ' ';
