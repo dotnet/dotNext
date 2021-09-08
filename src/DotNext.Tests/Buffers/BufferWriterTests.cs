@@ -264,12 +264,30 @@ namespace DotNext.Buffers
         [Theory]
         [InlineData(10, 10)]
         [InlineData(int.MaxValue, int.MinValue)]
-        public static void WriteFormattedString(int x, int y)
+        public static void WriteInterpolatedStringToBufferWriter(int x, int y)
         {
             using var buffer = new PooledArrayBufferWriter<char>();
 
             buffer.Write($"{x,4:X} = {y,-3:X}");
             Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
+        }
+
+        [Theory]
+        [InlineData(10, 10)]
+        [InlineData(int.MaxValue, int.MinValue)]
+        public static void WriteInterpolatedStringToBufferWriterSlim(int x, int y)
+        {
+            var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
+
+            try
+            {
+                buffer.WriteString($"{x,4:X} = {y,-3:X}");
+                Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
         }
     }
 }
