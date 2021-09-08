@@ -16,7 +16,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using SslOptions = DotNext.Net.Security.SslOptions;
-using static DotNext.Threading.AsyncEvent;
 
 namespace RaftNode
 {
