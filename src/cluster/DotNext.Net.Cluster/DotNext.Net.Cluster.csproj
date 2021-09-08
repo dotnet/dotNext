@@ -42,9 +42,6 @@
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Net/Cluster/Discovery/HyParView/LogMessages.restext">
-      <Generator></Generator>
-    </EmbeddedResource>
     <None Include="../../../logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
