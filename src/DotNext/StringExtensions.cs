@@ -72,8 +72,7 @@ namespace DotNext
             }
             else if (str.Length > maxLength)
             {
-                // TODO: Replace with GetPinnableReference in .NET 6
-                str = new string(CreateReadOnlySpan(ref GetReference(str.AsSpan()), maxLength));
+                str = new string(str.AsSpan().Slice(0, maxLength));
             }
 
             return str;

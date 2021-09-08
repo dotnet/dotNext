@@ -409,7 +409,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task SnapshotInstallation(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
@@ -461,7 +461,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task SequentialCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Sequential))
@@ -509,7 +509,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task BackgroundCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Background))
@@ -573,7 +573,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task ForegroundCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Foreground))
@@ -677,7 +677,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task Reconstruction()
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (var state = new TestAuditTrail(dir, true))
             {

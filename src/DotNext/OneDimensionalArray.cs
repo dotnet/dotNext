@@ -58,10 +58,9 @@ namespace DotNext
         /// <typeparam name="T">Type of array elements.</typeparam>
         /// <param name="array">An array to iterate.</param>
         /// <param name="action">An action to be applied for each element.</param>
-        public static void ForEach<T>(this T[] array, RefAction<T, long> action)
+        public static void ForEach<T>(this T[] array, RefAction<T, nint> action)
         {
-            // TODO: Change long to nint in RefAction signature in .NET 6
-            for (var i = 0L; i < array.LongLength; i++)
+            for (nint i = 0; i < Intrinsics.GetLength(array); i++)
                 action(ref array[i], i);
         }
 

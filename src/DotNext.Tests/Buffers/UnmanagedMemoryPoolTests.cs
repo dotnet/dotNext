@@ -233,7 +233,7 @@ namespace DotNext.Buffers
             await memory.WriteToAsync(ms);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach((ref byte value, long index) =>
+            buffer.Array.ForEach((ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
@@ -252,7 +252,7 @@ namespace DotNext.Buffers
             memory.WriteTo(ms);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach((ref byte value, long index) =>
+            buffer.Array.ForEach((ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;

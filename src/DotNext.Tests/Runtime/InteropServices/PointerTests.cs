@@ -41,7 +41,7 @@ namespace DotNext.Runtime.InteropServices
             ptr.WriteTo(ms, array.Length);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach(static (ref byte value, long index) =>
+            buffer.Array.ForEach(static (ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
@@ -61,7 +61,7 @@ namespace DotNext.Runtime.InteropServices
             await ptr.WriteToAsync(ms, array.Length);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach(static (ref byte value, long index) =>
+            buffer.Array.ForEach(static (ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
