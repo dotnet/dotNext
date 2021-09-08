@@ -84,12 +84,7 @@ namespace DotNext.Threading.Channels
             => readTrigger.WaitAsync(token).AsTask();
 
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
-        {
-            var result = new PartitionStream(location, partition, options, bufferSize);
-            if (result.Length == 0L && options.InitialSize > 0L)
-                result.SetLength(options.InitialSize);
-            return result;
-        }
+            => new(location, partition, options, bufferSize);
 
         /// <inheritdoc />
         PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull] ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)

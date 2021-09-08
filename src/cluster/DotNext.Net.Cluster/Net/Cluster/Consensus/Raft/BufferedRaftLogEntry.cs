@@ -160,7 +160,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long? length, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            var output = new FileStream(options.GetRandomFileName(), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose);
+            var output = new FileStream(options.GetRandomFileName(), new FileStreamOptions
+            {
+                Mode = FileMode.CreateNew,
+                Access = FileAccess.ReadWrite,
+                Share = FileShare.None,
+                BufferSize = options.BufferSize,
+                Options = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose,
+                PreallocationSize = entry.Length.GetValueOrDefault(),
+            });
+
             var buffer = options.RentBuffer();
             try
             {

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace DotNext.IO
 {
@@ -20,5 +19,14 @@ namespace DotNext.IO
             Optimization = options;
             InitialSize = initialSize;
         }
+
+        internal FileStreamOptions ToFileStreamOptions(int bufferSize) => new()
+        {
+            Mode = Mode,
+            Access = Access,
+            Share = Share,
+            Options = Optimization,
+            PreallocationSize = InitialSize,
+        };
     }
 }

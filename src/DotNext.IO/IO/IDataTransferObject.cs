@@ -192,11 +192,18 @@ namespace DotNext.IO
         {
             var tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             const FileOptions tempFileOptions = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
-            var fs = new FileStream(tempFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, DefaultBufferSize, tempFileOptions);
+            var fs = new FileStream(tempFileName, new FileStreamOptions
+            {
+                Mode = FileMode.CreateNew,
+                Access = FileAccess.ReadWrite,
+                Share = FileShare.None,
+                BufferSize = DefaultBufferSize,
+                Options = tempFileOptions,
+                PreallocationSize = length,
+            });
+
             await using (fs.ConfigureAwait(false))
             {
-                fs.SetLength(length);
-
                 using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
 
                 // serialize

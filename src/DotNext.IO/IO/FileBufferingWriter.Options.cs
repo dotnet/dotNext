@@ -1,6 +1,4 @@
-using System;
 using System.Diagnostics.Tracing;
-using System.IO;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
@@ -12,7 +10,7 @@ namespace DotNext.IO
     public partial class FileBufferingWriter
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct BackingFileProvider : ISupplier<FileStream>
+        private readonly struct BackingFileProvider
         {
             // if temporary == true then contains path to the directory;
             // otherwise, contains full path to the file
@@ -45,10 +43,18 @@ namespace DotNext.IO
 
             internal bool IsAsynchronous => HasFlag(options, FileOptions.Asynchronous);
 
-            public FileStream Invoke()
+            internal FileStream CreateBackingFileStream(int preallocationSize)
             {
                 var path = temporary ? Path.Combine(this.path, Path.GetRandomFileName()) : this.path;
-                return new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, BufferSize, options);
+                return new(path, new FileStreamOptions
+                {
+                    Mode = FileMode.CreateNew,
+                    Access = FileAccess.ReadWrite,
+                    Share = FileShare.Read,
+                    BufferSize = BufferSize,
+                    Options = options,
+                    PreallocationSize = preallocationSize,
+                });
             }
         }
 

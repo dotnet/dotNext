@@ -1,13 +1,9 @@
-using System;
 using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
-using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
@@ -420,7 +416,7 @@ namespace DotNext.IO
             }
         }
 
-        private void EnsureBackingStore() => fileBackend ??= fileProvider.Invoke();
+        private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileStream(buffer.Length);
 
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
