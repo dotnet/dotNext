@@ -1,115 +1,230 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Resources;
-
-    // TODO: Migrate to logger codegen in .NET 6
-    internal static class LogMessages
+    internal static partial class LogMessages
     {
         private const string EventIdPrefix = "DotNext.Net.Cluster";
         private const int EventIdOffset = 74000;
-        private static readonly ResourceManager Resources = new("DotNext.Net.Cluster.Consensus.Raft.LogMessages", Assembly.GetExecutingAssembly());
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Log<T>(this ILogger logger, LogLevel level, int eventId, T args, Exception? e = null, [CallerMemberName] string resourceName = "")
-            where T : struct, ITuple
-        {
-            if (logger.IsEnabled(level))
-                logger.Log(level, new(EventIdOffset + eventId, string.Concat(EventIdPrefix, ".", resourceName)), e, Resources.GetString(resourceName)!, args.ToArray());
-        }
+        [LoggerMessage(
+            EventIdOffset,
+            LogLevel.Debug,
+            "Member is downgrading to follower state",
+            EventName = EventIdPrefix + "." + nameof(DowngradingToFollowerState)
+        )]
+        public static partial void DowngradingToFollowerState(this ILogger logger);
 
-        internal static void DowngradingToFollowerState(this ILogger logger)
-            => logger.Log(LogLevel.Debug, 0, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 1,
+            LogLevel.Debug,
+            "Member is downgraded to follower state",
+            EventName = EventIdPrefix + "." + nameof(DowngradedToFollowerState)
+        )]
+        public static partial void DowngradedToFollowerState(this ILogger logger);
 
-        internal static void DowngradedToFollowerState(this ILogger logger)
-            => logger.Log(LogLevel.Debug, 1, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 2,
+            LogLevel.Information,
+            "Transition to Candidate state started",
+            EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateStarted)
+        )]
+        public static partial void TransitionToCandidateStateStarted(this ILogger logger);
 
-        internal static void TransitionToCandidateStateStarted(this ILogger logger)
-            => logger.Log(LogLevel.Information, 2, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 3,
+            LogLevel.Information,
+            "Transition to Candidate state completed",
+            EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateCompleted)
+        )]
+        public static partial void TransitionToCandidateStateCompleted(this ILogger logger);
 
-        internal static void TransitionToCandidateStateCompleted(this ILogger logger)
-            => logger.Log(LogLevel.Information, 3, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 4,
+            LogLevel.Information,
+            "Transition to Leader state started",
+            EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateStarted)
+        )]
+        public static partial void TransitionToLeaderStateStarted(this ILogger logger);
 
-        internal static void TransitionToLeaderStateStarted(this ILogger logger)
-            => logger.Log(LogLevel.Information, 4, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 5,
+            LogLevel.Information,
+            "Transition to Leader state completed",
+            EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateCompleted)
+        )]
+        public static partial void TransitionToLeaderStateCompleted(this ILogger logger);
 
-        internal static void TransitionToLeaderStateCompleted(this ILogger logger)
-            => logger.Log(LogLevel.Information, 5, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 6,
+            LogLevel.Debug,
+            "Voting is started with timeout {ElectionTimeout}",
+            EventName = EventIdPrefix + "." + nameof(VotingStarted)
+        )]
+        public static partial void VotingStarted(this ILogger logger, int electionTimeout);
 
-        internal static void VotingStarted(this ILogger logger, int timeout)
-            => logger.Log(LogLevel.Debug, 6, ValueTuple.Create(timeout));
+        [LoggerMessage(
+            EventIdOffset + 7,
+            LogLevel.Debug,
+            "Voting is completed. Total vote weight is {Quorum}",
+            EventName = EventIdPrefix + "." + nameof(VotingCompleted)
+        )]
+        public static partial void VotingCompleted(this ILogger logger, int quorum);
 
-        internal static void VotingCompleted(this ILogger logger, int votes)
-            => logger.Log(LogLevel.Debug, 7, ValueTuple.Create(votes));
+        [LoggerMessage(
+            EventIdOffset + 8,
+            LogLevel.Debug,
+            "Vote is granted by member {Member}",
+            EventName = EventIdPrefix + "." + nameof(VoteGranted)
+        )]
+        public static partial void VoteGranted(this ILogger logger, EndPoint member);
 
-        internal static void VoteGranted(this ILogger logger, EndPoint member)
-            => logger.Log(LogLevel.Debug, 8, ValueTuple.Create(member));
+        [LoggerMessage(
+            EventIdOffset + 9,
+            LogLevel.Debug,
+            "Vote is rejected by member {Member}",
+            EventName = EventIdPrefix + "." + nameof(VoteRejected)
+        )]
+        public static partial void VoteRejected(this ILogger logger, EndPoint member);
 
-        internal static void VoteRejected(this ILogger logger, EndPoint member)
-            => logger.Log(LogLevel.Debug, 9, ValueTuple.Create(member));
+        [LoggerMessage(
+            EventIdOffset + 10,
+            LogLevel.Debug,
+            "Cluster member {Member} is unavailable",
+            EventName = EventIdPrefix + "." + nameof(MemberUnavailable)
+        )]
+        public static partial void MemberUnavailable(this ILogger logger, EndPoint member, Exception? e = null);
 
-        internal static void MemberUnavailable(this ILogger logger, EndPoint member)
-            => logger.Log(LogLevel.Debug, 10, ValueTuple.Create(member));
+        [LoggerMessage(
+            EventIdOffset + 11,
+            LogLevel.Debug,
+            "Election timeout is refreshed",
+            EventName = EventIdPrefix + "." + nameof(TimeoutReset)
+        )]
+        public static partial void TimeoutReset(this ILogger logger);
 
-        internal static void MemberUnavailable(this ILogger logger, EndPoint member, Exception e)
-            => logger.Log(LogLevel.Warning, 11, ValueTuple.Create(member), e);
+        [LoggerMessage(
+            EventIdOffset + 12,
+            LogLevel.Debug,
+            "Replication of member {Member} started from log index {EntryIndex}",
+            EventName = EventIdPrefix + "." + nameof(ReplicationStarted)
+        )]
+        public static partial void ReplicationStarted(this ILogger logger, EndPoint member, long entryIndex);
 
-        internal static void TimeoutReset(this ILogger logger)
-            => logger.Log(LogLevel.Debug, 12, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 13,
+            LogLevel.Debug,
+            "Replication of {Member} contains {LogEntries} entries. Preceding entry has index {PrevLogIndex} and term {PrevLogTerm}",
+            EventName = EventIdPrefix + "." + nameof(ReplicaSize)
+        )]
+        public static partial void ReplicaSize(this ILogger logger, EndPoint? member, int logEntries, long prevLogIndex, long prevLogTerm);
 
-        internal static void ReplicationStarted(this ILogger logger, EndPoint member, long index)
-            => logger.Log(LogLevel.Debug, 13, (member, index));
+        [LoggerMessage(
+            EventIdOffset + 14,
+            LogLevel.Debug,
+            "Member {Member} is replicated successfully starting from entry {EntryIndex}",
+            EventName = EventIdPrefix + "." + nameof(ReplicationSuccessful)
+        )]
+        public static partial void ReplicationSuccessful(this ILogger logger, EndPoint member, long entryIndex);
 
-        internal static void ReplicaSize(this ILogger logger, EndPoint? member, int count, long index, long term)
-            => logger.Log(LogLevel.Debug, 14, (member, count, index, term));
+        [LoggerMessage(
+            EventIdOffset + 15,
+            LogLevel.Debug,
+            "Replication of {Member} is failed. Retry replication from entry {EntryIndex}",
+            EventName = EventIdPrefix + "." + nameof(ReplicationFailed)
+        )]
+        public static partial void ReplicationFailed(this ILogger logger, EndPoint member, long entryIndex);
 
-        internal static void ReplicationSuccessful(this ILogger logger, EndPoint member, long index)
-            => logger.Log(LogLevel.Debug, 15, (member, index));
+        [LoggerMessage(
+            EventIdOffset + 16,
+            LogLevel.Debug,
+            "Unable to commit local changes. Quorum is {Quorum}, last committed entry is {CommitIndex}",
+            EventName = EventIdPrefix + "." + nameof(CommitFailed)
+        )]
+        public static partial void CommitFailed(this ILogger logger, int quorum, long commitIndex);
 
-        internal static void ReplicationFailed(this ILogger logger, EndPoint member, long index)
-            => logger.Log(LogLevel.Information, 16, (member, index));
+        [LoggerMessage(
+            EventIdOffset + 17,
+            LogLevel.Debug,
+            "All changes started from {EntryIndex} are committed. The number of committed entries is {LogEntries}",
+            EventName = EventIdPrefix + "." + nameof(CommitSuccessful)
+        )]
+        public static partial void CommitSuccessful(this ILogger logger, long entryIndex, long logEntries);
 
-        internal static void CommitFailed(this ILogger logger, int quorum, long commitIndex)
-            => logger.Log(LogLevel.Debug, 17, (quorum, commitIndex));
+        [LoggerMessage(
+            EventIdOffset + 18,
+            LogLevel.Debug,
+            "Installing snapshot with {EntryIndex} index of the last included log entry",
+            EventName = EventIdPrefix + "." + nameof(InstallingSnapshot)
+        )]
+        public static partial void InstallingSnapshot(this ILogger logger, long entryIndex);
 
-        internal static void CommitSuccessful(this ILogger logger, long index, long count)
-            => logger.Log(LogLevel.Debug, 18, (index, count));
+        public const string SnapshotInstallationFailed = "Critical error detected while installing snapshot of audit trail";
 
-        internal static void InstallingSnapshot(this ILogger logger, long snapshotIndex)
-            => logger.Log(LogLevel.Debug, 19, ValueTuple.Create(snapshotIndex));
+        [LoggerMessage(
+            EventIdOffset + 19,
+            LogLevel.Error,
+            "Datagram with id {PacketId} has dropped from remote endpoint {Member} because it cannot be dispatched to appropriate logical channel",
+            EventName = EventIdPrefix + "." + nameof(PacketDropped)
+        )]
+        public static partial void PacketDropped(this ILogger logger, TransportServices.CorrelationId packetId, EndPoint? member);
 
-        internal static string SnapshotInstallationFailed => (string)Resources.Get();
+        [LoggerMessage(
+            EventIdOffset + 20,
+            LogLevel.Error,
+            "Too many pallel requests",
+            EventName = EventIdPrefix + "." + nameof(NotEnoughRequestHandlers)
+        )]
+        public static partial void NotEnoughRequestHandlers(this ILogger logger);
 
-        internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint? endPoint)
-            where T : struct
-            => logger.Log(LogLevel.Error, 20, (packetId, endPoint));
+        [LoggerMessage(
+            EventIdOffset + 21,
+            LogLevel.Error,
+            "Socket error {SockerError} occurred",
+            EventName = EventIdPrefix + "." + nameof(SockerErrorOccurred)
+        )]
+        public static partial void SockerErrorOccurred(this ILogger logger, SocketError sockerError);
 
-        internal static void NotEnoughRequestHandlers(this ILogger logger)
-            => logger.Log(LogLevel.Error, 21, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 22,
+            LogLevel.Warning,
+            "Request has timed out",
+            EventName = EventIdPrefix + "." + nameof(RequestTimedOut)
+        )]
+        public static partial void RequestTimedOut(this ILogger logger);
 
-        internal static void SockerErrorOccurred(this ILogger logger, SocketError error)
-            => logger.Log(LogLevel.Error, 22, ValueTuple.Create(error));
+        [LoggerMessage(
+            EventIdOffset + 23,
+            LogLevel.Debug,
+            "Listening of incoming connections unexpectedly failed",
+            EventName = EventIdPrefix + "." + nameof(SocketAcceptLoopTerminated)
+        )]
+        public static partial void SocketAcceptLoopTerminated(this ILogger logger, Exception e);
 
-        internal static void RequestTimedOut(this ILogger logger)
-            => logger.Log(LogLevel.Warning, 23, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 24,
+            LogLevel.Warning,
+            "Graceful shutdown of TCP server failed. Timeout is {Timeout}",
+            EventName = EventIdPrefix + "." + nameof(TcpGracefulShutdownFailed)
+        )]
+        public static partial void TcpGracefulShutdownFailed(this ILogger logger, int timeout);
 
-        internal static void SocketAcceptLoopTerminated(this ILogger logger, Exception e)
-            => logger.Log(LogLevel.Debug, 24, new ValueTuple(), e);
+        [LoggerMessage(
+            EventIdOffset + 25,
+            LogLevel.Warning,
+            "Unable to cancel all pending outbound requests",
+            EventName = EventIdPrefix + "." + nameof(FailedToCancelPendingRequests)
+        )]
+        public static partial void FailedToCancelPendingRequests(this ILogger logger, Exception e);
 
-        internal static void TcpGracefulShutdownFailed(this ILogger logger, int timeout)
-            => logger.Log(LogLevel.Warning, 25, ValueTuple.Create(timeout));
-
-        internal static void FailedToCancelPendingRequests(this ILogger logger, Exception e)
-            => logger.Log(LogLevel.Warning, 26, new ValueTuple(), e);
-
-        internal static void StopAsyncWasNotCalled(this ILogger logger)
-            => logger.Log(LogLevel.Warning, 27, new ValueTuple());
+        [LoggerMessage(
+            EventIdOffset + 26,
+            LogLevel.Warning,
+            "StopAsync() method wasn't called",
+            EventName = EventIdPrefix + "." + nameof(StopAsyncWasNotCalled)
+        )]
+        public static partial void StopAsyncWasNotCalled(this ILogger logger);
     }
 }

@@ -42,9 +42,6 @@
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="Net/Cluster/Consensus/Raft/LogMessages.restext">
-      <Generator></Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="Net/Cluster/Discovery/HyParView/LogMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
