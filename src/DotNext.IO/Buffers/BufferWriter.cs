@@ -204,10 +204,10 @@ namespace DotNext.Buffers
                 WriteString(writer, value, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
         }
 
-        private static unsafe bool WriteString<T>(IBufferWriter<byte> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, Span<char> buffer, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
-            where T : struct, IFormattable
+        private static bool WriteString<T>(IBufferWriter<byte> writer, ref T value, Span<char> buffer, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
+            where T : struct, ISpanFormattable
         {
-            if (!formatter(in value, buffer, out var charsWritten, format, provider))
+            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
                 return false;
 
             ReadOnlySpan<char> result = buffer.Slice(0, charsWritten);
@@ -217,20 +217,19 @@ namespace DotNext.Buffers
         }
 
         [SkipLocalsInit]
-        private static unsafe void Write<T>(IBufferWriter<byte> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
-            where T : struct, IFormattable
+        private static void Write<T>(IBufferWriter<byte> writer, ref T value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
+            where T : struct, ISpanFormattable
         {
-            // TODO: Move to public ISpanFormattable and IParseable interfaces in .NET 6
             const int initialCharBufferSize = 128;
 
             // attempt to allocate char buffer on the stack
             Span<char> charBuffer = stackalloc char[initialCharBufferSize];
-            if (!WriteString(writer, value, formatter, charBuffer, lengthFormat, in context, format, provider, bufferSize))
+            if (!WriteString(writer, ref value, charBuffer, lengthFormat, in context, format, provider, bufferSize))
             {
                 for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = new MemoryRental<char>(charBufferSize, false);
-                    if (WriteString(writer, value, formatter, owner.Span, lengthFormat, in context, format, provider, bufferSize))
+                    if (WriteString(writer, ref value, owner.Span, lengthFormat, in context, format, provider, bufferSize))
                         break;
                     charBufferSize = owner.Length;
                 }
@@ -247,8 +246,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteInt64(this IBufferWriter<byte> writer, long value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteInt64(this IBufferWriter<byte> writer, long value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 64-bit unsigned integer as a string.
@@ -261,8 +260,8 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt64(this IBufferWriter<byte> writer, ulong value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteUInt64(this IBufferWriter<byte> writer, ulong value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 32-bit signed integer as a string.
@@ -274,8 +273,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteInt32(this IBufferWriter<byte> writer, int value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteInt32(this IBufferWriter<byte> writer, int value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 32-bit unsigned integer as a string.
@@ -288,8 +287,8 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt32(this IBufferWriter<byte> writer, uint value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteUInt32(this IBufferWriter<byte> writer, uint value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 16-bit signed integer as a string.
@@ -301,8 +300,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteInt16(this IBufferWriter<byte> writer, short value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteInt16(this IBufferWriter<byte> writer, short value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 16-bit unsigned integer as a string.
@@ -315,8 +314,8 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt16(this IBufferWriter<byte> writer, ushort value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteUInt16(this IBufferWriter<byte> writer, ushort value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 8-bit signed integer as a string.
@@ -329,8 +328,8 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteSByte(this IBufferWriter<byte> writer, sbyte value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteSByte(this IBufferWriter<byte> writer, sbyte value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes 8-bit unsigned integer as a string.
@@ -342,8 +341,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteByte(this IBufferWriter<byte> writer, byte value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteByte(this IBufferWriter<byte> writer, byte value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes <see cref="decimal"/> as a string.
@@ -355,8 +354,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteDecimal(this IBufferWriter<byte> writer, in decimal value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteDecimal(this IBufferWriter<byte> writer, decimal value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes single-precision floating-point number as a string.
@@ -368,8 +367,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteSingle(this IBufferWriter<byte> writer, float value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteSingle(this IBufferWriter<byte> writer, float value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes double-precision floating-point number as a string.
@@ -381,8 +380,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteDouble(this IBufferWriter<byte> writer, double value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteDouble(this IBufferWriter<byte> writer, double value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes <see cref="Guid"/> as a string.
@@ -392,9 +391,10 @@ namespace DotNext.Buffers
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteGuid(this IBufferWriter<byte> writer, in Guid value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, null, bufferSize);
+        public static void WriteGuid(this IBufferWriter<byte> writer, Guid value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes <see cref="DateTime"/> as a string.
@@ -406,8 +406,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteDateTime(this IBufferWriter<byte> writer, DateTime value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteDateTime(this IBufferWriter<byte> writer, DateTime value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes <see cref="DateTimeOffset"/> as a string.
@@ -419,8 +419,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteDateTimeOffset(this IBufferWriter<byte> writer, DateTimeOffset value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteDateTimeOffset(this IBufferWriter<byte> writer, DateTimeOffset value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes <see cref="TimeSpan"/> as a string.
@@ -432,8 +432,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteTimeSpan(this IBufferWriter<byte> writer, TimeSpan value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteTimeSpan(this IBufferWriter<byte> writer, TimeSpan value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Encodes <see cref="BigInteger"/> as a string.
@@ -445,8 +445,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static unsafe void WriteBigInteger(this IBufferWriter<byte> writer, in BigInteger value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
-            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+        public static void WriteBigInteger(this IBufferWriter<byte> writer, BigInteger value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, ref value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
         /// Writes line termination symbols to the buffer.
@@ -466,13 +466,13 @@ namespace DotNext.Buffers
             writer.Write(Environment.NewLine);
         }
 
-        private static unsafe void Write<T>(IBufferWriter<char> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
-            where T : struct, IFormattable
+        private static void Write<T>(IBufferWriter<char> writer, ref T value, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, ISpanFormattable
         {
             for (int bufferSize = 0; ;)
             {
                 var buffer = writer.GetSpan(bufferSize);
-                if (formatter(in value, buffer, out var charsWritten, format, provider))
+                if (value.TryFormat(buffer, out var charsWritten, format, provider))
                 {
                     writer.Advance(charsWritten);
                     break;
@@ -489,8 +489,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteByte(this IBufferWriter<char> writer, byte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteByte(this IBufferWriter<char> writer, byte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 8-bit signed integer to the buffer.
@@ -500,8 +500,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteSByte(this IBufferWriter<char> writer, sbyte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteSByte(this IBufferWriter<char> writer, sbyte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 16-bit signed integer to the buffer.
@@ -510,8 +510,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt16(this IBufferWriter<char> writer, short value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteInt16(this IBufferWriter<char> writer, short value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 16-bit unsigned integer to the buffer.
@@ -521,8 +521,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt16(this IBufferWriter<char> writer, ushort value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteUInt16(this IBufferWriter<char> writer, ushort value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 32-bit signed integer to the buffer.
@@ -531,8 +531,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt32(this IBufferWriter<char> writer, int value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteInt32(this IBufferWriter<char> writer, int value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 32-bit unsigned integer to the buffer.
@@ -542,8 +542,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt32(this IBufferWriter<char> writer, uint value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteUInt32(this IBufferWriter<char> writer, uint value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 64-bit signed integer to the buffer.
@@ -552,8 +552,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt64(this IBufferWriter<char> writer, long value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteInt64(this IBufferWriter<char> writer, long value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 64-bit unsigned integer to the buffer.
@@ -563,8 +563,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt64(this IBufferWriter<char> writer, ulong value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteUInt64(this IBufferWriter<char> writer, ulong value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="Guid"/> to the buffer.
@@ -572,8 +572,9 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-        public static unsafe void WriteGuid(this IBufferWriter<char> writer, in Guid value, ReadOnlySpan<char> format = default)
-            => Write(writer, in value, &TryFormat, format, null);
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteGuid(this IBufferWriter<char> writer, Guid value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="DateTime"/> to the buffer.
@@ -582,8 +583,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDateTime(this IBufferWriter<char> writer, DateTime value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteDateTime(this IBufferWriter<char> writer, DateTime value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="DateTimeOffset"/> to the buffer.
@@ -592,8 +593,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDateTimeOffset(this IBufferWriter<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteDateTimeOffset(this IBufferWriter<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="decimal"/> to the buffer.
@@ -602,8 +603,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDecimal(this IBufferWriter<char> writer, in decimal value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteDecimal(this IBufferWriter<char> writer, decimal value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of single-precision floating-point number to the buffer.
@@ -612,8 +613,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteSingle(this IBufferWriter<char> writer, float value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteSingle(this IBufferWriter<char> writer, float value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of double-precision floating-point number to the buffer.
@@ -622,8 +623,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDouble(this IBufferWriter<char> writer, double value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteDouble(this IBufferWriter<char> writer, double value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="TimeSpan"/> to the buffer.
@@ -632,16 +633,16 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(writer, in value, &TryFormat, format, provider);
+        public static void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, ref value, format, provider);
 
-        private static unsafe void Write<T>(ref BufferWriterSlim<char> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
-            where T : struct, IFormattable
+        private static void Write<T>(ref BufferWriterSlim<char> writer, ref T value, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, ISpanFormattable
         {
             for (int bufferSize = 0; ;)
             {
                 var buffer = writer.GetSpan(bufferSize);
-                if (formatter(in value, buffer, out var charsWritten, format, provider))
+                if (value.TryFormat(buffer, out var charsWritten, format, provider))
                 {
                     writer.Advance(charsWritten);
                     break;
@@ -676,8 +677,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteByte(this ref BufferWriterSlim<char> writer, byte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteByte(this ref BufferWriterSlim<char> writer, byte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 8-bit signed integer to the buffer.
@@ -687,8 +688,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteSByte(this ref BufferWriterSlim<char> writer, sbyte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteSByte(this ref BufferWriterSlim<char> writer, sbyte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 16-bit signed integer to the buffer.
@@ -697,8 +698,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt16(this ref BufferWriterSlim<char> writer, short value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteInt16(this ref BufferWriterSlim<char> writer, short value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 16-bit unsigned integer to the buffer.
@@ -708,8 +709,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt16(this ref BufferWriterSlim<char> writer, ushort value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteUInt16(this ref BufferWriterSlim<char> writer, ushort value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 32-bit signed integer to the buffer.
@@ -718,8 +719,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt32(this ref BufferWriterSlim<char> writer, int value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteInt32(this ref BufferWriterSlim<char> writer, int value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 32-bit unsigned integer to the buffer.
@@ -729,8 +730,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt32(this ref BufferWriterSlim<char> writer, uint value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteUInt32(this ref BufferWriterSlim<char> writer, uint value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 64-bit signed integer to the buffer.
@@ -739,8 +740,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt64(this ref BufferWriterSlim<char> writer, long value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteInt64(this ref BufferWriterSlim<char> writer, long value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of 64-bit unsigned integer to the buffer.
@@ -750,8 +751,8 @@ namespace DotNext.Buffers
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt64(this ref BufferWriterSlim<char> writer, ulong value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteUInt64(this ref BufferWriterSlim<char> writer, ulong value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="Guid"/> to the buffer.
@@ -759,8 +760,9 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-        public static unsafe void WriteGuid(this ref BufferWriterSlim<char> writer, in Guid value, ReadOnlySpan<char> format = default)
-            => Write(ref writer, in value, &TryFormat, format, null);
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteGuid(this ref BufferWriterSlim<char> writer, Guid value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="DateTime"/> to the buffer.
@@ -769,8 +771,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDateTime(this ref BufferWriterSlim<char> writer, DateTime value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteDateTime(this ref BufferWriterSlim<char> writer, DateTime value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="DateTimeOffset"/> to the buffer.
@@ -779,8 +781,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDateTimeOffset(this ref BufferWriterSlim<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteDateTimeOffset(this ref BufferWriterSlim<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="decimal"/> to the buffer.
@@ -789,8 +791,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDecimal(this ref BufferWriterSlim<char> writer, in decimal value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteDecimal(this ref BufferWriterSlim<char> writer, decimal value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of single-precision floating-point number to the buffer.
@@ -799,8 +801,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteSingle(this ref BufferWriterSlim<char> writer, float value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteSingle(this ref BufferWriterSlim<char> writer, float value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of double-precision floating-point number to the buffer.
@@ -809,8 +811,8 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDouble(this ref BufferWriterSlim<char> writer, double value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteDouble(this ref BufferWriterSlim<char> writer, double value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
 
         /// <summary>
         /// Writes string representation of <see cref="TimeSpan"/> to the buffer.
@@ -819,7 +821,7 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteTimeSpan(this ref BufferWriterSlim<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write(ref writer, in value, &TryFormat, format, provider);
+        public static void WriteTimeSpan(this ref BufferWriterSlim<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, ref value, format, provider);
     }
 }

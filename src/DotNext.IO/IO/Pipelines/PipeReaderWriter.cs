@@ -182,28 +182,6 @@ namespace DotNext.IO.Pipelines
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly unsafe struct Writer<T1, T2, T3, T4> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-        {
-            private readonly T1 arg1;
-            private readonly T2 arg2;
-            private readonly T3 arg3;
-            private readonly T4 arg4;
-            private readonly delegate*<PipeWriter, T1, T2, T3, T4, CancellationToken, ValueTask<FlushResult>> writer;
-
-            internal Writer(T1 arg1, T2 arg2, T3 arg3, T4 arg4, delegate*<PipeWriter, T1, T2, T3, T4, CancellationToken, ValueTask<FlushResult>> writer)
-            {
-                this.arg1 = arg1;
-                this.arg2 = arg2;
-                this.arg3 = arg3;
-                this.arg4 = arg4;
-                this.writer = writer;
-            }
-
-            public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
-                => writer(pipe, arg1, arg2, arg3, arg4, token);
-        }
-
-        [StructLayout(LayoutKind.Auto)]
         private readonly unsafe struct Writer<T1, T2, T3, T4, T5> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
         {
             private readonly T1 arg1;
@@ -306,8 +284,8 @@ namespace DotNext.IO.Pipelines
         unsafe ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => WriteAsync(output, new Writer<decimal, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteDecimalAsync), token);
 
-        unsafe ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, CancellationToken token)
-            => WriteAsync(output, new Writer<Guid, LengthFormat, EncodingContext, string?>(value, lengthFormat, context, format, &PipeExtensions.WriteGuidAsync), token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<Guid, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteGuidAsync), token);
 
         unsafe ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => WriteAsync(output, new Writer<DateTime, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteDateTimeAsync), token);

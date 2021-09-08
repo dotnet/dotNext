@@ -15,6 +15,7 @@ namespace DotNext.Buffers;
 [StructLayout(LayoutKind.Auto)]
 public ref struct BufferWriterSlimInterpolatedStringHandler
 {
+    private const int MaxBufferSize = int.MaxValue / 2;
     private const char Whitespace = ' ';
 
     private readonly IFormatProvider? provider;
@@ -63,7 +64,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
         {
             if (value is ISpanFormattable)
             {
-                for (int bufferSize = 0; ; bufferSize = checked(bufferSize * 2))
+                for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     var span = buffer.GetSpan(bufferSize);
 
@@ -168,7 +169,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
         {
             if (value is ISpanFormattable)
             {
-                for (int bufferSize = alignment; ; bufferSize = checked(bufferSize * 2))
+                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     var span = buffer.GetSpan(bufferSize);
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))

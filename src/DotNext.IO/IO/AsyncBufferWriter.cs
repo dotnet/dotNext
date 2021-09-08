@@ -1,11 +1,7 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
+﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
@@ -384,7 +380,7 @@ namespace DotNext.IO
             return result;
         }
 
-        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             ValueTask result;
             if (token.IsCancellationRequested)
@@ -396,7 +392,7 @@ namespace DotNext.IO
                 result = new();
                 try
                 {
-                    writer.WriteGuid(value, lengthFormat, in context, format);
+                    writer.WriteGuid(value, lengthFormat, in context, format, provider);
                 }
                 catch (Exception e)
                 {

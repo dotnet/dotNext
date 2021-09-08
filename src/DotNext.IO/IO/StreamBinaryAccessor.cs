@@ -1,12 +1,8 @@
-using System;
 using System.Buffers;
 using System.Globalization;
-using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
@@ -256,6 +252,9 @@ namespace DotNext.IO
 
         ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
             => stream.WriteBigIntegerAsync(value, littleEndian, buffer, lengthFormat, token);
+
+        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => stream.WriteGuidAsync(value, lengthFormat, context, format, provider);
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(stream, token);

@@ -363,13 +363,14 @@ namespace DotNext.IO.Pipelines
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
         /// <param name="format">The format to use.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteGuidAsync(this PipeWriter writer, Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteGuidAsync(this PipeWriter writer, Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
-            writer.WriteGuid(value, lengthFormat, in context, format);
+            writer.WriteGuid(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
         }
 
