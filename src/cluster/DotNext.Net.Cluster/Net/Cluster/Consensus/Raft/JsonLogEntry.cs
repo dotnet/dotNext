@@ -73,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             MaxDepth = options.MaxDepth,
         };
 
-        internal static object? Deserialize(SequenceBinaryReader input, Func<string, Type>? typeLoader, JsonSerializerOptions? options)
+        internal static object? Deserialize(SequenceReader input, Func<string, Type>? typeLoader, JsonSerializerOptions? options)
         {
             var typeId = input.ReadString(LengthEncoding, DefaultEncoding);
             var reader = new Utf8JsonReader(input.RemainingSequence, options?.GetReaderOptions() ?? DefaultReaderOptions);

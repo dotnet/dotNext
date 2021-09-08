@@ -44,7 +44,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
             where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
-            => IsDisposed ? new ValueTask<TResult>(GetDisposedTask<TResult>()) : transformation.TransformAsync(new SequenceBinaryReader(Content), token);
+            => IsDisposed ? new ValueTask<TResult>(GetDisposedTask<TResult>()) : transformation.TransformAsync(new SequenceReader(Content), token);
 
         /// <summary>
         /// Gets the content of this object.

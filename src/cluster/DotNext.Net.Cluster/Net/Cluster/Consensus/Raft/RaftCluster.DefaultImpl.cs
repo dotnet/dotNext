@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => writer.WriteAsync(configuration.Memory, null, token);
 
             ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-                => transformation.TransformAsync<SequenceBinaryReader>(IAsyncBinaryReader.Create(configuration.Memory), token);
+                => transformation.TransformAsync<SequenceReader>(IAsyncBinaryReader.Create(configuration.Memory), token);
 
             bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
             {

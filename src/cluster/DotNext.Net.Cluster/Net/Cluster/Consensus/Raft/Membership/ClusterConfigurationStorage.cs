@@ -63,9 +63,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         /// </summary>
         /// <param name="reader">The reader of binary data.</param>
         /// <returns>The decoded address.</returns>
-        protected abstract TAddress Decode(ref SequenceBinaryReader reader);
+        protected abstract TAddress Decode(ref SequenceReader reader);
 
-        private void Decode(IDictionary<ClusterMemberId, TAddress> output, ref SequenceBinaryReader reader)
+        private void Decode(IDictionary<ClusterMemberId, TAddress> output, ref SequenceReader reader)
         {
             Span<byte> memberIdBuffer = stackalloc byte[ClusterMemberId.Size];
 

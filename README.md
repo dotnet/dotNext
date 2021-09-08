@@ -77,7 +77,7 @@ Release Date: 08-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.io/3.4.0">DotNext.IO 3.4.0</a>
 * Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
 * Added `DotNext.IO.SequenceBinaryReader.Read(Span<byte>)` method
-* Optimized performance of some `ReadXXX` methods of `DotNext.IO.SequenceBinaryReader` type
+* Optimized performance of some `ReadXXX` methods of `DotNext.IO.SequenceReader` type
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.4.0">DotNext.Net.Cluster 3.4.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state

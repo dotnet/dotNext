@@ -16,18 +16,18 @@ namespace DotNext.IO
     /// Represents binary reader for the sequence of bytes.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct SequenceBinaryReader : IAsyncBinaryReader
+    public struct SequenceReader : IAsyncBinaryReader
     {
         private readonly ReadOnlySequence<byte> sequence;
         private SequencePosition position;
 
-        internal SequenceBinaryReader(ReadOnlySequence<byte> sequence)
+        internal SequenceReader(ReadOnlySequence<byte> sequence)
         {
             this.sequence = sequence;
             position = sequence.Start;
         }
 
-        internal SequenceBinaryReader(ReadOnlyMemory<byte> memory)
+        internal SequenceReader(ReadOnlyMemory<byte> memory)
             : this(new ReadOnlySequence<byte>(memory))
         {
         }

@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             response.StatusCode = StatusCodes.Status204NoContent;
         }
 
-        private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ref SequenceBinaryReader reader)
+        private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ref SequenceReader reader)
         {
             var count = reader.ReadInt32(true);
             var result = new List<EndPoint>(count);
@@ -114,7 +114,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             response.StatusCode = StatusCodes.Status204NoContent;
         }
 
-        private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ref SequenceBinaryReader reader)
+        private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ref SequenceReader reader)
         {
             var sender = reader.ReadEndPoint();
             var origin = reader.ReadEndPoint();

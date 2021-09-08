@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         protected override void Encode(HttpEndPoint address, ref BufferWriterSlim<byte> output)
             => output.WriteEndPoint(address);
 
-        protected override HttpEndPoint Decode(ref SequenceBinaryReader reader)
+        protected override HttpEndPoint Decode(ref SequenceReader reader)
             => (HttpEndPoint)reader.ReadEndPoint();
     }
 }

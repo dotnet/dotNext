@@ -39,7 +39,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
-            return transformation.TransformAsync(new SequenceBinaryReader(ToMemory()), token);
+            return transformation.TransformAsync(new SequenceReader(ToMemory()), token);
         }
 
         /// <inheritdoc/>
@@ -92,7 +92,7 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            => transformation.TransformAsync(new SequenceBinaryReader(content), token);
+            => transformation.TransformAsync(new SequenceReader(content), token);
 
         /// <inheritdoc/>
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)

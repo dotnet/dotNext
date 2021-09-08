@@ -279,7 +279,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         protected override void Encode(IPEndPoint address, ref BufferWriterSlim<byte> output)
             => output.WriteEndPoint(address);
 
-        protected override IPEndPoint Decode(ref SequenceBinaryReader reader)
+        protected override IPEndPoint Decode(ref SequenceReader reader)
             => (IPEndPoint)reader.ReadEndPoint();
     }
 }

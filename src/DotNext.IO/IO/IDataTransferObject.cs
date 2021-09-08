@@ -161,7 +161,7 @@ namespace DotNext.IO
             using var writer = length <= int.MaxValue ? new PooledArrayBufferWriter<byte>((int)length) : throw new InsufficientMemoryException();
 
             await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
-            return await parser.TransformAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
+            return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);
         }
 
         // use FileBufferingWriter to keep the balance between I/O performance and memory consumption
@@ -178,7 +178,7 @@ namespace DotNext.IO
 
                 // deserialize
                 if (output.TryGetWrittenContent(out var memory))
-                    return await parser.TransformAsync(new SequenceBinaryReader(memory), token).ConfigureAwait(false);
+                    return await parser.TransformAsync(new SequenceReader(memory), token).ConfigureAwait(false);
 
                 var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
                 await using (input.ConfigureAwait(false))

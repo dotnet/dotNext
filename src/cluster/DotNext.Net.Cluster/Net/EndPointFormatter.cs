@@ -126,7 +126,7 @@ namespace DotNext.Net
         /// </summary>
         /// <param name="reader">The binary reader.</param>
         /// <returns>The deserialized network endpoint address.</returns>
-        public static EndPoint ReadEndPoint(this ref SequenceBinaryReader reader) => reader.Read<byte>() switch
+        public static EndPoint ReadEndPoint(this ref SequenceReader reader) => reader.Read<byte>() switch
         {
             IPEndPointPrefix => DeserializeIP(ref reader),
             DnsEndPointPrefix => DeserializeHost(ref reader),
@@ -134,7 +134,7 @@ namespace DotNext.Net
             _ => throw new NotSupportedException(),
         };
 
-        private static IPEndPoint DeserializeIP(ref SequenceBinaryReader reader)
+        private static IPEndPoint DeserializeIP(ref SequenceReader reader)
         {
             var port = reader.ReadInt32(true);
             var bytesCount = reader.Read<byte>();
@@ -145,7 +145,7 @@ namespace DotNext.Net
             return new IPEndPoint(new IPAddress(bytes), port);
         }
 
-        private static void DeserializeHost(ref SequenceBinaryReader reader, out string hostName, out int port, out AddressFamily family)
+        private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
         {
             port = reader.ReadInt32(true);
             family = (AddressFamily)reader.ReadInt32(true);
@@ -158,13 +158,13 @@ namespace DotNext.Net
             }
         }
 
-        private static DnsEndPoint DeserializeHost(ref SequenceBinaryReader reader)
+        private static DnsEndPoint DeserializeHost(ref SequenceReader reader)
         {
             DeserializeHost(ref reader, out var hostName, out var port, out var family);
             return new DnsEndPoint(hostName, port, family);
         }
 
-        private static HttpEndPoint DeserializeHttp(ref SequenceBinaryReader reader)
+        private static HttpEndPoint DeserializeHttp(ref SequenceReader reader)
         {
             var secure = ValueTypeExtensions.ToBoolean(reader.Read<byte>());
             DeserializeHost(ref reader, out var hostName, out var port, out var family);

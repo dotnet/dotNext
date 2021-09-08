@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             response.StatusCode = StatusCodes.Status204NoContent;
         }
 
-        private static (EndPoint, bool) DeserializeDisconnectRequest(ref SequenceBinaryReader reader)
+        private static (EndPoint, bool) DeserializeDisconnectRequest(ref SequenceReader reader)
             => (reader.ReadEndPoint(), ValueTypeExtensions.ToBoolean(reader.Read<byte>()));
 
         private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlyMemory<byte> buffer)
