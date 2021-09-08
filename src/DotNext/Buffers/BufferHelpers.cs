@@ -190,9 +190,27 @@ namespace DotNext.Buffers
         /// <param name="input">The string builder.</param>
         public static void Write(this IBufferWriter<char> writer, StringBuilder input)
         {
-            // TODO: Add support of DefaultInterpolatedStringHandler in .NET 6
             foreach (var chunk in input.GetChunks())
                 writer.Write(chunk.Span);
         }
+
+        /// <summary>
+        /// Writes interpolated string to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="provider">The formatting provider.</param>
+        /// <param name="handler">The handler of the interpolated string.</param>
+        /// <returns>The number of written characters.</returns>
+        public static int Write(this IBufferWriter<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] ref BufferWriterInterpolatedStringHandler handler)
+            => handler.WrittenCount;
+
+        /// <summary>
+        /// Writes interpolated string to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="handler">The handler of the interpolated string.</param>
+        /// <returns>The number of written characters.</returns>
+        public static int Write(this IBufferWriter<char> writer, [InterpolatedStringHandlerArgument("writer")] ref BufferWriterInterpolatedStringHandler handler)
+            => Write(writer, null, ref handler);
     }
 }

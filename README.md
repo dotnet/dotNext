@@ -48,7 +48,7 @@ Documentation for older versions:
 # What's new
 Release Date: 08-XX-2021
 
-<a href="https://www.nuget.org/packages/dotnext/3.4.0">DotNext 3.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext/4.0.0">DotNext 4.0.0</a>
 * Added `DotNext.Span.Shuffle` and `DotNext.Collections.Generic.List.Shuffle` extension methods that allow to randomize position of elements within span/collection
 * Added `DotNext.Collections.Generic.Sequence.Copy` extension method for making copy of the original enumerable collection. The memory for the copy is always rented from the pool
 * Added `DotNext.Collections.Generic.Collection.PeekRandom` extension method that allows to select random element from the collection
@@ -57,6 +57,7 @@ Release Date: 08-XX-2021
 * Improved performance of `DotNext.Buffers.BufferWriter<T>.AddAll` method
 * Reduced memory allocations by `ElementAt`, `FirstOrEmpty`, `FirstOrNull`, `ForEach` extension methods in `DotNext.Collections.Generic.Sequence` class
 * Added `DotNext.Numerics.BitVector` that allows to convert **bool** vectors into integral types
+* Added ability to write interpolated strings to `IBufferWriter<char>` without temporary allocations
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees

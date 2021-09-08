@@ -260,5 +260,16 @@ namespace DotNext.Buffers
                 buffer.Dispose();
             }
         }
+
+        [Theory]
+        [InlineData(10, 10)]
+        [InlineData(int.MaxValue, int.MinValue)]
+        public static void WriteFormattedString(int x, int y)
+        {
+            using var buffer = new PooledArrayBufferWriter<char>();
+
+            buffer.Write($"{x,4:X} = {y,-3:X}");
+            Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
+        }
     }
 }
