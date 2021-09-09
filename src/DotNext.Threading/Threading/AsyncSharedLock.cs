@@ -95,26 +95,28 @@ namespace DotNext.Threading
                 : new UnconstrainedValueTaskPool<WaitNode>(removeFromList).Get;
         }
 
-        private static bool TryAcquireWeakLock(ref State state)
+        private static void WeakLockControl(ref State state, ref bool flag)
         {
-            if (state.IsWeakLockAllowed)
+            if (flag)
             {
                 state.AcquireWeakLock();
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = state.IsWeakLockAllowed;
+            }
         }
 
-        private static bool TryAcquireStrongLock(ref State state)
+        private static void StrongLockControl(ref State state, ref bool flag)
         {
-            if (state.IsStrongLockAllowed)
+            if (flag)
             {
                 state.AcquireStrongLock();
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = state.IsStrongLockAllowed;
+            }
         }
 
         /// <summary>
@@ -144,10 +146,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryAcquire(bool strongLock)
+        public unsafe bool TryAcquire(bool strongLock)
         {
             ThrowIfDisposed();
-            return strongLock ? TryAcquireStrongLock(ref state) : TryAcquireWeakLock(ref state);
+            return TryAcquire(ref state, strongLock ? &StrongLockControl : &WeakLockControl);
         }
 
         /// <summary>
@@ -163,7 +165,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitNoTimeoutAsync(ref state, strongLock ? &TryAcquireStrongLock : &TryAcquireWeakLock, pool, out var node, timeout, token);
+            var result = WaitNoTimeoutAsync(ref state, strongLock ? &StrongLockControl : &WeakLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.IsStrongLock = strongLock;
 
@@ -184,7 +186,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitWithTimeoutAsync(ref state, strongLock ? &TryAcquireStrongLock : &TryAcquireWeakLock, pool, out var node, timeout, token);
+            var result = WaitWithTimeoutAsync(ref state, strongLock ? &StrongLockControl : &WeakLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.IsStrongLock = strongLock;
 

@@ -55,15 +55,16 @@ namespace DotNext.Threading
         /// </summary>
         public bool IsLockHeld => state.Value;
 
-        private static bool TryAcquire(ref State state)
+        private static void LockControl(ref State state, ref bool flag)
         {
-            if (state.IsLockAllowed)
+            if (flag)
             {
                 state.AcquireLock();
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = state.IsLockAllowed;
+            }
         }
 
         /// <summary>
@@ -72,10 +73,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryAcquire()
+        public unsafe bool TryAcquire()
         {
             ThrowIfDisposed();
-            return TryAcquire(ref state);
+            return TryAcquire(ref state, &LockControl);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-            => WaitNoTimeoutAsync(ref state, &TryAcquire, pool, out _, timeout, token);
+            => WaitNoTimeoutAsync(ref state, &LockControl, pool, out _, timeout, token);
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -103,7 +104,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-            => WaitWithTimeoutAsync(ref state, &TryAcquire, pool, out _, timeout, token);
+            => WaitWithTimeoutAsync(ref state, &LockControl, pool, out _, timeout, token);
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.

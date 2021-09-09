@@ -191,37 +191,40 @@ namespace DotNext.Threading
             pool = new UnconstrainedValueTaskPool<WaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
-        private static bool TryAcquireReadLock(ref State state)
+        private static void ReadLockControl(ref State state, ref bool flag)
         {
-            if (state.IsReadLockAllowed)
+            if (flag)
             {
                 state.AcquireReadLock();
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = state.IsReadLockAllowed;
+            }
         }
 
-        private static bool TryUpgradeToWriteLock(ref State state)
+        private static void UpgradeToWriteLockControl(ref State state, ref bool flag)
         {
-            if (state.IsUpgradeToWriteLockAllowed)
+            if (flag)
             {
                 state.AcquireWriteLock();
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = state.IsUpgradeToWriteLockAllowed;
+            }
         }
 
-        private static bool TryAcquireWriteLock(ref State state)
+        private static void WriteLockControl(ref State state, ref bool flag)
         {
-            if (state.IsWriteLockAllowed)
+            if (flag)
             {
                 state.AcquireWriteLock();
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = state.IsWriteLockAllowed;
+            }
         }
 
         /// <summary>
@@ -264,10 +267,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterReadLock()
+        public unsafe bool TryEnterReadLock()
         {
             ThrowIfDisposed();
-            return TryAcquireReadLock(ref state);
+            return TryAcquire(ref state, &ReadLockControl);
         }
 
         /// <summary>
@@ -282,7 +285,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitNoTimeoutAsync(ref state, &TryAcquireReadLock, pool, out var node, timeout, token);
+            var result = WaitNoTimeoutAsync(ref state, &ReadLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Type = LockType.Read;
 
@@ -302,7 +305,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitWithTimeoutAsync(ref state, &TryAcquireReadLock, pool, out var node, timeout, token);
+            var result = WaitWithTimeoutAsync(ref state, &ReadLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Type = LockType.Read;
 
@@ -327,10 +330,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock(in LockStamp stamp)
+        public unsafe bool TryEnterWriteLock(in LockStamp stamp)
         {
             ThrowIfDisposed();
-            return stamp.IsValid(in state) && TryAcquireWriteLock(ref state);
+            return stamp.IsValid(in state) && TryAcquire(ref state, &WriteLockControl);
         }
 
         /// <summary>
@@ -339,10 +342,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock()
+        public unsafe bool TryEnterWriteLock()
         {
             ThrowIfDisposed();
-            return TryAcquireWriteLock(ref state);
+            return TryAcquire(ref state, &WriteLockControl);
         }
 
         /// <summary>
@@ -357,7 +360,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitNoTimeoutAsync(ref state, &TryAcquireWriteLock, pool, out var node, timeout, token);
+            var result = WaitNoTimeoutAsync(ref state, &WriteLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Type = LockType.Exclusive;
 
@@ -388,7 +391,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitWithTimeoutAsync(ref state, &TryAcquireWriteLock, pool, out var node, timeout, token);
+            var result = WaitWithTimeoutAsync(ref state, &WriteLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Type = LockType.Exclusive;
 
@@ -401,10 +404,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryUpgradeToWriteLock()
+        public unsafe bool TryUpgradeToWriteLock()
         {
             ThrowIfDisposed();
-            return TryUpgradeToWriteLock(ref state);
+            return TryAcquire(ref state, &UpgradeToWriteLockControl);
         }
 
         /// <summary>
@@ -419,7 +422,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitNoTimeoutAsync(ref state, &TryUpgradeToWriteLock, pool, out var node, timeout, token);
+            var result = WaitNoTimeoutAsync(ref state, &UpgradeToWriteLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Type = LockType.Upgrade;
 
@@ -450,7 +453,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
         {
-            var result = WaitWithTimeoutAsync(ref state, &TryUpgradeToWriteLock, pool, out var node, timeout, token);
+            var result = WaitWithTimeoutAsync(ref state, &UpgradeToWriteLockControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Type = LockType.Upgrade;
 

@@ -52,13 +52,16 @@ namespace DotNext.Threading
             pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
-        private static bool TryDecrement(ref long counter)
+        private static void CounterControl(ref long counter, ref bool flag)
         {
-            if (counter.VolatileRead() == 0L)
-                return false;
-
-            counter.DecrementAndGet();
-            return true;
+            if (flag)
+            {
+                counter.DecrementAndGet();
+            }
+            else
+            {
+                flag = counter.VolatileRead() > 0L;
+            }
         }
 
         /// <inheritdoc/>
@@ -86,7 +89,7 @@ namespace DotNext.Threading
         public void Increment()
         {
             ThrowIfDisposed();
-            counter = checked(counter + 1L);
+            counter.IncrementAndGet();
 
             for (WaitNode? current = first as WaitNode, next; current is not null && counter.VolatileRead() > 0L; current = next)
             {
@@ -118,7 +121,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-            => WaitNoTimeoutAsync(ref counter, &TryDecrement, pool, out _, timeout, token);
+            => WaitNoTimeoutAsync(ref counter, &CounterControl, pool, out _, timeout, token);
 
         /// <summary>
         /// Suspends caller if <see cref="Value"/> is zero
@@ -130,17 +133,17 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask WaitAsync(CancellationToken token = default)
-            => WaitWithTimeoutAsync(ref counter, &TryDecrement, pool, out _, InfiniteTimeSpan, token);
+            => WaitWithTimeoutAsync(ref counter, &CounterControl, pool, out _, InfiniteTimeSpan, token);
 
         /// <summary>
         /// Attempts to decrement the counter synchronously.
         /// </summary>
         /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryDecrement()
+        public unsafe bool TryDecrement()
         {
             ThrowIfDisposed();
-            return TryDecrement(ref counter);
+            return TryAcquire(ref counter, &CounterControl);
         }
     }
 }

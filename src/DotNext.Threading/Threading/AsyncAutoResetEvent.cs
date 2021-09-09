@@ -39,7 +39,17 @@ namespace DotNext.Threading
             pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
         }
 
-        private static bool TryReset(ref AtomicBoolean state) => state.TrueToFalse();
+        private static void StateControl(ref AtomicBoolean state, ref bool flag)
+        {
+            if (flag)
+            {
+                state.Value = false;
+            }
+            else
+            {
+                flag = state.Value;
+            }
+        }
 
         /// <summary>
         /// Indicates whether this event is set.
@@ -55,7 +65,7 @@ namespace DotNext.Threading
         public bool Reset()
         {
             ThrowIfDisposed();
-            return TryReset(ref state);
+            return state.TrueToFalse();
         }
 
         private void SetCore()
@@ -113,7 +123,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-            => WaitNoTimeoutAsync(ref state, &TryReset, pool, out _, timeout, token);
+            => WaitNoTimeoutAsync(ref state, &StateControl, pool, out _, timeout, token);
 
         /// <summary>
         /// Turns caller into idle state until the current event is set.
@@ -124,6 +134,6 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask WaitAsync(CancellationToken token = default)
-            => WaitWithTimeoutAsync(ref state, &TryReset, pool, out _, InfiniteTimeSpan, token);
+            => WaitWithTimeoutAsync(ref state, &StateControl, pool, out _, InfiniteTimeSpan, token);
     }
 }

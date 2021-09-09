@@ -27,6 +27,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             set => current.VolatileWrite(value);
         }
 
+        internal readonly bool IsEmpty => Current == 0L;
+
         internal long Initial
         {
             readonly get => initial.VolatileRead();
@@ -81,7 +83,13 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
     }
 
-    private static bool IsEmpty(ref State state) => state.Current == 0L;
+    private static void CounterControl(ref State state, ref bool flag)
+    {
+        if (!flag)
+        {
+            flag = state.IsEmpty;
+        }
+    }
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
@@ -96,7 +104,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => IsEmpty(ref state);
+    public bool IsSet => state.IsEmpty;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal bool TryAddCount(long signalCount, bool autoReset)
@@ -106,7 +114,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 0)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        if (IsEmpty(ref state) && !autoReset)
+        if (state.IsEmpty && !autoReset)
             return false;
 
         state.Increment(signalCount);
@@ -171,7 +179,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(count));
 
         // in signaled state
-        if (!IsEmpty(ref state))
+        if (!state.IsEmpty)
             return false;
 
         state.Current = state.Initial = count;
@@ -180,7 +188,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     private bool SignalCore(long signalCount)
     {
-        if (IsEmpty(ref state))
+        if (state.IsEmpty)
             throw new InvalidOperationException();
 
         if (state.Decrement(signalCount))
@@ -208,11 +216,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal unsafe ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
-        => (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref state, &IsEmpty, pool, out _, timeout, token);
+        => (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref state, &CounterControl, pool, out _, timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal unsafe ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
-        => (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &IsEmpty, pool, out _, InfiniteTimeSpan, token);
+        => (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &CounterControl, pool, out _, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.
@@ -247,7 +255,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref state, &IsEmpty, pool, out _, timeout, token);
+        => WaitNoTimeoutAsync(ref state, &CounterControl, pool, out _, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -258,5 +266,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref state, &IsEmpty, pool, out _, InfiniteTimeSpan, token);
+        => WaitWithTimeoutAsync(ref state, &CounterControl, pool, out _, InfiniteTimeSpan, token);
 }

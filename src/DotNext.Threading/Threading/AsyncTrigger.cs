@@ -86,7 +86,9 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         bool IAsyncEvent.Signal() => SignalCore();
 
-        internal static bool AlwaysFalse(ref ValueTuple timeout) => false;
+        private static void AlwaysFalse(ref ValueTuple timeout, ref bool flag)
+        {
+        }
 
         /// <summary>
         /// Suspends the caller and waits for the signal.
@@ -252,15 +254,16 @@ namespace DotNext.Threading
         /// </summary>
         public TState State { get; }
 
-        private static bool TrySignal(ref (TState, ITransition) args)
+        private static void TransitionControl(ref (TState, ITransition) args, ref bool flag)
         {
-            if (args.Item2.Test(args.Item1))
+            if (flag)
             {
                 args.Item2.Transit(args.Item1);
-                return true;
             }
-
-            return false;
+            else
+            {
+                flag = args.Item2.Test(args.Item1);
+            }
         }
 
         private protected sealed override void DrainWaitQueue()
@@ -330,12 +333,12 @@ namespace DotNext.Threading
         /// <returns>The result of <see cref="ITransition.Test(TState)"/> invocation.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TrySignal(ITransition transition)
+        public unsafe bool TrySignal(ITransition transition)
         {
             ThrowIfDisposed();
 
             var args = (State, transition);
-            return TrySignal(ref args);
+            return TryAcquire(ref args, &TransitionControl);
         }
 
         /// <summary>
@@ -352,7 +355,7 @@ namespace DotNext.Threading
         public unsafe ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
         {
             var args = (State, transition);
-            var result = WaitNoTimeoutAsync(ref args, &TrySignal, pool, out var node, timeout, token);
+            var result = WaitNoTimeoutAsync(ref args, &TransitionControl, pool, out var node, timeout, token);
             if (node is not null)
                 node.Transition = transition;
 
@@ -372,7 +375,7 @@ namespace DotNext.Threading
         public unsafe ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
         {
             var args = (State, transition);
-            var result = WaitWithTimeoutAsync(ref args, &TrySignal, pool, out var node, InfiniteTimeSpan, token);
+            var result = WaitWithTimeoutAsync(ref args, &TransitionControl, pool, out var node, InfiniteTimeSpan, token);
             if (node is not null)
                 node.Transition = transition;
 

@@ -114,12 +114,53 @@ namespace DotNext.Threading
             contentionCounter?.Invoke(1L);
         }
 
-        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+        /*
+         * Lock control function is a special function that allows to check the possibility of transition
+         * and perform the transition if needed:
+         * static void LockControl(ref State state, ref bool flag)
+         * {
+         *   if (flag) state.AcquireLock(); else flag = state.IsLockAllowed;
+         * }
+         */
+        private protected unsafe bool TryAcquire<TContext>(ref TContext context, delegate*<ref TContext, ref bool, void> control)
+            where TContext : struct
+        {
+            Debug.Assert(Monitor.IsEntered(this));
+
+            var result = false;
+            control(ref context, ref result);
+            if (result)
+            {
+                for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+                {
+                    next = current.Next as WaitNode;
+
+                    if (current.IsCompleted)
+                    {
+                        RemoveNode(current);
+                    }
+                    else
+                    {
+                        result = false;
+                        goto exit;
+                    }
+                }
+
+                Debug.Assert(result);
+                control(ref context, ref result);
+                Debug.Assert(result);
+            }
+
+        exit:
+            return result;
+        }
+
+        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
             where TContext : struct
             where TNode : WaitNode
         {
             Debug.Assert(Monitor.IsEntered(this));
-            Debug.Assert(probe != null);
+            Debug.Assert(control != null);
 
             node = null;
 
@@ -132,7 +173,7 @@ namespace DotNext.Threading
             if (token.IsCancellationRequested)
                 return ValueTask.FromCanceled(token);
 
-            if (probe(ref context))
+            if (TryAcquire(ref context, control))
                 return ValueTask.CompletedTask;
 
             if (timeout == TimeSpan.Zero)
@@ -144,12 +185,12 @@ namespace DotNext.Threading
             return node.As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
         }
 
-        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, bool> probe, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
             where TContext : struct
             where TNode : WaitNode
         {
             Debug.Assert(Monitor.IsEntered(this));
-            Debug.Assert(probe != null);
+            Debug.Assert(control != null);
 
             node = null;
 
@@ -162,7 +203,7 @@ namespace DotNext.Threading
             if (token.IsCancellationRequested)
                 return ValueTask.FromCanceled<bool>(token);
 
-            if (probe(ref context))
+            if (TryAcquire(ref context, control))
                 return new(true);
 
             if (timeout == TimeSpan.Zero)

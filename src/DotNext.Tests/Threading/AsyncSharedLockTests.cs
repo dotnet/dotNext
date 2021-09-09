@@ -157,5 +157,23 @@ namespace DotNext.Threading
             @lock.Release();
             await task;
         }
+
+        [Fact]
+        public static async Task QueueFairness()
+        {
+            using var @lock = new AsyncSharedLock(3);
+            True(@lock.TryAcquire(false));
+
+            var writeLockTask = @lock.AcquireAsync(true);
+            var readLockTask = @lock.AcquireAsync(false);
+            False(writeLockTask.IsCompleted);
+            False(readLockTask.IsCompleted);
+
+            @lock.Release();
+            await writeLockTask;
+
+            @lock.Release();
+            await readLockTask;
+        }
     }
 }

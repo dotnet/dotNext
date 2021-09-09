@@ -9,7 +9,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task SignalAndWait()
         {
-            using (var counter = new AsyncCounter(3))
+            using (var counter = new AsyncCounter())
             {
                 Equal(0, counter.Value);
                 counter.Increment();

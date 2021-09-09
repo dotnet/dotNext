@@ -87,7 +87,13 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Signal() => Set();
 
-    private static bool CheckState(ref AtomicBoolean state) => state.Value;
+    private static void StateControl(ref AtomicBoolean state, ref bool flag)
+    {
+        if (!flag)
+        {
+            flag = state.Value;
+        }
+    }
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -100,7 +106,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref state, &CheckState, pool, out _, timeout, token);
+        => WaitNoTimeoutAsync(ref state, &StateControl, pool, out _, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -111,7 +117,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref state, &CheckState, pool, out _, InfiniteTimeSpan, token);
+        => WaitWithTimeoutAsync(ref state, &StateControl, pool, out _, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -130,7 +136,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
-        => state.Value || condition(arg) ? new(true) : WaitNoTimeoutAsync(ref state, &CheckState, pool, out _, timeout, token);
+        => state.Value || condition(arg) ? new(true) : WaitNoTimeoutAsync(ref state, &StateControl, pool, out _, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -147,7 +153,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
-        => state.Value || condition(arg) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &CheckState, pool, out _, InfiniteTimeSpan, token);
+        => state.Value || condition(arg) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &StateControl, pool, out _, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -168,7 +174,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
-        => state.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeoutAsync(ref state, &CheckState, pool, out _, timeout, token);
+        => state.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeoutAsync(ref state, &StateControl, pool, out _, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -187,5 +193,5 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public unsafe ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
-        => state.Value || condition(arg1, arg2) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &CheckState, pool, out _, InfiniteTimeSpan, token);
+        => state.Value || condition(arg1, arg2) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &StateControl, pool, out _, InfiniteTimeSpan, token);
 }
