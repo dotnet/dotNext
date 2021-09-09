@@ -74,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Metrics = metrics;
             this.announcer = announcer;
 
-            // track changes in configuration, do not track membership if discovery service is enabled
+            // track changes in configuration, do not track membership
             configurationTracker = config.OnChange(ConfigurationChanged);
 
             pollingLoopTask = Task.CompletedTask;
