@@ -35,51 +35,49 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly Uri protocolPath;
         private readonly int warmupRounds;
 
-        // TODO: Replace IServiceProvider with nullable parameters to use optional dependency injection
-        private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
-            : base(config)
+        public RaftHttpCluster(
+            IOptionsMonitor<HttpClusterMemberConfiguration> config,
+            IEnumerable<IInputChannel> messageHandlers,
+            ILoggerFactory loggerFactory,
+            IClusterMemberLifetime? configurator = null,
+            IPersistentState? auditTrail = null,
+            IClusterConfigurationStorage<HttpEndPoint>? configStorage = null,
+            IHttpMessageHandlerFactory? httpHandlerFactory = null,
+            MetricsCollector? metrics = null,
+            ClusterMemberAnnouncer<HttpEndPoint>? announcer = null)
+            : base(config.CurrentValue)
         {
-            openConnectionForEachRequest = config.OpenConnectionForEachRequest;
-            metadata = new MemberMetadata(config.Metadata);
-            requestTimeout = config.RequestTimeout;
-            raftRpcTimeout = config.RpcTimeout;
-            connectTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
-            duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
-            clientHandlerName = config.ClientHandlerName;
-            protocolVersion = config.ProtocolVersion;
-            protocolVersionPolicy = config.ProtocolVersionPolicy;
-            localNode = config.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
-            protocolPath = new Uri(config.ProtocolPath.Value.IfNullOrEmpty(HttpClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative);
-            coldStart = config.ColdStart;
-            warmupRounds = config.WarmupRounds;
+            openConnectionForEachRequest = config.CurrentValue.OpenConnectionForEachRequest;
+            metadata = new MemberMetadata(config.CurrentValue.Metadata);
+            requestTimeout = config.CurrentValue.RequestTimeout;
+            raftRpcTimeout = config.CurrentValue.RpcTimeout;
+            connectTimeout = TimeSpan.FromMilliseconds(config.CurrentValue.LowerElectionTimeout);
+            duplicationDetector = new DuplicateRequestDetector(config.CurrentValue.RequestJournal);
+            clientHandlerName = config.CurrentValue.ClientHandlerName;
+            protocolVersion = config.CurrentValue.ProtocolVersion;
+            protocolVersionPolicy = config.CurrentValue.ProtocolVersionPolicy;
+            localNode = config.CurrentValue.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
+            protocolPath = new Uri(config.CurrentValue.ProtocolPath.Value.IfNullOrEmpty(HttpClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative);
+            coldStart = config.CurrentValue.ColdStart;
+            warmupRounds = config.CurrentValue.WarmupRounds;
 
             if (raftRpcTimeout > requestTimeout)
                 throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
 
             // dependencies
-            configurator = dependencies.GetService<IClusterMemberLifetime>();
-            messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IInputChannel>());
-            AuditTrail = dependencies.GetService<IPersistentState>() ?? new ConsensusOnlyState();
-            ConfigurationStorage = dependencies.GetService<IClusterConfigurationStorage<HttpEndPoint>>() ?? new InMemoryClusterConfigurationStorage();
-            httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
-            Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
-            Metrics = dependencies.GetService<MetricsCollector>();
-            announcer = dependencies.GetService<ClusterMemberAnnouncer<HttpEndPoint>>();
+            this.configurator = configurator;
+            this.messageHandlers = ImmutableList.CreateRange(messageHandlers);
+            AuditTrail = auditTrail ?? new ConsensusOnlyState();
+            ConfigurationStorage = configStorage ?? new InMemoryClusterConfigurationStorage();
+            this.httpHandlerFactory = httpHandlerFactory;
+            Logger = loggerFactory.CreateLogger(GetType());
+            Metrics = metrics;
+            this.announcer = announcer;
 
             // track changes in configuration, do not track membership if discovery service is enabled
-            configurationTracker = configTracker(ConfigurationChanged);
+            configurationTracker = config.OnChange(ConfigurationChanged);
 
             pollingLoopTask = Task.CompletedTask;
-        }
-
-        private RaftHttpCluster(IOptionsMonitor<HttpClusterMemberConfiguration> config, IServiceProvider dependencies)
-            : this(config.CurrentValue, dependencies, config.OnChange)
-        {
-        }
-
-        public RaftHttpCluster(IServiceProvider dependencies)
-            : this(dependencies.GetRequiredService<IOptionsMonitor<HttpClusterMemberConfiguration>>(), dependencies)
-        {
         }
 
         protected override IClusterConfigurationStorage<HttpEndPoint> ConfigurationStorage { get; }
