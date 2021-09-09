@@ -41,15 +41,14 @@ namespace DotNext.Threading
             var task = Task.Run(async () =>
             {
                 False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(ev => ev.SetResult(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
                 await rwLock.EnterWriteLockAsync(DefaultTimeout);
                 rwLock.Release();
-                return true;
             });
 
             await are.Task.WaitAsync(DefaultTimeout);
             rwLock.Release();
-            True(await task);
+            await task.WaitAsync(DefaultTimeout);
         }
 
         [Fact]
@@ -64,12 +63,11 @@ namespace DotNext.Threading
                 True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
                 await rwLock.EnterReadLockAsync(DefaultTimeout);
                 rwLock.Release();
-                return true;
             });
 
             await are.Task.WaitAsync(DefaultTimeout);
             rwLock.Release();
-            True(await task);
+            await task.WaitAsync(DefaultTimeout);
         }
 
         [Fact]
