@@ -38,7 +38,7 @@ public static class Serializable
         where TObject : notnull, ISerializable<TObject>
     {
         using var owner = MemoryAllocator.Allocate<byte>(bufferSize, false);
-        return await ReadFromAsync<TObject>(input, owner.Memory, token);
+        return await ReadFromAsync<TObject>(input, owner.Memory, token).ConfigureAwait(false);
     }
 
     /// <summary>
