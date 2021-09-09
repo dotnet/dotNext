@@ -45,6 +45,12 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
+        /// Gets boxed representation of the underlying value.
+        /// </summary>
+        /// <returns>The boxed representation of the underlying value.</returns>
+        public object? ToObject() => value;
+
+        /// <summary>
         /// Gets pinnable managed pointer to the boxed object.
         /// </summary>
         /// <returns>The pinnable managed pointer.</returns>
@@ -70,7 +76,7 @@ namespace DotNext.Runtime
         /// </summary>
         /// <param name="other">The other container to compare.</param>
         /// <returns><see langword="true"/> his container holds the same reference as the specified container; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is Box<T> box && Equals(box);
+        public override bool Equals(object? other) => other is Box<T> box ? Equals(box) : ReferenceEquals(value, other);
 
         /// <summary>
         /// Returns hash code of the reference stored in this container.
