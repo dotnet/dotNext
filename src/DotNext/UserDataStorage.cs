@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext
 {
@@ -264,7 +263,22 @@ namespace DotNext
             }
         }
 
-        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new();
+        /*
+         * ConditionalWeakTable is synchronized to we use a bucket of tables
+         * to reduce the risk of lock contention. The specific table for the object
+         * is based on object's identity hash code.
+         */
+        private static readonly ConditionalWeakTable<object, BackingStorage>[] Buckets;
+
+        static UserDataStorage()
+        {
+            var size = Environment.ProcessorCount;
+            size = (size / 2) + size;
+
+            Buckets = new ConditionalWeakTable<object, BackingStorage>[size];
+            for (var i = 0; i < size; i++)
+                Buckets[i] = new();
+        }
 
         private readonly object source;
 
@@ -275,15 +289,24 @@ namespace DotNext
             _ => source,
         };
 
-        private BackingStorage? GetStorage()
+        private static ConditionalWeakTable<object, BackingStorage> GetStorage(object source)
         {
-            if (source is BackingStorage storage)
-                return storage;
-            return UserData.TryGetValue(source, out storage!) ? storage : null;
+            var bucket = (RuntimeHelpers.GetHashCode(source) % Buckets.Length) & int.MaxValue;
+            Debug.Assert(bucket >= 0 && bucket < Buckets.Length);
+
+            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Buckets), bucket);
         }
 
+        private BackingStorage? GetStorage()
+            => source is BackingStorage storage || GetStorage(source).TryGetValue(source, out storage!) ? storage : null;
+
         private BackingStorage GetOrCreateStorage()
-            => source is BackingStorage storage ? storage : UserData.GetOrCreateValue(source);
+        {
+            if (source is not BackingStorage storage)
+                storage = GetStorage(source).GetOrCreateValue(source);
+
+            return storage;
+        }
 
         /// <summary>
         /// Gets user data.
@@ -492,7 +515,7 @@ namespace DotNext
                 if (obj is BackingStorage destination)
                     source.CopyTo(destination);
                 else
-                    UserData.Add(obj, source.Copy());
+                    GetStorage(obj).Add(obj, source.Copy());
             }
         }
 
