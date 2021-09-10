@@ -273,7 +273,7 @@ public readonly ref struct UserDataStorage
     static UserDataStorage()
     {
         var size = Environment.ProcessorCount;
-        size = (size / 2) + size;
+        size += size / 2;
 
         Buckets = new ConditionalWeakTable<object, BackingStorage>[size];
         for (var i = 0; i < size; i++)
