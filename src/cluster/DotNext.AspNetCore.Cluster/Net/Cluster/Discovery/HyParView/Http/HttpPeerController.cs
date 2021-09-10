@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,8 +31,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
         private readonly HttpEndPoint localNode;
         private HttpEndPoint? contactNode;
 
-        // TODO: Use nullable services in .NET 6
-        private HttpPeerController(IOptions<HttpPeerConfiguration> configuration, IServiceProvider dependencies)
+        private HttpPeerController(
+            IOptions<HttpPeerConfiguration> configuration,
+            ILoggerFactory loggerFactory,
+            IServer server,
+            IHttpMessageHandlerFactory? handlerFactory = null,
+            IPeerLifetime? lifetimeService = null)
             : base(configuration.Value)
         {
             // configuration
@@ -52,18 +51,13 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
             resourcePath = new(configuration.Value.ResourcePath.Value.IfNullOrEmpty(HttpPeerConfiguration.DefaultResourcePath), UriKind.Relative);
 
             // resolve dependencies
-            handlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
-            lifetimeService = dependencies.GetService<IPeerLifetime>();
-            Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
-            server = dependencies.GetRequiredService<IServer>();
+            this.handlerFactory = handlerFactory;
+            this.lifetimeService = lifetimeService;
+            Logger = loggerFactory.CreateLogger(GetType());
+            this.server = server;
 
             // various init
             clientCache = new();
-        }
-
-        internal HttpPeerController(IServiceProvider dependencies)
-            : this(dependencies.GetRequiredService<IOptions<HttpPeerConfiguration>>(), dependencies)
-        {
         }
 
         /// <summary>
