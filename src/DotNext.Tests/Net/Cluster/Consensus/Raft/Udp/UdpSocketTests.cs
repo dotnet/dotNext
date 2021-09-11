@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     public sealed class UdpSocketTests : TransportTestSuite
     {
         private static readonly IPEndPoint LocalHostRandomPort = new(IPAddress.Loopback, 0);
-        private readonly Func<long> appIdGenerator = new Random().Next<long>;
+        private readonly Func<long> appIdGenerator = Random.Shared.Next<long>;
 
         [Fact]
         public Task RequestResponse()

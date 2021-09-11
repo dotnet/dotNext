@@ -62,11 +62,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var state = new PersistentState(path, 10, options);
             const int payloadSize = 2048;
-            var rnd = new Random();
             var bytes = new byte[payloadSize];
-            rnd.NextBytes(bytes);
+            Random.Shared.NextBytes(bytes);
             await state.AppendAsync(new BinaryLogEntry(10L, bytes), addToCache);
-            rnd.NextBytes(bytes);
+            Random.Shared.NextBytes(bytes);
             await state.AppendAsync(new BinaryLogEntry(20L, bytes), addToCache);
             this.state = state;
         }

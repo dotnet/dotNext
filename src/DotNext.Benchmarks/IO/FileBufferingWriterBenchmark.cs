@@ -19,7 +19,7 @@ namespace DotNext.IO
         public FileBufferingWriterBenchmark()
         {
             content = new byte[1024 * 1024];    // 1 MB
-            new Random().NextBytes(content);
+            Random.Shared.NextBytes(content);
         }
 
         private IEnumerable<ReadOnlyMemory<byte>> GetChunks()

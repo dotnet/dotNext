@@ -20,8 +20,7 @@ namespace DotNext
         public static void RandomStringTest()
         {
             const string AllowedChars = "abcd123456789";
-            var rnd = new Random();
-            var str = rnd.NextString(AllowedChars, 6);
+            var str = Random.Shared.NextString(AllowedChars, 6);
             Equal(6, str.Length);
             using (var generator = new RNGCryptoServiceProvider())
             {

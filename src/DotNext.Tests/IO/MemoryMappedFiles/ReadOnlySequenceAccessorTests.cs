@@ -40,7 +40,7 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             var tempFile = Path.GetTempFileName();
             var content = new byte[1024];
-            new Random().NextBytes(content);
+            Random.Shared.NextBytes(content);
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Write, FileShare.None))
             {
                 fs.Write(content);

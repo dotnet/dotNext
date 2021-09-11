@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 heartbeatThreshold = 0.5D;
                 Metadata = new Dictionary<string, string>();
                 HostEndPoint = hostAddress;
-                applicationIdGenerator = new Random().Next<long>;
+                applicationIdGenerator = Random.Shared.Next<long>;
                 TimeToLive = 64;
                 warmupRounds = 10;
             }

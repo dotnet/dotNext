@@ -21,7 +21,7 @@ namespace DotNext.Reflection
         public HashMethodReflectionBenchmark()
         {
             //generate random data
-            new Random(0xEBD8320).NextBytes(data);
+            Random.Shared.NextBytes(data);
         }
 
         [Benchmark]

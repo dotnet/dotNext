@@ -294,11 +294,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //prepare client
             using var client = clientFactory(serverAddr);
             var buffer = new byte[533];
-            var rnd = new Random();
-            rnd.NextBytes(buffer);
+            Random.Shared.NextBytes(buffer);
             var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
             buffer = new byte[payloadSize];
-            rnd.NextBytes(buffer);
+            Random.Shared.NextBytes(buffer);
             var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
 
             await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, new() { ApplyConfig = true, Fingerprint = 42L });

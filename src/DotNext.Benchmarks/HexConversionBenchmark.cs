@@ -34,15 +34,14 @@ namespace DotNext
         {
             get
             {
-                var rnd = new Random();
                 byte[] bytes;
-                rnd.NextBytes(bytes = new byte[16]);
+                Random.Shared.NextBytes(bytes = new byte[16]);
                 yield return new ByteArrayParam(bytes);
-                rnd.NextBytes(bytes = new byte[64]);
+                Random.Shared.NextBytes(bytes = new byte[64]);
                 yield return new ByteArrayParam(bytes);
-                rnd.NextBytes(bytes = new byte[128]);
+                Random.Shared.NextBytes(bytes = new byte[128]);
                 yield return new ByteArrayParam(bytes);
-                rnd.NextBytes(bytes = new byte[256]);
+                Random.Shared.NextBytes(bytes = new byte[256]);
                 yield return new ByteArrayParam(bytes);
             }
         }
