@@ -1,7 +1,6 @@
-using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
@@ -42,7 +41,7 @@ namespace DotNext.IO.MemoryMappedFiles
             public bool Equals(Segment other)
                 => Equals(in other);
 
-            public override bool Equals(object? other) => other is Segment window && Equals(in window);
+            public override bool Equals([NotNullWhen(true)] object? other) => other is Segment window && Equals(in window);
 
             public override int GetHashCode()
                 => HashCode.Combine(Offset, Length);

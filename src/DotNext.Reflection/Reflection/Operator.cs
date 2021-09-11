@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using static System.Diagnostics.Debug;
@@ -47,7 +45,7 @@ namespace DotNext.Reflection
 
             public bool Equals(Kind other) => operatorType == other.operatorType && overloaded == other.overloaded;
 
-            public override bool Equals(object? other)
+            public override bool Equals([NotNullWhen(true)] object? other)
                 => other is Kind key && Equals(key);
 
             public override int GetHashCode() => overloaded ? (int)operatorType + 100 : (int)operatorType;
@@ -191,7 +189,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other reflected operator to be compared.</param>
         /// <returns><see langword="true"/>, if  this object reflects the same operator as other object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other switch
+        public override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             Operator<TSignature> op => Type == op.Type && Method == op.Method,
             TSignature invoker => Equals(Invoker, invoker),

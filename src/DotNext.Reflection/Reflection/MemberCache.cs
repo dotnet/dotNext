@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -73,7 +72,7 @@ namespace DotNext.Reflection
 
         public bool Equals(MemberKey other) => NonPublic == other.NonPublic && Name == other.Name;
 
-        public override bool Equals(object? other) => other is MemberKey key && Equals(key);
+        public override bool Equals([NotNullWhen(true)] object? other) => other is MemberKey key && Equals(key);
 
         public override int GetHashCode() => HashCode.Combine(NonPublic, Name);
     }

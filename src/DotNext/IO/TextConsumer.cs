@@ -1,8 +1,5 @@
-using System;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.IO
@@ -57,7 +54,7 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns><see langword="true"/> if this object contains the same text writer as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is TextConsumer consumer && Equals(consumer);
+        public override bool Equals([NotNullWhen(true)] object? other) => other is TextConsumer consumer && Equals(consumer);
 
         /// <summary>
         /// Gets the hash code representing identity of the stored text writer.

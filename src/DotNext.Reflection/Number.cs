@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -200,7 +200,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The number to compare.</param>
         /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other switch
+        public override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             T number => Equals(number),
             Number<T> number => Equals(number),

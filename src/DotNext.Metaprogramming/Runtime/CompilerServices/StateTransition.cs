@@ -1,5 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 
@@ -44,7 +44,7 @@ namespace DotNext.Runtime.CompilerServices
 
         bool IEquatable<StateTransition>.Equals(StateTransition other) => Equals(in other);
 
-        public override bool Equals(object? other) => other is StateTransition transition && Equals(transition);
+        public override bool Equals([NotNullWhen(true)] object? other) => other is StateTransition transition && Equals(transition);
 
         public override int GetHashCode() => HashCode.Combine(Successful, Failure);
 

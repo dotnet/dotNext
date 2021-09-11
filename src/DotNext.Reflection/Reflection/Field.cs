@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -224,7 +222,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other field to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same field as the specified object; otherwise, <see langword="false"/>.</returns>
-        public sealed override bool Equals(object? other) => other switch
+        public sealed override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             FieldBase<TValue> field => this.field == field.field,
             FieldInfo field => this.field == field,

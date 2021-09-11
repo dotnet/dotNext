@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
@@ -136,7 +137,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object? other) => other is LockStamp stamp && Equals(in stamp);
+            public override bool Equals([NotNullWhen(true)] object? other) => other is LockStamp stamp && Equals(in stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.

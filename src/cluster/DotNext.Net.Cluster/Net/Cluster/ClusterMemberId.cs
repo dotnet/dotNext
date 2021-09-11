@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.InteropServices;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -191,7 +191,7 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="other">The identifier to compare.</param>
         /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is ClusterMemberId id && Equals(in id);
+        public override bool Equals([NotNullWhen(true)] object? other) => other is ClusterMemberId id && Equals(in id);
 
         /// <summary>
         /// Gets the hash code of this identifier.

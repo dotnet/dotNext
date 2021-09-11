@@ -43,7 +43,7 @@ namespace DotNext.Generic
         /// </summary>
         /// <param name="other">Other constant value to compare.</param>
         /// <returns><see langword="true"/>, this object represents the same constant value as other; otherwise, <see langword="false"/>.</returns>
-        public sealed override bool Equals(object? other) => other switch
+        public sealed override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             T obj => Equals(obj, Value),
             Constant<T> @const => Equals(Value, @const.Value),

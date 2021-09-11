@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -272,7 +269,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same method as the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other switch
+        public override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             Method<TSignature> method => this.method == method.method,
             MethodInfo method => this.method == method,

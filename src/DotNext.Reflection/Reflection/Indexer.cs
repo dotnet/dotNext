@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -223,7 +221,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other property to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same property as the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other switch
+        public override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             IndexerBase<TIndicies, TValue> property => this.property == property.property,
             PropertyInfo property => this.property == property,

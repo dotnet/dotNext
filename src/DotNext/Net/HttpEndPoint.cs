@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
@@ -111,7 +110,7 @@ namespace DotNext.Net
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns><see langword="true"/> if this object represents the same endpoint as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => Equals(other as HttpEndPoint);
+        public override bool Equals([NotNullWhen(true)] object? other) => Equals(other as HttpEndPoint);
 
         /// <summary>
         /// Determines whether the objects represent the same HTTP endpoint.

@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public bool Equals(CorrelationId other) => Equals(in other);
 
-        public override bool Equals(object? other) => other is CorrelationId id && Equals(in id);
+        public override bool Equals([NotNullWhen(true)] object? other) => other is CorrelationId id && Equals(in id);
 
         public override int GetHashCode() => HashCode.Combine(ApplicationId, StreamId);
 

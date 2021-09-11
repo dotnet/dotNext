@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
@@ -168,7 +167,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns><see langword="true"/> if this object contains the same delegate instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is DelegatingSupplier<T1, T2, TResult> supplier && Equals(supplier);
+        public override bool Equals([NotNullWhen(true)] object? other) => other is DelegatingSupplier<T1, T2, TResult> supplier && Equals(supplier);
 
         /// <summary>
         /// Gets the hash code representing identity of the stored delegate instance.

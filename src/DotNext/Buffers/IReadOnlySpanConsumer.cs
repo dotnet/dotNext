@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
@@ -206,7 +207,7 @@ public readonly struct BufferConsumer<T> : IReadOnlySpanConsumer<T>, IEquatable<
     /// </summary>
     /// <param name="other">The object to compare.</param>
     /// <returns><see langword="true"/> if this object contains the same buffer instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals(object? other) => other is BufferConsumer<T> consumer && Equals(consumer);
+    public override bool Equals([NotNullWhen(true)] object? other) => other is BufferConsumer<T> consumer && Equals(consumer);
 
     /// <summary>
     /// Gets the hash code representing identity of the stored buffer writer.

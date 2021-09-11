@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -227,7 +225,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The array to be compared.</param>
         /// <returns><see langword="true"/> if the current object references the same array as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other switch
+        public override bool Equals([NotNullWhen(true)] object? other) => other switch
         {
             PinnedArray<T> pinned => Equals(pinned),
             T[] array => ReferenceEquals(Array, array),

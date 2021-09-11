@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -46,7 +45,7 @@ namespace DotNext.Reflection
         public bool Equals(BuiltinOperatorInfo? other)
             => other is not null && expression == other.expression && DeclaringType == other.DeclaringType;
 
-        public override bool Equals(object? other) => Equals(other as BuiltinOperatorInfo);
+        public override bool Equals([NotNullWhen(true)] object? other) => Equals(other as BuiltinOperatorInfo);
 
         public override int GetHashCode() => HashCode.Combine(expression, DeclaringType);
     }

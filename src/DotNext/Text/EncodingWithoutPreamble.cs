@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace DotNext.Text
@@ -123,7 +123,7 @@ namespace DotNext.Text
 
         public override string? ToString() => encoding.ToString();
 
-        public override bool Equals(object? other)
+        public override bool Equals([NotNullWhen(true)] object? other)
             => other is EncodingWithoutPreamble wrapper ? encoding.Equals(wrapper.encoding) : encoding.Equals(other);
 
         public override int GetHashCode() => encoding.GetHashCode();

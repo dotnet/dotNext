@@ -81,7 +81,7 @@ public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
     /// </summary>
     /// <param name="other">Other data slot to check.</param>
     /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-    public override bool Equals(object? other) => other is UserDataSlot<TValue> slot && Equals(slot);
+    public override bool Equals([NotNullWhen(true)] object? other) => other is UserDataSlot<TValue> slot && Equals(slot);
 
     /// <summary>
     /// Computes hash code for this data slot.
