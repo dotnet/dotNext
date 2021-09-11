@@ -613,7 +613,7 @@ public partial class PersistentState
     private Partition? DetachPartitions(long upperBoundIndex)
     {
         Partition? result = head, current;
-        for (current = result; current is not null && current.LastIndex <= upperBoundIndex; current = current.Next) ;
+        for (current = result; current is not null && current.LastIndex <= upperBoundIndex; current = current.Next);
 
         if (current is null)
         {

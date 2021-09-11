@@ -24,6 +24,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets allocator of unmanaged memory.
         /// </summary>
+        /// <typeparam name="T">The type of the elements in the memory block.</typeparam>
         /// <param name="zeroMem"><see langword="true"/> to set all bits in the memory to zero; otherwise, <see langword="false"/>.</param>
         /// <returns>The unmanaged memory allocator.</returns>
         public static MemoryAllocator<T> GetAllocator<T>(bool zeroMem)

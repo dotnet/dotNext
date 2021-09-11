@@ -101,7 +101,7 @@ public partial class PersistentState
 
             goto repeat_search;
 
-        exit:
+            exit:
             return sessionId;
         }
 
