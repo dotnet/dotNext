@@ -1,85 +1,68 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Buffers
+namespace DotNext.Buffers;
+
+internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
+    where T : unmanaged
 {
-    using Runtime;
+    private readonly bool owner;
+    private void* address;
 
-    internal class UnmanagedMemory<T> : MemoryManager<T>
-        where T : unmanaged
+    internal UnmanagedMemory(IntPtr address, int length)
     {
-        private readonly bool owner;
-        private IntPtr address;
+        this.address = address.ToPointer();
+        Length = length;
+    }
 
-        internal UnmanagedMemory(nint address, int length)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected static long SizeOf(int length) => Math.BigMul(length, sizeof(T));
+
+    private protected UnmanagedMemory(int length, bool zeroMem)
+    {
+        var size = (nuint)SizeOf(length);
+        address = zeroMem ? NativeMemory.AllocZeroed(size) : NativeMemory.Alloc(size);
+        Length = length;
+        owner = true;
+    }
+
+    private protected IntPtr Address => address == null ? throw new ObjectDisposedException(GetType().Name) : new IntPtr(address);
+
+    public long Size => SizeOf(Length);
+
+    public int Length { get; private set; }
+
+    internal void Reallocate(int length)
+    {
+        if (length <= 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        if (address == null)
+            throw new ObjectDisposedException(GetType().Name);
+
+        Length = length;
+        var size = (nuint)SizeOf(length);
+        address = NativeMemory.Realloc(address, size);
+    }
+
+    public sealed override Span<T> GetSpan()
+        => address == null ? Span<T>.Empty : new(address, Length);
+
+    public sealed override MemoryHandle Pin(int elementIndex = 0)
+        => new(Unsafe.Add<T>(address, elementIndex));
+
+    public sealed override void Unpin()
+    {
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (address != null && owner)
         {
-            this.address = address;
-            Length = length;
+            NativeMemory.Free(address);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected static unsafe long SizeOf(int length) => Math.BigMul(length, sizeof(T));
-
-        private protected unsafe UnmanagedMemory(int length, bool zeroMem)
-        {
-            var size = SizeOf(length);
-            address = Marshal.AllocHGlobal(new IntPtr(size));
-            GC.AddMemoryPressure(size);
-            Length = length;
-            if (zeroMem)
-                Intrinsics.ClearBits(address.ToPointer(), size);
-            owner = true;
-        }
-
-        private protected IntPtr Address
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                var result = address;
-                return result == default ? throw new ObjectDisposedException(GetType().Name) : result;
-            }
-        }
-
-        public long Size => SizeOf(Length);
-
-        public int Length { get; private set; }
-
-        internal void Reallocate(int length)
-        {
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-            if (address == default)
-                throw new ObjectDisposedException(GetType().Name);
-            long oldSize = Size, newSize = SizeOf(Length = length);
-            address = Marshal.ReAllocHGlobal(address, new IntPtr(newSize));
-            var diff = newSize - oldSize;
-            if (diff > 0L)
-                GC.AddMemoryPressure(diff);
-            else if (diff < 0L)
-                GC.RemoveMemoryPressure(Math.Abs(diff));
-        }
-
-        public sealed override unsafe Span<T> GetSpan() => new(Address.ToPointer(), Length);
-
-        public sealed override unsafe MemoryHandle Pin(int elementIndex = 0)
-            => new((T*)Address.ToPointer() + elementIndex);
-
-        public sealed override void Unpin()
-        {
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (address != default && owner)
-            {
-                Marshal.FreeHGlobal(address);
-                GC.RemoveMemoryPressure(Size);
-            }
-
-            address = default;
-        }
+        address = null;
     }
 }
