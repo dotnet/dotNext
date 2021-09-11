@@ -12,12 +12,11 @@ namespace DotNext
     public abstract class Test : Assert
     {
         private protected static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
-        private static readonly Random rng = new();
 
         private protected static byte[] RandomBytes(int size)
         {
             var result = new byte[size];
-            rng.NextBytes(result);
+            Random.Shared.NextBytes(result);
             return result;
         }
 
