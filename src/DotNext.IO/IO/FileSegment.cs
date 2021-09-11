@@ -79,7 +79,7 @@ public readonly struct FileSegment : IEquatable<FileSegment>
         {
             Length = source.Length - offset;
             Offset = offset + source.Offset;
-            this.handle = source.handle;
+            handle = source.handle;
         }
     }
 
@@ -93,7 +93,7 @@ public readonly struct FileSegment : IEquatable<FileSegment>
         {
             Offset = source.Offset + offset;
             Length = length;
-            this.handle = source.handle;
+            handle = source.handle;
         }
     }
 
@@ -150,7 +150,7 @@ public readonly struct FileSegment : IEquatable<FileSegment>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The number of copied bytes.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is less than zero.</exception>
-    public ValueTask<int> Read(Memory<byte> output, long offset = 0L, CancellationToken token = default)
+    public ValueTask<int> ReadAsync(Memory<byte> output, long offset = 0L, CancellationToken token = default)
     {
         if ((ulong)offset > (ulong)Length)
             return ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(offset)));
@@ -185,8 +185,8 @@ public readonly struct FileSegment : IEquatable<FileSegment>
     /// </summary>
     /// <param name="offset">The offset within the current segment.</param>
     /// <param name="length">The desired length for the slice.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <returns>A new segment.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The combination of <paramref name="offset"/> and <paramref name="length"/> is invalid.</exception>
     public FileSegment Slice(long offset, long length)
     {
         if ((ulong)offset + (ulong)length < (ulong)Length)
