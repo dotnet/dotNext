@@ -5,6 +5,8 @@ namespace DotNext.Buffers
 {
     internal static class SevenBitEncodedInt
     {
+        internal const int MaxSize = 5;
+
         [StructLayout(LayoutKind.Auto)]
         internal struct Reader
         {
@@ -13,7 +15,7 @@ namespace DotNext.Buffers
 
             internal bool Append(byte b)
             {
-                if (shift == 5 * 7)
+                if (shift == MaxSize * 7)
                     throw new InvalidDataException();
                 result |= (b & 0x7FU) << shift;
                 shift += 7;

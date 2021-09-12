@@ -1,8 +1,6 @@
-using System;
 using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DotNext.Buffers
@@ -16,26 +14,6 @@ namespace DotNext.Buffers
     public static partial class BufferWriter
     {
         private const int MaxBufferSize = int.MaxValue / 2;
-
-        [StructLayout(LayoutKind.Auto)]
-        internal struct LengthWriter : IConsumer<byte>
-        {
-            private readonly Memory<byte> writer;
-            private int offset;
-
-            internal LengthWriter(IBufferWriter<byte> output)
-            {
-                writer = output.GetMemory(5);
-                offset = 0;
-            }
-
-            internal readonly int Count => offset;
-
-            void IConsumer<byte>.Invoke(byte value)
-            {
-                writer.Span[offset++] = value;
-            }
-        }
 
         /// <summary>
         /// Encodes value of blittable type.
@@ -143,9 +121,9 @@ namespace DotNext.Buffers
 
         internal static void Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
         {
-            var writer = new LengthWriter(output);
+            var writer = new MemoryWriter(output.GetMemory(SevenBitEncodedInt.MaxSize));
             SevenBitEncodedInt.Encode(ref writer, (uint)value);
-            output.Advance(writer.Count);
+            output.Advance(writer.ConsumedBytes);
         }
 
         internal static void WriteLength(this IBufferWriter<byte> writer, int length, LengthFormat lengthFormat)

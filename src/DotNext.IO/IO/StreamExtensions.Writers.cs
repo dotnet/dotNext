@@ -25,23 +25,6 @@ public static partial class StreamExtensions
         void IConsumer<byte>.Invoke(byte value) => stream.WriteByte(value);
     }
 
-    [StructLayout(LayoutKind.Auto)]
-    private struct BufferedMemoryWriter : IConsumer<byte>
-    {
-        private readonly Memory<byte> buffer;
-        private int offset;
-
-        internal BufferedMemoryWriter(Memory<byte> output)
-        {
-            buffer = output;
-            offset = 0;
-        }
-
-        internal readonly Memory<byte> Result => buffer.Slice(0, offset);
-
-        void IConsumer<byte>.Invoke(byte value) => buffer.Span[offset++] = value;
-    }
-
     private static void Write7BitEncodedInt(this Stream stream, int value)
     {
         var writer = new StreamWriter(stream);
@@ -50,7 +33,7 @@ public static partial class StreamExtensions
 
     private static ValueTask Write7BitEncodedIntAsync(this Stream stream, int value, Memory<byte> buffer, CancellationToken token)
     {
-        var writer = new BufferedMemoryWriter(buffer);
+        var writer = new MemoryWriter(buffer);
         SevenBitEncodedInt.Encode(ref writer, (uint)value);
         return stream.WriteAsync(writer.Result, token);
     }
