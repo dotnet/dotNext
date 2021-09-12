@@ -21,5 +21,7 @@ namespace DotNext
         internal static string WriterInReadMode => (string)Resources.Get();
 
         internal static string NoConsumerProvided => (string)Resources.Get();
+
+        internal static string AsyncFileExpected => (string)Resources.Get();
     }
 }

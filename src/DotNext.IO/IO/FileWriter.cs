@@ -26,8 +26,18 @@ public sealed partial class FileWriter : Disposable
     /// or <paramref name="bufferSize"/> is less than or equal to zero.
     /// </exception>
     /// <exception cref="ArgumentNullException"><paramref name="handle"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="fileOffset"/> is less than zero;
+    /// or <paramref name="bufferSize"/> is less than or equal to zero.
+    /// </exception>
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
+        ArgumentNullException.ThrowIfNull(handle, nameof(handle));
+
+        if (!handle.IsAsync)
+            throw new ArgumentException(ExceptionMessages.AsyncFileExpected, nameof(handle));
+
         if (fileOffset < 0L)
             throw new ArgumentOutOfRangeException(nameof(fileOffset));
 
@@ -35,7 +45,7 @@ public sealed partial class FileWriter : Disposable
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
         buffer = allocator.Invoke(bufferSize, false);
-        this.handle = handle ?? throw new ArgumentNullException(nameof(handle));
+        this.handle = handle;
         this.fileOffset = fileOffset;
     }
 
@@ -149,7 +159,8 @@ public sealed partial class FileWriter : Disposable
 
     private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
-        await FlushCoreAsync(token).ConfigureAwait(false);
+        if (bufferOffset > 0)
+            await FlushCoreAsync(token).ConfigureAwait(false);
 
         if (input.Length > buffer.Length)
         {
