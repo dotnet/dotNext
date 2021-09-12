@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
-using static System.Globalization.CultureInfo;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
