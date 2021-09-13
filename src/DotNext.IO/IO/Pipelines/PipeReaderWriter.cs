@@ -35,53 +35,8 @@ namespace DotNext.IO.Pipelines
         public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
             => input.ReadStringAsync(lengthFormat, context, token);
 
-        ValueTask<byte> IAsyncBinaryReader.ReadByteAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadByteAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<short> IAsyncBinaryReader.ReadInt16Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadInt16Async(lengthFormat, context, style, provider, token);
-
-        ValueTask<int> IAsyncBinaryReader.ReadInt32Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadInt32Async(lengthFormat, context, style, provider, token);
-
-        ValueTask<long> IAsyncBinaryReader.ReadInt64Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadInt64Async(lengthFormat, context, style, provider, token);
-
-        ValueTask<float> IAsyncBinaryReader.ReadSingleAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadSingleAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<double> IAsyncBinaryReader.ReadDoubleAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadDoubleAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<decimal> IAsyncBinaryReader.ReadDecimalAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadDecimalAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadBigIntegerAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
-            => input.ReadGuidAsync(lengthFormat, context, token);
-
-        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token)
-            => input.ReadGuidAsync(lengthFormat, context, format, token);
-
-        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadDateTimeAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadDateTimeAsync(lengthFormat, context, formats, style, provider, token);
-
-        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadDateTimeOffsetAsync(lengthFormat, context, style, provider, token);
-
-        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadDateTimeOffsetAsync(lengthFormat, context, formats, style, provider, token);
-
-        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
-            => input.ReadTimeSpanAsync(lengthFormat, context, provider, token);
-
-        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
-            => input.ReadTimeSpanAsync(lengthFormat, context, formats, style, provider, token);
+        ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
+            => input.ParseAsync(parser, lengthFormat, context, provider, token);
 
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
             => input.ReadInt16Async(littleEndian, token);
