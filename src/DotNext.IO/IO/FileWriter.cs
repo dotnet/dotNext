@@ -99,7 +99,7 @@ public sealed partial class FileWriter : Disposable
             if (value < 0L)
                 throw new ArgumentOutOfRangeException(nameof(value));
 
-            if (bufferOffset > 0)
+            if (HasBufferedData)
                 throw new InvalidOperationException();
 
             fileOffset = value;
@@ -200,9 +200,10 @@ public sealed partial class FileWriter : Disposable
         if (disposing)
         {
             buffer.Dispose();
-            fileOffset = 0L;
-            bufferOffset = 0;
         }
+
+        fileOffset = 0L;
+        bufferOffset = 0;
 
         base.Dispose(disposing);
     }
