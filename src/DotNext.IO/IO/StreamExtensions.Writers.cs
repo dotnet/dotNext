@@ -264,7 +264,7 @@ public static partial class StreamExtensions
         if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
-        stream.Write(buffer.Span.Slice(0, bytesCount));
+        await stream.WriteAsync(buffer.Slice(0, bytesCount)).ConfigureAwait(false);
     }
 
     /// <summary>

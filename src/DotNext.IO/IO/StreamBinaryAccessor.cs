@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Globalization;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -13,7 +12,7 @@ namespace DotNext.IO
     /// Represents binary reader for the stream.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly partial struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
+    internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
     {
         private readonly Memory<byte> buffer;
         private readonly Stream stream;
@@ -149,7 +148,7 @@ namespace DotNext.IO
 
         async ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
         {
-            using var bufferWriter = new BufferedStreamWriter(buffer);
+            using var bufferWriter = new PreallocatedBufferWriter(buffer);
             writer(arg, bufferWriter);
             await stream.WriteAsync(bufferWriter.WrittenMemory, token).ConfigureAwait(false);
         }
