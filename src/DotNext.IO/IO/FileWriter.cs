@@ -14,7 +14,21 @@ public sealed partial class FileWriter : Disposable
     private int bufferOffset;
     private long fileOffset;
 
-    internal FileWriter(SafeFileHandle handle, long fileOffset, int bufferSize, MemoryAllocator<byte>? allocator)
+    /// <summary>
+    /// Creates a new writer backed by the file.
+    /// </summary>
+    /// <param name="handle">The file handle.</param>
+    /// <param name="fileOffset">The initial offset within the file.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <returns>The writer over the file.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="fileOffset"/> is less than zero;
+    /// or <paramref name="bufferSize"/> is less than 16 bytes.
+    /// </exception>
+    /// <exception cref="ArgumentNullException"><paramref name="handle"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
+    public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle, nameof(handle));
 
