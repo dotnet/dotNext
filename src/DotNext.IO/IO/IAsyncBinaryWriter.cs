@@ -155,7 +155,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Encodes formatted value as a set of characters using the specified encoding. 
+        /// Encodes formatted value as a set of characters using the specified encoding.
         /// </summary>
         /// <typeparam name="T">The type of formattable value.</typeparam>
         /// <param name="value">The type value to be written as string.</param>

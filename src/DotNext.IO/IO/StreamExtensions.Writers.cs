@@ -189,7 +189,7 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding. 
+    /// Encodes formatted value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
@@ -396,7 +396,7 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding. 
+    /// Encodes formatted value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
@@ -428,7 +428,7 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding. 
+    /// Encodes formatted value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
