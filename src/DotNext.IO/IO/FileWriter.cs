@@ -21,7 +21,6 @@ public sealed partial class FileWriter : Disposable
     /// <param name="fileOffset">The initial offset within the file.</param>
     /// <param name="bufferSize">The buffer size.</param>
     /// <param name="allocator">The buffer allocator.</param>
-    /// <returns>The writer over the file.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
     /// <paramref name="fileOffset"/> is less than zero;
     /// or <paramref name="bufferSize"/> is less than 16 bytes.
