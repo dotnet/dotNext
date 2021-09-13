@@ -51,5 +51,26 @@ namespace DotNext.IO
 
             reader.ClearBuffer();
         }
+
+        [Fact]
+        public static async Task ReadLargeData()
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+            using var reader = new FileReader(handle, bufferSize: 32);
+
+            var expected = RandomBytes(reader.MaxBufferSize * 2);
+            await RandomAccess.WriteAsync(handle, expected, 0L);
+
+            True(await reader.ReadAsync());
+            Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+
+            var actual = new byte[expected.Length];
+            Equal(actual.Length, await reader.ReadAsync(actual));
+
+            Equal(expected, actual);
+
+            False(await reader.ReadAsync());
+        }
     }
 }
