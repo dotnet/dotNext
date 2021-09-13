@@ -142,6 +142,49 @@ public sealed partial class FileReader : Disposable
         return count > 0;
     }
 
+    /// <summary>
+    /// Reads the block of the memory.
+    /// </summary>
+    /// <param name="output">The output buffer.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns></returns>
+    public ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token = default)
+    {
+        if (IsDisposed)
+            return new(GetDisposedTask<int>());
+
+        if (output.IsEmpty)
+            return new(0);
+
+        return HasBufferedData || output.Length < buffer.Length
+            ? ReadBufferedAsync(output, token)
+            : ReadDirectAsync(output, token);
+
+        async ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
+        {
+            var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
+            fileOffset += count;
+            return count;
+        }
+
+        async ValueTask<int> ReadBufferedAsync(Memory<byte> output, CancellationToken token)
+        {
+            var result = 0;
+
+            for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
+            {
+                if (!HasBufferedData)
+                    await ReadAsync(token).ConfigureAwait(false);
+
+                Buffer.Span.CopyTo(output.Span, out writtenCount);
+                result += writtenCount;
+                Read(writtenCount);
+            }
+
+            return result;
+        }
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
