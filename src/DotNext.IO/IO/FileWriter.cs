@@ -89,7 +89,7 @@ public sealed partial class FileWriter : Disposable
     /// Gets or sets the cursor position within the file.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">The value is less than zero.</exception>
-    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="ClearBuffer"/> or <see cref="FlushAsync"/> before changing the position.</exception>
+    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="ClearBuffer"/> or <see cref="WriteAsync(CancellationToken)"/> before changing the position.</exception>
     public long FilePosition
     {
         get => fileOffset;
@@ -119,7 +119,7 @@ public sealed partial class FileWriter : Disposable
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask FlushAsync(CancellationToken token = default)
+    public ValueTask WriteAsync(CancellationToken token = default)
     {
         if (IsDisposed)
             return new(DisposedTask);

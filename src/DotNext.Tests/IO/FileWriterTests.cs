@@ -20,7 +20,7 @@ namespace DotNext.IO
             True(writer.HasBufferedData);
             Equal(0L, writer.FilePosition);
 
-            await writer.FlushAsync();
+            await writer.WriteAsync();
             Equal(expected.Length, writer.FilePosition);
 
             var actual = new byte[expected.Length];

@@ -199,7 +199,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async Task CopyFromAsync(Stream input, CancellationToken token = default)
     {
-        await FlushAsync(token).ConfigureAwait(false);
+        await WriteAsync(token).ConfigureAwait(false);
 
         var buffer = this.buffer.Memory;
 
@@ -218,7 +218,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async Task CopyFromAsync(PipeReader input, CancellationToken token = default)
     {
-        await FlushAsync(token).ConfigureAwait(false);
+        await WriteAsync(token).ConfigureAwait(false);
 
         ReadResult result;
         do
@@ -235,7 +235,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <inheritdoc />
     async Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
     {
-        await FlushAsync(token).ConfigureAwait(false);
+        await WriteAsync(token).ConfigureAwait(false);
 
         for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty;)
             await WriteAsync(source, token).ConfigureAwait(false);
