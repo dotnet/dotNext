@@ -133,26 +133,6 @@ public sealed partial class FileWriter : Disposable
         return ValueTask.CompletedTask;
     }
 
-    /// <summary>
-    /// Writes the data directly to the file and bypass the internal buffer.
-    /// </summary>
-    /// <param name="input">The data to write.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
-    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="ClearBuffer"/> or <see cref="FlushAsync"/> before changing the position.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask WriteThroughAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
-    {
-        ThrowIfDisposed();
-
-        if (HasBufferedData)
-            throw new InvalidOperationException();
-
-        await RandomAccess.WriteAsync(handle, input, fileOffset, token).ConfigureAwait(false);
-        fileOffset += input.Length;
-    }
-
     private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
         if (bufferOffset > 0)
