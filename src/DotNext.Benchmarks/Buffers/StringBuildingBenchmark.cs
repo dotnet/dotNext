@@ -20,7 +20,7 @@ namespace DotNext.Buffers
             for (var i = 0; i < 100; i++)
             {
                 writer.Write(StringValue);
-                writer.WriteInt32(int.MaxValue);
+                writer.WriteFormattable(int.MaxValue);
                 writer.WriteLine();
             }
 
@@ -34,7 +34,7 @@ namespace DotNext.Buffers
             for (var i = 0; i < 100; i++)
             {
                 writer.Write(StringValue);
-                writer.WriteInt32(int.MaxValue);
+                writer.WriteFormattable(int.MaxValue);
                 writer.WriteLine();
             }
 
@@ -69,7 +69,7 @@ namespace DotNext.Buffers
                 for (var i = 0; i < 100; i++)
                 {
                     writer.Write(StringValue);
-                    writer.WriteInt32(int.MaxValue);
+                    writer.WriteFormattable(int.MaxValue);
                     writer.WriteLine();
                 }
 
@@ -90,7 +90,7 @@ namespace DotNext.Buffers
                 for (var i = 0; i < 100; i++)
                 {
                     writer.Write(StringValue);
-                    writer.WriteInt32(int.MaxValue);
+                    writer.WriteFormattable(int.MaxValue);
                     writer.WriteLine();
                 }
 
