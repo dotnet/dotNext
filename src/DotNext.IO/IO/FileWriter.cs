@@ -67,7 +67,7 @@ public sealed partial class FileWriter : Disposable
     /// </summary>
     /// <param name="bytes">The number of consumed bytes.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
-    public void AdvanceBuffer(int bytes)
+    public void Produce(int bytes)
     {
         if (bytes > FreeCapacity)
             throw new ArgumentOutOfRangeException(nameof(bytes));

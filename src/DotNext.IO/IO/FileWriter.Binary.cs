@@ -16,7 +16,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     {
         var writer = new SpanWriter<byte>(Buffer.Span);
         writer.Write(in value);
-        AdvanceBuffer(writer.WrittenCount);
+        Produce(writer.WrittenCount);
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     {
         var writer = new MemoryWriter(Buffer);
         SevenBitEncodedInt.Encode(ref writer, (uint)value);
-        AdvanceBuffer(writer.ConsumedBytes);
+        Produce(writer.ConsumedBytes);
     }
 
     private void WriteLength(int length, LengthFormat lengthFormat)
@@ -117,7 +117,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
             charsUsed = Math.Min(maxChars, charsLeft);
             encoder.Convert(chars.Span.Slice(0, charsUsed), Buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
-            AdvanceBuffer(bytesUsed);
+            Produce(bytesUsed);
         }
     }
 
@@ -150,7 +150,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (!value.TryWriteBytes(buffer.Span, out var bytesWritten, !littleEndian))
             throw new InsufficientMemoryException();
 
-        AdvanceBuffer(bytesWritten);
+        Produce(bytesWritten);
     }
 
     /// <summary>

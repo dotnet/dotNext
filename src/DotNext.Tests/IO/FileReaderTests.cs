@@ -38,15 +38,15 @@ namespace DotNext.IO
             True(await reader.ReadAsync());
             Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
 
-            reader.Read(16);
+            reader.Consume(16);
 
             True(await reader.ReadAsync());
             Equal(expected.AsMemory(16, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
 
-            reader.Read(16);
+            reader.Consume(16);
             True(await reader.ReadAsync());
 
-            reader.Read(16);
+            reader.Consume(16);
             False(await reader.ReadAsync());
 
             reader.ClearBuffer();

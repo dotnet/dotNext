@@ -49,7 +49,7 @@ public sealed partial class FileReader : Disposable
     /// Gets or sets the cursor position within the file.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">The value is less than zero.</exception>
-    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Read"/> or <see cref="ClearBuffer"/> before changing the position.</exception>
+    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Consume"/> or <see cref="ClearBuffer"/> before changing the position.</exception>
     public long FilePosition
     {
         get => fileOffset;
@@ -85,7 +85,7 @@ public sealed partial class FileReader : Disposable
     /// </summary>
     /// <param name="bytes">The number of consumed bytes.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
-    public void Read(int bytes)
+    public void Consume(int bytes)
     {
         var newPosition = bytes + bufferStart;
 
@@ -179,7 +179,7 @@ public sealed partial class FileReader : Disposable
 
                 Buffer.Span.CopyTo(output.Span, out writtenCount);
                 result += writtenCount;
-                Read(writtenCount);
+                Consume(writtenCount);
             }
 
             return result;
