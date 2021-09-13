@@ -147,7 +147,8 @@ public sealed partial class FileReader : Disposable
     /// </summary>
     /// <param name="output">The output buffer.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns></returns>
+    /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token = default)
     {
         if (IsDisposed)
