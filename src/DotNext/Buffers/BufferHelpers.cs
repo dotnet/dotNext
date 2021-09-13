@@ -199,7 +199,7 @@ public static partial class BufferHelpers
     /// <param name="provider">The formatting provider.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int Write(this IBufferWriter<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] ref BufferWriterInterpolatedStringHandler handler)
+    public static int WriteString(this IBufferWriter<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] ref BufferWriterInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -208,6 +208,50 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int Write(this IBufferWriter<char> writer, [InterpolatedStringHandlerArgument("writer")] ref BufferWriterInterpolatedStringHandler handler)
-        => Write(writer, null, ref handler);
+    public static int WriteString(this IBufferWriter<char> writer, [InterpolatedStringHandlerArgument("writer")] ref BufferWriterInterpolatedStringHandler handler)
+        => WriteString(writer, null, ref handler);
+
+    /// <summary>
+    /// Writes line termination symbols to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    public static void WriteLine(this IBufferWriter<char> writer)
+        => writer.Write(Environment.NewLine);
+
+    /// <summary>
+    /// Writes a string to the buffer, followed by a line terminator.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="characters">The characters to write.</param>
+    public static void WriteLine(this IBufferWriter<char> writer, ReadOnlySpan<char> characters)
+    {
+        writer.Write(characters);
+        writer.Write(Environment.NewLine);
+    }
+
+    /// <summary>
+    /// Converts the value to the characters and write them to the buffer.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to convert.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    public static void WriteFormattable<T>(this IBufferWriter<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        where T : notnull, ISpanFormattable
+    {
+        const int maxBufferSize = int.MaxValue / 2;
+
+        for (int bufferSize = 0; ;)
+        {
+            var buffer = writer.GetSpan(bufferSize);
+            if (value.TryFormat(buffer, out var charsWritten, format, provider))
+            {
+                writer.Advance(charsWritten);
+                break;
+            }
+
+            bufferSize = bufferSize <= maxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
+        }
+    }
 }

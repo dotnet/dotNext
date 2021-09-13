@@ -1,167 +1,163 @@
-using System;
 using System.Buffers;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DotNext.IO
+namespace DotNext.IO;
+
+using Buffers;
+
+internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWriter>
+    where TWriter : class, IBufferWriter<byte>
 {
-    using Buffers;
+    private const int ConversionBufferSize = 64;
 
-    internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWriter>
-        where TWriter : class, IBufferWriter<byte>
+    internal EncodingTextWriter(TWriter writer, Encoding encoding, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
+        : base(writer, provider, flush, flushAsync)
     {
-        private const int ConversionBufferSize = 64;
+        Encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+    }
 
-        internal EncodingTextWriter(TWriter writer, Encoding encoding, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
-            : base(writer, provider, flush, flushAsync)
+    public override Encoding Encoding { get; }
+
+    public override void Write(ReadOnlySpan<char> chars)
+        => Encoding.GetBytes(chars, writer);
+
+    public override void Write(decimal value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
         {
-            Encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
         }
-
-        public override Encoding Encoding { get; }
-
-        public override void Write(ReadOnlySpan<char> chars)
-            => Encoding.GetBytes(chars, writer);
-
-        public override void Write(decimal value)
+        finally
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteDecimal(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.Dispose();
         }
+    }
 
-        public override void Write(double value)
+    public override void Write(double value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteDouble(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
         }
-
-        public override void Write(float value)
+        finally
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteSingle(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.Dispose();
         }
+    }
 
-        public override void Write(int value)
+    public override void Write(float value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteInt32(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
         }
-
-        public override void Write(long value)
+        finally
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteInt64(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.Dispose();
         }
+    }
 
-        public override void Write(uint value)
+    public override void Write(int value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteUInt32(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
         }
-
-        public override void Write(ulong value)
+        finally
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteUInt64(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.Dispose();
         }
+    }
 
-        private protected override void Write(DateTime value)
+    public override void Write(long value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteDateTime(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
         }
-
-        private protected override void Write(DateTimeOffset value)
+        finally
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteDateTimeOffset(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.Dispose();
         }
+    }
 
-        private protected override void Write(TimeSpan value)
+    public override void Write(uint value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
         {
-            var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
-            try
-            {
-                writer.WriteTimeSpan(value, string.Empty, FormatProvider);
-                Write(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+
+    public override void Write(ulong value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
+        {
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+
+    private protected override void Write(DateTime value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
+        {
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+
+    private protected override void Write(DateTimeOffset value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
+        {
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+
+    private protected override void Write(TimeSpan value)
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
+        try
+        {
+            writer.WriteFormattable(value, provider: FormatProvider);
+            Write(writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
         }
     }
 }

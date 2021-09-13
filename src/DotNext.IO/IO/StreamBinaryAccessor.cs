@@ -199,17 +199,11 @@ namespace DotNext.IO
             await stream.WriteAsync(bufferWriter.WrittenMemory, token).ConfigureAwait(false);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteByteAsync(value, lengthFormat, context, buffer, format, provider, token);
-
         ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, bool littleEndian, CancellationToken token)
         {
             value.ReverseIfNeeded(littleEndian);
             return WriteAsync(value, token);
         }
-
-        ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteInt16Async(value, lengthFormat, context, buffer, format, provider, token);
 
         ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, bool littleEndian, CancellationToken token)
         {
@@ -217,44 +211,17 @@ namespace DotNext.IO
             return WriteAsync(value, token);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteInt32Async(value, lengthFormat, context, buffer, format, provider, token);
-
         ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, bool littleEndian, CancellationToken token)
         {
             value.ReverseIfNeeded(littleEndian);
             return WriteAsync(value, token);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteInt64Async(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteDecimalAsync(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteSingleAsync(float value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteSingleAsync(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteDoubleAsync(double value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteDoubleAsync(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteDateTimeAsync(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteDateTimeOffsetAsync(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteTimeSpanAsync(value, lengthFormat, context, buffer, format, provider, token);
-
-        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteBigIntegerAsync(value, lengthFormat, context, buffer, format, provider, token);
-
         ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
             => stream.WriteBigIntegerAsync(value, littleEndian, buffer, lengthFormat, token);
 
-        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            => stream.WriteGuidAsync(value, lengthFormat, context, format, provider);
+        ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => stream.WriteFormattableAsync(value, lengthFormat, context, buffer, format, provider, token);
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(stream, token);

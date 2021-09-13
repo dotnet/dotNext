@@ -1,11 +1,7 @@
-using System;
 using System.Buffers;
-using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.IO.Pipelines
 {
@@ -58,39 +54,23 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
-        /// Encodes 8-bit unsigned integer as a string.
+        /// Encodes formatted value as a set of characters using the specified encoding. 
         /// </summary>
+        /// <typeparam name="T">The type of formattable value.</typeparam>
         /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
+        /// <param name="value">The type value to be written as string.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">The format of the value.</param>
+        /// <param name="provider">The format provider.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteByteAsync(this PipeWriter writer, byte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static ValueTask<FlushResult> WriteFormattableAsync<T>(this PipeWriter writer, T value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            where T : notnull, ISpanFormattable
         {
-            writer.WriteByte(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes 8-bit signed integer as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteSByteAsync(this PipeWriter writer, sbyte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteSByte(value, lengthFormat, in context, format, provider);
+            writer.WriteFormattable(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
         }
 
@@ -106,24 +86,6 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, bool littleEndian, CancellationToken token = default)
         {
             writer.WriteInt64(value, littleEndian);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes 64-bit signed integer as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteInt64(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
         }
 
@@ -144,25 +106,6 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
-        /// Encodes 64-bit unsigned integer as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteUInt64Async(this PipeWriter writer, ulong value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteUInt64(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
         /// Encodes 32-bit signed integer asynchronously.
         /// </summary>
         /// <param name="writer">The pipe writer.</param>
@@ -174,24 +117,6 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteInt32Async(this PipeWriter writer, int value, bool littleEndian, CancellationToken token = default)
         {
             writer.WriteInt32(value, littleEndian);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes 32-bit signed integer as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt32Async(this PipeWriter writer, int value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteInt32(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
         }
 
@@ -212,25 +137,6 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
-        /// Encodes 32-bit unsigned integer as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteUInt32Async(this PipeWriter writer, uint value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteUInt32(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
         /// Encodes 16-bit signed integer asynchronously.
         /// </summary>
         /// <param name="writer">The pipe writer.</param>
@@ -242,24 +148,6 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, bool littleEndian, CancellationToken token = default)
         {
             writer.WriteInt16(value, littleEndian);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes 16-bit signed integer as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteInt16(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
         }
 
@@ -280,173 +168,19 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
-        /// Encodes 16-bit unsigned integer as a string.
+        /// Encodes an arbitrary large integer as raw bytes.
         /// </summary>
-        /// <param name="writer">The buffer writer.</param>
+        /// <param name="writer">The pipe to write into.</param>
         /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteUInt16Async(this PipeWriter writer, ushort value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static ValueTask<FlushResult> WriteBigIntegerAsync(this PipeWriter writer, BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token = default)
         {
-            writer.WriteUInt16(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes single-precision floating-point number as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteSingleAsync(this PipeWriter writer, float value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteSingle(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes double-precision floating-point number as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDoubleAsync(this PipeWriter writer, double value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteDouble(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes <see cref="decimal"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDecimalAsync(this PipeWriter writer, decimal value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteDecimal(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes <see cref="Guid"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteGuidAsync(this PipeWriter writer, Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteGuid(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes <see cref="DateTime"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDateTimeAsync(this PipeWriter writer, DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteDateTime(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes <see cref="DateTimeOffset"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDateTimeOffsetAsync(this PipeWriter writer, DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteDateTimeOffset(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes <see cref="TimeSpan"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteTimeSpanAsync(this PipeWriter writer, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteTimeSpan(value, lengthFormat, in context, format, provider);
-            return writer.FlushAsync(token);
-        }
-
-        /// <summary>
-        /// Encodes <see cref="BigInteger"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="format">The format to use.</param>
-        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteBigIntegerAsync(this PipeWriter writer, BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        {
-            writer.WriteBigInteger(value, lengthFormat, in context, format, provider);
+            writer.WriteBigInteger(in value, littleEndian, lengthFormat);
             return writer.FlushAsync(token);
         }
 
@@ -530,23 +264,6 @@ namespace DotNext.IO.Pipelines
                 writer.WriteLength(input.Length, lengthFormat.GetValueOrDefault());
 
             return writer.WriteAsync(input, token);
-        }
-
-        /// <summary>
-        /// Encodes an arbitrary large integer as raw bytes.
-        /// </summary>
-        /// <param name="writer">The pipe to write into.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask<FlushResult> WriteBigIntegerAsync(this PipeWriter writer, BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token = default)
-        {
-            writer.WriteBigInteger(in value, littleEndian, lengthFormat);
-            return writer.FlushAsync(token);
         }
     }
 }

@@ -178,8 +178,8 @@ public static partial class StreamExtensions
         stream.Write(buffer.Span);
     }
 
-    private static bool WriteString<T>(Stream stream, ref T value, Span<char> buffer, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
-        where T : struct, ISpanFormattable
+    private static bool TryWriteFormattable<T>(Stream stream, T value, LengthFormat lengthFormat, Encoding encoding, Span<char> buffer, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        where T : notnull, ISpanFormattable
     {
         if (!value.TryFormat(buffer, out var charsWritten, format, provider))
             return false;
@@ -188,218 +188,33 @@ public static partial class StreamExtensions
         return true;
     }
 
-    private static void Write<T>(Stream stream, ref T value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
-        where T : struct, ISpanFormattable
+    /// <summary>
+    /// Encodes formatted value as a set of characters using the specified encoding. 
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="stream">The stream to write into.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
+    /// <param name="encoding">The encoding of characters.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static void WriteFormattable<T>(this Stream stream, T value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        where T : notnull, ISpanFormattable
     {
         // attempt to allocate char buffer on the stack
         Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
-        if (!WriteString(stream, ref value, charBuffer, lengthFormat, encoding, format, provider))
+        if (!TryWriteFormattable(stream, value, lengthFormat, encoding, charBuffer, format, provider))
         {
             for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
                 using var owner = new MemoryRental<char>(charBufferSize, false);
-                if (WriteString(stream, ref value, owner.Span, lengthFormat, encoding, format, provider))
+                if (TryWriteFormattable(stream, value, lengthFormat, encoding, owner.Span, format, provider))
                     break;
                 charBufferSize = owner.Length;
             }
         }
     }
-
-    /// <summary>
-    /// Encodes 8-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteByte(this Stream stream, byte value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 8-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    [CLSCompliant(false)]
-    public static void WriteSByte(this Stream stream, sbyte value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 16-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteInt16(this Stream stream, short value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 16-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    [CLSCompliant(false)]
-    public static void WriteUInt16(this Stream stream, ushort value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 32-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteInt32(this Stream stream, int value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 32-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    [CLSCompliant(false)]
-    public static void WriteUInt32(this Stream stream, uint value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 64-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteInt64(this Stream stream, long value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes 64-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    [CLSCompliant(false)]
-    public static void WriteUInt64(this Stream stream, ulong value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes single-precision floating-point number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteSingle(this Stream stream, float value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes double-precision floating-point number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteDouble(this Stream stream, double value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes <see cref="decimal"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteDecimal(this Stream stream, decimal value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes <see cref="Guid"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteGuid(this Stream stream, Guid value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, null);
-
-    /// <summary>
-    /// Encodes <see cref="DateTime"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteDateTime(this Stream stream, DateTime value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes <see cref="DateTimeOffset"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes <see cref="TimeSpan"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteTimeSpan(this Stream stream, TimeSpan value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
-
-    /// <summary>
-    /// Encodes <see cref="BigInteger"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="encoding">The string encoding.</param>
-    /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    public static void WriteBigInteger(this Stream stream, BigInteger value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Write(stream, ref value, lengthFormat, encoding, format, provider);
 
     private static ValueTask WriteLengthAsync(this Stream stream, int length, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
     {
@@ -580,8 +395,23 @@ public static partial class StreamExtensions
         await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
-    private static async ValueTask WriteAsync<T>(Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
-        where T : struct, ISpanFormattable
+    /// <summary>
+    /// Encodes formatted value as a set of characters using the specified encoding. 
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="stream">The stream to write into.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
+    /// <param name="context">The context describing encoding of characters.</param>
+    /// <param name="buffer">The buffer to be used for characters encoding.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        where T : notnull, ISpanFormattable
     {
         for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
@@ -597,548 +427,26 @@ public static partial class StreamExtensions
         }
     }
 
-    private static async ValueTask WriteAsync<T>(Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        where T : struct, ISpanFormattable
+    /// <summary>
+    /// Encodes formatted value as a set of characters using the specified encoding. 
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="stream">The stream to write into.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
+    /// <param name="context">The context describing encoding of characters.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        where T : notnull, ISpanFormattable
     {
         using var owner = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
-        await WriteAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
+        await WriteFormattableAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
     }
-
-    /// <summary>
-    /// Encodes 8-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteByteAsync(this Stream stream, byte value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 8-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteByteAsync(this Stream stream, byte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 8-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteSByteAsync(this Stream stream, sbyte value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 8-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteSByteAsync(this Stream stream, sbyte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 16-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteInt16Async(this Stream stream, short value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 16-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteInt16Async(this Stream stream, short value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 16-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteUInt16Async(this Stream stream, ushort value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 16-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteUInt16Async(this Stream stream, ushort value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 32-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteInt32Async(this Stream stream, int value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 16-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteInt32Async(this Stream stream, int value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 32-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteUInt32Async(this Stream stream, uint value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 16-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteUInt32Async(this Stream stream, uint value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 64-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteInt64Async(this Stream stream, long value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 64-bit signed integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteInt64Async(this Stream stream, long value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes 64-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteUInt64Async(this Stream stream, ulong value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes 64-bit unsigned integer as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    [CLSCompliant(false)]
-    public static ValueTask WriteUInt64Async(this Stream stream, ulong value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes single-precision floating-point number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteSingleAsync(this Stream stream, float value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes single-precision floating-pointer number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteSingleAsync(this Stream stream, float value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes double-precision floating-point number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDoubleAsync(this Stream stream, double value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes double-precision floating-pointer number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDoubleAsync(this Stream stream, double value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes double-precision floating-point number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDecimalAsync(this Stream stream, decimal value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes double-precision floating-pointer number as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDecimalAsync(this Stream stream, decimal value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="Guid"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteGuidAsync(this Stream stream, Guid value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="Guid"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteGuidAsync(this Stream stream, Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="DateTime"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="DateTime"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="DateTimeOffset"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="DateTimeOffset"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="TimeSpan"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="TimeSpan"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="BigInteger"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The buffer that is allocated by the caller.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, buffer, format, provider, token);
-
-    /// <summary>
-    /// Encodes <see cref="BigInteger"/> as a string.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="format">The format to use.</param>
-    /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the operation.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        => WriteAsync(stream, value, lengthFormat, context, format, provider, token);
 
     /// <summary>
     /// Writes sequence of bytes to the underlying stream synchronously.
