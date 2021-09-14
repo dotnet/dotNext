@@ -211,6 +211,30 @@ public partial class FileReader : IAsyncBinaryReader
     /// Reads the entire content using the specified delegate.
     /// </summary>
     /// <param name="consumer">The content reader.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">Unable to read <paramref name="count"/> bytes.</exception>
+    public async Task CopyToAsync<TConsumer>(TConsumer consumer, long count, CancellationToken token = default)
+        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+    {
+        for (ReadOnlyMemory<byte> buffer; count > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
+        {
+            buffer = Buffer;
+            await consumer.Invoke(buffer, token).ConfigureAwait(false);
+            count -= buffer.Length;
+        }
+
+        if (count > 0L)
+            throw new EndOfStreamException();
+    }
+
+    /// <summary>
+    /// Reads the entire content using the specified delegate.
+    /// </summary>
+    /// <param name="consumer">The content reader.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <returns>The task representing asynchronous result.</returns>
@@ -255,18 +279,21 @@ public partial class FileReader : IAsyncBinaryReader
     public Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
         => CopyToAsync(new BufferConsumer<byte>(writer), token);
 
-    private async ValueTask ReadBlockAsync(Memory<byte> output, CancellationToken token)
+    /// <summary>
+    /// Reads the block of bytes.
+    /// </summary>
+    /// <param name="output">The output buffer.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="EndOfStreamException">The expected block cannot be obtained.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public async ValueTask ReadBlockAsync(Memory<byte> output, CancellationToken token)
     {
-        for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
+        for (int writtenBytes; !output.IsEmpty; output = output.Slice(writtenBytes))
         {
-            if (!HasBufferedData)
-            {
-                if (!await ReadAsync(token).ConfigureAwait(false))
-                    throw new OutOfMemoryException();
-            }
-
-            Buffer.Span.CopyTo(output.Span, out writtenCount);
-            Consume(writtenCount);
+            writtenBytes = await ReadAsync(output, token).ConfigureAwait(false);
+            if (writtenBytes == 0)
+                throw new EndOfStreamException();
         }
     }
 

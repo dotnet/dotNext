@@ -105,6 +105,15 @@ public sealed partial class FileWriter : Disposable
         }
     }
 
+    /// <summary>
+    /// Gets write position.
+    /// </summary>
+    /// <remarks>
+    /// The returned value may be larger than <see cref="FilePosition"/> because the writer
+    /// performs buffered write.
+    /// </remarks>
+    public long WritePosition => fileOffset + bufferOffset;
+
     private async ValueTask FlushCoreAsync(CancellationToken token)
     {
         await RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token).ConfigureAwait(false);
