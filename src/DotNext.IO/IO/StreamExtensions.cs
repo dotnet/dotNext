@@ -367,7 +367,7 @@ public static partial class StreamExtensions
         }
     }
 
-    private static async ValueTask<int> ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+    private static async ValueTask<int> ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token)
     {
         var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
         if (maxChars == 0)
