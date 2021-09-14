@@ -24,7 +24,7 @@ internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>, ISupplier
         : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)), maximumRetained)
         => weakRef.SetTarget(this);
 
-    internal ValueTaskPool(Action<TNode>? completionCallback)
+    internal ValueTaskPool(Action<TNode>? completionCallback = null)
         : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)))
         => weakRef.SetTarget(this);
 

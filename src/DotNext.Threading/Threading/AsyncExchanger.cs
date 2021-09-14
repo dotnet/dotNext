@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
     using Tasks;
+    using Tasks.Pooling;
 
     /// <summary>
     /// Represents a synchronization point at which two async flows can cooperate and swap elements
@@ -19,12 +16,12 @@ namespace DotNext.Threading
     /// <typeparam name="T">The type of objects that may be exchanged.</typeparam>
     public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
-        private sealed class ExchangePoint : ValueTaskCompletionSource<T>
+        private sealed class ExchangePoint : ValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<ExchangePoint>
         {
             private readonly Action<ExchangePoint> consumedCallback;
             internal T? Value;
 
-            internal ExchangePoint(Action<ExchangePoint> consumedCallback)
+            private ExchangePoint(Action<ExchangePoint> consumedCallback)
                 => this.consumedCallback = consumedCallback;
 
             protected override void AfterConsumed()
@@ -43,11 +40,12 @@ namespace DotNext.Threading
 
                 return false;
             }
+
+            public static ExchangePoint CreateSource(Action<ExchangePoint> backToPool) => new(backToPool);
         }
 
         private readonly TaskCompletionSource disposeTask;
-        private readonly ConcurrentBag<ExchangePoint> pool; // chances of multiple exchange points is very small so use concurrent bag
-        private readonly Action<ExchangePoint> consumed;
+        private readonly ValueTaskPool<ExchangePoint> pool;
         private ExchangePoint? point;
         private bool disposeRequested;
         private volatile ExchangeTerminatedException? termination;
@@ -57,16 +55,13 @@ namespace DotNext.Threading
         /// </summary>
         public AsyncExchanger()
         {
-            pool = new();
+            pool = new(RemoveExchangePoint);
             disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            consumed = OnConsumed;
         }
 
         private ExchangePoint RentExchangePoint(T value)
         {
-            if (!pool.TryTake(out var result))
-                result = new(consumed);
-
+            var result = pool.Get();
             result.Value = value;
             return result;
         }
@@ -76,13 +71,6 @@ namespace DotNext.Threading
         {
             if (ReferenceEquals(this.point, point))
                 this.point = null;
-        }
-
-        private void OnConsumed(ExchangePoint point)
-        {
-            RemoveExchangePoint(point);
-            point.Reset();
-            pool.Add(point);
         }
 
         /// <summary>
@@ -221,7 +209,6 @@ namespace DotNext.Threading
             {
                 Interlocked.Exchange(ref point, null)?.TrySetException(new ObjectDisposedException(GetType().Name));
                 termination = null;
-                pool.Clear();
                 disposeTask.TrySetResult();
             }
 
