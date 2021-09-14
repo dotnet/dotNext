@@ -49,7 +49,7 @@ public sealed partial class FileReader : Disposable
     /// Gets or sets the cursor position within the file.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">The value is less than zero.</exception>
-    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Consume"/> or <see cref="ClearBuffer"/> before changing the position.</exception>
+    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Consume(int)"/> or <see cref="ClearBuffer"/> before changing the position.</exception>
     public long FilePosition
     {
         get => fileOffset;
@@ -65,10 +65,12 @@ public sealed partial class FileReader : Disposable
         }
     }
 
+    private int BufferLength => bufferEnd - bufferStart;
+
     /// <summary>
     /// Gets unconsumed part of the buffer.
     /// </summary>
-    public ReadOnlyMemory<byte> Buffer => buffer.Memory.Slice(bufferStart, bufferEnd - bufferStart);
+    public ReadOnlyMemory<byte> Buffer => buffer.Memory.Slice(bufferStart, BufferLength);
 
     /// <summary>
     /// Gets a value indicating that the read buffer is not empty.
@@ -105,6 +107,15 @@ public sealed partial class FileReader : Disposable
     }
 
     /// <summary>
+    /// Marks the entire buffer as consumed.
+    /// </summary>
+    public void Consume()
+    {
+        fileOffset += BufferLength;
+        ClearBuffer();
+    }
+
+    /// <summary>
     /// Clears the read buffer.
     /// </summary>
     public void ClearBuffer() => bufferStart = bufferEnd = 0;
@@ -131,7 +142,7 @@ public sealed partial class FileReader : Disposable
                 throw new InvalidOperationException();
             case > 0:
                 // compact buffer
-                buffer.Slice(bufferStart, bufferEnd - bufferStart).CopyTo(buffer);
+                buffer.Slice(bufferStart, BufferLength).CopyTo(buffer);
                 bufferEnd -= bufferStart;
                 bufferStart = 0;
                 break;
@@ -183,6 +194,29 @@ public sealed partial class FileReader : Disposable
             }
 
             return result;
+        }
+    }
+
+    /// <summary>
+    /// Skips the specified number of bytes and advances file read cursor.
+    /// </summary>
+    /// <param name="bytes">The number of bytes to skip.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is less than zero.</exception>
+    public void Skip(long bytes)
+    {
+        ThrowIfDisposed();
+
+        if (bytes < 0L)
+            throw new ArgumentOutOfRangeException(nameof(bytes));
+
+        if (bytes < BufferLength)
+        {
+            Consume((int)bytes);
+        }
+        else
+        {
+            ClearBuffer();
+            fileOffset += bytes;
         }
     }
 
