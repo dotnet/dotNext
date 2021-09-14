@@ -108,14 +108,13 @@ public partial class FileWriter : IAsyncBinaryWriter
             await FlushCoreAsync(token).ConfigureAwait(false);
 
         var encoder = context.GetEncoder();
-        var maxChars = buffer.Length / maxByteCount;
 
         for (int charsLeft = chars.Length, charsUsed; charsLeft > 0; chars = chars.Slice(charsUsed), charsLeft -= charsUsed)
         {
             if (FreeCapacity < maxByteCount)
                 await FlushCoreAsync(token).ConfigureAwait(false);
 
-            charsUsed = Math.Min(maxChars, charsLeft);
+            charsUsed = Math.Min(Buffer.Length / maxByteCount, charsLeft);
             encoder.Convert(chars.Span.Slice(0, charsUsed), Buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
             Produce(bytesUsed);
         }
