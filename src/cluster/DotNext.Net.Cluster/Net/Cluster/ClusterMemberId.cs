@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster
     /// Represents unique identifier of cluster member.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>
+    public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFormattable<ClusterMemberId>
     {
         /// <summary>
         /// Gets size of this type, in bytes.
@@ -122,43 +122,21 @@ namespace DotNext.Net.Cluster
             family = reader.ReadInt32(true);
         }
 
+        /// <inheritdoc />
+        static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ref SpanReader<byte> input)
+            => new(ref input);
+
         /// <summary>
         /// Serializes the value as a sequence of bytes.
         /// </summary>
         /// <param name="writer">The memory block writer.</param>
         /// <exception cref="System.IO.InternalBufferOverflowException"><paramref name="writer"/> is not large enough.</exception>
-        public void WriteTo(ref SpanWriter<byte> writer)
+        public void Format(ref SpanWriter<byte> writer)
         {
             address.TryWriteBytes(writer.Slide(16));
             writer.WriteInt32(port, true);
             writer.WriteInt32(length, true);
             writer.WriteInt32(family, true);
-        }
-
-        /// <summary>
-        /// Serializes the value as a sequence of bytes.
-        /// </summary>
-        /// <param name="output">The output buffer.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is not large enough.</exception>
-        public void WriteTo(Span<byte> output)
-        {
-            if (output.Length < Size)
-                throw new ArgumentOutOfRangeException(nameof(output));
-
-            var writer = new SpanWriter<byte>(output);
-            WriteTo(ref writer);
-        }
-
-        /// <summary>
-        /// Creates buffered copy of the cluster ID.
-        /// </summary>
-        /// <param name="allocator">The buffer allocator.</param>
-        /// <returns>The buffered copy of the cluster ID.</returns>
-        public MemoryOwner<byte> Bufferize(MemoryAllocator<byte>? allocator = null)
-        {
-            var result = allocator.Invoke(Size, true);
-            WriteTo(result.Memory.Span);
-            return result;
         }
 
         /// <summary>
@@ -205,9 +183,9 @@ namespace DotNext.Net.Cluster
         /// <returns>The hexadecimal representation of this identifier.</returns>
         public override string ToString()
         {
-            Span<byte> bytes = stackalloc byte[Size];
-            WriteTo(bytes);
-            return Span.ToHex(bytes);
+            SpanWriter<byte> writer = new SpanWriter<byte>(stackalloc byte[Size]);
+            Format(ref writer);
+            return Span.ToHex(writer.WrittenSpan);
         }
 
         /// <summary>

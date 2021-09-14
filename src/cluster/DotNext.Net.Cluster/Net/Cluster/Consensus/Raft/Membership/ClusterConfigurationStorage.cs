@@ -50,8 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             foreach (var (id, address) in configuration)
             {
                 // serialize id
-                id.WriteTo(output.GetSpan(ClusterMemberId.Size));
-                output.Advance(ClusterMemberId.Size);
+                output.WriteFormattable(id);
 
                 // serialize address
                 Encode(address, ref output);

@@ -39,10 +39,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            sender.WriteTo(ref writer);
+            sender.Format(ref writer);
             writer.WriteInt64(term, true);
             writer.WriteInt64(snapshotIndex, true);
-            LogEntryMetadata.Create(snapshot).Serialize(ref writer);
+            LogEntryMetadata.Create(snapshot).Format(ref writer);
 
             return writer.WrittenCount;
         }

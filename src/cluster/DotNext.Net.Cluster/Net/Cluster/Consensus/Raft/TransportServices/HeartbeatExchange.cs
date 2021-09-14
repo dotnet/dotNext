@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(payload);
 
-            sender.WriteTo(ref writer);
+            sender.Format(ref writer);
             writer.WriteInt64(currentTerm, true);
             writer.WriteInt64(prevLogIndex, true);
             writer.WriteInt64(prevLogTerm, true);

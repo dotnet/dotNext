@@ -129,7 +129,7 @@ public static partial class BufferHelpers
         => WriteString(ref writer, null, ref handler);
 
     /// <summary>
-    /// Converts the value to the characters and write them to the buffer.
+    /// Writes the value as a sequence of characters.
     /// </summary>
     /// <typeparam name="T">The type of the value to convert.</typeparam>
     /// <param name="writer">The buffer writer.</param>
@@ -170,5 +170,19 @@ public static partial class BufferHelpers
     {
         writer.Write(characters);
         writer.Write(Environment.NewLine);
+    }
+
+    /// <summary>
+    /// Writes the value as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to convert.</param>
+    public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, T value)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        var output = new SpanWriter<byte>(writer.GetSpan(T.Size));
+        value.Format(ref output);
+        writer.Advance(output.WrittenCount);
     }
 }

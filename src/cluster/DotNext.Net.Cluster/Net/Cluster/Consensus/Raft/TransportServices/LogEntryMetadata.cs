@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     using BitVector = Numerics.BitVector;
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct LogEntryMetadata
+    internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
         internal const int Size = sizeof(long) + sizeof(long) + sizeof(long) + sizeof(byte) + sizeof(int);
         private const byte IdentifierFlag = 0x01;
@@ -41,6 +41,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             length = reader.ReadInt64(true);
         }
 
+        static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+
+        static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ref SpanReader<byte> input)
+            => new(ref input);
+
         internal long Term { get; }
 
         internal DateTimeOffset Timestamp => new(timestamp, TimeSpan.Zero);
@@ -51,19 +56,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal bool IsSnapshot => (flags & SnapshotFlag) != 0;
 
-        internal void Serialize(ref SpanWriter<byte> writer)
+        public void Format(ref SpanWriter<byte> writer)
         {
             writer.WriteInt64(Term, true);
             writer.WriteInt64(timestamp, true);
             writer.Add(flags);
             writer.WriteInt32(identifier, true);
             writer.WriteInt64(length, true);
-        }
-
-        internal void Serialize(Span<byte> output)
-        {
-            var writer = new SpanWriter<byte>(output);
-            Serialize(ref writer);
         }
     }
 }

@@ -254,4 +254,18 @@ public static partial class BufferHelpers
             bufferSize = bufferSize <= maxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
         }
     }
+
+    /// <summary>
+    /// Writes the value as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to convert.</param>
+    public static void WriteFormattable<T>(this IBufferWriter<byte> writer, T value)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        var output = new SpanWriter<byte>(writer.GetSpan(T.Size));
+        value.Format(ref output);
+        writer.Advance(output.WrittenCount);
+    }
 }

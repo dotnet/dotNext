@@ -71,7 +71,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            sender.WriteTo(ref writer);
+            sender.Format(ref writer);
             writer.WriteInt64(term, true);
             writer.WriteInt64(prevLogIndex, true);
             writer.WriteInt64(prevLogTerm, true);
@@ -118,9 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private static ValueTask<FlushResult> WriteLogEntryMetadata(PipeWriter writer, TEntry entry, CancellationToken token)
         {
-            var buffer = writer.GetSpan(LogEntryMetadata.Size);
-            LogEntryMetadata.Create(entry).Serialize(buffer.Slice(0, LogEntryMetadata.Size));
-            writer.Advance(LogEntryMetadata.Size);
+            writer.WriteFormattable(LogEntryMetadata.Create(entry));
             return writer.FlushAsync(token);
         }
 
