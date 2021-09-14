@@ -147,7 +147,7 @@ public static partial class StreamExtensions
         if (bytesCount == 0)
             return;
 
-        using MemoryRental<byte> buffer = (uint)bytesCount <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
+        using MemoryRental<byte> buffer = (uint)bytesCount <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
         if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
             throw new InternalBufferOverflowException();
 
@@ -173,7 +173,7 @@ public static partial class StreamExtensions
         if (bytesCount == 0)
             return;
 
-        using MemoryRental<byte> buffer = (uint)bytesCount <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
+        using MemoryRental<byte> buffer = (uint)bytesCount <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
         encoding.GetBytes(value, buffer.Span);
         stream.Write(buffer.Span);
     }

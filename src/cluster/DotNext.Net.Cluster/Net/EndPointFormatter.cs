@@ -151,7 +151,7 @@ namespace DotNext.Net
             family = (AddressFamily)reader.ReadInt32(true);
             var length = reader.ReadInt32(true);
 
-            using (var hostNameBuffer = (uint)length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true))
+            using (var hostNameBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true))
             {
                 reader.Read(hostNameBuffer.Span);
                 hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
