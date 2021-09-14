@@ -107,15 +107,6 @@ public sealed partial class FileReader : Disposable
     }
 
     /// <summary>
-    /// Marks the entire buffer as consumed.
-    /// </summary>
-    public void Consume()
-    {
-        fileOffset += BufferLength;
-        ClearBuffer();
-    }
-
-    /// <summary>
     /// Clears the read buffer.
     /// </summary>
     public void ClearBuffer() => bufferStart = bufferEnd = 0;

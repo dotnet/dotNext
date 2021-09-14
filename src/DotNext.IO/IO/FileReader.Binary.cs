@@ -1,6 +1,6 @@
 using System.Buffers;
-using System.Numerics;
 using System.IO.Pipelines;
+using System.Numerics;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
@@ -114,7 +114,7 @@ public partial class FileReader : IAsyncBinaryReader
         var decoder = context.GetDecoder();
         var resultOffset = 0;
 
-        for (int remainingBytes = result.Length; remainingBytes > 0;)
+        for (int remainingBytes = result.Length, consumedBytes; remainingBytes > 0; Consume(consumedBytes), remainingBytes -= consumedBytes)
         {
             if (BufferLength < remainingBytes)
             {
@@ -122,8 +122,9 @@ public partial class FileReader : IAsyncBinaryReader
                     throw new EndOfStreamException();
             }
 
-            resultOffset += decoder.GetChars(Buffer.Span.TrimLength(remainingBytes), result.Span.Slice(resultOffset), remainingBytes <= BufferLength);
-            Consume();
+            var buffer = Buffer.TrimLength(remainingBytes);
+            resultOffset += decoder.GetChars(buffer.Span, result.Span.Slice(resultOffset), remainingBytes <= BufferLength);
+            consumedBytes = buffer.Length;
         }
 
         return resultOffset;
@@ -142,7 +143,7 @@ public partial class FileReader : IAsyncBinaryReader
     public async ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
     {
         if (BufferLength < SevenBitEncodedInt.MaxSize)
-            await ReadAsync(token);
+            await ReadAsync(token).ConfigureAwait(false);
 
         var length = ReadLength(lengthFormat);
 
@@ -212,7 +213,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <param name="consumer">The content reader.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async Task CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
@@ -230,6 +231,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// </summary>
     /// <param name="output">The output stream receiving object content.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync(Stream output, CancellationToken token = default)
         => CopyToAsync<StreamConsumer>(output, token);
@@ -239,7 +241,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// </summary>
     /// <param name="output">The writer.</param>
     /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync(PipeWriter output, CancellationToken token = default)
         => CopyToAsync<PipeConsumer>(output, token);
@@ -249,7 +251,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
         => CopyToAsync(new BufferConsumer<byte>(writer), token);

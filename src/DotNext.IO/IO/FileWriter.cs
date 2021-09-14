@@ -76,11 +76,6 @@ public sealed partial class FileWriter : Disposable
     }
 
     /// <summary>
-    /// Marks the entire buffer as written.
-    /// </summary>
-    public void Produce() => bufferOffset = buffer.Length;
-
-    /// <summary>
     /// Drops all buffered data.
     /// </summary>
     public void ClearBuffer() => bufferOffset = 0;

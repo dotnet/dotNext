@@ -216,6 +216,7 @@ public interface IAsyncBinaryReader
     /// </summary>
     /// <param name="output">The output stream receiving object content.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     Task CopyToAsync(Stream output, CancellationToken token = default)
         => CopyToAsync<StreamConsumer>(output, token);
@@ -225,7 +226,7 @@ public interface IAsyncBinaryReader
     /// </summary>
     /// <param name="output">The writer.</param>
     /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     Task CopyToAsync(PipeWriter output, CancellationToken token = default)
         => CopyToAsync<PipeConsumer>(output, token);
@@ -235,7 +236,7 @@ public interface IAsyncBinaryReader
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
     {

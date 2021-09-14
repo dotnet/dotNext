@@ -95,9 +95,11 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public async ValueTask WriteStringAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
     {
-        if (lengthFormat.HasValue && FreeCapacity < SevenBitEncodedInt.MaxSize)
+        if (lengthFormat.HasValue)
         {
-            await FlushCoreAsync(token).ConfigureAwait(false);
+            if (FreeCapacity < SevenBitEncodedInt.MaxSize)
+                await FlushCoreAsync(token).ConfigureAwait(false);
+
             WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
         }
 
@@ -134,9 +136,11 @@ public partial class FileWriter : IAsyncBinaryWriter
     {
         var bytesCount = value.GetByteCount();
 
-        if (lengthFormat.HasValue && FreeCapacity < SevenBitEncodedInt.MaxSize)
+        if (lengthFormat.HasValue)
         {
-            await FlushCoreAsync(token).ConfigureAwait(false);
+            if (FreeCapacity < SevenBitEncodedInt.MaxSize)
+                await FlushCoreAsync(token).ConfigureAwait(false);
+
             WriteLength(bytesCount, lengthFormat.GetValueOrDefault());
         }
 
@@ -146,7 +150,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (FreeCapacity < bytesCount)
             await FlushCoreAsync(token).ConfigureAwait(false);
 
-        if (value.TryWriteBytes(Buffer.Span, out var bytesWritten, !littleEndian))
+        if (value.TryWriteBytes(Buffer.Span, out var bytesWritten, isBigEndian: !littleEndian))
         {
             Produce(bytesWritten);
         }
@@ -154,7 +158,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         {
             Debug.Assert(bufferOffset == 0);
             using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
-            value.TryWriteBytes(buffer.Memory.Span, out bytesWritten, !littleEndian);
+            value.TryWriteBytes(buffer.Memory.Span, out bytesWritten, isBigEndian: !littleEndian);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += bytesCount;
         }

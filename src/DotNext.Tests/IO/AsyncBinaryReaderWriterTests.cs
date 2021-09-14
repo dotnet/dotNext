@@ -6,6 +6,7 @@ using System.Text;
 using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO
 {
@@ -157,8 +158,53 @@ namespace DotNext.IO
             public ValueTask DisposeAsync() => stream.DisposeAsync();
         }
 
+        private sealed class FileSource : Disposable, IAsyncBinaryReaderWriterSource, IFlushable
+        {
+            private readonly SafeFileHandle handle;
+            private readonly FileWriter writer;
+            private readonly FileReader reader;
+
+            public FileSource(int bufferSize)
+            {
+                var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
+                writer = new(handle, bufferSize: bufferSize);
+                reader = new(handle, bufferSize: bufferSize);
+            }
+
+            public IAsyncBinaryWriter CreateWriter() => writer;
+
+            public IAsyncBinaryReader CreateReader() => reader;
+
+            public Task FlushAsync(CancellationToken token) => writer.WriteAsync(token).AsTask();
+
+            void IFlushable.Flush()
+            {
+                using (var task = FlushAsync(CancellationToken.None))
+                    task.Wait(DefaultTimeout);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    writer.Dispose();
+                    reader.Dispose();
+                    handle.Dispose();
+                }
+
+                base.Dispose(disposing);
+            }
+
+            public new ValueTask DisposeAsync() => base.DisposeAsync();
+        }
+
         public static IEnumerable<object[]> GetDataForPrimitives()
         {
+            yield return new object[] { new FileSource(128), true, Encoding.UTF8 };
+            yield return new object[] { new FileSource(128), false, Encoding.UTF8 };
+            yield return new object[] { new FileSource(1024), true, Encoding.UTF8 };
+            yield return new object[] { new FileSource(1024), false, Encoding.UTF8 };
             yield return new object[] { new StreamSource(), true, Encoding.UTF8 };
             yield return new object[] { new StreamSource(), false, Encoding.UTF8 };
             yield return new object[] { new PipeSource(), true, Encoding.UTF8 };
@@ -172,6 +218,10 @@ namespace DotNext.IO
             yield return new object[] { new DefaultSource(), true, Encoding.UTF8 };
             yield return new object[] { new DefaultSource(), false, Encoding.UTF8 };
 
+            yield return new object[] { new FileSource(128), true, Encoding.Unicode };
+            yield return new object[] { new FileSource(128), false, Encoding.Unicode };
+            yield return new object[] { new FileSource(1024), true, Encoding.Unicode };
+            yield return new object[] { new FileSource(1024), false, Encoding.Unicode };
             yield return new object[] { new StreamSource(), true, Encoding.Unicode };
             yield return new object[] { new StreamSource(), false, Encoding.Unicode };
             yield return new object[] { new PipeSource(), true, Encoding.Unicode };
@@ -230,6 +280,9 @@ namespace DotNext.IO
                 await writer.WriteAsync(blob, LengthFormat.Compressed);
                 await writer.WriteFormattableAsync(bi, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
                 await writer.WriteBigIntegerAsync(bi, littleEndian, LengthFormat.Compressed);
+
+                if (source is IFlushable flushable)
+                    await flushable.FlushAsync();
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
