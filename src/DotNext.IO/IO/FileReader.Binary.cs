@@ -218,11 +218,10 @@ public partial class FileReader : IAsyncBinaryReader
     public async Task CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        while (HasBufferedData || await ReadAsync(token).ConfigureAwait(false))
+        for (ReadOnlyMemory<byte> buffer; HasBufferedData || await ReadAsync(token).ConfigureAwait(false); Consume(buffer.Length))
         {
-            var buffer = Buffer;
+            buffer = Buffer;
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
-            Consume(buffer.Length);
         }
     }
 
