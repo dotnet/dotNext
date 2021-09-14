@@ -34,7 +34,7 @@ namespace DotNext.Threading
 
             protected sealed override void AfterConsumed() => backToPool(this);
 
-            public static DefaultWaitNode CreateSource(Action<DefaultWaitNode> backToPool) => new(backToPool);
+            static DefaultWaitNode IPooledManualResetCompletionSource<DefaultWaitNode>.CreateSource(Action<DefaultWaitNode> backToPool) => new(backToPool);
         }
 
         private readonly Action<double>? contentionCounter, lockDurationCounter;

@@ -27,7 +27,7 @@ namespace DotNext.Threading
 
             protected override void AfterConsumed() => backToPool(this);
 
-            public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
+            static WaitNode IPooledManualResetCompletionSource<WaitNode>.CreateSource(Action<WaitNode> backToPool) => new(backToPool);
         }
 
         [StructLayout(LayoutKind.Auto)]

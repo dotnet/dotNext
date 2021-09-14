@@ -38,7 +38,7 @@ namespace DotNext.Threading
 
             internal bool IsWriteLock => Type == LockType.Exclusive;
 
-            public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
+            static WaitNode IPooledManualResetCompletionSource<WaitNode>.CreateSource(Action<WaitNode> backToPool) => new(backToPool);
         }
 
         // describes internal state of reader/writer lock

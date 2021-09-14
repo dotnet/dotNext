@@ -41,7 +41,7 @@ namespace DotNext.Threading
                 return false;
             }
 
-            public static ExchangePoint CreateSource(Action<ExchangePoint> backToPool) => new(backToPool);
+            static ExchangePoint IPooledManualResetCompletionSource<ExchangePoint>.CreateSource(Action<ExchangePoint> backToPool) => new(backToPool);
         }
 
         private readonly TaskCompletionSource disposeTask;
