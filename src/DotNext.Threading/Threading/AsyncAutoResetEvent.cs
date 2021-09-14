@@ -11,7 +11,7 @@ namespace DotNext.Threading
     /// </summary>
     public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
-        private readonly Func<DefaultWaitNode> pool;
+        private readonly ValueTaskPool<DefaultWaitNode> pool;
         private AtomicBoolean state;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             state.Value = initialState;
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+            pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace DotNext.Threading
         public AsyncAutoResetEvent(bool initialState)
         {
             state.Value = initialState;
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
+            pool = new(RemoveAndDrainWaitQueue);
         }
 
         private static void StateControl(ref AtomicBoolean state, ref bool flag)

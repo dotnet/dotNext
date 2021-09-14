@@ -2,7 +2,7 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace DotNext.Threading.Tasks.Pooling;
 
-internal sealed class ConstrainedValueTaskPool<TNode> : DefaultObjectPool<TNode>, ISupplier<TNode>, IConsumer<TNode>
+internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>, ISupplier<TNode>, IConsumer<TNode>
     where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>
 {
     private sealed class PooledNodePolicy : IPooledObjectPolicy<TNode>
@@ -20,11 +20,15 @@ internal sealed class ConstrainedValueTaskPool<TNode> : DefaultObjectPool<TNode>
         }
     }
 
-    internal ConstrainedValueTaskPool(int maximumRetained, Action<TNode>? completionCallback = null)
+    internal ValueTaskPool(int maximumRetained, Action<TNode>? completionCallback = null)
         : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)), maximumRetained)
         => weakRef.SetTarget(this);
 
-    private static Action<TNode> CreateBackToPoolCallback(out WeakReference<ConstrainedValueTaskPool<TNode>?> weakRef)
+    internal ValueTaskPool(Action<TNode>? completionCallback)
+        : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)))
+        => weakRef.SetTarget(this);
+
+    private static Action<TNode> CreateBackToPoolCallback(out WeakReference<ValueTaskPool<TNode>?> weakRef)
     {
         weakRef = new(null, false);
         return weakRef.Consume;

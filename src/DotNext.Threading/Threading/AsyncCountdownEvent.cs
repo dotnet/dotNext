@@ -46,7 +46,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private readonly Func<DefaultWaitNode> pool;
+    private readonly ValueTaskPool<DefaultWaitNode> pool;
     private State state;
 
     /// <summary>
@@ -66,7 +66,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         state = new(initialCount);
-        pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(initialCount));
 
         state = new(initialCount);
-        pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
+        pool = new(RemoveAndDrainWaitQueue);
     }
 
     private static void CounterControl(ref State state, ref bool flag)

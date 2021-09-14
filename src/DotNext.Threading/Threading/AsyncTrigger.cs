@@ -12,14 +12,14 @@ namespace DotNext.Threading
     /// </summary>
     public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
-        private readonly Func<DefaultWaitNode> pool;
+        private readonly ValueTaskPool<DefaultWaitNode> pool;
 
         /// <summary>
         /// Initializes a new trigger.
         /// </summary>
         public AsyncTrigger()
         {
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
+            pool = new(RemoveAndDrainWaitQueue);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace DotNext.Threading
             if (concurrencyLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+            pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
         }
 
         /// <inheritdoc/>
@@ -222,7 +222,7 @@ namespace DotNext.Threading
             public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
         }
 
-        private readonly Func<WaitNode> pool;
+        private readonly ValueTaskPool<WaitNode> pool;
 
         /// <summary>
         /// Initializes a new trigger.
@@ -231,7 +231,7 @@ namespace DotNext.Threading
         public AsyncTrigger(TState state)
         {
             State = state ?? throw new ArgumentNullException(nameof(state));
-            pool = new UnconstrainedValueTaskPool<WaitNode>(RemoveAndDrainWaitQueue).Get;
+            pool = new(RemoveAndDrainWaitQueue);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             State = state ?? throw new ArgumentNullException(nameof(state));
-            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+            pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
         }
 
         /// <summary>

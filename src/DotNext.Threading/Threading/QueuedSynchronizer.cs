@@ -155,9 +155,9 @@ namespace DotNext.Threading
             return result;
         }
 
-        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+        private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, ValueTaskPool<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
             where TContext : struct
-            where TNode : WaitNode
+            where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>
         {
             Debug.Assert(Monitor.IsEntered(this));
             Debug.Assert(control != null);
@@ -179,15 +179,15 @@ namespace DotNext.Threading
             if (timeout == TimeSpan.Zero)
                 return ValueTask.FromException(new TimeoutException());
 
-            node = pool();
+            node = pool.Get();
             EnqueueNode(node, true);
 
             return node.As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
         }
 
-        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, Func<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
+        private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, ValueTaskPool<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
             where TContext : struct
-            where TNode : WaitNode
+            where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>
         {
             Debug.Assert(Monitor.IsEntered(this));
             Debug.Assert(control != null);
@@ -209,7 +209,7 @@ namespace DotNext.Threading
             if (timeout == TimeSpan.Zero)
                 return new(false);    // if timeout is zero fail fast
 
-            node = pool();
+            node = pool.Get();
             EnqueueNode(node, false);
 
             return node.CreateTask(timeout, token);

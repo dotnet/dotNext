@@ -26,7 +26,7 @@ namespace DotNext.Threading
             internal void ExitLock() => state = false;
         }
 
-        private readonly Func<DefaultWaitNode> pool;
+        private readonly ValueTaskPool<DefaultWaitNode> pool;
         private State state;
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace DotNext.Threading
             if (concurrencyLevel < 1)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+            pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace DotNext.Threading
         /// </summary>
         public AsyncExclusiveLock()
         {
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
+            pool = new(RemoveAndDrainWaitQueue);
         }
 
         /// <summary>

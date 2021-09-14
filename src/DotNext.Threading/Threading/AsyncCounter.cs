@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading
 {
@@ -17,7 +16,7 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
-        private readonly Func<DefaultWaitNode> pool;
+        private readonly ValueTaskPool<DefaultWaitNode> pool;
         private long counter;
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
             counter = initialValue;
-            pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+            pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(initialValue));
 
             counter = initialValue;
-            pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
+            pool = new(RemoveAndDrainWaitQueue);
         }
 
         private static void CounterControl(ref long counter, ref bool flag)

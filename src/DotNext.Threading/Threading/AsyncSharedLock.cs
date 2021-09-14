@@ -71,7 +71,7 @@ namespace DotNext.Threading
             internal void Downgrade() => RemainingLocks = ConcurrencyLevel - 1L;
         }
 
-        private readonly Func<WaitNode> pool;
+        private readonly ValueTaskPool<WaitNode> pool;
         private State state;
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace DotNext.Threading
             state = new(concurrencyLevel);
             Action<WaitNode> removeFromList = RemoveAndDrainWaitQueue;
             pool = limitedConcurrency
-                ? new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel.Truncate(), removeFromList).Get
-                : new UnconstrainedValueTaskPool<WaitNode>(removeFromList).Get;
+                ? new(concurrencyLevel.Truncate(), removeFromList)
+                : new(removeFromList);
         }
 
         private static void WeakLockControl(ref State state, ref bool flag)

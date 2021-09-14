@@ -45,7 +45,7 @@ namespace DotNext.Threading
                 buckets[i] = new();
 
             this.comparer = comparer ?? EqualityComparer<TKey>.Default;
-            pool = new ConstrainedValueTaskPool<WaitNode>(concurrencyLevel);
+            pool = new ValueTaskPool<WaitNode>(concurrencyLevel);
         }
 
         /// <summary>

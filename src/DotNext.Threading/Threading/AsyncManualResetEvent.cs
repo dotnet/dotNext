@@ -10,7 +10,7 @@ using Tasks.Pooling;
 /// </summary>
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    private readonly Func<DefaultWaitNode> pool;
+    private readonly ValueTaskPool<DefaultWaitNode> pool;
     private AtomicBoolean state;
 
     /// <summary>
@@ -24,7 +24,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        pool = new ConstrainedValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue).Get;
+        pool = new ValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncManualResetEvent(bool initialState)
     {
         state = new(initialState);
-        pool = new UnconstrainedValueTaskPool<DefaultWaitNode>(RemoveAndDrainWaitQueue).Get;
+        pool = new(RemoveAndDrainWaitQueue);
     }
 
     /// <inheritdoc/>
