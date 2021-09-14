@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
@@ -145,11 +146,18 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (FreeCapacity < bytesCount)
             await FlushCoreAsync(token).ConfigureAwait(false);
 
-        var buffer = Buffer;
-        if (!value.TryWriteBytes(buffer.Span, out var bytesWritten, !littleEndian))
-            throw new InsufficientMemoryException();
-
-        Produce(bytesWritten);
+        if (value.TryWriteBytes(Buffer.Span, out var bytesWritten, !littleEndian))
+        {
+            Produce(bytesWritten);
+        }
+        else
+        {
+            Debug.Assert(bufferOffset == 0);
+            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
+            value.TryWriteBytes(buffer.Memory.Span, out bytesWritten, !littleEndian);
+            await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
+            fileOffset += bytesCount;
+        }
     }
 
     /// <summary>
