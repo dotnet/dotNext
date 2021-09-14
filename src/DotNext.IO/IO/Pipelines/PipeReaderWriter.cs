@@ -83,7 +83,7 @@ namespace DotNext.IO.Pipelines
     {
         [StructLayout(LayoutKind.Auto)]
         private readonly unsafe struct Writer<TArg> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-            where TArg : struct
+            where TArg : notnull
         {
             private readonly TArg arg;
             private readonly delegate*<PipeWriter, TArg, CancellationToken, ValueTask<FlushResult>> writer;
@@ -220,6 +220,9 @@ namespace DotNext.IO.Pipelines
 
         unsafe ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => WriteAsync(output, new Writer<T, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteFormattableAsync<T>), token);
+
+        unsafe ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
+            => WriteAsync(output, new Writer<T>(value, &PipeExtensions.WriteFormattableAsync<T>), token);
 
         unsafe ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, bool littleEndian, CancellationToken token)
             => WriteAsync(output, new Writer<short, bool>(value, littleEndian, &PipeExtensions.WriteInt16Async), token);

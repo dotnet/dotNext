@@ -197,6 +197,34 @@ public partial class FileWriter : IAsyncBinaryWriter
         }
     }
 
+    /// <summary>
+    /// Encodes formattable value as a set of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public async ValueTask WriteFormattableAsync<T>(T value, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        if (FreeCapacity < T.Size)
+            await FlushCoreAsync(token).ConfigureAwait(false);
+
+        if (FreeCapacity >= T.Size)
+        {
+            IBinaryFormattable<T>.Format(value, Buffer.Span);
+            Produce(T.Size);
+        }
+        else
+        {
+            using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+            IBinaryFormattable<T>.Format(value, buffer.Memory.Span);
+            await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
+            fileOffset += T.Size;
+        }
+    }
+
     /// <inheritdoc />
     ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
         => lengthFormat is null ? WriteAsync(input, token) : WriteAsync(input, lengthFormat.GetValueOrDefault(), token);

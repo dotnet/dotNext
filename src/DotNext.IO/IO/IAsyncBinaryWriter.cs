@@ -155,10 +155,10 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding.
+    /// Encodes formattable value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
-    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="value">The value to be written as string.</param>
     /// <param name="lengthFormat">String length encoding format.</param>
     /// <param name="context">The context describing encoding of characters.</param>
     /// <param name="format">The format of the value.</param>
@@ -170,6 +170,20 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     ValueTask WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         where T : notnull, ISpanFormattable
         => WriteStringAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
+
+    /// <summary>
+    /// Encodes formattable value as a set of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution.</returns>
+    async ValueTask WriteFormattableAsync<T>(T value, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = IBinaryFormattable<T>.Format(value);
+        await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Writes the content from the specified stream.

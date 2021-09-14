@@ -189,7 +189,7 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding.
+    /// Encodes formattable value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
@@ -214,6 +214,21 @@ public static partial class StreamExtensions
                 charBufferSize = owner.Length;
             }
         }
+    }
+
+    /// <summary>
+    /// Encodes formattable value as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="stream">The stream to write into.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    public static void WriteFormattable<T>(this Stream stream, T value)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        var buffer = (uint)T.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[T.Size] : new MemoryRental<byte>(T.Size);
+        var writer = new SpanWriter<byte>(buffer.Span);
+        value.Format(ref writer);
+        stream.Write(buffer.Span);
     }
 
     private static ValueTask WriteLengthAsync(this Stream stream, int length, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
@@ -396,7 +411,7 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding.
+    /// Encodes formattable value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
@@ -428,7 +443,7 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Encodes formatted value as a set of characters using the specified encoding.
+    /// Encodes formattable value as a set of characters using the specified encoding.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
@@ -446,6 +461,48 @@ public static partial class StreamExtensions
     {
         using var owner = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
         await WriteFormattableAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Encodes formattable value as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="stream">The stream to write into.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="buffer">The buffer to be used for characters encoding.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        if (T.Size <= buffer.Length)
+        {
+            var tempBuffer = buffer.Slice(0, T.Size);
+            IBinaryFormattable<T>.Format(value, tempBuffer.Span);
+            await stream.WriteAsync(tempBuffer, token).ConfigureAwait(false);
+        }
+        else
+        {
+            using var tempBuffer = IBinaryFormattable<T>.Format(value);
+            await stream.WriteAsync(tempBuffer.Memory, token).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Encodes formattable value as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="stream">The stream to write into.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = IBinaryFormattable<T>.Format(value);
+        await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
     /// <summary>

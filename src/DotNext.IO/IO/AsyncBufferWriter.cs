@@ -196,6 +196,29 @@ namespace DotNext.IO
             return result;
         }
 
+        ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
+        {
+            ValueTask result;
+            if (token.IsCancellationRequested)
+            {
+                result = ValueTask.FromCanceled(token);
+            }
+            else
+            {
+                result = new();
+                try
+                {
+                    writer.WriteFormattable(value);
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException(e);
+                }
+            }
+
+            return result;
+        }
+
         ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
         {
             ValueTask result;

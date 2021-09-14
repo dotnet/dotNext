@@ -177,6 +177,9 @@ namespace DotNext.IO
         ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => stream.WriteFormattableAsync(value, lengthFormat, context, buffer, format, provider, token);
 
+        ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
+            => stream.WriteFormattableAsync(value, buffer, token);
+
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(stream, token);
 

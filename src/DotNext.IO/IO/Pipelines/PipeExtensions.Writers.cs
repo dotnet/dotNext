@@ -54,7 +54,7 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
-        /// Encodes formatted value as a set of characters using the specified encoding.
+        /// Encodes formattable value as a set of characters using the specified encoding.
         /// </summary>
         /// <typeparam name="T">The type of formattable value.</typeparam>
         /// <param name="writer">The buffer writer.</param>
@@ -71,6 +71,22 @@ namespace DotNext.IO.Pipelines
             where T : notnull, ISpanFormattable
         {
             writer.WriteFormattable(value, lengthFormat, in context, format, provider);
+            return writer.FlushAsync(token);
+        }
+
+        /// <summary>
+        /// Encodes formattable value as a sequence of bytes.
+        /// </summary>
+        /// <typeparam name="T">The type of formattable value.</typeparam>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The type value to be written as string.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<FlushResult> WriteFormattableAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
+            where T : notnull, IBinaryFormattable<T>
+        {
+            writer.WriteFormattable(value);
             return writer.FlushAsync(token);
         }
 

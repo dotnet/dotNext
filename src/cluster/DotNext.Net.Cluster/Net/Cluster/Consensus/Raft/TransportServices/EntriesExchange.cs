@@ -117,10 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         }
 
         private static ValueTask<FlushResult> WriteLogEntryMetadata(PipeWriter writer, TEntry entry, CancellationToken token)
-        {
-            writer.WriteFormattable(LogEntryMetadata.Create(entry));
-            return writer.FlushAsync(token);
-        }
+            => writer.WriteFormattableAsync(LogEntryMetadata.Create(entry), token);
 
         private static async ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, TEntry entry, CancellationToken token)
         {
