@@ -85,7 +85,7 @@ public static partial class StreamExtensions
         var resultOffset = 0;
         for (int length = result.Length, n; length > 0; resultOffset += decoder.GetChars(buffer.Slice(0, n), result.Slice(resultOffset), length == 0))
         {
-            n = stream.Read(buffer.Slice(0, Math.Min(length, buffer.Length)));
+            n = stream.Read(buffer.TrimLength(length));
             if (n == 0)
                 throw new EndOfStreamException();
             length -= n;
@@ -376,7 +376,7 @@ public static partial class StreamExtensions
         var resultOffset = 0;
         for (int length = result.Length, n; length > 0; resultOffset += decoder.GetChars(buffer.Span.Slice(0, n), result.Span.Slice(resultOffset), length == 0))
         {
-            n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length)), token).ConfigureAwait(false);
+            n = await stream.ReadAsync(buffer.TrimLength(length), token).ConfigureAwait(false);
             if (n == 0)
                 throw new EndOfStreamException();
             length -= n;
