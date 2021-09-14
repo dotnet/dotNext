@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace DotNext.IO
+﻿namespace DotNext.IO
 {
+    using static Buffers.BufferHelpers;
+
     /// <summary>
     /// Represents read-only view over the portion of underlying stream.
     /// </summary>
@@ -112,10 +109,7 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override int Read(Span<byte> buffer)
-        {
-            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, RemainingBytes));
-            return BaseStream.Read(buffer);
-        }
+            => BaseStream.Read(buffer.TrimLength(RemainingBytes.Truncate()));
 
         /// <inheritdoc/>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
@@ -133,10 +127,7 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
-        {
-            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, RemainingBytes));
-            return BaseStream.ReadAsync(buffer, token);
-        }
+            => BaseStream.ReadAsync(buffer.TrimLength(RemainingBytes.Truncate()), token);
 
         /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
