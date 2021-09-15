@@ -298,9 +298,11 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="transition">The transition action.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Signal(Action<TState> transition)
         {
+            ArgumentNullException.ThrowIfNull(transition, nameof(transition));
             ThrowIfDisposed();
             transition(State);
             DrainWaitQueue();
@@ -316,8 +318,10 @@ namespace DotNext.Threading
         /// <param name="transition">The transition action.</param>
         /// <param name="arg">The argument to be passed to the transition.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
         public void Signal<T>(Action<TState, T> transition, T arg)
         {
+            ArgumentNullException.ThrowIfNull(transition, nameof(transition));
             ThrowIfDisposed();
             transition(State, arg);
             DrainWaitQueue();
@@ -332,9 +336,11 @@ namespace DotNext.Threading
         /// <param name="transition">The condition to be examined immediately.</param>
         /// <returns>The result of <see cref="ITransition.Test(TState)"/> invocation.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe bool TrySignal(ITransition transition)
         {
+            ArgumentNullException.ThrowIfNull(transition, nameof(transition));
             ThrowIfDisposed();
 
             var args = (State, transition);
@@ -350,10 +356,13 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
         /// <seealso cref="Signal"/>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
         {
+            ArgumentNullException.ThrowIfNull(transition, nameof(transition));
+
             var args = (State, transition);
             var result = WaitNoTimeoutAsync(ref args, &TransitionControl, pool, out var node, timeout, token);
             if (node is not null)
@@ -370,10 +379,12 @@ namespace DotNext.Threading
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
         /// <seealso cref="Signal"/>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public unsafe ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
         {
+            ArgumentNullException.ThrowIfNull(transition, nameof(transition));
             var args = (State, transition);
             var result = WaitWithTimeoutAsync(ref args, &TransitionControl, pool, out var node, InfiniteTimeSpan, token);
             if (node is not null)
