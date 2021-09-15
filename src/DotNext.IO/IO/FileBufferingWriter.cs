@@ -416,7 +416,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         }
     }
 
-    private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileStream(buffer.Length);
+    private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileStream(position);
 
     /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count)
