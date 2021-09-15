@@ -152,6 +152,15 @@ public partial class PersistentState
             internal static void Release(LockState state) => state.ReleaseWriteLock();
         }
 
+        private sealed class CompactionLockTransition : ITransition
+        {
+            bool ITransition.Test(LockState state) => state.IsCompactionLockAllowed;
+
+            void ITransition.Transit(LockState state) => state.AcquireCompactionLock();
+
+            internal static void Release(LockState state) => state.ReleaseCompactionLock();
+        }
+
         private sealed class ExclusiveLockTransition : ITransition
         {
             bool ITransition.Test(LockState state) => state.IsExclusiveLockAllowed;
@@ -161,8 +170,8 @@ public partial class PersistentState
             internal static void Release(LockState state) => state.ReleaseExclusiveLock();
         }
 
-        private readonly ITransition[] acquisitions = { new WeakReadLockTransition(), new StrongReadLockTransition(), new WriteLockTransition(), new ExclusiveLockTransition() };
-        private readonly Action<LockState>[] exits = { WeakReadLockTransition.Release, StrongReadLockTransition.Release, WriteLockTransition.Release, ExclusiveLockTransition.Release };
+        private readonly ITransition[] acquisitions = { new WeakReadLockTransition(), new StrongReadLockTransition(), new WriteLockTransition(), new CompactionLockTransition(), new ExclusiveLockTransition() };
+        private readonly Action<LockState>[] exits = { WeakReadLockTransition.Release, StrongReadLockTransition.Release, WriteLockTransition.Release, CompactionLockTransition.Release, ExclusiveLockTransition.Release };
 
         internal LockManager(IAsyncLockSettings configuration)
             : base(new(configuration.ConcurrencyLevel))
