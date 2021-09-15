@@ -38,6 +38,9 @@ namespace DotNext.IO.Pipelines
         ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
             => input.ParseAsync(parser, lengthFormat, context, provider, token);
 
+        ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
+            => input.ParseAsync<T>(token);
+
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
             => input.ReadInt16Async(littleEndian, token);
 

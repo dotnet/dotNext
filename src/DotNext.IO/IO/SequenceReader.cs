@@ -78,7 +78,7 @@ namespace DotNext.IO
             where T : notnull
         {
             var length = ReadLength(lengthFormat);
-            if ((uint)length > MemoryRental<char>.StackallocThreshold)
+            if ((uint)length > (uint)MemoryRental<char>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<char>(length);
                 return Parse<T, ArrayBuffer<char>>(parser, in context, buffer, provider);
@@ -88,6 +88,19 @@ namespace DotNext.IO
                 var buffer = stackalloc char[length];
                 return Parse<T, UnsafeBuffer<char>>(parser, in context, new UnsafeBuffer<char>(buffer, length), provider);
             }
+        }
+
+        /// <summary>
+        /// Parses the value encoded as a sequence of bytes.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <returns>The parsed value.</returns>
+        public T Parse<T>()
+            where T : notnull, IBinaryFormattable<T>
+        {
+            var result = IBinaryFormattable<T>.Parse(RemainingSequence);
+            position = sequence.GetPosition(T.Size, position);
+            return result;
         }
 
         /// <summary>
@@ -260,7 +273,7 @@ namespace DotNext.IO
             {
                 result = BigInteger.Zero;
             }
-            else if ((uint)length > MemoryRental<byte>.StackallocThreshold)
+            else if ((uint)length > (uint)MemoryRental<byte>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<byte>(length);
                 result = Read<BigInteger, BigIntegerReader<ArrayBuffer<byte>>>(new BigIntegerReader<ArrayBuffer<byte>>(buffer, littleEndian));
@@ -300,7 +313,7 @@ namespace DotNext.IO
             {
                 result = string.Empty;
             }
-            else if ((uint)length > MemoryRental<char>.StackallocThreshold)
+            else if ((uint)length > (uint)MemoryRental<char>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<char>(length);
                 result = Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
@@ -530,6 +543,28 @@ namespace DotNext.IO
                 try
                 {
                     result = new(Parse(parser, lengthFormat, in context, provider));
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<T>(e);
+                }
+            }
+
+            return result;
+        }
+
+        ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
+        {
+            ValueTask<T> result;
+            if (token.IsCancellationRequested)
+            {
+                result = ValueTask.FromCanceled<T>(token);
+            }
+            else
+            {
+                try
+                {
+                    result = new(Parse<T>());
                 }
                 catch (Exception e)
                 {

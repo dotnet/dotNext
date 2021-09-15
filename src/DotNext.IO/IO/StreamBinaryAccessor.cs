@@ -100,6 +100,9 @@ namespace DotNext.IO
         ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ParseAsync(stream, parser, lengthFormat, context, buffer, provider, token);
 
+        ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
+            => StreamExtensions.ParseAsync<T>(stream, buffer, token);
+
         ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
             => StreamExtensions.ReadBigIntegerAsync(stream, length, littleEndian, token);
 

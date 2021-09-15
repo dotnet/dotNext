@@ -76,6 +76,43 @@ public static partial class StreamExtensions
         return parser(result.Span.Slice(0, length), provider);
     }
 
+    /// <summary>
+    /// Parses the value encoded as a sequence of bytes.
+    /// </summary>
+    ///  <typeparam name="T">The type of the result.</typeparam>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="buffer">The buffer that is allocated by the caller.</param>
+    /// <returns>The decoded value.</returns>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+    public static T Parse<T>(this Stream stream, Span<byte> buffer)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        if (buffer.Length < T.Size)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        buffer = buffer.Slice(0, T.Size);
+        ReadBlock(stream, buffer);
+
+        var reader = new SpanReader<byte>(buffer);
+        return T.Parse(ref reader);
+    }
+
+    /// <summary>
+    /// Parses the value encoded as a sequence of bytes.
+    /// </summary>
+    ///  <typeparam name="T">The type of the result.</typeparam>
+    /// <param name="stream">The stream to read from.</param>
+    /// <returns>The decoded value.</returns>
+    public static T Parse<T>(this Stream stream)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = (uint)T.Size <= (uint)MemoryRental<byte>.StackallocThreshold
+            ? stackalloc byte[T.Size]
+            : new MemoryRental<byte>(T.Size);
+
+        return Parse<T>(stream, buffer.Span);
+    }
+
     private static int ReadString(Stream stream, Span<char> result, in DecodingContext context, Span<byte> buffer)
     {
         var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
@@ -365,6 +402,44 @@ public static partial class StreamExtensions
             length = await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
             return parser(result.Memory.Slice(0, length).Span, provider);
         }
+    }
+
+    /// <summary>
+    /// Parses the value encoded as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="buffer">The buffer that is allocated by the caller.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The parsed value.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding value.</exception>
+    public static async ValueTask<T> ParseAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        if (buffer.Length < T.Size)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        buffer = buffer.Slice(0, T.Size);
+        await stream.ReadAsync(buffer, token).ConfigureAwait(false);
+        return IBinaryFormattable<T>.Parse(buffer.Span);
+    }
+
+    /// <summary>
+    /// Parses the value encoded as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The parsed value.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public static async ValueTask<T> ParseAsync<T>(this Stream stream, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+        return await ParseAsync<T>(stream, buffer.Memory, token).ConfigureAwait(false);
     }
 
     private static async ValueTask<int> ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token)

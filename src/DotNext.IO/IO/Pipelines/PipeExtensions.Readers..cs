@@ -113,6 +113,42 @@ namespace DotNext.IO.Pipelines
             return bufferReader.RemainingBytes == 0 ? parser(bufferReader.Complete(), provider) : throw new EndOfStreamException();
         }
 
+        /// <summary>
+        /// Parses the value encoded as a sequence of bytes.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="reader">The pipe reader.</param>
+        ///  <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static ValueTask<T> ParseAsync<T>(this PipeReader reader, CancellationToken token = default)
+            where T : notnull, IBinaryFormattable<T>
+        {
+            ValueTask<T> result;
+            if (TryReadBlock(reader, T.Size, out var readResult))
+            {
+                result = readResult.IsCanceled
+                    ? ValueTask.FromCanceled<T>(token.IsCancellationRequested ? token : new(true))
+                    : new(IBinaryFormattable<T>.Parse(readResult.Buffer));
+
+                reader.AdvanceTo(readResult.Buffer.GetPosition(T.Size));
+            }
+            else
+            {
+                result = ParseSlowAsync(reader, token);
+            }
+
+            return result;
+
+            static async ValueTask<T> ParseSlowAsync(PipeReader reader, CancellationToken token)
+            {
+                using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+                await ReadBlockAsync(reader, buffer.Memory, token).ConfigureAwait(false);
+                return IBinaryFormattable<T>.Parse(buffer.Memory.Span);
+            }
+        }
+
         private static async ValueTask<int> ComputeHashAsync(PipeReader reader, HashAlgorithmName name, int? count, Memory<byte> output, CancellationToken token)
         {
             using var hash = IncrementalHash.CreateHash(name);

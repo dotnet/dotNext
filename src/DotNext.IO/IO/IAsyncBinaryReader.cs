@@ -102,6 +102,22 @@ public interface IAsyncBinaryReader
         => parser(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider);
 
     /// <summary>
+    /// Parses the value encoded as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The formattable type.</typeparam>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The parsed value.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    async ValueTask<T> ParseAsync<T>(CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+        await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+        return IBinaryFormattable<T>.Parse(buffer.Memory.Span);
+    }
+
+    /// <summary>
     /// Decodes an arbitrary integer value.
     /// </summary>
     /// <param name="length">The length of the value, in bytes.</param>

@@ -147,7 +147,7 @@ public static partial class StreamExtensions
         if (bytesCount == 0)
             return;
 
-        using MemoryRental<byte> buffer = (uint)bytesCount <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
+        using var buffer = (uint)bytesCount <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
         if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
             throw new InternalBufferOverflowException();
 
@@ -225,7 +225,7 @@ public static partial class StreamExtensions
     public static void WriteFormattable<T>(this Stream stream, T value)
         where T : notnull, IBinaryFormattable<T>
     {
-        var buffer = (uint)T.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[T.Size] : new MemoryRental<byte>(T.Size);
+        using var buffer = (uint)T.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[T.Size] : new MemoryRental<byte>(T.Size);
         var writer = new SpanWriter<byte>(buffer.Span);
         value.Format(ref writer);
         stream.Write(buffer.Span);

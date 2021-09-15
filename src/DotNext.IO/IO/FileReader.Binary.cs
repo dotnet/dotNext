@@ -185,6 +185,44 @@ public partial class FileReader : IAsyncBinaryReader
     }
 
     /// <summary>
+    /// Parses the value encoded as a sequence of bytes.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The parsed value.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public ValueTask<T> ParseAsync<T>(CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        ValueTask<T> result;
+
+        if (IsDisposed)
+        {
+            result = new(GetDisposedTask<T>());
+        }
+        else if (BufferLength >= T.Size)
+        {
+            var reader = new SpanReader<byte>(Buffer.Span.Slice(0, T.Size));
+            result = new(T.Parse(ref reader));
+            Consume(reader.ConsumedCount);
+        }
+        else
+        {
+            result = ParseSlowAsync(token);
+        }
+
+        return result;
+
+        async ValueTask<T> ParseSlowAsync(CancellationToken token)
+        {
+            using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+            await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            return IBinaryFormattable<T>.Parse(buffer.Memory.Span);
+        }
+    }
+
+    /// <summary>
     /// Decodes an arbitrary integer value.
     /// </summary>
     /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
