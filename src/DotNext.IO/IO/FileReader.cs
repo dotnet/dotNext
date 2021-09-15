@@ -185,8 +185,8 @@ public sealed partial class FileReader : Disposable
 
             for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
             {
-                if (!HasBufferedData)
-                    await ReadAsync(token).ConfigureAwait(false);
+                if (!HasBufferedData && !await ReadAsync(token).ConfigureAwait(false))
+                    break;
 
                 Buffer.Span.CopyTo(output.Span, out writtenCount);
                 result += writtenCount;
