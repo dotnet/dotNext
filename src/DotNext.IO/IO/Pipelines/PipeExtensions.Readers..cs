@@ -118,7 +118,7 @@ namespace DotNext.IO.Pipelines
         /// </summary>
         /// <typeparam name="T">The type of the result.</typeparam>
         /// <param name="reader">The pipe reader.</param>
-        ///  <param name="token">The token that can be used to cancel the operation.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>

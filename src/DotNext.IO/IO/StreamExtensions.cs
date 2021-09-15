@@ -79,7 +79,7 @@ public static partial class StreamExtensions
     /// <summary>
     /// Parses the value encoded as a sequence of bytes.
     /// </summary>
-    ///  <typeparam name="T">The type of the result.</typeparam>
+    /// <typeparam name="T">The type of the result.</typeparam>
     /// <param name="stream">The stream to read from.</param>
     /// <param name="buffer">The buffer that is allocated by the caller.</param>
     /// <returns>The decoded value.</returns>
@@ -100,7 +100,7 @@ public static partial class StreamExtensions
     /// <summary>
     /// Parses the value encoded as a sequence of bytes.
     /// </summary>
-    ///  <typeparam name="T">The type of the result.</typeparam>
+    /// <typeparam name="T">The type of the result.</typeparam>
     /// <param name="stream">The stream to read from.</param>
     /// <returns>The decoded value.</returns>
     public static T Parse<T>(this Stream stream)

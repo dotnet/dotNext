@@ -122,7 +122,11 @@ namespace DotNext.Net.Cluster
             family = reader.ReadInt32(true);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Deserializes the cluster member ID.
+        /// </summary>
+        /// <param name="input">The memory block reader.</param>
+        /// <returns>The identifier of the cluster member.</returns>
         static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ref SpanReader<byte> input)
             => new(ref input);
 

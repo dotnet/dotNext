@@ -553,6 +553,7 @@ namespace DotNext.IO
             return result;
         }
 
+        /// <inheritdoc />
         ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
         {
             ValueTask<T> result;
