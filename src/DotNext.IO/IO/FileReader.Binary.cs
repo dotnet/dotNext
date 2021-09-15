@@ -14,9 +14,13 @@ public partial class FileReader : IAsyncBinaryReader
     private T Read<T>()
         where T : unmanaged
     {
-        var reader = new SpanReader<byte>(Buffer.Span);
+        if (length < Unsafe.SizeOf<T>())
+            throw new EndOfStreamException();
+
+        var reader = new SpanReader<byte>(TrimLength(Buffer, length).Span);
         var result = reader.Read<T>();
         Consume(reader.ConsumedCount);
+        length -= reader.ConsumedCount;
         return result;
     }
 
@@ -44,8 +48,9 @@ public partial class FileReader : IAsyncBinaryReader
         bool moveNext;
         do
         {
-            var b = reader.Read();
+            var b = length > 0L ? reader.Read() : -1;
             moveNext = b >= 0 ? decoder.Append((byte)b) : throw new EndOfStreamException();
+            length -= 1L;
         }
         while (moveNext);
 
@@ -95,6 +100,7 @@ public partial class FileReader : IAsyncBinaryReader
             await ReadAsync(token).ConfigureAwait(false);
 
         var length = ReadLength(lengthFormat);
+
         MemoryOwner<byte> result;
         if (length > 0)
         {
@@ -116,15 +122,13 @@ public partial class FileReader : IAsyncBinaryReader
 
         for (int remainingBytes = result.Length, consumedBytes; remainingBytes > 0; Consume(consumedBytes), remainingBytes -= consumedBytes)
         {
-            if (BufferLength < remainingBytes)
-            {
-                if (!await ReadAsync(token).ConfigureAwait(false))
-                    throw new EndOfStreamException();
-            }
+            if (BufferLength < remainingBytes && !await ReadAsync(token).ConfigureAwait(false))
+                throw new EndOfStreamException();
 
-            var buffer = Buffer.TrimLength(remainingBytes);
+            var buffer = TrimLength(Buffer.TrimLength(remainingBytes), length);
             resultOffset += decoder.GetChars(buffer.Span, result.Span.Slice(resultOffset), remainingBytes <= BufferLength);
             consumedBytes = buffer.Length;
+            length -= consumedBytes;
         }
 
         return resultOffset;
@@ -149,6 +153,31 @@ public partial class FileReader : IAsyncBinaryReader
 
         if (length <= 0)
             return string.Empty;
+
+        if (this.length < length)
+            throw new EndOfStreamException();
+
+        using var result = MemoryAllocator.Allocate<char>(length, true);
+        length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
+        return new string(result.Memory.Span.Slice(0, length));
+    }
+
+    /// <summary>
+    /// Decodes the string.
+    /// </summary>
+    /// <param name="length">The length of the encoded string, in bytes.</param>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The decoded string.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
+    {
+        if (length == 0)
+            return string.Empty;
+
+        if (this.length < length)
+            throw new EndOfStreamException();
 
         using var result = MemoryAllocator.Allocate<char>(length, true);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
@@ -179,6 +208,9 @@ public partial class FileReader : IAsyncBinaryReader
         if (length <= 0)
             return parser(ReadOnlySpan<char>.Empty, provider);
 
+        if (this.length < length)
+            throw new EndOfStreamException();
+
         using var result = MemoryAllocator.Allocate<char>(length, true);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
         return parser(result.Memory.Span.Slice(0, length), provider);
@@ -201,11 +233,16 @@ public partial class FileReader : IAsyncBinaryReader
         {
             result = new(GetDisposedTask<T>());
         }
+        else if (length < T.Size)
+        {
+            result = ValueTask.FromException<T>(new EndOfStreamException());
+        }
         else if (BufferLength >= T.Size)
         {
             var reader = new SpanReader<byte>(Buffer.Span.Slice(0, T.Size));
             result = new(T.Parse(ref reader));
             Consume(reader.ConsumedCount);
+            length -= reader.ConsumedCount;
         }
         else
         {
@@ -240,33 +277,12 @@ public partial class FileReader : IAsyncBinaryReader
         if (length <= 0)
             return BigInteger.Zero;
 
+        if (this.length < length)
+            throw new EndOfStreamException();
+
         using var block = MemoryAllocator.Allocate<byte>(length, true);
         await ReadBlockAsync(block.Memory, token).ConfigureAwait(false);
         return new BigInteger(block.Memory.Span, isBigEndian: !littleEndian);
-    }
-
-    /// <summary>
-    /// Reads the entire content using the specified delegate.
-    /// </summary>
-    /// <param name="consumer">The content reader.</param>
-    /// <param name="count">The number of bytes to copy.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="EndOfStreamException">Unable to read <paramref name="count"/> bytes.</exception>
-    public async Task CopyToAsync<TConsumer>(TConsumer consumer, long count, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
-    {
-        for (ReadOnlyMemory<byte> buffer; count > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
-        {
-            buffer = Buffer;
-            await consumer.Invoke(buffer, token).ConfigureAwait(false);
-            count -= buffer.Length;
-        }
-
-        if (count > 0L)
-            throw new EndOfStreamException();
     }
 
     /// <summary>
@@ -280,10 +296,11 @@ public partial class FileReader : IAsyncBinaryReader
     public async Task CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        for (ReadOnlyMemory<byte> buffer; HasBufferedData || await ReadAsync(token).ConfigureAwait(false); Consume(buffer.Length))
+        for (ReadOnlyMemory<byte> buffer; length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
         {
-            buffer = Buffer;
+            buffer = TrimLength(Buffer, length);
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
+            length -= buffer.Length;
         }
     }
 
@@ -327,11 +344,19 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask ReadBlockAsync(Memory<byte> output, CancellationToken token)
     {
+        if (length < output.Length)
+            throw new EndOfStreamException();
+
+        output = TrimLength(output, length);
+
         for (int writtenBytes; !output.IsEmpty; output = output.Slice(writtenBytes))
         {
             writtenBytes = await ReadAsync(output, token).ConfigureAwait(false);
+
             if (writtenBytes == 0)
                 throw new EndOfStreamException();
+
+            length -= writtenBytes;
         }
     }
 
@@ -340,19 +365,24 @@ public partial class FileReader : IAsyncBinaryReader
         => ReadBlockAsync(output, token);
 
     /// <inheritdoc />
-    ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+    ValueTask IAsyncBinaryReader.SkipAsync(int bytes, CancellationToken token)
     {
         ValueTask result;
         if (token.IsCancellationRequested)
         {
             result = ValueTask.FromCanceled(token);
         }
+        else if (length < bytes)
+        {
+            result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(bytes)));
+        }
         else
         {
             result = new();
             try
             {
-                Skip(length);
+                Skip(bytes);
+                length -= bytes;
             }
             catch (Exception e)
             {
@@ -361,5 +391,19 @@ public partial class FileReader : IAsyncBinaryReader
         }
 
         return result;
+    }
+
+    /// <inheritdoc />
+    bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
+    {
+        var buffer = Buffer;
+        if (length <= buffer.Length)
+        {
+            bytes = new(TrimLength(buffer, length));
+            return true;
+        }
+
+        bytes = default;
+        return false;
     }
 }
