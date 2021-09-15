@@ -370,6 +370,7 @@ namespace DotNext.IO
             var t = TimeSpan.FromMilliseconds(1096);
             var blob = RandomBytes(128);
             var bi = new BigInteger(RandomBytes(64));
+            var memberId = new Net.Cluster.ClusterMemberId(Random.Shared);
 
             stream.WriteFormattable<long>(42L, LengthFormat.Plain, encoding, provider: InvariantCulture);
             stream.WriteFormattable<ulong>(12UL, LengthFormat.PlainLittleEndian, encoding, provider: InvariantCulture);
@@ -395,6 +396,7 @@ namespace DotNext.IO
             stream.WriteFormattable(t, LengthFormat.Plain, encoding, "G", provider: InvariantCulture);
             stream.WriteBlock(blob, LengthFormat.Plain);
             stream.WriteFormattable(bi, LengthFormat.Plain, encoding, provider: InvariantCulture);
+            stream.WriteFormattable(memberId);
 
             stream.Position = 0;
             DecodingContext decodingContext = encoding;
@@ -424,6 +426,7 @@ namespace DotNext.IO
             using var decodedBlob = stream.ReadBlock(LengthFormat.Plain);
             Equal(blob, decodedBlob.Memory.ToArray());
             Equal(bi, stream.Parse<BigInteger>(static (c, p) => BigInteger.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(memberId, stream.Parse<Net.Cluster.ClusterMemberId>());
         }
 
         [Theory]
@@ -438,6 +441,7 @@ namespace DotNext.IO
             var dto = DateTimeOffset.Now;
             var t = TimeSpan.FromMilliseconds(1096);
             var bi = new BigInteger(RandomBytes(64));
+            var memberId = new Net.Cluster.ClusterMemberId(Random.Shared);
 
             await stream.WriteFormattableAsync<long>(42L, LengthFormat.Plain, encoding, provider: InvariantCulture);
             await stream.WriteFormattableAsync<ulong>(12UL, LengthFormat.PlainLittleEndian, encoding, provider: InvariantCulture);
@@ -462,6 +466,7 @@ namespace DotNext.IO
             await stream.WriteFormattableAsync(t, LengthFormat.Plain, encoding, provider: InvariantCulture);
             await stream.WriteFormattableAsync(t, LengthFormat.Plain, encoding, "G", provider: InvariantCulture);
             await stream.WriteFormattableAsync(bi, LengthFormat.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteFormattableAsync(memberId);
 
             stream.Position = 0;
             DecodingContext decodingContext = encoding;
@@ -488,6 +493,7 @@ namespace DotNext.IO
             Equal(t, await stream.ParseAsync<TimeSpan>(TimeSpan.Parse, LengthFormat.Plain, decodingContext, provider: InvariantCulture));
             Equal(t, await stream.ParseAsync<TimeSpan>(static (c, p) => TimeSpan.ParseExact(c, "G", p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
             Equal(bi, await stream.ParseAsync<BigInteger>(static (c, p) => BigInteger.Parse(c, provider: p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+            Equal(memberId, await stream.ParseAsync<Net.Cluster.ClusterMemberId>());
         }
     }
 }

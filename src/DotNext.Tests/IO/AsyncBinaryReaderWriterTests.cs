@@ -255,6 +255,7 @@ namespace DotNext.IO
                 var valueT = TimeSpan.FromMilliseconds(1024);
                 var blob = RandomBytes(128);
                 var bi = new BigInteger(RandomBytes(64));
+                var memberId = new Net.Cluster.ClusterMemberId(Random.Shared);
 
                 var writer = source.CreateWriter();
                 await writer.WriteInt16Async(value16, littleEndian);
@@ -280,6 +281,7 @@ namespace DotNext.IO
                 await writer.WriteAsync(blob, LengthFormat.Compressed);
                 await writer.WriteFormattableAsync(bi, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
                 await writer.WriteBigIntegerAsync(bi, littleEndian, LengthFormat.Compressed);
+                await writer.WriteFormattableAsync(memberId);
 
                 if (source is IFlushable flushable)
                     await flushable.FlushAsync();
@@ -309,6 +311,7 @@ namespace DotNext.IO
                 Equal(blob, decodedBlob.Memory.ToArray());
                 Equal(bi, await reader.ParseAsync<BigInteger>(static (c, p) => BigInteger.Parse(c, provider: p), LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
                 Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
+                Equal(memberId, await reader.ParseAsync<Net.Cluster.ClusterMemberId>());
             }
         }
 
