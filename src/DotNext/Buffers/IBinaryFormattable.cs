@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers;
@@ -96,5 +97,24 @@ public interface IBinaryFormattable<TSelf>
     {
         var reader = new SpanReader<byte>(input);
         return TSelf.Parse(ref reader);
+    }
+
+    /// <summary>
+    /// Restores the object from its binary representation.
+    /// </summary>
+    /// <param name="input">The input buffer.</param>
+    /// <returns>The restored object.</returns>
+    public static TSelf Parse(in ReadOnlySequence<byte> input)
+    {
+        return input.FirstSpan.Length >= TSelf.Size
+            ? Parse(input.FirstSpan.Slice(0, TSelf.Size))
+            : ParseSlow(in input);
+
+        static TSelf ParseSlow(in ReadOnlySequence<byte> input)
+        {
+            using var buffer = (uint)TSelf.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[TSelf.Size] : new MemoryRental<byte>(TSelf.Size);
+            input.CopyTo(buffer.Span, out var writtenCount);
+            return Parse(buffer.Span.Slice(0, writtenCount));
+        }
     }
 }
