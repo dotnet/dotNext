@@ -246,7 +246,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         [Fact]
         public static async Task InterpreterWithPersistentState()
         {
-            await using var wal = new TestPersistenceState();
+            using var wal = new TestPersistenceState();
             var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract });
             await wal.AppendAsync(entry1);
             Equal(0, wal.Value);
