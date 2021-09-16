@@ -1,5 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -17,7 +19,7 @@ public partial class PersistentState
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct LogEntryMetadata
+    internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
         internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
         private readonly LogEntryFlags flags;
@@ -46,6 +48,11 @@ public partial class PersistentState
             identifier = reader.ReadInt32(true);
         }
 
+        static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+
+        static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ref SpanReader<byte> input)
+            => new(ref input);
+
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,7 +64,7 @@ public partial class PersistentState
         internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
             => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
-        internal void Serialize(ref SpanWriter<byte> writer)
+        public void Format(ref SpanWriter<byte> writer)
         {
             writer.WriteInt64(Term, true);
             writer.WriteInt64(Timestamp, true);
@@ -69,7 +76,7 @@ public partial class PersistentState
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct SnapshotMetadata
+    internal readonly struct SnapshotMetadata : IBinaryFormattable<SnapshotMetadata>
     {
         internal const int Size = sizeof(long) + LogEntryMetadata.Size;
         internal readonly long Index;
@@ -87,147 +94,94 @@ public partial class PersistentState
             RecordMetadata = new(ref reader);
         }
 
+        static int IBinaryFormattable<SnapshotMetadata>.Size => Size;
+
+        static SnapshotMetadata IBinaryFormattable<SnapshotMetadata>.Parse(ref SpanReader<byte> input)
+            => new(ref input);
+
         internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
             where TLogEntry : IRaftLogEntry
             => new(LogEntryMetadata.Create(snapshot, Size, length), index);
 
-        internal void Serialize(ref SpanWriter<byte> writer)
+        public void Format(ref SpanWriter<byte> writer)
         {
             writer.WriteInt64(Index, true);
-            RecordMetadata.Serialize(ref writer);
+            RecordMetadata.Format(ref writer);
         }
     }
 
-    private abstract class ConcurrentStorageAccess : Stream, IFlushable
+    private abstract class ConcurrentStorageAccess : Disposable
     {
-        // do not derive from FileStream because some virtual methods
-        // assumes that they are overridden and do async calls inefficiently
-        private readonly FileStream fs;
-        private readonly int bufferSize;
+        private readonly SafeFileHandle handle;
+        private protected readonly FileWriter writer;
+        private readonly MemoryAllocator<byte> allocator;
+        internal readonly string FileName;
 
-        // A pool of read-only streams that can be shared between multiple readers in parallel.
-        // The stream will be created on demand.
-        private StreamSegment?[] readers;
+        // A pool of read-only readers that can be shared between multiple consumers in parallel.
+        // The reader will be created on demand.
+        private FileReader?[] readers;
 
-        private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize)
-            : this(fileName, bufferSize, readersCount, options, initialSize, out _)
+        private protected ConcurrentStorageAccess(string fileName, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
-        }
+            handle = File.OpenHandle(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+            writer = new(handle, bufferSize: bufferSize, allocator: allocator);
+            readers = new FileReader[readersCount];
+            this.allocator = allocator;
+            FileName = fileName;
 
-        private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options, long initialSize, out long actualLength)
-        {
-            fs = new(fileName, new FileStreamOptions
-            {
-                Mode = FileMode.OpenOrCreate,
-                Access = FileAccess.ReadWrite,
-                Share = FileShare.Read,
-                BufferSize = bufferSize,
-                Options = options,
-                PreallocationSize = initialSize,
-            });
-
-            actualLength = fs.Length;
-
-            this.bufferSize = bufferSize;
-            readers = new StreamSegment[readersCount];
             if (readersCount == 1)
-                readers[0] = new(fs, true);
+                readers[0] = new(handle, bufferSize: bufferSize, allocator: allocator);
         }
 
-        internal abstract ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token = default)
+        private protected long FileSize => RandomAccess.GetLength(handle);
+
+        /*
+         * This method allows to reset read cache. It's an expensive operation and we
+         * actually need this in two cases: when dropping log entries and when rewriting uncommitted entries
+         */
+        private protected void InvalidateReaders()
+        {
+            foreach (var reader in readers)
+            {
+                reader?.ClearBuffer();
+            }
+        }
+
+        internal ValueTask SetWritePositionAsync(long value, CancellationToken token = default)
+        {
+            var result = ValueTask.CompletedTask;
+
+            if (!writer.HasBufferedData)
+            {
+                writer.FilePosition = value;
+            }
+            else if (value != writer.FilePosition)
+            {
+                result = FlushAndSetPositionAsync(value, token);
+            }
+
+            return result;
+
+            async ValueTask FlushAndSetPositionAsync(long value, CancellationToken token)
+            {
+                await FlushAsync(token).ConfigureAwait(false);
+                writer.FilePosition = value;
+            }
+        }
+
+        internal abstract ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry;
 
-        public sealed override bool CanRead => fs.CanRead;
-
-        public sealed override bool CanWrite => fs.CanWrite;
-
-        public sealed override bool CanSeek => fs.CanSeek;
-
-        public sealed override bool CanTimeout => fs.CanTimeout;
-
-        public sealed override long Length => fs.Length;
-
-        public sealed override long Position
-        {
-            get => fs.Position;
-            set => fs.Position = value;
-        }
-
-        public sealed override int ReadTimeout
-        {
-            get => fs.ReadTimeout;
-            set => fs.ReadTimeout = value;
-        }
-
-        public sealed override int WriteTimeout
-        {
-            get => fs.WriteTimeout;
-            set => fs.WriteTimeout = value;
-        }
-
-        public sealed override void SetLength(long length) => fs.SetLength(length);
-
-        public sealed override long Seek(long offset, SeekOrigin origin)
-            => fs.Seek(offset, origin);
-
-        public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => fs.BeginRead(buffer, offset, count, callback, state);
-
-        public sealed override int EndRead(IAsyncResult asyncResult)
-            => fs.EndRead(asyncResult);
-
-        public sealed override int Read(Span<byte> buffer)
-            => fs.Read(buffer);
-
-        public sealed override int Read(byte[] buffer, int offset, int count)
-            => fs.Read(buffer, offset, count);
-
-        public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
-            => fs.ReadAsync(buffer, offset, count, token);
-
-        public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
-            => fs.ReadAsync(buffer, token);
-
-        public sealed override int ReadByte() => fs.ReadByte();
-
-        public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => fs.BeginWrite(buffer, offset, count, callback, state);
-
-        public sealed override void EndWrite(IAsyncResult asyncResult)
-            => fs.EndWrite(asyncResult);
-
-        public sealed override void Write(ReadOnlySpan<byte> buffer)
-            => fs.Write(buffer);
-
-        public sealed override void Write(byte[] buffer, int offset, int count)
-            => fs.Write(buffer, offset, count);
-
-        public sealed override void WriteByte(byte value)
-            => fs.WriteByte(value);
-
-        public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => fs.WriteAsync(buffer, offset, count, cancellationToken);
-
-        public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
-            => fs.WriteAsync(buffer, cancellationToken);
-
-        public sealed override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-            => fs.CopyToAsync(destination, bufferSize, cancellationToken);
-
-        public sealed override void CopyTo(Stream destination, int bufferSize)
-            => fs.CopyTo(destination, bufferSize);
-
-        public override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
-
-        public override void Flush() => fs.Flush(true);
-
-        internal string FileName => fs.Name;
+        public virtual ValueTask FlushAsync(CancellationToken token = default)
+            => writer.WriteAsync(token);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected StreamSegment GetReadSessionStream(in DataAccessSession session)
+        private protected FileReader GetSessionReader(int sessionId)
         {
-            ref var stream = ref readers[session.SessionId];
-            return stream ??= new(new FileStream(fs.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
+            Debug.Assert(sessionId >= 0 && sessionId < readers.Length);
+
+            ref var reader = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
+            return reader ??= new(handle, bufferSize: writer.MaxBufferSize, allocator: allocator);
         }
 
         protected override void Dispose(bool disposing)
@@ -241,29 +195,12 @@ public partial class PersistentState
                     stream?.Dispose();
                 }
 
-                readers = Array.Empty<StreamSegment?>();
-                fs.Dispose();
+                readers = Array.Empty<FileReader?>();
+                writer.Dispose();
+                handle.Dispose();
             }
 
             base.Dispose(disposing);
-        }
-
-        public override async ValueTask DisposeAsync()
-        {
-            for (var i = 0; i < readers.Length; i++)
-                await DisposeAsync(ref readers[i]).ConfigureAwait(false);
-
-            readers = Array.Empty<StreamSegment?>();
-            await fs.DisposeAsync().ConfigureAwait(false);
-            await base.DisposeAsync().ConfigureAwait(false);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static ValueTask DisposeAsync(ref StreamSegment? segment)
-            {
-                var stream = segment;
-                segment = null;
-                return stream is null ? new() : stream.DisposeAsync();
-            }
         }
     }
 }

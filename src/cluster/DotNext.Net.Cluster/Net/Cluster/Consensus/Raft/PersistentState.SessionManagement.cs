@@ -1,28 +1,13 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Buffers;
 using AtomicBoolean = Threading.AtomicBoolean;
 
 public partial class PersistentState
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct DataAccessSession
-    {
-        internal readonly int SessionId;
-        internal readonly Memory<byte> Buffer;
-
-        internal DataAccessSession(int sessionId, Memory<byte> buffer)
-        {
-            SessionId = sessionId;
-            Buffer = buffer;
-        }
-    }
-
     /// <summary>
     /// Represents session pool that is responsible
     /// for returning a unique value in range [0..N) for each requester.
@@ -109,57 +94,6 @@ public partial class PersistentState
             => tokens[sessionId].Value = true;
     }
 
-    /*
-     * This class helps to organize thread-safe concurrent access to the multiple streams
-     * used for reading log entries. Such approach allows to use one-writer multiple-reader scenario
-     * which dramatically improves the performance
-     */
-    [StructLayout(LayoutKind.Auto)]
-    private struct DataAccessSessionManager : IDisposable
-    {
-        private readonly SessionIdPool sessions;
-        private readonly int bufferSize;
-        internal readonly int Capacity;
-        private MemoryOwner<byte> writeBuffer, compactionBuffer, readBuffer;
-
-        internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int bufferSize)
-        {
-            Capacity = readersCount;
-            sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
-
-            writeBuffer = sharedPool.Invoke(bufferSize, false);
-
-            compactionBuffer = sharedPool.Invoke(bufferSize, false);
-
-            readBuffer = sharedPool.Invoke(checked(readersCount * bufferSize), false);
-            this.bufferSize = bufferSize;
-        }
-
-        internal Memory<byte> WriteBuffer => writeBuffer.Memory;
-
-        internal Memory<byte> CompactionBuffer => compactionBuffer.Memory;
-
-        internal readonly DataAccessSession OpenSession()
-        {
-            var id = sessions.Take();
-            Debug.Assert(id >= 0 && id < Capacity);
-
-            // renting buffer for read session is trivial here:
-            // just compute offset in a shared buffer for all readers
-            return new DataAccessSession(id, readBuffer.Memory.Slice(bufferSize * id, bufferSize));
-        }
-
-        internal readonly void CloseSession(in DataAccessSession readSession)
-            => sessions.Return(readSession.SessionId);
-
-        public void Dispose()
-        {
-            writeBuffer.Dispose();
-            compactionBuffer.Dispose();
-            readBuffer.Dispose();
-        }
-    }
-
     // concurrent read sessions management
-    private DataAccessSessionManager sessionManager;
+    private readonly SessionIdPool sessionManager;
 }

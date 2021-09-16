@@ -85,8 +85,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                await (state as IAsyncDisposable).DisposeAsync();
+                (state as IDisposable).Dispose();
             }
+
             //now open state again to check persistence
             state = new PersistentState(dir, RecordsPerPartition);
             try
@@ -97,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                (state as IDisposable)?.Dispose();
+                (state as IDisposable).Dispose();
             }
         }
 
@@ -220,8 +221,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(2L, index);
         }
 
-        [Fact]
-        public static async Task DropRecords()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task DropRecords(bool reuseSpace)
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
             var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -234,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
-            Equal(5L, await state.DropAsync(1L));
+            Equal(5L, await state.DropAsync(1L, reuseSpace));
             Equal(0L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
         }
@@ -772,7 +775,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task JsonSerialization(bool cached)
         {
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            await using var state = new JsonPersistentState(dir, cached);
+            using var state = new JsonPersistentState(dir, cached);
             var entry1 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 10, Y = 20, Message = "Entry1" });
             var entry2 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 50, Y = 60, Message = "Entry2" });
             await state.AppendAsync(entry1, true);

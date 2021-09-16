@@ -174,7 +174,7 @@ public partial class PersistentState
         private readonly Action<LockState>[] exits = { WeakReadLockTransition.Release, StrongReadLockTransition.Release, WriteLockTransition.Release, CompactionLockTransition.Release, ExclusiveLockTransition.Release };
 
         internal LockManager(IAsyncLockSettings configuration)
-            : base(new(configuration.ConcurrencyLevel))
+            : base(new(configuration.ConcurrencyLevel), configuration.ConcurrencyLevel + 2) // + write lock + compaction lock
         {
             // setup metrics
             if (configuration.LockContentionCounter is not null)

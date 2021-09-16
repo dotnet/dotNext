@@ -19,19 +19,19 @@ public partial class PersistentState
     protected internal readonly struct LogEntry : IRaftLogEntry
     {
         // if null then the log entry payload is represented by buffer
-        private readonly StreamSegment? content;
+        private readonly FileReader? content;
         private readonly LogEntryMetadata metadata;
-        private readonly Memory<byte> buffer;
+        private readonly ReadOnlyMemory<byte> buffer;
 
         // if negative then it's a snapshot index because |snapshotIndex| > 0
         private readonly long index;
 
         // for regular log entry
-        internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
+        internal LogEntry(FileReader cachedContent, in LogEntryMetadata metadata, long index)
         {
             this.metadata = metadata;
-            content = cachedContent;
-            buffer = sharedBuffer;
+            content = metadata.Length > 0L ? cachedContent : null;
+            buffer = ReadOnlyMemory<byte>.Empty;
             this.index = index;
         }
 
@@ -46,23 +46,13 @@ public partial class PersistentState
         }
 
         // for snapshot
-        internal LogEntry(StreamSegment cachedContent, in Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
+        internal LogEntry(FileReader cachedContent, in SnapshotMetadata metadata)
         {
             Debug.Assert(metadata.Index > 0L);
 
             this.metadata = metadata.RecordMetadata;
-            if (metadata.RecordMetadata.Length > 0L)
-            {
-                content = cachedContent;
-                buffer = sharedBuffer;
-            }
-            else
-            {
-                content = null;
-                buffer = Memory<byte>.Empty;
-            }
-
-            buffer = sharedBuffer;
+            content = metadata.RecordMetadata.Length > 0L ? cachedContent : null;
+            buffer = ReadOnlyMemory<byte>.Empty;
             index = -metadata.Index;
         }
 
@@ -103,8 +93,22 @@ public partial class PersistentState
 
         internal bool IsEmpty => Length == 0L;
 
-        private static void Adjust(StreamSegment segment, in LogEntryMetadata metadata)
-            => segment.Adjust(metadata.Offset, metadata.Length);
+        private static void Adjust(FileReader segment, in LogEntryMetadata metadata)
+        {
+            if (!segment.HasBufferedData || metadata.Offset < segment.FilePosition || metadata.Offset > segment.ReadPosition)
+            {
+                // attempt to read past or too far behind, clear the buffer
+                segment.ClearBuffer();
+                segment.FilePosition = metadata.Offset;
+            }
+            else
+            {
+                // the offset is in the buffered segment within the file, skip necessary bytes
+                segment.Skip(metadata.Offset - segment.FilePosition);
+            }
+
+            segment.SetSegmentLength(metadata.Length);
+        }
 
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
@@ -114,7 +118,7 @@ public partial class PersistentState
             if (content is not null)
             {
                 Adjust(content, in metadata);
-                result = new(writer.CopyFromAsync(content, token));
+                result = new(content.CopyToAsync(writer, token));
             }
             else if (!buffer.IsEmpty)
             {
@@ -153,7 +157,7 @@ public partial class PersistentState
             if (content is not null)
             {
                 Adjust(content, in metadata);
-                result = IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
+                result = transformation.TransformAsync(content, token);
             }
             else if (!buffer.IsEmpty)
             {
@@ -206,7 +210,7 @@ public partial class PersistentState
             if (content is not null)
             {
                 Adjust(content, in metadata);
-                result = IAsyncBinaryReader.Create(content, buffer);
+                result = content;
             }
             else if (!buffer.IsEmpty)
             {
@@ -241,7 +245,7 @@ public partial class PersistentState
             if (content is not null)
             {
                 Adjust(content, in metadata);
-                result = JsonLogEntry.DeserializeAsync(content, typeLoader, options, token);
+                result = DeserializeSlowAsync(typeLoader, options, token);
             }
             else if (!buffer.IsEmpty)
             {
@@ -253,6 +257,15 @@ public partial class PersistentState
             }
 
             return result;
+        }
+
+        private async ValueTask<object?> DeserializeSlowAsync(Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+        {
+            Debug.Assert(content is not null);
+
+            using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
+            await content.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
         }
     }
 
