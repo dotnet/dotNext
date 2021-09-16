@@ -93,7 +93,7 @@ public partial class PersistentState
         /// <summary>
         /// Initializes a new snapshot builder.
         /// </summary>
-        /// <param name="context">The context of the snapshot builder</param>
+        /// <param name="context">The context of the snapshot builder.</param>
         protected IncrementalSnapshotBuilder(in SnapshotBuilderContext context)
             : base(context)
         {
@@ -149,7 +149,7 @@ public partial class PersistentState
         /// <summary>
         /// Initializes a new snapshot builder.
         /// </summary>
-        /// <param name="context">The context of the snapshot builder</param>
+        /// <param name="context">The context of the snapshot builder.</param>
         protected InlineSnapshotBuilder(in SnapshotBuilderContext context)
             : base(context)
         {
