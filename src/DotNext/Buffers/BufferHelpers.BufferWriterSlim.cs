@@ -185,4 +185,24 @@ public static partial class BufferHelpers
         value.Format(ref output);
         writer.Advance(output.WrittenCount);
     }
+
+    /// <summary>
+    /// Writes a sequence of formattable values.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="values">A sequence of values to convert.</param>
+    public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, ReadOnlySpan<T> values)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        if (values.IsEmpty)
+            return;
+
+        var output = new SpanWriter<byte>(writer.GetSpan(checked(T.Size * values.Length)));
+
+        foreach (ref readonly var value in values)
+            value.Format(ref output);
+
+        writer.Advance(output.WrittenCount);
+    }
 }
