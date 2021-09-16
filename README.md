@@ -85,6 +85,7 @@ Release Date: 08-XX-2021
 * Added `FileWriter` and `FileReader` classes that are tuned for fast file I/O with the ability to access the buffer explicitly
 * Introduced a concept of a serializable Data Transfer Objects represented by `ISerializable<TSelf>` interface. The interface allows to control the serialization/deserialization behavior on top of `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces. Thanks to static abstract interface methods, the value of the type can be easily reconstructed from its serialized state
 * Added support of binary-formattable types to `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces
+* Improved performance of `FileBufferingWriter` I/O operations with preallocated file size feature introduced in .NET 6
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.0.0">DotNext.Net.Cluster 4.0.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
@@ -94,6 +95,7 @@ Release Date: 08-XX-2021
 * Added varios snapshot building strategies: incremental and inline
 * Optimized file I/O performance in persistent WAL
 * Reduced the number of opened file descriptors required by persistent WAL
+* Improved performance of partitions allocation in persistent WAL with preallocated file size feature introduced in .NET 6
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.0.0">DotNext.AspNetCore.Cluster 4.0.0</a>
 * Added configurable HTTP protocol version selection policy
