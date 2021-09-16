@@ -171,7 +171,7 @@ public partial class PersistentState
         /// Initializes the builder.
         /// </summary>
         /// <returns>The task representing asynchronous result.</returns>
-        protected abstract ValueTask InitializeAsync();
+        protected virtual ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
         internal sealed override ValueTask InitializeAsync(int sessionId) => InitializeAsync();
 
