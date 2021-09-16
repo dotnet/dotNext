@@ -50,21 +50,9 @@ namespace DotNext
 
         internal static string UnknownCommand(int id) => Resources.Get().Format(id);
 
-        internal static string MissingCommandFormatter<TCommand>()
-            where TCommand : struct
-            => Resources.Get().Format(typeof(TCommand));
-
-        internal static string MissingCommandAttribute<TCommand>()
-            where TCommand : struct
-            => Resources.Get().Format(typeof(TCommand));
-
         internal static string MissingCommandId => (string)Resources.Get();
 
-        internal static string MissingMessageAttribute<T>()
-            => Resources.Get().Format(typeof(T));
-
-        internal static string MissingMessageFormatter<T>()
-            => Resources.Get().Format(typeof(T));
+        internal static string MissingMessageName => (string)Resources.Get();
 
         internal static string AuditTrailNoMembershipSupport(Type type)
             => Resources.Get().Format(type);

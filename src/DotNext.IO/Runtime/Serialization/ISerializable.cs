@@ -9,6 +9,9 @@ using IO;
 public interface ISerializable<TSelf> : IDataTransferObject
     where TSelf : ISerializable<TSelf>
 {
+    /// <inheritdoc />
+    bool IDataTransferObject.IsReusable => true;
+
     /// <summary>
     /// Decodes the object of type <typeparamref name="TSelf"/> from its binary representation.
     /// </summary>

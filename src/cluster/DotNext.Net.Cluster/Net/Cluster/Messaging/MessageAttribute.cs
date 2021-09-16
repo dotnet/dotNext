@@ -1,63 +1,56 @@
-using System;
 using System.Net.Mime;
-using System.Reflection;
 
-namespace DotNext.Net.Cluster.Messaging
+namespace DotNext.Net.Cluster.Messaging;
+
+using Runtime.Serialization;
+
+/// <summary>
+/// Indicates that the type can be used as message payload.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public abstract class MessageAttribute : Attribute
 {
-    using Runtime.Serialization;
+    private string? mimeType;
 
     /// <summary>
-    /// Indicates that the type can be used as message payload.
+    /// Initializes a new instance of the attribute.
     /// </summary>
-    /// <seealso cref="MessagingClient"/>
-    /// <seealso cref="MessageHandler"/>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-    public sealed class MessageAttribute : SerializableAttribute
+    /// <param name="name">The name of the message.</param>
+    protected MessageAttribute(string name)
     {
-        private string? mimeType;
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the attribute.
-        /// </summary>
-        /// <param name="name">The name of the message.</param>
-        public MessageAttribute(string name)
-        {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-        }
+    /// <summary>
+    /// Gets the name of the message.
+    /// </summary>
+    public string Name { get; }
 
-        /// <summary>
-        /// Gets the name of the message.
-        /// </summary>
-        public string Name { get; }
+    /// <summary>
+    /// Gets or sets MIME type of the message.
+    /// </summary>
+    public string MimeType
+    {
+        get => mimeType.IfNullOrEmpty(MediaTypeNames.Application.Octet);
+        set => mimeType = value;
+    }
+}
 
-        /// <summary>
-        /// Gets or sets MIME type of the message.
-        /// </summary>
-        public string MimeType
-        {
-            get => mimeType.IfNullOrEmpty(MediaTypeNames.Application.Octet);
-            set => mimeType = value;
-        }
-
-        internal static IFormatter<T> GetFormatter<T>(out string messageName)
-        {
-            var attr = typeof(T).GetCustomAttribute<MessageAttribute>();
-            if (attr is null)
-                throw new GenericArgumentException<T>(ExceptionMessages.MissingMessageAttribute<T>());
-
-            messageName = attr.Name;
-            return attr.CreateFormatter() as IFormatter<T> ?? throw new GenericArgumentException<T>(ExceptionMessages.MissingMessageFormatter<T>());
-        }
-
-        internal static IFormatter<T> GetFormatter<T>(out string messageName, out ContentType messageType)
-        {
-            var attr = typeof(T).GetCustomAttribute<MessageAttribute>();
-            if (attr is null)
-                throw new GenericArgumentException<T>(ExceptionMessages.MissingMessageAttribute<T>());
-
-            messageName = attr.Name;
-            messageType = new(attr.MimeType);
-            return attr.CreateFormatter() as IFormatter<T> ?? throw new GenericArgumentException<T>(ExceptionMessages.MissingMessageFormatter<T>());
-        }
+/// <summary>
+/// Indicates that the type can be used as message payload.
+/// </summary>
+/// <typeparam name="TMessage">The type of the message payload.</typeparam>
+/// <seealso cref="MessagingClient"/>
+/// <seealso cref="MessageHandler"/>
+public sealed class MessageAttribute<TMessage> : MessageAttribute
+    where TMessage : notnull, ISerializable<TMessage>
+{
+    /// <summary>
+    /// Initializes a new instance of the attribute.
+    /// </summary>
+    /// <param name="name">The name of the message.</param>
+    public MessageAttribute(string name)
+        : base(name)
+    {
     }
 }

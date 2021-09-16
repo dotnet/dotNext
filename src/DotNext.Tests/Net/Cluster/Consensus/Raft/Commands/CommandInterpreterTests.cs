@@ -1,13 +1,10 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
+    using IO;
     using Runtime.Serialization;
 
     [ExcludeFromCodeCoverage]
@@ -25,93 +22,97 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             OnesComplement
         }
 
-        [Command(0, Formatter = typeof(Formatter))]
-        private struct BinaryOperationCommand
+        private struct BinaryOperationCommand : ISerializable<BinaryOperationCommand>
         {
+            internal const int Id = 0;
+
             public int X, Y;
             public BinaryOperation Type;
-        }
 
-        [Command(1, Formatter = typeof(Formatter), FormatterMember = nameof(Formatter.Instance))]
-        private struct UnaryOperationCommand
-        {
-            public int X;
-            public UnaryOperation Type;
-        }
+            long? IDataTransferObject.Length => sizeof(int) + sizeof(int) + sizeof(BinaryOperation);
 
-        [Command(3)]
-        private struct AssignCommand
-        {
-            public int Value;
-        }
-
-        [Command(4, Formatter = typeof(Formatter), FormatterMember = nameof(Formatter.Instance))]
-        private struct SnapshotCommand
-        {
-            public int Value;
-        }
-
-        private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>, IFormatter<SnapshotCommand>
-        {
-            public static readonly Formatter Instance = new();
-
-            async ValueTask IFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
+            async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
-                await writer.WriteInt32Async(command.X, true, token);
-                await writer.WriteInt32Async(command.Y, true, token);
-                await writer.WriteAsync(command.Type, token);
+                await writer.WriteInt32Async(X, true, token);
+                await writer.WriteInt32Async(Y, true, token);
+                await writer.WriteAsync(Type, token);
             }
 
-            async ValueTask<BinaryOperationCommand> IFormatter<BinaryOperationCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                return new BinaryOperationCommand
+            public static async ValueTask<BinaryOperationCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : notnull, IAsyncBinaryReader
+                => new BinaryOperationCommand
                 {
                     X = await reader.ReadInt32Async(true, token),
                     Y = await reader.ReadInt32Async(true, token),
-                    Type = await reader.ReadAsync<BinaryOperation>(token)
+                    Type = await reader.ReadAsync<BinaryOperation>(token),
                 };
-            }
-
-            unsafe long? IFormatter<BinaryOperationCommand>.GetLength(BinaryOperationCommand command)
-                => sizeof(BinaryOperationCommand);
-
-            async ValueTask IFormatter<UnaryOperationCommand>.SerializeAsync<TWriter>(UnaryOperationCommand command, TWriter writer, CancellationToken token)
-            {
-                await writer.WriteInt32Async(command.X, true, token);
-                await writer.WriteAsync(command.Type, token);
-            }
-
-            async ValueTask<UnaryOperationCommand> IFormatter<UnaryOperationCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                return new UnaryOperationCommand
-                {
-                    X = await reader.ReadInt32Async(true, token),
-                    Type = await reader.ReadAsync<UnaryOperation>(token)
-                };
-            }
-
-            unsafe long? IFormatter<UnaryOperationCommand>.GetLength(UnaryOperationCommand command)
-                => sizeof(UnaryOperationCommand);
-
-            ValueTask IFormatter<AssignCommand>.SerializeAsync<TWriter>(AssignCommand command, TWriter writer, CancellationToken token)
-                => writer.WriteAsync(command, token);
-
-            ValueTask<AssignCommand> IFormatter<AssignCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
-                => reader.ReadAsync<AssignCommand>(token);
-
-            unsafe long? IFormatter<AssignCommand>.GetLength(AssignCommand command)
-                => sizeof(AssignCommand);
-
-            ValueTask IFormatter<SnapshotCommand>.SerializeAsync<TWriter>(SnapshotCommand command, TWriter writer, CancellationToken token)
-                => writer.WriteAsync(command, token);
-
-            ValueTask<SnapshotCommand> IFormatter<SnapshotCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
-                => reader.ReadAsync<SnapshotCommand>(token);
-
-            unsafe long? IFormatter<SnapshotCommand>.GetLength(SnapshotCommand command)
-                => sizeof(SnapshotCommand);
         }
 
+        private struct UnaryOperationCommand : ISerializable<UnaryOperationCommand>
+        {
+            internal const int Id = 1;
+
+            public int X;
+            public UnaryOperation Type;
+
+            long? IDataTransferObject.Length => sizeof(int) + sizeof(UnaryOperation);
+
+            async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            {
+                await writer.WriteInt32Async(X, true, token);
+                await writer.WriteAsync(Type, token);
+            }
+
+            public static async ValueTask<UnaryOperationCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : notnull, IAsyncBinaryReader
+                => new UnaryOperationCommand
+                {
+                    X = await reader.ReadInt32Async(true, token),
+                    Type = await reader.ReadAsync<UnaryOperation>(token),
+                };
+        }
+
+        private struct AssignCommand : ISerializable<AssignCommand>
+        {
+            internal const int Id = 3;
+
+            public int Value;
+
+            long? IDataTransferObject.Length => sizeof(int);
+
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => writer.WriteInt32Async(Value, true, token);
+
+            public static async ValueTask<AssignCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : notnull, IAsyncBinaryReader
+                => new AssignCommand
+                {
+                    Value = await reader.ReadInt32Async(true, token),
+                };
+        }
+
+        private struct SnapshotCommand : ISerializable<SnapshotCommand>
+        {
+            internal const int Id = 4;
+
+            public int Value;
+
+            long? IDataTransferObject.Length => sizeof(int);
+
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => writer.WriteInt32Async(Value, true, token);
+
+            public static async ValueTask<SnapshotCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : notnull, IAsyncBinaryReader
+                => new SnapshotCommand
+                {
+                    Value = await reader.ReadInt32Async(true, token),
+                };
+        }
+
+        [Command<BinaryOperationCommand>(BinaryOperationCommand.Id)]
+        [Command<UnaryOperationCommand>(UnaryOperationCommand.Id)]
+        [Command<SnapshotCommand>(SnapshotCommand.Id)]
         private sealed class CustomInterpreter : CommandInterpreter
         {
             internal int Value;
@@ -169,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             internal int Value => interpreter.Value;
 
             internal LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
-                where TCommand : struct
+                where TCommand : struct, ISerializable<TCommand>
                 => interpreter.CreateLogEntry(command, Term);
 
             protected override ValueTask ApplyAsync(LogEntry entry)
@@ -221,9 +222,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             };
 
             var interpreter = new CommandInterpreter.Builder()
-                .Add(binaryOp)
-                .Add(unaryOp)
-                .Add(assignOp, new Formatter())
+                .Add(BinaryOperationCommand.Id, binaryOp)
+                .Add(UnaryOperationCommand.Id, unaryOp)
+                .Add(AssignCommand.Id, assignOp)
                 .Build();
 
             var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);

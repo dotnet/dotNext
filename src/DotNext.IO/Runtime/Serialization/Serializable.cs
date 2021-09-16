@@ -4,6 +4,7 @@ namespace DotNext.Runtime.Serialization;
 
 using Buffers;
 using AsyncStreamBinaryAccessor = IO.AsyncStreamBinaryAccessor;
+using IDataTransferObject = IO.IDataTransferObject;
 using PipeBinaryReader = IO.Pipelines.PipeBinaryReader;
 
 /// <summary>
@@ -52,4 +53,18 @@ public static class Serializable
     public static ValueTask<TObject> ReadFromAsync<TObject>(this PipeReader reader, CancellationToken token = default)
         where TObject : notnull, ISerializable<TObject>
         => TObject.ReadFromAsync<PipeBinaryReader>(new(reader), token);
+
+    /// <summary>
+    /// Transforms one object into another object.
+    /// </summary>
+    /// <typeparam name="TInput">The type of the object to transform.</typeparam>
+    /// <typeparam name="TOutput">The type of the transformation result.</typeparam>
+    /// <param name="input">The object to transform.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>Deserialized object.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<TOutput> TransformAsync<TInput, TOutput>(this TInput input, CancellationToken token = default)
+        where TInput : notnull, IDataTransferObject
+        where TOutput : notnull, ISerializable<TOutput>
+        => input.TransformAsync<TOutput, DeserializingTransformation<TOutput>>(new(), token);
 }
