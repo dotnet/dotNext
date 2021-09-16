@@ -15,7 +15,7 @@ public partial class PersistentState
     /// </summary>
     /// <remarks>
     /// This type contains internal data needed to initialize
-    /// snapshot builder.
+    /// the snapshot builder.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
     protected readonly struct SnapshotBuilderContext
