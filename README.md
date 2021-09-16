@@ -95,10 +95,11 @@ Release Date: 08-XX-2021
 * Optimized file I/O performance in persistent WAL
 * Reduced the number of opened file descriptors required by persistent WAL
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.4.0">DotNext.AspNetCore.Cluster 3.4.0</a>
-* Added configurable HTTP protocol version selection policy (.NET 5 or later)
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.0.0">DotNext.AspNetCore.Cluster 4.0.0</a>
+* Added configurable HTTP protocol version selection policy
 * Added support of leader lease in Raft implementation for optimized read operations
-* Added `IRaftCluster.LeadershipToken` that allows to track leadership transfer
+* Added `IRaftCluster.LeadershipToken` property that allows to track leadership transfer
+* Added `IRaftCluster.Readiness` property that represents readiness probe. The probe indicates whether the cluster member is ready to serve client requests
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
