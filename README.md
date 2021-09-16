@@ -59,6 +59,7 @@ Release Date: 08-XX-2021
 * Added `DotNext.Numerics.BitVector` that allows to convert **bool** vectors into integral types
 * Added ability to write interpolated strings to `IBufferWriter<char>` without temporary allocations
 * Added ability to write interpolated strings to `BufferWriterSlim<char>`. This makes `BufferWriterSlim<char>` type as allocation-free alternative to [StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder)
+* Introduced a concept of binary-formattable types. See `DotNext.Buffers.IBinaryFormattable<TSelf>` interface for more information
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
 * Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
@@ -68,21 +69,31 @@ Release Date: 08-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/3.3.0">DotNext.Unsafe 3.3.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.0.0">DotNext.Unsafe 4.0.0</a>
+* Unmanaged memory pool has moved to [NativeMemory](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativememory) class instead of [Marshal.AllocHGlobal](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.allochglobal) method
 
-<a href="https://www.nuget.org/packages/dotnext.threading/3.3.0">DotNext.Threading 3.3.0</a>
-* Reduced memory allocations caused by async locks
+<a href="https://www.nuget.org/packages/dotnext.threading/4.0.0">DotNext.Threading 4.0.0</a>
+* Polished `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. Also these types become a foundation for all synchronization primitives within the library
+* Return types of all methods of asynchronous locks now moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) and [ValueTask&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1) types
+* Together with previous change, all asynchronous locks are written on top of `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. It means that these asynchronous locks use task pooling that leads to zero allocation on the heap and low GC latency
 
-<a href="https://www.nuget.org/packages/dotnext.io/3.4.0">DotNext.IO 3.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.0.0">DotNext.IO 4.0.0</a>
 * Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
 * Added `DotNext.IO.SequenceBinaryReader.Read(Span<byte>)` method
 * Optimized performance of some `ReadXXX` methods of `DotNext.IO.SequenceReader` type
+* All `WriteXXXAsync` methods of `IAsyncBinaryWriter` are replaced with a single `WriteFormattableAsync` method supporting [ISpanFormattable](https://docs.microsoft.com/en-us/dotnet/api/system.ispanformattable) interface. Now you can encode any type that implements this interface efficiently
+* Added `FileWriter` and `FileReader` classes that are tuned for fast file I/O with the ability to access the buffer explicitly
+* Introduced a concept of a serializable Data Transfer Objects represented by `ISerializable<TSelf>` interface. The interface allows to control the serialization/deserialization behavior on top of `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces. Thanks to static abstract interface methods, the value of the type can be easily reconstructed from its serialized state
+* Added support of binary-formattable types to `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.4.0">DotNext.Net.Cluster 3.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.0.0">DotNext.Net.Cluster 4.0.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
-* Introduced transport-independent implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol
 * Fixed compatibility of WAL Interpreter Framework with TCP/UDP transports
+* Added support of cluster configuration management to Raft that allows to use Raft features for managing cluster members instead of external discovery protocol
+* Persistent WAL has moved to new implementation of asynchronous locks to reduce the memory allocation
+* Added varios snapshot building strategies: incremental and inline
+* Optimized file I/O performance in persistent WAL
+* Reduced the number of opened file descriptors required by persistent WAL
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.4.0">DotNext.AspNetCore.Cluster 3.4.0</a>
 * Added configurable HTTP protocol version selection policy (.NET 5 or later)
