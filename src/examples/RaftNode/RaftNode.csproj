@@ -5,6 +5,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
     <StartupObject>RaftNode.Program</StartupObject>
     <Version>4.0.0</Version>
   </PropertyGroup>

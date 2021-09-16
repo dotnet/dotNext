@@ -5,6 +5,7 @@
   <RootNamespace>DotNext</RootNamespace>
   <LangVersion>latest</LangVersion>
   <Nullable>enable</Nullable>
+  <ImplicitUsings>true</ImplicitUsings>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Version>4.0.0</Version>
 	<Authors>.NET Foundation and Contributors</Authors>

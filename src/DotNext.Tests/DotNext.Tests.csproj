@@ -4,6 +4,7 @@
 	  <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <Version>4.0.0</Version>
     <IsPackable>false</IsPackable>

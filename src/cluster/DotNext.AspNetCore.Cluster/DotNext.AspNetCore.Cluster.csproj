@@ -5,6 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <ImplicitUsings>true</ImplicitUsings>
     <Version>4.0.0</Version>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>

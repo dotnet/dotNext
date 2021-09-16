@@ -4,6 +4,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>preview</LangVersion>
+    <ImplicitUsings>true</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Version>4.0.0</Version>
     <Authors>.NET Foundation and Contributors</Authors>
