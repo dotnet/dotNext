@@ -34,7 +34,7 @@ using Timeout = Threading.Timeout;
 /// </item>
 /// </list>
 /// The audit trail supports log compaction. However, it doesn't know how to interpret and reduce log records during compaction.
-/// To do that, you can override <see cref="CreateSnapshotBuilder"/> method and implement state machine logic.
+/// To do that, you can override <see cref="CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext)"/> method and implement state machine logic.
 /// </remarks>
 public partial class PersistentState : Disposable, IPersistentState
 {
@@ -849,14 +849,12 @@ public partial class PersistentState : Disposable, IPersistentState
     {
         // Calculate the term of the snapshot
         Partition? current = tail;
-        if (this.TryGetPartition(upperBoundIndex, ref current))
-            builder.Term = current.GetTerm(upperBoundIndex);
+        builder.Term = this.TryGetPartition(upperBoundIndex, ref current)
+            ? current.GetTerm(upperBoundIndex)
+            : throw new MissingPartitionException(upperBoundIndex);
 
         // Initialize builder with snapshot record
-        if (!snapshot.IsEmpty)
-        {
-            await builder.ApplyCoreAsync(snapshot.Read(sessionId)).ConfigureAwait(false);
-        }
+        await builder.InitializeAsync(sessionId).ConfigureAwait(false);
 
         current = head;
         Debug.Assert(current is not null);
@@ -875,11 +873,10 @@ public partial class PersistentState : Disposable, IPersistentState
         }
     }
 
-    private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder snapshot, long snapshotIndex)
+    private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder builder, long snapshotIndex)
     {
         // Persist snapshot (cannot be canceled to avoid inconsistency)
-        await this.snapshot.WriteAsync(snapshot, snapshotIndex).ConfigureAwait(false);
-        await this.snapshot.FlushAsync().ConfigureAwait(false);
+        await builder.BuildAsync(snapshotIndex).ConfigureAwait(false);
 
         // Remove squashed partitions
         return DetachPartitions(snapshotIndex);

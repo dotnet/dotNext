@@ -42,9 +42,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal long Value;
 
-            private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+            private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
             {
                 private long currentValue;
+
+                public SimpleSnapshotBuilder(in SnapshotBuilderContext context)
+                    : base(in context)
+                {
+                }
 
                 protected override async ValueTask ApplyAsync(LogEntry entry)
                 {
@@ -63,7 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ToTypeAsync<long, LogEntry>();
 
-            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder();
+            protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context) => new SimpleSnapshotBuilder(context);
         }
 
         private const int RecordsPerPartition = 4;

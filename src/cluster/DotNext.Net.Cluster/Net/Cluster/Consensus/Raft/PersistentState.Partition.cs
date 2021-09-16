@@ -290,7 +290,7 @@ public partial class PersistentState
      * [struct SnapshotMetadata] X 1
      * [octet string] X 1
      */
-    private sealed class Snapshot : ConcurrentStorageAccess
+    internal sealed class Snapshot : ConcurrentStorageAccess
     {
         private new const string FileName = "snapshot";
         private const string TempFileName = "snapshot.new";
@@ -321,6 +321,14 @@ public partial class PersistentState
 
         internal async ValueTask InitializeAsync()
             => metadata = FileSize >= SnapshotMetadata.Size ? await GetSessionReader(0).ParseAsync<SnapshotMetadata>().ConfigureAwait(false) : default;
+
+        internal async ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
+        {
+            InvalidateReaders();
+            await SetWritePositionAsync(0L, token).ConfigureAwait(false);
+            metadata = new(index, timestamp, term, FileSize - SnapshotMetadata.Size);
+            await writer.WriteFormattableAsync(metadata, token).ConfigureAwait(false);
+        }
 
         internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
         {

@@ -26,7 +26,7 @@ public partial class PersistentState
         private readonly int identifier;
         internal readonly long Term, Timestamp, Length, Offset;
 
-        private LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id)
+        internal LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id)
         {
             Term = term;
             Timestamp = timeStamp.UtcTicks;
@@ -94,6 +94,11 @@ public partial class PersistentState
             RecordMetadata = new(ref reader);
         }
 
+        internal SnapshotMetadata(long index, DateTimeOffset timeStamp, long term, long length, int? id = null)
+            : this(new LogEntryMetadata(timeStamp, term, Size, length, id), index)
+        {
+        }
+
         static int IBinaryFormattable<SnapshotMetadata>.Size => Size;
 
         static SnapshotMetadata IBinaryFormattable<SnapshotMetadata>.Parse(ref SpanReader<byte> input)
@@ -110,9 +115,9 @@ public partial class PersistentState
         }
     }
 
-    private abstract class ConcurrentStorageAccess : Disposable
+    internal abstract class ConcurrentStorageAccess : Disposable
     {
-        private readonly SafeFileHandle handle;
+        internal readonly SafeFileHandle Handle;
         private protected readonly FileWriter writer;
         private readonly MemoryAllocator<byte> allocator;
         internal readonly string FileName;
@@ -123,17 +128,17 @@ public partial class PersistentState
 
         private protected ConcurrentStorageAccess(string fileName, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
-            handle = File.OpenHandle(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
-            writer = new(handle, bufferSize: bufferSize, allocator: allocator);
+            Handle = File.OpenHandle(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+            writer = new(Handle, bufferSize: bufferSize, allocator: allocator);
             readers = new FileReader[readersCount];
             this.allocator = allocator;
             FileName = fileName;
 
             if (readersCount == 1)
-                readers[0] = new(handle, bufferSize: bufferSize, allocator: allocator);
+                readers[0] = new(Handle, bufferSize: bufferSize, allocator: allocator);
         }
 
-        private protected long FileSize => RandomAccess.GetLength(handle);
+        private protected long FileSize => RandomAccess.GetLength(Handle);
 
         /*
          * This method allows to reset read cache. It's an expensive operation and we
@@ -181,7 +186,7 @@ public partial class PersistentState
             Debug.Assert(sessionId >= 0 && sessionId < readers.Length);
 
             ref var reader = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
-            return reader ??= new(handle, bufferSize: writer.MaxBufferSize, allocator: allocator);
+            return reader ??= new(Handle, bufferSize: writer.MaxBufferSize, allocator: allocator);
         }
 
         protected override void Dispose(bool disposing)
@@ -197,7 +202,7 @@ public partial class PersistentState
 
                 readers = Array.Empty<FileReader?>();
                 writer.Dispose();
-                handle.Dispose();
+                Handle.Dispose();
             }
 
             base.Dispose(disposing);

@@ -13,9 +13,14 @@ namespace RaftNode
     {
         internal const string LogLocation = "logLocation";
 
-        private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+        private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
         {
             private long value;
+
+            public SimpleSnapshotBuilder(in SnapshotBuilderContext context)
+                : base(context)
+            {
+            }
 
             protected override async ValueTask ApplyAsync(LogEntry entry)
                 => value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
@@ -86,10 +91,10 @@ namespace RaftNode
             await WaitForCommitAsync(commitIndex + 1L, timeout, token);
         }
 
-        protected override SnapshotBuilder CreateSnapshotBuilder()
+        protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
         {
             Console.WriteLine("Building snapshot");
-            return new SimpleSnapshotBuilder();
+            return new SimpleSnapshotBuilder(context);
         }
     }
 }
