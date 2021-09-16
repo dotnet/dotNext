@@ -258,7 +258,7 @@ public static partial class BufferHelpers
     /// <summary>
     /// Writes the value as a sequence of bytes.
     /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to convert.</param>
     public static void WriteFormattable<T>(this IBufferWriter<byte> writer, T value)
@@ -272,7 +272,7 @@ public static partial class BufferHelpers
     /// <summary>
     /// Writes a sequence of formattable values.
     /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">A sequence of values to convert.</param>
     public static void WriteFormattable<T>(this IBufferWriter<byte> writer, ReadOnlySpan<T> values)
