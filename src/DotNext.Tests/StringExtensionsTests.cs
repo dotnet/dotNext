@@ -22,7 +22,7 @@ namespace DotNext
             const string AllowedChars = "abcd123456789";
             var str = Random.Shared.NextString(AllowedChars, 6);
             Equal(6, str.Length);
-            using (var generator = new RNGCryptoServiceProvider())
+            using (var generator = RandomNumberGenerator.Create())
             {
                 str = generator.NextString(AllowedChars, 7);
             }
