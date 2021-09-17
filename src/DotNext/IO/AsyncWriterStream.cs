@@ -1,48 +1,44 @@
-using System;
 using System.Buffers;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DotNext.IO
+namespace DotNext.IO;
+
+using Buffers;
+
+internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
+    where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
 {
-    using Buffers;
+    private const int DefaultTimeout = 4000;
+    private int timeout;
 
-    internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
-        where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+    internal AsyncWriterStream(TOutput output)
+        : base(output)
     {
-        private const int DefaultTimeout = 4000;
-        private int timeout;
+        timeout = DefaultTimeout;
+    }
 
-        internal AsyncWriterStream(TOutput output)
-            : base(output)
+    public override int WriteTimeout
+    {
+        get => timeout;
+        set => timeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
+
+    public override bool CanTimeout => true;
+
+    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    {
+        await output.Invoke(buffer, token).ConfigureAwait(false);
+        writtenBytes += buffer.Length;
+    }
+
+    public override void Write(ReadOnlySpan<byte> buffer)
+    {
+        if (!buffer.IsEmpty)
         {
-            timeout = DefaultTimeout;
-        }
-
-        public override int WriteTimeout
-        {
-            get => timeout;
-            set => timeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        public override bool CanTimeout => true;
-
-        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
-        {
-            await output.Invoke(buffer, token).ConfigureAwait(false);
-            writtenBytes += buffer.Length;
-        }
-
-        public override void Write(ReadOnlySpan<byte> buffer)
-        {
-            if (!buffer.IsEmpty)
-            {
-                using var rental = new MemoryOwner<byte>(ArrayPool<byte>.Shared, buffer.Length);
-                buffer.CopyTo(rental.Memory.Span);
-                using var source = new CancellationTokenSource(timeout);
-                using var task = WriteAsync(rental.Memory, source.Token).AsTask();
-                task.Wait(source.Token);
-            }
+            using var rental = new MemoryOwner<byte>(ArrayPool<byte>.Shared, buffer.Length);
+            buffer.CopyTo(rental.Memory.Span);
+            using var source = new CancellationTokenSource(timeout);
+            using var task = WriteAsync(rental.Memory, source.Token).AsTask();
+            task.Wait(source.Token);
         }
     }
 }
