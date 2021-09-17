@@ -319,7 +319,7 @@ namespace DotNext.Buffers
             Span<char> buffer = stackalloc char[bufferSize];
 
             var context = new EncodingContext(Encoding.GetEncoding(encoding), true);
-            writer.WriteString(in context, buffer, null, $"{x,4:X} = {y,-3:X}");
+            True(writer.WriteString(in context, buffer, null, $"{x,4:X} = {y,-3:X}") > 0);
 
             Equal($"{x,4:X} = {y,-3:X}", context.Encoding.GetString(writer.WrittenSpan));
         }
