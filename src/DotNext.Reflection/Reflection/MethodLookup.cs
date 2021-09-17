@@ -1,18 +1,17 @@
-namespace DotNext.Reflection
+namespace DotNext.Reflection;
+
+/// <summary>
+/// Represents method declaration type.
+/// </summary>
+public enum MethodLookup : byte
 {
     /// <summary>
-    /// Represents method declaration type.
+    /// Represents static method.
     /// </summary>
-    public enum MethodLookup : byte
-    {
-        /// <summary>
-        /// Represents static method.
-        /// </summary>
-        Static = 0,
+    Static = 0,
 
-        /// <summary>
-        /// Represents instance method.
-        /// </summary>
-        Instance = 1,
-    }
+    /// <summary>
+    /// Represents instance method.
+    /// </summary>
+    Instance = 1,
 }
