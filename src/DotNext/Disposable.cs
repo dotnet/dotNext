@@ -1,159 +1,155 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
-namespace DotNext
+namespace DotNext;
+
+using static Runtime.Intrinsics;
+
+/// <summary>
+/// Provides implementation of dispose pattern.
+/// </summary>
+/// <see cref="IDisposable"/>
+/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
+public abstract class Disposable : IDisposable
 {
-    using static Runtime.Intrinsics;
+    private volatile bool disposed;
 
     /// <summary>
-    /// Provides implementation of dispose pattern.
+    /// Indicates that this object is disposed.
     /// </summary>
-    /// <see cref="IDisposable"/>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
-    public abstract class Disposable : IDisposable
+    protected bool IsDisposed => disposed;
+
+    private string ObjectName => GetType().Name;
+
+    /// <summary>
+    /// Throws exception if this object is disposed.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    protected void ThrowIfDisposed()
     {
-        private volatile bool disposed;
-
-        /// <summary>
-        /// Indicates that this object is disposed.
-        /// </summary>
-        protected bool IsDisposed => disposed;
-
-        private string ObjectName => GetType().Name;
-
-        /// <summary>
-        /// Throws exception if this object is disposed.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void ThrowIfDisposed()
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(ObjectName);
-        }
-
-        /// <summary>
-        /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
-        /// </summary>
-        protected Task DisposedTask => Task.FromException(new ObjectDisposedException(ObjectName));
-
-        /// <summary>
-        /// Returns a task representing <see cref="ObjectDisposedException"/> exception.
-        /// </summary>
-        /// <typeparam name="T">The type of the task.</typeparam>
-        /// <returns>The task representing <see cref="ObjectDisposedException"/> exception.</returns>
-        protected Task<T> GetDisposedTask<T>()
-            => Task.FromException<T>(new ObjectDisposedException(ObjectName));
-
-        /// <summary>
-        /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
-        /// </summary>
-        /// <param name="source">The task completion source.</param>
-        /// <typeparam name="T">The type of the task.</typeparam>
-        /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
-        protected bool TrySetDisposedException<T>(TaskCompletionSource<T> source)
-            => source.TrySetException(new ObjectDisposedException(ObjectName));
-
-        /// <summary>
-        /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
-        /// </summary>
-        /// <param name="source">The task completion source.</param>
-        /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
-        protected bool TrySetDisposedException(TaskCompletionSource source)
-            => source.TrySetException(new ObjectDisposedException(ObjectName));
-
-        /// <summary>
-        /// Releases managed and unmanaged resources associated with this object.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
-        protected virtual void Dispose(bool disposing) => disposed = true;
-
-        /// <summary>
-        /// Releases managed resources associated with this object asynchronously.
-        /// </summary>
-        /// <remarks>
-        /// This method makes sense only if derived class implements <see cref="IAsyncDisposable"/> interface.
-        /// </remarks>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected virtual ValueTask DisposeAsyncCore()
-        {
-            Dispose(true);
-            return new ValueTask();
-        }
-
-        private async ValueTask DisposeAsyncImpl()
-        {
-            await DisposeAsyncCore().ConfigureAwait(false);
-            Dispose(false);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases managed resources associated with this object asynchronously.
-        /// </summary>
-        /// <remarks>
-        /// If derived class implements <see cref="IAsyncDisposable"/> then <see cref="IAsyncDisposable.DisposeAsync"/>
-        /// can be trivially implemented through delegation of the call to this method.
-        /// </remarks>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected ValueTask DisposeAsync() => disposed ? new ValueTask() : DisposeAsyncImpl();
-
-        /// <summary>
-        /// Releases all resources associated with this object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Disposes many objects.
-        /// </summary>
-        /// <param name="objects">An array of objects to dispose.</param>
-        public static void Dispose(IEnumerable<IDisposable?> objects)
-        {
-            foreach (var obj in objects)
-                obj?.Dispose();
-        }
-
-        /// <summary>
-        /// Disposes many objects.
-        /// </summary>
-        /// <param name="objects">An array of objects to dispose.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
-        {
-            foreach (var obj in objects)
-            {
-                if (obj is not null)
-                    await obj.DisposeAsync().ConfigureAwait(false);
-            }
-        }
-
-        /// <summary>
-        /// Disposes many objects in safe manner.
-        /// </summary>
-        /// <param name="objects">An array of objects to dispose.</param>
-        public static void Dispose(params IDisposable?[] objects)
-        {
-            for (nint i = 0; i < GetLength(objects); i++)
-                objects[i]?.Dispose();
-        }
-
-        /// <summary>
-        /// Disposes many objects in safe manner.
-        /// </summary>
-        /// <param name="objects">An array of objects to dispose.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
-            => DisposeAsync(objects.As<IEnumerable<IAsyncDisposable?>>());
-
-        /// <summary>
-        /// Finalizes this object.
-        /// </summary>
-        ~Disposable() => Dispose(false);
+        if (IsDisposed)
+            throw new ObjectDisposedException(ObjectName);
     }
+
+    /// <summary>
+    /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
+    /// </summary>
+    protected Task DisposedTask => Task.FromException(new ObjectDisposedException(ObjectName));
+
+    /// <summary>
+    /// Returns a task representing <see cref="ObjectDisposedException"/> exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns>The task representing <see cref="ObjectDisposedException"/> exception.</returns>
+    protected Task<T> GetDisposedTask<T>()
+        => Task.FromException<T>(new ObjectDisposedException(ObjectName));
+
+    /// <summary>
+    /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
+    /// </summary>
+    /// <param name="source">The task completion source.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
+    protected bool TrySetDisposedException<T>(TaskCompletionSource<T> source)
+        => source.TrySetException(new ObjectDisposedException(ObjectName));
+
+    /// <summary>
+    /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
+    /// </summary>
+    /// <param name="source">The task completion source.</param>
+    /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
+    protected bool TrySetDisposedException(TaskCompletionSource source)
+        => source.TrySetException(new ObjectDisposedException(ObjectName));
+
+    /// <summary>
+    /// Releases managed and unmanaged resources associated with this object.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
+    protected virtual void Dispose(bool disposing) => disposed = true;
+
+    /// <summary>
+    /// Releases managed resources associated with this object asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method makes sense only if derived class implements <see cref="IAsyncDisposable"/> interface.
+    /// </remarks>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        Dispose(true);
+        return new ValueTask();
+    }
+
+    private async ValueTask DisposeAsyncImpl()
+    {
+        await DisposeAsyncCore().ConfigureAwait(false);
+        Dispose(false);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases managed resources associated with this object asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// If derived class implements <see cref="IAsyncDisposable"/> then <see cref="IAsyncDisposable.DisposeAsync"/>
+    /// can be trivially implemented through delegation of the call to this method.
+    /// </remarks>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    protected ValueTask DisposeAsync() => disposed ? new ValueTask() : DisposeAsyncImpl();
+
+    /// <summary>
+    /// Releases all resources associated with this object.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Disposes many objects.
+    /// </summary>
+    /// <param name="objects">An array of objects to dispose.</param>
+    public static void Dispose(IEnumerable<IDisposable?> objects)
+    {
+        foreach (var obj in objects)
+            obj?.Dispose();
+    }
+
+    /// <summary>
+    /// Disposes many objects.
+    /// </summary>
+    /// <param name="objects">An array of objects to dispose.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
+    {
+        foreach (var obj in objects)
+        {
+            if (obj is not null)
+                await obj.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Disposes many objects in safe manner.
+    /// </summary>
+    /// <param name="objects">An array of objects to dispose.</param>
+    public static void Dispose(params IDisposable?[] objects)
+    {
+        for (nint i = 0; i < GetLength(objects); i++)
+            objects[i]?.Dispose();
+    }
+
+    /// <summary>
+    /// Disposes many objects in safe manner.
+    /// </summary>
+    /// <param name="objects">An array of objects to dispose.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
+        => DisposeAsync(objects.As<IEnumerable<IAsyncDisposable?>>());
+
+    /// <summary>
+    /// Finalizes this object.
+    /// </summary>
+    ~Disposable() => Dispose(false);
 }

@@ -180,7 +180,7 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void EnterWriteLock()
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) ;
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce());
 
         Interlocked.Increment(ref version);
     }
