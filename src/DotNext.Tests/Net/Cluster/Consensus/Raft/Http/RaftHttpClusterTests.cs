@@ -10,7 +10,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Messaging;
 using Replication;
-using static Hosting.HostBuilderExtensions;
 
 [ExcludeFromCodeCoverage]
 public sealed class EmbeddedClusterSupportTests : Test
@@ -36,7 +35,7 @@ public sealed class EmbeddedClusterSupportTests : Test
                 })
                 .UseStartup<TStartup>()
             )
-            .UseHostOptions(new HostOptions { ShutdownTimeout = TimeSpan.FromMinutes(2) })
+            .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
             .ConfigureLogging(static builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
             .JoinCluster()
