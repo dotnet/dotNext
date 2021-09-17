@@ -31,7 +31,7 @@ public struct BufferWriterInterpolatedStringHandler
     /// <param name="provider">Optional formatting provider.</param>
     public BufferWriterInterpolatedStringHandler(int literalLength, int formattedCount, IBufferWriter<char> buffer, IFormatProvider? provider = null)
     {
-        this.buffer = buffer;
+        this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
         this.provider = provider;
 
         buffer.GetSpan(literalLength + formattedCount);
@@ -70,6 +70,7 @@ public struct BufferWriterInterpolatedStringHandler
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
                         buffer.Advance(charsWritten);
+                        count += charsWritten;
                         break;
                     }
                 }

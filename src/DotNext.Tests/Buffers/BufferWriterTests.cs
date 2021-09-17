@@ -299,5 +299,29 @@ namespace DotNext.Buffers
                 buffer.Dispose();
             }
         }
+
+        [Theory]
+        [InlineData(0, "UTF-8", 10, 10)]
+        [InlineData(0, "UTF-8", int.MaxValue, int.MinValue)]
+        [InlineData(0, "UTF-16LE", 10, 10)]
+        [InlineData(0, "UTF-16BE", int.MaxValue, int.MinValue)]
+        [InlineData(0, "UTF-32LE", 10, 10)]
+        [InlineData(0, "UTF-32BE", int.MaxValue, int.MinValue)]
+        [InlineData(8, "UTF-8", 10, 10)]
+        [InlineData(8, "UTF-8", int.MaxValue, int.MinValue)]
+        [InlineData(8, "UTF-16LE", 10, 10)]
+        [InlineData(8, "UTF-16BE", int.MaxValue, int.MinValue)]
+        [InlineData(8, "UTF-32LE", 10, 10)]
+        [InlineData(8, "UTF-32BE", int.MaxValue, int.MinValue)]
+        public static void EncodeInterpolatedString(int bufferSize, string encoding, int x, int y)
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            Span<char> buffer = stackalloc char[bufferSize];
+
+            var context = new EncodingContext(Encoding.GetEncoding(encoding), true);
+            writer.WriteString(in context, buffer, null, $"{x,4:X} = {y,-3:X}");
+
+            Equal($"{x,4:X} = {y,-3:X}", context.Encoding.GetString(writer.WrittenSpan));
+        }
     }
 }
