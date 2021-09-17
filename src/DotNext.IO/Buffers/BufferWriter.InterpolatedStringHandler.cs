@@ -88,7 +88,7 @@ public partial class BufferWriter
                 {
                     for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                     {
-                        using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer.Slice(0, bufferSize) : new MemoryRental<char>(bufferSize);
+                        using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
 
                         // constrained call avoiding boxing for value types
                         if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out var charsWritten, format, provider))
