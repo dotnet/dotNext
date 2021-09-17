@@ -2,6 +2,7 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
@@ -22,7 +23,8 @@ public partial class BufferWriter
         private const char Whitespace = ' ';
         private readonly IBufferWriter<byte> buffer;
         private readonly IFormatProvider? provider;
-        private readonly EncodingContext context;
+        private readonly Encoding encoding;
+        private readonly Encoder encoder;
         private readonly Span<char> charBuffer;
         private int count;
 
@@ -40,7 +42,8 @@ public partial class BufferWriter
         {
             this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this.provider = provider;
-            this.context = context;
+            encoding = context.Encoding;
+            encoder = context.GetEncoder();
             this.charBuffer = charBuffer;
 
             buffer.GetSpan(context.Encoding.GetMaxByteCount(literalLength + formattedCount));
@@ -68,8 +71,8 @@ public partial class BufferWriter
             if (value.IsEmpty)
                 return;
 
-            var output = buffer.GetSpan(context.Encoding.GetByteCount(value));
-            var writtenCount = context.GetEncoder().GetBytes(value, output, true);
+            var output = buffer.GetSpan(encoding.GetByteCount(value));
+            var writtenCount = encoder.GetBytes(value, output, true);
             buffer.Advance(writtenCount);
             count += writtenCount;
         }
