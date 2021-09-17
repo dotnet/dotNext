@@ -58,7 +58,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the array element.</value>
-        public ref T this[int index] => ref Array[index];
+        public ref T this[nint index] => ref Array[index];
 
         /// <inheritdoc />
         T IList<T>.this[int index]
