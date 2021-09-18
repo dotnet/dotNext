@@ -1,13 +1,12 @@
 using System.Diagnostics.Tracing;
 
-namespace RaftNode
+namespace RaftNode;
+
+// for application metrics
+internal sealed class AppEventSource : EventSource
 {
-    // for application metrics
-    internal sealed class AppEventSource : EventSource
+    public AppEventSource()
+        : base("RaftNode.Events")
     {
-        public AppEventSource()
-            : base("RaftNode.Events")
-        {
-        }
     }
 }

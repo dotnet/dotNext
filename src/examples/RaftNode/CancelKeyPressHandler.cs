@@ -1,19 +1,17 @@
 using DotNext.Threading;
-using System;
 
-namespace RaftNode
+namespace RaftNode;
+
+internal sealed class CancelKeyPressHandler : AsyncManualResetEvent
 {
-    internal sealed class CancelKeyPressHandler : AsyncManualResetEvent
+    internal CancelKeyPressHandler()
+        : base(false)
     {
-        internal CancelKeyPressHandler()
-            : base(false)
-        {
-        }
+    }
 
-        internal void Handler(object? sender, ConsoleCancelEventArgs e)
-        {
-            e.Cancel = true;
-            Set();
-        }
+    internal void Handler(object? sender, ConsoleCancelEventArgs e)
+    {
+        e.Cancel = true;
+        Set();
     }
 }
