@@ -1,44 +1,41 @@
-using System;
 using System.Collections.Concurrent;
-using System.Threading;
 
-namespace DotNext.Threading
+namespace DotNext.Threading;
+
+using Tasks;
+
+public static partial class AsyncBridge
 {
-    using Tasks;
-
-    public static partial class AsyncBridge
+    private sealed class CancellationTokenValueTask : ValueTaskCompletionSource
     {
-        private sealed class CancellationTokenValueTask : ValueTaskCompletionSource
+        private readonly Action<CancellationTokenValueTask> backToPool;
+
+        internal new bool CompleteAsCanceled;
+
+        internal CancellationTokenValueTask(Action<CancellationTokenValueTask> backToPool)
         {
-            private readonly Action<CancellationTokenValueTask> backToPool;
-
-            internal new bool CompleteAsCanceled;
-
-            internal CancellationTokenValueTask(Action<CancellationTokenValueTask> backToPool)
-            {
-                this.backToPool = backToPool;
-                Interlocked.Increment(ref instantiatedTasks);
-            }
-
-            protected override void AfterConsumed()
-            {
-                Interlocked.Decrement(ref instantiatedTasks);
-                backToPool(this);
-            }
-
-            protected override Exception? OnCanceled(CancellationToken token)
-                => CompleteAsCanceled ? new OperationCanceledException(token) : null;
+            this.backToPool = backToPool;
+            Interlocked.Increment(ref instantiatedTasks);
         }
 
-        private sealed class CancellationTokenValueTaskPool : ConcurrentBag<CancellationTokenValueTask>
+        protected override void AfterConsumed()
         {
-            internal void Return(CancellationTokenValueTask vt)
-            {
-                vt.Reset();
-                Add(vt);
-            }
+            Interlocked.Decrement(ref instantiatedTasks);
+            backToPool(this);
         }
 
-        private static readonly CancellationTokenValueTaskPool TokenPool = new();
+        protected override Exception? OnCanceled(CancellationToken token)
+            => CompleteAsCanceled ? new OperationCanceledException(token) : null;
     }
+
+    private sealed class CancellationTokenValueTaskPool : ConcurrentBag<CancellationTokenValueTask>
+    {
+        internal void Return(CancellationTokenValueTask vt)
+        {
+            vt.Reset();
+            Add(vt);
+        }
+    }
+
+    private static readonly CancellationTokenValueTaskPool TokenPool = new();
 }

@@ -1,13 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Threading.Channels
+namespace DotNext.Threading.Channels;
+
+using IO;
+
+internal interface IChannel
 {
-    using IO;
+    DirectoryInfo Location { get; }
 
-    internal interface IChannel
-    {
-        DirectoryInfo Location { get; }
-
-        PartitionStream GetOrCreatePartition(ref ChannelCursor cursor, [NotNull] ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose);
-    }
+    PartitionStream GetOrCreatePartition(ref ChannelCursor cursor, [NotNull] ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose);
 }
