@@ -1,21 +1,19 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Runtime.ExceptionServices;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Runtime.CompilerServices;
+
+using static Linq.Expressions.ExpressionBuilder;
+
+internal sealed class RethrowExpression : StateMachineExpression
 {
-    using static Linq.Expressions.ExpressionBuilder;
+    public override Type Type => typeof(void);
 
-    internal sealed class RethrowExpression : StateMachineExpression
-    {
-        public override Type Type => typeof(void);
+    public override Expression Reduce() => Rethrow();
 
-        public override Expression Reduce() => Rethrow();
+    internal static Expression Dispatch(ParameterExpression exceptionHolder)
+        => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes, exceptionHolder);
 
-        internal static Expression Dispatch(ParameterExpression exceptionHolder)
-            => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes, exceptionHolder);
-
-        internal override Expression Reduce(ParameterExpression stateMachine)
-            => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Rethrow));
-    }
+    internal override Expression Reduce(ParameterExpression stateMachine)
+        => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Rethrow));
 }

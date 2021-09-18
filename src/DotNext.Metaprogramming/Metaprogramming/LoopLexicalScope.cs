@@ -1,19 +1,18 @@
 ﻿using System.Linq.Expressions;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Metaprogramming;
+
+using ILoopLabels = Linq.Expressions.ILoopLabels;
+
+internal abstract class LoopLexicalScope : Statement, ILoopLabels
 {
-    using ILoopLabels = Linq.Expressions.ILoopLabels;
-
-    internal abstract class LoopLexicalScope : Statement, ILoopLabels
+    private protected LoopLexicalScope()
     {
-        private protected LoopLexicalScope()
-        {
-            ContinueLabel = Expression.Label(typeof(void), "continue");
-            BreakLabel = Expression.Label(typeof(void), "break");
-        }
-
-        public LabelTarget ContinueLabel { get; }
-
-        public LabelTarget BreakLabel { get; }
+        ContinueLabel = Expression.Label(typeof(void), "continue");
+        BreakLabel = Expression.Label(typeof(void), "break");
     }
+
+    public LabelTarget ContinueLabel { get; }
+
+    public LabelTarget BreakLabel { get; }
 }
