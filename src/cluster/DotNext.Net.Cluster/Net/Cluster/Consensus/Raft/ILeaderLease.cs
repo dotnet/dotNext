@@ -1,13 +1,12 @@
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft;
+
+/// <summary>
+/// Represents Raft leader lease that can be used for linearizable read.
+/// </summary>
+public interface ILeaderLease
 {
     /// <summary>
-    /// Represents Raft leader lease that can be used for linearizable read.
+    /// Gets a value indicating that lease has expired.
     /// </summary>
-    public interface ILeaderLease
-    {
-        /// <summary>
-        /// Gets a value indicating that lease has expired.
-        /// </summary>
-        bool IsExpired { get; }
-    }
+    bool IsExpired { get; }
 }

@@ -1,129 +1,125 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.Udp;
+
+using Buffers;
+using TransportServices;
+
+internal sealed class UdpServer : UdpSocket, IServer
 {
-    using Buffers;
-    using TransportServices;
-
-    internal sealed class UdpServer : UdpSocket, IServer
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct Channel : INetworkTransport.IChannel
     {
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct Channel : INetworkTransport.IChannel
+        private readonly IExchangePool exchangeOwner;
+        private readonly IExchange exchange;
+        private readonly CancellationTokenSource timeoutTokenSource;
+        private readonly CancellationTokenRegistration cancellation;
+
+        internal Channel(IExchange exchange, IExchangePool exchanges, TimeSpan timeout, Action<object?> cancellationCallback, CorrelationId id)
         {
-            private readonly IExchangePool exchangeOwner;
-            private readonly IExchange exchange;
-            private readonly CancellationTokenSource timeoutTokenSource;
-            private readonly CancellationTokenRegistration cancellation;
-
-            internal Channel(IExchange exchange, IExchangePool exchanges, TimeSpan timeout, Action<object?> cancellationCallback, CorrelationId id)
-            {
-                this.exchange = exchange;
-                timeoutTokenSource = new CancellationTokenSource(timeout);
-                cancellation = timeoutTokenSource.Token.Register(cancellationCallback, id);
-                exchangeOwner = exchanges;
-            }
-
-            IExchange INetworkTransport.IChannel.Exchange => exchange;
-
-            public CancellationToken Token => timeoutTokenSource.Token;
-
-            public void Dispose()
-            {
-                cancellation.Dispose();
-                timeoutTokenSource.Dispose();
-                exchangeOwner.Release(exchange);
-            }
+            this.exchange = exchange;
+            timeoutTokenSource = new CancellationTokenSource(timeout);
+            cancellation = timeoutTokenSource.Token.Register(cancellationCallback, id);
+            exchangeOwner = exchanges;
         }
 
-        private readonly IExchangePool exchanges;
-        private readonly INetworkTransport.ChannelPool<Channel> channels;
-        private readonly Action<object?> cancellationHandler;
-        private TimeSpan receiveTimeout;
+        IExchange INetworkTransport.IChannel.Exchange => exchange;
 
-        internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
-            : base(address, backlog, allocator, loggerFactory)
+        public CancellationToken Token => timeoutTokenSource.Token;
+
+        public void Dispose()
         {
-            channels = new INetworkTransport.ChannelPool<Channel>(backlog);
-            cancellationHandler = channels.CancellationRequested;
-            exchanges = exchangePoolFactory(backlog);
+            cancellation.Dispose();
+            timeoutTokenSource.Dispose();
+            exchangeOwner.Release(exchange);
         }
+    }
 
-        private protected override bool AllowReceiveFromAnyHost => true;
+    private readonly IExchangePool exchanges;
+    private readonly INetworkTransport.ChannelPool<Channel> channels;
+    private readonly Action<object?> cancellationHandler;
+    private TimeSpan receiveTimeout;
 
-        private protected override void EndReceive(SocketAsyncEventArgs args)
+    internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
+        : base(address, backlog, allocator, loggerFactory)
+    {
+        channels = new INetworkTransport.ChannelPool<Channel>(backlog);
+        cancellationHandler = channels.CancellationRequested;
+        exchanges = exchangePoolFactory(backlog);
+    }
+
+    private protected override bool AllowReceiveFromAnyHost => true;
+
+    private protected override void EndReceive(SocketAsyncEventArgs args)
+    {
+        ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
+        var reader = new SpanReader<byte>(datagram.Span);
+
+        // dispatch datagram to appropriate exchange
+        var correlationId = new CorrelationId(ref reader);
+        var headers = new PacketHeaders(ref reader);
+        datagram = datagram.Slice(reader.ConsumedCount);
+
+    request_channel:
+        if (!channels.TryGetValue(correlationId, out var channel))
         {
-            ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
-
-            // dispatch datagram to appropriate exchange
-            var correlationId = new CorrelationId(datagram.Span, out var consumedBytes);
-            datagram = datagram.Slice(consumedBytes);
-
-            var headers = new PacketHeaders(datagram, out consumedBytes);
-            datagram = datagram.Slice(consumedBytes);
-
-        request_channel:
-            if (!channels.TryGetValue(correlationId, out var channel))
+            // channel doesn't exist in the list of active channel but rented successfully
+            if (exchanges.TryRent(out var exchange))
             {
-                // channel doesn't exist in the list of active channel but rented successfully
-                if (exchanges.TryRent(out var exchange))
+                channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
+                if (!channels.TryAdd(correlationId, channel))
                 {
-                    channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
-                    if (!channels.TryAdd(correlationId, channel))
-                    {
-                        channel.Dispose();
-                        goto request_channel;
-                    }
-                }
-                else
-                {
-                    logger.NotEnoughRequestHandlers();
-                    return;
+                    channel.Dispose();
+                    goto request_channel;
                 }
             }
-
-            ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
-        }
-
-        public new TimeSpan ReceiveTimeout
-        {
-            get => receiveTimeout;
-            set
+            else
             {
-                base.ReceiveTimeout = (int)value.TotalMilliseconds;
-                receiveTimeout = value;
+                logger.NotEnoughRequestHandlers();
+                return;
             }
         }
 
-        public void Start()
-        {
-            Bind(Address);
-            base.Start();
-        }
+        ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
+    }
 
-        private void Cleanup(bool disposing)
+    public new TimeSpan ReceiveTimeout
+    {
+        get => receiveTimeout;
+        set
         {
-            if (disposing)
-            {
-                channels.ClearAndDestroyChannels();
-                (exchanges as IDisposable)?.Dispose();
-            }
+            base.ReceiveTimeout = (int)value.TotalMilliseconds;
+            receiveTimeout = value;
         }
+    }
 
-        protected override void Dispose(bool disposing)
+    public void Start()
+    {
+        Bind(Address);
+        base.Start();
+    }
+
+    private void Cleanup(bool disposing)
+    {
+        if (disposing)
         {
-            try
-            {
-                base.Dispose(disposing);
-            }
-            finally
-            {
-                Cleanup(disposing);
-            }
+            channels.ClearAndDestroyChannels();
+            (exchanges as IDisposable)?.Dispose();
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            base.Dispose(disposing);
+        }
+        finally
+        {
+            Cleanup(disposing);
         }
     }
 }

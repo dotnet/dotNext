@@ -1,50 +1,46 @@
-using System;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DotNext.Net.Cluster.Discovery.HyParView
+namespace DotNext.Net.Cluster.Discovery.HyParView;
+
+using Buffers;
+
+public partial class PeerController
 {
-    using Buffers;
+    /// <summary>
+    /// Sends Join request to contact node.
+    /// </summary>
+    /// <param name="contactNode">The address of the contact node.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing communication operation.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    protected abstract Task JoinAsync(EndPoint contactNode, CancellationToken token);
 
-    public partial class PeerController
+    /// <summary>
+    /// Must be called by transport layer when Join request is received.
+    /// </summary>
+    /// <param name="joinedPeer">The joined peer.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+    protected ValueTask EnqueueJoinAsync(EndPoint joinedPeer, CancellationToken token = default)
+        => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Join(joinedPeer), token);
+
+    private async Task ProcessJoinAsync(EndPoint joinedPeer)
     {
-        /// <summary>
-        /// Sends Join request to contact node.
-        /// </summary>
-        /// <param name="contactNode">The address of the contact node.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing communication operation.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected abstract Task JoinAsync(EndPoint contactNode, CancellationToken token);
+        using var tasks = new PooledArrayBufferWriter<Task>(activeViewCapacity);
+        await AddPeerToActiveViewAsync(joinedPeer, true).ConfigureAwait(false);
 
-        /// <summary>
-        /// Must be called by transport layer when Join request is received.
-        /// </summary>
-        /// <param name="joinedPeer">The joined peer.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous result.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-        protected ValueTask EnqueueJoinAsync(EndPoint joinedPeer, CancellationToken token = default)
-            => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Join(joinedPeer), token);
-
-        private async Task ProcessJoinAsync(EndPoint joinedPeer)
+        // forwards JOIN request to all neighbors including joined peer
+        foreach (var neighbor in activeView.Remove(joinedPeer))
         {
-            using var tasks = new PooledArrayBufferWriter<Task>(activeViewCapacity);
-            await AddPeerToActiveViewAsync(joinedPeer, true).ConfigureAwait(false);
-
-            // forwards JOIN request to all neighbors including joined peer
-            foreach (var neighbor in activeView.Remove(joinedPeer))
+            if (!joinedPeer.Equals(neighbor))
             {
-                if (!joinedPeer.Equals(neighbor))
-                {
-                    tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, activeRandomWalkLength), LifecycleToken));
-                }
+                tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, activeRandomWalkLength), LifecycleToken));
             }
-
-            // await responses
-            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
+
+        // await responses
+        await Task.WhenAll(tasks).ConfigureAwait(false);
     }
 }

@@ -1,26 +1,25 @@
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft;
+
+/// <summary>
+/// Represents arguments for all events related to Raft cluster members.
+/// </summary>
+/// <typeparam name="TMember">The type of the cluster member.</typeparam>
+public class RaftClusterMemberEventArgs<TMember> : ClusterMemberEventArgs
+    where TMember : class, IRaftClusterMember
 {
     /// <summary>
-    /// Represents arguments for all events related to Raft cluster members.
+    /// Initializes a new set of arguments for the event.
     /// </summary>
-    /// <typeparam name="TMember">The type of the cluster member.</typeparam>
-    public class RaftClusterMemberEventArgs<TMember> : ClusterMemberEventArgs
-        where TMember : class, IRaftClusterMember
+    /// <param name="member">The type of the member.</param>
+    public RaftClusterMemberEventArgs(TMember member)
+        : base(member)
     {
-        /// <summary>
-        /// Initializes a new set of arguments for the event.
-        /// </summary>
-        /// <param name="member">The type of the member.</param>
-        public RaftClusterMemberEventArgs(TMember member)
-            : base(member)
-        {
-        }
-
-        /// <summary>
-        /// Gets the member associated with the event.
-        /// </summary>
-        public new TMember Member => Unsafe.As<TMember>(base.Member);
     }
+
+    /// <summary>
+    /// Gets the member associated with the event.
+    /// </summary>
+    public new TMember Member => Unsafe.As<TMember>(base.Member);
 }

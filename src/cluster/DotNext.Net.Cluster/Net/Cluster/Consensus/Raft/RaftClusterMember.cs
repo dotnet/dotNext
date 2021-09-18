@@ -1,143 +1,138 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft;
+
+using Membership;
+using Threading;
+using TransportServices;
+using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+
+/// <summary>
+/// Represents Raft cluster member that is accessible through the network.
+/// </summary>
+public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
-    using Membership;
-    using Threading;
-    using TransportServices;
-    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+    private long nextIndex, fingerprint;
+    private protected readonly IClientMetricsCollector? metrics;
+    private protected readonly ILocalMember localMember;
+    internal readonly ClusterMemberId Id;
+    private volatile IReadOnlyDictionary<string, string>? metadataCache;
+    private AtomicEnum<ClusterMemberStatus> status;
+    private Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>? statusChangedHandlers;
+
+    private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+    {
+        this.localMember = localMember;
+        this.metrics = metrics;
+        EndPoint = endPoint;
+        status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
+        Id = id;
+    }
+
+    /// <inheritdoc />
+    ClusterMemberId IClusterMember.Id => Id;
+
+    private protected ILogger Logger => localMember.Logger;
 
     /// <summary>
-    /// Represents Raft cluster member that is accessible through the network.
+    /// Gets the address of this cluster member.
     /// </summary>
-    public abstract class RaftClusterMember : Disposable, IRaftClusterMember
+    public IPEndPoint EndPoint { get; }
+
+    /// <inheritdoc />
+    EndPoint IPeer.EndPoint => EndPoint;
+
+    /// <summary>
+    /// Determines whether this member is a leader.
+    /// </summary>
+    public bool IsLeader => localMember.IsLeader(this);
+
+    /// <summary>
+    /// Determines whether this member is not a local node.
+    /// </summary>
+    public bool IsRemote { get; internal set; }
+
+    /// <summary>
+    /// Gets the status of this member.
+    /// </summary>
+    public ClusterMemberStatus Status => status.Value;
+
+    /// <summary>
+    /// Informs about status change.
+    /// </summary>
+    public event Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>> MemberStatusChanged
     {
-        private long nextIndex, fingerprint;
-        private protected readonly IClientMetricsCollector? metrics;
-        private protected readonly ILocalMember localMember;
-        internal readonly ClusterMemberId Id;
-        private volatile IReadOnlyDictionary<string, string>? metadataCache;
-        private AtomicEnum<ClusterMemberStatus> status;
-        private Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>? statusChangedHandlers;
+        add => statusChangedHandlers += value;
+        remove => statusChangedHandlers -= value;
+    }
 
-        private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
-        {
-            this.localMember = localMember;
-            this.metrics = metrics;
-            EndPoint = endPoint;
-            status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
-            Id = id;
-        }
+    /// <inheritdoc />
+    event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
+    {
+        add => statusChangedHandlers += value;
+        remove => statusChangedHandlers -= value;
+    }
 
-        /// <inheritdoc />
-        ClusterMemberId IClusterMember.Id => Id;
+    /// <inheritdoc/>
+    ref long IRaftClusterMember.NextIndex => ref nextIndex;
 
-        private protected ILogger Logger => localMember.Logger;
+    /// <inheritdoc/>
+    ref long IRaftClusterMember.ConfigurationFingerprint => ref fingerprint;
 
-        /// <summary>
-        /// Gets the address of this cluster member.
-        /// </summary>
-        public IPEndPoint EndPoint { get; }
+    /// <summary>
+    /// Cancels pending requests scheduled for this member.
+    /// </summary>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    public abstract ValueTask CancelPendingRequestsAsync();
 
-        /// <inheritdoc />
-        EndPoint IPeer.EndPoint => EndPoint;
+    private protected void ChangeStatus(ClusterMemberStatus newState)
+        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, statusChangedHandlers);
 
-        /// <summary>
-        /// Determines whether this member is a leader.
-        /// </summary>
-        public bool IsLeader => localMember.IsLeader(this);
+    internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
-        /// <summary>
-        /// Determines whether this member is not a local node.
-        /// </summary>
-        public bool IsRemote { get; internal set; }
+    private protected abstract Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-        /// <summary>
-        /// Gets the status of this member.
-        /// </summary>
-        public ClusterMemberStatus Status => status.Value;
+    /// <inheritdoc/>
+    Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        => IsRemote ? VoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
 
-        /// <summary>
-        /// Informs about status change.
-        /// </summary>
-        public event Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>> MemberStatusChanged
-        {
-            add => statusChangedHandlers += value;
-            remove => statusChangedHandlers -= value;
-        }
+    private protected abstract Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-        /// <inheritdoc />
-        event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
-        {
-            add => statusChangedHandlers += value;
-            remove => statusChangedHandlers -= value;
-        }
+    /// <inheritdoc/>
+    Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
 
-        /// <inheritdoc/>
-        ref long IRaftClusterMember.NextIndex => ref nextIndex;
+    private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        where TEntry : IRaftLogEntry
+        where TList : IReadOnlyList<TEntry>;
 
-        /// <inheritdoc/>
-        ref long IRaftClusterMember.ConfigurationFingerprint => ref fingerprint;
+    /// <inheritdoc/>
+    Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        => IsRemote ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, token) : Task.FromResult(new Result<bool>(term, true));
 
-        /// <summary>
-        /// Cancels pending requests scheduled for this member.
-        /// </summary>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        public abstract ValueTask CancelPendingRequestsAsync();
+    private protected abstract Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
 
-        private protected void ChangeStatus(ClusterMemberStatus newState)
-            => IClusterMember.OnMemberStatusChanged(this, ref status, newState, statusChangedHandlers);
+    /// <inheritdoc/>
+    Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+        => IsRemote ? InstallSnapshotAsync(term, snapshot, snapshotIndex, token) : Task.FromResult(new Result<bool>(term, true));
 
-        internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
+    private protected abstract Task<bool> ResignAsync(CancellationToken token);
 
-        private protected abstract Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+    /// <inheritdoc/>
+    Task<bool> IClusterMember.ResignAsync(CancellationToken token) => ResignAsync(token);
 
-        /// <inheritdoc/>
-        Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => IsRemote ? VoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
+    private protected abstract Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token);
 
-        private protected abstract Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+    /// <inheritdoc/>
+    async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
+    {
+        if (!IsRemote)
+            return localMember.Metadata;
 
-        /// <inheritdoc/>
-        Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
+        if (metadataCache is null || refresh)
+            metadataCache = await GetMetadataAsync(token).ConfigureAwait(false);
 
-        private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-            where TEntry : IRaftLogEntry
-            where TList : IReadOnlyList<TEntry>;
-
-        /// <inheritdoc/>
-        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-            => IsRemote ? AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, token) : Task.FromResult(new Result<bool>(term, true));
-
-        private protected abstract Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
-
-        /// <inheritdoc/>
-        Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-            => IsRemote ? InstallSnapshotAsync(term, snapshot, snapshotIndex, token) : Task.FromResult(new Result<bool>(term, true));
-
-        private protected abstract Task<bool> ResignAsync(CancellationToken token);
-
-        /// <inheritdoc/>
-        Task<bool> IClusterMember.ResignAsync(CancellationToken token) => ResignAsync(token);
-
-        private protected abstract Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token);
-
-        /// <inheritdoc/>
-        async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
-        {
-            if (!IsRemote)
-                return localMember.Metadata;
-
-            if (metadataCache is null || refresh)
-                metadataCache = await GetMetadataAsync(token).ConfigureAwait(false);
-
-            return metadataCache;
-        }
+        return metadataCache;
     }
 }

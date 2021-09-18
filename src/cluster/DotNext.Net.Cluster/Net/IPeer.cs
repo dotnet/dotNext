@@ -1,15 +1,14 @@
 using System.Net;
 
-namespace DotNext.Net
+namespace DotNext.Net;
+
+/// <summary>
+/// Represents a peer in network communication.
+/// </summary>
+public interface IPeer
 {
     /// <summary>
-    /// Represents a peer in network communication.
+    /// The address of the peer.
     /// </summary>
-    public interface IPeer
-    {
-        /// <summary>
-        /// The address of the peer.
-        /// </summary>
-        EndPoint EndPoint { get; }
-    }
+    EndPoint EndPoint { get; }
 }

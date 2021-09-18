@@ -1,29 +1,24 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Membership
+using IO;
+
+internal sealed class EmptyClusterConfiguration : IClusterConfiguration
 {
-    using IO;
+    internal EmptyClusterConfiguration(long fingerprint)
+        => Fingerprint = fingerprint;
 
-    internal sealed class EmptyClusterConfiguration : IClusterConfiguration
+    public long Fingerprint { get; }
+
+    long IClusterConfiguration.Length => 0L;
+
+    bool IDataTransferObject.IsReusable => true;
+
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        => IDataTransferObject.Empty.WriteToAsync(writer, token);
+
+    bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
     {
-        internal EmptyClusterConfiguration(long fingerprint)
-            => Fingerprint = fingerprint;
-
-        public long Fingerprint { get; }
-
-        long IClusterConfiguration.Length => 0L;
-
-        bool IDataTransferObject.IsReusable => true;
-
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => IDataTransferObject.Empty.WriteToAsync(writer, token);
-
-        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
-        {
-            memory = ReadOnlyMemory<byte>.Empty;
-            return true;
-        }
+        memory = ReadOnlyMemory<byte>.Empty;
+        return true;
     }
 }
