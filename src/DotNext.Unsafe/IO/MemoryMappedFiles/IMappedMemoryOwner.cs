@@ -1,11 +1,10 @@
-﻿namespace DotNext.IO.MemoryMappedFiles
-{
-    using Runtime.InteropServices;
+﻿namespace DotNext.IO.MemoryMappedFiles;
 
-    /// <summary>
-    /// Represents segment of memory-mapped file.
-    /// </summary>
-    public interface IMappedMemoryOwner : IUnmanagedMemory<byte>, IFlushable
-    {
-    }
+using Runtime.InteropServices;
+
+/// <summary>
+/// Represents segment of memory-mapped file.
+/// </summary>
+public interface IMappedMemoryOwner : IUnmanagedMemory<byte>, IFlushable
+{
 }
