@@ -1,9 +1,11 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    [ExcludeFromCodeCoverage]
     internal static partial class LogMessages
     {
         private const string EventIdPrefix = "DotNext.Net.Cluster";

@@ -1,48 +1,46 @@
-using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Buffers
+namespace DotNext.Buffers;
+
+internal interface IBuffer<T>
+    where T : unmanaged
 {
-    internal interface IBuffer<T>
-        where T : unmanaged
-    {
-        int Length { get; }
+    int Length { get; }
 
-        Span<T> Span { get; }
+    Span<T> Span { get; }
+}
+
+[StructLayout(LayoutKind.Auto)]
+internal readonly unsafe struct UnsafeBuffer<T> : IBuffer<T>
+    where T : unmanaged
+{
+    private readonly T* ptr;
+    private readonly int length;
+
+    internal UnsafeBuffer(T* ptr, int length)
+    {
+        this.ptr = ptr;
+        this.length = length;
     }
 
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly unsafe struct UnsafeBuffer<T> : IBuffer<T>
-        where T : unmanaged
-    {
-        private readonly T* ptr;
-        private readonly int length;
+    int IBuffer<T>.Length => length;
 
-        internal UnsafeBuffer(T* ptr, int length)
-        {
-            this.ptr = ptr;
-            this.length = length;
-        }
+    Span<T> IBuffer<T>.Span => new(ptr, length);
+}
 
-        int IBuffer<T>.Length => length;
+[StructLayout(LayoutKind.Auto)]
+internal struct ArrayBuffer<T> : IBuffer<T>, IDisposable
+    where T : unmanaged
+{
+    private MemoryOwner<T> buffer;
 
-        Span<T> IBuffer<T>.Span => new(ptr, length);
-    }
+    internal ArrayBuffer(int length)
+        => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
 
-    [StructLayout(LayoutKind.Auto)]
-    internal struct ArrayBuffer<T> : IBuffer<T>, IDisposable
-        where T : unmanaged
-    {
-        private MemoryOwner<T> buffer;
+    readonly int IBuffer<T>.Length => buffer.Length;
 
-        internal ArrayBuffer(int length)
-            => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
+    readonly Span<T> IBuffer<T>.Span => buffer.Memory.Span;
 
-        readonly int IBuffer<T>.Length => buffer.Length;
-
-        readonly Span<T> IBuffer<T>.Span => buffer.Memory.Span;
-
-        public void Dispose() => buffer.Dispose();
-    }
+    public void Dispose() => buffer.Dispose();
 }

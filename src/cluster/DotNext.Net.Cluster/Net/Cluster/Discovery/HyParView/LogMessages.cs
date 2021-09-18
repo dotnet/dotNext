@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
+    [ExcludeFromCodeCoverage]
     internal static partial class LogMessages
     {
         private const string EventIdPrefix = "DotNext.Net.Cluster.HyParView";
