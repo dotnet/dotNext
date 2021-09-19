@@ -76,7 +76,7 @@ namespace DotNext.Metaprogramming
                     {
                         Assign(result, "MaxValue".Const());
                     })
-                    .Default((ParameterExpression _) => Assign(result, "Unknown".Const()))
+                    .Default(new Action<ParameterExpression>(_ => Assign(result, "Unknown".Const())))
                 .End();
             }).Compile();
             Equal("X is zero", lambda(new Point { X = 0, Y = 10 }));
