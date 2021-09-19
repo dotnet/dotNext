@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.Extensions.Logging;
@@ -742,7 +743,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     IClusterMember? IPeerMesh<IClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
 
     /// <inheritdoc />
-    IReadOnlyCollection<EndPoint> IPeerMesh.Peers => members.Values.Select(static m => m.EndPoint).ToArray();
+    IReadOnlySet<EndPoint> IPeerMesh.Peers => ImmutableHashSet.CreateRange(members.Values.Select(static m => m.EndPoint));
 
     private void Cleanup()
     {

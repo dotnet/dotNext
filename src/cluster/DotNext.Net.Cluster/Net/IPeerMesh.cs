@@ -10,7 +10,7 @@ public interface IPeerMesh
     /// <summary>
     /// Gets a collection of visible peers.
     /// </summary>
-    IReadOnlyCollection<EndPoint> Peers { get; }
+    IReadOnlySet<EndPoint> Peers { get; }
 
     /// <summary>
     /// An event raised when a new remote peer has been discovered.

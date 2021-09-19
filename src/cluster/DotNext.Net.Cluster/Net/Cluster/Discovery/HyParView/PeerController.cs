@@ -88,10 +88,10 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     /// <summary>
     /// Gets a collection of discovered peers.
     /// </summary>
-    public IReadOnlyCollection<EndPoint> Neighbors => activeView; // TODO: Use IReadOnlySet in .NET 6
+    public IReadOnlySet<EndPoint> Neighbors => activeView;
 
     /// <inheritdoc />
-    IReadOnlyCollection<EndPoint> IPeerMesh.Peers => Neighbors;
+    IReadOnlySet<EndPoint> IPeerMesh.Peers => Neighbors;
 
     /// <summary>
     /// Starts serving HyParView messages and join to the cluster.
