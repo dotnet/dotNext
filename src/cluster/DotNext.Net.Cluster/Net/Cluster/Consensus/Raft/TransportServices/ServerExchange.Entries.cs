@@ -68,7 +68,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     }
 
     private readonly AsyncTrigger transmissionStateTrigger;
-    private int remainingCount, lookupIndex;
+    private int remainingCount, runnningIndex;
     private ReceivedLogEntry currentEntry;
 
     long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => remainingCount;
@@ -94,6 +94,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         await Reader.CompleteAsync().ConfigureAwait(false);
         await transmissionStateTrigger.WaitAsync(this, IsReadyToReceiveEntryAction).ConfigureAwait(false);
         state = State.ReadyToReceiveEntry;
+        runnningIndex += 1;
         transmissionStateTrigger.Signal(resumeAll: true);
 
         // waits for the log entry
@@ -104,7 +105,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
 
     private void BeginReceiveEntries(ReadOnlySpan<byte> announcement, CancellationToken token)
     {
-        lookupIndex = -1;
+        runnningIndex = -1;
         state = State.AppendEntriesReceived;
         EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount, out var configState);
 
@@ -182,8 +183,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
                     responseType = MessageType.None;
                     break;
                 case State.ReadyToReceiveEntry:
-                    ReusePipe(false);
-                    count = EntriesExchange.CreateNextEntryResponse(output.Span, lookupIndex);
+                    count = EntriesExchange.CreateNextEntryResponse(output.Span, runnningIndex);
                     isContinueReceiving = true;
                     responseType = MessageType.NextEntry;
                     break;
