@@ -45,6 +45,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
+      <LogicalName>DotNext.ExceptionMessages.resources</LogicalName>
       <Generator></Generator>
     </EmbeddedResource>
     <None Include="../../logo.png">
