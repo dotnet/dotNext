@@ -251,9 +251,9 @@ namespace DotNext.Metaprogramming
                 Try(new Action(() =>
                 {
                     If((Expression)(arg.AsDynamic() < 0L)).Then(Throw<InvalidOperationException>).End();
-                    If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
+                    If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(new Action(() => Return(arg))).End();
                 }))
-                .Catch<ArgumentException>(() => Return((-42L).Const()))
+                .Catch<ArgumentException>(new Action(() => Return((-42L).Const())))
                 .Catch<InvalidOperationException>(Rethrow)
                 .End();
             });
