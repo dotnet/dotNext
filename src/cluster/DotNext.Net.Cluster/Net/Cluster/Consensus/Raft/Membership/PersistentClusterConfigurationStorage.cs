@@ -33,7 +33,6 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
                 Share = FileShare.Read,
                 BufferSize = fileBufferSize,
                 Options = FileOptions.SequentialScan | FileOptions.Asynchronous,
-                PreallocationSize = 10 * 1024 * 1024, // 10 KB is enough for storing entire cluster config
             });
         }
 
