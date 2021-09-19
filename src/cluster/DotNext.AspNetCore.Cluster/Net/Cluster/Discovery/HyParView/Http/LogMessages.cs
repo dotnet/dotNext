@@ -1,8 +1,3 @@
-using System;
-using System.Net;
-using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http
