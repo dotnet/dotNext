@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
-using Xunit;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers

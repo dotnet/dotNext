@@ -3,7 +3,6 @@ using System.Diagnostics.Tracing;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using Xunit;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft

@@ -1,9 +1,7 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Xunit;
 
 namespace DotNext.Runtime
 {

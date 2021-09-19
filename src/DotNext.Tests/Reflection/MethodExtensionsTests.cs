@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Xunit;
 
 namespace DotNext.Reflection
 {

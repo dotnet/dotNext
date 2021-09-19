@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Diagnostics
 {

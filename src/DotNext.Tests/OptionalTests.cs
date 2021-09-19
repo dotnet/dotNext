@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext
 {

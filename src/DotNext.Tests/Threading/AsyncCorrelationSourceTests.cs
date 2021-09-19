@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace DotNext.Threading
 {
     public sealed class AsyncCorrelationSourceTests : Test

@@ -4,7 +4,6 @@ using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging.Abstractions;
-using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {

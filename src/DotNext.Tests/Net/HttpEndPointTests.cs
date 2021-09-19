@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
-using Xunit;
 
 namespace DotNext.Net
 {

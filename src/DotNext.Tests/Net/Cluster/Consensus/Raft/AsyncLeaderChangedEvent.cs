@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     internal class LeaderChangedEvent

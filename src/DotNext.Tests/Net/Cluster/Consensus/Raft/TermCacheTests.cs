@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     public sealed class TermCacheTests : Test

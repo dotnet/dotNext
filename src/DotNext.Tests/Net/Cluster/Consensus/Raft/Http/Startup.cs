@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {

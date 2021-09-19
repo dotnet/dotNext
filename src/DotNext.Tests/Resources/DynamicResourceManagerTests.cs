@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Resources;
-using Xunit;
 
 namespace DotNext.Resources
 {

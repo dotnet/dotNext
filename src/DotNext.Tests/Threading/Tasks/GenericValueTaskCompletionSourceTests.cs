@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks
