@@ -504,7 +504,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void ConversionToMemoryOwner()
         {
-            Throws<ObjectDisposedException>(() => default(Pointer<int>).ToMemoryOwner(2).Memory);
+            True(default(Pointer<int>).ToMemoryOwner(2).Memory.IsEmpty);
             Pointer<int> ptr = stackalloc int[10];
             ptr.Clear(10);
             ptr[0] = 12;
