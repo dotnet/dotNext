@@ -50,7 +50,12 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         => address == null ? Span<T>.Empty : new(address, Length);
 
     public sealed override MemoryHandle Pin(int elementIndex = 0)
-        => new(Unsafe.Add<T>(address, elementIndex));
+    {
+        if (address == null)
+            throw new ObjectDisposedException(GetType().Name);
+
+        return new(Unsafe.Add<T>(address, elementIndex));
+    }
 
     public sealed override void Unpin()
     {
@@ -64,5 +69,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         }
 
         address = null;
+        Length = 0;
     }
 }
