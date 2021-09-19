@@ -12,7 +12,7 @@ internal partial class ServerExchange
         if (result.IsCompleted | completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);
-            CurrentState = State.ReceivingSnapshotFinished;
+            state = State.ReceivingSnapshotFinished;
         }
 
         return true;
@@ -33,7 +33,7 @@ internal partial class ServerExchange
         if (completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);
-            CurrentState = State.ReceivingSnapshotFinished;
+            state = State.ReceivingSnapshotFinished;
         }
 
         return true;

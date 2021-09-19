@@ -24,25 +24,16 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         ReceivingConfigurationFinished,
     }
 
-    private sealed class StateHolder
-    {
-        internal volatile State Value;
-    }
-
     private readonly ILocalMember server;
+    private volatile State state;
     private Task? task;
 
     internal ServerExchange(ILocalMember server, PipeOptions? options = null)
         : base(options)
     {
-        transmissionStateTrigger = new(new());
+        transmissionStateTrigger = new();
         this.server = server;
-    }
-
-    private State CurrentState
-    {
-        get => transmissionStateTrigger.State.Value;
-        set => transmissionStateTrigger.State.Value = value;
+        state = State.Ready;
     }
 
     public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
@@ -54,35 +45,35 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
                 result = new ValueTask<bool>(false);
                 break;
             case MessageType.Vote:
-                CurrentState = State.VoteRequestReceived;
+                state = State.VoteRequestReceived;
                 BeginVote(payload, token);
                 break;
             case MessageType.PreVote:
-                CurrentState = State.PreVoteRequestReceived;
+                state = State.PreVoteRequestReceived;
                 BeginPreVote(payload, token);
                 break;
             case MessageType.Metadata:
                 if (headers.Control == FlowControl.None)
                 {
-                    CurrentState = State.MetadataRequestReceived;
+                    state = State.MetadataRequestReceived;
                     BeginSendMetadata(token);
                 }
                 else
                 {
-                    CurrentState = State.SendingMetadata;
+                    state = State.SendingMetadata;
                 }
 
                 break;
             case MessageType.Resign:
-                CurrentState = State.ResignRequestReceived;
+                state = State.ResignRequestReceived;
                 BeginResign(token);
                 break;
             case MessageType.Heartbeat:
-                CurrentState = State.HeartbeatRequestReceived;
+                state = State.HeartbeatRequestReceived;
                 BeginProcessHeartbeat(payload, token);
                 break;
             case MessageType.AppendEntries:
-                switch (CurrentState)
+                switch (state)
                 {
                     case State.Ready:
                         BeginReceiveEntries(payload.Span, token);
@@ -100,10 +91,10 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
 
                 break;
             case MessageType.InstallSnapshot:
-                switch (CurrentState)
+                switch (state)
                 {
                     case State.Ready:
-                        CurrentState = State.SnapshotReceived;
+                        state = State.SnapshotReceived;
                         result = BeginReceiveSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
                         break;
                     case State.SnapshotReceived:
@@ -116,10 +107,10 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
 
                 break;
             case MessageType.Configuration:
-                switch (CurrentState)
+                switch (state)
                 {
                     case State.Ready:
-                        CurrentState = State.ConfigurationReceived;
+                        state = State.ConfigurationReceived;
                         result = BeginReceiveConfiguration(payload, headers.Control == FlowControl.StreamEnd, token);
                         break;
                     case State.ConfigurationReceived:
@@ -136,7 +127,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         return result;
     }
 
-    public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token) => CurrentState switch
+    public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token) => state switch
     {
         State.VoteRequestReceived => EndVote(output),
         State.PreVoteRequestReceived => EndPreVote(output),
@@ -156,7 +147,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
     {
         ReusePipe();
         task = null;
-        CurrentState = State.Ready;
+        state = State.Ready;
         transmissionStateTrigger.CancelSuspendedCallers(new CancellationToken(true));
     }
 

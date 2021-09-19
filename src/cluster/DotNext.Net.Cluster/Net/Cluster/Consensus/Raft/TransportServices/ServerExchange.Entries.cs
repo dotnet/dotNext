@@ -49,65 +49,25 @@ internal readonly struct ReceivedLogEntry : IRaftLogEntry
 
 internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
 {
-    private sealed class ReadyToReceiveTransition : AsyncTrigger<StateHolder>.ITransition
-    {
-        internal static readonly ReadyToReceiveTransition Instance = new();
-
-        private ReadyToReceiveTransition()
-        {
-        }
-
-        bool AsyncTrigger<StateHolder>.ITransition.Test(StateHolder state)
-            => state.Value is State.ReceivingEntry or State.EntryReceived or State.AppendEntriesReceived;
-
-        void AsyncTrigger<StateHolder>.ITransition.Transit(StateHolder state)
-            => state.Value = State.ReadyToReceiveEntry;
-    }
-
-    private sealed class ReadyToReadTransition : AsyncTrigger<StateHolder>.ITransition
-    {
-        internal static readonly ReadyToReadTransition Instance = new();
-
-        private ReadyToReadTransition()
-        {
-        }
-
-        bool AsyncTrigger<StateHolder>.ITransition.Test(StateHolder state)
-            => state.Value is State.ReceivingEntry or State.EntryReceived;
-
-        void AsyncTrigger<StateHolder>.ITransition.Transit(StateHolder state)
-        {
-            // do nothing here
-        }
-    }
-
-    private sealed class ReadyToProcessTransition : AsyncTrigger<StateHolder>.ITransition
-    {
-        internal static readonly ReadyToProcessTransition Instance = new();
-
-        private ReadyToProcessTransition()
-        {
-        }
-
-        bool AsyncTrigger<StateHolder>.ITransition.Test(StateHolder state)
-            => state.Value is State.ReceivingEntriesFinished or State.ReadyToReceiveEntry or State.ReceivingEntry;
-
-        void AsyncTrigger<StateHolder>.ITransition.Transit(StateHolder state)
-        {
-            // do nothing here
-        }
-    }
-
-    private static readonly Action<StateHolder, State> SetStateAction;
+    private static readonly Predicate<ServerExchange> IsReadyToReceiveEntryAction, IsReadyToReadAction, IsReadyToProcessAction;
 
     static ServerExchange()
     {
-        SetStateAction = SetState;
+        IsReadyToReceiveEntryAction = IsReadyToReceive;
+        IsReadyToReadAction = IsReadyToRead;
+        IsReadyToProcessAction = IsReadyToProcess;
 
-        static void SetState(StateHolder holder, State state) => holder.Value = state;
+        static bool IsReadyToReceive(ServerExchange exchange)
+            => exchange.state is State.EntryReceived or State.AppendEntriesReceived;
+
+        static bool IsReadyToRead(ServerExchange exchange)
+            => exchange.state is State.ReceivingEntry or State.EntryReceived;
+
+        static bool IsReadyToProcess(ServerExchange exchange)
+            => exchange.state is State.ReceivingEntriesFinished or State.ReadyToReceiveEntry or State.ReceivingEntry;
     }
 
-    private readonly AsyncTrigger<StateHolder> transmissionStateTrigger;
+    private readonly AsyncTrigger transmissionStateTrigger;
     private int remainingCount, lookupIndex;
     private ReceivedLogEntry currentEntry;
 
@@ -125,16 +85,19 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         if (remainingCount <= 0)
         {
             // resume wait thread to finalize response
-            transmissionStateTrigger.Signal(SetStateAction, State.ReceivingEntriesFinished);
+            state = State.ReceivingEntriesFinished;
+            transmissionStateTrigger.Signal(resumeAll: true);
             return false;
         }
 
         // informs that we are ready to receive a new log entry
         await Reader.CompleteAsync().ConfigureAwait(false);
-        await transmissionStateTrigger.WaitAsync(ReadyToReceiveTransition.Instance).ConfigureAwait(false);
+        await transmissionStateTrigger.WaitAsync(this, IsReadyToReceiveEntryAction).ConfigureAwait(false);
+        state = State.ReadyToReceiveEntry;
+        transmissionStateTrigger.Signal(resumeAll: true);
 
         // waits for the log entry
-        await transmissionStateTrigger.WaitAsync(ReadyToReadTransition.Instance).ConfigureAwait(false);
+        await transmissionStateTrigger.WaitAsync(this, IsReadyToReadAction).ConfigureAwait(false);
         remainingCount -= 1;
         return true;
     }
@@ -142,7 +105,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     private void BeginReceiveEntries(ReadOnlySpan<byte> announcement, CancellationToken token)
     {
         lookupIndex = -1;
-        CurrentState = State.AppendEntriesReceived;
+        state = State.AppendEntriesReceived;
         EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount, out var configState);
 
         task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState?.ApplyConfig ?? false, token);
@@ -155,12 +118,14 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         if (result.IsCompleted | completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);
-            transmissionStateTrigger.Signal(SetStateAction, State.EntryReceived);
+            state = State.EntryReceived;
         }
         else
         {
-            transmissionStateTrigger.Signal(SetStateAction, State.ReceivingEntry);
+            state = State.ReceivingEntry;
         }
+
+        transmissionStateTrigger.Signal(resumeAll: true);
 
         return true;
     }
@@ -180,7 +145,8 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         if (completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);
-            transmissionStateTrigger.Signal(SetStateAction, State.AppendEntriesReceived);
+            state = State.AppendEntriesReceived;
+            transmissionStateTrigger.Signal(resumeAll: true);
         }
 
         return true;
@@ -192,14 +158,14 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         int count;
         bool isContinueReceiving;
         var resultTask = Cast<Task<Result<bool>>>(task);
-        var stateTask = transmissionStateTrigger.WaitAsync(ReadyToProcessTransition.Instance, token).AsTask();
+        var stateTask = transmissionStateTrigger.WaitAsync(this, IsReadyToProcessAction, token);
 
         // wait for result or state transition
         if (ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
         {
             // result obtained, finalize transmission
             task = null;
-            CurrentState = State.ReceivingEntriesFinished;
+            state = State.ReceivingEntriesFinished;
             remainingCount = 0;
             count = IExchange.WriteResult(resultTask.Result, output.Span);
             isContinueReceiving = false;
@@ -207,8 +173,8 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         }
         else
         {
-            // should be in sync with IsValidStateForResponse
-            switch (CurrentState)
+            // should be in sync with IsReadyToProcessAction
+            switch (state)
             {
                 case State.ReceivingEntriesFinished:
                     count = IExchange.WriteResult(await resultTask.ConfigureAwait(false), output.Span);
