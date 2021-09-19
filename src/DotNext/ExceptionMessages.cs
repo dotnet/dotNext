@@ -45,4 +45,7 @@ internal static class ExceptionMessages
     internal static string UndefinedValueDetected => Resources.GetString("UndefinedValueDetected")!;
 
     internal static string UndefinedEqualsNullSwitchEnabled => Resources.GetString("UndefinedEqualsNullSwitchEnabled")!;
+
+    internal static string InvalidHexInput(char ch)
+        => string.Format(Resources.GetString("InvalidHexInput")!, ch);
 }

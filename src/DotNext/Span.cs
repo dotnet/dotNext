@@ -2,9 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
-using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext;
 
@@ -16,7 +14,20 @@ using Runtime;
 /// </summary>
 public static class Span
 {
-    private static readonly char[] HexTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private const byte NimbleMaxValue = 0B1111;
+
+    private static readonly char[] NimbleToCharLookupTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+    private static ReadOnlySpan<byte> CharToNimbleLookupTable => new byte[]
+        {
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 15
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 31
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 47
+            0x0,  0x1,  0x2,  0x3,  0x4,  0x5,  0x6,  0x7,  0x8,  0x9,  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 63
+            0xFF, 0xA,  0xB,  0xC,  0xD,  0xE,  0xF,  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 79
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 95
+            0xFF, 0xa,  0xb,  0xc,  0xd,  0xe,  0xf // 102
+        };
 
     /// <summary>
     /// Computes bitwise hash code for the memory identified by the given span.
@@ -404,7 +415,7 @@ public static class Span
         var bytesCount = Math.Min(bytes.Length, output.Length / 2);
         ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
         ref char charPtr = ref MemoryMarshal.GetReference(output);
-        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(HexTable);
+        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToCharLookupTable);
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
         for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
@@ -412,7 +423,7 @@ public static class Span
             var value = Add(ref firstByte, i);
             charPtr = Add(ref hexTable, value >> 4);
             charPtr = ref Add(ref charPtr, 1);
-            charPtr = Add(ref hexTable, value & 0B1111);
+            charPtr = Add(ref hexTable, value & NimbleMaxValue);
         }
 
         return bytesCount * 2;
@@ -442,17 +453,34 @@ public static class Span
     /// <param name="chars">The hexadecimal representation of bytes.</param>
     /// <param name="output">The output buffer used to write decoded bytes.</param>
     /// <returns>The actual number of bytes in <paramref name="output"/> written by the method.</returns>
+    /// <exception cref="FormatException"><paramref name="chars"/> contain invalid hexadecimal symbol.</exception>
     public static int FromHex(this ReadOnlySpan<char> chars, Span<byte> output)
     {
         if (chars.IsEmpty || output.IsEmpty)
             return 0;
         var charCount = Math.Min(chars.Length, output.Length * 2);
         charCount -= charCount % 2;
-        ref (char, char) pair = ref As<char, (char, char)>(ref MemoryMarshal.GetReference(chars));
         ref byte bytePtr = ref MemoryMarshal.GetReference(output);
-        for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
-            bytePtr = byte.Parse(pair.AsSpan(), NumberStyles.AllowHexSpecifier, InvariantCulture);
+        for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1))
+        {
+            var high = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i);
+            var low = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i + 1);
+
+            bytePtr = (byte)(ToNimble(low) | (ToNimble(high) << 4));
+        }
+
         return charCount / 2;
+
+        static byte ToNimble(int ch)
+        {
+            var table = CharToNimbleLookupTable;
+
+            byte result = (uint)ch < (uint)table.Length
+                ? table[ch]
+                : byte.MaxValue;
+
+            return result <= NimbleMaxValue ? result : throw new FormatException(ExceptionMessages.InvalidHexInput((char)ch));
+        }
     }
 
     /// <summary>
@@ -460,6 +488,7 @@ public static class Span
     /// </summary>
     /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
     /// <returns>The decoded array of bytes.</returns>
+    /// <exception cref="FormatException"><paramref name="chars"/> contain invalid hexadecimal symbol.</exception>
     [SkipLocalsInit]
     public static byte[] FromHex(this ReadOnlySpan<char> chars)
     {

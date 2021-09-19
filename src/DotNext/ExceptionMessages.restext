@@ -16,3 +16,4 @@ EmptyBuffer=The buffer is empty
 MalformedBase64=The input BASE64 string contains invalid characters
 UndefinedValueDetected=Undefined value is unexpected in converter. Apply JsonIgnoreAttribute attribute with condition equal to JsonIgnoreCondition.WhenWritingDefault
 UndefinedEqualsNullSwitchEnabled=Converter is not supported if switch DotNext.Optional.UndefinedEqualsNull is enabled
+InvalidHexInput=Character {0} is not a valid hexadecimal value
