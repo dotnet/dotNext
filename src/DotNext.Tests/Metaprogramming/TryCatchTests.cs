@@ -17,7 +17,7 @@ namespace DotNext.Metaprogramming
                 var (arg1, arg2) = fun;
                 Assign(result, true.Const());
                 Try((Expression)(arg1.AsDynamic() / arg2))
-                    .Fault(() => Assign(result, false.Const()))
+                    .Fault(new Action(() => Assign(result, false.Const())))
                     .End();
             })
             .Compile();
@@ -33,7 +33,7 @@ namespace DotNext.Metaprogramming
                 var (arg1, arg2) = fun;
                 Assign(result, true.Const());
                 Try((Expression)(arg1.AsDynamic() / arg2))
-                    .Catch<DivideByZeroException>(() => Assign(result, false.Const()))
+                    .Catch<DivideByZeroException>(new Action(() => Assign(result, false.Const())))
                     .End();
             })
             .Compile();
@@ -49,7 +49,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 Try((Expression)(arg1.AsDynamic() / arg2))
-                    .Catch<DivideByZeroException>(() => Return(false.Const()))
+                    .Catch<DivideByZeroException>(new Action(() => Return(false.Const())))
                     .End();
                 Return(true.Const());
             })
