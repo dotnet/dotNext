@@ -93,7 +93,11 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         // informs that we are ready to receive a new log entry
         await Reader.CompleteAsync().ConfigureAwait(false);
         await transmissionStateTrigger.WaitAsync(this, IsReadyToReceiveEntryAction).ConfigureAwait(false);
-        await Writer.CompleteAsync().ConfigureAwait(false);
+
+        // complete writer only for the first call of MoveNextAsync()
+        if (runnningIndex < 0)
+            await Writer.CompleteAsync().ConfigureAwait(false);
+
         state = State.ReadyToReceiveEntry;
         runnningIndex += 1;
         transmissionStateTrigger.Signal(resumeAll: true);
@@ -147,7 +151,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         if (completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);
-            state = State.AppendEntriesReceived;
+            state = State.EntryReceived;
             transmissionStateTrigger.Signal(resumeAll: true);
         }
 
