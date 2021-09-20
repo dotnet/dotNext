@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Replication;
 
     [ExcludeFromCodeCoverage]
-    public sealed class EmbeddedClusterSupportTests : Test
+    public sealed class RaftHttpClusterTests : Test
     {
         private sealed class LeaderTracker : LeaderChangedEvent, IClusterMemberLifetime
         {
