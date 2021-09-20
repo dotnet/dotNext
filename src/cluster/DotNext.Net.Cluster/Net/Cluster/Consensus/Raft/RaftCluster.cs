@@ -195,18 +195,27 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private FollowerState CreateInitialState()
         => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
 
-    private async ValueTask UnfreezeAsync()
+    private ValueTask UnfreezeAsync()
     {
-        // ensure that local member has been received
-        foreach (var member in members.Values)
+        return readinessProbe.Task.IsCompleted ? ValueTask.CompletedTask : UnfreezeCoreAsync();
+
+        async ValueTask UnfreezeCoreAsync()
         {
-            if (member.Id == localMemberId)
+            // ensure that local member has been received
+            foreach (var member in members.Values)
             {
-                var newState = new FollowerState(this);
-                using var currentState = state;
-                await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
-                state = newState.StartServing(ElectionTimeout, LifecycleToken);
-                readinessProbe.TrySetResult();
+                if (member.Id == localMemberId)
+                {
+                    if (!standbyNode)
+                    {
+                        var newState = new FollowerState(this);
+                        using var currentState = state;
+                        await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+                        state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                    }
+
+                    readinessProbe.TrySetResult();
+                }
             }
         }
     }
@@ -450,8 +459,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         }
 
         return new Result<bool>(currentTerm, result);
-
-        ValueTask UnfreezeAsync() => standbyNode || state is not StandbyState ? new() : this.UnfreezeAsync();
     }
 
     /// <summary>
