@@ -32,20 +32,41 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
                 .Build();
         }
 
-        private sealed class PeerDiscoveryEventListener : TaskCompletionSource<EndPoint>, IPeerLifetime
+        private sealed class MembershipChangeEventListener : IPeerLifetime
         {
-            void IPeerLifetime.OnStart(PeerController controller)
-                => controller.PeerDiscovered += OnPeerDiscovered;
+            private readonly TaskCompletionSource<EndPoint> discovered, gone;
 
-            private void OnPeerDiscovered(PeerController sender, PeerEventArgs args)
-                => SetResult(args.PeerAddress);
+            internal MembershipChangeEventListener()
+            {
+                discovered = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                gone = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+
+            void IPeerLifetime.OnStart(PeerController controller)
+            {
+                controller.PeerDiscovered += OnPeerDiscovered;
+                controller.PeerGone += OnPeerGone;
+            }
 
             void IPeerLifetime.OnStop(PeerController controller)
-                => controller.PeerDiscovered -= OnPeerDiscovered;
+            {
+                controller.PeerDiscovered -= OnPeerDiscovered;
+                controller.PeerGone -= OnPeerGone;
+            }
+
+            private void OnPeerDiscovered(PeerController sender, PeerEventArgs args)
+                => discovered.TrySetResult(args.PeerAddress);
+
+            private void OnPeerGone(PeerController sender, PeerEventArgs args)
+                => gone.TrySetResult(args.PeerAddress);
+
+            internal Task<EndPoint> DiscoveryTask => discovered.Task;
+
+            internal Task<EndPoint> DisconnectionTask => gone.Task;
         }
 
         [Fact]
-        public static async Task MemberDiscovery()
+        public static async Task ConnectDisconnect()
         {
             var config1 = new Dictionary<string, string>
             {
@@ -64,23 +85,24 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
                 {"contactNode", "http://localhost:3262/"},
             };
 
-            var listener1 = new PeerDiscoveryEventListener();
+            var listener1 = new MembershipChangeEventListener();
             using var peer1 = CreateHost<Startup>(3262, config1, listener1);
             await peer1.StartAsync();
 
-            var listener2 = new PeerDiscoveryEventListener();
+            var listener2 = new MembershipChangeEventListener();
             using var peer2 = CreateHost<Startup>(3263, config2, listener2);
             await peer2.StartAsync();
 
-            await Task.WhenAll(listener1.Task, listener1.Task).WaitAsync(DefaultTimeout);
+            await Task.WhenAll(listener1.DiscoveryTask, listener1.DiscoveryTask).WaitAsync(DefaultTimeout);
 
-            Equal(new HttpEndPoint("localhost", 3262, false), listener2.Task.Result);
-            Equal(new HttpEndPoint("localhost", 3263, false), listener1.Task.Result);
+            Equal(new HttpEndPoint("localhost", 3262, false), listener2.DiscoveryTask.Result);
+            Equal(new HttpEndPoint("localhost", 3263, false), listener1.DiscoveryTask.Result);
 
-            peer1.Services.GetRequiredService<PeerController>().Neighbors.Contains(new HttpEndPoint("localhost", 3263, false));
-            peer2.Services.GetRequiredService<PeerController>().Neighbors.Contains(new HttpEndPoint("localhost", 3262, false));
-
+            // shutdown peer gracefully
             await peer2.StopAsync();
+
+            Equal(new HttpEndPoint("localhost", 3263, false), await listener1.DisconnectionTask.WaitAsync(DefaultTimeout));
+
             await peer1.StopAsync();
         }
 
