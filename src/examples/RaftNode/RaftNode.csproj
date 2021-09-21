@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\node.pfx">
+      <LogicalName>node.pfx</LogicalName>
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
