@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
     using HttpPeerConfiguration = Http.HttpPeerConfiguration;
 
+    [ExcludeFromCodeCoverage]
     public sealed class HyParViewControllerTests : Test
     {
         private abstract class TestPeerControllerBase : PeerController
