@@ -31,9 +31,6 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-#if DEBUG
-    internal
-#endif
     protected ValueTask EnqueueDisconnectAsync(EndPoint sender, bool isAlive, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Disconnect(sender, isAlive), token);
 

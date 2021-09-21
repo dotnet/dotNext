@@ -6,14 +6,43 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
     public sealed class HyParViewControllerTests : Test
     {
-        private sealed class TransportLayer : Dictionary<EndPoint, PeerController>
+        private abstract class TestPeerControllerBase : PeerController
+        {
+            internal readonly EndPoint Address;
+
+            protected TestPeerControllerBase(HttpPeerConfiguration configuration)
+                : base(configuration)
+            {
+            }
+
+            protected sealed override bool IsLocalNode(EndPoint peer) => Address.Equals(peer);
+
+            internal new ValueTask EnqueueJoinAsync(EndPoint joinedPeer, CancellationToken token)
+                => base.EnqueueJoinAsync(joinedPeer, token);
+
+            internal new ValueTask EnqueueNeighborAsync(EndPoint sender, bool highPriority, CancellationToken token)
+                => base.EnqueueNeighborAsync(sender, highPriority, token);
+
+            internal new ValueTask EnqueueForwardJoinAsync(EndPoint sender, EndPoint joinedPeer, int timeToLive, CancellationToken token)
+                => base.EnqueueForwardJoinAsync(sender, joinedPeer, timeToLive, token);
+
+            internal new ValueTask EnqueueDisconnectAsync(EndPoint sender, bool isAlive, CancellationToken token)
+                => base.EnqueueDisconnectAsync(sender, isAlive, token);
+
+            internal new ValueTask EnqueueShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int timeToLive, CancellationToken token)
+                => base.EnqueueShuffleAsync(sender, origin, peers, timeToLive, token);
+
+            internal new ValueTask EnqueueShuffleReplyAsync(IReadOnlyCollection<EndPoint> peers, CancellationToken token)
+                => base.EnqueueShuffleReplyAsync(peers, token);
+        }
+
+        private sealed class TransportLayer : Dictionary<EndPoint, TestPeerControllerBase>
         {
 
         }
 
-        private sealed class TestPeerController : PeerController
+        private sealed class TestPeerController : TestPeerControllerBase
         {
-            internal readonly EndPoint Address;
             private readonly EndPoint contactNode;
             private readonly TransportLayer transport;
 
@@ -21,11 +50,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 : base(configuration)
             {
                 this.transport = transport;
-                Address = configuration.LocalNode;
                 contactNode = configuration.ContactNode;
             }
-
-            protected override bool IsLocalNode(EndPoint peer) => Address.Equals(peer);
 
             public Task StartAsync(CancellationToken token = default)
             {

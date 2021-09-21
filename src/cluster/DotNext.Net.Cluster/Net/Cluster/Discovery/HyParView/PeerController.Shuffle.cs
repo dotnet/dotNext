@@ -105,9 +105,6 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-#if DEBUG
-    internal
-#endif
     protected ValueTask EnqueueShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int timeToLive, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Shuffle(sender, origin, peers, timeToLive), token);
 
@@ -155,9 +152,6 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-#if DEBUG
-    internal
-#endif
     protected ValueTask EnqueueShuffleReplyAsync(IReadOnlyCollection<EndPoint> peers, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.ShuffleReply(peers), token);
 
