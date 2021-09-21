@@ -96,7 +96,7 @@ public class PeerConfiguration : IPeerConfiguration
     public int LowerShufflePeriod
     {
         get => periodLowerBound;
-        set => periodLowerBound = value > 0 || value == int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        set => periodLowerBound = value.IsBetween(0, int.MaxValue) ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public class PeerConfiguration : IPeerConfiguration
     public int UpperShufflePeriod
     {
         get => periodUpperBound;
-        set => periodUpperBound = value > 0 || value == int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        set => periodUpperBound = value.IsBetween(0, int.MaxValue) ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <inheritdoc/>

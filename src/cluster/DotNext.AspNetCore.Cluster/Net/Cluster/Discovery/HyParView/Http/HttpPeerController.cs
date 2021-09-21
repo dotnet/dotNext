@@ -31,7 +31,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     private readonly HttpEndPoint localNode;
     private HttpEndPoint? contactNode;
 
-    private HttpPeerController(
+    public HttpPeerController(
         IOptions<HttpPeerConfiguration> configuration,
         ILoggerFactory loggerFactory,
         IServer server,
@@ -65,7 +65,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     /// </summary>
     protected sealed override ILogger Logger { get; }
 
-    internal PathString ResourcePath => PathString.FromUriComponent(resourcePath);
+    internal PathString ResourcePath => resourcePath.OriginalString;
 
     private HttpPeerClient CreateClient(HttpEndPoint endPoint, bool openConnectionForEachRequest)
     {

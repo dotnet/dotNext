@@ -20,6 +20,7 @@ public static class ConfigurationExtensions
     {
         Func<IServiceProvider, HttpPeerController> controllerCast = ServiceProviderServiceExtensions.GetRequiredService<HttpPeerController>;
         return services.AddSingleton<HttpPeerController>()
+            .AddSingleton<IHostedService>(controllerCast)
             .AddSingleton<PeerController>(controllerCast)
             .AddSingleton<IPeerMesh<HttpPeerClient>>(controllerCast);
     }
