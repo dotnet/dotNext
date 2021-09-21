@@ -15,15 +15,10 @@ public partial class PeerController
     {
         while (!queue.Reader.Completion.IsCompleted)
         {
-            try
-            {
-                await Task.Delay(period, LifecycleToken).ConfigureAwait(false);
-                await queue.Writer.WriteAsync(Command.ForceShuffle(), LifecycleToken).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
-            {
-                break;
-            }
+            await Task.Delay(period, LifecycleToken).ConfigureAwait(false);
+
+            if(!queue.Writer.TryWrite(Command.ForceShuffle()))
+                Logger.UnableToScheduleShuffle();
         }
     }
 

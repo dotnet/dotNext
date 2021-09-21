@@ -341,11 +341,12 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     {
         // terminate loops
         queue.Writer.Complete();
-        lifecycleTokenSource.Cancel();
 
         // wait for completion
         await shuffleTask.ConfigureAwait(false);
         await queueLoopTask.ConfigureAwait(false);
+
+        lifecycleTokenSource.Cancel();
 
         PooledArrayBufferWriter<Task>? responses = null;
         try

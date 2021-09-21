@@ -25,5 +25,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             EventName = EventIdPrefix + "." + nameof(PeerCommunicationFailed)
         )]
         public static partial void PeerCommunicationFailed(this ILogger logger, EndPoint peer, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 2,
+            LogLevel.Warning,
+            "Unable to schedule Shuffle operation. Probably queue is full or the controller has stopped"
+        )]
+        public static partial void UnableToScheduleShuffle(this ILogger logger);
     }
 }
