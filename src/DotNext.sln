@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyParViewPeer", "examples\HyParViewPeer\HyParViewPeer.csproj", "{1A2FAA85-95B5-4377-B430-622DC5000C89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bench|Any CPU = Bench|Any CPU
@@ -117,6 +119,12 @@ Global
 		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Bench|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Bench|Any CPU.Build.0 = Debug|Any CPU
+		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +136,7 @@ Global
 		{89E2D94F-E278-4365-B05F-2C8BEC2F94DC} = {511B9F61-9A94-44CB-B506-74E49E3A0B41}
 		{D9A4D7A3-A948-465A-B679-546411DC885D} = {511B9F61-9A94-44CB-B506-74E49E3A0B41}
 		{EF588447-3DB4-4719-A9FB-210C21035C65} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
+		{1A2FAA85-95B5-4377-B430-622DC5000C89} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1CE24157-AFE0-4CDF-B063-2876343F0A66}
