@@ -51,7 +51,7 @@ internal partial class HttpPeerController
         return result;
     }
 
-    protected sealed override async Task DisconnectAsync(EndPoint peer, bool isAlive, CancellationToken token)
+    protected override async Task DisconnectAsync(EndPoint peer, bool isAlive, CancellationToken token)
     {
         using var request = SerializeDisconnectRequest(isAlive);
         await PostAsync(peer, DisconnectMessageType, request, token).ConfigureAwait(false);

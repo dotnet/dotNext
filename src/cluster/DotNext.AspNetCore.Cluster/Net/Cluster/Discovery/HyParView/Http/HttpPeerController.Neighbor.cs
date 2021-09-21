@@ -53,7 +53,7 @@ internal partial class HttpPeerController
         return result;
     }
 
-    protected sealed override async Task NeighborAsync(EndPoint neighbor, bool highPriority, CancellationToken token)
+    protected override async Task NeighborAsync(EndPoint neighbor, bool highPriority, CancellationToken token)
     {
         using var request = SerializeNeighborRequest(highPriority);
         await PostAsync(neighbor, NeighborMessageType, request, token).ConfigureAwait(false);

@@ -23,6 +23,9 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+#if DEBUG
+    internal
+#endif
     protected ValueTask EnqueueJoinAsync(EndPoint joinedPeer, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Join(joinedPeer), token);
 
@@ -31,13 +34,10 @@ public partial class PeerController
         using var tasks = new PooledArrayBufferWriter<Task>(activeViewCapacity);
         await AddPeerToActiveViewAsync(joinedPeer, true).ConfigureAwait(false);
 
-        // forwards JOIN request to all neighbors including joined peer
+        // forwards JOIN request to all neighbors excluding joined peer
         foreach (var neighbor in activeView.Remove(joinedPeer))
         {
-            if (!joinedPeer.Equals(neighbor))
-            {
-                tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, activeRandomWalkLength), LifecycleToken));
-            }
+            tasks.Add(Task.Run(() => ForwardJoinAsync(joinedPeer, neighbor, activeRandomWalkLength, LifecycleToken), LifecycleToken));
         }
 
         // await responses

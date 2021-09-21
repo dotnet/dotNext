@@ -60,10 +60,12 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         clientCache = new();
     }
 
+    protected override bool IsLocalNode(EndPoint peer) => localNode.Equals(peer);
+
     /// <summary>
     /// Gets the logger associated with this controller.
     /// </summary>
-    protected sealed override ILogger Logger { get; }
+    protected override ILogger Logger { get; }
 
     internal PathString ResourcePath => resourcePath.OriginalString;
 
@@ -125,13 +127,13 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         await base.StopAsync(token).ConfigureAwait(false);
     }
 
-    protected sealed override void Destroy(EndPoint peer)
+    protected override void Destroy(EndPoint peer)
     {
         if (clientCache.TryRemove(peer, out var client))
             client.Dispose();
     }
 
-    protected sealed override ValueTask DestroyAsync(EndPoint peer)
+    protected override ValueTask DestroyAsync(EndPoint peer)
     {
         var result = ValueTask.CompletedTask;
         try
@@ -146,7 +148,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         return result;
     }
 
-    protected sealed override ValueTask DisconnectAsync(EndPoint peer)
+    protected override ValueTask DisconnectAsync(EndPoint peer)
     {
         var result = ValueTask.CompletedTask;
         try

@@ -17,7 +17,7 @@ public partial class PeerController
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract Task DisconnectAsync(EndPoint peer, bool isAlive, CancellationToken token = default);
+    protected abstract Task DisconnectAsync(EndPoint peer, bool isAlive, CancellationToken token);
 
     /// <summary>
     /// Must be called by transport layer when Disconnect request is received.
@@ -31,6 +31,9 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+#if DEBUG
+    internal
+#endif
     protected ValueTask EnqueueDisconnectAsync(EndPoint sender, bool isAlive, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Disconnect(sender, isAlive), token);
 

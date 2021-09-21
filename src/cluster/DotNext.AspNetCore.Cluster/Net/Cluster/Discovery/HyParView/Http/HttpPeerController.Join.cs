@@ -49,7 +49,7 @@ internal partial class HttpPeerController
     }
 
     /// <inheritdoc/>
-    protected sealed override async Task JoinAsync(EndPoint contactNode, CancellationToken token)
+    protected override async Task JoinAsync(EndPoint contactNode, CancellationToken token)
     {
         using var request = SerializeJoinRequest();
         await PostAsync(contactNode, JoinMessageType, request, token).ConfigureAwait(false);

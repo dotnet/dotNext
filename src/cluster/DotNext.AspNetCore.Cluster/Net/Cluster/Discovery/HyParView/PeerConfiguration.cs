@@ -1,14 +1,10 @@
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
-using ComponentModel;
-
 /// <summary>
 /// Represents configuration of the peer powered by HyParView membership protocol.
 /// </summary>
 public class PeerConfiguration : IPeerConfiguration
 {
-    static PeerConfiguration() => HttpEndPointConverter.Register();
-
     private readonly Random random = new();
     private int activeViewCapacity = 5;
     private int passiveViewCapacity = 10;
@@ -115,14 +111,4 @@ public class PeerConfiguration : IPeerConfiguration
         0 => TimeSpan.FromMilliseconds(periodLowerBound),
         > 0 => null,
     };
-
-    /// <summary>
-    /// Gets or sets the address of the contact node.
-    /// </summary>
-    public HttpEndPoint? ContactNode { get; set; }
-
-    /// <summary>
-    /// Gets or sets the address of the local node.
-    /// </summary>
-    public HttpEndPoint? LocalNode { get; set; }
 }

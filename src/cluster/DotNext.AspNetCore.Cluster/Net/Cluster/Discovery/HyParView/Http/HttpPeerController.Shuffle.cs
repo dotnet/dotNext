@@ -60,7 +60,7 @@ internal partial class HttpPeerController
         return result;
     }
 
-    protected sealed override async Task ShuffleReplyAsync(EndPoint receiver, IReadOnlyCollection<EndPoint> peers, CancellationToken token = default)
+    protected override async Task ShuffleReplyAsync(EndPoint receiver, IReadOnlyCollection<EndPoint> peers, CancellationToken token = default)
     {
         using var request = SerializeShuffleReply(peers);
         await PostAsync(receiver, ShuffleReplyMessageType, request, token).ConfigureAwait(false);

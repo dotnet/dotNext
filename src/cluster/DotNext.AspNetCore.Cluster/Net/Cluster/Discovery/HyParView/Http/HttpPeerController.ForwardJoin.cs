@@ -53,7 +53,7 @@ internal partial class HttpPeerController
         return result;
     }
 
-    protected sealed override async Task ForwardJoinAsync(EndPoint receiver, EndPoint joinedPeer, int timeToLive, CancellationToken token = default)
+    protected override async Task ForwardJoinAsync(EndPoint receiver, EndPoint joinedPeer, int timeToLive, CancellationToken token = default)
     {
         using var request = SerializeForwardJoinRequest(joinedPeer, timeToLive);
         await PostAsync(receiver, ForwardJoinMessageType, request, token).ConfigureAwait(false);

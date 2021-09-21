@@ -15,7 +15,7 @@ public partial class PeerController
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract Task ForwardJoinAsync(EndPoint receiver, EndPoint joinedPeer, int timeToLive, CancellationToken token = default);
+    protected abstract Task ForwardJoinAsync(EndPoint receiver, EndPoint joinedPeer, int timeToLive, CancellationToken token);
 
     /// <summary>
     /// Must be called by transport layer when ForwardJoin request is received.
@@ -27,6 +27,9 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
+#if DEBUG
+    internal
+#endif
     protected ValueTask EnqueueForwardJoinAsync(EndPoint sender, EndPoint joinedPeer, int timeToLive, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.ForwardJoin(sender, joinedPeer, timeToLive), token);
 
@@ -41,7 +44,7 @@ public partial class PeerController
             if (timeToLive == passiveRandomWalkLength)
                 await AddPeerToPassiveViewAsync(joinedPeer).ConfigureAwait(false);
 
-            await (activeView.Remove(sender).PeekRandom(random).TryGet(out var randomActivePeer)
+            await (activeView.Remove(sender).Remove(joinedPeer).PeekRandom(random).TryGet(out var randomActivePeer)
                 ? ForwardJoinAsync(randomActivePeer, joinedPeer, timeToLive - 1, LifecycleToken)
                 : AddPeerToActiveViewAsync(joinedPeer, true)).ConfigureAwait(false);
         }

@@ -238,7 +238,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     private ValueTask AddPeerToPassiveViewAsync(EndPoint peer)
     {
         var result = Optional.None<EndPoint>();
-        if (activeView.Contains(peer) || passiveView.Contains(peer))
+        if (activeView.Contains(peer) || passiveView.Contains(peer) || IsLocalNode(peer))
             goto exit;
 
         if (passiveView.Count >= passiveViewCapacity && passiveView.PeekRandom(random).TryGet(out var removedPeer))
@@ -296,9 +296,16 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             ThreadPool.QueueUserWorkItem<(Action<PeerController, PeerEventArgs> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, discoveredPeer), false);
     }
 
+    /// <summary>
+    /// Determines whether the address of the local node is equal to the specified address.
+    /// </summary>
+    /// <param name="peer">The peer address to compare.</param>
+    /// <returns><see langword="true"/> if <paramref name="peer"/> is a local node; otherwise, <see langword="false"/>.</returns>
+    protected abstract bool IsLocalNode(EndPoint peer);
+
     private async Task AddPeerToActiveViewAsync(EndPoint peer, bool highPriority)
     {
-        if (activeView.Contains(peer))
+        if (activeView.Contains(peer) || IsLocalNode(peer))
             return;
 
         passiveView = passiveView.Remove(peer);

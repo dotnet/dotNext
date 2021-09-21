@@ -17,6 +17,7 @@ public class HttpPeerConfiguration : PeerConfiguration
     static HttpPeerConfiguration()
     {
         PathStringConverter.Register();
+        HttpEndPointConverter.Register();
     }
 
     private string? handlerName;
@@ -60,4 +61,14 @@ public class HttpPeerConfiguration : PeerConfiguration
     /// Gets or sets allocator for the internal buffer.
     /// </summary>
     public MemoryAllocator<byte>? Allocator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address of the contact node.
+    /// </summary>
+    public HttpEndPoint? ContactNode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address of the local node.
+    /// </summary>
+    public HttpEndPoint? LocalNode { get; set; }
 }
