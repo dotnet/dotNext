@@ -13,13 +13,14 @@ public partial class PeerController
     // implements Shuffle message passing loop
     private async Task ShuffleLoopAsync(TimeSpan period)
     {
-        while (!queue.Reader.Completion.IsCompleted)
+        while (await SuspendAsync(queue.Reader.Completion, period, LifecycleToken).ConfigureAwait(false))
         {
-            await Task.Delay(period, LifecycleToken).ConfigureAwait(false);
-
             if(!queue.Writer.TryWrite(Command.ForceShuffle()))
                 Logger.UnableToScheduleShuffle();
         }
+
+        static async ValueTask<bool> SuspendAsync(Task queueCompletion, TimeSpan period, CancellationToken token)
+            => !ReferenceEquals(queueCompletion, await Task.WhenAny(queueCompletion, Task.Delay(period, token)).ConfigureAwait(false));
     }
 
     private async Task ProcessShuffleAsync()
