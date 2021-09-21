@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="node.pfx">
+    <EmbeddedResource Include="..\node.pfx">
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
