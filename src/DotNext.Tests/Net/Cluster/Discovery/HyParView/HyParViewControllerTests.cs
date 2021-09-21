@@ -12,8 +12,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
             protected TestPeerControllerBase(HttpPeerConfiguration configuration)
                 : base(configuration)
-            {
-            }
+                => Address = configuration.LocalNode;
 
             protected sealed override bool IsLocalNode(EndPoint peer) => Address.Equals(peer);
 
