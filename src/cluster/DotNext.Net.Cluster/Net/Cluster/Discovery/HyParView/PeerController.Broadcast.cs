@@ -20,7 +20,7 @@ public partial class PeerController
 
     private async Task ProcessBroadcastAsync(IRumourSender sender)
     {
-        using var failedPeers = new PooledArrayBufferWriter<EndPoint>(activeViewCapacity);
+        var failedPeers = new PooledArrayBufferWriter<EndPoint>(activeViewCapacity);
         try
         {
             int activeViewCount;
