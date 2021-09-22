@@ -1,6 +1,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Messaging;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Represents local view of Raft cluster built on top of ASP.NET Core infrastructure.

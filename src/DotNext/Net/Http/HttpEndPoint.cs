@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 
-namespace DotNext.Net;
+namespace DotNext.Net.Http;
 
 /// <summary>
 /// Represents HTTP endpoint.

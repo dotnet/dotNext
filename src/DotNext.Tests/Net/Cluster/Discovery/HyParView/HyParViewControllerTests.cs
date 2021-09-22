@@ -3,6 +3,7 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
+    using HttpEndPoint = Net.Http.HttpEndPoint;
     using HttpPeerConfiguration = Http.HttpPeerConfiguration;
 
     [ExcludeFromCodeCoverage]

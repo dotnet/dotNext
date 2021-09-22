@@ -7,6 +7,7 @@ namespace DotNext.Net;
 
 using Buffers;
 using IO;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Provides methods for serialization/deserialization of <see cref="EndPoint"/> derived types.

@@ -5,7 +5,7 @@ using System.Net;
 
 namespace DotNext.ComponentModel;
 
-using HttpEndPoint = Net.HttpEndPoint;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated implicitly via Register method")]
 internal sealed class HttpEndPointConverter : TypeConverter

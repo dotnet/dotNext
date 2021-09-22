@@ -6,6 +6,7 @@ namespace DotNext.Net
 {
     using Buffers;
     using IO;
+    using HttpEndPoint = Http.HttpEndPoint;
 
     [ExcludeFromCodeCoverage]
     public sealed class EndPointFormatterTests : Test

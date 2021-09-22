@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 {
+    using HttpEndPoint = Net.Http.HttpEndPoint;
     using HttpPeerClient = Net.Http.HttpPeerClient;
 
     [ExcludeFromCodeCoverage]

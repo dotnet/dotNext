@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
     using Buffers;
     using IO;
     using static Collections.Generic.Sequence;
+    using HttpEndPoint = Net.Http.HttpEndPoint;
 
     [ExcludeFromCodeCoverage]
     public sealed class ClusterConfigurationStorageTests : Test

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
+using HttpEndPoint = Net.Http.HttpEndPoint;
+
 internal partial class HttpPeerController
 {
     private const string MessageTypeHeader = "X-HyParView-Message-Type";

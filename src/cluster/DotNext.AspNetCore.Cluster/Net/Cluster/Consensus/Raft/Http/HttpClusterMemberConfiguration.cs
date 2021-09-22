@@ -3,6 +3,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using ComponentModel;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
 /// <summary>

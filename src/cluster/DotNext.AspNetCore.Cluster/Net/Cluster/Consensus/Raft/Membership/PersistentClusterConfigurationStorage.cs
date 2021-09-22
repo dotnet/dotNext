@@ -2,6 +2,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
 using IO;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 internal sealed class PersistentClusterConfigurationStorage : PersistentClusterConfigurationStorage<HttpEndPoint>
 {

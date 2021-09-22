@@ -4,6 +4,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
 using ComponentModel;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
 /// <summary>

@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.

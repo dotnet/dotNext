@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Replication;
+    using HttpEndPoint = Net.Http.HttpEndPoint;
 
     [ExcludeFromCodeCoverage]
     public sealed class RaftHttpClusterTests : Test

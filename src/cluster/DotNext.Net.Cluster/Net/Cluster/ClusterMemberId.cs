@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster;
 
 using Buffers;
 using Intrinsics = Runtime.Intrinsics;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Represents unique identifier of cluster member.

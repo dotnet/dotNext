@@ -2,6 +2,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using IO;
 using Membership;
+using HttpEndPoint = Net.Http.HttpEndPoint;
 
 internal partial class RaftHttpCluster
 {

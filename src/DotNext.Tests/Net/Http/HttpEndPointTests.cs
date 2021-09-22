@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 
-namespace DotNext.Net
+namespace DotNext.Net.Http
 {
     [ExcludeFromCodeCoverage]
     public sealed class HttpEndPointTests : Test

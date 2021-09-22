@@ -1,7 +1,7 @@
-﻿using DotNext.Net;
-using DotNext.Net.Cluster;
+﻿using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
+using DotNext.Net.Http;
 
 namespace RaftNode;
 
