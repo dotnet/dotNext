@@ -53,9 +53,9 @@ public partial class PeerController
         internal int TimeToLive { get; init; }
 
         [DisallowNull]
-        internal IRumourSender? RumourTransport
+        internal Func<PeerController, IRumourSender>? RumourTransport
         {
-            get => peersOrMessageTransport as IRumourSender;
+            get => peersOrMessageTransport as Func<PeerController, IRumourSender>;
             init => peersOrMessageTransport = value;
         }
 
@@ -79,6 +79,6 @@ public partial class PeerController
 
         internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new() { Type = CommandType.ShuffleReply, Peers = peers };
 
-        internal static Command Broadcast(IRumourSender sender) => new() { Type = CommandType.Broadcast, RumourTransport = sender };
+        internal static Command Broadcast(Func<PeerController, IRumourSender> senderFactory) => new() { Type = CommandType.Broadcast, RumourTransport = senderFactory };
     }
 }

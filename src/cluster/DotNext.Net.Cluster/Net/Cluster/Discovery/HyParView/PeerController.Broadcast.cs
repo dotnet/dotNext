@@ -10,16 +10,17 @@ public partial class PeerController
     /// <summary>
     /// Spreads the rumour across neighbors.
     /// </summary>
-    /// <param name="sender">The rumour sender.</param>
+    /// <param name="senderFactory">The rumour sender factory.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-    public ValueTask EnqueueBroadcastAsync(IRumourSender sender, CancellationToken token = default)
-        => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Broadcast(sender), token);
+    public ValueTask EnqueueBroadcastAsync(Func<PeerController, IRumourSender> senderFactory, CancellationToken token = default)
+        => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Broadcast(senderFactory ?? throw new ArgumentNullException(nameof(senderFactory))), token);
 
-    private async Task ProcessBroadcastAsync(IRumourSender sender)
+    private async Task ProcessBroadcastAsync(Func<PeerController, IRumourSender> senderFactory)
     {
+        var sender = senderFactory(this);
         var failedPeers = new PooledArrayBufferWriter<EndPoint>(activeViewCapacity);
         try
         {
