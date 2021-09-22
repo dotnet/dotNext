@@ -7,12 +7,12 @@ internal sealed class HyParViewPeerLifetime : IPeerLifetime
 {
     private static void OnPeerDiscovered(PeerController controller, PeerEventArgs args)
     {
-        Console.WriteLine($"Peer {args.PeerAddress} has been discovered by the local node");
+        Console.WriteLine($"Peer {args.PeerAddress} has been discovered by the current node");
     }
 
     private static void OnPeerGone(PeerController controller, PeerEventArgs args)
     {
-        Console.WriteLine($"Peer {args.PeerAddress} has been removed from the mesh");
+        Console.WriteLine($"Peer {args.PeerAddress} is no longer visible by the current node");
     }
 
     void IPeerLifetime.OnStart(PeerController controller)
