@@ -109,7 +109,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         finally
         {
             timeoutControl?.Dispose();
-            Disposable.Dispose(response, response?.Content, request);
+            response?.Content?.Dispose();
+            response?.Dispose();
+            request.Dispose();
             Metrics?.ReportResponseTime(timeStamp.Elapsed);
         }
     }
