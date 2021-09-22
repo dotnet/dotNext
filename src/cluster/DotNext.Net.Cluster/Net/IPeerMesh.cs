@@ -31,7 +31,7 @@ public interface IPeerMesh<out TPeer> : IPeerMesh
     where TPeer : class, IPeer
 {
     /// <summary>
-    /// Gets a client used to communucate with remote peer.
+    /// Gets a client used to communucate with a remote peer.
     /// </summary>
     /// <param name="peer">The address of the peer.</param>
     /// <returns>The peer client; or <see langword="null"/> if the specified peer is not visible from the current peer.</returns>
