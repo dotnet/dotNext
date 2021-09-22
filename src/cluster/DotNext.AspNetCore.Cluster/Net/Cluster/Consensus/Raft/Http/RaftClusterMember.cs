@@ -100,7 +100,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             // more info about handling timeouts in .NET 5
             throw MemberUnavailable(timeoutEx);
         }
-        catch (OperationCanceledException e) when (!token.IsCancellationRequested)
+        catch (OperationCanceledException e) when (e.CancellationToken != token)
         {
             // This handler catches inability to connect to the remote host on Windows platform.
             // On Linux, this situation is handled by handler for HttpRequestException
