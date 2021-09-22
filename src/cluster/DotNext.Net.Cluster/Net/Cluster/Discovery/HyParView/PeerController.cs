@@ -126,7 +126,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             {
                 try
                 {
-                    await DoCommand(in command).ConfigureAwait(false);
+                    await ExecuteCommandAsync(in command).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException e) when (e.CancellationToken == LifecycleToken)
                 {
@@ -145,7 +145,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         while (await reader.WaitToReadAsync(LifecycleToken).ConfigureAwait(false));
     }
 
-    private Task DoCommand(in Command command)
+    private Task ExecuteCommandAsync(in Command command)
     {
         Task result;
 
