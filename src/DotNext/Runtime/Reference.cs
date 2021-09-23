@@ -107,6 +107,7 @@ namespace DotNext.Runtime
         /// <summary>
         /// Gets a reference to the memory location where the value is stored.
         /// </summary>
+        /// <exception cref="NullReferenceException">This reference is not valid.</exception>
         public ref TValue Target
         {
             get
