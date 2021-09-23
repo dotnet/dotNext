@@ -14,7 +14,7 @@ namespace DotNext.Runtime
     /// </summary>
     /// <remarks>
     /// This type encapsulates the reference to the memory location where the value is stored.
-    /// The reference can be used in async context and stored in a field or a regular class in 
+    /// The reference can be used in async context and stored in a field or a regular class in
     /// contrast to <c>ref</c>-structs.
     /// </remarks>
     /// <typeparam name="TValue">The type of the value stored at a memory location.</typeparam>
