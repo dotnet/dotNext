@@ -47,21 +47,13 @@ public class QueuedSynchronizer : Disposable
     private protected interface ILockManager
     {
         bool IsLockAllowed { get; }
+
         void AcquireLock();
     }
 
     private protected interface ILockManager<in TNode> : ILockManager
         where TNode : WaitNode
     {
-        void InitializeNode(TNode node);
-    }
-
-    private protected interface ILockManager<in TNode, TState>
-        where TNode : WaitNode
-        where TState : struct
-    {
-        bool IsLockAllowed(ref TState state);
-        void AcquireLock(ref TState state);
         void InitializeNode(TNode node);
     }
 
