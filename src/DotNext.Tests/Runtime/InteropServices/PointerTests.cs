@@ -542,10 +542,10 @@ namespace DotNext.Runtime.InteropServices
             var value = 42;
             Reference<int> handle = new Pointer<int>(&value);
 
-            Equal(42, handle.Value);
+            Equal(42, handle.Target);
 
-            handle.Value = 52;
-            Equal(52, handle.Value);
+            handle.Target = 52;
+            Equal(52, handle.Target);
         }
     }
 }

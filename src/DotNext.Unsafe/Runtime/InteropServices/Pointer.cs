@@ -902,9 +902,10 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
 
     /// <summary>
-    /// Obtains the handle to the memory location identified by the pointer.
+    /// Obtains the reference to the memory location identified by the pointer.
     /// </summary>
     /// <param name="ptr">The pointer to the memory location.</param>
+    /// <returns>The reference to the memory location identified by the pointer.</returns>
     public static implicit operator Reference<T>(Pointer<T> ptr) => ptr.GetReference();
 
     /// <inheritdoc/>

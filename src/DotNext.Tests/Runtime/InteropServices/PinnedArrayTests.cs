@@ -157,9 +157,9 @@ namespace DotNext.Runtime.InteropServices
             Reference<int> handle = array.GetReference(0);
 
             array[0] = 42;
-            Equal(42, handle.Value);
+            Equal(42, handle.Target);
 
-            handle.Value = 52;
+            handle.Target = 52;
             Equal(52, array[0]);
         }
     }
