@@ -245,27 +245,13 @@ namespace DotNext.Runtime
         /// <returns>The handle wrapping the pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is <see langword="null"/>.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueHandle<TValue> Pointer<TValue>(TValue* ptr)
+        public static unsafe ValueHandle<TValue> FromPointer<TValue>(TValue* ptr)
             where TValue : unmanaged
         {
             if (ptr == null)
                 throw new ArgumentNullException(nameof(ptr));
 
             return new(ptr);
-        }
-
-        /// <summary>
-        /// Creates a handle providing access to the value stored in the node.
-        /// </summary>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <param name="node">The node.</param>
-        /// <returns>The handle providing access to the value stored in the node.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="node"/> is <see langword="null"/>.</exception>
-        public static unsafe ValueHandle<TValue> NodeValue<TValue>(LinkedListNode<TValue> node)
-        {
-            return Create<LinkedListNode<TValue>, TValue>(node, &GetValueRef);
-
-            static ref TValue GetValueRef(LinkedListNode<TValue> node) => ref node.ValueRef;
         }
 
         private static ref TValue GetValueRef<TValue>(StrongBox<TValue> box) => ref box.Value!;

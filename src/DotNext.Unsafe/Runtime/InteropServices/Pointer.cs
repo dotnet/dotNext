@@ -118,7 +118,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// <returns>The handle represeting the memory location identified by this pointer.</returns>
     /// <exception cref="NullPointerException">This pointer is zero.</exception>
     public unsafe ValueHandle<T> ToHandle()
-        => value != null ? ValueHandle.Pointer<T>(value) : throw new NullPointerException();
+        => value != null ? ValueHandle.FromPointer<T>(value) : throw new NullPointerException();
 
     /// <summary>
     /// Gets boxed pointer.

@@ -55,7 +55,7 @@ namespace DotNext.Runtime
         public static unsafe void PointerAccess()
         {
             var value = 42;
-            var handle = ValueHandle.Pointer<int>(&value);
+            var handle = ValueHandle.FromPointer<int>(&value);
             True(handle.IsValid);
 
             Equal(42, handle.Value);
