@@ -1,9 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
-    using Runtime;
-
     [ExcludeFromCodeCoverage]
     public sealed class ReaderWriterSpinLockTests : Test
     {
@@ -50,16 +49,16 @@ namespace DotNext.Threading
         public static async Task WriterToWriterChain()
         {
             var are = new TaskCompletionSource();
-            Box<ReaderWriterSpinLock> rwLock = new(new());
+            var rwLock = new StrongBox<ReaderWriterSpinLock>();
             True(rwLock.Value.TryEnterWriteLock());
             var task = Task.Factory.StartNew(state =>
             {
-                Box<ReaderWriterSpinLock> rwLock = new(state);
+                var rwLock = (StrongBox<ReaderWriterSpinLock>)state;
                 False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
                 True(rwLock.Value.TryEnterWriteLock(DefaultTimeout));
                 rwLock.Value.ExitWriteLock();
-            }, rwLock.ToObject());
+            }, rwLock);
 
             await are.Task.WaitAsync(DefaultTimeout);
             rwLock.Value.ExitWriteLock();
@@ -70,16 +69,16 @@ namespace DotNext.Threading
         public static async Task WriterToReaderChain()
         {
             var are = new TaskCompletionSource();
-            Box<ReaderWriterSpinLock> rwLock = new(new());
+            var rwLock = new StrongBox<ReaderWriterSpinLock>();
             True(rwLock.Value.TryEnterWriteLock());
             var task = Task.Factory.StartNew(state =>
             {
-                Box<ReaderWriterSpinLock> rwLock = new(state);
+                var rwLock = (StrongBox<ReaderWriterSpinLock>)state;
                 False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
                 True(rwLock.Value.TryEnterReadLock(DefaultTimeout));
                 rwLock.Value.ExitReadLock();
-            }, rwLock.ToObject());
+            }, rwLock);
 
             await are.Task.WaitAsync(DefaultTimeout);
             rwLock.Value.ExitWriteLock();
