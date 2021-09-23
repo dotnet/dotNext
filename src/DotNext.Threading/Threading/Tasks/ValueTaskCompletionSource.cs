@@ -63,7 +63,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     private protected sealed override void CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
-    private protected sealed override void ResetCore()
+    private protected override void ResetCore()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 

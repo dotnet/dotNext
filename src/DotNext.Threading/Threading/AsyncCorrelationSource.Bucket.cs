@@ -12,15 +12,21 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 {
     private sealed class WaitNode : LinkedValueTaskCompletionSource<TValue>, IPooledManualResetCompletionSource<WaitNode>
     {
-        private readonly Action<WaitNode> backToPool;
+        private Action<WaitNode>? consumedCallback;
         private volatile IConsumer<WaitNode>? owner;
         internal TKey? Id;
-
-        private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
 
         internal IConsumer<WaitNode>? Owner
         {
             set => owner = value;
+        }
+
+        private protected override void ResetCore()
+        {
+            owner = null;
+            consumedCallback = null;
+            Id = default;
+            base.ResetCore();
         }
 
         internal void Append(WaitNode node) => base.Append(node);
@@ -32,7 +38,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         protected override void AfterConsumed()
         {
             Interlocked.Exchange(ref owner, null)?.Invoke(this);
-            backToPool(this);
+            consumedCallback?.Invoke(this);
         }
 
         internal override WaitNode? CleanupAndGotoNext()
@@ -41,7 +47,10 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             return Unsafe.As<WaitNode>(base.CleanupAndGotoNext());
         }
 
-        public static WaitNode CreateSource(Action<WaitNode> backToPool) => new(backToPool);
+        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
+        {
+            set => consumedCallback = value;
+        }
     }
 
     private sealed class Bucket : IConsumer<WaitNode>
@@ -108,7 +117,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         }
     }
 
-    private readonly ISupplier<WaitNode> pool;
+    private readonly ValueTaskPool<WaitNode> pool;
 
     private Bucket GetBucket(TKey eventId)
     {

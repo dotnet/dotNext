@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
@@ -11,8 +12,34 @@ using Tasks.Pooling;
 /// </summary>
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
+    [StructLayout(LayoutKind.Auto)]
+    private struct StateManager : ILockManager<DefaultWaitNode>
+    {
+        private AtomicBoolean state;
+
+        internal StateManager(bool initialState)
+            => state = new(initialState);
+
+        readonly bool ILockManager.IsLockAllowed => state.Value;
+
+        void ILockManager.AcquireLock() => state.Value = false;
+
+        internal bool TryReset() => state.TrueToFalse();
+
+        internal bool Value
+        {
+            readonly get => state.Value;
+            set => state.Value = value;
+        }
+
+        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        {
+            // nothing to do here
+        }
+    }
+
     private readonly ValueTaskPool<DefaultWaitNode> pool;
-    private AtomicBoolean state;
+    private StateManager manager;
 
     /// <summary>
     /// Initializes a new asynchronous reset event in the specified state.
@@ -25,7 +52,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        state.Value = initialState;
+        manager = new(initialState);
         pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
     }
 
@@ -35,26 +62,14 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
     public AsyncAutoResetEvent(bool initialState)
     {
-        state.Value = initialState;
+        manager = new(initialState);
         pool = new(RemoveAndDrainWaitQueue);
-    }
-
-    private static void StateControl(ref AtomicBoolean state, ref bool flag)
-    {
-        if (flag)
-        {
-            state.Value = false;
-        }
-        else
-        {
-            flag = state.Value;
-        }
     }
 
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => state.Value;
+    public bool IsSet => manager.Value;
 
     /// <summary>
     /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
@@ -65,7 +80,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public bool Reset()
     {
         ThrowIfDisposed();
-        return state.TrueToFalse();
+        return manager.TryReset();
     }
 
     private void SetCore()
@@ -76,7 +91,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         {
             if (current is null)
             {
-                state.Value = true;
+                manager.Value = true;
                 break;
             }
 
@@ -99,7 +114,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ThrowIfDisposed();
 
-        if (state.Value)
+        if (manager.Value)
             return false;
 
         SetCore();
@@ -122,8 +137,8 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref state, &StateControl, pool, out _, timeout, token);
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -133,6 +148,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref state, &StateControl, pool, out _, InfiniteTimeSpan, token);
+    public ValueTask WaitAsync(CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
 }

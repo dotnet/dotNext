@@ -18,16 +18,16 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
     private sealed class ExchangePoint : ValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<ExchangePoint>
     {
-        private readonly Action<ExchangePoint> consumedCallback;
+        private Action<ExchangePoint>? consumedCallback;
         internal T? Value;
 
-        private ExchangePoint(Action<ExchangePoint> consumedCallback)
-            => this.consumedCallback = consumedCallback;
+        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
 
-        protected override void AfterConsumed()
+        private protected override void ResetCore()
         {
             Value = default;
-            consumedCallback(this);
+            consumedCallback = null;
+            base.ResetCore();
         }
 
         internal bool TryExchange(ref T value)
@@ -41,7 +41,10 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             return false;
         }
 
-        static ExchangePoint IPooledManualResetCompletionSource<ExchangePoint>.CreateSource(Action<ExchangePoint> backToPool) => new(backToPool);
+        Action<ExchangePoint>? IPooledManualResetCompletionSource<ExchangePoint>.OnConsumed
+        {
+            set => consumedCallback = value;
+        }
     }
 
     private readonly TaskCompletionSource disposeTask;

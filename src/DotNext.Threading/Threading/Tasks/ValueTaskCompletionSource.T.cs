@@ -160,7 +160,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         InvokeContinuation();
     }
 
-    private protected sealed override void ResetCore()
+    private protected override void ResetCore()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 

@@ -2,16 +2,22 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace DotNext.Threading.Tasks.Pooling;
 
-internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>, ISupplier<TNode>, IConsumer<TNode>
-    where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>
+internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>
+    where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>, new()
 {
     private sealed class PooledNodePolicy : IPooledObjectPolicy<TNode>
     {
-        private readonly Action<TNode> backToPool;
+        private readonly Action<TNode> consumedCallback;
 
-        internal PooledNodePolicy(Action<TNode> backToPool) => this.backToPool = backToPool;
+        internal PooledNodePolicy(Action<TNode> consumedCallback)
+            => this.consumedCallback = consumedCallback;
 
-        TNode IPooledObjectPolicy<TNode>.Create() => TNode.CreateSource(backToPool);
+        TNode IPooledObjectPolicy<TNode>.Create()
+        {
+            var result = new TNode();
+            result.OnConsumed = consumedCallback;
+            return result;
+        }
 
         bool IPooledObjectPolicy<TNode>.Return(TNode obj)
         {
@@ -20,21 +26,30 @@ internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>, ISupplier
         }
     }
 
+    private sealed class ValueTaskPoolWeakReference : WeakReference
+    {
+        internal ValueTaskPoolWeakReference()
+            : base(null, false)
+        {
+        }
+
+        internal new ValueTaskPool<TNode>? Target
+        {
+            get => base.Target as ValueTaskPool<TNode>;
+            set => base.Target = value;
+        }
+
+        internal void Return(TNode node) => Target?.Return(node);
+    }
+
     internal ValueTaskPool(int maximumRetained, Action<TNode>? completionCallback = null)
         : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)), maximumRetained)
-        => weakRef.SetTarget(this);
+        => weakRef.Target = this;
 
     internal ValueTaskPool(Action<TNode>? completionCallback = null)
         : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)))
-        => weakRef.SetTarget(this);
+        => weakRef.Target = this;
 
-    private static Action<TNode> CreateBackToPoolCallback(out WeakReference<ValueTaskPool<TNode>?> weakRef)
-    {
-        weakRef = new(null, false);
-        return weakRef.Consume;
-    }
-
-    TNode ISupplier<TNode>.Invoke() => Get();
-
-    void IConsumer<TNode>.Invoke(TNode node) => Return(node);
+    private static Action<TNode> CreateBackToPoolCallback(out ValueTaskPoolWeakReference weakRef)
+        => (weakRef = new()).Return;
 }

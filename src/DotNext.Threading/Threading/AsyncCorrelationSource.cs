@@ -118,7 +118,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             return ValueTask.FromCanceled<TValue>(token);
 
         var bucket = GetBucket(eventId);
-        var node = pool.Invoke();
+        var node = pool.Get();
 
         // initialize node
         node.Owner = bucket;

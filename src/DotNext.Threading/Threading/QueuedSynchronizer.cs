@@ -28,13 +28,41 @@ public class QueuedSynchronizer : Disposable
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
     {
-        private readonly Action<DefaultWaitNode> backToPool;
+        private Action<DefaultWaitNode>? consumedCallback;
 
-        private DefaultWaitNode(Action<DefaultWaitNode> backToPool) => this.backToPool = backToPool;
+        protected sealed override void AfterConsumed() => consumedCallback?.Invoke(this);
 
-        protected sealed override void AfterConsumed() => backToPool(this);
+        private protected override void ResetCore()
+        {
+            consumedCallback = null;
+            base.ResetCore();
+        }
 
-        static DefaultWaitNode IPooledManualResetCompletionSource<DefaultWaitNode>.CreateSource(Action<DefaultWaitNode> backToPool) => new(backToPool);
+        Action<DefaultWaitNode>? IPooledManualResetCompletionSource<DefaultWaitNode>.OnConsumed
+        {
+            set => consumedCallback = value;
+        }
+    }
+
+    private protected interface ILockManager
+    {
+        bool IsLockAllowed { get; }
+        void AcquireLock();
+    }
+
+    private protected interface ILockManager<in TNode> : ILockManager
+        where TNode : WaitNode
+    {
+        void InitializeNode(TNode node);
+    }
+
+    private protected interface ILockManager<in TNode, TState>
+        where TNode : WaitNode
+        where TState : struct
+    {
+        bool IsLockAllowed(ref TState state);
+        void AcquireLock(ref TState state);
+        void InitializeNode(TNode node);
     }
 
     private readonly Action<double>? contentionCounter, lockDurationCounter;
@@ -50,7 +78,7 @@ public class QueuedSynchronizer : Disposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     private protected void RemoveAndDrainWaitQueue(WaitNode node)
     {
-        if (RemoveNode(node))
+        if (RemoveNodeCore(node))
             DrainWaitQueue();
     }
 
@@ -76,8 +104,7 @@ public class QueuedSynchronizer : Disposable
         init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected bool RemoveNode(WaitNode node)
+    private bool RemoveNodeCore(WaitNode node)
     {
         bool isFirst;
         if (isFirst = ReferenceEquals(first, node))
@@ -92,14 +119,19 @@ public class QueuedSynchronizer : Disposable
         return isFirst;
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private protected bool RemoveNode(WaitNode node) => RemoveNodeCore(node);
+
     private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
 
-    private TNode EnqueueNode<TNode>(ValueTaskPool<TNode> pool, bool throwOnTimeout)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>
+    private TNode EnqueueNode<TNode, TLockManager>(ValueTaskPool<TNode> pool, ref TLockManager manager, bool throwOnTimeout)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+        where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
 
         var node = pool.Get();
+        manager.InitializeNode(node);
         node.ThrowOnTimeout = throwOnTimeout;
         node.ResetAge();
 
@@ -117,22 +149,14 @@ public class QueuedSynchronizer : Disposable
         return node;
     }
 
-    /*
-     * Lock control function is a special function that allows to check the possibility of transition
-     * and perform the transition if needed:
-     * static void LockControl(ref State state, ref bool flag)
-     * {
-     *   if (flag) state.AcquireLock(); else flag = state.IsLockAllowed;
-     * }
-     */
-    private protected unsafe bool TryAcquire<TContext>(ref TContext context, delegate*<ref TContext, ref bool, void> control)
-        where TContext : struct
+    private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
+        where TLockManager : struct, ILockManager
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        var result = false;
-        control(ref context, ref result);
-        if (result)
+        bool result;
+
+        if (result = manager.IsLockAllowed)
         {
             for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
             {
@@ -149,23 +173,18 @@ public class QueuedSynchronizer : Disposable
                 }
             }
 
-            Debug.Assert(result);
-            control(ref context, ref result);
-            Debug.Assert(result);
+            manager.AcquireLock();
         }
 
     exit:
         return result;
     }
 
-    private protected unsafe ValueTask WaitWithTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, ValueTaskPool<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
-        where TContext : struct
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>
+    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+        where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
-        Debug.Assert(control != null);
-
-        node = null;
 
         if (IsDisposed || IsDisposeRequested)
             return new(DisposedTask);
@@ -176,23 +195,20 @@ public class QueuedSynchronizer : Disposable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
-        if (TryAcquire(ref context, control))
+        if (TryAcquire(ref manager))
             return ValueTask.CompletedTask;
 
         if (timeout == TimeSpan.Zero)
             return ValueTask.FromException(new TimeoutException());
 
-        return (node = EnqueueNode(pool, true)).As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
+        return EnqueueNode(pool, ref manager, true).As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
     }
 
-    private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, ValueTaskPool<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
-        where TContext : struct
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>
+    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+        where TManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
-        Debug.Assert(control != null);
-
-        node = null;
 
         if (IsDisposed || IsDisposeRequested)
             return new(GetDisposedTask<bool>());
@@ -203,13 +219,13 @@ public class QueuedSynchronizer : Disposable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled<bool>(token);
 
-        if (TryAcquire(ref context, control))
+        if (TryAcquire(ref manager))
             return new(true);
 
         if (timeout == TimeSpan.Zero)
             return new(false);    // if timeout is zero fail fast
 
-        return (node = EnqueueNode(pool, false)).CreateTask(timeout, token);
+        return EnqueueNode(pool, ref manager, false).CreateTask(timeout, token);
     }
 
     /// <summary>

@@ -13,21 +13,26 @@ using Tasks.Pooling;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct State
+    private struct LockManager : ILockManager<DefaultWaitNode>
     {
         private volatile bool state;
 
         internal readonly bool Value => state;
 
-        internal readonly bool IsLockAllowed => !state;
+        public readonly bool IsLockAllowed => !state;
 
-        internal void AcquireLock() => state = true;
+        public void AcquireLock() => state = true;
 
         internal void ExitLock() => state = false;
+
+        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        {
+            // nothing to do here
+        }
     }
 
     private readonly ValueTaskPool<DefaultWaitNode> pool;
-    private State state;
+    private LockManager manager;
 
     /// <summary>
     /// Initializes a new asynchronous exclusive lock.
@@ -53,19 +58,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Indicates that exclusive lock taken.
     /// </summary>
-    public bool IsLockHeld => state.Value;
-
-    private static void LockControl(ref State state, ref bool flag)
-    {
-        if (flag)
-        {
-            state.AcquireLock();
-        }
-        else
-        {
-            flag = state.IsLockAllowed;
-        }
-    }
+    public bool IsLockHeld => manager.Value;
 
     /// <summary>
     /// Attempts to obtain exclusive lock synchronously without blocking caller thread.
@@ -73,10 +66,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe bool TryAcquire()
+    public bool TryAcquire()
     {
         ThrowIfDisposed();
-        return TryAcquire(ref state, &LockControl);
+        return TryAcquire(ref manager);
     }
 
     /// <summary>
@@ -89,8 +82,8 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref state, &LockControl, pool, out _, timeout, token);
+    public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -103,8 +96,8 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref state, &LockControl, pool, out _, timeout, token);
+    public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -131,14 +124,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 continue;
             }
 
-            if (!state.IsLockAllowed)
+            if (!manager.IsLockAllowed)
                 break;
 
             // skip dead node
             if (current.TrySetResult(true))
             {
                 RemoveNode(current);
-                state.AcquireLock();
+                manager.AcquireLock();
                 break;
             }
         }
@@ -153,15 +146,15 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public void Release()
     {
         ThrowIfDisposed();
-        if (!state.Value)
+        if (!manager.Value)
             throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-        state.ExitLock();
+        manager.ExitLock();
         DrainWaitQueue();
 
         if (IsDisposeRequested && IsReadyToDispose)
             Dispose(true);
     }
 
-    private protected sealed override bool IsReadyToDispose => state.Value is false && first is null;
+    private protected sealed override bool IsReadyToDispose => manager.Value is false && first is null;
 }

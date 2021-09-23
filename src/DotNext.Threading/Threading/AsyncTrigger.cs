@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
@@ -12,7 +13,24 @@ using Tasks.Pooling;
 /// </summary>
 public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 {
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct LockManager : ILockManager<DefaultWaitNode>
+    {
+        bool ILockManager.IsLockAllowed => false;
+
+        void ILockManager.AcquireLock()
+        {
+            // nothing to do here
+        }
+
+        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        {
+            // nothing to do here
+        }
+    }
+
     private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private LockManager manager;
 
     /// <summary>
     /// Initializes a new trigger.
@@ -103,11 +121,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal"/>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        var tuple = ValueTuple.Create();
-        return WaitNoTimeoutAsync(ref tuple, &AlwaysFalse, pool, out _, timeout, token);
-    }
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller and waits for the signal.
@@ -121,11 +136,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal"/>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask WaitAsync(CancellationToken token = default)
-    {
-        var tuple = ValueTuple.Create();
-        return WaitWithTimeoutAsync(ref tuple, &AlwaysFalse, pool, out _, InfiniteTimeSpan, token);
-    }
+    public ValueTask WaitAsync(CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Resumes the first suspended caller in the queue and suspends the immediate caller.
@@ -229,18 +241,42 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
 
     private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
     {
-        private readonly Action<WaitNode> backToPool;
-        internal volatile ITransition? Transition;
+        private Action<WaitNode>? consumedCallback;
+        internal ITransition? Transition;
 
-        private WaitNode(Action<WaitNode> backToPool) => this.backToPool = backToPool;
+        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
 
-        protected override void AfterConsumed()
+        private protected override void ResetCore()
         {
             Transition = null;
-            backToPool(this);
+            consumedCallback = null;
+            base.ResetCore();
         }
 
-        static WaitNode IPooledManualResetCompletionSource<WaitNode>.CreateSource(Action<WaitNode> backToPool) => new(backToPool);
+        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
+        {
+            set => consumedCallback = value;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct LockManager : ILockManager<WaitNode>
+    {
+        private readonly ITransition transition;
+        private readonly TState state;
+
+        internal LockManager(TState state, ITransition transition)
+        {
+            this.transition = transition;
+            this.state = state;
+        }
+
+        bool ILockManager.IsLockAllowed => transition.Test(state);
+
+        void ILockManager.AcquireLock() => transition.Transit(state);
+
+        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+            => node.Transition = transition;
     }
 
     private readonly ValueTaskPool<WaitNode> pool;
@@ -274,18 +310,6 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// Gets state of this trigger.
     /// </summary>
     public TState State { get; }
-
-    private static void TransitionControl(ref (TState, ITransition) args, ref bool flag)
-    {
-        if (flag)
-        {
-            args.Item2.Transit(args.Item1);
-        }
-        else
-        {
-            flag = args.Item2.Test(args.Item1);
-        }
-    }
 
     private protected sealed override void DrainWaitQueue()
     {
@@ -359,13 +383,13 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe bool TrySignal(ITransition transition)
+    public bool TrySignal(ITransition transition)
     {
         ArgumentNullException.ThrowIfNull(transition, nameof(transition));
         ThrowIfDisposed();
 
-        var args = (State, transition);
-        return TryAcquire(ref args, &TransitionControl);
+        var manager = new LockManager(State, transition);
+        return TryAcquire(ref manager);
     }
 
     /// <summary>
@@ -380,16 +404,12 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
     /// <seealso cref="Signal"/>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
+    public ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(transition, nameof(transition));
 
-        var args = (State, transition);
-        var result = WaitNoTimeoutAsync(ref args, &TransitionControl, pool, out var node, timeout, token);
-        if (node is not null)
-            node.Transition = transition;
-
-        return result;
+        var manager = new LockManager(State, transition);
+        return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
     }
 
     /// <summary>
@@ -403,15 +423,12 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
     /// <seealso cref="Signal"/>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
+    public ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(transition, nameof(transition));
-        var args = (State, transition);
-        var result = WaitWithTimeoutAsync(ref args, &TransitionControl, pool, out var node, InfiniteTimeSpan, token);
-        if (node is not null)
-            node.Transition = transition;
 
-        return result;
+        var manager = new LockManager(State, transition);
+        return WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
     }
 
     private protected sealed override bool IsReadyToDispose => first is null;

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
@@ -16,8 +17,38 @@ using Tasks.Pooling;
 /// </remarks>
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
+    [StructLayout(LayoutKind.Auto)]
+    private struct StateManager : ILockManager<DefaultWaitNode>
+    {
+        private long state;
+
+        internal StateManager(long initialValue)
+            => state = initialValue;
+
+        internal long Value
+        {
+            readonly get => state.VolatileRead();
+            set => state.VolatileWrite(value);
+        }
+
+        internal void Increment() => state.IncrementAndGet();
+
+        internal void Decrement() => state.DecrementAndGet();
+
+        internal bool TryReset() => Interlocked.Exchange(ref state, 0L) > 0L;
+
+        bool ILockManager.IsLockAllowed => Value > 0L;
+
+        void ILockManager.AcquireLock() => Decrement();
+
+        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        {
+            // nothing to do here
+        }
+    }
+
     private readonly ValueTaskPool<DefaultWaitNode> pool;
-    private long counter;
+    private StateManager manager;
 
     /// <summary>
     /// Initializes a new asynchronous counter.
@@ -33,7 +64,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        counter = initialValue;
+        manager = new(initialValue);
         pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
     }
 
@@ -47,24 +78,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         if (initialValue < 0L)
             throw new ArgumentOutOfRangeException(nameof(initialValue));
 
-        counter = initialValue;
+        manager = new(initialValue);
         pool = new(RemoveAndDrainWaitQueue);
     }
 
-    private static void CounterControl(ref long counter, ref bool flag)
-    {
-        if (flag)
-        {
-            counter.DecrementAndGet();
-        }
-        else
-        {
-            flag = counter.VolatileRead() > 0L;
-        }
-    }
-
     /// <inheritdoc/>
-    bool IAsyncEvent.IsSet => Value > 0;
+    bool IAsyncEvent.IsSet => manager.Value > 0L;
 
     /// <summary>
     /// Gets the counter value.
@@ -74,11 +93,11 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
     /// blocking.
     /// </remarks>
-    public long Value => counter.VolatileRead();
+    public long Value => manager.Value;
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    bool IAsyncEvent.Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
+    bool IAsyncEvent.Reset() => manager.TryReset();
 
     /// <summary>
     /// Increments counter and resume suspended callers.
@@ -88,16 +107,16 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     public void Increment()
     {
         ThrowIfDisposed();
-        counter.IncrementAndGet();
+        manager.Increment();
 
-        for (WaitNode? current = first as WaitNode, next; current is not null && counter.VolatileRead() > 0L; current = next)
+        for (WaitNode? current = first as WaitNode, next; current is not null && manager.Value > 0L; current = next)
         {
             next = current.Next as WaitNode;
 
             if (current.TrySetResult(true))
             {
                 RemoveNode(current);
-                counter.DecrementAndGet();
+                manager.Decrement();
             }
         }
     }
@@ -119,8 +138,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref counter, &CounterControl, pool, out _, timeout, token);
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -131,17 +150,17 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref counter, &CounterControl, pool, out _, InfiniteTimeSpan, token);
+    public ValueTask WaitAsync(CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.
     /// </summary>
     /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe bool TryDecrement()
+    public bool TryDecrement()
     {
         ThrowIfDisposed();
-        return TryAcquire(ref counter, &CounterControl);
+        return TryAcquire(ref manager);
     }
 }

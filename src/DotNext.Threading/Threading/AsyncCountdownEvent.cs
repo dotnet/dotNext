@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
@@ -14,11 +15,12 @@ using Tasks.Pooling;
 /// </remarks>
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
-    private struct State
+    [StructLayout(LayoutKind.Auto)]
+    private struct StateManager : ILockManager<DefaultWaitNode>
     {
         private long current, initial;
 
-        internal State(long initialCount)
+        internal StateManager(long initialCount)
             => current = initial = initialCount;
 
         internal long Current
@@ -28,6 +30,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
 
         internal readonly bool IsEmpty => Current == 0L;
+
+        bool ILockManager.IsLockAllowed => IsEmpty;
 
         internal long Initial
         {
@@ -44,10 +48,20 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             static long Accumulate(long current, long value)
                 => Math.Max(0L, current - value);
         }
+
+        void ILockManager.AcquireLock()
+        {
+            // nothing to do here
+        }
+
+        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        {
+            // nothing to do here
+        }
     }
 
     private readonly ValueTaskPool<DefaultWaitNode> pool;
-    private State state;
+    private StateManager manager;
 
     /// <summary>
     /// Creates a new countdown event with the specified count.
@@ -65,7 +79,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        state = new(initialCount);
+        manager = new(initialCount);
         pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
     }
 
@@ -79,32 +93,24 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (initialCount < 0)
             throw new ArgumentOutOfRangeException(nameof(initialCount));
 
-        state = new(initialCount);
+        manager = new(initialCount);
         pool = new(RemoveAndDrainWaitQueue);
-    }
-
-    private static void CounterControl(ref State state, ref bool flag)
-    {
-        if (!flag)
-        {
-            flag = state.IsEmpty;
-        }
     }
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
     /// </summary>
-    public long InitialCount => state.Initial;
+    public long InitialCount => manager.Initial;
 
     /// <summary>
     /// Gets the number of remaining signals required to set the event.
     /// </summary>
-    public long CurrentCount => state.Current;
+    public long CurrentCount => manager.Current;
 
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => state.IsEmpty;
+    public bool IsSet => manager.IsEmpty;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal bool TryAddCount(long signalCount, bool autoReset)
@@ -114,10 +120,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 0)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        if (state.IsEmpty && !autoReset)
+        if (manager.IsEmpty && !autoReset)
             return false;
 
-        state.Increment(signalCount);
+        manager.Increment(signalCount);
         return true;
     }
 
@@ -162,7 +168,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    public bool Reset() => Reset(state.Initial);
+    public bool Reset() => Reset(manager.Initial);
 
     /// <summary>
     /// Resets the <see cref="InitialCount"/> property to a specified value.
@@ -179,19 +185,19 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(count));
 
         // in signaled state
-        if (!state.IsEmpty)
+        if (!manager.IsEmpty)
             return false;
 
-        state.Current = state.Initial = count;
+        manager.Current = manager.Initial = count;
         return true;
     }
 
     private bool SignalCore(long signalCount)
     {
-        if (state.IsEmpty)
+        if (manager.IsEmpty)
             throw new InvalidOperationException();
 
-        if (state.Decrement(signalCount))
+        if (manager.Decrement(signalCount))
         {
             ResumeSuspendedCallers();
             return true;
@@ -204,10 +210,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        if (state.Decrement(signalCount))
+        if (manager.Decrement(signalCount))
         {
             ResumeSuspendedCallers();
-            state.Current = state.Initial;
+            manager.Current = manager.Initial;
             return true;
         }
 
@@ -215,12 +221,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    internal unsafe ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
-        => (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref state, &CounterControl, pool, out _, timeout, token);
+    internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+        => (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref manager, pool, timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    internal unsafe ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
-        => (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref state, &CounterControl, pool, out _, InfiniteTimeSpan, token);
+    internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
+        => (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.
@@ -254,8 +260,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref state, &CounterControl, pool, out _, timeout, token);
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -265,6 +271,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public unsafe ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref state, &CounterControl, pool, out _, InfiniteTimeSpan, token);
+    public ValueTask WaitAsync(CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
 }
