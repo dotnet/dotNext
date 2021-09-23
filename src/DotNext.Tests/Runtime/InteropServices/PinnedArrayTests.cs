@@ -149,5 +149,18 @@ namespace DotNext.Runtime.InteropServices
             Equal(30, ms.Read<int>());
             Equal(40, ms.Read<int>());
         }
+
+        [Fact]
+        public static void ArrayElementHandle()
+        {
+            var array = new PinnedArray<int>(4);
+            ValueHandle<int> handle = array.GetHandle(0);
+
+            array[0] = 42;
+            Equal(42, handle.Value);
+
+            handle.Value = 52;
+            Equal(52, array[0]);
+        }
     }
 }

@@ -535,5 +535,17 @@ namespace DotNext.Runtime.InteropServices
             IsType<Pointer>(obj);
             Equal((IntPtr)ptr.Address, new IntPtr(Pointer.Unbox(obj)));
         }
+
+        [Fact]
+        public static unsafe void PointerToHandle()
+        {
+            var value = 42;
+            ValueHandle<int> handle = new Pointer<int>(&value);
+
+            Equal(42, handle.Value);
+
+            handle.Value = 52;
+            Equal(52, handle.Value);
+        }
     }
 }

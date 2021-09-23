@@ -113,6 +113,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     }
 
     /// <summary>
+    /// Converts this pointer to <see cref="ValueHandle{TValue}"/>.
+    /// </summary>
+    /// <returns>The handle represeting the memory location identified by this pointer.</returns>
+    /// <exception cref="NullPointerException">This pointer is zero.</exception>
+    public unsafe ValueHandle<T> ToHandle()
+        => value != null ? ValueHandle.Pointer<T>(value) : throw new NullPointerException();
+
+    /// <summary>
     /// Gets boxed pointer.
     /// </summary>
     /// <returns>The boxed pointer.</returns>
@@ -892,6 +900,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
+
+    /// <summary>
+    /// Obtains the handle to the memory location identified by the pointer.
+    /// </summary>
+    /// <param name="ptr">The pointer to the memory location.</param>
+    public static implicit operator ValueHandle<T>(Pointer<T> ptr) => ptr.ToHandle();
 
     /// <inheritdoc/>
     unsafe UIntPtr ISupplier<UIntPtr>.Invoke() => (nuint)value;
