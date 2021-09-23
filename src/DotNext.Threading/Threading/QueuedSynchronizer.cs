@@ -94,10 +94,12 @@ public class QueuedSynchronizer : Disposable
 
     private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
 
-    private void EnqueueNode(WaitNode node, bool throwOnTimeout)
+    private TNode EnqueueNode<TNode>(ValueTaskPool<TNode> pool, bool throwOnTimeout)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
 
+        var node = pool.Get();
         node.ThrowOnTimeout = throwOnTimeout;
         node.ResetAge();
 
@@ -112,6 +114,7 @@ public class QueuedSynchronizer : Disposable
         }
 
         contentionCounter?.Invoke(1L);
+        return node;
     }
 
     /*
@@ -179,10 +182,7 @@ public class QueuedSynchronizer : Disposable
         if (timeout == TimeSpan.Zero)
             return ValueTask.FromException(new TimeoutException());
 
-        node = pool.Get();
-        EnqueueNode(node, true);
-
-        return node.As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
+        return (node = EnqueueNode(pool, true)).As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
     }
 
     private protected unsafe ValueTask<bool> WaitNoTimeoutAsync<TContext, TNode>(ref TContext context, delegate*<ref TContext, ref bool, void> control, ValueTaskPool<TNode> pool, out TNode? node, TimeSpan timeout, CancellationToken token)
@@ -209,10 +209,7 @@ public class QueuedSynchronizer : Disposable
         if (timeout == TimeSpan.Zero)
             return new(false);    // if timeout is zero fail fast
 
-        node = pool.Get();
-        EnqueueNode(node, false);
-
-        return node.CreateTask(timeout, token);
+        return (node = EnqueueNode(pool, false)).CreateTask(timeout, token);
     }
 
     /// <summary>
