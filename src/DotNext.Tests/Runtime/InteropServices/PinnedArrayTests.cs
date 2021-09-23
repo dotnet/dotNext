@@ -154,7 +154,7 @@ namespace DotNext.Runtime.InteropServices
         public static void ArrayElementHandle()
         {
             var array = new PinnedArray<int>(4);
-            ValueHandle<int> handle = array.GetHandle(0);
+            Reference<int> handle = array.GetReference(0);
 
             array[0] = 42;
             Equal(42, handle.Value);

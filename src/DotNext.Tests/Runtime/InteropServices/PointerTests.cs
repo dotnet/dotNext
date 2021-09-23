@@ -540,7 +540,7 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe void PointerToHandle()
         {
             var value = 42;
-            ValueHandle<int> handle = new Pointer<int>(&value);
+            Reference<int> handle = new Pointer<int>(&value);
 
             Equal(42, handle.Value);
 
