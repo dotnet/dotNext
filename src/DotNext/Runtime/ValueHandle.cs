@@ -105,7 +105,7 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
-        /// Gets a reference to the field.
+        /// Gets a reference to a memory location where the value is stored.
         /// </summary>
         public ref TValue Value
         {
