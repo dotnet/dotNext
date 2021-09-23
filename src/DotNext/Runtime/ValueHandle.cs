@@ -76,20 +76,31 @@ namespace DotNext.Runtime
         {
             get
             {
+                ref TValue result = ref Unsafe.NullRef<TValue>();
+
                 // array index may be zero so check on array type first
                 if (owner is TValue[] array)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), (nint)accessor);
+                {
+                    result = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), (nint)accessor);
+                }
+                else if (accessor == null)
+                {
+                    // leave getter
+                }
+                else if (owner is null)
+                {
+                    result = ref ((delegate*<ref TValue>)accessor)();
+                }
+                else if (ReferenceEquals(owner, PointerTypeSentinel.Instance))
+                {
+                    result = ref Unsafe.AsRef<TValue>(accessor);
+                }
+                else
+                {
+                    result = ref ((delegate*<object, ref TValue>)accessor)(owner);
+                }
 
-                if (accessor == null)
-                    return ref Unsafe.NullRef<TValue>();
-
-                if (owner is null)
-                    return ref ((delegate*<ref TValue>)accessor)();
-
-                if (ReferenceEquals(owner, PointerTypeSentinel.Instance))
-                    return ref Unsafe.AsRef<TValue>(accessor);
-
-                return ref ((delegate*<object, ref TValue>)accessor)(owner);
+                return ref result;
             }
         }
 
