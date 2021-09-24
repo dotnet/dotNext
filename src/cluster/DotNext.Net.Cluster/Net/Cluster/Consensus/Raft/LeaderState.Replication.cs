@@ -76,7 +76,7 @@ internal partial class LeaderState
                     logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                     member.NextIndex.VolatileWrite(currentIndex + 1);
                     member.ConfigurationFingerprint.VolatileWrite(fingerprint);
-                    result = result.SetValue(replicatedWithCurrentTerm);
+                    result = result with { Value = replicatedWithCurrentTerm };
                 }
                 else
                 {
