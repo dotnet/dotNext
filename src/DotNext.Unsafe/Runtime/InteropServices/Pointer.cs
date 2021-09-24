@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CancellationToken = System.Threading.CancellationToken;
@@ -994,7 +995,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// </summary>
     /// <param name="other">The object of type <see cref="Pointer{T}"/> to be compared.</param>
     /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
-    public override unsafe bool Equals(object? other) => other switch
+    public override unsafe bool Equals([NotNullWhen(true)] object? other) => other switch
     {
         Pointer<T> ptr => Equals(ptr),
         Pointer ptr => value == Pointer.Unbox(ptr),

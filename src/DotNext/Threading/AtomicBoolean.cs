@@ -266,7 +266,7 @@ public struct AtomicBoolean : IEquatable<bool>
     /// </summary>
     /// <param name="other">Other value to compare.</param>
     /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals(object? other) => other switch
+    public override readonly bool Equals([NotNullWhen(true)] object? other) => other switch
     {
         bool b => Equals(b),
         AtomicBoolean b => Value == b.Value,

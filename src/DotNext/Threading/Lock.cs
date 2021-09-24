@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
@@ -267,7 +268,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// </summary>
     /// <param name="other">Other lock to compare.</param>
     /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals(object? other) => other is Lock @lock && Equals(in @lock);
+    public override readonly bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
 
     /// <summary>
     /// Computes hash code of this lock.

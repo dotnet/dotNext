@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
 using static System.Threading.Timeout;
@@ -316,7 +317,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// </summary>
     /// <param name="other">Other lock to compare.</param>
     /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals(object? other) => other is AsyncLock @lock && Equals(in @lock);
+    public override readonly bool Equals([NotNullWhen(true)] object? other) => other is AsyncLock @lock && Equals(in @lock);
 
     /// <summary>
     /// Computes hash code of this lock.
