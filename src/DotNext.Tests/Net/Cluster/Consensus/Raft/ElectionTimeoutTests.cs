@@ -13,5 +13,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(20, timeout.UpperValue);
             True(timeout.RandomTimeout(Random.Shared).IsBetween(10, 20, BoundType.Closed));
         }
+
+        [Fact]
+        public static void DeconstructionOfRecommended()
+        {
+            var (lower, upper) = ElectionTimeout.Recommended;
+            Equal(150, lower);
+            Equal(300, upper);
+        }
     }
 }

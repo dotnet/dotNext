@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -38,5 +39,17 @@ public readonly struct ElectionTimeout
     {
         get => upperValue;
         init => upperValue = value > 0 && value < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(upperValue));
+    }
+
+    /// <summary>
+    /// Deconstructs the election timeout.
+    /// </summary>
+    /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
+    /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public void Deconstruct(out int lowerValue, out int upperValue)
+    {
+        lowerValue = this.lowerValue;
+        upperValue = this.upperValue;
     }
 }
