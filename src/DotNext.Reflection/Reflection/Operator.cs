@@ -13,15 +13,6 @@ internal static class Operator
 
     internal readonly struct Kind : IEquatable<Kind>
     {
-        private sealed class EqualityComparer : IEqualityComparer<Kind>
-        {
-            public int GetHashCode(Kind key) => key.GetHashCode();
-
-            public bool Equals(Kind first, Kind second) => first.Equals(second);
-        }
-
-        internal static IEqualityComparer<Kind> Comparer = new EqualityComparer();
-
         private readonly bool overloaded;
         private readonly ExpressionType operatorType;
 
@@ -43,12 +34,14 @@ internal static class Operator
             this.overloaded = overloaded;
         }
 
-        public bool Equals(Kind other) => operatorType == other.operatorType && overloaded == other.overloaded;
+        private bool Equals(in Kind other) => operatorType == other.operatorType && overloaded == other.overloaded;
+
+        bool IEquatable<Kind>.Equals(Kind other) => Equals(in other);
 
         public override bool Equals([NotNullWhen(true)] object? other)
-            => other is Kind key && Equals(key);
+            => other is Kind key && Equals(in key);
 
-        public override int GetHashCode() => overloaded ? (int)operatorType + 100 : (int)operatorType;
+        public override int GetHashCode() => HashCode.Combine(overloaded, operatorType);
 
         private InvalidOperationException OperatorNotExists()
             => new(ExceptionMessages.MissingOperator(operatorType));
