@@ -8,21 +8,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct ElectionTimeout
 {
-    /// <summary>
-    /// Initializes a new leader election timeout.
-    /// </summary>
-    /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
-    /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
-    public ElectionTimeout(int lowerValue, int upperValue)
-    {
-        LowerValue = lowerValue > 0 ? lowerValue : throw new ArgumentOutOfRangeException(nameof(lowerValue));
-        UpperValue = upperValue > 0 && upperValue < int.MaxValue ? upperValue : throw new ArgumentOutOfRangeException(nameof(upperValue));
-    }
+    private readonly int lowerValue, upperValue;
 
     /// <summary>
     /// Gets recommended election timeout.
     /// </summary>
-    public static ElectionTimeout Recommended => new(150, 300);
+    public static ElectionTimeout Recommended => new() { LowerValue = 150, UpperValue = 300 };
 
     /// <summary>
     /// Generates random election timeout.
@@ -34,25 +25,18 @@ public readonly struct ElectionTimeout
     /// <summary>
     /// Gets lower possible value of leader election timeout, in milliseconds.
     /// </summary>
-    public int LowerValue { get; }
+    public int LowerValue
+    {
+        get => lowerValue;
+        init => lowerValue = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
 
     /// <summary>
     /// Gets upper possible value of leader election timeout, in milliseconds.
     /// </summary>
-    public int UpperValue { get; }
-}
-
-/// <summary>
-/// Represents extension methods for <see cref="ElectionTimeout"/> value type.
-/// </summary>
-public static class ElectionTimeoutExtensions
-{
-    /// <summary>
-    /// Updates boundaries of the timeout.
-    /// </summary>
-    /// <param name="timeout">The election timeout to update.</param>
-    /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
-    /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
-    public static void Update(this ref ElectionTimeout timeout, int? lowerValue, int? upperValue)
-        => timeout = new(lowerValue ?? timeout.LowerValue, upperValue ?? timeout.UpperValue);
+    public int UpperValue
+    {
+        get => upperValue;
+        init => upperValue = value > 0 && value < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(upperValue));
+    }
 }

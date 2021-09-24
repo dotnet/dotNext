@@ -16,7 +16,7 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     public int LowerElectionTimeout
     {
         get => electionTimeout.LowerValue;
-        set => electionTimeout.Update(value, null);
+        set => electionTimeout = electionTimeout with { LowerValue = value };
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     public int UpperElectionTimeout
     {
         get => electionTimeout.UpperValue;
-        set => electionTimeout.Update(null, value);
+        set => electionTimeout = electionTimeout with { UpperValue = value };
     }
 
     /// <summary>
