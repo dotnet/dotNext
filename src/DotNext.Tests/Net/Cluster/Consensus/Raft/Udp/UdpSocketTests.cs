@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     using TransportServices;
 
     [ExcludeFromCodeCoverage]
+    [Collection(TestCollections.Raft)]
     public sealed class UdpSocketTests : TransportTestSuite
     {
         private static readonly IPEndPoint LocalHostRandomPort = new(IPAddress.Loopback, 0);

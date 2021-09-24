@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using HttpEndPoint = Net.Http.HttpEndPoint;
 
     [ExcludeFromCodeCoverage]
+    [Collection(TestCollections.Raft)]
     public sealed class RaftHttpClusterTests : Test
     {
         private sealed class LeaderTracker : LeaderChangedEvent, IClusterMemberLifetime

@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
     using TransportServices;
 
     [ExcludeFromCodeCoverage]
+    [Collection(TestCollections.Raft)]
     public sealed class TcpTransportTests : TransportTestSuite
     {
         private static X509Certificate2 LoadCertificate()
