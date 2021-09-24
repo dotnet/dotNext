@@ -9,6 +9,8 @@ namespace DotNext.Net.Http;
 /// </summary>
 public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>
 {
+    private const StringComparison HostNameComparison = StringComparison.OrdinalIgnoreCase;
+
     /// <summary>
     /// Initializes a new HTTP endpoint.
     /// </summary>
@@ -59,7 +61,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
         const int defaultHttpPort = 80;
         const int defaultHttpsPort = 443;
 
-        secure = string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+        secure = string.Equals(uri.Scheme, Uri.UriSchemeHttps, HostNameComparison);
         return uri.IsDefaultPort ? secure ? defaultHttpsPort : defaultHttpPort : uri.Port;
     }
 
@@ -103,7 +105,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// <param name="other">The object to compare.</param>
     /// <returns><see langword="true"/> if this object represents the same endpoint as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
     public bool Equals(HttpEndPoint? other)
-        => other is not null && string.Equals(Host, other.Host, StringComparison.OrdinalIgnoreCase) && Port == other.Port && IsSecure == other.IsSecure && AddressFamily == other.AddressFamily;
+        => other is not null && string.Equals(Host, other.Host, HostNameComparison) && Port == other.Port && IsSecure == other.IsSecure && AddressFamily == other.AddressFamily;
 
     /// <summary>
     /// Determines whether this object represents the same HTTP endpoint as the specified object.
@@ -137,7 +139,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     public override int GetHashCode()
     {
         var result = new HashCode();
-        result.Add(Host, StringComparer.OrdinalIgnoreCase);
+        result.Add(Host, StringComparer.FromComparison(HostNameComparison));
         result.Add(Port);
         result.Add(IsSecure);
         result.Add(AddressFamily);
