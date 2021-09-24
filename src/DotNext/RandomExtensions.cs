@@ -15,15 +15,7 @@ public static class RandomExtensions
     /// <summary>
     /// Represents randomly chosen salt for hash code algorithms.
     /// </summary>
-    internal static readonly int BitwiseHashSalt;
-
-    [SkipLocalsInit]
-    static unsafe RandomExtensions()
-    {
-        Unsafe.SkipInit(out int i);
-        RandomNumberGenerator.Fill(new Span<byte>(&i, sizeof(int)));
-        BitwiseHashSalt = i;
-    }
+    internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
     private static void NextString(Random rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
     {
