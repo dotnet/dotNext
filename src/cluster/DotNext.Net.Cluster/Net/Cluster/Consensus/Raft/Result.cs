@@ -6,7 +6,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// Represents RPC response.
 /// </summary>
 /// <typeparam name="T">The type of RPC response.</typeparam>
-/// <param name="Term">The term of the remote member.</param>
-/// <param name="Value">Raft RPC response.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct Result<T>(long Term, T Value);
+public readonly struct Result<T>
+{
+    private readonly T result;
+
+    /// <summary>
+    /// Initializes a new result.
+    /// </summary>
+    /// <param name="term">The term provided by remote node.</param>
+    /// <param name="value">The value returned by remote node.</param>
+    public Result(long term, T value)
+    {
+        Term = term;
+        result = value;
+    }
+
+    /// <summary>
+    /// Gets term of the remote member.
+    /// </summary>
+    public long Term { get; }
+
+    /// <summary>
+    /// Gets RPC response.
+    /// </summary>
+    public T Value
+    {
+        get => result;
+        init => result = value;
+    }
+}
