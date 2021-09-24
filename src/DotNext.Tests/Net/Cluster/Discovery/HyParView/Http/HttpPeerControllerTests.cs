@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
                 {"lowerShufflePeriod", "10"},
                 {"upperShufflePeriod", "5"},
                 {"requestTimeout", "00:01:00"},
-                {"localNode", "http://localhost:3262/"}
+                {"localNode", "http://localhost:3362/"}
             };
 
             var config2 = new Dictionary<string, string>
@@ -48,27 +48,27 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
                 {"lowerShufflePeriod", "10"},
                 {"upperShufflePeriod", "5"},
                 {"requestTimeout", "00:01:00"},
-                {"localNode", "http://localhost:3263/"},
-                {"contactNode", "http://localhost:3262/"},
+                {"localNode", "http://localhost:3363/"},
+                {"contactNode", "http://localhost:3362/"},
             };
 
             var listener1 = new MembershipChangeEventListener();
-            using var peer1 = CreateHost<Startup>(3262, config1, listener1);
+            using var peer1 = CreateHost<Startup>(3362, config1, listener1);
             await peer1.StartAsync();
 
             var listener2 = new MembershipChangeEventListener();
-            using var peer2 = CreateHost<Startup>(3263, config2, listener2);
+            using var peer2 = CreateHost<Startup>(3363, config2, listener2);
             await peer2.StartAsync();
 
             await Task.WhenAll(listener1.DiscoveryTask, listener1.DiscoveryTask).WaitAsync(DefaultTimeout);
 
-            Equal(new HttpEndPoint("localhost", 3262, false), listener2.DiscoveryTask.Result);
-            Equal(new HttpEndPoint("localhost", 3263, false), listener1.DiscoveryTask.Result);
+            Equal(new HttpEndPoint("localhost", 3362, false), listener2.DiscoveryTask.Result);
+            Equal(new HttpEndPoint("localhost", 3363, false), listener1.DiscoveryTask.Result);
 
             // shutdown peer gracefully
             await peer2.StopAsync();
 
-            Equal(new HttpEndPoint("localhost", 3263, false), await listener1.DisconnectionTask.WaitAsync(DefaultTimeout));
+            Equal(new HttpEndPoint("localhost", 3363, false), await listener1.DisconnectionTask.WaitAsync(DefaultTimeout));
 
             await peer1.StopAsync();
         }
@@ -81,10 +81,10 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
                 {"lowerShufflePeriod", "10"},
                 {"upperShufflePeriod", "5"},
                 {"requestTimeout", "00:01:00"},
-                {"localNode", "http://localhost:3262/"}
+                {"localNode", "http://localhost:3362/"}
             };
 
-            using var peer1 = CreateHost<Startup>(3262, config1);
+            using var peer1 = CreateHost<Startup>(3362, config1);
             await peer1.StartAsync();
 
             NotNull(peer1.Services.GetService<PeerController>());
