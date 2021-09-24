@@ -59,22 +59,19 @@ internal abstract class Cache<TKey, TValue>
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct MemberKey : IEquatable<MemberKey>
+internal readonly record struct MemberKey(string Name, bool NonPublic)
 {
-    internal readonly bool NonPublic;
-    internal readonly string Name;
+    private const StringComparison NameComparison = StringComparison.Ordinal;
 
-    internal MemberKey(string name, bool nonPublic)
+    public bool Equals(MemberKey other) => NonPublic == other.NonPublic && string.Equals(Name, other.Name, NameComparison);
+
+    public override int GetHashCode()
     {
-        NonPublic = nonPublic;
-        Name = name;
+        var result = new HashCode();
+        result.Add(NonPublic);
+        result.Add(Name, StringComparer.FromComparison(NameComparison));
+        return result.ToHashCode();
     }
-
-    public bool Equals(MemberKey other) => NonPublic == other.NonPublic && Name == other.Name;
-
-    public override bool Equals([NotNullWhen(true)] object? other) => other is MemberKey key && Equals(key);
-
-    public override int GetHashCode() => HashCode.Combine(NonPublic, Name);
 }
 
 internal abstract class MemberCache<TMember, TDescriptor> : Cache<MemberKey, TDescriptor>
