@@ -1,7 +1,0 @@
-UnresolvedHostName = Unable to resolve host name {0}
-MissingHeader=Raft protocol header {0} is missing
-IncorrectResponse=Incorrect response according with Raft protocol
-UnresolvedLocalMember=Configured list of members in cluster doesn't contain address of entire application
-UnavailableMember=Member is not reachable through the network
-LeaderIsUnavailable=Leader node is not yet elected
-InvalidRpcTimeout=Raft RPC timeout cannot be larger than HTTP request timeout
