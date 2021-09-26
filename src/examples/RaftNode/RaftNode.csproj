@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <StartupObject>RaftNode.Program</StartupObject>
-    <Version>3.3.0</Version>
+    <ImplicitUsings>true</ImplicitUsings>
+    <Version>4.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
@@ -14,34 +14,14 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.16" />
-    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj">
-      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
-      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
-      <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj">
-      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
-      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
-      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
-    </ProjectReference>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0-rc.1.21451.13" />
+    <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="node.pfx">
+    <EmbeddedResource Include="..\node.pfx">
+      <LogicalName>node.pfx</LogicalName>
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>

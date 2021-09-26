@@ -1,65 +1,52 @@
-using System;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Commands
+namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
+
+using IO;
+using Runtime.Serialization;
+
+/// <summary>
+/// Represents Raft log entry containing custom command.
+/// </summary>
+/// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
+[StructLayout(LayoutKind.Auto)]
+public readonly struct LogEntry<TCommand> : IRaftLogEntry
+    where TCommand : notnull, ISerializable<TCommand>
 {
-    using IO;
-    using Runtime.Serialization;
+    internal LogEntry(long term, TCommand command, int id)
+    {
+        Term = term;
+        Timestamp = DateTimeOffset.UtcNow;
+        Command = command;
+        CommandId = id;
+    }
 
     /// <summary>
-    /// Represents Raft log entry containing custom command.
+    /// Gets the command associated with this log entry.
     /// </summary>
-    /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct LogEntry<TCommand> : IRaftLogEntry
-        where TCommand : struct
-    {
-        private readonly IFormatter<TCommand> formatter;
-        private readonly int id;
+    public TCommand Command { get; }
 
-        internal LogEntry(long term, TCommand command, IFormatter<TCommand> formatter, int id)
-        {
-            Term = term;
-            Timestamp = DateTimeOffset.Now;
-            Command = command;
-            this.formatter = formatter;
-            this.id = id;
-        }
+    /// <inheritdoc />
+    public long Term { get; }
 
-        /// <summary>
-        /// Gets the command associated with this log entry.
-        /// </summary>
-        public TCommand Command { get; }
+    /// <inheritdoc />
+    public DateTimeOffset Timestamp { get; }
 
-        /// <inheritdoc />
-        public long Term { get; }
+    /// <summary>
+    /// Gets identifier of the underlying command associated with this log entry.
+    /// </summary>
+    public int CommandId { get; }
 
-        /// <inheritdoc />
-        public DateTimeOffset Timestamp { get; }
+    /// <inheritdoc />
+    int? IRaftLogEntry.CommandId => CommandId;
 
-        /// <inheritdoc />
-        int? IRaftLogEntry.CommandId => id;
+    /// <inheritdoc />
+    bool IDataTransferObject.IsReusable => true;
 
-        /// <inheritdoc />
-        bool IDataTransferObject.IsReusable => true;
+    /// <inheritdoc />
+    long? IDataTransferObject.Length => Command.Length;
 
-        /// <inheritdoc />
-        long? IDataTransferObject.Length
-        {
-            get
-            {
-                var result = formatter.GetLength(Command);
-                if (result.TryGetValue(out var length))
-                    result = new long?(length + sizeof(int));
-
-                return result;
-            }
-        }
-
-        /// <inheritdoc />
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => formatter.SerializeAsync(Command, writer, token);
-    }
+    /// <inheritdoc />
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        => Command.WriteToAsync(writer, token);
 }

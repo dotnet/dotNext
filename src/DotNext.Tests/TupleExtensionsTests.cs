@@ -1,6 +1,3 @@
-using System;
-using Xunit;
-
 namespace DotNext
 {
     public sealed class TupleExtensionsTests : Test

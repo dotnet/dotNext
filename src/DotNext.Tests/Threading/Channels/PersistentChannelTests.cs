@@ -1,10 +1,5 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading.Channels;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading.Channels
 {

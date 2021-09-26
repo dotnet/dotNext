@@ -1,11 +1,9 @@
-#if !NETCOREAPP3_1
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ThreadPoolWorkItemFactoryTests : Test
     {
 
@@ -55,4 +53,3 @@ namespace DotNext.Threading
         }
     }
 }
-#endif

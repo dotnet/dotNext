@@ -1,8 +1,4 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading
 {
@@ -10,32 +6,27 @@ namespace DotNext.Threading
     public sealed class AsyncResetEventTests : Test
     {
         [Fact]
-        public static void ManualResetEvent()
+        public static async Task ManualResetEvent()
         {
             using var resetEvent = new AsyncManualResetEvent(false);
             False(resetEvent.IsSet);
-            var t = new Thread(() =>
+            var t = Task.Run(async () =>
             {
-                resetEvent.WaitAsync(DefaultTimeout).Wait(DefaultTimeout);
-            })
-            {
-                IsBackground = true
-            };
-            t.Start();
+                True(await resetEvent.WaitAsync(DefaultTimeout));
+            });
+
             True(resetEvent.Set());
-            t.Join();
+            await t;
             True(resetEvent.Reset());
             False(resetEvent.IsSet);
-            t = new Thread(() =>
+
+            t = Task.Run(async () =>
             {
-                resetEvent.WaitAsync(DefaultTimeout).Wait(DefaultTimeout);
-            })
-            {
-                IsBackground = true
-            };
-            t.Start();
+                True(await resetEvent.WaitAsync(DefaultTimeout));
+            });
+
             True(resetEvent.Set());
-            t.Join();
+            await t;
             True(resetEvent.IsSet);
         }
 
@@ -56,21 +47,13 @@ namespace DotNext.Threading
         [Fact]
         public static async Task AutoresetForManualEvent()
         {
-            using var resetEvent = new AsyncManualResetEvent(false);
+            using var resetEvent = new AsyncManualResetEvent(false, 3);
             False(resetEvent.IsSet);
-            var t = new Thread(() =>
-            {
-                resetEvent.WaitAsync(DefaultTimeout).Wait(DefaultTimeout);
-            })
-            {
-                IsBackground = true
-            };
-            t.Start();
-            var spinner = new SpinWait();
-            while ((t.ThreadState & ThreadState.WaitSleepJoin) == 0)
-                spinner.SpinOnce();
+            var t = resetEvent.WaitAsync(DefaultTimeout);
+
             True(resetEvent.Set(true));
-            t.Join();
+            await t;
+
             False(resetEvent.IsSet);
             False(await resetEvent.WaitAsync(TimeSpan.Zero));
         }

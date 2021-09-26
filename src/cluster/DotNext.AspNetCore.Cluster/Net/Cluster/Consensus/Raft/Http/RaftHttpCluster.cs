@@ -1,159 +1,194 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+namespace DotNext.Net.Cluster.Consensus.Raft.Http;
+
+using Membership;
+using Messaging;
+using Net.Http;
+using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
+using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+
+[SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
+internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IRaftHttpCluster, IHostedService, IHostingContext
 {
-    using Messaging;
-    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+    private readonly IClusterMemberLifetime? configurator;
+    private readonly IDisposable configurationTracker;
+    private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
+    private readonly TimeSpan requestTimeout, raftRpcTimeout, connectTimeout;
+    private readonly bool openConnectionForEachRequest, coldStart;
+    private readonly string clientHandlerName;
+    private readonly HttpProtocolVersion protocolVersion;
+    private readonly HttpVersionPolicy protocolVersionPolicy;
+    private readonly HttpEndPoint localNode;
+    private readonly Uri protocolPath;
+    private readonly int warmupRounds;
 
-    internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
+    public RaftHttpCluster(
+        IOptionsMonitor<HttpClusterMemberConfiguration> config,
+        IEnumerable<IInputChannel> messageHandlers,
+        ILoggerFactory loggerFactory,
+        IClusterMemberLifetime? configurator = null,
+        IPersistentState? auditTrail = null,
+        IClusterConfigurationStorage<HttpEndPoint>? configStorage = null,
+        IHttpMessageHandlerFactory? httpHandlerFactory = null,
+        MetricsCollector? metrics = null,
+        ClusterMemberAnnouncer<HttpEndPoint>? announcer = null)
+        : base(config.CurrentValue)
     {
-        private static readonly Func<RaftProtocolException> UnresolvedLocalMemberExceptionFactory = CreateUnresolvedLocalMemberException;
-        private readonly IClusterMemberLifetime? configurator;
-        private readonly IDisposable configurationTracker;
-        private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
-        private readonly TimeSpan requestTimeout, raftRpcTimeout, connectTimeout;
-        private readonly bool openConnectionForEachRequest;
-        private readonly string clientHandlerName;
-        private readonly HttpVersion protocolVersion;
-        private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
-        private Optional<ClusterMemberId> localMember;
+        openConnectionForEachRequest = config.CurrentValue.OpenConnectionForEachRequest;
+        metadata = new MemberMetadata(config.CurrentValue.Metadata);
+        requestTimeout = config.CurrentValue.RequestTimeout;
+        raftRpcTimeout = config.CurrentValue.RpcTimeout;
+        connectTimeout = TimeSpan.FromMilliseconds(config.CurrentValue.LowerElectionTimeout);
+        duplicationDetector = new DuplicateRequestDetector(config.CurrentValue.RequestJournal);
+        clientHandlerName = config.CurrentValue.ClientHandlerName;
+        protocolVersion = config.CurrentValue.ProtocolVersion;
+        protocolVersionPolicy = config.CurrentValue.ProtocolVersionPolicy;
+        localNode = config.CurrentValue.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
+        protocolPath = new Uri(config.CurrentValue.ProtocolPath.Value.IfNullOrEmpty(HttpClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative);
+        coldStart = config.CurrentValue.ColdStart;
+        warmupRounds = config.CurrentValue.WarmupRounds;
 
-        private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
-            : base(config, out members)
+        if (raftRpcTimeout > requestTimeout)
+            throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
+
+        // dependencies
+        this.configurator = configurator;
+        this.messageHandlers = ImmutableList.CreateRange(messageHandlers);
+        AuditTrail = auditTrail ?? new ConsensusOnlyState();
+        ConfigurationStorage = configStorage ?? new InMemoryClusterConfigurationStorage();
+        this.httpHandlerFactory = httpHandlerFactory;
+        Logger = loggerFactory.CreateLogger(GetType());
+        Metrics = metrics;
+        this.announcer = announcer;
+
+        // track changes in configuration, do not track membership
+        configurationTracker = config.OnChange(ConfigurationChanged);
+
+        pollingLoopTask = Task.CompletedTask;
+    }
+
+    protected override IClusterConfigurationStorage<HttpEndPoint> ConfigurationStorage { get; }
+
+    /// <inheritdoc />
+    IReadOnlyCollection<ISubscriber> IMessageBus.Members => Members;
+
+    private RaftClusterMember CreateMember(in ClusterMemberId id, HttpEndPoint address)
+    {
+        var result = new RaftClusterMember(this, address, protocolPath, id)
         {
-            openConnectionForEachRequest = config.OpenConnectionForEachRequest;
-            allowedNetworks = config.AllowedNetworks.ToImmutableHashSet();
-            metadata = new MemberMetadata(config.Metadata);
-            requestTimeout = config.RequestTimeout;
-            raftRpcTimeout = config.RpcTimeout;
-            connectTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
-            duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
-            clientHandlerName = config.ClientHandlerName;
-            protocolVersion = config.ProtocolVersion;
+            Timeout = requestTimeout,
+            Metrics = Metrics as IClientMetricsCollector,
+        };
 
-            // dependencies
-            configurator = dependencies.GetService<IClusterMemberLifetime>();
-            messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IInputChannel>());
-            AuditTrail = dependencies.GetService<IPersistentState>() ?? new ConsensusOnlyState();
-            httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
-            Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
-            Metrics = dependencies.GetService<MetricsCollector>();
-            bufferingOptions = dependencies.GetBufferingOptions();
-            discoveryService = dependencies.GetService<IMemberDiscoveryService>();
+        result.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
+        result.DefaultVersionPolicy = protocolVersionPolicy;
+        result.IsRemote = !Equals(result.BaseAddress, localNode);
+        result.SetProtocolVersion(protocolVersion);
+        return result;
+    }
 
-            // track changes in configuration, do not track membership if discovery service is enabled
-            configurationTracker = configTracker(discoveryService is null ? ConfigurationAndMembershipChanged : ConfigurationChanged);
+    internal PathString ProtocolPath => protocolPath.OriginalString;
+
+    protected sealed override ILogger Logger { get; }
+
+    ILogger IHostingContext.Logger => Logger;
+
+    ISubscriber? IMessageBus.Leader => Leader;
+
+    private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
+    {
+        metadata = new MemberMetadata(configuration.Metadata);
+    }
+
+    IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
+
+    bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
+
+    ref readonly ClusterMemberId IHostingContext.LocalMember => ref LocalMemberId;
+
+    HttpMessageHandler IHostingContext.CreateHttpHandler()
+        => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
+
+    bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
+
+    HttpEndPoint IRaftHttpCluster.LocalMemberAddress => localNode;
+
+    public override async Task StartAsync(CancellationToken token)
+    {
+        configurator?.OnStart(this, metadata);
+        pollingLoopTask = ConfigurationPollingLoop();
+
+        if (coldStart)
+        {
+            // in case of cold start, add the local member to the configuration
+            var localMember = CreateMember(LocalMemberId, localNode);
+            localMember.IsRemote = false;
+            await AddMemberAsync(localMember, token).ConfigureAwait(false);
+            await ConfigurationStorage.AddMemberAsync(LocalMemberId, localNode, token).ConfigureAwait(false);
+            await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
         }
-
-        private RaftHttpCluster(IOptionsMonitor<HttpClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
-            : this(config.CurrentValue, dependencies, out members, config.OnChange)
+        else
         {
-        }
+            await ConfigurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
 
-        private protected RaftHttpCluster(IServiceProvider dependencies, out MemberCollectionBuilder members)
-            : this(dependencies.GetRequiredService<IOptionsMonitor<HttpClusterMemberConfiguration>>(), dependencies, out members)
-        {
-        }
-
-        private static RaftProtocolException CreateUnresolvedLocalMemberException()
-            => new(ExceptionMessages.UnresolvedLocalMember);
-
-        private protected void ConfigureMember(RaftClusterMember member)
-        {
-            member.Timeout = requestTimeout;
-            member.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
-            member.Metrics = Metrics as IClientMetricsCollector;
-            member.ProtocolVersion = protocolVersion;
-        }
-
-        private protected abstract RaftClusterMember CreateMember(Uri address);
-
-        protected override ILogger Logger { get; }
-
-        ILogger IHostingContext.Logger => Logger;
-
-        IReadOnlyCollection<ISubscriber> IMessageBus.Members => Members;
-
-        ISubscriber? IMessageBus.Leader => Leader;
-
-        private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
-        {
-            metadata = new MemberMetadata(configuration.Metadata);
-            allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
-        }
-
-        private async void ConfigurationAndMembershipChanged(HttpClusterMemberConfiguration configuration, string name)
-        {
-            ConfigurationChanged(configuration, name);
-            await ChangeMembersAsync(ChangeMembers, configuration.Members, CancellationToken.None).ConfigureAwait(false);
-        }
-
-        IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
-
-        bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
-
-        ref readonly ClusterMemberId IHostingContext.LocalEndpoint
-            => ref localMember.GetReference(UnresolvedLocalMemberExceptionFactory);
-
-        HttpMessageHandler IHostingContext.CreateHttpHandler()
-            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
-
-        bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
-
-        public event ClusterChangedEventHandler? MemberAdded;
-
-        public event ClusterChangedEventHandler? MemberRemoved;
-
-        public override async Task StartAsync(CancellationToken token)
-        {
-            if (raftRpcTimeout > requestTimeout)
-                throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
-
-            // discover members
-            if (discoveryService is not null)
-                await DiscoverMembersAsync(discoveryService, token).ConfigureAwait(false);
-
-            // detect local member
-            localMember = await DetectLocalMemberAsync(token).ConfigureAwait(false);
-            configurator?.Initialize(this, metadata);
-            await base.StartAsync(token).ConfigureAwait(false);
-        }
-
-        public override Task StopAsync(CancellationToken token)
-        {
-            configurator?.Shutdown(this);
-            duplicationDetector.Trim(100);
-            var result = base.StopAsync(token);
-            if (membershipWatch is not null)
+            foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
             {
-                membershipWatch.Dispose();
-                membershipWatch = null;
+                var member = CreateMember(id, address);
+                member.IsRemote = address != localNode;
+                await AddMemberAsync(member, token).ConfigureAwait(false);
             }
-
-            return result;
         }
 
-        protected override void Dispose(bool disposing)
+        await base.StartAsync(token).ConfigureAwait(false);
+
+        if (!coldStart && announcer is not null)
+            await announcer(LocalMemberId, localNode, token).ConfigureAwait(false);
+    }
+
+    public override Task StopAsync(CancellationToken token)
+    {
+        configurator?.OnStop(this);
+        duplicationDetector.Trim(100);
+        return base.StopAsync(token);
+    }
+
+    /// <inheritdoc />
+    ISubscriber? IPeerMesh<ISubscriber>.TryGetPeer(EndPoint peer)
+    {
+        foreach (var member in Members)
         {
-            if (disposing)
-            {
-                membershipWatch?.Dispose();
-                localMember = default;
-                configurationTracker.Dispose();
-                duplicationDetector.Dispose();
-                messageHandlers = ImmutableList<IInputChannel>.Empty;
-            }
-
-            base.Dispose(disposing);
+            if (Equals(member.EndPoint, peer))
+                return member;
         }
+
+        return null;
+    }
+
+    private void Cleanup()
+    {
+        configurationTracker.Dispose();
+        duplicationDetector.Dispose();
+        messageHandlers = ImmutableList<IInputChannel>.Empty;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+            Cleanup();
+
+        base.Dispose(disposing);
+    }
+
+    protected override ValueTask DisposeAsyncCore()
+    {
+        Cleanup();
+        return base.DisposeAsyncCore();
     }
 }

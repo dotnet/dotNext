@@ -1,13 +1,10 @@
-#if !NETCOREAPP3_1
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Xunit;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Runtime.InteropServices
 {
     using IO;
 
+    [ExcludeFromCodeCoverage]
     public sealed class PinnedArrayTests : Test
     {
         private static void CheckEmptyArray(IUnmanagedArray<int> array)
@@ -152,6 +149,18 @@ namespace DotNext.Runtime.InteropServices
             Equal(30, ms.Read<int>());
             Equal(40, ms.Read<int>());
         }
+
+        [Fact]
+        public static void ArrayElementHandle()
+        {
+            var array = new PinnedArray<int>(4);
+            Reference<int> handle = array.GetReference(0);
+
+            array[0] = 42;
+            Equal(42, handle.Target);
+
+            handle.Target = 52;
+            Equal(52, array[0]);
+        }
     }
 }
-#endif

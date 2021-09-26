@@ -1,12 +1,8 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using Xunit;
 
 namespace DotNext
 {
@@ -156,7 +152,7 @@ namespace DotNext
                 types[argCount] = typeof(int);
                 var funcType = Expression.GetFuncType(types);
                 var parameters = new ParameterExpression[argCount];
-                parameters.ForEach((ref ParameterExpression p, long idx) => p = Expression.Parameter(typeof(string)));
+                parameters.ForEach((ref ParameterExpression p, nint _) => p = Expression.Parameter(typeof(string)));
                 //prepare args
                 var args = new object[parameters.LongLength + 1];
                 Array.Fill(args, string.Empty);

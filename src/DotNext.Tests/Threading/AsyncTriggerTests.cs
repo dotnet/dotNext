@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using Xunit;
 
 namespace DotNext.Threading
 {
@@ -14,127 +12,93 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void WaitForValue()
+        public static async Task UnicastSignal()
         {
-            var state = new State { Value = 0 };
             using var trigger = new AsyncTrigger();
-            var eventNode = trigger.WaitAsync();
-            False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(state, IsEqualTo42);
-            False(trigger.EnsureState(state, IsEqualTo42));
-            False(valueNode.IsCompleted);
-            trigger.Signal();
-            True(eventNode.IsCompletedSuccessfully);
-            False(valueNode.IsCompleted);
-            state.Value = 14;
-            trigger.Signal(state);
-            False(valueNode.IsCompleted);
-            state.Value = 42;
-            True(trigger.EnsureState(state, IsEqualTo42));
-            trigger.Signal(state);
-            True(valueNode.IsCompletedSuccessfully);
+            False(trigger.Signal(true));
+            False(trigger.Signal(false));
 
-            static bool IsEqualTo42(State state) => state.Value == 42;
+            var task1 = trigger.WaitAsync();
+            var task2 = trigger.WaitAsync();
+            False(task1.IsCompleted);
+            False(task2.IsCompleted);
+
+            True(trigger.Signal());
+            True(trigger.Signal());
+            False(trigger.Signal());
+
+            await task1;
+            await task2;
         }
 
         [Fact]
-        public static void WaitForValueOrdered()
+        public static async Task MulticastSignal()
         {
-            var state = new State { Value = 0 };
             using var trigger = new AsyncTrigger();
-            static bool Condition(State state)
-            {
-                if (state.Value == 42)
-                {
-                    state.Value = 14;
-                    return true;
-                }
 
-                return false;
-            };
-            var valueNode = trigger.WaitAsync(state, Condition);
-            var valueNode2 = trigger.WaitAsync(state, Condition);
-            False(valueNode.IsCompleted);
-            False(valueNode2.IsCompleted);
-            trigger.Signal(state, static s => s.Value = 14);
-            False(valueNode.IsCompleted);
-            False(valueNode2.IsCompleted);
-            trigger.Signal(state, static s => s.Value = 42, true);
-            True(valueNode.IsCompletedSuccessfully);
-            False(valueNode2.IsCompletedSuccessfully);
-            trigger.Signal(state, static (s, i) => s.Value = i, 42, true);
-            True(valueNode2.IsCompletedSuccessfully);
-        }
+            var task1 = trigger.WaitAsync();
+            var task2 = trigger.WaitAsync();
+            False(task1.IsCompleted);
+            False(task2.IsCompleted);
 
-        private static void ModifyState(State state, int value) => state.Value = value;
+            True(trigger.Signal(true));
 
-        private static void ModifyState(State state) => state.Value = 42;
-
-        [Fact]
-        public static void WaitForValue2()
-        {
-            var state = new State { Value = 0 };
-            using var trigger = new AsyncTrigger();
-            var eventNode = trigger.WaitAsync();
-            False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(state, static i => i.Value == 42);
-            False(valueNode.IsCompleted);
-            trigger.Signal();
-            True(eventNode.IsCompletedSuccessfully);
-            False(valueNode.IsCompleted);
-            trigger.Signal(state, ModifyState, 14);
-            Equal(14, state.Value);
-            False(valueNode.IsCompleted);
-            trigger.Signal(state, ModifyState);
-            True(valueNode.IsCompletedSuccessfully);
-            Equal(42, state.Value);
+            await task1;
+            await task2;
         }
 
         [Fact]
-        public static void SignalAndWait()
+        public static async Task SignalAndWait()
         {
-            var state = new State { Value = 10 };
             using var trigger = new AsyncTrigger();
-            var waitTask = trigger.SignalAndWaitAsync(state, static i => i.Value == 42);
-            False(waitTask.IsCompleted);
-            Equal(10, state.Value);
-            state.Value = 42;
-            trigger.Signal(state);
-            True(waitTask.IsCompletedSuccessfully);
-            Equal(42, state.Value);
+
+            var task1 = trigger.WaitAsync();
+            var task2 = trigger.SignalAndWaitAsync(false, true);
+
+            await task1;
+            False(task2.IsCompleted);
+
+            True(trigger.Signal());
+
+            await task2;
         }
 
         [Fact]
-        public static void SignalAndWaitUnconditionally()
+        public static async Task SignalEmptyQueue()
         {
             using var trigger = new AsyncTrigger();
-            var waitTask = trigger.SignalAndWaitAsync();
-            False(waitTask.IsCompleted);
-            var waitTask2 = trigger.SignalAndWaitAsync();
-            True(waitTask.IsCompletedSuccessfully);
-            False(waitTask2.IsCompleted);
-            trigger.Signal();
-            True(waitTask2.IsCompletedSuccessfully);
+
+            await ThrowsAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true).AsTask);
+        }
+
+        private sealed class TestTransition : AsyncTrigger<StrongBox<int>>.ITransition
+        {
+            bool AsyncTrigger<StrongBox<int>>.ITransition.Test(StrongBox<int> state)
+                => state.Value == 42;
+
+            void AsyncTrigger<StrongBox<int>>.ITransition.Transit(StrongBox<int> state)
+                => state.Value = 56;
         }
 
         [Fact]
-        public static void VariousStateTypes()
+        public static async Task Transitions()
         {
-            using var trigger = new AsyncTrigger();
-            var untypedWait = trigger.WaitAsync();
-            False(untypedWait.IsCompleted);
-            var stringWait = trigger.WaitAsync(string.Empty, static str => str.Length > 0);
-            False(stringWait.IsCompleted);
-            var arrayWait = trigger.WaitAsync(Array.Empty<int>(), static array => array.Length > 0);
-            False(arrayWait.IsCompleted);
+            using var trigger = new AsyncTrigger<StrongBox<int>>(new());
 
-            trigger.Signal("Hello, world!");
-            True(untypedWait.IsCompletedSuccessfully);
-            True(stringWait.IsCompletedSuccessfully);
-            False(arrayWait.IsCompleted);
+            trigger.State.Value = 64;
+            var task1 = trigger.WaitAsync(new TestTransition());
+            False(task1.IsCompleted);
 
-            trigger.Signal(new int[1]);
-            True(arrayWait.IsCompletedSuccessfully);
+            trigger.Signal(static state => state.Value = 42);
+
+            var task2 = trigger.WaitAsync(new TestTransition());
+            False(task2.IsCompleted);
+
+            await task1;
+
+            trigger.CancelSuspendedCallers(new(true));
+
+            await ThrowsAsync<OperationCanceledException>(task2.AsTask);
         }
     }
 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -41,7 +37,7 @@ namespace DotNext.Runtime.InteropServices
             ptr.WriteTo(ms, array.Length);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach(static (ref byte value, long index) =>
+            buffer.Array.ForEach(static (ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
@@ -61,7 +57,7 @@ namespace DotNext.Runtime.InteropServices
             await ptr.WriteToAsync(ms, array.Length);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach(static (ref byte value, long index) =>
+            buffer.Array.ForEach(static (ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
@@ -119,7 +115,6 @@ namespace DotNext.Runtime.InteropServices
             Equal(1, array[1]);
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static unsafe void VolatileReadWriteUInt64()
         {
@@ -167,7 +162,6 @@ namespace DotNext.Runtime.InteropServices
             Equal(32U, ptr.GetAndAccumulateValue(8, &Sum));
             Equal(40U, ptr.Value);
         }
-#endif
 
         [Fact]
         public static unsafe void VolatileReadWriteInt64()
@@ -510,7 +504,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void ConversionToMemoryOwner()
         {
-            Throws<ObjectDisposedException>(() => default(Pointer<int>).ToMemoryOwner(2).Memory);
+            True(default(Pointer<int>).ToMemoryOwner(2).Memory.IsEmpty);
             Pointer<int> ptr = stackalloc int[10];
             ptr.Clear(10);
             ptr[0] = 12;
@@ -540,6 +534,18 @@ namespace DotNext.Runtime.InteropServices
             var obj = ptr.GetBoxedPointer();
             IsType<Pointer>(obj);
             Equal((IntPtr)ptr.Address, new IntPtr(Pointer.Unbox(obj)));
+        }
+
+        [Fact]
+        public static unsafe void PointerToHandle()
+        {
+            var value = 42;
+            Reference<int> handle = new Pointer<int>(&value);
+
+            Equal(42, handle.Target);
+
+            handle.Target = 52;
+            Equal(52, handle.Target);
         }
     }
 }

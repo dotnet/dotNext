@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Collections.Generic
 {
@@ -131,21 +128,26 @@ namespace DotNext.Collections.Generic
             Equal(2, list.Count);
         }
 
-#if !NETCOREAPP3_1
+        [Fact]
+        public static void ShuffleArray()
+        {
+            var array = new int[] { 1, 2, 3, 4, 5, 6, 7 };
+            array.Shuffle(Random.Shared);
+            True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
+        }
+
+        [Fact]
+        public static void ShuffleList()
+        {
+            var array = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+            array.Shuffle(Random.Shared);
+            True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
+        }
+
         [Fact]
         public static void ArraySlice()
         {
             var segment = List.Slice(new int[] { 10, 20, 30 }, 0..2);
-            True(segment.TryGetSpan(out var span));
-            Equal(2, span.Length);
-            Equal(10, span[0]);
-            Equal(20, span[1]);
-        }
-
-        [Fact]
-        public static void ListSlice()
-        {
-            var segment = List.Slice(new List<int> { 10, 20, 30 }, 0..2);
             True(segment.TryGetSpan(out var span));
             Equal(2, span.Length);
             Equal(10, span[0]);
@@ -158,6 +160,15 @@ namespace DotNext.Collections.Generic
             var segment = default(ListSegment<int>);
             False(segment.TryGetSpan(out _));
         }
-#endif
+
+        [Fact]
+        public static void ListSlice()
+        {
+            var segment = List.Slice(new List<int> { 10, 20, 30 }, 0..2);
+            True(segment.TryGetSpan(out var span));
+            Equal(2, span.Length);
+            Equal(10, span[0]);
+            Equal(20, span[1]);
+        }
     }
 }

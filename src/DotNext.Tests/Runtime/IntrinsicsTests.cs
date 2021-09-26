@@ -1,9 +1,7 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Xunit;
 
 namespace DotNext.Runtime
 {
@@ -307,33 +305,6 @@ namespace DotNext.Runtime
             array = Array.Empty<int>();
             Equal(default, Intrinsics.GetLength(array));
             Equal(new IntPtr(4), (IntPtr)Intrinsics.GetLength(new int[2, 2]));
-        }
-
-        [Fact]
-        [Obsolete("This test is for checking obsolete member")]
-        public static void ArrayElement()
-        {
-            string[] array = { "42" };
-            var element = Intrinsics.GetElement<IEquatable<string>>(array, IntPtr.Zero);
-            True(element.Equals("42"));
-
-            Intrinsics.GetElementReference(array, IntPtr.Zero) = "43";
-            Equal("43", array[0]);
-
-            element = Intrinsics.GetElement<IEquatable<string>>(array, UIntPtr.Zero);
-            True(element.Equals("43"));
-
-            Intrinsics.GetElementReference(array, UIntPtr.Zero) = "44";
-            Equal("44", array[0]);
-        }
-
-        [Fact]
-        public static void CombineBits()
-        {
-            Equal(0, Intrinsics.ToInt32(false, false));
-            Equal(1, Intrinsics.ToInt32(true, false));
-            Equal(2, Intrinsics.ToInt32(false, true));
-            Equal(3, Intrinsics.ToInt32(true, true));
         }
     }
 }

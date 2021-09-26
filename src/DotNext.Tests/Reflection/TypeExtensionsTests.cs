@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Xunit;
 
 namespace DotNext.Reflection
 {
@@ -74,7 +71,7 @@ namespace DotNext.Reflection
         public static unsafe void IsImmutable()
         {
             True(typeof(ReadOnlySpan<int>).IsImmutable());
-            False(typeof(Guid).IsImmutable());
+            True(typeof(Guid).IsImmutable());
             True(typeof(long).IsImmutable());
             True(typeof(void*).IsImmutable());
             True(typeof(void).MakeByRefType().IsImmutable());

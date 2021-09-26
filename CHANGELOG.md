@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 08-12-2021
+<a href="https://www.nuget.org/packages/dotnext/3.3.1">DotNext 3.3.1</a>
+* `DotNext.Threading.Tasks.Synchronization.WaitAsync` doesn't suspend the exception associated with faulty input task anymore
+
+<a href="https://www.nuget.org/packages/dotnext.threading/3.3.1">DotNext.Threading 3.3.1</a>
+* Fixed [73](https://github.com/dotnet/dotNext/issues/73)
+
 # 07-28-2021
 <a href="https://www.nuget.org/packages/dotnext/3.3.0">DotNext 3.3.0</a>
 * Added `ValueTypeExtensions.Normalize` extension methods that allow to normalize numbers of different types
@@ -71,7 +78,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.2.0">DotNext.Metaprogramming 3.2.0</a>
 * Call site optimization for `AsDynamic()` extension method that allows to construct LINQ expression tree on-the-fly using C# expressions
-* Fixed [70](https://github.com/sakno/dotNext/issues/70)
+* Fixed [70](https://github.com/dotnet/dotNext/issues/70)
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.2.0">DotNext.Reflection 3.2.0</a>
 * Respect volatile modifier when reading/writing field
@@ -124,7 +131,7 @@ Release Notes
 * Updated dependencies
 
 # 05-11-2021
-This release is primarily focused on improvements of stuff related to cluster programming and Raft: persistent WAL, transferring over the wire, buffering and reducing I/O overhead. Many ideas for this release were proposed by [potrusil-osi](https://github.com/potrusil-osi) in the issue [57](https://github.com/sakno/dotNext/issues/57).
+This release is primarily focused on improvements of stuff related to cluster programming and Raft: persistent WAL, transferring over the wire, buffering and reducing I/O overhead. Many ideas for this release were proposed by [potrusil-osi](https://github.com/potrusil-osi) in the issue [57](https://github.com/dotnet/dotNext/issues/57).
 
 <a href="https://www.nuget.org/packages/dotnext/3.1.0">DotNext 3.1.0</a>
 * Added async support to `IGrowableBuffer<T>` interface
@@ -180,12 +187,12 @@ This release is primarily focused on improvements of stuff related to cluster pr
 * Minor performance optimizations of Raft heartbeat processing
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.1">DotNext.AspNetCore.Cluster 3.0.1</a>
-* Unexpected HTTP response received from Raft RPC call cannot crash the node anymore (see [54](https://github.com/sakno/dotNext/issues/54))
+* Unexpected HTTP response received from Raft RPC call cannot crash the node anymore (see [54](https://github.com/dotnet/dotNext/issues/54))
 
 # 01-30-2021
 The next major version is out! Its primary focus is .NET 5 support while keeping compatibility with .NET Standard 2.1. As a result, .NEXT libraries built for multiple target frameworks. Additional changes include performance optimizations, polishing of existing API, dropping support of members that were deprecated in 2.x, expanding usage of nullable reference types.
 
-Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migration/2.html). Please consider that this version is not fully backward compatible with 2.x.
+Migration guide for 2.x users is [here](https://dotnet.github.io/dotNext/migration/2.html). Please consider that this version is not fully backward compatible with 2.x.
 
 <a href="https://www.nuget.org/packages/dotnext/3.0.0">DotNext 3.0.0</a>
 * Improved performance of [SparseBufferWriter&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601), [BufferWriterSlim&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601), [PooledArrayBufferWriter&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601), [PooledBufferWriter&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601)
@@ -214,7 +221,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.0.0">DotNext.Metaprogramming 3.0.0</a>
 * Fixed nullability attributes
-* Fixed [issue 23](https://github.com/sakno/dotNext/issues/23)
+* Fixed [issue 23](https://github.com/dotnet/dotNext/issues/23)
 * Fixed code generation of **finally** blocks inside of asynchronous lambda expressions
 * Updated dependencies
 
@@ -252,17 +259,17 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 # 01-07-2021
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.2">DotNext.Metaprogramming 2.12.2</a>
-* Fixed [46](https://github.com/sakno/dotNext/issues/46)
+* Fixed [46](https://github.com/dotnet/dotNext/issues/46)
 
 # 12-16-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.1">DotNext.Metaprogramming 2.12.1</a>
-* Fixed invalid detection of the collection item type inside of [CollectionAccessExpression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.CollectionAccessExpression.html)
+* Fixed invalid detection of the collection item type inside of [CollectionAccessExpression](https://dotnet.github.io/dotNext/api/DotNext.Linq.Expressions.CollectionAccessExpression.html)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.1">DotNext.Net.Cluster 2.12.1</a>
-* Fixed issue [24](https://github.com/sakno/dotNext/issues/24)
+* Fixed issue [24](https://github.com/dotnet/dotNext/issues/24)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.12.1">DotNext.AspNetCore.Cluster 2.12.1</a>
-* Fixed issue [24](https://github.com/sakno/dotNext/issues/24)
+* Fixed issue [24](https://github.com/dotnet/dotNext/issues/24)
 
 # 12-04-2020
 <a href="https://www.nuget.org/packages/dotnext/2.12.0">DotNext 2.12.0</a>
@@ -275,7 +282,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 <a href="https://www.nuget.org/packages/dotnext.io/2.12.0">DotNext.IO 2.12.0</a>
 * Introduced `TextBufferReader` class inherited from [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) that can be used to read the text from [ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) or [ReadOnlyMemory&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1)
 * Added `SequenceBuilder<T>` type for building [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) instances from the chunk of memory blocks
-* Added `GetWrittenContentAsStream` and `GetWrittenContentAsStreamAsync` methods to [FileBufferingWriter](https://sakno.github.io/dotNext/api/DotNext.IO.FileBufferingWriter.html) class
+* Added `GetWrittenContentAsStream` and `GetWrittenContentAsStreamAsync` methods to [FileBufferingWriter](https://dotnet.github.io/dotNext/api/DotNext.IO.FileBufferingWriter.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.0">DotNext.Metaprogramming 2.12.0</a>
@@ -291,13 +298,13 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 <a href="https://www.nuget.org/packages/dotnext.threading/2.12.0">DotNext.Threading 2.12.0</a>
 * Added support of `Count` and `CanCount` properties inherited from [ChannelReader&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1) by persistent channel reader
 * Added support of diagnostics counters for persistent channel
-* Fixed resuming of suspended callers in [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class
+* Fixed resuming of suspended callers in [AsyncTrigger](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.12.0">DotNext.Unsafe 2.12.0</a>
-* Fixed ignoring of array offset in `ReadFrom` and `WriteTo` methods of [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
-* Added `ToArray` method to [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
-* Added indexer property to [IUnmanagedArray&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html) interface
+* Fixed ignoring of array offset in `ReadFrom` and `WriteTo` methods of [Pointer&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
+* Added `ToArray` method to [Pointer&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
+* Added indexer property to [IUnmanagedArray&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html) interface
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.0">DotNext.Net.Cluster 2.12.0</a>
@@ -312,25 +319,25 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 # 11-08-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.1">DotNext.Metaprogramming 2.11.1</a>
-* Fixed issue [19](https://github.com/sakno/dotNext/issues/19)
+* Fixed issue [19](https://github.com/dotnet/dotNext/issues/19)
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.11.1">DotNext.Reflection 2.11.1</a>
-* `Reflector.Unreflect` now can correctly represents **void** method or property setter as [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate
-* Unreflected members via [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate correctly handles boxed value types
-* Improved performance of [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) for by-ref argument of value type
+* `Reflector.Unreflect` now can correctly represents **void** method or property setter as [DynamicInvoker](https://dotnet.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate
+* Unreflected members via [DynamicInvoker](https://dotnet.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate correctly handles boxed value types
+* Improved performance of [DynamicInvoker](https://dotnet.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) for by-ref argument of value type
 
 # 11-01-2020
 <a href="https://www.nuget.org/packages/dotnext/2.11.0">DotNext 2.11.0</a>
 * Added `Span<T>.CopyTo` and `ReadOnlySpan<T>.CopyTo` extension methods to support cases when the source span can be larger than the destination
 * Added `Span.AsSpan` and `Span.AsReadOnlySpan` for value tuples
-* Deprecated [EnumerableTuple](https://sakno.github.io/dotNext/api/DotNext.EnumerableTuple-2.html) data type
+* Deprecated [EnumerableTuple](https://dotnet.github.io/dotNext/api/DotNext.EnumerableTuple-2.html) data type
 * Minor performance improvements
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.0">DotNext.Metaprogramming 2.11.0</a>
-* Overloaded `CodeGenerator.AsyncLambda` supports _Pascal_-style return (issue [13](https://github.com/sakno/dotNext/issues/13))
-* Fixed suppression of exceptions raised by generated async lambda (issue [14](https://github.com/sakno/dotNext/issues/14))
-* Fixed invalid behavior of async lambda body rewriter (issue [17](https://github.com/sakno/dotNext/issues/17))
+* Overloaded `CodeGenerator.AsyncLambda` supports _Pascal_-style return (issue [13](https://github.com/dotnet/dotNext/issues/13))
+* Fixed suppression of exceptions raised by generated async lambda (issue [14](https://github.com/dotnet/dotNext/issues/14))
+* Fixed invalid behavior of async lambda body rewriter (issue [17](https://github.com/dotnet/dotNext/issues/17))
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.11.0">DotNext.Reflection 2.11.0</a>
@@ -349,7 +356,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Updated dependencies shipped with .NET Core 3.1.9
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.11.0">DotNext.AspNetCore.Cluster 2.11.0</a>
-* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes (issue [12](https://github.com/sakno/dotNext/issues/12))
+* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes (issue [12](https://github.com/dotnet/dotNext/issues/12))
 * Updated dependencies shipped with .NET Core 3.1.9
 
 # 09-28-2020
@@ -357,17 +364,17 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
 * Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
 * `Optional<T>` type distinguishes **null** and undefined value
-* [DotNext.Sequence](https://sakno.github.io/dotNext/api/DotNext.Sequence.html) class is now deprecated and replaced with [DotNext.Collections.Generic.Sequence](https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) class. It's binary compatible but source incompatible change
-* Added [new API](https://sakno.github.io/dotNext/api/DotNext.Resources.ResourceManagerExtensions.html) for writing resource string readers. It utilizes [Caller Info](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/caller-information) feature in C# to resolve resource entry name using accessor method or property
-* Introduced [BufferWriterSlim&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) type as lightweight and stackalloc-friendly version of [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) type
-* Introduced [SpanReader&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SpanReader-1.html) and [SpanWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SpanWriter-1.html) types that can be used for sequential access to the elements in the memory span
+* [DotNext.Sequence](https://dotnet.github.io/dotNext/api/DotNext.Sequence.html) class is now deprecated and replaced with [DotNext.Collections.Generic.Sequence](https://dotnet.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) class. It's binary compatible but source incompatible change
+* Added [new API](https://dotnet.github.io/dotNext/api/DotNext.Resources.ResourceManagerExtensions.html) for writing resource string readers. It utilizes [Caller Info](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/caller-information) feature in C# to resolve resource entry name using accessor method or property
+* Introduced [BufferWriterSlim&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) type as lightweight and stackalloc-friendly version of [PooledBufferWriter&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) type
+* Introduced [SpanReader&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.SpanReader-1.html) and [SpanWriter&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.SpanWriter-1.html) types that can be used for sequential access to the elements in the memory span
 * Removed unused resource strings
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.10.1">DotNext.Metaprogramming 2.10.1</a>
-* Added extension methods of [ExpressionBuilder](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1)
+* Added extension methods of [ExpressionBuilder](https://dotnet.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1)
 * Fixed bug with expression building using **dynamic** keyword
-* [UniversalExpression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.UniversalExpression.html) is superseded by _ExpressionBuilder.AsDynamic_ extension method
+* [UniversalExpression](https://dotnet.github.io/dotNext/api/DotNext.Linq.Expressions.UniversalExpression.html) is superseded by _ExpressionBuilder.AsDynamic_ extension method
 * Removed unused resource strings
 * Updated dependencies
 
@@ -376,14 +383,14 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.10.1">DotNext.Threading 2.10.1</a>
-* [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
-* [AsyncTimer](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) for graceful shutdown
+* [AsyncExchanger&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
+* [AsyncTimer](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) for graceful shutdown
 * Removed unused resource strings
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.10.1">DotNext.Unsafe 2.10.1</a>
-* [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) value type now implements [IPinnable](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ipinnable) interface
-* Added interop between [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) and [System.Reflection.Pointer](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.pointer)
+* [Pointer&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) value type now implements [IPinnable](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ipinnable) interface
+* Added interop between [Pointer&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) and [System.Reflection.Pointer](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.pointer)
 * Removed unused resource strings
 * Updated dependencies
 
@@ -397,7 +404,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 # 08-16-2020
 <a href="https://www.nuget.org/packages/dotnext/2.9.6">DotNext 2.9.6</a>
-* Improved performance of [Enum Member API](https://sakno.github.io/dotNext/features/core/enum.html)
+* Improved performance of [Enum Member API](https://dotnet.github.io/dotNext/features/core/enum.html)
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.7.6">DotNext.IO 2.7.6</a>
 * Fixed compiler warnings
@@ -420,7 +427,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.6.6">DotNext.Net.Cluster 2.6.6</a>
-* Fixed unstable behavior of Raft TCP transport on Windows. See issue [#10](https://github.com/sakno/dotNext/issues/10) for more info.
+* Fixed unstable behavior of Raft TCP transport on Windows. See issue [#10](https://github.com/dotnet/dotNext/issues/10) for more info.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.6.6">DotNext.AspNetCore.Cluster 2.6.6</a>
@@ -428,7 +435,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 # 08-08-2020
 <a href="https://www.nuget.org/packages/dotnext/2.9.5">DotNext 2.9.5</a>
-* Added support of custom attributes to [Enum Member API](https://sakno.github.io/dotNext/features/core/enum.html)
+* Added support of custom attributes to [Enum Member API](https://dotnet.github.io/dotNext/features/core/enum.html)
 
 # 08-06-2020
 <a href="https://www.nuget.org/packages/dotnext/2.9.1">DotNext 2.9.1</a>
@@ -436,8 +443,8 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.9.0">DotNext.Threading 2.9.0</a>
 * Fixed graceful shutdown for async locks if they are not in locked state
-* Added  [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) synchronization primitive that allows to organize pipelines
-* [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) now has additional `SignalAndWaitAsync` overloads
+* Added  [AsyncExchanger&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) synchronization primitive that allows to organize pipelines
+* [AsyncTrigger](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) now has additional `SignalAndWaitAsync` overloads
 
 # 07-30-2020
 <a href="https://www.nuget.org/packages/dotnext/2.9.0">DotNext 2.9.0</a>
@@ -445,7 +452,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Added extension methods to `Sequence` class for working with [async streams][IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1)
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.7.3">DotNext.IO 2.7.3</a>
-* Fixed behavior of `GetObjectDataAsync` method in [StreamTransferObject](https://sakno.github.io/dotNext/api/DotNext.IO.StreamTransferObject.html). Now it respects the value of `IsReusable` property.
+* Fixed behavior of `GetObjectDataAsync` method in [StreamTransferObject](https://dotnet.github.io/dotNext/api/DotNext.IO.StreamTransferObject.html). Now it respects the value of `IsReusable` property.
 
 # 07-27-2020
 <a href="https://www.nuget.org/packages/dotnext/2.8.0">DotNext 2.8.0</a>
@@ -465,22 +472,22 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 # 07-11-2020
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.0">DotNext.Unsafe 2.7.0</a>
-* `UnmanagedMemoryPool<T>.GetAllocator` public static method is added for compatibility with [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate
+* `UnmanagedMemoryPool<T>.GetAllocator` public static method is added for compatibility with [MemoryAllocator&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate
 
 # 07-09-2020
 This release is mainly focused on `DotNext.IO` library to add new API unifying programming experience across I/O pipelines, streams, [sequences](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) and [buffer writers](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1).
 
 <a href="https://www.nuget.org/packages/dotnext/2.7.0">DotNext 2.7.0</a>
-* Introduced extension methods in [Span](https://sakno.github.io/dotNext/api/DotNext.Span.html) class for concatenation of memory spans
-* Removed allocation of [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) in the extension methods of [StreamSource](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html) class when passed [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is empty
-* [StreamSource](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html) has additional methods to create streams from various things
-* [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) and [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) support reuse of the internal buffer using overloaded `Clear(bool)` method
+* Introduced extension methods in [Span](https://dotnet.github.io/dotNext/api/DotNext.Span.html) class for concatenation of memory spans
+* Removed allocation of [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) in the extension methods of [StreamSource](https://dotnet.github.io/dotNext/api/DotNext.IO.StreamSource.html) class when passed [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is empty
+* [StreamSource](https://dotnet.github.io/dotNext/api/DotNext.IO.StreamSource.html) has additional methods to create streams from various things
+* [PooledArrayBufferWriter&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) and [PooledBufferWriter&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) support reuse of the internal buffer using overloaded `Clear(bool)` method
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.7.0">DotNext.IO 2.7.0</a>
-* [BufferWriter](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriter.html) now contains extension methods that allow to use any object implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as pooled string builder
-* [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html), [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html), [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html), [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html), [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) types now containing methods for encoding/decoding primitive types, [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) to/from string representation contained in underlying stream, pipe or [sequence](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) in the binary form
-* Fixed pooled memory leaks in [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html)
-* [TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter) over [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface using extension method in [TextWriterSource](https://sakno.github.io/dotNext/api/DotNext.IO.TextWriterSource.html) class
+* [BufferWriter](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriter.html) now contains extension methods that allow to use any object implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as pooled string builder
+* [IAsyncBinaryReader](https://dotnet.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html), [IAsyncBinaryWriter](https://dotnet.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html), [PipeExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html), [StreamExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.StreamExtensions.html), [SequenceBinaryReader](https://dotnet.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) types now containing methods for encoding/decoding primitive types, [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) to/from string representation contained in underlying stream, pipe or [sequence](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) in the binary form
+* Fixed pooled memory leaks in [SequenceBinaryReader](https://dotnet.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html)
+* [TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter) over [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface using extension method in [TextWriterSource](https://dotnet.github.io/dotNext/api/DotNext.IO.TextWriterSource.html) class
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.1">DotNext.Metaprogramming 2.6.1</a>
 * Enabled consistent build which is recommended for SourceLink
@@ -555,7 +562,7 @@ This release is mainly focused on `DotNext.IO` library to add new API unifying p
 
 # 05-29-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.4.1">DotNext.Metaprogramming 2.4.1</a>
-* Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR [#8](https://github.com/sakno/dotNext/pull/8))
+* Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR [#8](https://github.com/dotnet/dotNext/pull/8))
 
 # 05-20-2020
 <a href="https://www.nuget.org/packages/dotnext/2.4.2">DotNext 2.4.2</a>
@@ -611,9 +618,9 @@ This release is mostly aimed to improving code quality of all .NEXT libraries wi
 # 04-23-2020
 <a href="https://www.nuget.org/packages/dotnext/2.3.0">DotNext 2.3.0</a>
 * Performance improvements of `BitwiseComparer` and `Intrinsics` classes  
-* Introduced new [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that unifies working with memory and array pools
-* Path MTU [discovery](https://sakno.github.io/dotNext/api/DotNext.Net.NetworkInformation.MtuDiscovery.html)
-* Pooled buffer writes: [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) and [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html)
+* Introduced new [MemoryOwner&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that unifies working with memory and array pools
+* Path MTU [discovery](https://dotnet.github.io/dotNext/api/DotNext.Net.NetworkInformation.MtuDiscovery.html)
+* Pooled buffer writes: [PooledBufferWriter&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) and [PooledArrayBufferWriter&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.3.0">DotNext.Metaprogramming 2.3.0</a>
@@ -628,7 +635,7 @@ This release is mostly aimed to improving code quality of all .NEXT libraries wi
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.3.0">DotNext.Threading 2.3.0</a>
 * Improved performance of existing asynchronous locks
-* Added [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) synchronization primitive
+* Added [AsyncTrigger](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) synchronization primitive
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.3.0">DotNext.Reflection 2.3.0</a>
 * Updated dependencies
@@ -636,8 +643,8 @@ This release is mostly aimed to improving code quality of all .NEXT libraries wi
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.3.0">DotNext.Net.Cluster 2.3.0</a>
 * TCP transport for Raft
 * UDP transport for Raft
-* Fixed bug in [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class that leads to incorrect usage of rented memory and unexpected result during replication between nodes
-* Methods for handling Raft messages inside of [RaftCluster&lt;TMember&gt;](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html) class now support cancellation via token
+* Fixed bug in [PersistentState](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class that leads to incorrect usage of rented memory and unexpected result during replication between nodes
+* Methods for handling Raft messages inside of [RaftCluster&lt;TMember&gt;](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html) class now support cancellation via token
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.0">DotNext.AspNetCore.Cluster 2.3.0</a>
 * Updated dependencies
@@ -680,7 +687,7 @@ This release is mostly aimed to improving code quality of all .NEXT libraries wi
 * `DelegateHelpers.Bind` now supports both closed and open delegates
 
 # 01-31-2020
-Major release of version 2.0 is completely finished and contains polished existing and new API. All libraries in .NEXT family are upgraded. Migration guide for 1.x users is [here](https://sakno.github.io/dotNext/migration/1.html). Please consider that this version is not fully backward compatible with 1.x.
+Major release of version 2.0 is completely finished and contains polished existing and new API. All libraries in .NEXT family are upgraded. Migration guide for 1.x users is [here](https://dotnet.github.io/dotNext/migration/1.html). Please consider that this version is not fully backward compatible with 1.x.
 
 Major version is here for the following reasons:
 1. .NET Core 3.1 LTS is finally released
@@ -693,8 +700,8 @@ What is done in this release:
     1. Reduced and unified API to work with unmanaged memory in **DotNext.Unsafe** library
     1. **DotNext.AspNetCore.Cluster** migrated to ASP.NET Core 3.1 LTS
     1. Increased test coverage and fixed bugs
-    1. Additional optimizations of performance in [Write-Ahead Log](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
-    1. Fixed issue [#4](https://github.com/sakno/dotNext/issues/4)
+    1. Additional optimizations of performance in [Write-Ahead Log](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
+    1. Fixed issue [#4](https://github.com/dotnet/dotNext/issues/4)
     1. Introduced API for client interaction support described in Chapter 6 of [Raft dissertation](https://github.com/ongardie/dissertation/blob/master/book.pdf)
     1. Migration to C# 8 and nullable reference types
 1. New features
@@ -780,15 +787,15 @@ Raft users are strongly advised to migrate to this new version.
 
 # 11-20-2019
 <a href="https://www.nuget.org/packages/dotnext.threading/1.3.1">DotNext.Threading 1.3.1</a>
-* Fixed NRE when `Dispose` method of [PersistentChannel](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.Channels.PersistentChannel-2.html) class called multiple times
+* Fixed NRE when `Dispose` method of [PersistentChannel](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.Channels.PersistentChannel-2.html) class called multiple times
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.5">DotNext.AspNetCore.Cluster 1.2.5</a>
 * Fixed bug when log entry may have invalid content when retrieved from persistent audit trail. Usually this problem can be observed in case of concurrent read/write and caused by invalid synchronization of multiple file streams.
 
 # 11-18-2019
 <a href="https://www.nuget.org/packages/dotnext.threading/1.3.0">DotNext.Threading 1.3.0</a>
-* [PersistentChannel](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.Channels.PersistentChannel-2.html) is added as an extension of **channel** concept from [System.Threading.Channels](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.threading.channels). It allows to use disk memory instead of RAM for storing messages passed from producer to consumer. Read more [here](https://sakno.github.io/dotNext/features/threading/channel.html)
-* [AsyncCounter](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncCounter.html) allows to simplify asynchronous coordination in producer/consumer scenario
+* [PersistentChannel](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.Channels.PersistentChannel-2.html) is added as an extension of **channel** concept from [System.Threading.Channels](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.threading.channels). It allows to use disk memory instead of RAM for storing messages passed from producer to consumer. Read more [here](https://dotnet.github.io/dotNext/features/threading/channel.html)
+* [AsyncCounter](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncCounter.html) allows to simplify asynchronous coordination in producer/consumer scenario
 
 # 11-15-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.4">DotNext 1.2.4</a>
@@ -849,18 +856,18 @@ Raft users are strongly advised to migrate to this new version.
 
 # 11-02-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.1">DotNext 1.2.1</a>
-* Fixed type modifier of `Current` property declared in [CopyOnWriteList&lt;T&gt;.Enumerator](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html)
+* Fixed type modifier of `Current` property declared in [CopyOnWriteList&lt;T&gt;.Enumerator](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html)
 
 # 10-31-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.0">DotNext 1.2.0</a>
-* Fixed memory leaks caused by methods in [StreamExtensions](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.IO.StreamExtensions.html) class
-* [MemoryRental](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Buffers.MemoryRental-1.html) type is introduced to replace memory allocation with memory rental in some scenarios
-* [ArrayRental](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Buffers.ArrayRental-1.html) type is extended
+* Fixed memory leaks caused by methods in [StreamExtensions](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.IO.StreamExtensions.html) class
+* [MemoryRental](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Buffers.MemoryRental-1.html) type is introduced to replace memory allocation with memory rental in some scenarios
+* [ArrayRental](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Buffers.ArrayRental-1.html) type is extended
 * Value Delegates now are protected from _dangling pointer_ issue caused by dynamic assembly loading 
 * Reduced amount of memory utilized by random string generation methods
 * Strict package versioning rules are added to avoid accidental upgrade to major version
-* Improved performance of [AtomicEnum](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AtomicEnum.html) methods
-* Improved performance of [Atomic&lt;T&gt;](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.Atomic-1.html) using optimistic read locks
+* Improved performance of [AtomicEnum](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AtomicEnum.html) methods
+* Improved performance of [Atomic&lt;T&gt;](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.Atomic-1.html) using optimistic read locks
 * Fixed unnecessary boxing in atomic operations
 * `Intrinsics.HasFlag` static generic method is added as boxing-free and fast alternative to [Enum.HasFlag](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.enum.hasflag?view=netcore-2.2#System_Enum_HasFlag_System_Enum_) method
 
@@ -875,10 +882,10 @@ Raft users are strongly advised to migrate to this new version.
 <a href="https://www.nuget.org/packages/dotnext.threading/1.2.0">DotNext.Threading 1.2.0</a>
 * Updated version of `DotNext` dependency to fix potential memory leaks
 * Strict package versioning rules are added to avoid accidental upgrade to major version
-* [AsyncReaderWriterLock](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncReaderWriterLock.html) now supports optimistic reads
+* [AsyncReaderWriterLock](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncReaderWriterLock.html) now supports optimistic reads
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.0">DotNext.Unsafe 1.2.0</a>
-* [UnmanagedMemoryPool](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Buffers.UnmanagedMemoryPool-1.html) is added
+* [UnmanagedMemoryPool](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Buffers.UnmanagedMemoryPool-1.html) is added
 * Strict package versioning rules are added to avoid accidental upgrade to major version
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.0">DotNext.Net.Cluster 1.2.0</a>
@@ -898,8 +905,8 @@ Raft users are strongly advised to migrate to this new version.
 <a href="https://www.nuget.org/packages/dotnext/1.1.0">DotNext 1.1.0</a>
 * Reduced number of inline IL code
 * Updated version of FxCop analyzer
-* [ReaderWriterSpinLock](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.ReaderWriterSpinLock.html) type is introduced
-* Improved performance of [UserDataStorage](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.UserDataStorage.html)
+* [ReaderWriterSpinLock](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.ReaderWriterSpinLock.html) type is introduced
+* Improved performance of [UserDataStorage](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.UserDataStorage.html)
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/1.1.0">DotNext.Reflection 1.1.0</a>
 * Updated version of FxCop analyzer
@@ -933,7 +940,7 @@ Raft users are strongly advised to migrate to this new version.
 * Minor performance optimizations
 
 <a href="https://www.nuget.org/packages/dotnext.threading/1.0.1">DotNext.Threading 1.0.1</a>
-* Introduced [AsyncSharedLock](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncSharedLock.html) as combination of reader/write lock and semaphore
+* Introduced [AsyncSharedLock](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncSharedLock.html) as combination of reader/write lock and semaphore
 * Minor performance optimizations
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.1">DotNext.Unsafe 1.0.1</a>
@@ -954,7 +961,7 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 .NEXT 1.x is based on .NET Standard 2.0 to keep compatibility with .NET Framework.
 
 <a href="https://www.nuget.org/packages/dotnext/1.0.0">DotNext 1.0.0</a>
-* Optimized methods of [Memory](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.Memory.html) class
+* Optimized methods of [Memory](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.Memory.html) class
 * Extension methods for I/O are introduced. Now you don't need to instantiate [BinaryReader](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.io.binaryreader) or [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.io.binarywriter) for high-level parsing of stream content. Encoding and decoding of strings are fully supported. Moreover, these methods are asynchronous in contrast to methods of `BinaryReader` and `BinaryWriter`.
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/1.0.0">DotNext.Reflection 1.0.0</a>
@@ -964,14 +971,14 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 * API is stabilized
 
 <a href="https://www.nuget.org/packages/dotnext.threading/1.0.0">DotNext.Threading 1.0.0</a>
-* [AsyncManualResetEvent](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncManualResetEvent.html) has auto-reset optional behavior which allows to repeatedly unblock many waiters
+* [AsyncManualResetEvent](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncManualResetEvent.html) has auto-reset optional behavior which allows to repeatedly unblock many waiters
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.0">DotNext.Unsafe 1.0.0</a>
-* [MemoryMappedFileExtensions](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.html) allows to work with virtual memory associated with memory-mapped file using unsafe pointer or [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.span-1) to achieve the best performance.
+* [MemoryMappedFileExtensions](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.html) allows to work with virtual memory associated with memory-mapped file using unsafe pointer or [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.span-1) to achieve the best performance.
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.0">DotNext.Net.Cluster 1.0.0</a>
 * Audit trail programming model is redesigned
-* Persistent and high-performance Write Ahead Log (WAL) is introduced. Read more [here](https://sakno.github.io/dotNext/features/cluster/aspnetcore.html#replication)
+* Persistent and high-performance Write Ahead Log (WAL) is introduced. Read more [here](https://dotnet.github.io/dotNext/features/cluster/aspnetcore.html#replication)
 * Log compaction is supported
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.0">DotNext.AspNetCore.Cluster 1.0.0</a>
@@ -993,12 +1000,12 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 
 # 08-31-2019
 <a href="https://www.nuget.org/packages/dotnext/0.14.0">DotNext 0.14.0</a>
-* [Timestamp](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Diagnostics.Timestamp.html) type is introduced as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.diagnostics.stopwatch)
-* [Memory](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.Memory.html) class now have methods for reading and writing null-terminated UTF-16 string from/to unmanaged or pinned managed memory
+* [Timestamp](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Diagnostics.Timestamp.html) type is introduced as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.diagnostics.stopwatch)
+* [Memory](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.Memory.html) class now have methods for reading and writing null-terminated UTF-16 string from/to unmanaged or pinned managed memory
 * Updated InlineIL dependency to 1.3.1
 
 <a href="https://www.nuget.org/packages/dotnext.threading/0.14.0">DotNext.Threading 0.14.0</a>
-* [AsyncTimer](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncTimer.html) is completely rewritten in backward-incompatible way. Wait handle are no longer used.
+* [AsyncTimer](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncTimer.html) is completely rewritten in backward-incompatible way. Wait handle are no longer used.
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/0.14.0">DotNext.Unsafe 0.14.0</a><br/>
 <a href="https://www.nuget.org/packages/dotnext.reflection/0.14.0">DotNext.Reflection 0.14.0</a><br/>
@@ -1010,7 +1017,7 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/0.5.0">DotNext.Net.Cluster 0.5.0</a><br/>
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.0">DotNext.AspNetCore.Cluster 0.5.0</a>
-* Measurement of runtime metrics are introduced and exposed through [MetricsCollector](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) and [HttpMetricsCollector](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) classes
+* Measurement of runtime metrics are introduced and exposed through [MetricsCollector](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) and [HttpMetricsCollector](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) classes
 
 <a href="https://www.nuget.org/packages/dotnext.augmentation.fody/0.14.0">DotNext.Augmentation.Fody 0.14.0</a>
 * Updated `Fody` dependency to 6.0.0
@@ -1040,7 +1047,7 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 
 # 08-20-2019
 <a href="https://www.nuget.org/packages/dotnext/0.13.0">DotNext 0.13.0</a>
-* Fixed bug with equality comparison of **null** arrays inside of [EqualityComparerBuilder](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.EqualityComparerBuilder-1.html)
+* Fixed bug with equality comparison of **null** arrays inside of [EqualityComparerBuilder](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.EqualityComparerBuilder-1.html)
 * Improved debugging experience:
 	* SourceLink is enabled
 	* Debug symbols now embedded into assembly file
@@ -1068,29 +1075,29 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
 * Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types
 * Arithmetic, bitwise and comparison operations for [IntPtr](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.uintptr)
-* Improved performance of methods declared in [EnumConverter](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.EnumConverter.html)
+* Improved performance of methods declared in [EnumConverter](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.EnumConverter.html)
 * Improved performance of atomic operations
 * Improved performance of bitwise equality and bitwise comparison methods for value types
-* Improved performance of [IsDefault](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_IsDefault__1_) method which allows to check whether the arbitrary value of type `T` is `default(T)`
+* Improved performance of [IsDefault](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_IsDefault__1_) method which allows to check whether the arbitrary value of type `T` is `default(T)`
 * GetUnderlyingType() method is added to obtain underlying type of Result&lt;T&gt;
-* [TypedReference](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.typedreference) can be converted into managed pointer (type T&amp;, or ref T) using [Memory](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.Memory.html) class
+* [TypedReference](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.typedreference) can be converted into managed pointer (type T&amp;, or ref T) using [Memory](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.Memory.html) class
 
-This release introduces a new feature called Value Delegates which are allocation-free alternative to regular .NET delegates. Value Delegate is a value type which holds a pointer to the managed method and can be invoked using `Invoke` method in the same way as regular .NET delegate. Read more [here](https://sakno.github.io/dotNext/features/core/valued.html).
+This release introduces a new feature called Value Delegates which are allocation-free alternative to regular .NET delegates. Value Delegate is a value type which holds a pointer to the managed method and can be invoked using `Invoke` method in the same way as regular .NET delegate. Read more [here](https://dotnet.github.io/dotNext/features/core/valued.html).
 
-`ValueType<T>` is no longer exist and most of its methods moved into [BitwiseComparer](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.BitwiseComparer-1.html) class.
+`ValueType<T>` is no longer exist and most of its methods moved into [BitwiseComparer](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.BitwiseComparer-1.html) class.
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection 0.12.0</a>
-* Ability to obtain managed pointer (type T&amp;, or `ref T`) to static or instance field from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.reflection.fieldinfo) using [Reflector](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Reflection.Reflector.html) class
+* Ability to obtain managed pointer (type T&amp;, or `ref T`) to static or instance field from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.reflection.fieldinfo) using [Reflector](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Reflection.Reflector.html) class
 
 <a href="https://www.nuget.org/packages/dotnext.threading/0.12.0">DotNext.Threading 0.12.0</a>
-* [AsyncLazy&lt;T&gt;](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncLazy-1.html) is introduced as asynchronous alternative to [Lazy&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.lazy-1) class
+* [AsyncLazy&lt;T&gt;](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Threading.AsyncLazy-1.html) is introduced as asynchronous alternative to [Lazy&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/versions/1.x/api/system.lazy-1) class
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/0.12.0">DotNext.Metaprogramming 0.12.0</a>
-* [Null-safe navigation expression](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Linq.Expressions.NullSafetyExpression.html) is introduced
+* [Null-safe navigation expression](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Linq.Expressions.NullSafetyExpression.html) is introduced
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/0.12.0">DotNext.Unsafe 0.12.0</a>
-* [UnmanagedFunction](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.UnmanagedFunction.html) and [UnmanagedFunction&lt;R&gt;](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html) classes are introduced to call unmanaged functions by pointer
+* [UnmanagedFunction](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.UnmanagedFunction.html) and [UnmanagedFunction&lt;R&gt;](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html) classes are introduced to call unmanaged functions by pointer
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/0.2.0">DotNext.Net.Cluster 0.2.0</a>
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.2.0">DotNext.AspNetCore.Cluster 0.2.0</a>
-* Raft client is now capable to ensure that changes are committed by leader node using [WriteConcern](https://sakno.github.io/dotNext/versions/1.x/api/DotNext.Net.Cluster.Replication.WriteConcern.html)
+* Raft client is now capable to ensure that changes are committed by leader node using [WriteConcern](https://dotnet.github.io/dotNext/versions/1.x/api/DotNext.Net.Cluster.Replication.WriteConcern.html)

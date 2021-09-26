@@ -1,6 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
@@ -44,6 +43,46 @@ namespace DotNext.Threading
             True(rwLock.IsWriteLockHeld);
             False(rwLock.Validate(stamp));
             False(rwLock.TryEnterReadLock(TimeSpan.Zero));
+        }
+
+        [Fact]
+        public static async Task WriterToWriterChain()
+        {
+            var are = new TaskCompletionSource();
+            var rwLock = new StrongBox<ReaderWriterSpinLock>();
+            True(rwLock.Value.TryEnterWriteLock());
+            var task = Task.Factory.StartNew(state =>
+            {
+                var rwLock = (StrongBox<ReaderWriterSpinLock>)state;
+                False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
+                True(rwLock.Value.TryEnterWriteLock(DefaultTimeout));
+                rwLock.Value.ExitWriteLock();
+            }, rwLock);
+
+            await are.Task.WaitAsync(DefaultTimeout);
+            rwLock.Value.ExitWriteLock();
+            await task.WaitAsync(DefaultTimeout);
+        }
+
+        [Fact]
+        public static async Task WriterToReaderChain()
+        {
+            var are = new TaskCompletionSource();
+            var rwLock = new StrongBox<ReaderWriterSpinLock>();
+            True(rwLock.Value.TryEnterWriteLock());
+            var task = Task.Factory.StartNew(state =>
+            {
+                var rwLock = (StrongBox<ReaderWriterSpinLock>)state;
+                False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
+                True(rwLock.Value.TryEnterReadLock(DefaultTimeout));
+                rwLock.Value.ExitReadLock();
+            }, rwLock);
+
+            await are.Task.WaitAsync(DefaultTimeout);
+            rwLock.Value.ExitWriteLock();
+            await task.WaitAsync(DefaultTimeout);
         }
     }
 }

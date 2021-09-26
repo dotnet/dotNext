@@ -1,11 +1,7 @@
-using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Pipelines;
 using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.IO
 {
@@ -74,6 +70,26 @@ namespace DotNext.IO
             Equal(45U, reader.ReadUInt32(littleEndian));
             Equal(46, reader.ReadInt16(littleEndian));
             Equal(47, reader.ReadUInt16(littleEndian));
+        }
+
+        [Fact]
+        public static void ReadBlock()
+        {
+            var reader = IAsyncBinaryReader.Create(new byte[] { 10, 20, 30, 40, 50, 60 });
+
+            var block = new byte[3];
+            reader.Read(block.AsSpan());
+
+            Equal(10, block[0]);
+            Equal(20, block[1]);
+            Equal(30, block[2]);
+
+            reader.Read(block.AsSpan());
+            Equal(40, block[0]);
+            Equal(50, block[1]);
+            Equal(60, block[2]);
+
+            Throws<EndOfStreamException>(() => reader.Read(block.AsSpan()));
         }
 
         private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat? lengthEnc)

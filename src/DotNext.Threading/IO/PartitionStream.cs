@@ -1,16 +1,14 @@
-﻿using System.IO;
-using static System.Globalization.CultureInfo;
+﻿using static System.Globalization.CultureInfo;
 
-namespace DotNext.IO
+namespace DotNext.IO;
+
+internal sealed class PartitionStream : FileStream
 {
-    internal sealed class PartitionStream : FileStream
-    {
-        internal PartitionStream(DirectoryInfo location, long partitionNumber, in FileCreationOptions options, int bufferSize)
-            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), options.Mode, options.Access, options.Share, bufferSize, options.Optimization)
-        {
-            PartitionNumber = partitionNumber;
-        }
+    internal readonly long PartitionNumber;
 
-        internal long PartitionNumber { get; }
+    internal PartitionStream(DirectoryInfo location, long partitionNumber, in FileCreationOptions options, int bufferSize)
+        : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), options.ToFileStreamOptions(bufferSize))
+    {
+        PartitionNumber = partitionNumber;
     }
 }

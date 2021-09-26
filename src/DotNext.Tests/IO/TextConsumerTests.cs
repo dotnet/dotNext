@@ -1,11 +1,10 @@
-using System;
-using System.IO;
-using Xunit;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.IO
 {
     using Buffers;
 
+    [ExcludeFromCodeCoverage]
     public sealed class TextConsumerTests : Test
     {
         [Fact]

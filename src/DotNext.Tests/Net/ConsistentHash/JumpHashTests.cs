@@ -1,7 +1,8 @@
-using Xunit;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.ConsistentHash
 {
+    [ExcludeFromCodeCoverage]
     public sealed class JumpHashTests : Test
     {
         // test data taken from https://github.com/lithammer/python-jump-consistent-hash/blob/master/tests/test_jump.py

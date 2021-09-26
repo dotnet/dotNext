@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext
 {
@@ -122,25 +118,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void Serialization()
-        {
-            Optional<string> opt = default;
-            opt = SerializeDeserialize(opt);
-            False(opt.HasValue);
-            True(opt.IsUndefined);
-            False(opt.IsNull);
-
-            opt = new Optional<string>(null);
-            opt = SerializeDeserialize(opt);
-            False(opt.HasValue);
-            False(opt.IsUndefined);
-            True(opt.IsNull);
-
-            opt = "Hello";
-            Equal("Hello", SerializeDeserialize(opt).Value);
-        }
-
-        [Fact]
         public static void OrDefault()
         {
             var opt = new Optional<int>(10);
@@ -197,13 +174,6 @@ namespace DotNext
             True(first.Equals(second));
             False(first != second);
 
-            // enable legacy behavior
-            AppContext.SetSwitch("DotNext.Optional.UndefinedEqualsNull", true);
-            first = new Optional<string>(null);
-            False(first != second);
-            True(first == second);
-
-            AppContext.SetSwitch("DotNext.Optional.UndefinedEqualsNull", false);
             first = new Optional<string>(null);
             True(first != second);
             False(first == second);

@@ -1,8 +1,4 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext
 {
@@ -55,7 +51,7 @@ namespace DotNext
         {
             public new bool IsDisposed => base.IsDisposed;
 
-            ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync(false);
+            ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
         }
 
         [Fact]

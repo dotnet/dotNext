@@ -1,194 +1,192 @@
-using System;
 using System.Buffers;
 using System.Text;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
-namespace DotNext.IO
+namespace DotNext.IO;
+
+using Buffers;
+
+internal sealed class DecodingTextReader : TextBufferReader
 {
-    using Buffers;
+    private readonly Encoding encoding;
+    private readonly Decoder decoder;
+    private readonly MemoryAllocator<char>? allocator;
+    private ReadOnlySequence<byte> sequence;
+    private MemoryOwner<char> buffer;
+    private int charPos, charLen;
 
-    internal sealed class DecodingTextReader : TextBufferReader
+    internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
-        private readonly Encoding encoding;
-        private readonly Decoder decoder;
-        private readonly MemoryAllocator<char>? allocator;
-        private ReadOnlySequence<byte> sequence;
-        private MemoryOwner<char> buffer;
-        private int charPos, charLen;
+        if (bufferSize <= 0)
+            throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-        internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
+        this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+        decoder = encoding.GetDecoder();
+        this.sequence = sequence;
+        this.allocator = allocator;
+        buffer = allocator.Invoke(bufferSize, false);
+    }
+
+    private Span<char> Buffer => buffer.Memory.Span;
+
+    private Span<char> ReadyToReadChars => Buffer.Slice(charPos, charLen - charPos);
+
+    private int ReadBuffer()
+    {
+        charPos = 0;
+        return charLen = ReadBuffer(Buffer);
+    }
+
+    private int ReadBuffer(Span<char> output)
+    {
+        var result = 0;
+
+        for (int maxBytes = encoding.GetMaxByteCount(output.Length), bytesConsumed, charsProduced; !sequence.IsEmpty && !output.IsEmpty; maxBytes -= bytesConsumed, result += charsProduced)
         {
-            if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-            this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
-            decoder = encoding.GetDecoder();
-            this.sequence = sequence;
-            this.allocator = allocator;
-            buffer = allocator.Invoke(bufferSize, false);
+            var input = sequence.FirstSpan;
+            decoder.Convert(input, output, maxBytes <= input.Length, out bytesConsumed, out charsProduced, out _);
+            sequence = sequence.Slice(bytesConsumed);
+            output = output.Slice(charsProduced);
         }
 
-        private Span<char> Buffer => buffer.Memory.Span;
+        return result;
+    }
 
-        private Span<char> ReadyToReadChars => Buffer.Slice(charPos, charLen - charPos);
+    public override int Peek()
+        => charPos == charLen && ReadBuffer() == 0 ? InvalidChar : buffer[charPos];
 
-        private int ReadBuffer()
+    public override int Read(Span<char> buffer)
+    {
+        int writtenCount, result = 0;
+        if (charPos < charLen)
         {
-            charPos = 0;
-            return charLen = ReadBuffer(Buffer);
+            ReadyToReadChars.CopyTo(buffer, out writtenCount);
+            charPos += writtenCount;
+            buffer = buffer.Slice(writtenCount);
+            result += writtenCount;
         }
 
-        private int ReadBuffer(Span<char> output)
+        while (!buffer.IsEmpty)
         {
-            var result = 0;
+            writtenCount = ReadBuffer(buffer);
 
-            for (int maxBytes = encoding.GetMaxByteCount(output.Length), bytesConsumed, charsProduced; !sequence.IsEmpty && !output.IsEmpty; maxBytes -= bytesConsumed, result += charsProduced)
-            {
-                var input = sequence.FirstSpan;
-                decoder.Convert(input, output, maxBytes <= input.Length, out bytesConsumed, out charsProduced, out _);
-                sequence = sequence.Slice(bytesConsumed);
-                output = output.Slice(charsProduced);
-            }
+            if (writtenCount == 0)
+                break;
 
-            return result;
+            buffer = buffer.Slice(writtenCount);
+            result += writtenCount;
         }
 
-        public override int Peek()
-            => charPos == charLen && ReadBuffer() == 0 ? InvalidChar : buffer[charPos];
+        return result;
+    }
 
-        public override int Read(Span<char> buffer)
+    public override string? ReadLine()
+    {
+        if (charPos == charLen && ReadBuffer() == 0)
+            return null;
+
+        // this variable is needed to save temporary the length of characters that are candidates for line termination string
+        var newLineBufferPosition = 0;
+        var newLine = Environment.NewLine.AsSpan();
+
+        var result = new BufferWriterSlim<char>(stackalloc char[MemoryRental<char>.StackallocThreshold], allocator);
+        try
         {
-            int writtenCount, result = 0;
-            if (charPos < charLen)
+            do
             {
-                ReadyToReadChars.CopyTo(buffer, out writtenCount);
-                charPos += writtenCount;
-                buffer = buffer.Slice(writtenCount);
-                result += writtenCount;
-            }
+                ref var first = ref BufferHelpers.GetReference(in buffer);
 
-            while (!buffer.IsEmpty)
-            {
-                writtenCount = ReadBuffer(buffer);
-
-                if (writtenCount == 0)
-                    break;
-
-                buffer = buffer.Slice(writtenCount);
-                result += writtenCount;
-            }
-
-            return result;
-        }
-
-        public override string? ReadLine()
-        {
-            if (charPos == charLen && ReadBuffer() == 0)
-                return null;
-
-            // this variable is needed to save temporary the length of characters that are candidates for line termination string
-            var newLineBufferPosition = 0;
-            var newLine = Environment.NewLine.AsSpan();
-
-            var result = new BufferWriterSlim<char>(stackalloc char[MemoryRental<char>.StackallocThreshold], allocator);
-            try
-            {
                 do
                 {
-                    ref var first = ref BufferHelpers.GetReference(in buffer);
+                    Debug.Assert(charPos >= 0 && charPos < buffer.Length);
+                    var ch = Unsafe.Add(ref first, charPos);
 
-                    do
+                    if (ch == newLine[newLineBufferPosition])
                     {
-                        Debug.Assert(charPos >= 0 && charPos < buffer.Length);
-                        var ch = Unsafe.Add(ref first, charPos);
-
-                        if (ch == newLine[newLineBufferPosition])
+                        // skip character which is a part of line termination string
+                        if (newLineBufferPosition == newLine.Length - 1)
                         {
-                            // skip character which is a part of line termination string
-                            if (newLineBufferPosition == newLine.Length - 1)
-                            {
-                                charPos += 1;
-                                goto exit;
-                            }
-
-                            newLineBufferPosition += 1;
-                            continue;
+                            charPos += 1;
+                            goto exit;
                         }
 
-                        if ((uint)newLineBufferPosition > 0U)
-                            result.Write(newLine.Slice(0, newLineBufferPosition));
-
-                        result.Add(ch);
-                        newLineBufferPosition = 0;
+                        newLineBufferPosition += 1;
+                        continue;
                     }
-                    while (++charPos < charLen);
+
+                    if ((uint)newLineBufferPosition > 0U)
+                        result.Write(newLine.Slice(0, newLineBufferPosition));
+
+                    result.Add(ch);
+                    newLineBufferPosition = 0;
                 }
-                while (ReadBuffer() > 0);
-
-                // add trailing characters recognized as a part of uncompleted line termination
-                if ((uint)newLineBufferPosition > 0U)
-                    result.Write(newLine.Slice(0, newLineBufferPosition));
-
-                exit:
-                return (uint)result.WrittenCount > 0U ? new string(result.WrittenSpan) : string.Empty;
+                while (++charPos < charLen);
             }
-            finally
-            {
-                result.Dispose();
-            }
+            while (ReadBuffer() > 0);
+
+            // add trailing characters recognized as a part of uncompleted line termination
+            if ((uint)newLineBufferPosition > 0U)
+                result.Write(newLine.Slice(0, newLineBufferPosition));
+
+            exit:
+            return (uint)result.WrittenCount > 0U ? new string(result.WrittenSpan) : string.Empty;
         }
-
-        private string ReadToEnd(int bufferSize, bool bufferNotEmpty)
+        finally
         {
-            using var output = allocator.Invoke(bufferSize, false);
-            var writer = new SpanWriter<char>(output.Memory.Span);
-            if (bufferNotEmpty)
-            {
-                writer.Write(ReadyToReadChars);
-                charPos = charLen;
-            }
-
-            // a little optimization here - don't use internal buffer and write directly to a local buffer
-            for (int count; ; writer.Advance(count))
-            {
-                var localBuf = writer.RemainingSpan;
-                count = ReadBuffer(localBuf);
-                if (count == 0)
-                    break;
-            }
-
-            return new string(writer.WrittenSpan);
+            result.Dispose();
         }
+    }
 
-        public override string ReadToEnd()
+    private string ReadToEnd(int bufferSize, bool bufferNotEmpty)
+    {
+        using var output = allocator.Invoke(bufferSize, false);
+        var writer = new SpanWriter<char>(output.Memory.Span);
+        if (bufferNotEmpty)
         {
-            var bufferNotEmpty = charPos < charLen;
-            var length = sequence.Length;
-
-            // the rest of the sequence is already decoded
-            if (length == 0L)
-                return bufferNotEmpty ? new string(ReadyToReadChars) : string.Empty;
-
-            if (length > int.MaxValue)
-                throw new InsufficientMemoryException();
-
-            // slow path - decoding required
-            return ReadToEnd((int)length, bufferNotEmpty);
+            writer.Write(ReadyToReadChars);
+            charPos = charLen;
         }
 
-        protected override void Dispose(bool disposing)
+        // a little optimization here - don't use internal buffer and write directly to a local buffer
+        for (int count; ; writer.Advance(count))
         {
-            if (disposing)
-            {
-                buffer.Dispose();
-                buffer = default;
-                sequence = default;
-            }
-
-            charLen = charPos = 0;
-
-            base.Dispose(disposing);
+            var localBuf = writer.RemainingSpan;
+            count = ReadBuffer(localBuf);
+            if (count == 0)
+                break;
         }
+
+        return new string(writer.WrittenSpan);
+    }
+
+    public override string ReadToEnd()
+    {
+        var bufferNotEmpty = charPos < charLen;
+        var length = sequence.Length;
+
+        // the rest of the sequence is already decoded
+        if (length == 0L)
+            return bufferNotEmpty ? new string(ReadyToReadChars) : string.Empty;
+
+        if (length > int.MaxValue)
+            throw new InsufficientMemoryException();
+
+        // slow path - decoding required
+        return ReadToEnd((int)length, bufferNotEmpty);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            buffer.Dispose();
+            buffer = default;
+            sequence = default;
+        }
+
+        charLen = charPos = 0;
+
+        base.Dispose(disposing);
     }
 }

@@ -1,9 +1,5 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
-using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {

@@ -178,3 +178,6 @@ dotnet_diagnostic.CA2014.severity = error
 
 # SA1106: Code should not contain empty statements
 dotnet_diagnostic.SA1106.severity = none
+
+# CA1507: Use nameof in place of string
+dotnet_diagnostic.CA1507.severity = error

@@ -1,10 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Pipelines;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Net.Cluster.Messaging
 {
@@ -70,7 +66,6 @@ namespace DotNext.Net.Cluster.Messaging
             public int Arg { get; set; }
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static async Task JsonMessageSerialization()
         {
@@ -94,6 +89,5 @@ namespace DotNext.Net.Cluster.Messaging
             Equal("Hello, world!", obj.Message);
             Equal(42, obj.Arg);
         }
-#endif
     }
 }

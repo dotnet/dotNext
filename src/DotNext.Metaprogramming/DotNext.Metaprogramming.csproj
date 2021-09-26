@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>3.3.0</Version>
+    <ImplicitUsings>true</ImplicitUsings>
+    <Version>4.0.0</Version>
     <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>
@@ -44,6 +45,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
+      <LogicalName>DotNext.ExceptionMessages.resources</LogicalName>
       <Generator></Generator>
     </EmbeddedResource>
     <None Include="../../logo.png">

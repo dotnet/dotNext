@@ -1,14 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
     <RootNamespace>DotNext</RootNamespace>
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>3.3.0</Version>
+    <Version>4.0.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
@@ -46,7 +47,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0-rc.1.21451.13" />
     <PackageReference Include="Fody" Version="6.5.2" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.7.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -55,6 +56,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
+      <LogicalName>DotNext.ExceptionMessages.resources</LogicalName>
       <Generator></Generator>
     </EmbeddedResource>
     <None Include="../../logo.png">

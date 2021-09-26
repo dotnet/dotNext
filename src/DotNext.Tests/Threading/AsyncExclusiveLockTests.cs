@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Threading
 {
@@ -12,10 +8,10 @@ namespace DotNext.Threading
         [Fact]
         public static async Task TrivialLock()
         {
-            using var @lock = new AsyncExclusiveLock();
+            using var @lock = new AsyncExclusiveLock(3);
             True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
             False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
-            await ThrowsAsync<TimeoutException>(() => @lock.AcquireAsync(TimeSpan.FromMilliseconds(100)));
+            await ThrowsAsync<TimeoutException>(@lock.AcquireAsync(TimeSpan.FromMilliseconds(100)).AsTask);
             @lock.Release();
             True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
         }
@@ -23,21 +19,21 @@ namespace DotNext.Threading
         [Fact]
         public static async Task ConcurrentLock()
         {
-            using var are = new AutoResetEvent(false);
+            var are = new TaskCompletionSource();
             using var @lock = new AsyncExclusiveLock();
             await @lock.AcquireAsync(TimeSpan.Zero);
-            var task = new TaskCompletionSource<bool>();
-            ThreadPool.QueueUserWorkItem(async state =>
+            var task = Task.Run(async () =>
             {
                 False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
                 await @lock.AcquireAsync(DefaultTimeout);
                 @lock.Release();
-                task.SetResult(true);
+                return true;
             });
-            True(are.WaitOne(DefaultTimeout));
+
+            await are.Task.WaitAsync(DefaultTimeout);
             @lock.Release();
-            await task.Task;
+            True(await task);
         }
 
         [Fact]
@@ -51,7 +47,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void CancelSuspendedCallers()
+        public static async Task CancelSuspendedCallers()
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.TryAcquire());
@@ -59,9 +55,7 @@ namespace DotNext.Threading
             False(waitNode.IsCompleted);
             Throws<ArgumentOutOfRangeException>(() => @lock.CancelSuspendedCallers(new CancellationToken(false)));
             @lock.CancelSuspendedCallers(new CancellationToken(true));
-            True(waitNode.IsCompleted);
-            False(waitNode.IsCompletedSuccessfully);
-            True(waitNode.IsCanceled);
+            await ThrowsAsync<OperationCanceledException>(waitNode.AsTask);
         }
 
         [Fact]
@@ -73,47 +67,41 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void DisposeAsyncCompletedAsynchronously()
+        public static void DisposeAsyncCompletedSynchronously()
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.DisposeAsync().IsCompletedSuccessfully);
         }
 
         [Fact]
-        public static void GracefulShutdown()
+        public static async Task GracefulShutdown()
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.TryAcquire());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
             @lock.Release();
-            True(task.IsCompletedSuccessfully);
+            await task;
             Throws<ObjectDisposedException>(() => @lock.TryAcquire());
         }
 
         [Fact]
-        public static void GracefulShutdown2()
+        public static async Task GracefulShutdown2()
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.TryAcquire());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            var acquisition = @lock.AcquireAsync(CancellationToken.None);
-            False(acquisition.IsCompleted);
-            @lock.Release();
-            True(task.IsCompletedSuccessfully);
-            True(acquisition.IsFaulted);
-            Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
         }
 
         [Fact]
-        public static void DisposedState()
+        public static async Task DisposedState()
         {
             var l = new AsyncExclusiveLock();
             l.Dispose();
             var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
-            True(result.IsFaulted);
-            IsType<ObjectDisposedException>(result.Exception.InnerException);
+            await ThrowsAsync<ObjectDisposedException>(result.AsTask);
         }
     }
 }

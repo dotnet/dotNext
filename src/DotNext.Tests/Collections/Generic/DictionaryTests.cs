@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Collections.Generic

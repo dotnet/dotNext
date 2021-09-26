@@ -1,29 +1,29 @@
-using System;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+using Buffers;
+
+internal readonly struct PacketHeaders : IBinaryFormattable<PacketHeaders>
 {
-    internal readonly struct PacketHeaders
-    {
-        /// <summary>
-        /// Represents natural size without padding.
-        /// </summary>
-        internal const int NaturalSize = sizeof(byte);
+    /// <summary>
+    /// Represents natural size without padding.
+    /// </summary>
+    internal const int Size = ControlOctet.Size;
 
-        private readonly ControlOctet control;
+    private readonly ControlOctet control;
 
-        internal PacketHeaders(MessageType type, FlowControl control)
-            => this.control = new ControlOctet(type, control);
+    internal PacketHeaders(MessageType type, FlowControl control)
+        => this.control = new ControlOctet(type, control);
 
-        internal PacketHeaders(ReadOnlyMemory<byte> header, out int consumedBytes)
-            => control = new ControlOctet(header, out consumedBytes);
+    internal PacketHeaders(ref SpanReader<byte> input)
+        => control = new ControlOctet(ref input);
 
-        internal void WriteTo(Memory<byte> output)
-        {
-            control.WriteTo(ref output);
-        }
+    static PacketHeaders IBinaryFormattable<PacketHeaders>.Parse(ref SpanReader<byte> input) => new(ref input);
 
-        internal MessageType Type => control.Type;
+    static int IBinaryFormattable<PacketHeaders>.Size => Size;
 
-        internal FlowControl Control => control.Control;
-    }
+    public void Format(ref SpanWriter<byte> output) => control.Format(ref output);
+
+    internal MessageType Type => control.Type;
+
+    internal FlowControl Control => control.Control;
 }

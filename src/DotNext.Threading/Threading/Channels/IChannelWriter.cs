@@ -1,14 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿namespace DotNext.Threading.Channels;
 
-namespace DotNext.Threading.Channels
+using IO;
+
+internal interface IChannelWriter<T> : IChannel
 {
-    using IO;
+    void MessageReady();
 
-    internal interface IChannelWriter<T> : IChannel
-    {
-        void MessageReady();
-
-        ValueTask SerializeAsync(T input, PartitionStream output, CancellationToken token);
-    }
+    ValueTask SerializeAsync(T input, PartitionStream output, CancellationToken token);
 }

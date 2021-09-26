@@ -1,10 +1,6 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading
 {
@@ -66,7 +62,7 @@ namespace DotNext.Threading
                 Array.Fill(types, typeof(string));
                 var actionType = Expression.GetActionType(types);
                 var parameters = new ParameterExpression[argCount];
-                parameters.ForEach((ref ParameterExpression p, long idx) => p = Expression.Parameter(typeof(string)));
+                parameters.ForEach((ref ParameterExpression p, nint _) => p = Expression.Parameter(typeof(string)));
                 //prepare args
                 var args = new object[parameters.LongLength + 2];
                 Array.Fill(args, string.Empty);

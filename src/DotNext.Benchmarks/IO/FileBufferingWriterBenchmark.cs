@@ -7,83 +7,82 @@ using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DotNext.IO
+namespace DotNext.IO;
+
+[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+public class FileBufferingWriterBenchmark
 {
-    [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    public class FileBufferingWriterBenchmark
+    private const int MemoryThreshold = 500 * 1024; // 500 KB
+    private readonly byte[] content;
+
+    public FileBufferingWriterBenchmark()
     {
-        private const int MemoryThreshold = 500 * 1024; // 500 KB
-        private readonly byte[] content;
+        content = new byte[1024 * 1024];    // 1 MB
+        Random.Shared.NextBytes(content);
+    }
 
-        public FileBufferingWriterBenchmark()
+    private IEnumerable<ReadOnlyMemory<byte>> GetChunks()
+    {
+        const int chunkSize = 1024;
+
+        var startIndex = 0;
+        var length = Math.Min(chunkSize, content.Length);
+
+        do
         {
-            content = new byte[1024 * 1024];    // 1 MB
-            new Random().NextBytes(content);
+            yield return content.AsMemory(startIndex, length);
+            startIndex += chunkSize;
+            length = Math.Min(content.Length - startIndex, chunkSize);
         }
+        while (startIndex < content.Length);
+    }
 
-        private IEnumerable<ReadOnlyMemory<byte>> GetChunks()
-        {
-            const int chunkSize = 1024;
+    [Benchmark]
+    public async Task BufferingWriterAsync()
+    {
+        using var writer = new FileBufferingWriter(memoryThreshold: MemoryThreshold, asyncIO: true);
+        foreach (var chunk in GetChunks())
+            await writer.WriteAsync(chunk);
+        await writer.FlushAsync();
 
-            var startIndex = 0;
-            var length = Math.Min(chunkSize, content.Length);
+        using var ms = new MemoryStream(content.Length);
+        await writer.CopyToAsync(ms);
+    }
 
-            do
-            {
-                yield return content.AsMemory(startIndex, length);
-                startIndex += chunkSize;
-                length = Math.Min(content.Length - startIndex, chunkSize);
-            }
-            while (startIndex < content.Length);
-        }
+    [Benchmark]
+    public async Task FileBufferWriteStreamFromAspNetCoreAsync()
+    {
+        using var writer = new FileBufferingWriteStream(memoryThreshold: MemoryThreshold);
+        foreach (var chunk in GetChunks())
+            await writer.WriteAsync(chunk);
+        await writer.FlushAsync();
 
-        [Benchmark]
-        public async Task BufferingWriterAsync()
-        {
-            using var writer = new FileBufferingWriter(memoryThreshold: MemoryThreshold, asyncIO: true);
-            foreach (var chunk in GetChunks())
-                await writer.WriteAsync(chunk);
-            await writer.FlushAsync();
+        using var ms = new MemoryStream(content.Length);
+        await writer.DrainBufferAsync(ms);
+    }
 
-            using var ms = new MemoryStream(content.Length);
-            await writer.CopyToAsync(ms);
-        }
+    [Benchmark]
+    public void BufferingWriter()
+    {
+        using var writer = new FileBufferingWriter(memoryThreshold: MemoryThreshold, asyncIO: false);
+        foreach (var chunk in GetChunks())
+            writer.Write(chunk.Span);
+        writer.Flush();
 
-        [Benchmark]
-        public async Task FileBufferWriteStreamFromAspNetCoreAsync()
-        {
-            using var writer = new FileBufferingWriteStream(memoryThreshold: MemoryThreshold);
-            foreach (var chunk in GetChunks())
-                await writer.WriteAsync(chunk);
-            await writer.FlushAsync();
+        using var ms = new MemoryStream(content.Length);
+        writer.CopyTo(ms);
+    }
 
-            using var ms = new MemoryStream(content.Length);
-            await writer.DrainBufferAsync(ms);
-        }
+    [Benchmark]
+    public void FileBufferWriteStreamFromAspNetCore()
+    {
+        using var writer = new FileBufferingWriteStream(memoryThreshold: MemoryThreshold);
+        foreach (var chunk in GetChunks())
+            writer.Write(chunk.Span);
+        writer.Flush();
 
-        [Benchmark]
-        public void BufferingWriter()
-        {
-            using var writer = new FileBufferingWriter(memoryThreshold: MemoryThreshold, asyncIO: false);
-            foreach (var chunk in GetChunks())
-                writer.Write(chunk.Span);
-            writer.Flush();
-
-            using var ms = new MemoryStream(content.Length);
-            writer.CopyTo(ms);
-        }
-
-        [Benchmark]
-        public void FileBufferWriteStreamFromAspNetCore()
-        {
-            using var writer = new FileBufferingWriteStream(memoryThreshold: MemoryThreshold);
-            foreach (var chunk in GetChunks())
-                writer.Write(chunk.Span);
-            writer.Flush();
-
-            using var ms = new MemoryStream(content.Length);
-            writer.DrainBufferAsync(ms).GetAwaiter().GetResult();
-        }
+        using var ms = new MemoryStream(content.Length);
+        writer.DrainBufferAsync(ms).GetAwaiter().GetResult();
     }
 }

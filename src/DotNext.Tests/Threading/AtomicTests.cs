@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Threading
 {
@@ -159,7 +157,6 @@ namespace DotNext.Threading
             Equal(52, array.VolatileRead(0L));
         }
 
-#if !NETCOREAPP3_1
         [Fact]
         public static void AtomicUIntTest()
         {
@@ -255,7 +252,6 @@ namespace DotNext.Threading
             Equal(42UL, array.GetAndUpdate(0L, static current => 52UL));
             Equal(52UL, array.VolatileRead(0L));
         }
-#endif
 
         [Fact]
         public static void AtomicLongTest()
@@ -348,13 +344,6 @@ namespace DotNext.Threading
             False(value.Value);
             True(value.UpdateAndGet(static x => !x));
             True(value.Value);
-        }
-
-        [Fact]
-        public static void Serialization()
-        {
-            True(SerializeDeserialize(new AtomicBoolean(true)).Value);
-            Equal(EnvironmentVariableTarget.Machine, SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
         }
 
         [Fact]

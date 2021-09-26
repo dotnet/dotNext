@@ -1,40 +1,18 @@
-using Microsoft.Extensions.Logging.Abstractions;
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using TransportServices;
 
     [ExcludeFromCodeCoverage]
+    [Collection(TestCollections.Raft)]
     public sealed class TcpTransportTests : TransportTestSuite
     {
-        private sealed class LeaderChangedEvent : EventWaitHandle
-        {
-            internal volatile IClusterMember Leader;
-
-            internal LeaderChangedEvent()
-                : base(false, EventResetMode.ManualReset)
-            {
-            }
-
-            internal void OnLeaderChanged(ICluster sender, IClusterMember leader)
-            {
-                if (leader is null)
-                    return;
-                Leader = leader;
-                Set();
-            }
-        }
-
         private static X509Certificate2 LoadCertificate()
         {
             using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Test), "node.pfx");
@@ -147,6 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [Theory]
         [InlineData(512)]
         [InlineData(50)]
+        [InlineData(0)]
         public Task SendingSnapshot(int payloadSize)
         {
             static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
@@ -159,125 +138,65 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 TransmissionBlockSize = 350
             };
+
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
         }
 
         [Theory]
-        [InlineData(0)]
+        [InlineData(512)]
         [InlineData(50)]
-        [InlineData(100)]
-        [InlineData(200)]
-        [InlineData(300)]
-        [InlineData(400)]
-        [InlineData(500)]
-        public async Task Leadership(int delay)
+        [InlineData(0)]
+        public Task SendingConfiguration(int payloadSize)
         {
-            static void CheckLeadership(IClusterMember member1, IClusterMember member2)
-                => Equal(member1.EndPoint, member2.EndPoint);
-
-            static void AddMembers(RaftCluster.NodeConfiguration config)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
-                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3267));
-                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3268));
-                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3269));
-            }
+                TransmissionBlockSize = 350,
+                ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
+            };
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+            {
+                TransmissionBlockSize = 350
+            };
 
-            var config1 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3267));
-            AddMembers(config1);
-            var config2 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3268));
-            AddMembers(config2);
-            var config3 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3269));
-            AddMembers(config3);
+            return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
+        }
 
-            using var listener1 = new LeaderChangedEvent();
-            using var listener2 = new LeaderChangedEvent();
-            using var listener3 = new LeaderChangedEvent();
+        private static RaftCluster CreateCluster(int port, bool coldStart)
+        {
+            var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port)) { ColdStart = coldStart };
+            return new(config);
+        }
 
-            using var host1 = new RaftCluster(config1);
+        [Fact]
+        public async Task Leadership()
+        {
+            // first node - cold start
+            await using var host1 = CreateCluster(3267, true);
+            var listener1 = new LeaderChangedEvent();
             host1.LeaderChanged += listener1.OnLeaderChanged;
-            using var host2 = new RaftCluster(config2);
-            host2.LeaderChanged += listener2.OnLeaderChanged;
-            using var host3 = new RaftCluster(config3);
-            host3.LeaderChanged += listener3.OnLeaderChanged;
-
             await host1.StartAsync();
+            True(host1.Readiness.IsCompletedSuccessfully);
+
+            // two nodes in frozen state
+            await using var host2 = CreateCluster(3268, false);
             await host2.StartAsync();
-            await Task.Delay(delay);
+
+            await using var host3 = CreateCluster(3269, false);
             await host3.StartAsync();
 
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, DefaultTimeout);
+            await listener1.Result.WaitAsync(DefaultTimeout);
+            Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
 
-            IClusterMember leader1, leader2, leader3;
+            // add two nodes to the cluster
+            True(await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress));
+            await host2.Readiness.WaitAsync(DefaultTimeout);
 
-            //wait for stable election
-            for (var timer = Task.Delay(2000); ; await Task.Delay(100))
-            {
-                if (timer.IsCompleted)
-                    throw new RaftProtocolException("Leader election failed");
-                leader1 = host1.Leader;
-                leader2 = host2.Leader;
-                leader3 = host3.Leader;
-                if (leader1 is null || leader2 is null || leader3 is null)
-                    continue;
-                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader1.EndPoint.Equals(leader2.EndPoint))
-                    break;
-            }
+            True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
+            await host3.Readiness.WaitAsync(DefaultTimeout);
 
-            listener1.Reset();
-            listener2.Reset();
-            listener3.Reset();
-            listener1.Leader = listener2.Leader = listener3.Leader = null;
-
-            //let's shutdown leader node
-
-            var removedNode = default(int?);
-
-            if (!leader1.IsRemote)
-            {
-                removedNode = 1;
-                await host1.StopAsync();
-            }
-
-            if (!leader2.IsRemote)
-            {
-                removedNode = 2;
-                await host2.StopAsync();
-            }
-
-            if (!leader3.IsRemote)
-            {
-                removedNode = 3;
-                await host3.StopAsync();
-            }
-
-            NotNull(removedNode);
-
-            switch (removedNode)
-            {
-                case 1:
-                    //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 }, DefaultTimeout);
-                    NotNull(listener2.Leader);
-                    NotNull(listener3.Leader);
-                    CheckLeadership(listener2.Leader, listener3.Leader);
-                    break;
-                case 2:
-                    //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 }, DefaultTimeout);
-                    NotNull(listener1.Leader);
-                    NotNull(listener3.Leader);
-                    CheckLeadership(listener1.Leader, listener3.Leader);
-                    break;
-                case 3:
-                    //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 }, DefaultTimeout);
-                    NotNull(listener1.Leader);
-                    NotNull(listener2.Leader);
-                    CheckLeadership(listener1.Leader, listener2.Leader);
-                    break;
-                default:
-                    throw new Exception();
-            }
+            Equal(host1.Leader.EndPoint, host2.Leader.EndPoint);
+            Equal(host1.Leader.EndPoint, host3.Leader.EndPoint);
 
             await host3.StopAsync();
             await host2.StopAsync();

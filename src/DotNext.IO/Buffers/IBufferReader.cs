@@ -1,16 +1,12 @@
-using System;
-using System.IO;
+namespace DotNext.Buffers;
 
-namespace DotNext.Buffers
+internal interface IBufferReader<out T>
 {
-    internal interface IBufferReader<out T>
-    {
-        int RemainingBytes { get; }
+    int RemainingBytes { get; }
 
-        void Append(ReadOnlySpan<byte> block, ref int consumedBytes);
+    void Append(ReadOnlySpan<byte> block, ref int consumedBytes);
 
-        T Complete();
+    T Complete();
 
-        void EndOfStream() => throw new EndOfStreamException();
-    }
+    void EndOfStream() => throw new EndOfStreamException();
 }

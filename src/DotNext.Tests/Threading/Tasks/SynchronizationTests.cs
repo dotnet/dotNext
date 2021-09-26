@@ -1,32 +1,11 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading.Tasks
 {
     [ExcludeFromCodeCoverage]
     public sealed class SynchronizationTests : Test
     {
-        [Fact]
-        public static async Task WaitAsyncWithTimeout()
-        {
-            var source = new TaskCompletionSource<bool>();
-            False(await source.Task.WaitAsync(TimeSpan.FromMilliseconds(10)));
-            source.SetResult(true);
-            True(await source.Task.WaitAsync(TimeSpan.FromMilliseconds(600)));
-        }
-
-        [Fact]
-        public static async Task WaitAsyncWithToken()
-        {
-            using var source = new CancellationTokenSource(100);
-            var task = new TaskCompletionSource<bool>().Task;
-            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(DefaultTimeout, source.Token));
-        }
-
         [Fact]
         public static void GetResult()
         {

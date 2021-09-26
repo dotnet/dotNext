@@ -1,9 +1,5 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Buffers
 {
@@ -13,7 +9,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void ReadWriteTest()
         {
-            using var owner = UnmanagedMemoryPool<ushort>.Allocate(3);
+            using var owner = UnmanagedMemoryAllocator.Allocate<ushort>(3);
             var array = owner.Span;
             array[0] = 10;
             array[1] = 20;
@@ -40,7 +36,7 @@ namespace DotNext.Buffers
         [Fact]
         public static unsafe void ArrayInteropTest()
         {
-            using var owner = UnmanagedMemoryPool<ushort>.Allocate(3);
+            using var owner = UnmanagedMemoryAllocator.Allocate<ushort>(3);
             Span<ushort> array = owner.Span;
             array[0] = 10;
             array[1] = 20;
@@ -57,9 +53,9 @@ namespace DotNext.Buffers
         }
 
         [Fact]
-        public static unsafe void UnmanagedMemoryAllocator()
+        public static unsafe void UnmanagedMemoryAllocation()
         {
-            using var owner = UnmanagedMemoryPool<ushort>.GetAllocator(false).Invoke(3, false);
+            using var owner = UnmanagedMemoryAllocator.GetAllocator<ushort>(false).Invoke(3, false);
             Span<ushort> array = owner.Memory.Span;
             array[0] = 10;
             array[1] = 20;
@@ -75,8 +71,8 @@ namespace DotNext.Buffers
         [Fact]
         public static void BitwiseOperationsTest()
         {
-            using var owner1 = UnmanagedMemoryPool<ushort>.Allocate(3);
-            using var owner2 = UnmanagedMemoryPool<ushort>.Allocate(3);
+            using var owner1 = UnmanagedMemoryAllocator.Allocate<ushort>(3);
+            using var owner2 = UnmanagedMemoryAllocator.Allocate<ushort>(3);
             Span<ushort> array1 = owner1.Span;
             Span<ushort> array2 = owner2.Span;
 
@@ -106,7 +102,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void ResizeTest()
         {
-            using var owner = UnmanagedMemoryPool<long>.Allocate(5);
+            using var owner = UnmanagedMemoryAllocator.Allocate<long>(5);
             Span<long> array = owner.Span;
             array[0] = 10;
             array[1] = 20;
@@ -124,7 +120,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void SliceTest()
         {
-            using var owner = UnmanagedMemoryPool<long>.Allocate(5);
+            using var owner = UnmanagedMemoryAllocator.Allocate<long>(5);
             Span<long> span = owner.Span;
             span[0] = 10;
             span[1] = 20;
@@ -154,7 +150,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void Allocation()
         {
-            using var manager = UnmanagedMemoryPool<long>.Allocate(2);
+            using var manager = UnmanagedMemoryAllocator.Allocate<long>(2);
             Equal(2, manager.Length);
 
             Equal(sizeof(long) * 2, manager.Size);
@@ -186,7 +182,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void EnumeratorTest()
         {
-            using var owner = UnmanagedMemoryPool<int>.Allocate(3);
+            using var owner = UnmanagedMemoryAllocator.Allocate<int>(3);
             var array = owner.Span;
             array[0] = 10;
             array[1] = 20;
@@ -212,7 +208,7 @@ namespace DotNext.Buffers
         [Fact]
         public static unsafe void ZeroMem()
         {
-            using var memory = UnmanagedMemoryPool<byte>.Allocate(3, false);
+            using var memory = UnmanagedMemoryAllocator.Allocate<byte>(3, false);
             memory.Span[0] = 10;
             memory.Span[1] = 20;
             memory.Span[2] = 30;
@@ -227,13 +223,13 @@ namespace DotNext.Buffers
         [Fact]
         public static async Task StreamInteropAsync()
         {
-            using var memory = UnmanagedMemoryPool<ushort>.Allocate(3);
+            using var memory = UnmanagedMemoryAllocator.Allocate<ushort>(3);
             using var ms = new MemoryStream();
             new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
             await memory.WriteToAsync(ms);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach((ref byte value, long index) =>
+            buffer.Array.ForEach((ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
@@ -246,13 +242,13 @@ namespace DotNext.Buffers
         [Fact]
         public static void StreamInterop()
         {
-            using var memory = UnmanagedMemoryPool<ushort>.Allocate(3);
+            using var memory = UnmanagedMemoryAllocator.Allocate<ushort>(3);
             using var ms = new MemoryStream();
             new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
             memory.WriteTo(ms);
             Equal(6L, ms.Length);
             True(ms.TryGetBuffer(out var buffer));
-            buffer.Array.ForEach((ref byte value, long index) =>
+            buffer.Array.ForEach((ref byte value, nint _) =>
             {
                 if (value == 1)
                     value = 20;
@@ -265,7 +261,7 @@ namespace DotNext.Buffers
         [Fact]
         public static unsafe void ToStreamConversion()
         {
-            using var memory = UnmanagedMemoryPool<byte>.Allocate(3, false);
+            using var memory = UnmanagedMemoryAllocator.Allocate<byte>(3, false);
             new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
             using var stream = memory.AsStream();
             var bytes = new byte[3];
@@ -278,7 +274,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void CopyMemory()
         {
-            using var memory1 = UnmanagedMemoryPool<int>.Allocate(3);
+            using var memory1 = UnmanagedMemoryAllocator.Allocate<int>(3);
             memory1.Span[0] = 10;
             using var memory2 = memory1.Clone() as IUnmanagedMemoryOwner<int>;
             Equal(10, memory2.Span[0]);
@@ -290,7 +286,7 @@ namespace DotNext.Buffers
         [Fact]
         public static unsafe void Pinning()
         {
-            using var memory = UnmanagedMemoryPool<int>.Allocate(3) as MemoryManager<int>;
+            using var memory = UnmanagedMemoryAllocator.Allocate<int>(3) as MemoryManager<int>;
             NotNull(memory);
             memory.GetSpan()[0] = 10;
             memory.GetSpan()[1] = 20;

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Collections.Generic
 {
@@ -213,10 +207,14 @@ namespace DotNext.Collections.Generic
             Null(collection.FirstOrNull());
             Equal(Optional<int>.None, collection.FirstOrEmpty());
             Equal(Optional<int>.None, collection.FirstOrEmpty(Predicate.True<int>()));
+
             collection = new int[] { 42 };
             Equal(42, collection.FirstOrNull());
             Equal(42, collection.FirstOrEmpty());
             Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
+
+            Equal('a', "ab".FirstOrEmpty());
+            False(string.Empty.FirstOrEmpty().HasValue);
         }
 
         [Fact]
@@ -356,6 +354,67 @@ namespace DotNext.Collections.Generic
 
             var consumer = queue.GetConsumer();
             Collection(consumer, static i => Equal(52, i), static i => Equal(42, i));
+        }
+
+        [Fact]
+        public static void CopyArray()
+        {
+            using var copy = new int[] { 10, 20, 30 }.Copy();
+            Equal(3, copy.Length);
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
+        public static void CopyList()
+        {
+            using var copy = new List<int> { 10, 20, 30 }.Copy();
+            Equal(3, copy.Length);
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
+        public static void CopyLinkedList()
+        {
+            using var copy = new LinkedList<int>(new int[] { 10, 20, 30 }).Copy();
+            Equal(3, copy.Length);
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
+        public static void CopyEnumerable()
+        {
+            using var copy = GetElements().Copy();
+            Equal(3, copy.Length);
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+
+            static IEnumerable<int> GetElements()
+            {
+                yield return 10;
+                yield return 20;
+                yield return 30;
+            }
+        }
+
+        [Fact]
+        public static void CopyEmptyCollection()
+        {
+            using var copy = Enumerable.Empty<int>().Copy();
+            True(copy.IsEmpty);
+        }
+
+        [Fact]
+        public static void CopyString()
+        {
+            using var copy = "abcd".Copy();
+            Equal("abcd", copy.Memory.ToString());
         }
     }
 }

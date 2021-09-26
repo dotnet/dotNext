@@ -1,35 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace DotNext.IO.Log;
 
-namespace DotNext.IO.Log
+internal sealed class SingleEntryProducer<TEntry> : ILogEntryProducer<TEntry>
+    where TEntry : notnull, ILogEntry
 {
-    internal sealed class SingleEntryProducer<TEntry> : ILogEntryProducer<TEntry>
-        where TEntry : notnull, ILogEntry
+    private bool available;
+
+    internal SingleEntryProducer(TEntry entry)
     {
-        private bool available;
+        Current = entry;
+        available = true;
+    }
 
-        internal SingleEntryProducer(TEntry entry)
-        {
-            Current = entry;
-            available = true;
-        }
+    long ILogEntryProducer<TEntry>.RemainingCount => available.ToInt32();
 
-        long ILogEntryProducer<TEntry>.RemainingCount => available.ToInt32();
+    public TEntry Current { get; }
 
-        public TEntry Current { get; }
+    ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync()
+    {
+        var result = available;
+        available = false;
+        return new ValueTask<bool>(result);
+    }
 
-        ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync()
-        {
-            var result = available;
-            available = false;
-            return new ValueTask<bool>(result);
-        }
-
-        ValueTask IAsyncDisposable.DisposeAsync()
-        {
-            available = false;
-            return new ValueTask();
-        }
+    ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        available = false;
+        return new ValueTask();
     }
 }

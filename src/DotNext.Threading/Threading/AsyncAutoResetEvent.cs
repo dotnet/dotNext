@@ -1,91 +1,153 @@
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Threading
+namespace DotNext.Threading;
+
+using Tasks.Pooling;
+
+/// <summary>
+/// Represents asynchronous version of <see cref="AutoResetEvent"/>.
+/// </summary>
+public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    /// <summary>
-    /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
-    /// </summary>
-    public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
+    [StructLayout(LayoutKind.Auto)]
+    private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        private struct LockManager : ILockManager<WaitNode>
+        private AtomicBoolean state;
+
+        internal StateManager(bool initialState)
+            => state = new(initialState);
+
+        readonly bool ILockManager.IsLockAllowed => state.Value;
+
+        void ILockManager.AcquireLock() => state.Value = false;
+
+        internal bool TryReset() => state.TrueToFalse();
+
+        internal bool Value
         {
-            private AtomicBoolean state;
+            readonly get => state.Value;
+            set => state.Value = value;
+        }
 
-            public bool TryAcquire() => state.TrueToFalse();
+        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        {
+            // nothing to do here
+        }
+    }
 
-            internal bool IsSignaled
+    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private StateManager manager;
+
+    /// <summary>
+    /// Initializes a new asynchronous reset event in the specified state.
+    /// </summary>
+    /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
+    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
+    public AsyncAutoResetEvent(bool initialState, int concurrencyLevel)
+    {
+        if (concurrencyLevel < 1)
+            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+
+        manager = new(initialState);
+        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
+    }
+
+    /// <summary>
+    /// Initializes a new asynchronous reset event in the specified state.
+    /// </summary>
+    /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
+    public AsyncAutoResetEvent(bool initialState)
+    {
+        manager = new(initialState);
+        pool = new(RemoveAndDrainWaitQueue);
+    }
+
+    /// <summary>
+    /// Indicates whether this event is set.
+    /// </summary>
+    public bool IsSet => manager.Value;
+
+    /// <summary>
+    /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool Reset()
+    {
+        ThrowIfDisposed();
+        return manager.TryReset();
+    }
+
+    private void SetCore()
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        for (WaitNode? current = first as WaitNode, next; ; current = next)
+        {
+            if (current is null)
             {
-                readonly get => state.Value;
-                set => state.Value = value;
+                manager.Value = true;
+                break;
             }
 
-            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            next = current.Next as WaitNode;
+            RemoveNode(current);
+
+            // skip dead node
+            if (current.TrySetResult(true))
+                break;
         }
-
-        private LockManager manager;
-
-        /// <summary>
-        /// Initializes a new asynchronous reset event in the specified state.
-        /// </summary>
-        /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
-        public AsyncAutoResetEvent(bool initialState) => manager = new LockManager { IsSignaled = initialState };
-
-        /// <summary>
-        /// Gets whether this event is set.
-        /// </summary>
-        public bool IsSet => manager.IsSignaled;
-
-        /// <summary>
-        /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
-        /// </summary>
-        /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool Reset()
-        {
-            ThrowIfDisposed();
-            return manager.TryAcquire();
-        }
-
-        /// <summary>
-        /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
-        /// </summary>
-        /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool Set()
-        {
-            ThrowIfDisposed();
-            if (manager.IsSignaled)
-                return false;
-
-            if (first is null)
-                return manager.IsSignaled = true;
-
-            first.SetResult();
-            RemoveNode(first);
-            manager.IsSignaled = false;
-            return true;
-        }
-
-        /// <inheritdoc/>
-        bool IAsyncEvent.Signal() => Set();
-
-        /// <inheritdoc/>
-        EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
-
-        /// <summary>
-        /// Turns caller into idle state until the current event is set.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the signaled state.</param>
-        /// <param name="token">The token that can be used to abort wait process.</param>
-        /// <returns><see langword="true"/> if signaled state was set; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token) => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
     }
+
+    /// <summary>
+    /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool Set()
+    {
+        ThrowIfDisposed();
+
+        if (manager.Value)
+            return false;
+
+        SetCore();
+        return true;
+    }
+
+    /// <inheritdoc/>
+    bool IAsyncEvent.Signal() => Set();
+
+    /// <inheritdoc/>
+    EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
+
+    /// <summary>
+    /// Turns caller into idle state until the current event is set.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the signaled state.</param>
+    /// <param name="token">The token that can be used to abort wait process.</param>
+    /// <returns><see langword="true"/> if signaled state was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+
+    /// <summary>
+    /// Turns caller into idle state until the current event is set.
+    /// </summary>
+    /// <param name="token">The token that can be used to abort wait process.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask WaitAsync(CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
 }

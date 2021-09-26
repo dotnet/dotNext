@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Metaprogramming
 {
@@ -162,11 +158,11 @@ namespace DotNext.Metaprogramming
                 Loop(() =>
                 {
                     If((Expression)(arg.AsDynamic() > 1L))
-                        .Then(() =>
+                        .Then(new Action(() =>
                         {
                             Assign(result, result.AsDynamic() * arg);
                             Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
-                        })
+                        }))
                         .Else(Break)
                         .End();
                 });

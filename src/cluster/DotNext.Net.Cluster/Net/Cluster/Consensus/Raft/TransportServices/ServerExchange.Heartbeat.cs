@@ -1,28 +1,21 @@
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+using IO.Log;
+using static Runtime.Intrinsics;
+
+internal partial class ServerExchange
 {
-    using IO.Log;
-    using static Runtime.Intrinsics;
+    private static readonly ILogEntryProducer<ReceivedLogEntry> EmptyProducer = new LogEntryProducer<ReceivedLogEntry>();
 
-    internal partial class ServerExchange
+    private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, CancellationToken token)
     {
-        private static readonly ILogEntryProducer<ReceivedLogEntry> EmptyProducer = new LogEntryProducer<ReceivedLogEntry>();
+        HeartbeatExchange.Parse(payload.Span, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out var configState);
+        task = server.AppendEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState?.ApplyConfig ?? false, token);
+    }
 
-        private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
-        {
-            HeartbeatExchange.Parse(payload.Span, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
-            ChangePort(ref sender, remotePort);
-            task = server.ReceiveEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
-        }
-
-        private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)
-        {
-            var result = await Cast<Task<Result<bool>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
-            return (new PacketHeaders(MessageType.Heartbeat, FlowControl.Ack), IExchange.WriteResult(result, output.Span), false);
-        }
+    private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)
+    {
+        var result = await Cast<Task<Result<bool>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
+        return (new PacketHeaders(MessageType.Heartbeat, FlowControl.Ack), IExchange.WriteResult(result, output.Span), false);
     }
 }

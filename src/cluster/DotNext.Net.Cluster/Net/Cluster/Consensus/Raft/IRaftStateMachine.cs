@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft;
+
+internal interface IRaftStateMachine
 {
-    internal interface IRaftStateMachine
-    {
-        ILogger Logger { get; }
+    ILogger Logger { get; }
 
-        IEnumerable<IRaftClusterMember> Members { get; }
+    IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
-        void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null);
+    void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null);
 
-        void MoveToCandidateState();
+    void MoveToCandidateState();
 
-        void MoveToLeaderState(IRaftClusterMember leader);
-    }
+    void MoveToLeaderState(IRaftClusterMember leader);
 }
