@@ -1,17 +1,17 @@
-.NEXT 3.x
+.NEXT 4.x
 ====
 
 .NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
 
 > [!NOTE]
-> Use menu _Old Versions_ in the navigation bar to choose documentation for previous versions of .NEXT. Migration guides are [here](./migration/index.md).
+> The documentation for previous major versions is no longer available on this website. However, API docs are still available on [FuGet](https://www.fuget.org/) website for any specific library version. Migration guides are [here](./migration/index.md).
 
 This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
 Prerequisites:
-* Runtime: .NET 5 or any runtime compatible with .NET Standard 2.1
-* OS: Linux, Windows, MacOS
-* Architecture: any if supported by underlying .NET Runtime
+* Runtime: .NET 6
+* OS: Linux, Windows, MacOS, WebAssembly
+* Architecture: any if supported by the underlying .NET Runtime
 
 # DotNext
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?logo=NuGet"></a> ![Downloads](https://img.shields.io/nuget/dt/dotnext.svg)<br/>
@@ -21,10 +21,12 @@ This library is the core of .NEXT which extends .NET standard library with
   * Unified representation of various synchronization primitives in the form of the lock
   * Generic specialization with constant values
   * Generation of random strings
-  * Low-level methods to work with value types
   * Fast comparison of arrays
   * Ad-hoc user data associated with arbitrary object
-  * Rich set of advanced buffer types
+  * A rich set of dynamic buffer types
+  * Fast HEX conversion
+  * Fast Base64 encoding/decoding in streaming scenarios
+  * _Optional_ and _Result_ monads
 
 # DotNext.Reflection
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
@@ -68,8 +70,8 @@ Extending streams and I/O pipelines with methods for reading and writing typed v
 
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.net.cluster.svg)<br/>
-Provides rich framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. It includes transport-agnostic implementation of [Raft Consensus Algorithm](https://raft.github.io/) that can be adopted for any communication protocol, TCP/UDP transports for Raft, high-performance persistent Write-Ahead Log suitable for general-purpose usage.
+Provides rich framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and Gossip-based messaging. It includes transport-agnostic implementation of [Raft Consensus Algorithm](https://raft.github.io/) that can be adopted for any communication protocol, TCP/UDP transports for Raft, high-performance persistent Write-Ahead Log suitable for general-purpose usage. Transport-agnostic implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol included as well.
 
 # DotNext.AspNetCore.Cluster
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.aspnetcore.cluster.svg)<br/>
-Allows to build clustered microservices which rely on network consensus and distributed messaging with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) framework. This library contains HTTP-based implementation of [Raft](https://raft.github.io/) Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.
+Allows to build clustered microservices which rely on network consensus and distributed messaging with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) framework. This library contains HTTP-based implementation of [Raft](https://raft.github.io/) Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node, HTTP binding for HyParView.

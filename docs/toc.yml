@@ -16,6 +16,8 @@
     - name: Migration
       href: migration/index.md
     - name: 1.x
-      href: https://dotnet.github.io/dotNext/versions/1.x/index.html
+      href: migration/1.md
     - name: 2.x
-      href: https://dotnet.github.io/dotNext/versions/2.x/index.html
+      href: migration/2.md
+    - name: 3.x
+      href: migration/3.md
