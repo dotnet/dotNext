@@ -1,7 +1,45 @@
 {
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.IO/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Reflection/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Metaprogramming/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Unsafe/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Threading/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.Net.Cluster"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
+        }
+      ],
+      "dest": "api"
+    }
+  ],
   "build": {
     "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"],
-    "xref": ["DotNext.xref", "DotNext.IO.xref", "DotNext.Metaprogramming.xref", "DotNext.Reflection.xref", "DotNext.Threading.xref", "DotNext.Unsafe.xref", "DotNext.Net.Cluster.xref", "DotNext.AspNetCore.Cluster.xref"],
     "globalMetadata": {
       "_appTitle": ".NEXT",
       "_appLogoPath": "doc_logo.png",
