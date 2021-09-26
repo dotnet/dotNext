@@ -22,15 +22,16 @@
 Quick overview of additional features:
 
 * [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
-* [Automatic generation of Equals/GetHashCode](https://dotnet.github.io/dotNext/features/core/autoeh.html) for an arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
 * Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
 * [Fast Reflection](https://dotnet.github.io/dotNext/features/reflection/fast.html)
 * Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://www.fuget.org/packages/DotNext/latest/lib/net5.0/DotNext.dll/DotNext/Span) static class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
 * [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
 * [PipeExtensions](https://www.fuget.org/packages/DotNext.IO/latest/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/PipeExtensions) provides high-level I/O operations for pipelines such as string encoding and decoding
-* Various high-performance [growable buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
+* A rich set of high-performance [memory buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
+* String formatting, encoding and decoding with low GC pressure: [dynamic char buffers](https://dotnet.github.io/dotNext/features/io/buffers.html#char-buffer)
 * Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
+* Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
 
 All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
 
@@ -41,12 +42,17 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [Benchmarks](https://dotnet.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
-Documentation for older versions:
-* [1.x](https://dotnet.github.io/dotNext/versions/1.x/index.html)
-* [2.x](https://dotnet.github.io/dotNext/versions/2.x/index.html)
-
 # What's new
-Release Date: 08-XX-2021
+Release Date: 09-XX-2021
+
+The next major version of .NEXT has been released! Its primary focus is .NET 6 support as well as some other key features:
+* Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
+* All asynchronous locks do not allocate [tasks](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task) anymore in case of lock contention. Instead, they are moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) pooling
+* `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes are stabilized and used as a core of [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) pooling
+* Introduced Raft-native cluster membership management as proposed in Diego's original paper instead of external discovery mechanism
+* Introduced Gossip-based messaging framework
+
+Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migrate from 3.x.
 
 <a href="https://www.nuget.org/packages/dotnext/4.0.0">DotNext 4.0.0</a>
 * Added `DotNext.Span.Shuffle` and `DotNext.Collections.Generic.List.Shuffle` extension methods that allow to randomize position of elements within span/collection
@@ -60,14 +66,14 @@ Release Date: 08-XX-2021
 * Added ability to write interpolated strings to `IBufferWriter<char>` without temporary allocations
 * Added ability to write interpolated strings to `BufferWriterSlim<char>`. This makes `BufferWriterSlim<char>` type as allocation-free alternative to [StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder)
 * Introduced a concept of binary-formattable types. See `DotNext.Buffers.IBinaryFormattable<TSelf>` interface for more information
+* Introduced `Reference<T>` type as a way to pass the reference to the memory location in asynchronous scenarios
+* `Box<T>` is replaced with `Reference<T>` value type
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.3.0">DotNext.Metaprogramming 3.3.0</a>
-* Added `CodeGenerator.Statement` static method to simplify migration from pure Expression Trees
-* Fixed LGTM warnings
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.0.0">DotNext.Metaprogramming 4.0.0</a>
+* Migration to C# 10 and .NET 6
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
-* Updated dependencies
+* Migration to C# 10 and .NET 6
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.0.0">DotNext.Unsafe 4.0.0</a>
 * Unmanaged memory pool has moved to [NativeMemory](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativememory) class instead of [Marshal.AllocHGlobal](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.allochglobal) method
@@ -81,7 +87,7 @@ Release Date: 08-XX-2021
 * Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
 * Added `DotNext.IO.SequenceBinaryReader.Read(Span<byte>)` method
 * Optimized performance of some `ReadXXX` methods of `DotNext.IO.SequenceReader` type
-* All `WriteXXXAsync` methods of `IAsyncBinaryWriter` are replaced with a single `WriteFormattableAsync` method supporting [ISpanFormattable](https://docs.microsoft.com/en-us/dotnet/api/system.ispanformattable) interface. Now you can encode any type that implements this interface efficiently
+* All `WriteXXXAsync` methods of `IAsyncBinaryWriter` are replaced with a single `WriteFormattableAsync` method supporting [ISpanFormattable](https://docs.microsoft.com/en-us/dotnet/api/system.ispanformattable) interface. Now you can encode efficiently any type that implements this interface
 * Added `FileWriter` and `FileReader` classes that are tuned for fast file I/O with the ability to access the buffer explicitly
 * Introduced a concept of a serializable Data Transfer Objects represented by `ISerializable<TSelf>` interface. The interface allows to control the serialization/deserialization behavior on top of `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces. Thanks to static abstract interface methods, the value of the type can be easily reconstructed from its serialized state
 * Added support of binary-formattable types to `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces
@@ -90,18 +96,19 @@ Release Date: 08-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.0.0">DotNext.Net.Cluster 4.0.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
 * Fixed compatibility of WAL Interpreter Framework with TCP/UDP transports
-* Added support of cluster configuration management to Raft that allows to use Raft features for managing cluster members instead of external discovery protocol
+* Added support of Raft-native cluster configuration management that allows to use Raft features for managing cluster members instead of external discovery protocol
 * Persistent WAL has moved to new implementation of asynchronous locks to reduce the memory allocation
-* Added varios snapshot building strategies: incremental and inline
-* Optimized file I/O performance in persistent WAL
+* Added various snapshot building strategies: incremental and inline
+* Optimized file I/O performance of persistent WAL
 * Reduced the number of opened file descriptors required by persistent WAL
 * Improved performance of partitions allocation in persistent WAL with preallocated file size feature introduced in .NET 6
+* Added transport-agnostic implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol suitable for Gossip-based messaging
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.0.0">DotNext.AspNetCore.Cluster 4.0.0</a>
 * Added configurable HTTP protocol version selection policy
 * Added support of leader lease in Raft implementation for optimized read operations
 * Added `IRaftCluster.LeadershipToken` property that allows to track leadership transfer
-* Added `IRaftCluster.Readiness` property that represents readiness probe. The probe indicates whether the cluster member is ready to serve client requests
+* Introduced `IRaftCluster.Readiness` property that represents the readiness probe. The probe indicates whether the cluster member is ready to serve client requests
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
@@ -113,14 +120,15 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 | 0.x | .NET Standard 2.0 | Not Supported |
 | 1.x | .NET Standard 2.0 | Not Supported |
 | 2.x | .NET Standard 2.1 | Not Supported |
-| 3.x | .NET Standard 2.1, .NET 5 | Active Development |
+| 3.x | .NET Standard 2.1, .NET 5 | Maintenance |
+| 4.x | .NET 6 | Active development |
 
 _Maintenance_ support level means that new releases will contain bug fixes only.
 
 # Development Process
 Philosophy of development process:
-1. All libraries in .NEXT family are available for the wide range of .NET implementations: Mono, Xamarin, .NET Core, .NET
-1. Compatibility with AOT compiler should be checked for every release
+1. All libraries in .NEXT family are available for the wide range of .NET runtimes: Mono, .NET, Blazor
+1. Compatibility with R2R/AOT compiler should be checked for every release
 1. Minimize set of dependencies
 1. Provide high-quality documentation
 1. Stay cross-platform
