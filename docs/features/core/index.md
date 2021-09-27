@@ -239,7 +239,7 @@ dynamic result = await t.AsDynamic();
 using DotNext;
 
 ReadOnlySpan<byte> bytes = stackalloc byte[] {8, 16, 24};
-Span<char> hex = new stackalloc[bytes.Length * 2];
+Span<char> hex = stackalloc char[bytes.Length * 2];
 Span.ToHex(bytes, hex); //now hex == 081018
 ```
 
