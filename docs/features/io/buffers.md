@@ -137,7 +137,7 @@ writer.Write(4);
 string result = buffer.ToString();
 ```
 
-C# 10 introduces a new implementation of [string interpolation](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using Interpolated String Handlers. This approach is fully supported by `WriteString` extension method for [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) and [BufferWriterSlim&lt;char&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) data types. Now string building can have zero memory allocation overhead:
+C# 10 introduces a new implementation of [string interpolation](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using Interpolated String Handlers. This approach is fully supported by `WriteString` extension methods for [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) and [BufferWriterSlim&lt;char&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) data types. Now string building can have zero memory allocation overhead:
 ```csharp
 using DotNext.Buffers;
 
