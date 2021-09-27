@@ -1,4 +1,4 @@
-namespace DotNext.Net.Cluster.Consensus.Raft;
+namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 /// <summary>
 /// Represents a delegate that implements cluster node announcement logic.
