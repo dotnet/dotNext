@@ -19,7 +19,7 @@ try
 }
 finally
 {
-    rwlock.ExitReadLock();
+    rwlock.Release();
 }
 
 await rwlock.EnterWriteLockAsync(TimeSpan.FromSecond(2));
@@ -29,35 +29,34 @@ try
 }
 finally
 {
-    rwlock.ExitWriteLock();
+    rwlock.Release();
 }
 
-await rwlock.EnterUpgradeableReadLockAsync(TimeSpan.FromSecond(2), CancellationToken.None);
+await rwlock.UpgradeToWriteLockAsync(TimeSpan.FromSecond(2), CancellationToken.None);
 try
 {
-    //reader stuff here
-    await rwlock.EnterWriteLockAsync(CancellationToken.None);
     //writer stuff here
-    rwlock.ExitWriteLock();
 }
 finally
 {
-    rwlock.ExitWriteLock();
+    rwlock.DowngradeFromWriteLock();
 }
 
 //or with 'using statement'
-using(await rwlock.AcquireReadLockAsync(CancellationToken.None))
+using (await rwlock.AcquireReadLockAsync(CancellationToken.None))
 {
     //reader stuff here
 }
 
-using(await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
+using (await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
 {
     //writer stuff here
 }
 ```
 
 Exclusive lock should be destroyed if no longer needed by calling `Dispose` method which is not thread-safe.
+
+Behavior of `UpgradeToWriteLockAsync` and `DowngradeFromWriteLock` methods is the same as in [ReaderWriterLock](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlock). You need to be in the read lock to call the upgrade. After calling of `DowngradeFromWriteLock` method the current flow keeping the read lock so you need to call `Release` method to release the lock completely.
 
 ## Acquisition Order
 This lock does not impose a reader or writer preference ordering for lock access. However, it respects fairness policy. It means that callers contend for entry using an approximately arrival-order policy. When the currently held lock is released either the longest-waiting single writer will be assigned the write lock, or if there is a group of readers waiting longer than all waiting writers, that group will be assigned the read lock. 
