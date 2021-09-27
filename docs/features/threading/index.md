@@ -29,13 +29,13 @@ var syncLock = Lock.Semaphore(semaphore);
 var asyncLock = AsyncLock.Semaphore(semaphore);
 
 //thread #1
-using(syncLock.Acquire())
+using (syncLock.Acquire())
 {
 
 }
 
 //thread #2
-using(await asyncLock.AcquireAsync(CancellationToken.None))
+using (await asyncLock.AcquireAsync(CancellationToken.None))
 {
 
 }
@@ -66,13 +66,13 @@ using System.Text;
 var builder = new StringBuilder();
 
 //reader
-using(builder.AcquireReadLockAsync(CancellationToken.None))
+using (builder.AcquireReadLockAsync(CancellationToken.None))
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using(builder.AcquireWriteLockAsync(CancellationToken.None))
+using (builder.AcquireWriteLockAsync(CancellationToken.None))
 {
     builder.Append("Hello, world!");
 }
