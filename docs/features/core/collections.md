@@ -74,3 +74,20 @@ slice[0] = string.Empty;
 ```
 
 The delimited section allows to modify individual elements but doesn't support adding or removing elements.
+
+# Copy
+Any collection implementing [IEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1) interface can be copied to contiguous block of the memory rented from the pool.
+```csharp
+using DotNext.Buffers;
+using static DotNext.Collections.Generic.Sequence;
+
+static IEnumerable<int> GetItems()
+{
+    yield return 0;
+    yield return 1;
+}
+
+using MemoryOwner<int> copy = GetItems().Copy();
+```
+
+Now the elements can be accessed using the indexer of [MemoryOwner&lt;T&gt;](xref:DotNext.Buffers.MemoryOwner`1) data type. The memory of the copied elements is rented from the pool. You can override memory allocation logic and pass custom [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) to `Copy` method.
