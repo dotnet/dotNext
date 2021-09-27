@@ -81,8 +81,24 @@ using DotNext.Buffers;
 using var buffer = new SparseBufferWriter<byte>(256, SparseBufferGrowth.Exponential);
 ```
 
+# BufferWriterSlim
+[BufferWriterSlim&lt;T&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) is a lightweight version of [PooledBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledBufferWriter`1) class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.
+
+If initial buffer overflows then `BufferWriterSlim<T>` obtains rented buffer from the pool and copies the initial buffer into it.
+```csharp
+using DotNext.Buffers;
+
+using var builder = new BufferWriterSlim<byte>(stackalloc byte[128]); // capacity can be changed at runtime
+builder.Write(new byte[] { 1, 2, 3 });
+ReadOnlySpan<byte> result = builder.WrittenSpan;
+```
+
+This type has the following limitations:
+* Incompatible with async methods
+* Focused on [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type, there is no interop with types from [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace.
+
 # Char Buffer
-[StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>`, `PooledArrayBufferWriter<T>` and `SparseBufferWriter<T>` classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](xref:DotNext.Buffers.BufferWriter) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
+[StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>`, `PooledArrayBufferWriter<T>`, `SparseBufferWriter<T>` and `BufferWriterSlim<T>` types as described above. But we need suitable methods for adding characters to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](xref:DotNext.Buffers.BufferWriter) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
 ```csharp
 using DotNext.Buffers;
 
@@ -91,13 +107,13 @@ writer.Write("Hello,");
 writer.Write(' ');
 writer.Write("world!");
 writer.WriteLine();
-writer.Write(2);
+writer.WriteFormattable(2);
 writer.Write('+');
-writer.Write(2);
+writer.WriteFormattable(2);
 writer.Write('=');
-writer.Write(4);
+writer.WriteFormattable(4);
 
-string result = writer.BuildString();
+string result = writer.ToString();
 ```
 
 [TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter) is a common way to produce text dynamically and recognizable by many third-party libraries. There is a bridge that allow to use TextWriter API over pooled buffer writer with help of extension methods declared in [TextStreamExtensions](xref:DotNext.IO.TextStreamExtensions) class:
@@ -118,24 +134,21 @@ writer.Write(2);
 writer.Write('=');
 writer.Write(4);
 
-string result = buffer.BuildString();
+string result = buffer.ToString();
 ```
 
-# BufferWriterSlim
-[BufferWriterSlim&lt;T&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) is a lightweight version of [PooledBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledBufferWriter`1) class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.
-
-If initial buffer overflows then `BufferWriterSlim<T>` obtains rented buffer from the pool and copies the initial buffer into it.
+C# 10 introduces a new implementation of [string interpolation](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using Interpolated String Handlers. This approach is fully supported by `WriteString` extension method for [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) and [BufferWriterSlim&lt;char&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) data types. Now string building can have zero memory allocation overhead:
 ```csharp
 using DotNext.Buffers;
 
-using var builder = new BufferWriterSlim<byte>(stackalloc byte[128]); // capacity can be changed at runtime
-builder.Write(new byte[] { 1, 2, 3 });
-ReadOnlySpan<byte> result = builder.WrittenSpan;
+int x = 10, y = 20, z = 30;
+using var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
+buffer.WriteString($"{x} + {y} = {z}");
+
+string result = buffer.ToString();
 ```
 
-This type has the following limitations:
-* Incompatible with async methods
-* Focused on [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type, there is no interop with types from [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace.
+Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler) and [BufferWriterInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler) data types.
 
 # What to choose?
 The following table describes the main differences between various growable buffer types:
