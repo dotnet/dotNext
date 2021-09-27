@@ -131,7 +131,7 @@ public static partial class BufferHelpers
         => writer.Write(isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, value);
 
     /// <summary>
-    /// Writes the contents of string builder to the buffer.
+    /// Writes the contents of a string builder to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="input">The string builder.</param>
@@ -139,5 +139,23 @@ public static partial class BufferHelpers
     {
         foreach (var chunk in input.GetChunks())
             writer.Write(chunk.Span);
+    }
+
+    /// <summary>
+    /// Converts the value to a set of characters and writes them to the buffer.
+    /// </summary>
+    /// <typeparam name="T">The formattable type.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be converted to a set of characters.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="writer"/> is not large enough to place the characters.</exception>
+    public static void Write<T>(this ref SpanWriter<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        where T : notnull, ISpanFormattable
+    {
+        if (!value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))
+            throw new ArgumentOutOfRangeException(nameof(writer));
+
+        writer.Advance(writtenCount);
     }
 }

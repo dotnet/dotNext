@@ -269,5 +269,15 @@ namespace DotNext.Buffers
             reader.Rewind(2);
             Equal(10, reader.Current);
         }
+
+        [Fact]
+        public static void WriteFormattable()
+        {
+            var writer = new SpanWriter<char>(stackalloc char[32]);
+            writer.Write(42, "X");
+
+            Equal(2, writer.WrittenCount);
+            Equal("2A", new string(writer.WrittenSpan));
+        }
     }
 }
