@@ -91,3 +91,12 @@ using MemoryOwner<int> copy = GetItems().Copy();
 ```
 
 Now the elements can be accessed using the indexer of [MemoryOwner&lt;T&gt;](xref:DotNext.Buffers.MemoryOwner`1) data type. The memory of the copied elements is rented from the pool. You can override memory allocation logic and pass custom [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) to `Copy` method.
+
+# Randomize elements
+`Shuffle` extension method of [List](xref:DotNext.Collections.Generic.List) class can be used to randomize the order of the elements within the list:
+```csharp
+using static DotNext.Collections.Generic.List;
+
+IList<int> items = new int[] { 10, 20, 30, 40 };
+items.Shuffle(Random.Shared);
+```
