@@ -101,9 +101,6 @@ Optional.None<string>() == Optional.None<string>(); // true
 Optional.None<string>() == Optional.Null<string>(); // false
 ```
 
-> [!IMPORTANT]
-> Prior to .NEXT 3.2.0, null value is equal to undefined value, i.e. `Optional.None<string>() == Optional.Null<string>()` evaluated as true. Starting from 3.2.0 the behavior is changed. If you need to return previous behavior, then enable _DotNext.Optional.UndefinedEqualsNull_ switch using `SetSwitch` method from [AppContext](https://docs.microsoft.com/en-us/dotnet/api/system.appcontext) class.
-
 The following table describes relationship between `HasValue`, `IsNull` and `IsUndefined` properties for nullable type `T` (reference type, `Nullable<T>` or `Optional<T>`):
 
 | HasValue | IsNull | IsUndefined |
