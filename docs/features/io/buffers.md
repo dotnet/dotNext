@@ -141,9 +141,9 @@ C# 10 introduces a new implementation of [string interpolation](https://devblogs
 ```csharp
 using DotNext.Buffers;
 
-int x = 10, y = 20, z = 30;
+int x = 10, y = 20;
 using var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
-buffer.WriteString($"{x} + {y} = {z}");
+buffer.WriteString($"{x} + {y} = {x + y}");
 
 string result = buffer.ToString();
 ```

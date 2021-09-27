@@ -214,6 +214,15 @@ var i64 = reader.readInt64(true);
 var g = reader.Read<Guid>();
 ```
 
+`SpanWriter<char>` is fully compatible with [Interpolated String Handlers](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) introduced in C# 10:
+```csharp
+var writer = new SpanWriter<char>(stackalloc char[256]);
+
+int x = 10, y = 20;
+writer.RemainingSpan.TryWrite($"{x} + {y} = {x + y}", out int writtenCount);
+writer.Advance(writtenCount);
+```
+
 # Text Reader for ReadOnlySequence
 [ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) can be wrapped as an instance of [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) class to read strings and characters in more convenient way. To do that, you need to call `AsTextReader` extension method:
 ```csharp
