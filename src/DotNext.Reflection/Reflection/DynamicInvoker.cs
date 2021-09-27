@@ -58,7 +58,7 @@ public static class DynamicInvokerExtensions
     public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2)
     {
         var args = (arg1, arg2);
-        return invoker(target, Span.AsSpan(ref args));
+        return invoker(target, args.AsSpan());
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public static class DynamicInvokerExtensions
     public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2, object? arg3)
     {
         var args = (arg1, arg2, arg3);
-        return invoker(target, Span.AsSpan(ref args));
+        return invoker(target, args.AsSpan());
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public static class DynamicInvokerExtensions
     public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2, object? arg3, object? arg4)
     {
         var args = (arg1, arg2, arg3, arg4);
-        return invoker(target, Span.AsSpan(ref args));
+        return invoker(target, args.AsSpan());
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public static class DynamicInvokerExtensions
     public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2, object? arg3, object? arg4, object? arg5)
     {
         var args = (arg1, arg2, arg3, arg4, arg5);
-        return invoker(target, Span.AsSpan(ref args));
+        return invoker(target, args.AsSpan());
     }
 
     /// <summary>
@@ -124,6 +124,6 @@ public static class DynamicInvokerExtensions
     public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2, object? arg3, object? arg4, object? arg5, object? arg6)
     {
         var args = (arg1, arg2, arg3, arg4, arg5, arg6);
-        return invoker(target, Span.AsSpan(ref args));
+        return invoker(target, args.AsSpan());
     }
 }
