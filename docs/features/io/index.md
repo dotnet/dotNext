@@ -73,7 +73,7 @@ await pipe.Writer.WriteAsync(Guid.NewGuid());
 var result = await pipe.Reader.ReadAsync<Guid>();
 ```
 
-Starting with version _2.6.0_ there is [BufferWriter](xref:DotNext.Buffers.BufferWriter) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
+Starting with version _2.6.0_, there is [BufferWriter](xref:DotNext.Buffers.BufferWriter) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
 ```csharp
 using DotNext.IO;
 using DotNext.IO.Pipelines;
@@ -87,7 +87,7 @@ await pipe.Writer.FlushAsync();
 ```
 
 # Decoding Data from ReadOnlySequence
-[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceBinaryReader](xref:DotNext.IO.SequenceBinaryReader) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
+[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceReader](xref:DotNext.IO.SequenceReader) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
 ```csharp
 using DotNext.IO;
 using System;
@@ -95,7 +95,7 @@ using System.Buffers;
 using System.Text;
 
 ReadOnlySequence<byte> sequence = ...;
-SequenceBinaryReader reader = IAsyncBinaryReader.Create(sequence);
+SequenceReader reader = IAsyncBinaryReader.Create(sequence);
 int i = reader.ReadInt32(BitConverter.IsLittleEndian);
 string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
 ```
@@ -203,14 +203,14 @@ Span<byte> memory = stackalloc byte[32];
 
 // encodes int32, int64 and Guid values to stack-allocated memory
 var writer = new SpanWriter<byte>(memory);
-WriteInt32LittleEndian(writer.Slide(sizeof(int)), 42);
-WriteInt64LittleEndian(writer.Slide(sizeof(long)), 42L);
+writer.WriteInt32(42, true);
+writer.WriteInt64(42L, true);
 writer.Write<Guid>(Guid.NewGuid());
 
 // decodes int32, int64 and Guid values from stack-allocated memory
 var reader = new SpanReader<byte>(memory);
-var i32 = ReadInt32LittleEndian(reader.Read(sizeof(int)));
-var i64 = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+var i32 = reader.ReadInt32(true);
+var i64 = reader.readInt64(true);
 var g = reader.Read<Guid>();
 ```
 
