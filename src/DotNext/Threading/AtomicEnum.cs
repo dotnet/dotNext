@@ -110,7 +110,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     public TEnum Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly get => Unsafe.AsRef(in value).VolatileRead().ToEnum<TEnum>();
+        readonly get => value.VolatileRead().ToEnum<TEnum>();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => this.value.VolatileWrite(value.ToInt64());
     }
@@ -278,7 +278,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     /// </summary>
     /// <param name="other">Other value to compare.</param>
     /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-    public readonly bool Equals(TEnum other) => Unsafe.AsRef(in value).VolatileRead() == other.ToInt64();
+    public readonly bool Equals(TEnum other) => value.VolatileRead() == other.ToInt64();
 
     /// <summary>
     /// Determines whether stored value is equal to
@@ -289,7 +289,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     public override readonly bool Equals([NotNullWhen(true)] object? other) => other switch
     {
         TEnum b => Equals(b),
-        AtomicEnum<TEnum> b => b.value.VolatileRead() == Unsafe.AsRef(in value).VolatileRead(),
+        AtomicEnum<TEnum> b => b.value.VolatileRead() == value.VolatileRead(),
         _ => false,
     };
 
@@ -297,7 +297,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     /// Computes hash code for the stored value.
     /// </summary>
     /// <returns>The hash code of the stored boolean value.</returns>
-    public override readonly int GetHashCode() => Unsafe.AsRef(in value).VolatileRead().GetHashCode();
+    public override readonly int GetHashCode() => value.VolatileRead().GetHashCode();
 
     /// <summary>
     /// Converts the value in this container to its textual representation.
