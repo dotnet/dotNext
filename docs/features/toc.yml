@@ -1,6 +1,8 @@
 - name: BCL Enhancements
   href: core/index.md
   items:
+    - name: Efficient String Building
+      href: core/stringb.md
     - name: Ad-hoc User Data
       href: core/userdata.md
     - name: Value Type Enhancements
