@@ -49,13 +49,13 @@ using DotNext.Threading;
 var builder = new StringBuilder();
 
 //reader
-using(builder.AcquireReadLock())
+using (builder.AcquireReadLock())
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using(builder.AcquireWriteLock())
+using (builder.AcquireWriteLock())
 {
     builder.Append("Hello, world!");
 }
