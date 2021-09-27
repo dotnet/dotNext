@@ -360,12 +360,12 @@ public static class List
 
         static void ShuffleSlow(IList<T> list, Random random)
         {
-            for (var count = list.Count; count > 1;)
+            for (var i = list.Count - 1; i > 0; i--)
             {
-                var randomIndex = random.Next(count--);
+                var randomIndex = random.Next(i + 1);
                 T item = list[randomIndex];
-                list[randomIndex] = list[count];
-                list[count] = item;
+                list[randomIndex] = list[i];
+                list[i] = item;
             }
         }
     }
