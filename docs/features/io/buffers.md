@@ -159,3 +159,5 @@ The following table describes the main differences between various growable buff
 | `PooledBufferWriter<T>` | If custom [memory allocator](xref:DotNext.Buffers.MemoryAllocator`1) is required. For instance, if you want to use [unmanaged memory pool](xref:DotNext.Buffers.UnmanagedMemoryPool`1) | Yes | o(1), O(n) |
 | `BufferWriterSlim<T>` | If you have knowledge about optimal size of initial buffer which can be allocated on the stack. In this case the writer allows to avoid renting the buffer and doesn't allocate itself on the managed heap | No | o(1), O(n) |
 | `SparseBufferWriter<T>` | If optimal size of initial buffer is not known and the length of the written data varies widely | Yes | o(1), O(1) |
+
+`SparseBufferWriter<T>` is more reusable than [RecyclableMemoryStream](https://www.nuget.org/packages/Microsoft.IO.RecyclableMemoryStream/) because it can be instantiated with any generic argument, not only with **byte**. Moreover, the [benchmark](../../benchmarks.md) demonstrates the better results for large memory blocks.
