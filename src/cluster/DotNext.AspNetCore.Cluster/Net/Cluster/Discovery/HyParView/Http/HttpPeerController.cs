@@ -21,7 +21,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     private readonly IPeerLifetime? lifetimeService;
     private readonly MemoryAllocator<byte>? allocator;
     private readonly string clientHandlerName;
-    private readonly TimeSpan connectTimeout, requestTimeout;
+    private readonly TimeSpan requestTimeout;
     private readonly HttpProtocolVersion protocolVersion;
     private readonly HttpVersionPolicy protocolVersionPolicy;
     private readonly ConcurrentDictionary<EndPoint, HttpPeerClient> clientCache;
@@ -41,7 +41,6 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     {
         // configuration
         clientHandlerName = configuration.Value.ClientHandlerName;
-        connectTimeout = configuration.Value.ConnectTimeout;
         requestTimeout = configuration.Value.RequestTimeout;
         allocator = configuration.Value.Allocator;
         protocolVersion = configuration.Value.ProtocolVersion;
@@ -73,7 +72,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     {
         var baseUri = endPoint.CreateUriBuilder().Uri;
         var client = handlerFactory is null
-            ? new HttpPeerClient(baseUri, new SocketsHttpHandler { ConnectTimeout = connectTimeout }, true)
+            ? new HttpPeerClient(baseUri, new SocketsHttpHandler { ConnectTimeout = requestTimeout }, true)
             : new HttpPeerClient(baseUri, handlerFactory.CreateHandler(clientHandlerName), false);
 
         client.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;

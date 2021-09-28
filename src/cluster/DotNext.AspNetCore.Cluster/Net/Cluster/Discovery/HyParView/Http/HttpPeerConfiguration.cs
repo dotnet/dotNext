@@ -13,7 +13,7 @@ using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 public class HttpPeerConfiguration : PeerConfiguration
 {
     internal const string DefaultResourcePath = "/membership/hyparview";
-    private const string DefaultClientHandlerName = "hyParViewClient";
+    private const string DefaultClientHandlerName = "HyParViewClient";
 
     static HttpPeerConfiguration()
     {
@@ -43,11 +43,6 @@ public class HttpPeerConfiguration : PeerConfiguration
     /// Gets or sets HTTP request timeout.
     /// </summary>
     public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
-
-    /// <summary>
-    /// Gets or sets socket connection timeout.
-    /// </summary>
-    public TimeSpan ConnectTimeout { get; set; } = TimeSpan.FromSeconds(3);
 
     /// <summary>
     /// Gets or sets HTTP handler name used by HyParView peer client.
