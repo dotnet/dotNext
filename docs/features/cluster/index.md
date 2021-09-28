@@ -4,20 +4,24 @@ Cluster Computing is a form of distributed computing where each node set to perf
 
 .NEXT cluster programming model provides the following features in addition to the core model:
 1. Messaging
+1. [Rumour spreading](https://en.wikipedia.org/wiki/Gossip_protocol)
 1. [Replication](https://en.wikipedia.org/wiki/Replication_(computing))
 1. [Consensus](https://en.wikipedia.org/wiki/Consensus_(computer_science))
+1. Cluster configuration management
 
-The programming model at higher level of abstraction is represented by interfaces:
-* [IClusterMember](xref:DotNext.Net.Cluster.IClusterMember) represents individual node in the cluster
-* [ICluster](xref:DotNext.Net.Cluster.ICluster) represents entire cluster. This is an entry point to work with cluster using .NEXT library.
-* [IExpandableCluster](xref:DotNext.Net.Cluster.IExpandableCluster) optional interface that extends `ICluster` and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes
+The programming model at higher level of abstraction is represented by the following interfaces:
+* [IPeer](xref:DotNext.Net.IPeer) represents the peer in the network
+* [IPeerMesh](xref:DotNext.Net.IPeerMesh) represents a set of nodes that can communicate with each other through the network. It exposes the basic functionality for tracking of mesh events: adding or removing peers
+* [IPeerMesh&lt;TPeer&gt;](xref:DotNext.Net.IPeerMesh`1) is an extension of `IPeerMesh` interface that provides access to the peer client for communication and messaging
+* [IClusterMember](xref:DotNext.Net.Cluster.IClusterMember) represents an individual node in the cluster. This is an extension of Peer concept with high-level API
+* [ICluster](xref:DotNext.Net.Cluster.ICluster) represents the entire cluster. This is an extension of peer mesh concept with high-level API
 * [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) optional interface provides message-based communication between nodes in  point-to-point manner
-* [IReplicationCluster&lt;T&gt;](xref:DotNext.Net.Cluster.Replication.IReplicationCluster`1) optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on [IAuditTrail](xref:DotNext.IO.Log.IAuditTrail). By default, design of replication infrastructure supports [Weak Consistency](https://en.wikipedia.org/wiki/Weak_consistency).
+* [IReplicationCluster&lt;T&gt;](xref:DotNext.Net.Cluster.Replication.IReplicationCluster`1) optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on [IAuditTrail](xref:DotNext.IO.Log.IAuditTrail)
 
-Thereby, core model consists of two interfaces: `ICluster` and `IClusterMember`. Other interfaces are extensions of the core model. 
+Thereby, the core model consists of two interfaces: `IPeer` and `IPeerMesh`. Other interfaces are extensions of the core model.
 
 # Messaging
-Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by [IMessage](xref:DotNext.Net.Cluster.Messaging.IMessage) interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.
+Messaging feature allows to organize point-to-point communication between the nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by [IMessage](xref:DotNext.Net.Cluster.Messaging.IMessage) interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.
 
 There are two types of messages:
 1. **Request-Reply** message is similar to RPC call when caller should wait for the response. The response payload is represented by `IMessage`
@@ -41,26 +45,47 @@ Typed message client or listener consists of the following parts:
 * Serialization/deserialization logic for DTO models
 * Message handling logic (for listener)
 
-Typed message client is represented by [MessagingClient](xref:DotNext.Net.Cluster.Messaging.MessagingClient) class. Its methods for sending messages are generic methods. The actual generic argument must represent DTO model describing message payload. The model must be marked with [MessageAttribute](xref:DotNext.Net.Cluster.Messaging.MessageAttribute):
+Typed message client is represented by [MessagingClient](xref:DotNext.Net.Cluster.Messaging.MessagingClient) class. Its methods for sending messages are generic methods. The actual generic argument must represent DTO model describing the message payload and serialization/deserialization logic:
 ```csharp
-[Message("Add", MimeType = "application/octet-stream", Formatter = typeof(MessageFormatter))]
-public sealed class AddMessage
+using DotNext.IO;
+using DotNext.Runtime.Serialization;
+
+public sealed class AddMessage : ISerializable<AddMessage>
 {
-    public int X { get; set; }
-    public int Y { get; set; }
+    public const string Name = "Add";
+
+    public int X { get; init; }
+    public int Y { get; init; }
+
+    public async ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token = default)
+        where TWriter : notnull, IAsyncBinaryWriter
+    {
+        await writer.WriteInt32Async(X, true, token);
+        await writer.WriteInt32Async(Y, true, token);
+    }
+
+    public static async ValueTask<AddMessage> ReadFromAsync<TReader>(TReader reader, CancellationToken token = default)
+        where TReader : notnull, IAsyncBinaryReader
+    {
+        return new AddMessage
+        {
+            X = await reader.ReadInt32Async(true, token),
+            Y = await reader.ReadInt32Async(true, token)
+        };
+    }
 }
 ```
 
-`Formatter` property points to the type that implements [IFormatter](xref:DotNext.Runtime.Serialization.IFormatter`1) interface. This type is responsible for serialization and deserialization of the message type. It must have public parameterless constructor, or public static property/field that exposes instance of this type. If field or property is presented, then its name must be specified via `FormatterMember` property of the attribute.
+[ISerializable&lt;TSelf&gt;](xref:DotNext.Runtime.Serialization.ISerializable`1) interface is needed to provide serialization/deserialization logic. Thanks to static abstract methods in C#, the interface requires that the implementing type must provide deserialization logic in the form of static factory method.
 
-DTO models can be shared between the client and the listener. Sending messages via typed client is trivial:
+DTO models can be shared between the client and the listener. The message type must be registered in the client. After that, sending messages via typed client is trivial:
 ```csharp
 ISubscriber clusterMember;
-var client = new MessageClient(clusterMember);
+var client = new MessagingClient(clusterMember).RegisterMessage<AddMessage>(AddMessage.Name);
 await client.SendSignal(new AddMessage { X = 40, Y = 2 }); // send one-way message
 ```
 
-Typed listener must inherit from [MessageHandler](xref:DotNext.Net.Cluster.Messaging.MessageHandler) type or instantiate it using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder). Message handling logic is represented by the public instance methods.
+Typed listener must inherit from [MessageHandler](xref:DotNext.Net.Cluster.Messaging.MessageHandler) type or instantiated using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder). Message handling logic is represented by the public instance methods.
 
 For duplex (request-reply) message handler the method must follow to one of the allowed signatures:
 ```csharp
@@ -92,6 +117,7 @@ using DotNext.Net.Cluster.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 
+[Message<AddMessage>(AddMessage.Name)]
 public class TestMessageHandler : MessageHandler
 {
     public Task<ResultMessage> AddAsync(AddMessage message, CancellationToken token)
@@ -100,6 +126,21 @@ public class TestMessageHandler : MessageHandler
     }
 }
 ```
+
+In contrast to `MessagingClient`, all message types must be registered using [MessageAttribute&lt;TMessage&gt;](xref:DotNext.Net.Cluster.Messaging.MessageAttribute`1) attribute declaratively. However, this is not applicable when you constructing the handle using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder).
+
+# Rumour Spreading
+Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. [IPeerMesh](xref:DotNext.Net.IPeerMesh) exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbours. This capability is usually called _membership protocol_ for Gossip-based communication. There are few approaches to achieve that:
+* [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) for large-scale peer meshes with hundreds or event thousands of peers
+* [SWIM](https://research.cs.cornell.edu/projects/Quicksilver/public_pdfs/SWIM.pdf) for mid-size clusters where each node has weakly-consistent view of the entire cluster
+
+Currently, .NEXT offers HyParView implementation only. Read more about Gossip-based communication with .NEXT in this [article](./gossip.md).
+
+If you want to know more about infection-style communication in cluster computing then use the following links:
+* [Introduction to Gossip protocols](https://managementfromscratch.wordpress.com/2016/04/01/introduction-to-gossip/)
+* [Gossip Simulator](https://flopezluis.github.io/gossip-simulator/)
+* [Make your cluster SWIM](https://bartoszsypytkowski.com/make-your-cluster-swim/)
+* [HyParView: cluster membership that scales](https://bartoszsypytkowski.com/hyparview/)
 
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
@@ -121,4 +162,5 @@ Replication allows to share information between nodes to ensure consistency betw
 [IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.
 
 # Implementations
-* [.NEXT Raft Suite](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure.
+* [.NEXT Raft Suite](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure
+* [.NEXT HyParView](./gossip.md) is a fully-featured implementation of HyParView membership protocol for reliable Gossip-based communication

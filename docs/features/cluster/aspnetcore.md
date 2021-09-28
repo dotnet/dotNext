@@ -1,10 +1,12 @@
-Clustered ASP.NET Core Microservices
+Cluster Programming with ASP.NET Core
 ====
 .NEXT provides fully-featured implementation of cluster computing infrastructure for microservices constructed on top of ASP.NET Core. This implementation consists of the following features:
+* HyParView membership protocol implementation on top of HTTP transport
 * Point-to-point messaging between microservices organized through HTTP
 * Consensus algorithm is Raft and all necessary communication for this algorithm is based on HTTP
-* Replication according with Raft algorithm is fully supported. In-memory audit trail is used by default.
+* Replication according with Raft algorithm is fully supported. In-memory audit trail is used by default
 
+# Raft
 In this implementation, Web application treated as cluster node. The following example demonstrates how to turn ASP.NET Core application into cluster node:
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
@@ -14,10 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 sealed class Startup
 {
-    private readonly IConfiguration configuration;
-
-    public Startup(IConfiguration configuration) => this.configuration = configuration;
-
     public void Configure(IApplicationBuilder app)
     {
         app.UseConsensusProtocolHandler();	//informs that processing pipeline should handle Raft-specific requests
@@ -37,23 +35,23 @@ IHost host = new HostBuilder()
     .Build();
 ```
 
-Raft algorithm requires dedicated HTTP endpoint for internal purposes. There are two possible ways to expose necessary endpoint:
-* **Hosted Mode** exposes internal endpoint at different port because dedicated [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) is used
-* **Embedded Mode** exposes internal endpoint at the same port as underlying web application
+Note that `JoinCluster` method should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
 
-The necessary mode depends on your requirements and network environment.
+`JoinCluster` method has overloads that allow to specify custom configuration section containing the configuration of the local node.
 
-# Dependency Injection
-Web application component can request the following service from ASP.NET Core DI container:
+`UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
+
+## Dependency Injection
+The application may request the following services from ASP.NET Core DI container:
 * [ICluster](xref:DotNext.Net.Cluster.ICluster)
 * [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) represents Raft-specific version of `ICluster` interface
 * [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) for point-to-point messaging between nodes
-* [IExpandableCluster](xref:DotNext.Net.Cluster.IExpandableCluster) for tracking changes in cluster membership
+* [IPeerMesh&lt;IRaftClusterMember&gt;](xref:DotNext.Net.IPeerMesh`1) for tracking changes in cluster membership
 * [IReplicationCluster&lt;IRaftLogEntry&gt;](xref:DotNext.Net.Cluster.Replication.IReplicationCluster`1) to work with audit trail used for replication. [IRaftLogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry) is Raft-specific representation of the record in the audit trail
 * [IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) to work with audit trail in simplified manner 
 
-# Configuration
-The application should be configured properly to work as a cluster node. The following JSON represents example of configuration:
+## Configuration
+The application should be configured properly to work as a cluster node. The following JSON represents the example of configuration:
 ```json
 {
 	"partitioning" : false,
@@ -112,8 +110,8 @@ The application should be configured properly to work as a cluster node. The fol
 
 Choose `lowerElectionTimeout` and `upperElectionTimeout` according with the quality of your network. If values are small then you get frequent elections and migration of leader node.
 
-## Runtime Hook
-The service implementing `IRaftCluster` is registered as singleton service. The service starts receiving Raft-specific messages immediately. Therefore, you can loose some events raised by the service such as `LeaderChanged` at starting point. To avoid that, you can implement [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface and register implementation as singleton.
+### Controlling node lifetime
+The service implementing `IRaftCluster` is registered as singleton service. It starts receiving Raft-specific messages immediately. Therefore, you can loose some events raised by the service such as `LeaderChanged` at starting point. To avoid that, you can implement [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface and register implementation as singleton.
 
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
@@ -165,7 +163,7 @@ internal sealed class MemberLifetime : IClusterMemberLifetime
 }
 ```
 
-## HTTP Client Behavior
+### HTTP Client Behavior
 .NEXT uses [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient) for communication between cluster nodes. The client itself delegates all operations to [HttpMessageHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler). It's not recommended to use [HttpClientHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler) because it has inconsistent behavior on different platforms because relies on _libcurl_. Raft implementation uses `Timeout` property of `HttpClient` to establish request timeout. It is always defined as `upperElectionTimeout` by .NEXT infrastructure. To demonstrate inconsistent behavior let's introduce three cluster nodes: _A_, _B_ and _C_. _A_ and _B_ have been started except _C_:
 * On Windows the leader will not be elected even though the majority is present - 2 of 3 nodes are available. This is happening because Connection Timeout is equal to Response Timeout, which is equal to `upperElectionTimeout`.
 * On Linux everything is fine because Connection Timeout less than Response Timeout
@@ -184,74 +182,7 @@ internal sealed class RaftClientHandlerFactory : IHttpMessageHandlerFactory
 
 In practice, `ConnectTimeout` should be equal to `lowerElectionTimeout` configuration property. Note that `name` parameter is equal to the `clientHandlerName` configuration property when handler creation is requested by Raft implementation.
 
-# Hosted Mode
-This mode allows to create separated [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) used for hosting Raft-specific stuff. As a result, Raft implementation listens on the port that differs from the port of underlying Web application.
-
-The following example demonstrates this approach:
-```csharp
-using DotNext.Net.Cluster.Consensus.Raft.Http.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-IHost host = new HostBuilder()
-    .ConfigureWebHost(webHost => webHost
-        .UseKestrel(options => options.ListenLocalhost(80))
-        .UseStartup<Startup>()
-    )
-    .JoinCluster()  //registers all necessary services required for normal cluster node operation
-    .Build();
-```
-
-Note that `JoinCluster` method declared in `DotNext.Net.Cluster.Consensus.Raft.Http.Hosting` namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
-
-By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to configure dedicated host manually. To do that, you need to register singleton service implementing [IDedicatedHostBuilder](xref:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder) interface. In this case, `port` configuration property will be ignored.
-
-`JoinCluster` method has overloads that allow to specify custom configuration section containing configuration of local node.
-
-# Embedded Mode
-Embedded mode shares the same [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) and port with underlying Web Application. To serve Raft-specific requests the implementation uses dedicated endpoint `/cluster-consensus/raft` that can be changed through configuration parameter. The following example demonstrates how to setup embedded mode:
-
-```csharp
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-sealed class Startup
-{
-    private readonly IConfiguration configuration;
-
-    public Startup(IConfiguration configuration) => this.configuration = configuration;
-
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseConsensusProtocolHandler();	//informs that processing pipeline should handle Raft-specific requests
-    }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-    }
-}
-
-IHost host = new HostBuilder()
-    .ConfigureWebHost(webHost => webHost
-        .UseKestrel(options => options.ListenLocalhost(80))
-        .UseStartup<Startup>()
-    )
-    .JoinCluster()  //registers all necessary services required for normal cluster node operation
-    .Build();
-```
-
-Note that `JoinCluster` declared in `DotNext.Net.Cluster.Consensus.Raft.Http.Embedding` namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
-
-`JoinCluster` method has overloads that allow to specify custom configuration section containing configuration of local node.
-
-`UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
-
-# Redirection to Leader
+## Redirection to Leader
 Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of _307 Temporary Redirect_ status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns _503 Service Unavailable_. 
 
 Automatic redirection is provided by [LeaderRouter](xref:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter) class. You can specify endpoint that should be handled by leader node with `RedirectToLeader` method.
@@ -285,7 +216,7 @@ sealed class Startup
 
 This redirection can be transparent to actual client if you use reverse proxy server such as NGINX. Reverse proxy can automatically handle redirection without returning control to the client.
 
-## Custom Redirections
+### Custom Redirections
 It is possible to change default behavior of redirection where _301 Moved Permanently_ status code is used. You can pass custom implementation into the optional parameter of `RedirectToLeader` method.
 
 The following example demonstrates how to return _404 Not Found_ and location of Leader node as its body.
@@ -306,7 +237,7 @@ public void Configure(IApplicationBuilder app)
 
 The customized redirection should be as fast as possible and don't block the caller.
 
-## Port mapping
+### Port mapping
 Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its [WebHost](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost) because of Hosted Mode or the port from the incoming `Host` header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside of the container the ASP.NET Core application port is mapped to the externally visible port which not always the same. In this case you can specify port for redirections explicitly as follows:
 
 ```csharp
@@ -317,23 +248,23 @@ public void Configure(IApplicationBuilder app)
 }
 ```
 
-# Messaging
+## Messaging
 .NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement [IInputChannel](xref:DotNext.Net.Cluster.Messaging.IInputChannel) interface.
 
 Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via `LeaderRouter` property of [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface.
 
-# Replication
+## Replication
 Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. By default, it is implemented as [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface.
 
-## Reliable State
+### Reliable State
 Information about reliable persistent state which uses disk for storing write ahead log located in the separated [article](./wal.md). However, its usage turns your microservice into stateful service because its state persisted on disk. Consider this fact if you are using containerization technologies such as Docker or LXC.
 
-# Service Discovery
+## Service Discovery
 The clustered application may be deployed in various hosting environments and container orchestrators. In case of classic deployment on virtual machines or containers the configuration of cluster members supplied via configuration file or any other configuration providers with the support of hot reloading in case when you have added or removed cluster members. There is another way to do the service discovery. [IMemberServiceDiscovery](xref:DotNext.Net.Cluster.Consensus.Raft.IMemberDiscoveryService) interface represents extension point at which you can implement your own mechanism of tracking cluster nodes. This way is much more simplier in comparison to custom [IConfigurationProvider](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfigurationprovider). All you need is to implement this interface and register it as singleton service with `UseDiscoveryService` extension method or manually.
 
 Custom discovery mechanism is applicable when your hosting environment has its own discovery mechanism. For instance, you have [Consul](https://www.consul.io/) or Kubernetes. Kubernetes has its own mechanism for service discovery if you use [Service](https://kubernetes.io/docs/concepts/services-networking/service/) abstraction configured for your nodes.
 
-# Metrics
+## Metrics
 It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector) class. The reporting mechanism is agnostic to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
 
 The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods do nothing.
@@ -386,20 +317,20 @@ It is possible to derive directly from [MetricsCollector](xref:DotNext.Net.Clust
 
 Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.
 
-# Development and Debugging
+## Development and Debugging
 It may be hard to reproduce the real cluster on developer's machine. You may want to run your node in _Debug_ mode and ensure that the node you're running is a leader node. To do that, you need to configure only one node in the list of cluster members.
 
-# Performance
+## Performance
 The wire format is highly optimized for transferring log entries during the replication process over the wire. The most performance optimizations should be performed when configuring persistent Write-Ahead Log.
 
-## Log Compaction
+### Log Compaction
 [PersistentState]((xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState)) supports several log compaction modes. Some of them allow compaction in parallel with appending of new log entries. Read more [here](./wal.md) for more information about the available modes. _Background_ compaction provides precise control over the compaction. There are few ways to control it:
 1. If you're using `UsePersistenceEngine` extension method for registering your engine based on `PersistentState` then .NEXT infrastructure automatically detects the configured compaction mode. If it is _Background_ then it will register _compaction worker_ as a background service in ASP.NET Core. This worker provides _incremental background compaction_. You can override this behavior by implementing [ILogCompactionSupport](xref:DotNext.IO.Log.ILogCompactionSupport) in your persistence engine.
 1. If you're registering persistence engine in DI container manually, you need to implement background compaction worker manually using [BackgroundService](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.backgroundservice.startasync) class and call `ForceCompactionAsync` method in the overridden `ExecuteAsync` method.
 
 _Incremental background compaction_ is the default strategy when _Background_ compaction enabled. The worker just waits for the commit and checks whether `PersistentState.CompactionCount` property is greater than zero. If so, it calls `ForceCompactionAsync` with the compaction factor which is equal to 1. It provides minimal compaction of the log. As a result, the contention between the compaction worker and readers is minimal or close to zero.
 
-# Example
+## Example
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/dotnet/dotNext/tree/master/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
 cd <dotnext>/src/examples/RaftNode
