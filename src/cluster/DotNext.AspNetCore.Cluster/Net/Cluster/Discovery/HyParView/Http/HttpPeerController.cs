@@ -36,13 +36,14 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         ILoggerFactory loggerFactory,
         IServer server,
         IHttpMessageHandlerFactory? handlerFactory = null,
-        IPeerLifetime? lifetimeService = null)
+        IPeerLifetime? lifetimeService = null,
+        MemoryAllocator<byte>? allocator = null)
         : base(configuration.Value)
     {
         // configuration
         clientHandlerName = configuration.Value.ClientHandlerName;
         requestTimeout = configuration.Value.RequestTimeout;
-        allocator = configuration.Value.Allocator;
+        this.allocator = configuration.Value.Allocator ?? allocator;
         protocolVersion = configuration.Value.ProtocolVersion;
         protocolVersionPolicy = configuration.Value.ProtocolVersionPolicy;
         contactNode = configuration.Value.ContactNode;
