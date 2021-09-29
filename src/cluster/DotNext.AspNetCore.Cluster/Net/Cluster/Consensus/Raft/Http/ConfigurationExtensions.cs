@@ -14,7 +14,7 @@ using Replication;
 /// <summary>
 /// Provides a set of methods for enabling Raft support in ASP.NET Core HTTP application.
 /// </summary>
-public static class ConfigurationExtensions
+public static partial class ConfigurationExtensions
 {
     private static IServiceCollection AddClusterAsSingleton(this IServiceCollection services)
     {
