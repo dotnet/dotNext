@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                 }
 
-                protected override async ValueTask ApplyAsync(LogEntry entry)
+                protected internal override async ValueTask ApplyAsync(LogEntry entry)
                 {
                     Assert.True(entry.Index > 0L);
                     currentValue = await entry.ToTypeAsync<long, LogEntry>();

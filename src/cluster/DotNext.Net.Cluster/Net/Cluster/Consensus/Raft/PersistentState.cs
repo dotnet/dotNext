@@ -860,7 +860,7 @@ public partial class PersistentState : Disposable, IPersistentState
         Debug.Assert(current is not null);
         for (long startIndex = snapshot.Metadata.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
         {
-            await builder.ApplyCoreAsync(current.Read(sessionId, currentIndex)).ConfigureAwait(false);
+            await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
         }
 
         // update counter
@@ -871,6 +871,10 @@ public partial class PersistentState : Disposable, IPersistentState
             builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
             return currentIndex.IsBetween(startIndex, endIndex, BoundType.Closed) && this.TryGetPartition(currentIndex, ref partition);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static ValueTask ApplyIfNotEmptyAsync(SnapshotBuilder builder, LogEntry entry)
+            => entry.IsEmpty ? ValueTask.CompletedTask : builder.ApplyAsync(entry);
     }
 
     private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder builder, long snapshotIndex)
