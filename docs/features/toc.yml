@@ -108,12 +108,12 @@
   items:
     - name: Structured Memory Access
       href: unsafe/struct.md
-- name: Cluster and Distributed Consensus
+- name: Cluster Programming Suite
   href: cluster/index.md
   items:
-    - name: Clustered ASP.NET Core Microservices
-      href: cluster/aspnetcore.md
-    - name: Persistent Log
-      href: cluster/wal.md
+    - name: P2P Gossip
+      href: cluster/gossip.md
     - name: Raft
       href: cluster/raft.md
+    - name: Persistent Log
+      href: cluster/wal.md

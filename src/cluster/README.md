@@ -1,6 +1,6 @@
-.NEXT Cluster Development Suite
+.NEXT Cluster Programming Suite
 ====
-.NEXT Cluster Development Suite is a set of libraries for building clustered microservices:
+.NEXT Cluster Programming Suite is a set of libraries for building clustered microservices:
 * [DotNext.Net.Cluster](https://www.nuget.org/packages/DotNext.Net.Cluster/) contains cluster programming model, transport-agnostic implementation of Raft and HyParView algorithms, TCP and UDP transport bindings for Raft
 * [DotNext.AspNetCore.Cluster](https://www.nuget.org/packages/DotNext.AspNetCore.Cluster/) is a concrete implementation of Raft and HyParView algorithms on top of _DotNext.Net.Cluster_ library for building ASP.NET Core applications.
 

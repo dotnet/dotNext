@@ -1,8 +1,10 @@
-Cluster and Distributed Consensus
+Cluster Programming Suite
 ====
-Cluster Computing is a form of distributed computing where each node set to perform the same task. The nodes usually located in the same local area network, each of them hosted on separated virtual machine or container. The input task can be distributed to the target node by load balancer or leader node. If leader node is required then cluster should use Distributed Consensus Algorithm to select exactly one leader or re-elect it if leader failed. Additionally, consensus-enabled cluster can be used to organize fault-tolerant set of microservices where only one service (leader) can be active and perform specific operations while other are in standby mode. If active node is failed then one of the standby nodes becomes active.
+**Cluster Computing** is a form of distributed computing where each node set to perform the same task. The nodes usually located in the same local area network, each of them hosted on separated virtual machine or container. The cluster can be organized in various ways:
+* _Peer-to-peer_ where there are no special nodes that provide a service
+* _Master-replica_, or _leader-follower_ where there are special _master_ node that provide a service and _replica_ nodes that contain a backup of _master_ node. Master node performs replication to keep replicas in sync. Usually, _replica_ node can replace _master_ node in case of failure. Usually, this architecture relies on Distributed Consensus Algorithm for leader election and re-election in case of leader failure. The algorithm provides a guarantee that the cluster may have exactly one leader node at a time (or zero if no quorum), linearizability of operations, consistency of data.
 
-.NEXT cluster programming model provides the following features in addition to the core model:
+.NEXT cluster development suite provides the following features:
 1. Messaging
 1. [Rumour spreading](https://en.wikipedia.org/wiki/Gossip_protocol)
 1. [Replication](https://en.wikipedia.org/wiki/Replication_(computing))
@@ -162,5 +164,5 @@ Replication allows to share information between nodes to ensure consistency betw
 [IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.
 
 # Implementations
-* [.NEXT Raft Suite](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure
+* [.NEXT Raft](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure
 * [.NEXT HyParView](./gossip.md) is a fully-featured implementation of HyParView membership protocol for reliable Gossip-based communication
