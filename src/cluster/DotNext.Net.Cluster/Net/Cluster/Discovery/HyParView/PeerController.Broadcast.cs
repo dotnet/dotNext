@@ -8,7 +8,7 @@ using IRumorSender = Messaging.Gossip.IRumorSender;
 public partial class PeerController
 {
     /// <summary>
-    /// Spreads the rumour across neighbors.
+    /// Spreads the rumor across neighbors.
     /// </summary>
     /// <param name="senderFactory">The rumour sender factory.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
