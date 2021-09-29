@@ -63,9 +63,7 @@ public partial class PersistentState
         /// </summary>
         /// <param name="entry">The committed log entry.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected abstract ValueTask ApplyAsync(LogEntry entry);
-
-        internal ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry);
+        protected internal abstract ValueTask ApplyAsync(LogEntry entry);
 
         /// <summary>
         /// Allows to adjust the index of the current log entry to be snapshotted.
@@ -125,7 +123,7 @@ public partial class PersistentState
             where TWriter : IAsyncBinaryWriter;
 
         internal sealed override ValueTask InitializeAsync(int sessionId)
-            => Context.Snapshot.IsEmpty ? ValueTask.CompletedTask : ApplyCoreAsync(Context.Snapshot.Read(sessionId));
+            => Context.Snapshot.IsEmpty ? ValueTask.CompletedTask : ApplyAsync(Context.Snapshot.Read(sessionId));
 
         internal sealed override async ValueTask BuildAsync(long snapshotIndex)
         {
