@@ -1,6 +1,6 @@
 Gossip-based Communication
 ====
-[Gossip-based communication](https://en.wikipedia.org/wiki/Gossip_protocol) is a way to spread a message (rumour) across all cluster nodes using infection-style message exchange. This approach is very efficient in comparison to naive broadcasting especially in large-scale clusters. But how the node knows how to join the cluster and discover other peers? The answer is _membership protocol_ that allows to discover and keep the view of cluster members.
+[Gossip-based communication](https://en.wikipedia.org/wiki/Gossip_protocol) is a way to spread a message (rumor) across all cluster nodes using infection-style message exchange. This approach is very efficient in comparison to naive broadcasting especially in large-scale clusters. But how the node knows how to join the cluster and discover other peers? The answer is _membership protocol_ that allows to discover and keep the view of cluster members.
 
 # HyParView
 [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) is an implementation of _membership protocol_ for peers that want to communicate with each other using infection-style message exchange. This algorithm is highly scalable up to thousands of nodes. However, it has one major drawback: every node has partial view of the entire cluster.
@@ -17,7 +17,7 @@ When the node is joined to the mesh then it will be able to discover a list of n
 
 `StopAsync` method provides a way for graceful shutdown of the node. All neighbors will be informed that the stopped node is no longer accessible and it must be removed from the list of neighbors.
 
-`EnqueueBroadcastAsync` method can be used to broadcast the message (rumour) to all neighbors. This is a core of Gossip-based messaging. The method requires an implementation of [IRumourSender](xref:DotNext.Net.Cluster.Messaging.Gossip.IRumourSender) interface that provides the delivery of the message using the specific transport. Additionally, the method controls the delivery status. If it suspects that the peer is unavailable then it removes the peer from the list of neighbors.
+`EnqueueBroadcastAsync` method can be used to broadcast the message (rumor) to all neighbors. This is a core of Gossip-based messaging. The method requires an implementation of [IRumourSender](xref:DotNext.Net.Cluster.Messaging.Gossip.IRumourSender) interface that provides the delivery of the message using the specific transport. Additionally, the method controls the delivery status. If it suspects that the peer is unavailable then it removes the peer from the list of neighbors.
 
 ## Integration with ASP.NET Core
 `DotNext.AspNetCore.Cluster` provides implementation of HyParView protocol using HTTP transport and [PeerController](xref:DotNext.Net.Cluster.Discovery.HyParView.PeerController) class on the top of ASP.NET Core infrastructure.
@@ -65,7 +65,7 @@ Note that `JoinMesh` method should be called after `ConfigureWebHost`. Otherwise
 ### Dependency Injection
 The application may request the following services from ASP.NET Core DI container:
 * [IPeerMesh&lt;HttpPeerClient&gt;](xref:DotNext.Net.IPeerMesh`1) provides access to all peers visible from the local node, discovery events, configured [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient) for communication with neighbors
-* [PeerController](xref:DotNext.Net.Cluster.Discovery.HyParView.PeerController) maintains the state of the local peer, handles HyParView-specific messages and exposes `EnqueueBroadcastAsync` method for rumour spreading
+* [PeerController](xref:DotNext.Net.Cluster.Discovery.HyParView.PeerController) maintains the state of the local peer, handles HyParView-specific messages and exposes `EnqueueBroadcastAsync` method for rumor spreading
 
 ### Configuration
 The application should be configured properly to serve HyParView messages. The following JSON represents the example of configuration:
@@ -156,4 +156,4 @@ You can launch as many peers as you want, but the port number must be unique for
 
 The terminal window of the peer will display discovery events. Each peer exposes the following HTTP resources that can be examined using Web Browser:
 * GET _https://localhost:3262/neighbors_ can be used to obtain a list of neighbors visible by the peer. You can change _3262_ to the port number of the appropriate peer. According to HyParView, each peer may have partial view of the entire cluster so the list of neighbors may differ
-* GET _https://localhost:3262/rumour_ can be used to spread the rumour across all peers in the mesh. The terminal window associated with each launched peer will display the identifier of the broadcast message
+* GET _https://localhost:3262/rumor_ can be used to spread the rumor across all peers in the mesh. The terminal window associated with each launched peer will display the identifier of the broadcast message

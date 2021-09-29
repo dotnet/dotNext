@@ -132,7 +132,7 @@ public class TestMessageHandler : MessageHandler
 In contrast to `MessagingClient`, all message types must be registered using [MessageAttribute&lt;TMessage&gt;](xref:DotNext.Net.Cluster.Messaging.MessageAttribute`1) attribute declaratively. However, this is not applicable when you constructing the handle using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder).
 
 # Rumour Spreading
-Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. [IPeerMesh](xref:DotNext.Net.IPeerMesh) exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbours. This capability is usually called _membership protocol_ for Gossip-based communication. There are few approaches to achieve that:
+Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. [IPeerMesh](xref:DotNext.Net.IPeerMesh) exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbors. This capability is usually called _membership protocol_ for Gossip-based communication. There are few approaches to achieve that:
 * [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) for large-scale peer meshes with hundreds or event thousands of peers
 * [SWIM](https://research.cs.cornell.edu/projects/Quicksilver/public_pdfs/SWIM.pdf) for mid-size clusters where each node has weakly-consistent view of the entire cluster
 
