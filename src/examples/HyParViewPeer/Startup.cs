@@ -16,18 +16,18 @@ internal sealed class Startup
     private const string BroadcastResource = "/broadcast";
     private const string NeighborsResource = "/neighbors";
 
-    private sealed class RumourSender : Disposable, IRumourSender
+    private sealed class RumorSender : Disposable, IRumorSender
     {
         private readonly IPeerMesh<HttpPeerClient> mesh;
         private readonly string messageId;
 
-        internal RumourSender(IPeerMesh<HttpPeerClient> mesh, string? messageId = null)
+        internal RumorSender(IPeerMesh<HttpPeerClient> mesh, string? messageId = null)
         {
             this.mesh = mesh;
             this.messageId = messageId ?? Guid.NewGuid().ToString();
         }
 
-        async Task IRumourSender.SendAsync(EndPoint peer, CancellationToken token)
+        async Task IRumorSender.SendAsync(EndPoint peer, CancellationToken token)
         {
             var client = mesh.TryGetPeer(peer);
             if (client is not null)
@@ -63,7 +63,7 @@ internal sealed class Startup
 
         return context.RequestServices
             .GetRequiredService<PeerController>()
-            .EnqueueBroadcastAsync(controller => new RumourSender((IPeerMesh<HttpPeerClient>)controller, messageId))
+            .EnqueueBroadcastAsync(controller => new RumorSender((IPeerMesh<HttpPeerClient>)controller, messageId))
             .AsTask();
     }
 
@@ -71,7 +71,7 @@ internal sealed class Startup
     {
         return context.RequestServices
             .GetRequiredService<PeerController>()
-            .EnqueueBroadcastAsync(static controller => new RumourSender((IPeerMesh<HttpPeerClient>)controller))
+            .EnqueueBroadcastAsync(static controller => new RumorSender((IPeerMesh<HttpPeerClient>)controller))
             .AsTask();
     }
 
