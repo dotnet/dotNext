@@ -12,7 +12,7 @@ namespace HyParViewPeer;
 internal sealed class Startup
 {
     private const string MessageIdHeader = "x-Message-Id";
-    private const string RumourResource = "/rumour";
+    private const string RumorResource = "/rumor";
     private const string BroadcastResource = "/broadcast";
     private const string NeighborsResource = "/neighbors";
 
@@ -46,7 +46,7 @@ internal sealed class Startup
     {
         app.UseHyParViewProtocolHandler().UseRouting().UseEndpoints(static endpoints =>
         {
-            endpoints.MapGet(RumourResource, SendRumourAsync);
+            endpoints.MapGet(RumorResource, SendRumourAsync);
             endpoints.MapGet(NeighborsResource, PrintNeighborsAsync);
             endpoints.MapPost(BroadcastResource, BroadcastAsync);
         });
@@ -59,7 +59,7 @@ internal sealed class Startup
         if (detector.IsDuplicated(messageId))
             return Task.CompletedTask;
 
-        Console.WriteLine($"Spreading rumour with id = {messageId}");
+        Console.WriteLine($"Spreading rumor with id = {messageId}");
 
         return context.RequestServices
             .GetRequiredService<PeerController>()
