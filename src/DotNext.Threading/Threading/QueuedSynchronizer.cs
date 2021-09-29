@@ -156,7 +156,7 @@ public class QueuedSynchronizer : Disposable
 
                 if (current.IsCompleted)
                 {
-                    RemoveNode(current);
+                    RemoveNodeCore(current);
                 }
                 else
                 {
