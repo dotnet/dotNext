@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
-using IRumourSender = Messaging.Gossip.IRumourSender;
+using IRumorSender = Messaging.Gossip.IRumorSender;
 
 public partial class PeerController
 {
@@ -53,9 +53,9 @@ public partial class PeerController
         internal int TimeToLive { get; init; }
 
         [DisallowNull]
-        internal Func<PeerController, IRumourSender>? RumourTransport
+        internal Func<PeerController, IRumorSender>? RumourTransport
         {
-            get => peersOrMessageTransport as Func<PeerController, IRumourSender>;
+            get => peersOrMessageTransport as Func<PeerController, IRumorSender>;
             init => peersOrMessageTransport = value;
         }
 
@@ -79,6 +79,6 @@ public partial class PeerController
 
         internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new() { Type = CommandType.ShuffleReply, Peers = peers };
 
-        internal static Command Broadcast(Func<PeerController, IRumourSender> senderFactory) => new() { Type = CommandType.Broadcast, RumourTransport = senderFactory };
+        internal static Command Broadcast(Func<PeerController, IRumorSender> senderFactory) => new() { Type = CommandType.Broadcast, RumourTransport = senderFactory };
     }
 }

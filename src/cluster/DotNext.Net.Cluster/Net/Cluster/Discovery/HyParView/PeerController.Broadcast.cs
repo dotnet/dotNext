@@ -3,7 +3,7 @@ using System.Net;
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
 using Buffers;
-using IRumourSender = Messaging.Gossip.IRumourSender;
+using IRumorSender = Messaging.Gossip.IRumorSender;
 
 public partial class PeerController
 {
@@ -15,10 +15,10 @@ public partial class PeerController
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The controller has been disposed.</exception>
-    public ValueTask EnqueueBroadcastAsync(Func<PeerController, IRumourSender> senderFactory, CancellationToken token = default)
+    public ValueTask EnqueueBroadcastAsync(Func<PeerController, IRumorSender> senderFactory, CancellationToken token = default)
         => IsDisposed ? new(DisposedTask) : EnqueueAsync(Command.Broadcast(senderFactory ?? throw new ArgumentNullException(nameof(senderFactory))), token);
 
-    private async Task ProcessBroadcastAsync(Func<PeerController, IRumourSender> senderFactory)
+    private async Task ProcessBroadcastAsync(Func<PeerController, IRumorSender> senderFactory)
     {
         var sender = senderFactory(this);
         var failedPeers = new PooledArrayBufferWriter<EndPoint>(activeViewCapacity);

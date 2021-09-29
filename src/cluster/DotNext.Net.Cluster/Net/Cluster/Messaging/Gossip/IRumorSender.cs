@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Messaging.Gossip;
 /// <summary>
 /// Represents broadcast command.
 /// </summary>
-public interface IRumourSender : IAsyncDisposable
+public interface IRumorSender : IAsyncDisposable
 {
     /// <summary>
     /// Sends custom message to the specified peer from the active view.
