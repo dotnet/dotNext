@@ -49,7 +49,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
                 Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
 
-            rwLock.DowngradeFromWriterLock();
+            rwLock.DowngradeFromWriteLock();
         }
     }
 
