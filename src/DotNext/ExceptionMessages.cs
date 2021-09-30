@@ -48,4 +48,6 @@ internal static class ExceptionMessages
 
     internal static string InvalidHexInput(char ch)
         => string.Format(Resources.GetString("InvalidHexInput")!, ch);
+
+    internal static string KeyAlreadyExists => Resources.GetString("KeyAlreadyExists")!;
 }

@@ -78,6 +78,7 @@ public struct ReaderWriterSpinLock
 
     private const int WriteLockState = int.MinValue;
     private const int NoLockState = default;
+    private const int SingleReaderState = 1;
 
     private volatile int state;
     private int version;    // volatile
@@ -226,4 +227,59 @@ public struct ReaderWriterSpinLock
     /// Exits the write lock.
     /// </summary>
     public void ExitWriteLock() => state = NoLockState;
+
+    /// <summary>
+    /// Upgrades a reader lock to the writer lock.
+    /// </summary>
+    /// <remarks>
+    /// The caller must have acquired read lock. Otherwise, the behavior is unspecified.
+    /// </remarks>
+    public void UpgradeToWriteLock()
+    {
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) != SingleReaderState; spinner.SpinOnce());
+
+        Interlocked.Increment(ref version);
+    }
+
+    /// <summary>
+    /// Attempts to upgrade a reader lock to the writer lock.
+    /// </summary>
+    /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryUpgradeToWriteLock()
+    {
+        if (Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) == SingleReaderState)
+        {
+            Interlocked.Increment(ref version);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryUpgradeToWriteLock(Timeout timeout, CancellationToken token)
+    {
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) != SingleReaderState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
+        {
+            if (timeout.IsExpired)
+                return false;
+        }
+
+        Interlocked.Increment(ref version);
+        return true;
+    }
+
+    /// <summary>
+    /// Attempts to upgrade a reader lock to the writer lock.
+    /// </summary>
+    /// <param name="timeout">The time to wait for the lock.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public bool TryUpgradeToWriteLock(TimeSpan timeout, CancellationToken token = default)
+        => TryUpgradeToWriteLock(new Timeout(timeout), token);
+
+    /// <summary>
+    /// Downgrades a writer lock back to the reader lock.
+    /// </summary>
+    public void DowngradeToReadLock() => state = SingleReaderState;
 }
