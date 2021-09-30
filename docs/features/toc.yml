@@ -33,6 +33,8 @@
       href: core/autoeh.md
     - name: Typed Reference
       href: core/ref.md
+    - name: TypeMap
+      href: core/typemap.md
 - name: I/O Enhancements
   href: io/index.md
   items:
