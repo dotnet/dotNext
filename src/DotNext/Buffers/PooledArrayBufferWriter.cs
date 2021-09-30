@@ -299,14 +299,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            if (GetLength(buffer) <= int.MaxValue)
-            {
-                Array.Clear(buffer, 0, buffer.Length);
-            }
-            else
-            {
-                Array.Fill(buffer, default!);
-            }
+            Array.Clear(buffer, 0, position);
         }
 
         position = 0;

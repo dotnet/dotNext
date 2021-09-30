@@ -13,9 +13,9 @@ using Threading;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private const int UndefinedValueState = 0;
-    private const int InProgressState = 1;
-    private const int HasValueState = 2;
+    private const int EmptyValueState = 0;
+    private const int LockedState = 1;
+    private const int NotEmptyValueState = 2;
 
     private ReaderWriterSpinLock rwLock;
     private (int, TValue?)[] storage;
@@ -45,18 +45,15 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
         {
             rwLock.UpgradeToWriteLock();
-            try
-            {
-                if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-                    Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
-            }
-            finally
-            {
-                rwLock.DowngradeToReadLock();
-            }
+
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+                Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
+
+            rwLock.DowngradeToReadLock();
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref (int State, TValue? Value) Get<TKey>((int, TValue?)[] storage)
     {
         Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < storage.Length);
@@ -79,22 +76,23 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<TKey>(TValue value)
     {
+        bool result;
+
         EnterReadLockAndEnsureCapacity<TKey>();
-        try
+        ref var holder = ref Get<TKey>(storage);
+        if (TryAcquireLock(ref holder.State))
         {
-            ref var holder = ref Get<TKey>(storage);
-            if (!TryAcquireUpdateLock(ref holder.State)) // acquire
-                return false;
-
             holder.Value = value;
-            holder.State.VolatileWrite(HasValueState); // release
+            holder.State.VolatileWrite(NotEmptyValueState); // release
+            result = true;
         }
-        finally
+        else
         {
-            rwLock.ExitReadLock();
+            result = false;
         }
 
-        return true;
+        rwLock.ExitReadLock();
+        return result;
     }
 
     /// <summary>
@@ -105,18 +103,13 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public void Set<TKey>(TValue value)
     {
         EnterReadLockAndEnsureCapacity<TKey>();
-        try
-        {
-            ref var holder = ref Get<TKey>(storage);
-            AcquireUpdateLock(ref holder.State); // acquire
+        ref var holder = ref Get<TKey>(storage);
+        AcquireLock(ref holder.State); // acquire
 
-            holder.Value = value;
-            holder.State = HasValueState; // release
-        }
-        finally
-        {
-            rwLock.ExitReadLock();
-        }
+        holder.Value = value;
+
+        holder.State.VolatileWrite(NotEmptyValueState); // release
+        rwLock.ExitReadLock();
     }
 
     /// <summary>
@@ -126,62 +119,59 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
     {
-        rwLock.EnterReadLock();
-        try
+        return ContainsKey(storage);
+
+        static bool ContainsKey((int, TValue?)[] storage)
         {
             if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
                 return false;
 
             ref var holder = ref Get<TKey>(storage);
 
-            for (var spin = new SpinWait(); ; spin.SpinOnce())
+            for (var sw = new SpinWait(); ; sw.SpinOnce())
             {
                 var currentState = holder.State.VolatileRead();
-                if (currentState == InProgressState)
+                if (currentState == LockedState)
                     continue;
 
-                return currentState == HasValueState;
+                return currentState == NotEmptyValueState;
             }
-        }
-        finally
-        {
-            rwLock.ExitReadLock();
         }
     }
 
-    private static int AcquireUpdateLock(ref int state)
+    private static int AcquireLock(ref int state)
     {
         int currentState;
 
-        for (var spin = new SpinWait(); ; spin.SpinOnce())
+        for (var sw = new SpinWait(); ; sw.SpinOnce())
         {
             currentState = state.VolatileRead();
-            if (currentState == InProgressState)
+            if (currentState == LockedState)
                 continue;
 
-            if (state.CompareAndSet(currentState, InProgressState))
+            if (state.CompareAndSet(currentState, LockedState))
                 break;
         }
 
         return currentState;
     }
 
-    private static bool TryAcquireUpdateLock(ref int state)
+    private static bool TryAcquireLock(ref int state)
     {
-        for (var spin = new SpinWait(); ; spin.SpinOnce())
+        for (var sw = new SpinWait(); ; sw.SpinOnce())
         {
             var currentState = state.VolatileRead();
             switch (currentState)
             {
                 default:
                     continue;
-                case HasValueState:
+                case NotEmptyValueState:
                     return false;
-                case UndefinedValueState:
+                case EmptyValueState:
                     break;
             }
 
-            if (state.CompareAndSet(currentState, InProgressState))
+            if (state.CompareAndSet(currentState, LockedState))
                 break;
         }
 
@@ -199,28 +189,22 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
     {
         EnterReadLockAndEnsureCapacity<TKey>();
-        try
-        {
-            ref var holder = ref Get<TKey>(storage);
+        ref var holder = ref Get<TKey>(storage);
 
-            // acquire
-            if (AcquireUpdateLock(ref holder.State) == UndefinedValueState)
-            {
-                holder.Value = value;
-                added = true;
-            }
-            else
-            {
-                value = holder.Value!;
-                added = false;
-            }
-
-            holder.State.VolatileWrite(HasValueState); // release
-        }
-        finally
+        // acquire
+        if (AcquireLock(ref holder.State) == EmptyValueState)
         {
-            rwLock.ExitReadLock();
+            holder.Value = value;
+            added = true;
         }
+        else
+        {
+            value = holder.Value!;
+            added = false;
+        }
+
+        holder.State.VolatileWrite(NotEmptyValueState); // release
+        rwLock.ExitReadLock();
 
         return value;
     }
@@ -238,17 +222,12 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         bool added;
 
         EnterReadLockAndEnsureCapacity<TKey>();
-        try
-        {
-            ref var holder = ref Get<TKey>(storage);
-            added = AcquireUpdateLock(ref holder.State) == UndefinedValueState; // acquire
-            holder.Value = value;
-            holder.State.VolatileWrite(HasValueState); // release
-        }
-        finally
-        {
-            rwLock.ExitReadLock();
-        }
+        ref var holder = ref Get<TKey>(storage);
+        added = AcquireLock(ref holder.State) == EmptyValueState; // acquire
+        holder.Value = value;
+
+        holder.State.VolatileWrite(NotEmptyValueState); // release
+        rwLock.ExitReadLock();
 
         return added;
     }
@@ -261,23 +240,16 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The replaced value.</returns>
     public Optional<TValue> Replace<TKey>(TValue value)
     {
-        Optional<TValue> result;
-
         EnterReadLockAndEnsureCapacity<TKey>();
-        try
-        {
-            ref var holder = ref Get<TKey>(storage);
-            result = AcquireUpdateLock(ref holder.State) == UndefinedValueState // acquire
-                ? Optional<TValue>.None
-                : holder.Value;
+        ref var holder = ref Get<TKey>(storage);
+        Optional<TValue> result = AcquireLock(ref holder.State) == EmptyValueState // acquire
+            ? Optional<TValue>.None
+            : holder.Value;
 
-            holder.Value = value;
-            holder.State.VolatileWrite(HasValueState); // release
-        }
-        finally
-        {
-            rwLock.ExitReadLock();
-        }
+        holder.Value = value;
+
+        holder.State.VolatileWrite(NotEmptyValueState); // release
+        rwLock.ExitReadLock();
 
         return result;
     }
@@ -293,27 +265,21 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         bool result;
 
         rwLock.EnterReadLock();
-        try
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
         {
-            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            {
-                value = default;
-                result = false;
-            }
-            else
-            {
-                ref var holder = ref Get<TKey>(storage);
-                result = AcquireUpdateLock(ref holder.State) == HasValueState; // acquire
-                value = holder.Value;
-                holder.Value = default;
-                holder.State.VolatileWrite(UndefinedValueState); // release
-            }
+            value = default;
+            result = false;
         }
-        finally
+        else
         {
-            rwLock.ExitReadLock();
+            ref var holder = ref Get<TKey>(storage);
+            result = AcquireLock(ref holder.State) == NotEmptyValueState; // acquire
+            value = holder.Value;
+            holder.Value = default;
+            holder.State.VolatileWrite(EmptyValueState); // release
         }
 
+        rwLock.ExitReadLock();
         return result;
     }
 
@@ -327,25 +293,19 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         bool result;
 
         rwLock.EnterReadLock();
-        try
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
         {
-            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            {
-                result = false;
-            }
-            else
-            {
-                ref var holder = ref Get<TKey>(storage);
-                result = AcquireUpdateLock(ref holder.State) == HasValueState; // acquire
-                holder.Value = default;
-                holder.State.VolatileWrite(UndefinedValueState); // release
-            }
+            result = false;
         }
-        finally
+        else
         {
-            rwLock.ExitReadLock();
+            ref var holder = ref Get<TKey>(storage);
+            result = AcquireLock(ref holder.State) == NotEmptyValueState; // acquire
+            holder.Value = default;
+            holder.State.VolatileWrite(EmptyValueState); // release
         }
 
+        rwLock.ExitReadLock();
         return result;
     }
 
@@ -357,11 +317,12 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
     {
-        bool result;
+        return TryGetValue(storage, out value);
 
-        rwLock.EnterReadLock();
-        try
+        static bool TryGetValue((int, TValue?)[] storage, [MaybeNullWhen(false)] out TValue value)
         {
+            bool result;
+
             if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
             {
                 result = false;
@@ -370,18 +331,14 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             else
             {
                 ref var holder = ref Get<TKey>(storage);
-                var previousState = AcquireUpdateLock(ref holder.State);
-                result = previousState == HasValueState; // acquire
+                var previousState = AcquireLock(ref holder.State);
+                result = previousState == NotEmptyValueState; // acquire
                 value = holder.Value;
                 holder.State.VolatileWrite(previousState); // release
             }
-        }
-        finally
-        {
-            rwLock.ExitReadLock();
-        }
 
-        return result;
+            return result;
+        }
     }
 
     /// <summary>
@@ -390,13 +347,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public void Clear()
     {
         rwLock.EnterWriteLock();
-        try
-        {
-            Array.Clear(storage);
-        }
-        finally
-        {
-            rwLock.ExitWriteLock();
-        }
+        Array.Clear(storage);
+        rwLock.ExitWriteLock();
     }
 }
