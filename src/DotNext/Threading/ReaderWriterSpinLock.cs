@@ -281,5 +281,5 @@ public struct ReaderWriterSpinLock
     /// <summary>
     /// Downgrades a writer lock back to the reader lock.
     /// </summary>
-    public void DowngradeToReadLock() => state = SingleReaderState;
+    public void DowngradeFromWriterLock() => state = SingleReaderState;
 }
