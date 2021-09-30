@@ -18,6 +18,7 @@
 | [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)  |
 | [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://dotnet.github.io/dotNext/features/io/mmfile.html) |
 | [Memory-mapped file as ReadOnlySequence&lt;byte&gt;](https://github.com/dotnet/runtime/issues/24805) | [ReadOnlySequenceAccessor](https://www.fuget.org/packages/DotNext.IO/latest/lib/net5.0/DotNext.IO.dll/DotNext.IO.MemoryMappedFiles/ReadOnlySequenceAccessor) |
+| [A dictionary where the keys are represented by generic arguments](https://github.com/dotnet/runtime/issues/59718) | [Documentation](https://dotnet.github.io/dotNext/features/core/typem.html) |
 
 Quick overview of additional features:
 
@@ -68,6 +69,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Introduced a concept of binary-formattable types. See `DotNext.Buffers.IBinaryFormattable<TSelf>` interface for more information
 * Introduced `Reference<T>` type as a way to pass the reference to the memory location in asynchronous scenarios
 * `Box<T>` is replaced with `Reference<T>` value type
+* `ITypeMap<T>` interface and implementing classes allow to associate an arbitrary value with the type
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.0.0">DotNext.Metaprogramming 4.0.0</a>
 * Migration to C# 10 and .NET 6
