@@ -175,7 +175,7 @@ internal sealed class VisitorContext : Disposable
                 result.AddLast(statement.InlineFinally(visitor, state));
         }
 
-        Array.Clear(statements, 0, statements.Length);
+        Array.Clear(statements);
         return result;
     }
 
