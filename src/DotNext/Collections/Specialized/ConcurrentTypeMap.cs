@@ -79,7 +79,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             Resize<TKey>();
 
         ref var holder = ref Get<TKey>(storage);
-        if (TryAcquireLock(ref holder.State))
+        if (TryAcquireLock(ref holder.State, EmptyValueState))
         {
             holder.Value = value;
             holder.State.VolatileWrite(NotEmptyValueState); // release
@@ -92,28 +92,6 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         rwLock.ExitReadLock();
         return result;
-
-        static bool TryAcquireLock(ref int state)
-        {
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-            {
-                var currentState = state.VolatileRead();
-                switch (currentState)
-                {
-                    default:
-                        continue;
-                    case NotEmptyValueState:
-                        return false;
-                    case EmptyValueState:
-                        break;
-                }
-
-                if (state.CompareAndSet(currentState, LockedState))
-                    break;
-            }
-
-            return true;
-        }
     }
 
     /// <summary>
