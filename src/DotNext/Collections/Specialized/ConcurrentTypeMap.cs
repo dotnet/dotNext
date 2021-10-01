@@ -131,7 +131,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             ref var holder = ref Get<TKey>(storage);
 
-            for (var sw = new SpinWait(); ; sw.SpinOnce())
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 var currentState = holder.State.VolatileRead();
                 if (currentState == LockedState)
@@ -146,7 +146,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         int currentState;
 
-        for (var sw = new SpinWait(); ; sw.SpinOnce())
+        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
             currentState = state.VolatileRead();
             if (currentState == LockedState)
@@ -161,7 +161,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private static bool TryAcquireLock(ref int state)
     {
-        for (var sw = new SpinWait(); ; sw.SpinOnce())
+        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
             var currentState = state.VolatileRead();
             switch (currentState)
