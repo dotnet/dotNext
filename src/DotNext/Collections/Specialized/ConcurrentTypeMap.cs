@@ -39,18 +39,14 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public ConcurrentTypeMap()
         => storage = new (int, TValue?)[ITypeMap<TValue>.RecommendedCapacity];
 
-    private void EnterReadLockAndEnsureCapacity<TKey>()
+    private void Resize<TKey>()
     {
-        rwLock.EnterReadLock();
+        rwLock.UpgradeToWriteLock();
+
         if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-        {
-            rwLock.UpgradeToWriteLock();
+            Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
 
-            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-                Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
-
-            rwLock.DowngradeFromWriteLock();
-        }
+        rwLock.DowngradeFromWriteLock();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,7 +74,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         bool result;
 
-        EnterReadLockAndEnsureCapacity<TKey>();
+        rwLock.EnterReadLock();
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+            Resize<TKey>();
+
         ref var holder = ref Get<TKey>(storage);
         if (TryAcquireLock(ref holder.State))
         {
@@ -124,7 +123,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
     {
-        EnterReadLockAndEnsureCapacity<TKey>();
+        rwLock.EnterReadLock();
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+            Resize<TKey>();
+
         ref var holder = ref Get<TKey>(storage);
         AcquireLock(ref holder.State); // acquire
 
@@ -210,7 +212,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
     {
-        EnterReadLockAndEnsureCapacity<TKey>();
+        rwLock.EnterReadLock();
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+            Resize<TKey>();
+
         ref var holder = ref Get<TKey>(storage);
 
         // acquire
@@ -243,7 +248,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         bool added;
 
-        EnterReadLockAndEnsureCapacity<TKey>();
+        rwLock.EnterReadLock();
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+            Resize<TKey>();
+
         ref var holder = ref Get<TKey>(storage);
         added = AcquireLock(ref holder.State) == EmptyValueState; // acquire
         holder.Value = value;
@@ -262,7 +270,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The replaced value.</returns>
     public Optional<TValue> Replace<TKey>(TValue value)
     {
-        EnterReadLockAndEnsureCapacity<TKey>();
+        rwLock.EnterReadLock();
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+            Resize<TKey>();
+
         ref var holder = ref Get<TKey>(storage);
         Optional<TValue> result = AcquireLock(ref holder.State) == EmptyValueState // acquire
             ? Optional<TValue>.None
