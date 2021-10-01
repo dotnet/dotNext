@@ -119,7 +119,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
     {
-        return ContainsKey(storage);
+        rwLock.EnterReadLock();
+        var result = ContainsKey(storage);
+        rwLock.ExitReadLock();
+        return result;
 
         static bool ContainsKey((int, TValue?)[] storage)
         {
@@ -128,7 +131,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             ref var holder = ref Get<TKey>(storage);
 
-            for (var sw = new SpinWait(); ; sw.SpinOnce())
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 var currentState = holder.State.VolatileRead();
                 if (currentState == LockedState)
@@ -143,7 +146,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         int currentState;
 
-        for (var sw = new SpinWait(); ; sw.SpinOnce())
+        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
             currentState = state.VolatileRead();
             if (currentState == LockedState)
@@ -158,7 +161,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private static bool TryAcquireLock(ref int state)
     {
-        for (var sw = new SpinWait(); ; sw.SpinOnce())
+        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
             var currentState = state.VolatileRead();
             switch (currentState)
@@ -317,7 +320,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
     {
-        return TryGetValue(storage, out value);
+        rwLock.EnterReadLock();
+        var result = TryGetValue(storage, out value);
+        rwLock.ExitReadLock();
+        return result;
 
         static bool TryGetValue((int, TValue?)[] storage, [MaybeNullWhen(false)] out TValue value)
         {
