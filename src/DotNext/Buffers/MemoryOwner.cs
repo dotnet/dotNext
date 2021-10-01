@@ -320,6 +320,13 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
         public readonly ref T this[int index] => ref this[(nint)index];
 
+        /// <summary>
+        /// Gets managed pointer to the first element in the rented memory block.
+        /// </summary>
+        /// <returns>A managed pointer to the first element; or <see cref="System.Runtime.CompilerServices.Unsafe.NullRef{T}"/> if memory block is empty.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ref T GetPinnableReference() => ref First;
+
         internal void Clear(bool clearBuffer)
         {
             switch (owner)
