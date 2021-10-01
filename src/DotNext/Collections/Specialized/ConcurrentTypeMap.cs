@@ -119,7 +119,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
     {
-        return ContainsKey(storage);
+        rwLock.EnterReadLock();
+        var result = ContainsKey(storage);
+        rwLock.ExitReadLock();
+        return result;
 
         static bool ContainsKey((int, TValue?)[] storage)
         {
@@ -317,7 +320,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
     {
-        return TryGetValue(storage, out value);
+        rwLock.EnterReadLock();
+        var result = TryGetValue(storage, out value);
+        rwLock.ExitReadLock();
+        return result;
 
         static bool TryGetValue((int, TValue?)[] storage, [MaybeNullWhen(false)] out TValue value)
         {
