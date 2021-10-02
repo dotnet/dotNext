@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Collections.Specialized;
 
@@ -206,21 +205,15 @@ public class TypeMap<TValue> : ITypeMap<TValue>
 
     private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
     {
-        bool result;
-
         if (index < entries.Length)
         {
             ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             value = holder.Value;
-            result = holder.HasValue;
-        }
-        else
-        {
-            result = false;
-            value = default;
+            return holder.HasValue;
         }
 
-        return result;
+        value = default;
+        return false;
     }
 
     /// <summary>
