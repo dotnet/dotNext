@@ -15,7 +15,33 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     private struct Entry
     {
         internal readonly object Lock = new();
-        internal Optional<TValue> Value;
+        private bool hasValue;
+        private TValue? value;
+
+        internal readonly bool HasValue => hasValue;
+
+        internal TValue? Value
+        {
+            readonly get => value;
+            set
+            {
+                hasValue = true;
+                this.value = value;
+            }
+        }
+
+        internal readonly bool TryGetValue([MaybeNullWhen(false)]out TValue value)
+        {
+            value = this.value;
+            return hasValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void Clear()
+        {
+            hasValue = false;
+            value = default;
+        }
     }
 
     // Assuming that the map will not contain hunders or thousands for entries.
@@ -135,14 +161,14 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 snapshot = tmp;
                 goto try_again;
             }
-            else if (entry.Value.IsUndefined)
+            else if (entry.HasValue)
             {
-                entry.Value = value;
-                added = true;
+                added = false;
             }
             else
             {
-                added = false;
+                added = true;
+                entry.Value = value;
             }
         }
 
@@ -189,7 +215,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool ContainsKey<TKey>()
     {
         var snapshot = entries;
-        return ITypeMap<TValue>.GetIndex<TKey>() < snapshot.Length && !Get<TKey>(snapshot).Value.IsUndefined;
+        return ITypeMap<TValue>.GetIndex<TKey>() < snapshot.Length && Get<TKey>(snapshot).HasValue;
     }
 
     /// <summary>
@@ -222,13 +248,15 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 snapshot = tmp;
                 goto try_again;
             }
-            else if (added = entry.Value.IsUndefined)
+            else if (entry.HasValue)
             {
-                entry.Value = value;
+                added = false;
+                value = entry.Value!;
             }
             else
             {
-                value = entry.Value.OrDefault()!;
+                added = true;
+                entry.Value = value;
             }
         }
 
@@ -267,7 +295,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 goto try_again;
             }
 
-            added = entry.Value.IsUndefined;
+            added = !entry.HasValue;
             entry.Value = value;
         }
 
@@ -305,7 +333,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 goto try_again;
             }
 
-            result = entry.Value;
+            result = entry.HasValue ? entry.Value : Optional<TValue>.None;
             entry.Value = value;
         }
 
@@ -342,9 +370,8 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 goto try_again;
             }
 
-            result = !entry.Value.IsUndefined;
-            value = entry.Value.OrDefault()!;
-            entry.Value = Optional<TValue>.None;
+            result = entry.TryGetValue(out value);
+            entry.Clear();
         }
 
         return result;
@@ -387,8 +414,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 goto try_again;
             }
 
-            result = !entry.Value.IsUndefined;
-            value = entry.Value.OrDefault()!;
+            result = entry.TryGetValue(out value);
         }
 
         return result;
@@ -409,14 +435,14 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             snapshot = entries;
 
             ref var entry = ref MemoryMarshal.GetArrayDataReference(snapshot);
-            entry.Value = Optional<TValue>.None;
+            entry.Clear();
 
             // acquire remaining locks
             for (var i = 1; i < snapshot.Length; i++, locksTaken++)
             {
                 entry = ref snapshot[i];
                 Monitor.Enter(entry.Lock);
-                entry.Value = Optional<TValue>.None;
+                entry.Clear();
             }
         }
         finally
