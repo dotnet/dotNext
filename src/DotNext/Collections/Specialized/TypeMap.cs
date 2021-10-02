@@ -65,9 +65,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     {
         EnsureCapacity<TKey>();
         ref var holder = ref Get<TKey>();
-        if (!(exists = holder.HasValue))
-            holder.Value = default;
-
+        exists = holder.HasValue;
         holder.HasValue = true;
         return ref holder.Value;
     }
