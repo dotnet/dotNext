@@ -12,7 +12,14 @@ namespace DotNext.Collections.Specialized;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public class TypeMap<TValue> : ITypeMap<TValue>
 {
-    private (bool, TValue?)[] storage;
+    [StructLayout(LayoutKind.Auto)]
+    private struct Entry
+    {
+        internal bool HasValue;
+        internal TValue? Value;
+    }
+
+    private Entry[] storage;
 
     /// <summary>
     /// Initializes a new map.
@@ -24,14 +31,14 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        storage = capacity == 0 ? Array.Empty<(bool, TValue?)>() : new (bool, TValue?)[capacity];
+        storage = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
     }
 
     /// <summary>
     /// Initializes a new map of recommended capacity.
     /// </summary>
     public TypeMap()
-        => storage = new (bool, TValue?)[ITypeMap<TValue>.RecommendedCapacity];
+        => storage = new Entry[ITypeMap<TValue>.RecommendedCapacity];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void EnsureCapacity<TKey>()
@@ -41,7 +48,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ref (bool HasValue, TValue? Value) Get<TKey>()
+    private ref Entry Get<TKey>()
     {
         Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < storage.Length);
 
