@@ -10,18 +10,16 @@ namespace DotNext.Collections.Specialized;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    [StructLayout(LayoutKind.Auto)]
-    private struct Entry
+    private sealed class Entry
     {
-        internal readonly object Lock = new();
         private bool hasValue;
         private TValue? value;
 
-        internal readonly bool HasValue => hasValue;
+        internal bool HasValue => hasValue;
 
         internal TValue? Value
         {
-            readonly get => value;
+            get => value;
             set
             {
                 hasValue = true;
@@ -29,13 +27,12 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             }
         }
 
-        internal readonly bool TryGetValue([MaybeNullWhen(false)]out TValue value)
+        internal bool TryGetValue([MaybeNullWhen(false)]out TValue value)
         {
             value = this.value;
             return hasValue;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Clear()
         {
             hasValue = false;
@@ -59,7 +56,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
         var entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
-        entries.Initialize();
+        entries.InstantiateElements();
         this.entries = entries;
     }
 
@@ -69,7 +66,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public ConcurrentTypeMap()
     {
         var entries = new Entry[ITypeMap<TValue>.RecommendedCapacity];
-        entries.Initialize();
+        entries.InstantiateElements();
         this.entries = entries;
     }
 
@@ -78,7 +75,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         var locksTaken = 0;
 
         // the thread that first obtains the first lock will be the one doing the resize operation
-        Monitor.Enter(entries[0].Lock);
+        Monitor.Enter(entries[0]);
         try
         {
             locksTaken = 1;
@@ -89,7 +86,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             // acquire remaining locks
             for (var i = 1; i < entries.Length; i++, locksTaken++)
-                Monitor.Enter(entries[i].Lock);
+                Monitor.Enter(entries[i]);
 
             // do resize
             Resize(ref entries);
@@ -101,7 +98,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             // release locks starting from the last lock
             for (var i = locksTaken - 1; i >= 0; i--)
-                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i).Lock);
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i));
         }
 
         static void Resize(ref Entry[] entries)
@@ -111,7 +108,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             // initializes the rest of the array
             for (var i = firstUnitialized; i < entries.Length; i++)
-                Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i) = new();
+                entries[i] = new();
         }
     }
 
@@ -134,9 +131,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 continue;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -177,9 +174,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 continue;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -224,9 +221,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 continue;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -270,9 +267,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 continue;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -308,9 +305,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 continue;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -347,9 +344,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 break;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -395,9 +392,9 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 break;
             }
 
-            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            lock (entry.Lock)
+            lock (entry)
             {
                 if (!ReferenceEquals(entries, this.entries))
                     continue;
@@ -428,20 +425,20 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         var locksTaken = 0;
         var entries = this.entries;
 
-        Monitor.Enter(entries[0].Lock);
+        Monitor.Enter(entries[0]);
         try
         {
             locksTaken = 1;
             entries = this.entries;
 
-            ref var entry = ref MemoryMarshal.GetArrayDataReference(entries);
+            var entry = MemoryMarshal.GetArrayDataReference(entries);
             entry.Clear();
 
             // acquire remaining locks
             for (var i = 1; i < entries.Length; i++, locksTaken++)
             {
-                entry = ref entries[i];
-                Monitor.Enter(entry.Lock);
+                entry = entries[i];
+                Monitor.Enter(entry);
                 entry.Clear();
             }
         }
@@ -449,7 +446,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             // release locks starting from the last lock
             for (var i = locksTaken - 1; i >= 0; i--)
-                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i).Lock);
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i));
         }
     }
 }

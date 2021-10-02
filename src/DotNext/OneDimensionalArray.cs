@@ -489,4 +489,16 @@ public static class OneDimensionalArray
 
         return cmp;
     }
+
+    /// <summary>
+    /// Initializes every element with a new instance of <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of array elements.</typeparam>
+    /// <param name="array">The array to initialize.</param>
+    public static void InstantiateElements<T>(this T[] array)
+        where T : new()
+    {
+        for (nint i = 0; i < Intrinsics.GetLength(array); i++)
+            Add(ref GetArrayDataReference(array), i) = new T();
+    }
 }
