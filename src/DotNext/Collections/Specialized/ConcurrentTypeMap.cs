@@ -13,12 +13,17 @@ using Threading;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private const int EmptyValueState = 0;
-    private const int LockedState = 1;
-    private const int NotEmptyValueState = 2;
+    [StructLayout(LayoutKind.Auto)]
+    private struct Entry
+    {
+        internal readonly object Lock = new();
+        internal Optional<TValue> Value;
+    }
 
-    private ReaderWriterSpinLock rwLock;
-    private (int, TValue?)[] storage;
+    // Assuming that the map will not contain hunders or thousands for entries.
+    // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
+    // As a result, we don't need the concurrent level
+    private volatile Entry[] entries;
 
     /// <summary>
     /// Initializes a new map.
@@ -30,31 +35,69 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        storage = capacity == 0 ? Array.Empty<(int, TValue?)>() : new (int, TValue?)[capacity];
+        var entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        entries.Initialize();
+        this.entries = entries;
     }
 
     /// <summary>
     /// Initializes a new map of recommended capacity.
     /// </summary>
     public ConcurrentTypeMap()
-        => storage = new (int, TValue?)[ITypeMap<TValue>.RecommendedCapacity];
-
-    private void Resize<TKey>()
     {
-        rwLock.UpgradeToWriteLock();
+        var entries = new Entry[ITypeMap<TValue>.RecommendedCapacity];
+        entries.Initialize();
+        this.entries = entries;
+    }
 
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
+    private void Resize(Entry[] snapshot)
+    {
+        var locksTaken = 0;
 
-        rwLock.DowngradeFromWriteLock();
+        // the thread that first obtains the first lock will be the one doing the resize operation
+        Monitor.Enter(snapshot[0].Lock);
+        try
+        {
+            locksTaken = 1;
+
+            // make sure nobody resized the table while we were waiting for the first lock
+            if (!ReferenceEquals(snapshot, entries))
+                return;
+
+            // acquire remaining locks
+            for (var i = 1; i < snapshot.Length; i++, locksTaken++)
+                Monitor.Enter(snapshot[i].Lock);
+
+            // do resize
+            Resize(ref snapshot);
+
+            // commit resized storage
+            entries = snapshot;
+        }
+        finally
+        {
+            // release locks starting from the last lock
+            for (var i = locksTaken - 1; i >= 0; i--)
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(snapshot), i).Lock);
+        }
+
+        static void Resize(ref Entry[] entries)
+        {
+            var firstUnitialized = entries.Length;
+            Array.Resize(ref entries, ITypeMap<TValue>.RecommendedCapacity);
+
+            // initializes the rest of the array
+            for (var i = firstUnitialized; i < entries.Length; i++)
+                Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i) = new();
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref (int State, TValue? Value) Get<TKey>((int, TValue?)[] storage)
+    private static ref Entry Get<TKey>(Entry[] entries)
     {
-        Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < storage.Length);
+        Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < entries.Length);
 
-        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(storage), ITypeMap<TValue>.GetIndex<TKey>());
+        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), ITypeMap<TValue>.GetIndex<TKey>());
     }
 
     /// <inheritdoc />
@@ -72,26 +115,40 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<TKey>(TValue value)
     {
-        bool result;
+        var snapshot = entries;
 
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Resize<TKey>();
-
-        ref var holder = ref Get<TKey>(storage);
-        if (TryAcquireLock(ref holder.State, EmptyValueState))
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
         {
-            holder.Value = value;
-            holder.State.VolatileWrite(NotEmptyValueState); // release
-            result = true;
-        }
-        else
-        {
-            result = false;
+            Resize(snapshot);
+            snapshot = entries;
         }
 
-        rwLock.ExitReadLock();
-        return result;
+        bool added;
+
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
+
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(tmp, snapshot))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+            else if (entry.Value.IsUndefined)
+            {
+                entry.Value = value;
+                added = true;
+            }
+            else
+            {
+                added = false;
+            }
+        }
+
+        return added;
     }
 
     /// <summary>
@@ -101,17 +158,29 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
     {
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Resize<TKey>();
+        var snapshot = entries;
 
-        ref var holder = ref Get<TKey>(storage);
-        AcquireLock(ref holder.State); // acquire
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        {
+            Resize(snapshot);
+            snapshot = entries;
+        }
 
-        holder.Value = value;
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(snapshot, tmp))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+
+            entry.Value = value;
+        }
     }
 
     /// <summary>
@@ -121,63 +190,8 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
     {
-        rwLock.EnterReadLock();
-        var result = ITypeMap<TValue>.GetIndex<TKey>() < storage.Length && CheckState(ref Get<TKey>(storage).State, NotEmptyValueState);
-        rwLock.ExitReadLock();
-        return result;
-    }
-
-    private static bool CheckState(ref int state, int expected)
-    {
-        bool result;
-
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-        {
-            var currentState = state.VolatileRead();
-            if (currentState == LockedState)
-                continue;
-
-            result = currentState == expected;
-            break;
-        }
-
-        return result;
-    }
-
-    private static int AcquireLock(ref int state)
-    {
-        int currentState;
-
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-        {
-            currentState = state.VolatileRead();
-            if (currentState == LockedState)
-                continue;
-
-            if (state.CompareAndSet(currentState, LockedState))
-                break;
-        }
-
-        return currentState;
-    }
-
-    private static bool TryAcquireLock(ref int state, int expected)
-    {
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-        {
-            var currentState = state.VolatileRead();
-
-            if (currentState == LockedState)
-                continue;
-
-            if (currentState != expected)
-                return false;
-
-            if (state.CompareAndSet(currentState, LockedState))
-                break;
-        }
-
-        return true;
+        var snapshot = entries;
+        return ITypeMap<TValue>.GetIndex<TKey>() < snapshot.Length && !Get<TKey>(snapshot).Value.IsUndefined;
     }
 
     /// <summary>
@@ -190,26 +204,35 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
     {
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Resize<TKey>();
+        var snapshot = entries;
 
-        ref var holder = ref Get<TKey>(storage);
-
-        // acquire
-        if (AcquireLock(ref holder.State) == EmptyValueState)
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
         {
-            holder.Value = value;
-            added = true;
-        }
-        else
-        {
-            value = holder.Value!;
-            added = false;
+            Resize(snapshot);
+            snapshot = entries;
         }
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
+
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(snapshot, tmp))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+            else if (added = entry.Value.IsUndefined)
+            {
+                entry.Value = value;
+            }
+            else
+            {
+                value = entry.Value.OrDefault()!;
+            }
+        }
 
         return value;
     }
@@ -225,17 +248,30 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool AddOrUpdate<TKey>(TValue value)
     {
         bool added;
+        var snapshot = entries;
 
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Resize<TKey>();
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        {
+            Resize(snapshot);
+            snapshot = entries;
+        }
 
-        ref var holder = ref Get<TKey>(storage);
-        added = AcquireLock(ref holder.State) == EmptyValueState; // acquire
-        holder.Value = value;
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(snapshot, tmp))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+
+            added = entry.Value.IsUndefined;
+            entry.Value = value;
+        }
 
         return added;
     }
@@ -248,19 +284,32 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The replaced value.</returns>
     public Optional<TValue> Replace<TKey>(TValue value)
     {
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Resize<TKey>();
+        Optional<TValue> result;
 
-        ref var holder = ref Get<TKey>(storage);
-        Optional<TValue> result = AcquireLock(ref holder.State) == EmptyValueState // acquire
-            ? Optional<TValue>.None
-            : holder.Value;
+        var snapshot = entries;
 
-        holder.Value = value;
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        {
+            Resize(snapshot);
+            snapshot = entries;
+        }
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
+
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(snapshot, tmp))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+
+            result = entry.Value;
+            entry.Value = value;
+        }
 
         return result;
     }
@@ -274,26 +323,32 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
     {
         bool result;
+        var snapshot = entries;
 
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() < storage.Length)
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
         {
-            ref var holder = ref Get<TKey>(storage);
-            if (TryAcquireLock(ref holder.State, NotEmptyValueState))
-            {
-                value = holder.Value;
-                holder.Value = default;
-                holder.State.VolatileWrite(EmptyValueState); // release
-                result = true;
-                goto exit;
-            }
+            value = default;
+            return false;
         }
 
-        value = default;
-        result = false;
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
 
-    exit:
-        rwLock.ExitReadLock();
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(snapshot, tmp))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+
+            result = !entry.Value.IsUndefined;
+            value = entry.Value.OrDefault()!;
+            entry.Value = Optional<TValue>.None;
+        }
+
         return result;
     }
 
@@ -313,25 +368,31 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
     {
         bool result;
-        rwLock.EnterReadLock();
+        var snapshot = entries;
 
-        if (ITypeMap<TValue>.GetIndex<TKey>() < storage.Length)
+        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
         {
-            ref var holder = ref Get<TKey>(storage);
-            if (TryAcquireLock(ref holder.State, NotEmptyValueState))
-            {
-                value = holder.Value;
-                holder.State.VolatileWrite(NotEmptyValueState); // release
-                result = true;
-                goto exit;
-            }
+            value = default;
+            return false;
         }
 
-        result = false;
-        value = default;
+    try_again:
+        ref var entry = ref Get<TKey>(snapshot);
 
-    exit:
-        rwLock.ExitReadLock();
+        lock (entry.Lock)
+        {
+            var tmp = entries;
+
+            if (!ReferenceEquals(snapshot, tmp))
+            {
+                snapshot = tmp;
+                goto try_again;
+            }
+
+            result = !entry.Value.IsUndefined;
+            value = entry.Value.OrDefault()!;
+        }
+
         return result;
     }
 
@@ -340,8 +401,31 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </summary>
     public void Clear()
     {
-        rwLock.EnterWriteLock();
-        Array.Clear(storage);
-        rwLock.ExitWriteLock();
+        var locksTaken = 0;
+        var snapshot = entries;
+
+        Monitor.Enter(snapshot[0].Lock);
+        try
+        {
+            locksTaken = 1;
+            snapshot = entries;
+
+            ref var entry = ref MemoryMarshal.GetArrayDataReference(snapshot);
+            entry.Value = Optional<TValue>.None;
+
+            // acquire remaining locks
+            for (var i = 1; i < snapshot.Length; i++, locksTaken++)
+            {
+                entry = ref snapshot[i];
+                Monitor.Enter(entry.Lock);
+                entry.Value = Optional<TValue>.None;
+            }
+        }
+        finally
+        {
+            // release locks starting from the last lock
+            for (var i = locksTaken - 1; i >= 0; i--)
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(snapshot), i).Lock);
+        }
     }
 }
