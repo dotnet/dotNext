@@ -46,7 +46,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     // Assuming that the map will not contain hunders or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
-    // As a result, we don't need the concurrent level
+    // As a result, we don't need the concurrency level
     private volatile Entry[] entries;
 
     /// <summary>
