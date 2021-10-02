@@ -79,13 +79,13 @@ namespace DotNext.Buffers
         public static void RawReference()
         {
             var owner = new MemoryOwner<byte>(Array.Empty<byte>());
-            True(Unsafe.IsNullRef(ref BufferHelpers.GetReference(in owner)));
+            True(Unsafe.IsNullRef(ref owner.GetPinnableReference()));
 
             owner = default;
-            True(Unsafe.IsNullRef(ref BufferHelpers.GetReference(in owner)));
+            True(Unsafe.IsNullRef(ref owner.GetPinnableReference()));
 
             owner = new(new byte[] { 10 });
-            Equal(10, BufferHelpers.GetReference(in owner));
+            Equal(10, owner.GetPinnableReference());
         }
 
         [Fact]

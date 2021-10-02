@@ -203,7 +203,7 @@ public partial class PersistentState : Disposable, IPersistentState
             if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
             {
                 var snapshotEntry = snapshot.Read(sessionId);
-                BufferHelpers.GetReference(in list) = snapshotEntry;
+                list.GetPinnableReference() = snapshotEntry;
 
                 // skip squashed log entries
                 startIndex = snapshot.Metadata.Index + 1L;
@@ -211,7 +211,7 @@ public partial class PersistentState : Disposable, IPersistentState
             }
             else if (startIndex == 0L)
             {
-                BufferHelpers.GetReference(in list) = LogEntry.Initial;
+                list.GetPinnableReference() = LogEntry.Initial;
                 startIndex = length = 1;
             }
             else
@@ -224,7 +224,7 @@ public partial class PersistentState : Disposable, IPersistentState
 
         ValueTask<TResult> ReadEntries(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
         {
-            ref var first = ref BufferHelpers.GetReference(in list);
+            ref var first = ref list.GetPinnableReference();
 
             // enumerate over partitions in search of log entries
             for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
