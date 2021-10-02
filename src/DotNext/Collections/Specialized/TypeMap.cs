@@ -12,7 +12,7 @@ namespace DotNext.Collections.Specialized;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public class TypeMap<TValue> : ITypeMap<TValue>
 {
-    private (bool Exists, TValue? Value)[] storage;
+    private (bool, TValue?)[] storage;
 
     /// <summary>
     /// Initializes a new map.
@@ -41,7 +41,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ref (bool Exists, TValue? Value) Get<TKey>()
+    private ref (bool HasValue, TValue? Value) Get<TKey>()
     {
         Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < storage.Length);
 
@@ -58,11 +58,10 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     {
         EnsureCapacity<TKey>();
         ref var holder = ref Get<TKey>();
-        exists = holder.Exists;
-        if (!(exists = holder.Exists))
+        if (!(exists = holder.HasValue))
             holder.Value = default;
 
-        holder.Exists = true;
+        holder.HasValue = true;
         return ref holder.Value;
     }
 
@@ -76,11 +75,11 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     {
         EnsureCapacity<TKey>();
         ref var holder = ref Get<TKey>();
-        if (holder.Exists)
+        if (holder.HasValue)
             throw new GenericArgumentException<TKey>(ExceptionMessages.KeyAlreadyExists);
 
         holder.Value = value;
-        holder.Exists = true;
+        holder.HasValue = true;
     }
 
     /// <summary>
@@ -93,7 +92,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         EnsureCapacity<TKey>();
         ref var holder = ref Get<TKey>();
         holder.Value = value;
-        holder.Exists = true;
+        holder.HasValue = true;
     }
 
     /// <summary>
@@ -108,14 +107,14 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         ref var holder = ref Get<TKey>();
         Optional<TValue> result;
 
-        if (holder.Exists)
+        if (holder.HasValue)
         {
             result = holder.Value;
         }
         else
         {
             result = Optional<TValue>.None;
-            holder.Exists = true;
+            holder.HasValue = true;
         }
 
         holder.Value = value;
@@ -128,7 +127,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
-        => ITypeMap<TValue>.GetIndex<TKey>() < storage.Length && Get<TKey>().Exists;
+        => ITypeMap<TValue>.GetIndex<TKey>() < storage.Length && Get<TKey>().HasValue;
 
     /// <summary>
     /// Attempts to remove the value from the map.
@@ -141,9 +140,9 @@ public class TypeMap<TValue> : ITypeMap<TValue>
             goto fail;
 
         ref var holder = ref Get<TKey>();
-        if (holder.Exists)
+        if (holder.HasValue)
         {
-            holder.Exists = false;
+            holder.HasValue = false;
             holder.Value = default;
             return true;
         }
@@ -169,8 +168,8 @@ public class TypeMap<TValue> : ITypeMap<TValue>
             value = holder.Value;
             holder.Value = default;
 
-            result = holder.Exists;
-            holder.Exists = false;
+            result = holder.HasValue;
+            holder.HasValue = false;
         }
         else
         {
@@ -195,7 +194,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         {
             ref var holder = ref Get<TKey>();
             value = holder.Value;
-            result = holder.Exists;
+            result = holder.HasValue;
         }
         else
         {
