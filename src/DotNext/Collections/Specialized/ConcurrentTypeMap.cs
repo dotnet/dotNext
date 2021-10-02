@@ -1,11 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Collections.Specialized;
-
-using Threading;
 
 /// <summary>
 /// Represents thread-safe implementation of <see cref="ITypeMap{TValue}"/> interface.
@@ -13,12 +10,43 @@ using Threading;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private const int EmptyValueState = 0;
-    private const int LockedState = 1;
-    private const int NotEmptyValueState = 2;
+    [StructLayout(LayoutKind.Auto)]
+    private struct Entry
+    {
+        internal readonly object Lock = new();
+        private bool hasValue;
+        private TValue? value;
 
-    private ReaderWriterSpinLock rwLock;
-    private (int, TValue?)[] storage;
+        internal readonly bool HasValue => hasValue;
+
+        internal TValue? Value
+        {
+            readonly get => value;
+            set
+            {
+                hasValue = true;
+                this.value = value;
+            }
+        }
+
+        internal readonly bool TryGetValue([MaybeNullWhen(false)]out TValue value)
+        {
+            value = this.value;
+            return hasValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void Clear()
+        {
+            hasValue = false;
+            value = default;
+        }
+    }
+
+    // Assuming that the map will not contain hunders or thousands for entries.
+    // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
+    // As a result, we don't need the concurrency level
+    private volatile Entry[] entries;
 
     /// <summary>
     /// Initializes a new map.
@@ -30,35 +58,61 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        storage = capacity == 0 ? Array.Empty<(int, TValue?)>() : new (int, TValue?)[capacity];
+        var entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        entries.Initialize();
+        this.entries = entries;
     }
 
     /// <summary>
     /// Initializes a new map of recommended capacity.
     /// </summary>
     public ConcurrentTypeMap()
-        => storage = new (int, TValue?)[ITypeMap<TValue>.RecommendedCapacity];
-
-    private void EnterReadLockAndEnsureCapacity<TKey>()
     {
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-        {
-            rwLock.UpgradeToWriteLock();
-
-            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-                Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
-
-            rwLock.DowngradeFromWriteLock();
-        }
+        var entries = new Entry[ITypeMap<TValue>.RecommendedCapacity];
+        entries.Initialize();
+        this.entries = entries;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref (int State, TValue? Value) Get<TKey>((int, TValue?)[] storage)
+    private void Resize(Entry[] entries)
     {
-        Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < storage.Length);
+        var locksTaken = 0;
 
-        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(storage), ITypeMap<TValue>.GetIndex<TKey>());
+        // the thread that first obtains the first lock will be the one doing the resize operation
+        Monitor.Enter(entries[0].Lock);
+        try
+        {
+            locksTaken = 1;
+
+            // make sure nobody resized the table while we were waiting for the first lock
+            if (!ReferenceEquals(entries, this.entries))
+                return;
+
+            // acquire remaining locks
+            for (var i = 1; i < entries.Length; i++, locksTaken++)
+                Monitor.Enter(entries[i].Lock);
+
+            // do resize
+            Resize(ref entries);
+
+            // commit resized storage
+            this.entries = entries;
+        }
+        finally
+        {
+            // release locks starting from the last lock
+            for (var i = locksTaken - 1; i >= 0; i--)
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i).Lock);
+        }
+
+        static void Resize(ref Entry[] entries)
+        {
+            var firstUnitialized = entries.Length;
+            Array.Resize(ref entries, ITypeMap<TValue>.RecommendedCapacity);
+
+            // initializes the rest of the array
+            for (var i = firstUnitialized; i < entries.Length; i++)
+                Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i) = new();
+        }
     }
 
     /// <inheritdoc />
@@ -68,6 +122,40 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             throw new GenericArgumentException<TKey>(ExceptionMessages.KeyAlreadyExists);
     }
 
+    private bool TryAdd(int index, TValue value)
+    {
+        for (bool added; ;)
+        {
+            var entries = this.entries;
+
+            if (index >= entries.Length)
+            {
+                Resize(entries);
+                continue;
+            }
+
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                if (entry.HasValue)
+                {
+                    added = false;
+                }
+                else
+                {
+                    added = true;
+                    entry.Value = value;
+                }
+            }
+
+            return added;
+        }
+    }
+
     /// <summary>
     /// Attempts to associate a value with the type.
     /// </summary>
@@ -75,24 +163,32 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<TKey>(TValue value)
+        => TryAdd(ITypeMap<TValue>.GetIndex<TKey>(), value);
+
+    private void Set(int index, TValue value)
     {
-        bool result;
-
-        EnterReadLockAndEnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>(storage);
-        if (TryAcquireLock(ref holder.State))
+        for (Entry[] entries; ;)
         {
-            holder.Value = value;
-            holder.State.VolatileWrite(NotEmptyValueState); // release
-            result = true;
-        }
-        else
-        {
-            result = false;
-        }
+            entries = this.entries;
 
-        rwLock.ExitReadLock();
-        return result;
+            if (index >= entries.Length)
+            {
+                Resize(entries);
+                continue;
+            }
+
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                entry.Value = value;
+            }
+
+            break;
+        }
     }
 
     /// <summary>
@@ -101,16 +197,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
-    {
-        EnterReadLockAndEnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>(storage);
-        AcquireLock(ref holder.State); // acquire
-
-        holder.Value = value;
-
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
-    }
+        => Set(ITypeMap<TValue>.GetIndex<TKey>(), value);
 
     /// <summary>
     /// Determines whether the map has association between the value and the specified type.
@@ -119,66 +206,45 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
     {
-        rwLock.EnterReadLock();
-        var result = ContainsKey(storage);
-        rwLock.ExitReadLock();
-        return result;
+        return ContainsKey(entries, ITypeMap<TValue>.GetIndex<TKey>());
 
-        static bool ContainsKey((int, TValue?)[] storage)
-        {
-            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-                return false;
-
-            ref var holder = ref Get<TKey>(storage);
-
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-            {
-                var currentState = holder.State.VolatileRead();
-                if (currentState == LockedState)
-                    continue;
-
-                return currentState == NotEmptyValueState;
-            }
-        }
+        static bool ContainsKey(Entry[] entries, int index)
+            => index < entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
     }
 
-    private static int AcquireLock(ref int state)
+    private TValue GetOrAdd(int index, TValue value, out bool added)
     {
-        int currentState;
-
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+        for (Entry[] entries; ;)
         {
-            currentState = state.VolatileRead();
-            if (currentState == LockedState)
+            entries = this.entries;
+
+            if (index >= entries.Length)
+            {
+                Resize(entries);
                 continue;
-
-            if (state.CompareAndSet(currentState, LockedState))
-                break;
-        }
-
-        return currentState;
-    }
-
-    private static bool TryAcquireLock(ref int state)
-    {
-        for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-        {
-            var currentState = state.VolatileRead();
-            switch (currentState)
-            {
-                default:
-                    continue;
-                case NotEmptyValueState:
-                    return false;
-                case EmptyValueState:
-                    break;
             }
 
-            if (state.CompareAndSet(currentState, LockedState))
-                break;
-        }
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-        return true;
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                if (entry.HasValue)
+                {
+                    added = false;
+                    value = entry.Value!;
+                }
+                else
+                {
+                    added = true;
+                    entry.Value = value;
+                }
+            }
+
+            return value;
+        }
     }
 
     /// <summary>
@@ -190,26 +256,33 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="added"><see langword="true"/> if the value is added; <see langword="false"/> if the value is already exist.</param>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
+        => GetOrAdd(ITypeMap<TValue>.GetIndex<TKey>(), value, out added);
+
+    private bool AddOrUpdate(int index, TValue value)
     {
-        EnterReadLockAndEnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>(storage);
-
-        // acquire
-        if (AcquireLock(ref holder.State) == EmptyValueState)
+        for (bool added; ;)
         {
-            holder.Value = value;
-            added = true;
-        }
-        else
-        {
-            value = holder.Value!;
-            added = false;
-        }
+            var entries = this.entries;
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+            if (index >= entries.Length)
+            {
+                Resize(entries);
+                continue;
+            }
 
-        return value;
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                added = !entry.HasValue;
+                entry.Value = value;
+            }
+
+            return added;
+        }
     }
 
     /// <summary>
@@ -221,18 +294,33 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <see langword="false"/> if the existing value is updated with <paramref name="value"/>.
     /// </returns>
     public bool AddOrUpdate<TKey>(TValue value)
+        => AddOrUpdate(ITypeMap<TValue>.GetIndex<TKey>(), value);
+
+    private Optional<TValue> Replace(int index, TValue value)
     {
-        bool added;
+        for (Optional<TValue> result; ;)
+        {
+            var entries = this.entries;
 
-        EnterReadLockAndEnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>(storage);
-        added = AcquireLock(ref holder.State) == EmptyValueState; // acquire
-        holder.Value = value;
+            if (index >= entries.Length)
+            {
+                Resize(entries);
+                continue;
+            }
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-        return added;
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                result = entry.HasValue ? entry.Value : Optional<TValue>.None;
+                entry.Value = value;
+            }
+
+            return result;
+        }
     }
 
     /// <summary>
@@ -242,17 +330,36 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">A new value.</param>
     /// <returns>The replaced value.</returns>
     public Optional<TValue> Replace<TKey>(TValue value)
+        => Replace(ITypeMap<TValue>.GetIndex<TKey>(), value);
+
+    private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
-        EnterReadLockAndEnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>(storage);
-        Optional<TValue> result = AcquireLock(ref holder.State) == EmptyValueState // acquire
-            ? Optional<TValue>.None
-            : holder.Value;
+        bool result;
 
-        holder.Value = value;
+        for (Entry[] entries; ;)
+        {
+            entries = this.entries;
 
-        holder.State.VolatileWrite(NotEmptyValueState); // release
-        rwLock.ExitReadLock();
+            if (index >= entries.Length)
+            {
+                value = default;
+                result = false;
+                break;
+            }
+
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                result = entry.TryGetValue(out value);
+                entry.Clear();
+            }
+
+            break;
+        }
 
         return result;
     }
@@ -264,51 +371,43 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value of the removed element.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
-    {
-        bool result;
-
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-        {
-            value = default;
-            result = false;
-        }
-        else
-        {
-            ref var holder = ref Get<TKey>(storage);
-            result = AcquireLock(ref holder.State) == NotEmptyValueState; // acquire
-            value = holder.Value;
-            holder.Value = default;
-            holder.State.VolatileWrite(EmptyValueState); // release
-        }
-
-        rwLock.ExitReadLock();
-        return result;
-    }
+        => Remove(ITypeMap<TValue>.GetIndex<TKey>(), out value);
 
     /// <summary>
     /// Attempts to remove the value from the map.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    public bool Remove<TKey>()
+    public bool Remove<TKey>() => Remove<TKey>(out _);
+
+    private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
     {
         bool result;
 
-        rwLock.EnterReadLock();
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+        for (Entry[] entries; ;)
         {
-            result = false;
-        }
-        else
-        {
-            ref var holder = ref Get<TKey>(storage);
-            result = AcquireLock(ref holder.State) == NotEmptyValueState; // acquire
-            holder.Value = default;
-            holder.State.VolatileWrite(EmptyValueState); // release
+            entries = this.entries;
+
+            if (index >= entries.Length)
+            {
+                value = default;
+                result = false;
+                break;
+            }
+
+            ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                result = entry.TryGetValue(out value);
+            }
+
+            break;
         }
 
-        rwLock.ExitReadLock();
         return result;
     }
 
@@ -319,41 +418,38 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
-    {
-        rwLock.EnterReadLock();
-        var result = TryGetValue(storage, out value);
-        rwLock.ExitReadLock();
-        return result;
-
-        static bool TryGetValue((int, TValue?)[] storage, [MaybeNullWhen(false)] out TValue value)
-        {
-            bool result;
-
-            if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            {
-                result = false;
-                value = default;
-            }
-            else
-            {
-                ref var holder = ref Get<TKey>(storage);
-                var previousState = AcquireLock(ref holder.State);
-                result = previousState == NotEmptyValueState; // acquire
-                value = holder.Value;
-                holder.State.VolatileWrite(previousState); // release
-            }
-
-            return result;
-        }
-    }
+        => TryGetValue(ITypeMap<TValue>.GetIndex<TKey>(), out value);
 
     /// <summary>
     /// Removes all elements from this map.
     /// </summary>
     public void Clear()
     {
-        rwLock.EnterWriteLock();
-        Array.Clear(storage);
-        rwLock.ExitWriteLock();
+        var locksTaken = 0;
+        var entries = this.entries;
+
+        Monitor.Enter(entries[0].Lock);
+        try
+        {
+            locksTaken = 1;
+            entries = this.entries;
+
+            ref var entry = ref MemoryMarshal.GetArrayDataReference(entries);
+            entry.Clear();
+
+            // acquire remaining locks
+            for (var i = 1; i < entries.Length; i++, locksTaken++)
+            {
+                entry = ref entries[i];
+                Monitor.Enter(entry.Lock);
+                entry.Clear();
+            }
+        }
+        finally
+        {
+            // release locks starting from the last lock
+            for (var i = locksTaken - 1; i >= 0; i--)
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i).Lock);
+        }
     }
 }
