@@ -23,6 +23,8 @@ public class TypeMapBenchmark
         public void Set<TKey>(TValue value) => this[typeof(TKey)] = value;
 
         public bool TryGetValue<TKey>(out TValue value) => TryGetValue(typeof(TKey), out value);
+
+        public TValue GetOrAdd<TKey>(TValue value) => GetOrAdd(typeof(TKey), value);
     }
 
     private readonly TypeMap<int> threadUnsafeMap = new();
@@ -61,4 +63,10 @@ public class TypeMapBenchmark
         concurrentLookup.TryGetValue<string>(out var result);
         return result;
     }
+
+    [Benchmark]
+    public int ConcurrentTypeMapAtomicLookup() => threadSafeMap.GetOrAdd<object>(42, out _);
+
+    [Benchmark]
+    public int ConcurrentDictionaryAtomicLookup() => concurrentLookup.GetOrAdd<object>(42);
 }
