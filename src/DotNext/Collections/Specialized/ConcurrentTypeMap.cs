@@ -74,35 +74,35 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         this.entries = entries;
     }
 
-    private void Resize(Entry[] snapshot)
+    private void Resize(Entry[] entries)
     {
         var locksTaken = 0;
 
         // the thread that first obtains the first lock will be the one doing the resize operation
-        Monitor.Enter(snapshot[0].Lock);
+        Monitor.Enter(entries[0].Lock);
         try
         {
             locksTaken = 1;
 
             // make sure nobody resized the table while we were waiting for the first lock
-            if (!ReferenceEquals(snapshot, entries))
+            if (!ReferenceEquals(entries, this.entries))
                 return;
 
             // acquire remaining locks
-            for (var i = 1; i < snapshot.Length; i++, locksTaken++)
-                Monitor.Enter(snapshot[i].Lock);
+            for (var i = 1; i < entries.Length; i++, locksTaken++)
+                Monitor.Enter(entries[i].Lock);
 
             // do resize
-            Resize(ref snapshot);
+            Resize(ref entries);
 
             // commit resized storage
-            entries = snapshot;
+            this.entries = entries;
         }
         finally
         {
             // release locks starting from the last lock
             for (var i = locksTaken - 1; i >= 0; i--)
-                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(snapshot), i).Lock);
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i).Lock);
         }
 
         static void Resize(ref Entry[] entries)
@@ -139,40 +139,36 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<TKey>(TValue value)
     {
-        var snapshot = entries;
-
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (bool added; ;)
         {
-            Resize(snapshot);
-            snapshot = entries;
+            var entries = this.entries;
+
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+            {
+                Resize(entries);
+                continue;
+            }
+
+            ref var entry = ref Get<TKey>(entries);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                if (entry.HasValue)
+                {
+                    added = false;
+                }
+                else
+                {
+                    added = true;
+                    entry.Value = value;
+                }
+            }
+
+            return added;
         }
-
-        bool added;
-
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(tmp, snapshot))
-            {
-                snapshot = tmp;
-                goto try_again;
-            }
-            else if (entry.HasValue)
-            {
-                added = false;
-            }
-            else
-            {
-                added = true;
-                entry.Value = value;
-            }
-        }
-
-        return added;
     }
 
     /// <summary>
@@ -182,28 +178,27 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
     {
-        var snapshot = entries;
-
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (Entry[] entries; ;)
         {
-            Resize(snapshot);
-            snapshot = entries;
-        }
+            entries = this.entries;
 
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(snapshot, tmp))
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
             {
-                snapshot = tmp;
-                goto try_again;
+                Resize(entries);
+                continue;
             }
 
-            entry.Value = value;
+            ref var entry = ref Get<TKey>(entries);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                entry.Value = value;
+            }
+
+            break;
         }
     }
 
@@ -228,39 +223,37 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
     {
-        var snapshot = entries;
-
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (Entry[] entries; ;)
         {
-            Resize(snapshot);
-            snapshot = entries;
+            entries = this.entries;
+
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+            {
+                Resize(entries);
+                continue;
+            }
+
+            ref var entry = ref Get<TKey>(entries);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                if (entry.HasValue)
+                {
+                    added = false;
+                    value = entry.Value!;
+                }
+                else
+                {
+                    added = true;
+                    entry.Value = value;
+                }
+            }
+
+            return value;
         }
-
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(snapshot, tmp))
-            {
-                snapshot = tmp;
-                goto try_again;
-            }
-            else if (entry.HasValue)
-            {
-                added = false;
-                value = entry.Value!;
-            }
-            else
-            {
-                added = true;
-                entry.Value = value;
-            }
-        }
-
-        return value;
     }
 
     /// <summary>
@@ -273,33 +266,29 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </returns>
     public bool AddOrUpdate<TKey>(TValue value)
     {
-        bool added;
-        var snapshot = entries;
-
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (bool added; ;)
         {
-            Resize(snapshot);
-            snapshot = entries;
-        }
+            var entries = this.entries;
 
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(snapshot, tmp))
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
             {
-                snapshot = tmp;
-                goto try_again;
+                Resize(entries);
+                continue;
             }
 
-            added = !entry.HasValue;
-            entry.Value = value;
-        }
+            ref var entry = ref Get<TKey>(entries);
 
-        return added;
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                added = !entry.HasValue;
+                entry.Value = value;
+            }
+
+            return added;
+        }
     }
 
     /// <summary>
@@ -310,34 +299,29 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <returns>The replaced value.</returns>
     public Optional<TValue> Replace<TKey>(TValue value)
     {
-        Optional<TValue> result;
-
-        var snapshot = entries;
-
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (Optional<TValue> result; ;)
         {
-            Resize(snapshot);
-            snapshot = entries;
-        }
+            var entries = this.entries;
 
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(snapshot, tmp))
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
             {
-                snapshot = tmp;
-                goto try_again;
+                Resize(entries);
+                continue;
             }
 
-            result = entry.HasValue ? entry.Value : Optional<TValue>.None;
-            entry.Value = value;
-        }
+            ref var entry = ref Get<TKey>(entries);
 
-        return result;
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                result = entry.HasValue ? entry.Value : Optional<TValue>.None;
+                entry.Value = value;
+            }
+
+            return result;
+        }
     }
 
     /// <summary>
@@ -349,29 +333,30 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
     {
         bool result;
-        var snapshot = entries;
 
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (Entry[] entries; ;)
         {
-            value = default;
-            return false;
-        }
+            entries = this.entries;
 
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(snapshot, tmp))
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
             {
-                snapshot = tmp;
-                goto try_again;
+                value = default;
+                result = false;
+                break;
             }
 
-            result = entry.TryGetValue(out value);
-            entry.Clear();
+            ref var entry = ref Get<TKey>(entries);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                result = entry.TryGetValue(out value);
+                entry.Clear();
+            }
+
+            break;
         }
 
         return result;
@@ -393,28 +378,29 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
     {
         bool result;
-        var snapshot = entries;
 
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
+        for (Entry[] entries; ;)
         {
-            value = default;
-            return false;
-        }
+            entries = this.entries;
 
-    try_again:
-        ref var entry = ref Get<TKey>(snapshot);
-
-        lock (entry.Lock)
-        {
-            var tmp = entries;
-
-            if (!ReferenceEquals(snapshot, tmp))
+            if (ITypeMap<TValue>.GetIndex<TKey>() >= entries.Length)
             {
-                snapshot = tmp;
-                goto try_again;
+                value = default;
+                result = false;
+                break;
             }
 
-            result = entry.TryGetValue(out value);
+            ref var entry = ref Get<TKey>(entries);
+
+            lock (entry.Lock)
+            {
+                if (!ReferenceEquals(entries, this.entries))
+                    continue;
+
+                result = entry.TryGetValue(out value);
+            }
+
+            break;
         }
 
         return result;
@@ -426,21 +412,21 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public void Clear()
     {
         var locksTaken = 0;
-        var snapshot = entries;
+        var entries = this.entries;
 
-        Monitor.Enter(snapshot[0].Lock);
+        Monitor.Enter(entries[0].Lock);
         try
         {
             locksTaken = 1;
-            snapshot = entries;
+            entries = this.entries;
 
-            ref var entry = ref MemoryMarshal.GetArrayDataReference(snapshot);
+            ref var entry = ref MemoryMarshal.GetArrayDataReference(entries);
             entry.Clear();
 
             // acquire remaining locks
-            for (var i = 1; i < snapshot.Length; i++, locksTaken++)
+            for (var i = 1; i < entries.Length; i++, locksTaken++)
             {
-                entry = ref snapshot[i];
+                entry = ref entries[i];
                 Monitor.Enter(entry.Lock);
                 entry.Clear();
             }
@@ -449,7 +435,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             // release locks starting from the last lock
             for (var i = locksTaken - 1; i >= 0; i--)
-                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(snapshot), i).Lock);
+                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i).Lock);
         }
     }
 }
