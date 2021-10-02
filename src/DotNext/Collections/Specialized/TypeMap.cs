@@ -19,7 +19,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         internal TValue? Value;
     }
 
-    private Entry[] storage;
+    private Entry[] entries;
 
     /// <summary>
     /// Initializes a new map.
@@ -31,28 +31,29 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        storage = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
     }
 
     /// <summary>
     /// Initializes a new map of recommended capacity.
     /// </summary>
     public TypeMap()
-        => storage = new Entry[ITypeMap<TValue>.RecommendedCapacity];
+        => entries = new Entry[ITypeMap<TValue>.RecommendedCapacity];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void EnsureCapacity<TKey>()
+    private void EnsureCapacity(int index)
     {
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
-            Array.Resize(ref storage, ITypeMap<TValue>.RecommendedCapacity);
+        if (index >= entries.Length)
+            Array.Resize(ref entries, ITypeMap<TValue>.RecommendedCapacity);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ref Entry Get<TKey>()
+    private ref TValue? GetValueRefOrAddDefault(int index, out bool exists)
     {
-        Debug.Assert(ITypeMap<TValue>.GetIndex<TKey>() < storage.Length);
-
-        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(storage), ITypeMap<TValue>.GetIndex<TKey>());
+        EnsureCapacity(index);
+        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        exists = holder.HasValue;
+        holder.HasValue = true;
+        return ref holder.Value;
     }
 
     /// <summary>
@@ -62,12 +63,18 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="exists"><see langword="true"/> if the association exists; <see langword="false"/> if the association is created.</param>
     /// <returns>The reference to the value associated with the type.</returns>
     public ref TValue? GetValueRefOrAddDefault<TKey>(out bool exists)
+        => ref GetValueRefOrAddDefault(ITypeMap<TValue>.GetIndex<TKey>(), out exists);
+
+    private bool TryAdd(int index, TValue value)
     {
-        EnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>();
-        exists = holder.HasValue;
+        EnsureCapacity(index);
+        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        if (holder.HasValue)
+            return false;
+
+        holder.Value = value;
         holder.HasValue = true;
-        return ref holder.Value;
+        return true;
     }
 
     /// <summary>
@@ -78,11 +85,14 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     /// <exception cref="GenericArgumentException">A value associated with <typeparamref name="TKey"/> is already exist.</exception>
     public void Add<TKey>(TValue value)
     {
-        EnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>();
-        if (holder.HasValue)
+        if (!TryAdd(ITypeMap<TValue>.GetIndex<TKey>(), value))
             throw new GenericArgumentException<TKey>(ExceptionMessages.KeyAlreadyExists);
+    }
 
+    private void Set(int index, TValue value)
+    {
+        EnsureCapacity(index);
+        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
         holder.Value = value;
         holder.HasValue = true;
     }
@@ -93,23 +103,12 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
-    {
-        EnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>();
-        holder.Value = value;
-        holder.HasValue = true;
-    }
+        => Set(ITypeMap<TValue>.GetIndex<TKey>(), value);
 
-    /// <summary>
-    /// Replaces the existing value with a new value.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="value">A new value.</param>
-    /// <returns>The replaced value.</returns>
-    public Optional<TValue> Replace<TKey>(TValue value)
+    private Optional<TValue> Replace(int index, TValue value)
     {
-        EnsureCapacity<TKey>();
-        ref var holder = ref Get<TKey>();
+        EnsureCapacity(index);
+        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
         Optional<TValue> result;
 
         if (holder.HasValue)
@@ -127,24 +126,33 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     }
 
     /// <summary>
+    /// Replaces the existing value with a new value.
+    /// </summary>
+    /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <param name="value">A new value.</param>
+    /// <returns>The replaced value.</returns>
+    public Optional<TValue> Replace<TKey>(TValue value)
+        => Replace(ITypeMap<TValue>.GetIndex<TKey>(), value);
+
+    /// <summary>
     /// Determines whether the map has association between the value and the specified type.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
-        => ITypeMap<TValue>.GetIndex<TKey>() < storage.Length && Get<TKey>().HasValue;
-
-    /// <summary>
-    /// Attempts to remove the value from the map.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    public bool Remove<TKey>()
     {
-        if (ITypeMap<TValue>.GetIndex<TKey>() >= storage.Length)
+        return ContainsKey(entries, ITypeMap<TValue>.GetIndex<TKey>());
+
+        static bool ContainsKey(Entry[] entries, int index)
+            => index < entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
+    }
+
+    private bool Remove(int index)
+    {
+        if (index >= entries.Length)
             goto fail;
 
-        ref var holder = ref Get<TKey>();
+        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
         if (holder.HasValue)
         {
             holder.HasValue = false;
@@ -160,21 +168,51 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     /// Attempts to remove the value from the map.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="value">The value of the removed element.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
+    public bool Remove<TKey>()
+        => Remove(ITypeMap<TValue>.GetIndex<TKey>());
+
+    private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
         bool result;
 
-        if (ITypeMap<TValue>.GetIndex<TKey>() < storage.Length)
+        if (index < entries.Length)
         {
-            ref var holder = ref Get<TKey>();
+            ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
             value = holder.Value;
             holder.Value = default;
 
             result = holder.HasValue;
             holder.HasValue = false;
+        }
+        else
+        {
+            result = false;
+            value = default;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Attempts to remove the value from the map.
+    /// </summary>
+    /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <param name="value">The value of the removed element.</param>
+    /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
+    public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
+        => Remove(ITypeMap<TValue>.GetIndex<TKey>(), out value);
+
+    private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
+    {
+        bool result;
+
+        if (index < entries.Length)
+        {
+            ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            value = holder.Value;
+            result = holder.HasValue;
         }
         else
         {
@@ -192,26 +230,10 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
-    {
-        bool result;
-
-        if (ITypeMap<TValue>.GetIndex<TKey>() < storage.Length)
-        {
-            ref var holder = ref Get<TKey>();
-            value = holder.Value;
-            result = holder.HasValue;
-        }
-        else
-        {
-            result = false;
-            value = default;
-        }
-
-        return result;
-    }
+        => TryGetValue(ITypeMap<TValue>.GetIndex<TKey>(), out value);
 
     /// <summary>
     /// Removes all elements from this map.
     /// </summary>
-    public void Clear() => Array.Clear(storage);
+    public void Clear() => Array.Clear(entries);
 }
