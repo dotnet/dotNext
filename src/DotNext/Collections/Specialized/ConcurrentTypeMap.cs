@@ -72,33 +72,18 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private void Resize(Entry[] entries)
     {
-        var locksTaken = 0;
-
         // the thread that first obtains the first lock will be the one doing the resize operation
-        Monitor.Enter(entries[0]);
-        try
+        lock (this)
         {
-            locksTaken = 1;
-
             // make sure nobody resized the table while we were waiting for the first lock
             if (!ReferenceEquals(entries, this.entries))
                 return;
-
-            // acquire remaining locks
-            for (var i = 1; i < entries.Length; i++, locksTaken++)
-                Monitor.Enter(entries[i]);
 
             // do resize
             Resize(ref entries);
 
             // commit resized storage
             this.entries = entries;
-        }
-        finally
-        {
-            // release locks starting from the last lock
-            for (var i = locksTaken - 1; i >= 0; i--)
-                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i));
         }
 
         static void Resize(ref Entry[] entries)
@@ -422,31 +407,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </summary>
     public void Clear()
     {
-        var locksTaken = 0;
-        var entries = this.entries;
-
-        Monitor.Enter(entries[0]);
-        try
+        foreach (var entry in entries)
         {
-            locksTaken = 1;
-            entries = this.entries;
-
-            var entry = MemoryMarshal.GetArrayDataReference(entries);
-            entry.Clear();
-
-            // acquire remaining locks
-            for (var i = 1; i < entries.Length; i++, locksTaken++)
-            {
-                entry = entries[i];
-                Monitor.Enter(entry);
+            lock (entry)
                 entry.Clear();
-            }
-        }
-        finally
-        {
-            // release locks starting from the last lock
-            for (var i = locksTaken - 1; i >= 0; i--)
-                Monitor.Exit(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i));
         }
     }
 }
