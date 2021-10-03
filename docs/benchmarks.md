@@ -208,3 +208,15 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 | `PooledArrayBufferWriter<byte>` |       1000000 |  84,345.21 ns |  1,475.370 ns |  1,699.039 ns |  0.09 |    0.00 |        - |        - |        - |     128 B |
 |           `FileBufferingWriter` |       1000000 | 739,081.13 ns | 14,452.230 ns | 17,204.351 ns |  0.79 |    0.02 |        - |        - |        - |     368 B |
 |                  `MemoryStream` |       1000000 | 931,331.53 ns | 17,399.875 ns | 14,529.684 ns |  1.00 |    0.00 | 498.0469 | 498.0469 | 498.0469 | 2095552 B |
+
+# TypeMap
+[TypeMap&lt;TValue&gt;](xref:DotNext.Collections.Specialized.TypeMap`1) and [ConcurrentTypeMap&lt;TValue&gt;](xref:DotNext.Collections.Specialized.ConcurrentTypeMap`1) are specialized dictionaries where the keys are represented by the types passed as generic arguments. The are optimized in a way to be more performant than classic [Dictionary&lt;Type,TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2) and [ConcurrentDictionary&lt;Type,TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentdictionary-2). [This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Collections/Specialized/TypeMapBenchmark.cs) demonstrates efficiency of the specialized collections:
+
+|                           Method   |      Mean |     Error |    StdDev |
+|----------------------------------- |----------:|----------:|----------:|
+| `TypeMap`, `Set` + `Get`           |  1.819 ns | 0.0589 ns | 0.0551 ns |
+| `ConcurrentTypeMap.GetOrAdd`       | 10.653 ns | 0.1589 ns | 0.1486 ns |
+| `ConcurrentDictionary.GetOrAdd`    | 15.298 ns | 0.3372 ns | 0.4014 ns |
+| `ConcurrentTypeMap`, `Set` + `Get` | 21.694 ns | 0.4696 ns | 0.4822 ns |
+| `Dictionary` indexer               | 34.454 ns | 0.4723 ns | 0.4418 ns |
+| `ConcurrentDictionary` indexer     | 59.285 ns | 0.4616 ns | 0.4318 ns |
