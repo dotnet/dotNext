@@ -5,7 +5,7 @@ using IO;
 /// <summary>
 /// Represents an object that supports serialization and deserialization.
 /// </summary>
-/// <typeparam name="TSelf">THe implementing type.</typeparam>
+/// <typeparam name="TSelf">The implementing type.</typeparam>
 public interface ISerializable<TSelf> : IDataTransferObject
     where TSelf : ISerializable<TSelf>
 {
