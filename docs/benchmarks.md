@@ -6,8 +6,8 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET 5.0.7 (CoreCLR 5.0.721.25508, CoreFX 5.0.721.25508), X64 RyuJIT |
-| Job | .NET 5.0.7 (CoreCLR 5.0.721.25508, CoreFX 5.0.721.25508), X64 RyuJIT |
+| Host | .NET 6.0.0 (6.0.21.45113), X64 RyuJIT, X64 RyuJIT |
+| Job | .NET 6.0.0 (6.0.21.45113), X64 RyuJIT, X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 20.04.2 |
@@ -26,56 +26,57 @@ dotnet run -c Bench
 # Bitwise Equality
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](xref:DotNext.BitwiseComparer`1) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- |
-| `BitwiseComparer<Guid>.Equals` | 4.1255 ns | 0.0350 ns | 0.0292 ns | 4.1218 ns |
-| `Guid.Equals` | 1.9494 ns | 0.0284 ns | 0.0252 ns | 1.9399 ns |
-| `ReadOnlySpan.SequenceEqual` for `Guid` | 5.9802 ns | 0.0306 ns | 0.0271 ns | 5.9869 ns |
-| `BitwiseComparer<LargeStruct>.Equals` | 9.8929 ns | 0.0698 ns | 0.0618 ns | 9.8828 ns |
-| `LargeStruct.Equals` | 28.8117 ns | 0.3003 ns | 0.2662 ns | 28.7669 ns |
-| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 10.4538 ns | 0.0659 ns | 0.0585 ns | 10.4538 ns |
+|                                          Method |        Mean |     Error |    StdDev |
+|------------------------------------------------ |------------:|----------:|----------:|
+|                                   `Guid.Equals` |   1.5397 ns | 0.0119 ns | 0.0106 ns |
+|                  `BitwiseComparer<Guid>.Equals` |   4.1342 ns | 0.0298 ns | 0.0278 ns |
+|         `ReadOnlySpan.SequenceEqual` for `Guid` |   5.9180 ns | 0.0390 ns | 0.0365 ns |
+|           `BitwiseComparer<LargeStruct>.Equals` |   9.7704 ns | 0.0489 ns | 0.0434 ns |
+|  `ReadOnlySpan.SequenceEqual` for `LargeStruct` |  10.4140 ns | 0.0742 ns | 0.0694 ns |
+|                            `LargeStruct.Equals` |  33.9465 ns | 0.2037 ns | 0.1805 ns |
 
 Bitwise equality method has the better performance than field-by-field equality check especially for large value types because `BitwiseEquals` utilizes low-level optimizations performed by .NET according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
 
 # Equality of Arrays
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](xref:DotNext.OneDimensionalArray) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.196 ns |  0.0628 ns | 0.0490 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 37.417 ns |  0.2111 ns | 0.1872 ns |
-| `for` loop, small arrays (~10 elements) | 68.674 ns | 0.1695 ns | 0.1585 ns |
-| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 66.910 ns |  1.3718 ns | 2.2920 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 364.899 ns |  6.3412 ns | 5.2952 ns |
-| `for` loop, large arrays (~100 elements) | 659.282 ns | 11.3921 ns | 8.8942 ns |
+|                                                          Method |       Mean |     Error |    StdDev |
+|---------------------------------------------------------------- |-----------:|----------:|----------:|
+|              `Guid[].BitwiseEquals`, small array (~10 elements) |   7.333 ns | 0.0556 ns | 0.0520 ns |
+|  `ReadOnlySpan<Guid>.SequenceEqual`, small array (~10 elements) |  34.068 ns | 0.6565 ns | 0.6141 ns |
+|                          `for` loop, small array (~10 elements) |  35.471 ns | 0.3395 ns | 0.2835 ns |
+|             `Guid[].BitwiseEquals`, large array (~100 elements) |  44.753 ns | 0.1101 ns | 0.1030 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, large array (~100 elements) | 318.775 ns | 1.2861 ns | 1.1401 ns |
+|                         `for` loop, large array (~100 elements) | 337.962 ns | 1.4221 ns | 1.2606 ns |
 
 Bitwise equality is an absolute winner for equality check between arrays of any size.
 
 # Bitwise Hash Code
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.GetHashCode](xref:DotNext.BitwiseComparer`1) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `Guid.GetHashCode` | 1.416 ns | 0.0211 ns | 0.0198 ns |
-| `BitwiseComparer<Guid>.GetHashCode` | 6.202 ns | 0.0355 ns | 0.0315 ns |
-| `BitwiseComparer<LargeStructure>.GetHashCode` | 44.327 ns | 0.1936 ns | 0.1716 ns |
-| `LargeStructure.GetHashCode` | 20.520 ns | 0.0666 ns | 0.0623 ns |
+|                                        Method |       Mean |     Error |    StdDev |
+|---------------------------------------------- |-----------:|----------:|----------:|
+|                            `Guid.GetHashCode` |  0.6889 ns | 0.0085 ns | 0.0076 ns |
+|           `BitwiseComparer<Guid>.GetHashCode` |  6.3194 ns | 0.0223 ns | 0.0209 ns |
+| `BitwiseComparer<LargeStructure>.GetHashCode` | 20.6265 ns | 0.0839 ns | 0.0785 ns |
+|                  `LargeStructure.GetHashCode` | 43.5677 ns | 0.1517 ns | 0.1419 ns |
 
-Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 5 but still convenient in complex cases.
+
+Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 6 but still convenient in complex cases.
 
 # Bytes to Hex
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs) demonstrates performance of `DotNext.Span.ToHex` extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with`Span<T>` data type in constrast to [BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method.
 
-| Method | Num of Bytes | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- | ---- |
-| `BitConverter.ToString` | 16 bytes | 60.60 ns | 0.245 ns | 0.217 ns |
-| `Span.ToHex` | 16 bytes | 60.14 ns | 0.375 ns | 0.313 ns |
-| `BitConverter.ToString` | 64 bytes | 192.31 ns | 0.896 ns | 0.794 ns |
-| `Span.ToHex` | 64 bytes | 122.43 ns | 0.268 ns | 0.209 ns |
-| `BitConverter.ToString` | 128 bytes | 364.90 ns | 1.764 ns | 1.473 ns |
-| `Span.ToHex` | 128 bytes | 224.62 ns | 0.795 ns | 0.705 ns |
-| `BitConverter.ToString` | 256 bytes | 725.64 ns | 3.656 ns | 3.420 ns |
-| `Span.ToHex` | 256 bytes | 457.48 ns | 1.321 ns | 1.171 ns |
+|                Method |     Bytes |        Mean |     Error |    StdDev |
+|---------------------- |---------- |------------:|----------:|----------:|
+| BitConverter.ToString |  16 bytes |    59.81 ns |  0.379 ns |  0.296 ns |
+|            Span.ToHex |  16 bytes |    54.27 ns |  0.754 ns |  0.705 ns |
+| BitConverter.ToString |  64 bytes |   195.29 ns |  1.175 ns |  1.099 ns |
+|            Span.ToHex |  64 bytes |   129.07 ns |  0.564 ns |  0.471 ns |
+| BitConverter.ToString | 128 bytes |   520.31 ns |  9.848 ns | 14.740 ns |
+|            Span.ToHex | 128 bytes |   228.17 ns |  1.084 ns |  0.961 ns |
+| BitConverter.ToString | 256 bytes | 1,013.92 ns | 17.653 ns | 15.649 ns |
+|            Span.ToHex | 256 bytes |   458.78 ns |  5.442 ns |  4.545 ns |
 
 `Span.ToHex` demonstrates the best performance especially for large arrays.
 
@@ -89,14 +90,14 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type `Function<object, ValueTuple, object>`. It is assumed that instance type and property type is not known at compile type (th) so the delegate performs type check on every call.
 1. Classic .NET reflection
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| Direct call | 11.09 ns | 0.197 ns | 0.154 ns |
-| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 11.88 ns | 0.155 ns | 0.145 ns |
-| Reflection with DotNext using `DynamicInvoker` | 22.40 ns | 0.251 ns | 0.222 ns |
-| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 22.91 ns | 0.364 ns | 0.323 ns |
-| `ObjectAccess` class from _FastMember_ library | 47.63 ns | 0.358 ns | 0.335 ns |
-| .NET reflection | 163.44 ns | 2.468 ns | 2.309 ns |
+|                                                                             Method |      Mean |    Error |   StdDev | Ratio | RatioSD |
+|----------------------------------------------------------------------------------- |----------:|---------:|---------:|------:|--------:|
+|                                                                      Direct call |  11.18 ns | 0.083 ns | 0.073 ns |  1.00 |    0.00 |
+| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` |  11.83 ns | 0.060 ns | 0.056 ns |  1.06 |    0.01 |
+|                                     Reflection with DotNext using `DynamicInvoker` |  21.46 ns | 0.131 ns | 0.122 ns |  1.92 |    0.02 |
+| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` |  20.49 ns | 0.127 ns | 0.106 ns |  1.83 |    0.02 |
+|                                       ObjectAccess class from _FastMember_ library |  41.46 ns | 0.185 ns | 0.173 ns |  3.71 |    0.03 |
+|                                                                    .NET reflection | 135.60 ns | 1.085 ns | 1.015 ns | 12.13 |    0.15 |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
@@ -109,23 +110,28 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 The benchmark uses series of different strings to run the same set of tests. Worst case means that character lookup is performed for a string that doesn't contain the given character. Best case means that character lookup is performed for a string that has the given character.
 
-| Method | Condition | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- | ---- |
-| Direct call | Empty String | 5.326 ns | 0.1191 ns | 0.1783 ns |
-| Direct call | Best Case | 9.883 ns | 0.1057 ns | 0.0988 ns |
-| Direct call | Worst Case | 12.836 ns | 0.0516 ns | 0.0431 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Empty String | 8.619 ns | 0.1266 ns | 0.1184 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Best Case | 12.950 ns | 0.2557 ns | 0.3413 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Worst Case | 19.191 ns | 0.3604 ns | 0.4006 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Empty String | 12.535 ns | 0.1385 ns | 0.1295 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Best Case | 17.662 ns | 0.3306 ns | 0.3092 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Worst Case | 21.126 ns | 0.3728 ns | 0.3487 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Empty String | 30.211 ns | 0.1373 ns | 0.1284 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Best Case | 35.754 ns | 0.0965 ns | 0.0806 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Worst Case | 40.073 ns | 0.2489 ns | 0.2328 ns |
-| .NET reflection | Empty String | 303.852 ns | 1.9509 ns | 1.8249 ns |
-| .NET reflection | Best Case | 324.094 ns | 1.2919 ns | 1.1453 ns |
-| .NET reflection | Worst Case | 324.064 ns | 2.8673 ns | 2.6821 ns |
+|                                                                                   Method |          StringValue |       Mean |     Error |    StdDev | Ratio | RatioSD |
+|----------------------------------------------------------------------------------------- |--------------------- |-----------:|----------:|----------:|------:|--------:|
+|                                                                        .NET reflection |                      | 267.051 ns | 0.7739 ns | 0.6860 ns | 61.84 |    2.42 |
+|                                                                            Direct call |                      |   4.341 ns | 0.1173 ns | 0.1483 ns |  1.00 |    0.00 |
+|               Reflection with DotNext using delegate type `Func<string, char, int, int>` |                      |   8.694 ns | 0.0299 ns | 0.0265 ns |  2.01 |    0.08 |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` |                      |  29.566 ns | 0.1688 ns | 0.1496 ns |  6.85 |    0.26 |
+|         Reflection with DotNext using delegate type `Function<string, (char, int), int>` |                      |  12.496 ns | 0.0556 ns | 0.0521 ns |  2.89 |    0.10 |
+|                                           Reflection with DotNext using `DynamicInvoker` |                      |  27.646 ns | 0.2521 ns | 0.2235 ns |  6.40 |    0.25 |
+|                                                                                          |                      |            |           |           |       |         |
+|                                                                        .NET reflection | abccdahehkgbe387jwgr | 276.495 ns | 1.3943 ns | 1.3042 ns | 38.86 |    0.35 |
+|                                                                            Direct call | abccdahehkgbe387jwgr |   7.111 ns | 0.0502 ns | 0.0419 ns |  1.00 |    0.00 |
+|               Reflection with DotNext using delegate type `Func<string, char, int, int>` | abccdahehkgbe387jwgr |  10.947 ns | 0.0467 ns | 0.0390 ns |  1.54 |    0.01 |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | abccdahehkgbe387jwgr |  30.356 ns | 0.1505 ns | 0.1408 ns |  4.27 |    0.03 |
+|         Reflection with DotNext using delegate type `Function<string, (char, int), int>` | abccdahehkgbe387jwgr |  15.782 ns | 0.1097 ns | 0.0972 ns |  2.22 |    0.02 |
+|                                           Reflection with DotNext using `DynamicInvoker` | abccdahehkgbe387jwgr |  34.757 ns | 0.1380 ns | 0.1223 ns |  4.89 |    0.03 |
+|                                                                                          |                      |            |           |           |       |         |
+|                                                                        .NET reflection | wfjwk(...)wjbvw [52] | 268.056 ns | 1.8884 ns | 1.6740 ns | 20.30 |    0.18 |
+|                                                                            Direct call | wfjwk(...)wjbvw [52] |  13.207 ns | 0.1005 ns | 0.0891 ns |  1.00 |    0.00 |
+|               Reflection with DotNext using delegate type `Func<string, char, int, int>` | wfjwk(...)wjbvw [52] |  13.430 ns | 0.0718 ns | 0.0599 ns |  1.02 |    0.01 |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | wfjwk(...)wjbvw [52] |  34.486 ns | 0.1407 ns | 0.1175 ns |  2.61 |    0.02 |
+|         Reflection with DotNext using delegate type `Function<string, (char, int), int>` | wfjwk(...)wjbvw [52] |  17.992 ns | 0.0771 ns | 0.0683 ns |  1.36 |    0.01 |
+|                                           Reflection with DotNext using `DynamicInvoker` | wfjwk(...)wjbvw [52] |  35.445 ns | 0.2010 ns | 0.1880 ns |  2.68 |    0.03 |
 
 DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.
 
@@ -136,36 +142,37 @@ DotNext Reflection library offers the best result in case when delegate type exa
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type: `Function<(object text, object result), object>`. It is assumed that types of all parameters are not known at compile time.
 1. Classic .NET reflection
 
-| Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- |
-| Direct call | 119.8 ns | 2.27 ns | 4.32 ns | 117.8 ns |
-| Reflection with DotNext using delegate type `TryParseDelegate` | 125.3 ns | 0.41 ns | 0.34 ns | 125.3 ns |
-| Reflection with DotNext using delegate type `Function<(string text, decimal result), bool>` | 131.0 ns | 0.30 ns | 0.28 ns | 131.1 ns |
-| Reflection with DotNext using delegate type `Function<(object text, object result), object>` | 147.9 ns | 0.54 ns | 0.51 ns | 147.8 ns |
-| .NET reflection | 530.2 ns | 1.71 ns | 1.60 ns | 530.0 ns |
+|                                                                                         Method |     Mean |   Error |  StdDev | Ratio | RatioSD |
+|----------------------------------------------------------------------------------------------- |---------:|--------:|--------:|------:|--------:|
+|                                 Reflection with DotNext using delegate type `TryParseDelegate` | 124.1 ns | 0.44 ns | 0.39 ns |  1.00 |    0.01 |
+|                                                                                  Direct call | 124.3 ns | 0.85 ns | 0.80 ns |  1.00 |    0.00 |
+|    Reflection with DotNext using delegate type `Function<(string text, decimal result), bool>` | 132.0 ns | 0.35 ns | 0.33 ns |  1.06 |    0.01 |
+| 'Reflection with DotNext using delegate type `Function<(object text, object result), object>`' | 144.2 ns | 0.67 ns | 0.63 ns |  1.16 |    0.01 |
+|                                                 Reflection with DotNext using `DynamicInvoker` | 148.7 ns | 0.57 ns | 0.53 ns |  1.20 |    0.01 |
+|                                                                              .NET reflection | 462.6 ns | 1.25 ns | 1.11 ns |  3.72 |    0.03 |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
 # Atomic Access to Arbitrary Value Type
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](xref:DotNext.Threading.Atomic`1) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
-| Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- |
-| Atomic | 358.0 us |  9.36 us |  85.54 us | 345.7 us |
-| Synchronized | 961.7 us | 11.80 us | 105.92 us | 946.1 us |
-| SpinLock | 1,586.0 us | 45.64 us | 424.80 us | 1,586.0 us |
+|       Method |       Mean |    Error |    StdDev |     Median |
+|------------- |-----------:|---------:|----------:|-----------:|
+|       Atomic |   317.9 us |  9.36 us |  86.20 us |   305.8 us |
+| Synchronized |   977.9 us | 10.77 us |  98.57 us |   967.1 us |
+|     SpinLock | 1,891.5 us | 58.82 us | 556.19 us | 1,772.4 us |
 
 # File-buffering Writer
 [This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs) compares performance of [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream) from ASP.NET Core and [FileBufferingWriter](xref:DotNext.IO.FileBufferingWriter) from .NEXT library.
 
 Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.
 
-| Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- |
-| `FileBufferingWriter` in synchronous mode | 950.8 us | 8.58 us | 7.61 us |
-| `FileBufferingWriteStream` in synchronous mode | 14,295.1 us | 838.55 us | 2,351.37 us |
-| `FileBufferingWriter` in asynchronous mode | 7,825.6 us | 337.13 us | 894.03 us |
-| `FileBufferingWriteStream` in asynchronous mode | 18,418.7 us | 993.00 us | 2,896.64 us |
+|                                        Method |     Mean |     Error |    StdDev |   Median |
+|---------------------------------------------- |---------:|----------:|----------:|---------:|
+|       'FileBufferingWriter, synchronous mode' | 1.083 ms | 0.0147 ms | 0.0137 ms | 1.089 ms |
+|      'FileBufferingWriter, asynchronous mode' | 1.532 ms | 0.0501 ms | 0.1477 ms | 1.447 ms |
+| 'FileBufferingWriteStream, synchronouse mode' | 4.251 ms | 0.0434 ms | 0.0385 ms | 4.242 ms |
+| 'FileBufferingWriteStream, asynchronous mode' | 5.127 ms | 0.0683 ms | 0.0639 ms | 5.106 ms |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
 
@@ -177,46 +184,46 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 * [PooledArrayBufferWriter&lt;byte&gt;](xref:DotNext.Buffers.PooledArrayBufferWriter`1)
 * [FileBufferingWriter](xref:DotNext.IO.FileBufferingWriter)
 
-|                   Buffer Type   | Written bytes |       Mean |         Error |        StdDev | Ratio | RatioSD |    Gen 0 |    Gen 1 |    Gen 2 | Allocated |
-|-------------------------------- |-------------- |--------------:|--------------:|--------------:|------:|--------:|---------:|---------:|---------:|----------:|
-|                  `MemoryStream` |           100 |      66.91 ns |      1.379 ns |      2.187 ns |  1.00 |    0.00 |   0.1097 |        - |        - |     344 B |
-| `PooledArrayBufferWriter<byte>` |           100 |     237.78 ns |      1.819 ns |      1.519 ns |  3.53 |    0.10 |   0.0405 |        - |        - |     128 B |
-|      `SparseBufferWriter<byte>` |           100 |     249.18 ns |      3.458 ns |      3.234 ns |  3.68 |    0.14 |   0.0663 |        - |        - |     208 B |
-|           `FileBufferingWriter` |           100 |   1,681.56 ns |     31.827 ns |     29.771 ns | 24.85 |    0.94 |   0.0324 |        - |        - |     104 B |
-|        `RecyclableMemoryStream` |           100 |   2,503.46 ns |     10.280 ns |      9.113 ns | 37.16 |    0.93 |   0.1030 |        - |        - |     328 B |
-|                                 |               |               |               |               |       |         |          |          |          |           |
-|                  `MemoryStream` |          1000 |     124.90 ns |      0.882 ns |      1.264 ns |  1.00 |    0.00 |   0.3467 |        - |        - |    1088 B |
-|      `SparseBufferWriter<byte>` |          1000 |     273.03 ns |      2.024 ns |      1.794 ns |  2.20 |    0.03 |   0.0663 |        - |        - |     208 B |
-| `PooledArrayBufferWriter<byte>` |          1000 |     491.45 ns |      2.027 ns |      1.693 ns |  3.96 |    0.04 |   0.0401 |        - |        - |     128 B |
-|           `FileBufferingWriter` |          1000 |   1,704.61 ns |     33.291 ns |     31.141 ns | 13.72 |    0.39 |   0.0324 |        - |        - |     104 B |
-|        `RecyclableMemoryStream` |          1000 |   2,535.13 ns |     20.769 ns |     19.427 ns | 20.40 |    0.21 |   0.1030 |        - |        - |     328 B |
-|                                 |               |               |               |               |       |         |          |          |          |           |
-|      `SparseBufferWriter<byte>` |         10000 |     778.99 ns |      3.440 ns |      3.050 ns |  0.32 |    0.00 |   0.0858 |        - |        - |     272 B |
-| `PooledArrayBufferWriter<byte>` |         10000 |   1,570.87 ns |     11.332 ns |     10.045 ns |  0.64 |    0.01 |   0.0401 |        - |        - |     128 B |
-|                  `MemoryStream` |         10000 |   2,441.00 ns |     43.130 ns |     38.234 ns |  1.00 |    0.00 |   9.8343 |        - |        - |   30880 B |
-|           `FileBufferingWriter` |         10000 |   2,841.10 ns |     54.135 ns |     57.924 ns |  1.17 |    0.02 |   0.0305 |        - |        - |     104 B |
-|        `RecyclableMemoryStream` |         10000 |   2,971.70 ns |     23.778 ns |     22.242 ns |  1.22 |    0.02 |   0.1030 |        - |        - |     328 B |
-|                                 |               |               |               |               |       |         |          |          |          |           |
-|      `SparseBufferWriter<byte>` |        100000 |   5,332.73 ns |     18.125 ns |     16.954 ns |  0.08 |    0.00 |   0.1450 |        - |        - |     464 B |
-|        `RecyclableMemoryStream` |        100000 |   7,589.19 ns |     37.040 ns |     32.835 ns |  0.11 |    0.00 |   0.0916 |        - |        - |     328 B |
-| `PooledArrayBufferWriter<byte>` |        100000 |   8,901.54 ns |     34.404 ns |     28.729 ns |  0.13 |    0.00 |   0.0305 |        - |        - |     128 B |
-|                  `MemoryStream` |        100000 |  66,530.32 ns |  1,048.177 ns |    980.465 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |  260340 B |
-|           `FileBufferingWriter` |        100000 | 117,812.86 ns |  2,269.839 ns |  3,533.865 ns |  1.79 |    0.06 |        - |        - |        - |     368 B |
-|                                 |               |               |               |               |       |         |          |          |          |           |
-|      `SparseBufferWriter<byte>` |       1000000 |  50,656.44 ns |    906.284 ns |    847.739 ns |  0.05 |    0.00 |   0.1831 |        - |        - |     656 B |
-|        `RecyclableMemoryStream` |       1000000 |  53,671.61 ns |    854.939 ns |    799.711 ns |  0.06 |    0.00 |   0.1831 |        - |        - |     736 B |
-| `PooledArrayBufferWriter<byte>` |       1000000 |  84,345.21 ns |  1,475.370 ns |  1,699.039 ns |  0.09 |    0.00 |        - |        - |        - |     128 B |
-|           `FileBufferingWriter` |       1000000 | 739,081.13 ns | 14,452.230 ns | 17,204.351 ns |  0.79 |    0.02 |        - |        - |        - |     368 B |
-|                  `MemoryStream` |       1000000 | 931,331.53 ns | 17,399.875 ns | 14,529.684 ns |  1.00 |    0.00 | 498.0469 | 498.0469 | 498.0469 | 2095552 B |
+|                   Buffer Type | TotalCount |          Mean |         Error |        StdDev | Ratio | RatioSD |    Gen 0 |    Gen 1 |    Gen 2 |   Allocated |
+|------------------------------ |----------- |--------------:|--------------:|--------------:|------:|--------:|---------:|---------:|---------:|------------:|
+|                  `MemoryStream` |        100 |      60.39 ns |      0.674 ns |      0.598 ns |  1.00 |    0.00 |   0.1097 |        - |        - |       344 B |
+| `PooledArrayBufferWriter<byte>` |        100 |     171.04 ns |      0.719 ns |      0.672 ns |  2.83 |    0.03 |   0.0355 |        - |        - |       112 B |
+|      `SparseBufferWriter<byte>` |        100 |     240.96 ns |      2.217 ns |      1.731 ns |  3.99 |    0.05 |   0.0610 |        - |        - |       192 B |
+|           `FileBufferingWriter` |        100 |   2,230.30 ns |     14.776 ns |     13.822 ns | 36.95 |    0.49 |   0.0343 |        - |        - |       112 B |
+|        `RecyclableMemoryStream` |        100 |   2,418.88 ns |     13.071 ns |     11.587 ns | 40.06 |    0.39 |   0.1183 |        - |        - |       376 B |
+|                               |            |               |               |               |       |         |          |          |          |             |
+|                  `MemoryStream` |       1000 |     114.40 ns |      1.511 ns |      1.413 ns |  1.00 |    0.00 |   0.3468 |        - |        - |     1,088 B |
+|      `SparseBufferWriter<byte>` |       1000 |     262.99 ns |      1.076 ns |      0.954 ns |  2.30 |    0.03 |   0.0610 |        - |        - |       192 B |
+| `PooledArrayBufferWriter<byte>` |       1000 |     393.58 ns |      1.456 ns |      1.291 ns |  3.44 |    0.04 |   0.0353 |        - |        - |       112 B |
+|           `FileBufferingWriter` |       1000 |   2,112.13 ns |     12.391 ns |     10.984 ns | 18.48 |    0.24 |   0.0343 |        - |        - |       112 B |
+|        `RecyclableMemoryStream` |       1000 |   2,485.95 ns |     12.796 ns |     11.970 ns | 21.73 |    0.28 |   0.1183 |        - |        - |       376 B |
+|                               |            |               |               |               |       |         |          |          |          |             |
+|      `SparseBufferWriter<byte>` |      10000 |     771.29 ns |      2.057 ns |      1.823 ns |  0.32 |    0.00 |   0.0811 |        - |        - |       256 B |
+| `PooledArrayBufferWriter<byte>` |      10000 |   1,293.53 ns |      7.453 ns |      6.224 ns |  0.53 |    0.00 |   0.0343 |        - |        - |       112 B |
+|                  `MemoryStream` |      10000 |   2,419.10 ns |     21.564 ns |     19.116 ns |  1.00 |    0.00 |   9.8343 |        - |        - |    30,880 B |
+|        `RecyclableMemoryStream` |      10000 |   2,891.81 ns |     11.367 ns |      9.492 ns |  1.19 |    0.01 |   0.1183 |        - |        - |       376 B |
+|           `FileBufferingWriter` |      10000 |   3,004.68 ns |     13.759 ns |     12.870 ns |  1.24 |    0.01 |   0.0343 |        - |        - |       112 B |
+|                               |            |               |               |               |       |         |          |          |          |             |
+|      `SparseBufferWriter<byte>` |     100000 |   5,122.79 ns |     27.198 ns |     25.441 ns |  0.08 |    0.00 |   0.1373 |        - |        - |       448 B |
+|        `RecyclableMemoryStream` |     100000 |   7,108.29 ns |     30.354 ns |     25.347 ns |  0.11 |    0.00 |   0.1144 |        - |        - |       376 B |
+| `PooledArrayBufferWriter<byte>` |     100000 |   8,401.60 ns |     41.469 ns |     38.790 ns |  0.13 |    0.00 |   0.0305 |        - |        - |       112 B |
+|                  `MemoryStream` |     100000 |  65,821.24 ns |    781.429 ns |    692.716 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |   260,356 B |
+|           `FileBufferingWriter` |     100000 | 130,246.81 ns |  2,765.125 ns |  8,109.632 ns |  1.94 |    0.09 |        - |        - |        - |       480 B |
+|                               |            |               |               |               |       |         |          |          |          |             |
+|        `RecyclableMemoryStream` |    1000000 |  50,008.15 ns |    224.449 ns |    209.950 ns |  0.06 |    0.00 |   0.3052 |        - |        - |     1,008 B |
+|      `SparseBufferWriter<byte>` |    1000000 |  51,783.54 ns |    356.691 ns |    316.197 ns |  0.06 |    0.00 |   0.1831 |        - |        - |       640 B |
+| `PooledArrayBufferWriter<byte>` |    1000000 |  83,773.13 ns |    430.674 ns |    402.853 ns |  0.09 |    0.00 |        - |        - |        - |       112 B |
+|           `FileBufferingWriter` |    1000000 | 736,273.23 ns | 12,760.737 ns | 11,312.061 ns |  0.82 |    0.01 |        - |        - |        - |       481 B |
+|                  `MemoryStream` |    1000000 | 899,134.70 ns |  6,252.141 ns |  5,542.360 ns |  1.00 |    0.00 | 499.0234 | 499.0234 | 499.0234 | 2,095,744 B |
 
 # TypeMap
 [TypeMap&lt;TValue&gt;](xref:DotNext.Collections.Specialized.TypeMap`1) and [ConcurrentTypeMap&lt;TValue&gt;](xref:DotNext.Collections.Specialized.ConcurrentTypeMap`1) are specialized dictionaries where the keys are represented by the types passed as generic arguments. The are optimized in a way to be more performant than classic [Dictionary&lt;Type,TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2) and [ConcurrentDictionary&lt;Type,TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentdictionary-2). [This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Collections/Specialized/TypeMapBenchmark.cs) demonstrates efficiency of the specialized collections:
 
-|                           Method   |      Mean |     Error |    StdDev |
-|----------------------------------- |----------:|----------:|----------:|
-| `TypeMap`, `Set` + `Get`           |  1.819 ns | 0.0589 ns | 0.0551 ns |
-| `ConcurrentTypeMap.GetOrAdd`       | 10.653 ns | 0.1589 ns | 0.1486 ns |
-| `ConcurrentDictionary.GetOrAdd`    | 15.298 ns | 0.3372 ns | 0.4014 ns |
-| `ConcurrentTypeMap`, `Set` + `Get` | 21.694 ns | 0.4696 ns | 0.4822 ns |
-| `Dictionary` indexer               | 34.454 ns | 0.4723 ns | 0.4418 ns |
-| `ConcurrentDictionary` indexer     | 59.285 ns | 0.4616 ns | 0.4318 ns |
+|                                        Method |      Mean |     Error |    StdDev |
+|---------------------------------------------- |----------:|----------:|----------:|
+|              `TypeMap`, `Set` + `TryGetValue` |  1.860 ns | 0.0173 ns | 0.0162 ns |
+|           `Dictionary`, `Set` + `TryGetValue` | 34.212 ns | 0.1182 ns | 0.1048 ns |
+|    `ConcurrentTypeMap`, `Set` + `TryGetValue` | 20.773 ns | 0.1711 ns | 0.1600 ns |
+| `ConcurrentDictionary`, `Set` + `TryGetValue` | 58.532 ns | 0.2534 ns | 0.2247 ns |
+|             `ConcurrentTypeMap`, `GetOrAdd` | 10.064 ns | 0.0572 ns | 0.0535 ns |
+|          `ConcurrentDictionary`, `GetOrAdd` | 16.246 ns | 0.1248 ns | 0.1042 ns |
