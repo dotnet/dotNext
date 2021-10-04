@@ -1,22 +1,20 @@
 using DotNext;
 using Microsoft.Extensions.Options;
-using System;
 
-namespace RaftNode
+namespace RaftNode;
+
+internal sealed class FakeOptionsMonitor<T> : IOptionsMonitor<T>
 {
-    internal sealed class FakeOptionsMonitor<T> : IOptionsMonitor<T>
+    private sealed class ChangeToken : Disposable
     {
-        private sealed class ChangeToken : Disposable
-        {
 
-        }
-
-        internal FakeOptionsMonitor(T value) => CurrentValue = value;
-
-        public T CurrentValue { get; }
-
-        T IOptionsMonitor<T>.Get(string name) => CurrentValue;
-
-        IDisposable IOptionsMonitor<T>.OnChange(Action<T, string> listener) => new ChangeToken();
     }
+
+    internal FakeOptionsMonitor(T value) => CurrentValue = value;
+
+    public T CurrentValue { get; }
+
+    T IOptionsMonitor<T>.Get(string name) => CurrentValue;
+
+    IDisposable IOptionsMonitor<T>.OnChange(Action<T, string> listener) => new ChangeToken();
 }

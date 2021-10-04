@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
-using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -20,54 +14,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     [ExcludeFromCodeCoverage]
     public sealed class PersistentStateTests : Test
     {
-        private sealed class ClusterMemberMock : IRaftClusterMember
-        {
-            internal ClusterMemberMock(IPEndPoint endpoint) => EndPoint = endpoint;
-
-            Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-                => throw new NotImplementedException();
-
-            ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
-
-            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new(Task.FromException(new NotImplementedException()));
-
-            public EndPoint EndPoint { get; }
-
-            bool IClusterMember.IsLeader => false;
-
-            bool IClusterMember.IsRemote => false;
-
-            event ClusterMemberStatusChanged IClusterMember.MemberStatusChanged
-            {
-                add => throw new NotImplementedException();
-                remove => throw new NotImplementedException();
-            }
-
-            ClusterMemberStatus IClusterMember.Status => ClusterMemberStatus.Unknown;
-
-            ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
-                => throw new NotImplementedException();
-
-            Task<bool> IClusterMember.ResignAsync(CancellationToken token) => throw new NotImplementedException();
-
-            public bool Equals(IClusterMember other) => Equals(EndPoint, other?.EndPoint);
-
-            public override bool Equals(object other) => Equals(other as IClusterMember);
-
-            public override int GetHashCode() => EndPoint.GetHashCode();
-
-            public override string ToString() => EndPoint.ToString();
-        }
-
         private sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry
         {
             internal Int64LogEntry(long value, bool snapshot = false)
@@ -95,11 +41,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal long Value;
 
-            private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+            private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
             {
                 private long currentValue;
 
-                protected override async ValueTask ApplyAsync(LogEntry entry)
+                public SimpleSnapshotBuilder(in SnapshotBuilderContext context)
+                    : base(in context)
+                {
+                }
+
+                protected internal override async ValueTask ApplyAsync(LogEntry entry)
                 {
                     Assert.True(entry.Index > 0L);
                     currentValue = await entry.ToTypeAsync<long, LogEntry>();
@@ -116,7 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ToTypeAsync<long, LogEntry>();
 
-            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder();
+            protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context) => new SimpleSnapshotBuilder(context);
         }
 
         private const int RecordsPerPartition = 4;
@@ -126,31 +77,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
-            var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+            var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
             {
                 Equal(0, state.Term);
                 Equal(1, await state.IncrementTermAsync());
-                True(state.IsVotedFor(null));
+                True(state.IsVotedFor(default(ClusterMemberId?)));
                 await state.UpdateVotedForAsync(member);
-                False(state.IsVotedFor(null));
+                False(state.IsVotedFor(default(ClusterMemberId?)));
                 True(state.IsVotedFor(member));
             }
             finally
             {
-                await (state as IAsyncDisposable).DisposeAsync();
+                (state as IDisposable).Dispose();
             }
+
             //now open state again to check persistence
             state = new PersistentState(dir, RecordsPerPartition);
             try
             {
                 Equal(1, state.Term);
-                False(state.IsVotedFor(null));
+                False(state.IsVotedFor(default(ClusterMemberId?)));
                 True(state.IsVotedFor(member));
             }
             finally
             {
-                (state as IDisposable)?.Dispose();
+                (state as IDisposable).Dispose();
             }
         }
 
@@ -273,8 +225,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(2L, index);
         }
 
-        [Fact]
-        public static async Task DropRecords()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task DropRecords(bool reuseSpace)
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
             var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -287,7 +241,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
-            Equal(5L, await state.DropAsync(1L));
+            Equal(5L, await state.DropAsync(1L, reuseSpace));
             Equal(0L, state.GetLastIndex(false));
             Equal(0L, state.GetLastIndex(true));
         }
@@ -462,7 +416,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task SnapshotInstallation(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
@@ -514,7 +468,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task SequentialCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Sequential))
@@ -562,7 +516,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task BackgroundCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Background))
@@ -626,7 +580,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task ForegroundCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Foreground))
@@ -679,7 +633,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var backupFile = Path.GetTempFileName();
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
-            var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+            var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
             {
                 //define node state
@@ -730,7 +684,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task Reconstruction()
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (var state = new TestAuditTrail(dir, true))
             {
@@ -794,7 +748,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
         }
 
-#if !NETCOREAPP3_1
         public struct JsonPayload
         {
             public int X { get; set; }
@@ -826,7 +779,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task JsonSerialization(bool cached)
         {
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            await using var state = new JsonPersistentState(dir, cached);
+            using var state = new JsonPersistentState(dir, cached);
             var entry1 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 10, Y = 20, Message = "Entry1" });
             var entry2 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 50, Y = 60, Message = "Entry2" });
             await state.AppendAsync(entry1, true);
@@ -844,6 +797,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(entry2.Content.Y, payload.Y);
             Equal(entry2.Content.Message, payload.Message);
         }
-#endif
     }
 }

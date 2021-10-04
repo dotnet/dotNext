@@ -1,9 +1,5 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.IO
 {
@@ -118,7 +114,7 @@ namespace DotNext.IO
             Equal(3, tr.Read(array, 0, array.Length));
             Equal(new[] { 'H', 'E', 'L' }, array[0..3]);
 
-            Array.Clear(array, 0, array.Length);
+            Array.Clear(array);
             Equal(2, tr.Read(array, 0, array.Length));
             Equal(new[] { 'L', 'O' }, array[0..2]);
         }
@@ -142,7 +138,7 @@ namespace DotNext.IO
             Equal(3, await tr.ReadAsync(array, 0, array.Length));
             Equal(new[] { 'H', 'E', 'L' }, array[0..3]);
 
-            Array.Clear(array, 0, array.Length);
+            Array.Clear(array);
             Equal(2, await tr.ReadAsync(array, 0, array.Length));
             Equal(new[] { 'L', 'O' }, array[0..2]);
         }

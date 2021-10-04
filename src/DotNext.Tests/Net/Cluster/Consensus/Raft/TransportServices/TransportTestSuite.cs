@@ -1,22 +1,30 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using Buffers;
     using IO;
     using IO.Log;
+    using IClusterConfiguration = Membership.IClusterConfiguration;
 
     [ExcludeFromCodeCoverage]
     public abstract class TransportTestSuite : Test
     {
+        private sealed class BufferedClusterConfiguration : BinaryTransferObject, IClusterConfiguration
+        {
+            internal BufferedClusterConfiguration(ReadOnlyMemory<byte> memory)
+                : base(memory)
+            {
+            }
+
+            public long Fingerprint { get; init; }
+
+            long IClusterConfiguration.Length => Content.Length;
+        }
+
         private sealed class BufferedEntry : BinaryTransferObject, IRaftLogEntry
         {
             internal BufferedEntry(long term, DateTimeOffset timestamp, bool isSnapshot, byte[] content)
@@ -48,6 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
             internal ReceiveEntriesBehavior Behavior;
+            internal byte[] ReceivedConfiguration = Array.Empty<byte>();
 
             internal LocalMember(bool smallAmountOfMetadata = false)
             {
@@ -64,18 +73,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Metadata = metadata.ToImmutableDictionary();
             }
 
-            IPEndPoint ILocalMember.Address => throw new NotImplementedException();
+            ref readonly ClusterMemberId ILocalMember.Id => throw new NotImplementedException();
 
             bool ILocalMember.IsLeader(IRaftClusterMember member) => throw new NotImplementedException();
 
             Task<bool> ILocalMember.ResignAsync(CancellationToken token) => Task.FromResult(true);
 
-            async Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            async Task ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
+            {
+                using var buffer = MemoryAllocator.Allocate<byte>(configurationLength.Truncate(), true);
+                await configurationReader(buffer.Memory, token).ConfigureAwait(false);
+                Equal(43L, fingerprint);
+                ReceivedConfiguration = buffer.Memory.ToArray();
+            }
+
+            async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(1, prevLogIndex);
                 Equal(56L, prevLogTerm);
                 Equal(10, commitIndex);
+                Equal(42L, fingerprint);
+                True(applyConfig);
+
                 byte[] buffer;
                 switch (Behavior)
                 {
@@ -105,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return new Result<bool>(43L, true);
             }
 
-            async Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            async Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(10, snapshotIndex);
@@ -115,7 +135,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return new Result<bool>(43L, true);
             }
 
-            Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(42L, term);
@@ -124,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<bool>(43L, true));
             }
 
-            Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<bool>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(10L, term);
@@ -195,7 +215,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //Heartbeat request
             using (timeoutTokenSource = new CancellationTokenSource(timeout))
             {
-                var exchange = new HeartbeatExchange(42L, 1L, 56L, 10L);
+                var exchange = new HeartbeatExchange(42L, 1L, 56L, 10L, new() { ApplyConfig = true, Fingerprint = 42L });
                 client.Enqueue(exchange, timeoutTokenSource.Token);
                 result = await exchange.Task;
                 True(result.Value);
@@ -260,21 +280,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false) { Behavior = behavior };
+
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = serverFactory(member, serverAddr, timeout);
             server.Start();
+
             //prepare client
             using var client = clientFactory(serverAddr);
             var buffer = new byte[533];
-            var rnd = new Random();
-            rnd.NextBytes(buffer);
+            Random.Shared.NextBytes(buffer);
             var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
             buffer = new byte[payloadSize];
-            rnd.NextBytes(buffer);
+            Random.Shared.NextBytes(buffer);
             var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
 
-            await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10);
+            await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, new() { ApplyConfig = true, Fingerprint = 42L });
             client.Enqueue(exchange, timeoutTokenSource.Token);
             var result = await exchange.Task;
             Equal(43L, result.Term);
@@ -305,12 +326,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false);
+
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = serverFactory(member, serverAddr, timeout);
             server.Start();
+
             //prepare client
             using var client = clientFactory(serverAddr);
+
             var buffer = new byte[payloadSize];
             new Random().NextBytes(buffer);
             var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
@@ -321,6 +345,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             True(result.Value);
             NotEmpty(member.ReceivedEntries);
             Equal(snapshot, member.ReceivedEntries[0]);
+        }
+
+        private protected async Task SendingConfigurationTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
+        {
+            var timeout = TimeSpan.FromSeconds(20);
+            using var timeoutTokenSource = new CancellationTokenSource(timeout);
+            var member = new LocalMember(false);
+
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
+
+            //prepare client
+            using var client = clientFactory(serverAddr);
+
+            var config = RandomBytes(payloadSize);
+            await using var exchange = new ConfigurationExchange(new BufferedClusterConfiguration(config) { Fingerprint = 43L });
+            client.Enqueue(exchange, timeoutTokenSource.Token);
+            var result = await exchange.Task;
+
+            True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config));
         }
     }
 }

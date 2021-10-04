@@ -1,904 +1,794 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Missing = System.Reflection.Missing;
+using static System.Linq.Enumerable;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft;
+
+using IO.Log;
+using Membership;
+using Threading;
+using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
+using Timestamp = Diagnostics.Timestamp;
+
+/// <summary>
+/// Represents transport-independent implementation of Raft protocol.
+/// </summary>
+/// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
+public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
+    where TMember : class, IRaftClusterMember, IDisposable
 {
-    using IO.Log;
-    using Threading;
-    using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
-    using Timestamp = Diagnostics.Timestamp;
+    private readonly bool allowPartitioning;
+    private readonly ElectionTimeout electionTimeoutProvider;
+    private readonly CancellationTokenSource transitionCancellation;
+    private readonly double heartbeatThreshold, clockDriftBound;
+    private readonly Random random;
+    private readonly TaskCompletionSource readinessProbe;
+
+    private ClusterMemberId localMemberId;
+
+    private bool standbyNode;
+
+    private AsyncLock transitionSync;  // used to synchronize state transitions
+
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
+    private volatile RaftState? state;
+    private volatile TMember? leader;
+    private Action<RaftCluster<TMember>, TMember?>? leaderChangedHandlers;
+    private volatile int electionTimeout;
+    private IPersistentState auditTrail;
+    private Timestamp lastUpdated; // volatile
 
     /// <summary>
-    /// Represents transport-independent implementation of Raft protocol.
+    /// Initializes a new cluster manager for the local node.
     /// </summary>
-    /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
-    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
-        where TMember : class, IRaftClusterMember, IDisposable
+    /// <param name="config">The configuration of the local node.</param>
+    protected RaftCluster(IClusterMemberConfiguration config)
     {
-        private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
+        electionTimeoutProvider = config.ElectionTimeout;
+        random = new();
+        electionTimeout = electionTimeoutProvider.RandomTimeout(random);
+        allowPartitioning = config.Partitioning;
+        members = MemberList.Empty;
+        transitionSync = AsyncLock.Exclusive();
+        transitionCancellation = new CancellationTokenSource();
+        LifecycleToken = transitionCancellation.Token;
+        auditTrail = new ConsensusOnlyState();
+        heartbeatThreshold = config.HeartbeatThreshold;
+        standbyNode = config.Standby;
+        clockDriftBound = config.ClockDriftBound;
+        readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        localMemberId = new(random);
+    }
 
-        internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
+    /// <summary>
+    /// Gets logger used by this object.
+    /// </summary>
+    [CLSCompliant(false)]
+    protected virtual ILogger Logger => NullLogger.Instance;
+
+    /// <summary>
+    /// Gets information the current member.
+    /// </summary>
+    public ref readonly ClusterMemberId LocalMemberId => ref localMemberId;
+
+    /// <inheritdoc />
+    ILogger IRaftStateMachine.Logger => Logger;
+
+    /// <summary>
+    /// Gets election timeout used by the local member.
+    /// </summary>
+    public TimeSpan ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
+
+    /// <summary>
+    /// Represents a task indicating that the current node is ready to serve requests.
+    /// </summary>
+    public Task Readiness => readinessProbe.Task;
+
+    private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
+
+    private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
+
+    /// <summary>
+    /// Indicates that local member is a leader.
+    /// </summary>
+    protected bool IsLeaderLocal => state is LeaderState;
+
+    /// <summary>
+    /// Gets the lease that can be used for linearizable read.
+    /// </summary>
+    public ILeaderLease? Lease => state as LeaderState;
+
+    /// <summary>
+    /// Gets the cancellation token that tracks the leader state of the current node.
+    /// </summary>
+    public CancellationToken LeadershipToken => (state as LeaderState)?.LeadershipToken ?? new(true);
+
+    /// <summary>
+    /// Associates audit trail with the current instance.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+    public IPersistentState AuditTrail
+    {
+        get => auditTrail;
+        set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    /// <summary>
+    /// Gets configuration storage.
+    /// </summary>
+    protected abstract IClusterConfigurationStorage ConfigurationStorage { get; }
+
+    /// <summary>
+    /// Gets token that can be used for all internal asynchronous operations.
+    /// </summary>
+    protected CancellationToken LifecycleToken { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
+
+    /// <summary>
+    /// Gets members of Raft-based cluster.
+    /// </summary>
+    /// <returns>A collection of cluster member.</returns>
+    public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : members;
+
+    /// <inheritdoc />
+    IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
+
+    /// <inheritdoc />
+    IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => members;
+
+    /// <summary>
+    /// Establishes metrics collector.
+    /// </summary>
+    public MetricsCollector? Metrics
+    {
+        protected get;
+        set;
+    }
+
+    /// <summary>
+    /// Gets Term value maintained by local member.
+    /// </summary>
+    public long Term => auditTrail.Term;
+
+    /// <summary>
+    /// An event raised when leader has been changed.
+    /// </summary>
+    public event Action<RaftCluster<TMember>, TMember?> LeaderChanged
+    {
+        add => leaderChangedHandlers += value;
+        remove => leaderChangedHandlers -= value;
+    }
+
+    /// <inheritdoc />
+    event Action<ICluster, IClusterMember?> ICluster.LeaderChanged
+    {
+        add => leaderChangedHandlers += value;
+        remove => leaderChangedHandlers -= value;
+    }
+
+    /// <summary>
+    /// Represents an event raised when the local node completes its replication with another
+    /// node.
+    /// </summary>
+    public event ReplicationCompletedEventHandler? ReplicationCompleted;
+
+    /// <inheritdoc/>
+    IClusterMember? ICluster.Leader => Leader;
+
+    /// <summary>
+    /// Gets leader of the cluster.
+    /// </summary>
+    public TMember? Leader
+    {
+        get => leader;
+        private set
         {
+            var oldLeader = Interlocked.Exchange(ref leader, value);
+            if (!ReferenceEquals(oldLeader, value))
+                leaderChangedHandlers?.Invoke(this, value);
         }
+    }
 
-        private sealed class EmptyMemberCollection : ReadOnlyCollection<TMember>, IMemberCollection
+    private FollowerState CreateInitialState()
+        => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
+
+    private ValueTask UnfreezeAsync()
+    {
+        return readinessProbe.Task.IsCompleted ? ValueTask.CompletedTask : UnfreezeCoreAsync();
+
+        async ValueTask UnfreezeCoreAsync()
         {
-            internal EmptyMemberCollection()
-                : base(Array.Empty<TMember>())
+            // ensure that local member has been received
+            foreach (var member in members.Values)
             {
-            }
-        }
-
-        private sealed class MemberCollection : LinkedList<TMember>, IMemberCollection
-        {
-            internal MemberCollection()
-            {
-            }
-
-            internal MemberCollection(IEnumerable<TMember> members)
-                : base(members)
-            {
-            }
-        }
-
-        /// <summary>
-        /// Represents cluster member.
-        /// </summary>
-        [StructLayout(LayoutKind.Auto)]
-        protected readonly ref struct MemberHolder
-        {
-            private readonly LinkedListNode<TMember>? node;
-
-            internal MemberHolder(LinkedListNode<TMember>? node)
-                => this.node = node;
-
-            /// <summary>
-            /// Gets actual cluster member.
-            /// </summary>
-            /// <exception cref="InvalidOperationException">The member is already removed.</exception>
-            public TMember Member => node?.Value ?? throw new InvalidOperationException();
-
-            /// <summary>
-            /// Removes the current member from the list.
-            /// </summary>
-            /// <remarks>
-            /// Removed member is not disposed so it can be reused.
-            /// </remarks>
-            /// <returns>The removed member.</returns>
-            /// <exception cref="InvalidOperationException">Attempt to remove local node; or node is already removed.</exception>
-            public TMember Remove()
-            {
-                if (node is null || node.Value is null || node.List is null)
-                    throw new InvalidOperationException();
-
-                if (!node.Value.IsRemote)
-                    throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
-
-                node.List.Remove(node);
-                var member = node.Value;
-                node.Value = null!;
-                return member;
-            }
-
-            /// <summary>
-            /// Obtains actual cluster member.
-            /// </summary>
-            /// <param name="holder">The holder of cluster member.</param>
-            public static implicit operator TMember(MemberHolder holder) => holder.Member;
-        }
-
-        /// <summary>
-        /// Represents collection of cluster members stored in the memory of the current process.
-        /// </summary>
-        [StructLayout(LayoutKind.Auto)]
-        protected readonly ref struct MemberCollectionBuilder
-        {
-            /// <summary>
-            /// Represents enumerator over cluster members.
-            /// </summary>
-            [StructLayout(LayoutKind.Auto)]
-            public ref struct Enumerator
-            {
-                private LinkedListNode<TMember>? current, backlog;
-
-                internal Enumerator(LinkedList<TMember> members)
+                if (member.Id == localMemberId)
                 {
-                    current = null;
-                    backlog = members.First;
-                }
+                    if (!standbyNode)
+                    {
+                        var newState = new FollowerState(this);
+                        using var currentState = state;
+                        await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+                        state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                    }
 
-                /// <summary>
-                /// Adjusts position of this enumerator.
-                /// </summary>
-                /// <returns><see langword="true"/> if enumerator moved to the next member successfully; otherwise, <see langword="false"/>.</returns>
-                public bool MoveNext()
-                {
-                    current = backlog;
-                    backlog = backlog?.Next;
-                    return current is not null;
-                }
-
-                /// <summary>
-                /// Gets holder of the member holder at the current position of enumerator.
-                /// </summary>
-                public readonly MemberHolder Current => new(current);
-            }
-
-            private readonly MemberCollection members;
-
-            internal MemberCollectionBuilder(IEnumerable<TMember> members)
-                => this.members = new MemberCollection(members);
-
-            internal MemberCollectionBuilder(out IMemberCollection members)
-                => members = this.members = new MemberCollection();
-
-            /// <summary>
-            /// Adds new cluster member.
-            /// </summary>
-            /// <param name="member">A new member to be added into in-memory collection.</param>
-            public void Add(TMember member) => members.AddLast(member);
-
-            /// <summary>
-            /// Returns enumerator over cluster members.
-            /// </summary>
-            /// <returns>The enumerator over cluster members.</returns>
-            public Enumerator GetEnumerator() => new(members);
-
-            internal IMemberCollection Build() => members;
-        }
-
-        /// <summary>
-        /// Represents mutator of a collection of cluster members.
-        /// </summary>
-        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        [Obsolete("Use generic version of this delegate")]
-        protected delegate void MemberCollectionMutator(in MemberCollectionBuilder members);
-
-        /// <summary>
-        /// Represents mutator of a collection of cluster members.
-        /// </summary>
-        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        /// <param name="arg">The argument to be passed to the mutator.</param>
-        /// <typeparam name="T">The type of the argument.</typeparam>
-        protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
-
-        private readonly bool allowPartitioning;
-        private readonly ElectionTimeout electionTimeoutProvider;
-        private readonly CancellationTokenSource transitionCancellation;
-        private readonly double heartbeatThreshold;
-        private volatile IMemberCollection members;
-        private bool standbyNode;
-
-        private AsyncLock transitionSync;  // used to synchronize state transitions
-
-        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
-        private volatile RaftState? state;
-        private volatile TMember? leader;
-        private volatile int electionTimeout;
-        private IPersistentState auditTrail;
-        private Timestamp lastUpdated; // volatile
-
-        /// <summary>
-        /// Initializes a new cluster manager for the local node.
-        /// </summary>
-        /// <param name="config">The configuration of the local node.</param>
-        /// <param name="members">The collection of members that can be modified at construction stage.</param>
-        protected RaftCluster(IClusterMemberConfiguration config, out MemberCollectionBuilder members)
-        {
-            electionTimeoutProvider = config.ElectionTimeout;
-            electionTimeout = electionTimeoutProvider.RandomTimeout();
-            allowPartitioning = config.Partitioning;
-            members = new MemberCollectionBuilder(out var collection);
-            this.members = collection;
-            transitionSync = AsyncLock.Exclusive();
-            transitionCancellation = new CancellationTokenSource();
-            Token = transitionCancellation.Token;
-            auditTrail = new ConsensusOnlyState();
-            heartbeatThreshold = config.HeartbeatThreshold;
-            standbyNode = config.Standby;
-        }
-
-        private static bool IsLocalMember(TMember member) => !member.IsRemote;
-
-        /// <summary>
-        /// Gets logger used by this object.
-        /// </summary>
-        [CLSCompliant(false)]
-        protected virtual ILogger Logger => NullLogger.Instance;
-
-        /// <inheritdoc />
-        ILogger IRaftStateMachine.Logger => Logger;
-
-        /// <summary>
-        /// Gets election timeout used by the local member.
-        /// </summary>
-        public TimeSpan ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
-
-        private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
-
-        /// <summary>
-        /// Indicates that local member is a leader.
-        /// </summary>
-        protected bool IsLeaderLocal => state is LeaderState;
-
-        /// <summary>
-        /// Associates audit trail with the current instance.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
-        public IPersistentState AuditTrail
-        {
-            get => auditTrail;
-            set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        /// <summary>
-        /// Gets token that can be used for all internal asynchronous operations.
-        /// </summary>
-        protected CancellationToken Token { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
-
-        private void ChangeMembers<T>(MemberCollectionMutator<T> mutator, T arg)
-        {
-            var members = new MemberCollectionBuilder(this.members);
-            mutator(in members, arg);
-            this.members = members.Build();
-        }
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <typeparam name="T">The type of the argument to be passed to the mutator.</typeparam>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <param name="arg">The argument to be passed to the mutator.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
-        {
-            var tokenSource = token.LinkTo(Token);
-            var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            try
-            {
-                if (transitionLock)
-                    ChangeMembers(mutator, arg);
-            }
-            finally
-            {
-                transitionLock.Dispose();
-                tokenSource?.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use generic version of this method")]
-        protected Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
-            => ChangeMembersAsync((in MemberCollectionBuilder builder, Missing arg) => mutator(in builder), Missing.Value, token);
-
-        /// <summary>
-        /// Modifies collection of cluster members.
-        /// </summary>
-        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        [Obsolete("Use generic version of this method")]
-        protected Task ChangeMembersAsync(MemberCollectionMutator mutator)
-            => ChangeMembersAsync(mutator, CancellationToken.None);
-
-        /// <summary>
-        /// Gets members of Raft-based cluster.
-        /// </summary>
-        /// <returns>A collection of cluster member.</returns>
-        public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
-
-        /// <inheritdoc />
-        IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
-
-        /// <inheritdoc/>
-        IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
-
-        /// <summary>
-        /// Establishes metrics collector.
-        /// </summary>
-        public MetricsCollector? Metrics
-        {
-            protected get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets Term value maintained by local member.
-        /// </summary>
-        public long Term => auditTrail.Term;
-
-        /// <summary>
-        /// An event raised when leader has been changed.
-        /// </summary>
-        public event ClusterLeaderChangedEventHandler? LeaderChanged;
-
-        /// <summary>
-        /// Represents an event raised when the local node completes its replication with another
-        /// node.
-        /// </summary>
-        public event ReplicationCompletedEventHandler? ReplicationCompleted;
-
-        /// <inheritdoc/>
-        IClusterMember? ICluster.Leader => Leader;
-
-        /// <summary>
-        /// Gets leader of the cluster.
-        /// </summary>
-        public TMember? Leader
-        {
-            get => leader;
-            private set
-            {
-                var oldLeader = Interlocked.Exchange(ref leader, value);
-                if (!ReferenceEquals(oldLeader, value))
-                    LeaderChanged?.Invoke(this, value);
-            }
-        }
-
-        private RaftState CreateInitialState()
-            => state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
-
-        /// <summary>
-        /// Starts serving local member.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel initialization process.</param>
-        /// <returns>The task representing asynchronous execution of the methodC.</returns>
-        public virtual async Task StartAsync(CancellationToken token)
-        {
-            await auditTrail.InitializeAsync(token).ConfigureAwait(false);
-
-            // start active node in Follower state;
-            // otherwise use ephemeral state
-            state = standbyNode ?
-                new StandbyState(this) :
-                CreateInitialState();
-        }
-
-        /// <summary>
-        /// Turns this node into regular state when the node can be elected as leader.
-        /// </summary>
-        /// <remarks>
-        /// Initially, the node can be started in standby mode when it cannot be elected as a leader.
-        /// This can be helpful if you need to wait for full replication with existing leader node.
-        /// When replication finished, you can turn this node into regular state.
-        /// </remarks>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous execution of this operation.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
-        {
-            ThrowIfDisposed();
-            if (standbyNode && state is StandbyState)
-            {
-                var tokenSource = token.LinkTo(Token);
-                var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-                try
-                {
-                    standbyNode = false;
-                    state = CreateInitialState();
-                }
-                finally
-                {
-                    transitionLock.Dispose();
-                    tokenSource?.Dispose();
+                    readinessProbe.TrySetResult();
                 }
             }
         }
+    }
 
-        private async Task CancelPendingRequestsAsync()
+    /// <summary>
+    /// Starts serving local member.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel initialization process.</param>
+    /// <returns>The task representing asynchronous execution of the method.</returns>
+    public virtual async Task StartAsync(CancellationToken token)
+    {
+        await auditTrail.InitializeAsync(token).ConfigureAwait(false);
+
+        var localMember = GetLocalMember();
+
+        // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
+        if (localMember is not null)
         {
-            ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (var member in members)
-                tasks.Add(member.CancelPendingRequestsAsync().AsTask());
-
-            try
-            {
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                Logger.FailedToCancelPendingRequests(e);
-            }
+            localMemberId = localMember.Id;
+            state = standbyNode ? new StandbyState(this) : new FollowerState(this).StartServing(ElectionTimeout, LifecycleToken);
+            readinessProbe.TrySetResult();
+        }
+        else
+        {
+            // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
+            state = new StandbyState(this);
         }
 
-        /// <summary>
-        /// Stops serving local member.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel shutdown process.</param>
-        /// <returns>The task representing asynchronous execution of the method.</returns>
-        public virtual async Task StopAsync(CancellationToken token)
+        TMember? GetLocalMember()
         {
-            if (transitionCancellation.IsCancellationRequested)
-                return;
-            transitionCancellation.Cancel(false);
-            await CancelPendingRequestsAsync().ConfigureAwait(false);
-            leader = null;
-            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+            foreach (var member in members.Values)
             {
-                var currentState = Interlocked.Exchange(ref state, null);
-                if (currentState is not null)
-                {
-                    await currentState.StopAsync().ConfigureAwait(false);
-                    currentState.Dispose();
-                }
-            }
-        }
-
-        private async Task StepDown(long newTerm)
-        {
-            if (newTerm > auditTrail.Term)
-                await auditTrail.UpdateTermAsync(newTerm, true).ConfigureAwait(false);
-            await StepDown().ConfigureAwait(false);
-        }
-
-        private async Task StepDown()
-        {
-            Logger.DowngradingToFollowerState();
-            switch (state)
-            {
-                case FollowerState followerState:
-                    followerState.Refresh();
-                    break;
-                case LeaderState leaderState:
-                    var newState = new FollowerState(this) { Metrics = Metrics };
-                    await leaderState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(ElectionTimeout, Token);
-                    leaderState.Dispose();
-                    Metrics?.MovedToFollowerState();
-                    break;
-                case CandidateState candidateState:
-                    newState = new FollowerState(this) { Metrics = Metrics };
-                    await candidateState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(ElectionTimeout, Token);
-                    candidateState.Dispose();
-                    Metrics?.MovedToFollowerState();
-                    break;
-            }
-
-            Logger.DowngradedToFollowerState();
-        }
-
-        /// <summary>
-        /// Finds cluster member using predicate.
-        /// </summary>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
-        protected TMember? FindMember(Predicate<TMember> criteria)
-            => members.FirstOrDefault(criteria.AsFunc());
-
-        /// <summary>
-        /// Finds cluster member asynchronously using predicate.
-        /// </summary>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected async ValueTask<TMember?> FindMemberAsync(Func<TMember, CancellationToken, ValueTask<bool>> criteria, CancellationToken token)
-        {
-            foreach (var candidate in members)
-            {
-                if (await criteria(candidate, token).ConfigureAwait(false))
-                    return candidate;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Finds cluster member using predicate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the predicate parameter.</typeparam>
-        /// <param name="criteria">The predicate used to find appropriate member.</param>
-        /// <param name="arg">The argument to be passed to the matching function.</param>
-        /// <returns>The cluster member; or <see langword="null"/> if member doesn't exist.</returns>
-        protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
-        {
-            foreach (var member in members)
-            {
-                if (criteria(member, arg))
+                if (!member.IsRemote)
                     return member;
             }
 
             return null;
         }
+    }
 
-        /// <summary>
-        /// Handles InstallSnapshot message received from remote cluster member.
-        /// </summary>
-        /// <typeparam name="TSnapshot">The type of snapshot record.</typeparam>
-        /// <param name="sender">The sender of the snapshot message.</param>
-        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
-        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
-        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        protected async Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-            where TSnapshot : notnull, IRaftLogEntry
+    /// <summary>
+    /// Turns this node into regular state when the node can be elected as leader.
+    /// </summary>
+    /// <remarks>
+    /// Initially, the node can be started in standby mode when it cannot be elected as a leader.
+    /// This can be helpful if you need to wait for full replication with existing leader node.
+    /// When replication finished, you can turn this node into regular state.
+    /// </remarks>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of this operation.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
+    {
+        ThrowIfDisposed();
+        if (standbyNode && state is StandbyState)
         {
-            var tokenSource = token.LinkTo(Token);
-            var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            try
-            {
-                var currentTerm = auditTrail.Term;
-                if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
-                {
-                    await StepDown(senderTerm).ConfigureAwait(false);
-                    Leader = sender;
-                    await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
-                    return new Result<bool>(currentTerm, true);
-                }
+            using var tokenSource = token.LinkTo(LifecycleToken);
+            using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            standbyNode = false;
+            state = CreateInitialState();
+        }
+    }
 
-                return new Result<bool>(currentTerm, false);
-            }
-            finally
+    private async Task CancelPendingRequestsAsync()
+    {
+        ICollection<Task> tasks = new LinkedList<Task>();
+        foreach (var member in members.Values)
+            tasks.Add(member.CancelPendingRequestsAsync().AsTask());
+
+        try
+        {
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.FailedToCancelPendingRequests(e);
+        }
+    }
+
+    /// <summary>
+    /// Stops serving local member.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel shutdown process.</param>
+    /// <returns>The task representing asynchronous execution of the method.</returns>
+    public virtual async Task StopAsync(CancellationToken token)
+    {
+        if (transitionCancellation.IsCancellationRequested)
+            return;
+        transitionCancellation.Cancel(false);
+        await CancelPendingRequestsAsync().ConfigureAwait(false);
+        leader = null;
+        using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+        {
+            var currentState = Interlocked.Exchange(ref state, null);
+            if (currentState is not null)
             {
-                transitionLock.Dispose();
-                tokenSource?.Dispose();
+                await currentState.StopAsync().ConfigureAwait(false);
+                currentState.Dispose();
             }
         }
+    }
 
-        /// <summary>
-        /// Handles AppendEntries message received from remote cluster member.
-        /// </summary>
-        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
-        /// <param name="sender">The sender of the replica message.</param>
-        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
-        /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
-        /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
-        /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
+    private async Task StepDown(long newTerm)
+    {
+        if (newTerm > auditTrail.Term)
+            await auditTrail.UpdateTermAsync(newTerm, true).ConfigureAwait(false);
+        await StepDown().ConfigureAwait(false);
+    }
+
+    private async Task StepDown()
+    {
+        Logger.DowngradingToFollowerState();
+        switch (state)
         {
-            var tokenSource = token.LinkTo(Token);
-            var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            try
+            case FollowerState followerState:
+                followerState.Refresh();
+                break;
+            case LeaderState leaderState:
+                var newState = new FollowerState(this) { Metrics = Metrics };
+                await leaderState.StopAsync().ConfigureAwait(false);
+                state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                leaderState.Dispose();
+                Metrics?.MovedToFollowerState();
+                break;
+            case CandidateState candidateState:
+                newState = new FollowerState(this) { Metrics = Metrics };
+                await candidateState.StopAsync().ConfigureAwait(false);
+                state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                candidateState.Dispose();
+                Metrics?.MovedToFollowerState();
+                break;
+        }
+
+        Logger.DowngradedToFollowerState();
+    }
+
+    /// <summary>
+    /// Handles InstallSnapshot message received from remote cluster member.
+    /// </summary>
+    /// <typeparam name="TSnapshot">The type of snapshot record.</typeparam>
+    /// <param name="sender">The sender of the snapshot message.</param>
+    /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
+    /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
+    /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
+    protected async Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        where TSnapshot : notnull, IRaftLogEntry
+    {
+        using var tokenSource = token.LinkTo(LifecycleToken);
+        using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+        var currentTerm = auditTrail.Term;
+        if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
+        {
+            await StepDown(senderTerm).ConfigureAwait(false);
+            Leader = TryGetMember(sender);
+            await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
+            return new Result<bool>(currentTerm, true);
+        }
+
+        return new Result<bool>(currentTerm, false);
+    }
+
+    /// <summary>
+    /// Handles AppendEntries message received from remote cluster member.
+    /// </summary>
+    /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
+    /// <param name="sender">The sender of the replica message.</param>
+    /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
+    /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
+    /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
+    /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
+    /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
+    /// <param name="config">The list of cluster members.</param>
+    /// <param name="applyConfig">
+    /// <see langword="true"/> to inform that the receiver must apply previously proposed configuration;
+    /// <see langword="false"/> to propose a new configuration.
+    /// </param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
+    protected async Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
+        using var tokenSource = token.LinkTo(LifecycleToken);
+        using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+        var result = false;
+        var currentTerm = auditTrail.Term;
+        if (currentTerm <= senderTerm)
+        {
+            Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
+            await StepDown(senderTerm).ConfigureAwait(false);
+            var senderMember = TryGetMember(sender);
+            Leader = senderMember;
+            if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
             {
-                var result = false;
-                var currentTerm = auditTrail.Term;
-                if (currentTerm <= senderTerm)
+                var emptySet = entries.RemainingCount == 0L;
+
+                /*
+                * AppendAsync is called with skipCommitted=true because HTTP response from the previous
+                * replication might fail but the log entry was committed by the local node.
+                * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
+                * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
+                * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
+                */
+                await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
+
+                if (commitIndex <= auditTrail.GetLastIndex(true))
                 {
-                    Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
-                    await StepDown(senderTerm).ConfigureAwait(false);
-                    Leader = sender;
-                    if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
+                    // This node is in sync with the leader and no entries arrived
+                    if (emptySet)
                     {
-                        var emptySet = entries.RemainingCount > 0L;
+                        if (senderMember is not null)
+                            ReplicationCompleted?.Invoke(this, senderMember);
 
-                        /*
-                        * AppendAsync is called with skipCommitted=true because HTTP response from the previous
-                        * replication might fail but the log entry was committed by the local node.
-                        * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
-                        * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
-                        * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
-                        */
-                        await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
-
-                        if (commitIndex <= auditTrail.GetLastIndex(true))
-                        {
-                            // This node is in sync with the leader and no entries arrived
-                            if (emptySet)
-                                ReplicationCompleted?.Invoke(this, sender);
-
-                            result = true;
-                        }
-                        else
-                        {
-                            result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
-                        }
+                        await UnfreezeAsync().ConfigureAwait(false);
                     }
-                }
 
-                return new Result<bool>(currentTerm, result);
-            }
-            finally
-            {
-                transitionLock.Dispose();
-                tokenSource?.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Receives preliminary vote from the potential Candidate in the cluster.
-        /// </summary>
-        /// <param name="nextTerm">Caller's current term + 1.</param>
-        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
-        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
-        protected async Task<Result<bool>> ReceivePreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        {
-            bool result;
-            long currentTerm;
-
-            // PreVote doesn't cause transition to another Raft state so locking not needed
-            var tokenSource = token.LinkTo(Token);
-            try
-            {
-                currentTerm = auditTrail.Term;
-
-                // provide leader stickiness
-                result = Timestamp.Current - Timestamp.VolatileRead(ref lastUpdated).Value >= ElectionTimeout &&
-                    currentTerm <= nextTerm &&
-                    await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                tokenSource?.Dispose();
-            }
-
-            return new Result<bool>(currentTerm, result);
-        }
-
-        /// <summary>
-        /// Votes for the new candidate.
-        /// </summary>
-        /// <param name="sender">The vote sender.</param>
-        /// <param name="senderTerm">Term value provided by sender of the request.</param>
-        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
-        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        {
-            var currentTerm = auditTrail.Term;
-            var result = false;
-
-            if (currentTerm > senderTerm)
-                goto exit;
-
-            var tokenSource = token.LinkTo(Token);
-            var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            try
-            {
-                if (currentTerm != senderTerm)
-                {
-                    Leader = null;
-                    await StepDown(senderTerm).ConfigureAwait(false);
-                }
-                else if (state is FollowerState follower)
-                {
-                    follower.Refresh();
-                }
-                else if (state is StandbyState)
-                {
-                    Metrics?.ReportHeartbeat();
+                    result = true;
                 }
                 else
                 {
-                    goto exit;
+                    result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
                 }
 
-                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+                // process configuration
+                var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
+                if (config.Fingerprint == fingerprint)
                 {
-                    await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
-                    result = true;
+                    if (applyConfig)
+                        await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                }
+                else if (applyConfig is false)
+                {
+                    await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
+                }
+                else
+                {
+                    result = false;
                 }
             }
-            finally
-            {
-                transitionLock.Dispose();
-                tokenSource?.Dispose();
-            }
-
-        exit:
-            return new Result<bool>(currentTerm, result);
         }
 
-        /// <summary>
-        /// Revokes leadership of the local node.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> ReceiveResignAsync(CancellationToken token)
+        return new Result<bool>(currentTerm, result);
+    }
+
+    /// <summary>
+    /// Receives preliminary vote from the potential Candidate in the cluster.
+    /// </summary>
+    /// <param name="nextTerm">Caller's current term + 1.</param>
+    /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+    /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
+    protected async Task<Result<bool>> PreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    {
+        bool result;
+        long currentTerm;
+
+        // PreVote doesn't cause transition to another Raft state so locking not needed
+        var tokenSource = token.LinkTo(LifecycleToken);
+        try
         {
-            if (state is StandbyState)
-                goto resign_denied;
+            currentTerm = auditTrail.Term;
 
-            var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            try
-            {
-                if (state is LeaderState leaderState)
-                {
-                    await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
-                    leaderState.Dispose();
-                    Leader = null;
-                    return true;
-                }
-            }
-            finally
-            {
-                lockHolder.Dispose();
-            }
+            // provide leader stickiness
+            result = Timestamp.Current - Timestamp.VolatileRead(ref lastUpdated).Value >= ElectionTimeout &&
+                currentTerm <= nextTerm &&
+                await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
 
-        resign_denied:
+        return new Result<bool>(currentTerm, result);
+    }
+
+    /// <summary>
+    /// Votes for the new candidate.
+    /// </summary>
+    /// <param name="sender">The vote sender.</param>
+    /// <param name="senderTerm">Term value provided by sender of the request.</param>
+    /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+    /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
+    protected async Task<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    {
+        var currentTerm = auditTrail.Term;
+
+        if (currentTerm > senderTerm)
+            return new(currentTerm, false);
+
+        using var tokenSource = token.LinkTo(LifecycleToken);
+        using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+        var result = false;
+        if (currentTerm != senderTerm)
+        {
+            Leader = null;
+            await StepDown(senderTerm).ConfigureAwait(false);
+        }
+        else if (state is FollowerState follower)
+        {
+            follower.Refresh();
+        }
+        else if (state is StandbyState)
+        {
+            Metrics?.ReportHeartbeat();
+        }
+        else
+        {
+            goto exit;
+        }
+
+        if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+        {
+            await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
+            result = true;
+        }
+
+    exit:
+        return new(currentTerm, result);
+    }
+
+    /// <summary>
+    /// Revokes leadership of the local node.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
+    protected async Task<bool> ResignAsync(CancellationToken token)
+    {
+        if (state is StandbyState)
             return false;
+
+        using var tokenSource = token.LinkTo(LifecycleToken);
+        using var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+        bool result;
+        if (state is LeaderState leaderState)
+        {
+            await leaderState.StopAsync().ConfigureAwait(false);
+            state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
+            leaderState.Dispose();
+            Leader = null;
+            result = true;
+        }
+        else
+        {
+            result = false;
         }
 
-        /// <inheritdoc/>
-        async Task<bool> ICluster.ResignAsync(CancellationToken token)
+        return result;
+    }
+
+    /// <inheritdoc/>
+    async Task<bool> ICluster.ResignAsync(CancellationToken token)
+    {
+        if (await ResignAsync(token).ConfigureAwait(false))
         {
-            if (await ReceiveResignAsync(token).ConfigureAwait(false))
+            return true;
+        }
+        else
+        {
+            var leader = Leader;
+            return leader is not null && await leader.ResignAsync(token).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
+    {
+        Debug.Assert(state is not StandbyState);
+        using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+        if (lockHolder)
+        {
+            if (randomizeTimeout)
+                electionTimeout = electionTimeoutProvider.RandomTimeout(random);
+            await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    async void IRaftStateMachine.MoveToCandidateState()
+    {
+        Debug.Assert(state is not StandbyState);
+
+        var currentTerm = auditTrail.Term;
+        var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
+        using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+        if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
+        {
+            Logger.TransitionToCandidateStateStarted();
+
+            // if term changed after lock then assumes that leader will be updated soon
+            if (currentTerm == auditTrail.Term)
+                Leader = null;
+            else
+                readyForTransition = false;
+
+            if (readyForTransition)
             {
-                return true;
+                followerState.Dispose();
+                await auditTrail.UpdateVotedForAsync(LocalMemberId).ConfigureAwait(false);     // vote for self
+                state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                Metrics?.MovedToCandidateState();
+                Logger.TransitionToCandidateStateCompleted();
             }
             else
             {
-                var leader = Leader;
-                return leader is not null && await leader.ResignAsync(token).ConfigureAwait(false);
+                // resume follower state
+                followerState.StartServing(ElectionTimeout, LifecycleToken);
+                Logger.DowngradedToFollowerState();
             }
         }
 
-        /// <inheritdoc />
-        async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
+        // pre-vote logic that allow to decide about transition to candidate state
+        async Task<bool> PreVoteAsync(long currentTerm)
         {
-            Debug.Assert(state is not StandbyState);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder)
+            var lastIndex = auditTrail.GetLastIndex(false);
+            var lastTerm = await auditTrail.GetTermAsync(lastIndex, LifecycleToken).ConfigureAwait(false);
+
+            ICollection<Task<Result<bool>>> responses = new LinkedList<Task<Result<bool>>>();
+            foreach (var member in Members)
+                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, LifecycleToken));
+
+            var votes = 0;
+
+            // analyze responses
+            foreach (var response in responses)
             {
-                if (randomizeTimeout)
-                    electionTimeout = electionTimeoutProvider.RandomTimeout();
-                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
-            }
-        }
-
-        /// <inheritdoc />
-        async void IRaftStateMachine.MoveToCandidateState()
-        {
-            Debug.Assert(state is not StandbyState);
-
-            var currentTerm = auditTrail.Term;
-            var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
-            {
-                Logger.TransitionToCandidateStateStarted();
-
-                // if term changed after lock then assumes that leader will be updated soon
-                if (currentTerm == auditTrail.Term)
-                    Leader = null;
-                else
-                    readyForTransition = false;
-
-                if (readyForTransition)
+                try
                 {
-                    followerState.Dispose();
-                    var localMember = FindMember(IsLocalMember);
-                    await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     // vote for self
-                    state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
-                    Metrics?.MovedToCandidateState();
-                    Logger.TransitionToCandidateStateCompleted();
+                    var result = await response.ConfigureAwait(false);
+                    votes += result.Value ? +1 : -1;
                 }
-                else
+                catch (OperationCanceledException)
                 {
-                    // resume follower state
-                    followerState.StartServing(ElectionTimeout, Token);
-                    Logger.DowngradedToFollowerState();
+                    return false;
+                }
+                catch (MemberUnavailableException)
+                {
+                    votes -= 1;
+                }
+                finally
+                {
+                    response.Dispose();
                 }
             }
 
-            // pre-vote logic that allow to decide about transition to candidate state
-            async Task<bool> PreVoteAsync(long currentTerm)
-            {
-                var lastIndex = auditTrail.GetLastIndex(false);
-                var lastTerm = await auditTrail.GetTermAsync(lastIndex, Token).ConfigureAwait(false);
+            return votes > 0;
+        }
+    }
 
-                ICollection<Task<Result<bool>>> responses = new LinkedList<Task<Result<bool>>>();
-                foreach (var member in Members)
-                    responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, Token));
+    /// <inheritdoc />
+    async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
+    {
+        Debug.Assert(state is not StandbyState);
+        Logger.TransitionToLeaderStateStarted();
+        using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+        long currentTerm;
+        if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
+        {
+            candidateState.Dispose();
+            Leader = newLeader as TMember;
+            state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
+                .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
+            await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+            Metrics?.MovedToLeaderState();
+            Logger.TransitionToLeaderStateCompleted();
+        }
+    }
 
-                var votes = 0;
+    /// <summary>
+    /// Forces replication.
+    /// </summary>
+    /// <param name="timeout">The time to wait until replication ends.</param>
+    /// <param name="token">The token that can be used to cancel waiting.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
+        => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
-                // analyze responses
-                foreach (var response in responses)
-                {
-                    try
-                    {
-                        var result = await response.ConfigureAwait(false);
-                        votes += result.Value ? +1 : -1;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return false;
-                    }
-                    catch (MemberUnavailableException)
-                    {
-                        votes -= 1;
-                    }
-                    finally
-                    {
-                        response.Dispose();
-                    }
-                }
+    private async Task<bool> ReplicateAsync<TEntry>(TEntry entry, Timeout timeout, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
+        using var tokenSource = token.LinkTo(LifecycleToken);
 
-                return votes > 0;
-            }
+        // 1 - append entry to the log
+        var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
+        timeout.ThrowIfExpired(out var remaining);
+
+        // 2 - force replication
+        await ForceReplicationAsync(remaining, token).ConfigureAwait(false);
+        timeout.ThrowIfExpired(out remaining);
+
+        // 3 - wait for commit
+        return await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false)
+            ? auditTrail.Term == entry.Term
+            : throw new TimeoutException();
+    }
+
+    /// <summary>
+    /// Appends and replicates the log entry.
+    /// </summary>
+    /// <typeparam name="TEntry">The type of the log entry.</typeparam>
+    /// <param name="entry">The log entry to append.</param>
+    /// <param name="timeout">The timeout for the operation.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>
+    /// <see langword="true"/> if the has been replicated successfully;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public Task<bool> ReplicateAsync<TEntry>(TEntry entry, TimeSpan timeout, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+        => ReplicateAsync(entry, new(timeout), token);
+
+    private TMember? TryGetPeer(EndPoint peer)
+    {
+        foreach (var member in members.Values)
+        {
+            if (Equals(member.EndPoint, peer))
+                return member;
         }
 
-        /// <inheritdoc />
-        async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
+        return null;
+    }
+
+    /// <inheritdoc />
+    IRaftClusterMember? IPeerMesh<IRaftClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
+
+    /// <inheritdoc />
+    IClusterMember? IPeerMesh<IClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
+
+    /// <inheritdoc />
+    IReadOnlySet<EndPoint> IPeerMesh.Peers => ImmutableHashSet.CreateRange(members.Values.Select(static m => m.EndPoint));
+
+    private void Cleanup()
+    {
+        Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
+        transitionCancellation.Dispose();
+        transitionSync.Dispose();
+        leader = null;
+        Interlocked.Exchange(ref state, null)?.Dispose();
+        TrySetDisposedException(readinessProbe);
+        ConfigurationStorage.Dispose();
+
+        memberAddedHandlers = memberRemovedHandlers = null;
+        leaderChangedHandlers = null;
+    }
+
+    /// <summary>
+    /// Releases managed and unmanaged resources associated with this object.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            Debug.Assert(state is not StandbyState);
-            Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            long currentTerm;
-            if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
-            {
-                candidateState.Dispose();
-                Leader = newLeader as TMember;
-                state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }
-                    .StartLeading(HeartbeatTimeout, auditTrail, Token);
-                await auditTrail.AppendNoOpEntry(Token).ConfigureAwait(false);
-                Metrics?.MovedToLeaderState();
-                Logger.TransitionToLeaderStateCompleted();
-            }
-        }
-
-        /// <summary>
-        /// Forces replication.
-        /// </summary>
-        /// <param name="timeout">The time to wait until replication ends.</param>
-        /// <param name="token">The token that can be used to cancel waiting.</param>
-        /// <returns><see langword="true"/> if replication is completed; <see langword="false"/>.</returns>
-        /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
-            => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
-
-        private void Cleanup()
-        {
-            ICollection<TMember> members = Interlocked.Exchange(ref this.members, EmptyCollection);
-            Dispose(members);
-            if (members.Count > 0)
-                members.Clear();
-            transitionCancellation.Dispose();
-            transitionSync.Dispose();
-            leader = null;
-            Interlocked.Exchange(ref state, null)?.Dispose();
-        }
-
-        /// <summary>
-        /// Releases managed and unmanaged resources associated with this object.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (!transitionCancellation.IsCancellationRequested)
-                    Logger.StopAsyncWasNotCalled();
-                Cleanup();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        /// <inheritdoc />
-        protected override async ValueTask DisposeAsyncCore()
-        {
-            await StopAsync(CancellationToken.None).ConfigureAwait(false);
+            if (!transitionCancellation.IsCancellationRequested)
+                Logger.StopAsyncWasNotCalled();
             Cleanup();
         }
 
-        /// <inheritdoc />
-        public ValueTask DisposeAsync() => DisposeAsync(false);
+        base.Dispose(disposing);
     }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        await StopAsync(CancellationToken.None).ConfigureAwait(false);
+        Cleanup();
+    }
+
+    /// <inheritdoc />
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
 }

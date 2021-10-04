@@ -1,70 +1,66 @@
-using System;
 using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace DotNext.Net.Cluster.Messaging
+namespace DotNext.Net.Cluster.Messaging;
+
+using Buffers;
+using IO;
+
+// this is not a public class because it's designed for special purpose: bufferize content of another DTO.
+// For that purpose we using growable buffer which relies on the pooled memory
+internal sealed class InMemoryMessage : Disposable, IDataTransferObject, IBufferedMessage
 {
-    using Buffers;
-    using IO;
+    private readonly int initialSize;
+    private MemoryOwner<byte> buffer;
 
-    // this is not a public class because it's designed for special purpose: bufferize content of another DTO.
-    // For that purpose we using growable buffer which relies on the pooled memory
-    internal sealed class InMemoryMessage : Disposable, IDataTransferObject, IBufferedMessage
+    internal InMemoryMessage(string name, ContentType type, int initialSize)
     {
-        private readonly int initialSize;
-        private MemoryOwner<byte> buffer;
+        Name = name;
+        Type = type;
+        this.initialSize = initialSize;
+    }
 
-        internal InMemoryMessage(string name, ContentType type, int initialSize)
-        {
-            Name = name;
-            Type = type;
-            this.initialSize = initialSize;
-        }
+    public string Name { get; }
 
-        public string Name { get; }
+    public ContentType Type { get; }
 
-        public ContentType Type { get; }
+    bool IDataTransferObject.IsReusable => true;
 
-        bool IDataTransferObject.IsReusable => true;
+    long? IDataTransferObject.Length => buffer.Length;
 
-        long? IDataTransferObject.Length => buffer.Length;
+    private ReadOnlyMemory<byte> Content => buffer.Memory;
 
-        private ReadOnlyMemory<byte> Content => buffer.Memory;
+    public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        where TWriter : IAsyncBinaryWriter
+        => writer.WriteAsync(Content, null, token);
 
-        public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            where TWriter : IAsyncBinaryWriter
-            => writer.WriteAsync(Content, null, token);
+    async ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
+    {
+        buffer.Dispose();
+        buffer = await source.ToMemoryAsync(token: token).ConfigureAwait(false);
+    }
 
-        async ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
+    void IBufferedMessage.PrepareForReuse()
+    {
+    }
+
+    ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        => transformation.TransformAsync(IAsyncBinaryReader.Create(Content), token);
+
+    bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+    {
+        memory = buffer.Memory;
+        return true;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
             buffer.Dispose();
-            buffer = await source.ToMemoryAsync(token: token).ConfigureAwait(false);
         }
 
-        void IBufferedMessage.PrepareForReuse()
-        {
-        }
-
-        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            => transformation.TransformAsync(IAsyncBinaryReader.Create(Content), token);
-
-        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
-        {
-            memory = buffer.Memory;
-            return true;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                buffer.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync(false);
+        base.Dispose(disposing);
     }
+
+    ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
 }

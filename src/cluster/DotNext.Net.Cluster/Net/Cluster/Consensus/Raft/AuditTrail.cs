@@ -1,40 +1,36 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+using IO.Log;
+
+internal static class AuditTrail
 {
-    using IO.Log;
-
-    internal static class AuditTrail
+    private sealed class TermReader : ILogEntryConsumer<IRaftLogEntry, long>
     {
-        private sealed class TermReader : ILogEntryConsumer<IRaftLogEntry, long>
+        internal static readonly ILogEntryConsumer<IRaftLogEntry, long> Instance = new TermReader();
+
+        private TermReader()
         {
-            internal static readonly ILogEntryConsumer<IRaftLogEntry, long> Instance = new TermReader();
-
-            private TermReader()
-            {
-            }
-
-            ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-                => new(entries[0].Term);
-
-            LogEntryReadOptimizationHint ILogEntryConsumer<IRaftLogEntry, long>.OptimizationHint
-                => LogEntryReadOptimizationHint.MetadataOnly;
         }
 
-        internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
-            => index == 0L ? new(0L) : auditTrail.ReadAsync<long>(TermReader.Instance, index, index, token);
+        ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            => new(entries[0].Term);
 
-        internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
-        {
-            var localIndex = auditTrail.GetLastIndex(false);
-            return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
-        }
-
-        internal static async ValueTask<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
-            => index <= auditTrail.GetLastIndex(false) && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
-
-        internal static ValueTask<long> AppendNoOpEntry(this IPersistentState auditTrail, CancellationToken token)
-            => auditTrail.AppendAsync(new EmptyLogEntry(auditTrail.Term), token);
+        LogEntryReadOptimizationHint ILogEntryConsumer<IRaftLogEntry, long>.OptimizationHint
+            => LogEntryReadOptimizationHint.MetadataOnly;
     }
+
+    internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
+        => index == 0L ? new(0L) : auditTrail.ReadAsync<long>(TermReader.Instance, index, index, token);
+
+    internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
+    {
+        var localIndex = auditTrail.GetLastIndex(false);
+        return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
+    }
+
+    internal static async ValueTask<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
+        => index <= auditTrail.GetLastIndex(false) && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
+
+    internal static ValueTask<long> AppendNoOpEntry(this IPersistentState auditTrail, CancellationToken token)
+        => auditTrail.AppendAsync(new EmptyLogEntry(auditTrail.Term), token);
 }

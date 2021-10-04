@@ -1,8 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Net.NetworkInformation
 {

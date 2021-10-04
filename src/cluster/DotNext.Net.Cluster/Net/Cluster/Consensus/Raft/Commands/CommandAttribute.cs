@@ -1,25 +1,38 @@
-using System;
+namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Commands
+using Runtime.Serialization;
+
+/// <summary>
+/// Registers command type in the interpreter.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public abstract class CommandAttribute : Attribute
 {
-    using Runtime.Serialization;
+    /// <summary>
+    /// Initializes a new attribute.
+    /// </summary>
+    /// <param name="id">The identifier of the log entry.</param>
+    protected CommandAttribute(int id) => Id = id;
 
     /// <summary>
-    /// Marks target value type as the command of the database engine
-    /// constructed on top of <see cref="PersistentState"/> type.
+    /// Gets unique identifier of the log entry.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Struct, AllowMultiple = false)]
-    public sealed class CommandAttribute : SerializableAttribute
-    {
-        /// <summary>
-        /// Initializes a new attribute.
-        /// </summary>
-        /// <param name="id">The unique identifier of the command.</param>
-        public CommandAttribute(int id) => Id = id;
+    public int Id { get; }
+}
 
-        /// <summary>
-        /// Gets unique identifier of the command.
-        /// </summary>
-        public int Id { get; }
+/// <summary>
+/// Registers command type in the interpreter.
+/// </summary>
+/// <typeparam name="TCommand">The type of the command.</typeparam>
+public sealed class CommandAttribute<TCommand> : CommandAttribute
+    where TCommand : notnull, ISerializable<TCommand>
+{
+    /// <summary>
+    /// Initializes a new attribute.
+    /// </summary>
+    /// <param name="id">The identifier of the log entry.</param>
+    public CommandAttribute(int id)
+        : base(id)
+    {
     }
 }

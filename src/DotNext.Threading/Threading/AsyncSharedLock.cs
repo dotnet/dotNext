@@ -1,250 +1,319 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Threading
-{
-    using Runtime;
-    using static Tasks.TaskHelpers;
+namespace DotNext.Threading;
 
-    /// <summary>
-    /// Represents a lock that can be acquired in exclusive or weak mode.
-    /// </summary>
-    /// <remarks>
-    /// This lock represents the combination of semaphore and reader-writer
-    /// lock. The caller can acquire weak locks simultaneously which count
-    /// is limited by the concurrency level passed into the constructor. However, the
-    /// only one caller can acquire the lock exclusively.
-    /// </remarks>
-    public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
+using Tasks.Pooling;
+
+/// <summary>
+/// Represents a lock that can be acquired in exclusive or weak mode.
+/// </summary>
+/// <remarks>
+/// This lock represents the combination of semaphore and reader-writer
+/// lock. The caller can acquire weak locks simultaneously which count
+/// is limited by the concurrency level passed into the constructor. However, the
+/// only one caller can acquire the lock exclusively.
+/// </remarks>
+public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
+{
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+    {
+        private Action<WaitNode>? consumedCallback;
+        internal bool IsStrongLock;
+
+        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
+
+        private protected override void ResetCore()
+        {
+            consumedCallback = null;
+            base.ResetCore();
+        }
+
+        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
+        {
+            set => consumedCallback = value;
+        }
+    }
+
+    private sealed class State
     {
         private const long ExclusiveMode = -1L;
 
-        private sealed class StrongLockNode : WaitNode
-        {
-            internal StrongLockNode()
-                : base()
-            {
-            }
+        internal readonly long ConcurrencyLevel;
+        private long remainingLocks;   // -1 means that the lock is acquired in exclusive mode
 
-            internal StrongLockNode(WaitNode previous)
-                : base(previous)
-            {
-            }
+        internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
+
+        internal long RemainingLocks
+        {
+            get => remainingLocks.VolatileRead();
+            private set => remainingLocks.VolatileWrite(value);
         }
 
-        [StructLayout(LayoutKind.Auto)]
-        private struct State : ILockManager<StrongLockNode>, ILockManager<WaitNode>
+        internal bool IsWeakLockAllowed => RemainingLocks > 0L;
+
+        internal void AcquireWeakLock() => remainingLocks.DecrementAndGet();
+
+        internal void ExitLock()
         {
-            internal readonly long ConcurrencyLevel;
-            internal long RemainingLocks;   // -1 means that the lock is acquired in exclusive mode
-
-            internal State(long concurrencyLevel) => ConcurrencyLevel = RemainingLocks = concurrencyLevel;
-
-            internal long IncrementLocks() => RemainingLocks = RemainingLocks == ExclusiveMode ? ConcurrencyLevel : RemainingLocks + 1L;
-
-            internal readonly bool IsEmpty => RemainingLocks == ConcurrencyLevel;
-
-            bool ILockManager<StrongLockNode>.TryAcquire()
+            if (RemainingLocks < 0L)
             {
-                if (RemainingLocks < ConcurrencyLevel)
-                    return false;
-                RemainingLocks = ExclusiveMode;
-                return true;
-            }
-
-            readonly StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
-
-            bool ILockManager<WaitNode>.TryAcquire()
-            {
-                if (RemainingLocks <= 0L)
-                    return false;
-                RemainingLocks -= 1L;
-                return true;
-            }
-
-            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
-        }
-
-        private readonly Box<State> state;
-
-        /// <summary>
-        /// Initializes a new shared lock.
-        /// </summary>
-        /// <param name="concurrencyLevel">The number of unique callers that can obtain shared lock simultaneously.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
-        public AsyncSharedLock(long concurrencyLevel)
-        {
-            if (concurrencyLevel < 1L)
-                throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
-            state = new Box<State>(new State(concurrencyLevel));
-        }
-
-        /// <summary>
-        /// Gets the number of shared locks that can be acquired.
-        /// </summary>
-        public long RemainingCount => Math.Max(state.Value.RemainingLocks, 0L);
-
-        /// <summary>
-        /// Gets the maximum number of locks that can be obtained simultaneously.
-        /// </summary>
-        public long ConcurrencyLevel => state.Value.ConcurrencyLevel;
-
-        /// <summary>
-        /// Indicates that the lock is acquired in exclusive or shared mode.
-        /// </summary>
-        public bool IsLockHeld => state.Value.RemainingLocks < ConcurrencyLevel;
-
-        /// <summary>
-        /// Indicates that the lock is acquired in exclusive mode.
-        /// </summary>
-        public bool IsStrongLockHeld => state.Value.RemainingLocks == ExclusiveMode;
-
-        /// <summary>
-        /// Attempts to obtain lock synchronously without blocking caller thread.
-        /// </summary>
-        /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
-        /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryAcquire(bool strongLock)
-        {
-            ThrowIfDisposed();
-            return strongLock ? TryAcquire<StrongLockNode, State>(ref state.Value) : TryAcquire<WaitNode, State>(ref state.Value);
-        }
-
-        /// <summary>
-        /// Attempts to enter the lock asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token)
-            => strongLock ? WaitAsync<StrongLockNode, State>(ref state.Value, timeout, token) : WaitAsync<WaitNode, State>(ref state.Value, timeout, token);
-
-        /// <summary>
-        /// Attempts to enter the lock asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout) => TryAcquireAsync(strongLock, timeout, CancellationToken.None);
-
-        /// <summary>
-        /// Entres the lock asynchronously.
-        /// </summary>
-        /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing lock acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default) => TryAcquireAsync(strongLock, timeout, token).CheckOnTimeout();
-
-        /// <summary>
-        /// Entres the lock asynchronously.
-        /// </summary>
-        /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing lock acquisition operation.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
-
-        private void ResumePendingCallers()
-        {
-            Debug.Assert(Monitor.IsEntered(this));
-
-            ref var stateHolder = ref state.Value;
-            for (WaitNode? current = first, next; current is not null && current is not StrongLockNode && !IsTerminalNode(current) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
-            {
-                next = current.Next;
-                RemoveNode(current);
-                current.SetResult();
-            }
-        }
-
-        private void Release(ref State stateHolder)
-        {
-            Debug.Assert(Monitor.IsEntered(this));
-            Debug.Assert(Unsafe.AreSame(ref stateHolder, ref state.Value));
-
-            if (stateHolder.IncrementLocks() == ConcurrencyLevel && first is StrongLockNode exclusiveNode)
-            {
-                RemoveNode(exclusiveNode);
-                exclusiveNode.SetResult();
-                stateHolder.RemainingLocks = ExclusiveMode;
+                RemainingLocks = ConcurrencyLevel;
             }
             else
             {
-                ResumePendingCallers();
+                remainingLocks.IncrementAndGet();
             }
         }
 
-        /// <summary>
-        /// Releases the acquired weak lock or downgrade exclusive lock to the weak lock.
-        /// </summary>
-        /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Downgrade()
-        {
-            ThrowIfDisposed();
-            ref var stateHolder = ref state.Value;
-            if (stateHolder.IsEmpty) // nothing to release
-                throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+        internal bool IsStrongLockHeld => RemainingLocks < 0L;
 
-            if (stateHolder.RemainingLocks == ExclusiveMode)
-            {
-                stateHolder.RemainingLocks = ConcurrencyLevel - 1;
-                ResumePendingCallers();
-            }
-            else if (!ProcessDisposeQueue())
-            {
-                Release(ref stateHolder);
-            }
+        internal bool IsStrongLockAllowed => RemainingLocks == ConcurrencyLevel;
+
+        internal void AcquireStrongLock() => RemainingLocks = ExclusiveMode;
+
+        internal void Downgrade() => RemainingLocks = ConcurrencyLevel - 1L;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct WeakLockManager : ILockManager<WaitNode>
+    {
+        private readonly State state;
+
+        internal WeakLockManager(State state) => this.state = state;
+
+        bool ILockManager.IsLockAllowed => state.IsWeakLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireWeakLock();
+
+        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+            => node.IsStrongLock = false;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct StrongLockManager : ILockManager<WaitNode>
+    {
+        private readonly State state;
+
+        internal StrongLockManager(State state) => this.state = state;
+
+        bool ILockManager.IsLockAllowed => state.IsStrongLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireStrongLock();
+
+        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+            => node.IsStrongLock = true;
+    }
+
+    private readonly ValueTaskPool<WaitNode> pool;
+    private readonly State state;
+
+    /// <summary>
+    /// Initializes a new shared lock.
+    /// </summary>
+    /// <param name="concurrencyLevel">The number of unique callers that can obtain shared lock simultaneously.</param>
+    /// <param name="limitedConcurrency">
+    /// <see langword="true"/> if the potential number of concurrent flows will not be greater than <paramref name="concurrencyLevel"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
+    public AsyncSharedLock(long concurrencyLevel, bool limitedConcurrency = true)
+    {
+        if (concurrencyLevel < 1L)
+            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+
+        state = new(concurrencyLevel);
+        Action<WaitNode> removeFromList = RemoveAndDrainWaitQueue;
+        pool = limitedConcurrency
+            ? new(concurrencyLevel.Truncate(), removeFromList)
+            : new(removeFromList);
+    }
+
+    /// <summary>
+    /// Gets the number of shared locks that can be acquired.
+    /// </summary>
+    public long RemainingCount => Math.Max(state.RemainingLocks, 0L);
+
+    /// <summary>
+    /// Gets the maximum number of locks that can be obtained simultaneously.
+    /// </summary>
+    public long ConcurrencyLevel => state.ConcurrencyLevel;
+
+    /// <summary>
+    /// Indicates that the lock is acquired in exclusive or shared mode.
+    /// </summary>
+    public bool IsLockHeld => state.RemainingLocks < state.ConcurrencyLevel;
+
+    /// <summary>
+    /// Indicates that the lock is acquired in exclusive mode.
+    /// </summary>
+    public bool IsStrongLockHeld => state.IsStrongLockHeld;
+
+    /// <summary>
+    /// Attempts to obtain lock synchronously without blocking caller thread.
+    /// </summary>
+    /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
+    /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool TryAcquire(bool strongLock)
+    {
+        ThrowIfDisposed();
+        if (strongLock)
+        {
+            var manager = new StrongLockManager(state);
+            return TryAcquire(ref manager);
         }
-
-        /// <summary>
-        /// Release the acquired lock.
-        /// </summary>
-        /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Release()
+        else
         {
-            ThrowIfDisposed();
-            ref var stateHolder = ref state.Value;
-            if (stateHolder.IsEmpty) // nothing to release
-                throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            if (!ProcessDisposeQueue())
-            {
-                Release(ref stateHolder);
-            }
-        }
-
-        /// <summary>
-        /// Disposes this lock asynchronously and gracefully.
-        /// </summary>
-        /// <remarks>
-        /// If this lock is not acquired then the method just completes synchronously.
-        /// Otherwise, it waits for calling of <see cref="Release()"/> or <see cref="Downgrade"/> method.
-        /// </remarks>
-        /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public unsafe ValueTask DisposeAsync()
-        {
-            return IsDisposed ? new ValueTask() : DisposeAsync(this, &CheckLockState);
-
-            static bool CheckLockState(AsyncSharedLock obj) => obj.IsLockHeld;
+            var manager = new WeakLockManager(state);
+            return TryAcquire(ref manager);
         }
     }
+
+    /// <summary>
+    /// Attempts to enter the lock asynchronously, with an optional time-out.
+    /// </summary>
+    /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
+    {
+        if (strongLock)
+        {
+            var manager = new StrongLockManager(state);
+            return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        }
+        else
+        {
+            var manager = new WeakLockManager(state);
+            return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        }
+    }
+
+    /// <summary>
+    /// Entres the lock asynchronously.
+    /// </summary>
+    /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
+    {
+        if (strongLock)
+        {
+            var manager = new StrongLockManager(state);
+            return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+        }
+        else
+        {
+            var manager = new WeakLockManager(state);
+            return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+        }
+    }
+
+    /// <summary>
+    /// Entres the lock asynchronously.
+    /// </summary>
+    /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
+        => AcquireAsync(strongLock, InfiniteTimeSpan, token);
+
+    private protected sealed override void DrainWaitQueue()
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        {
+            next = current.Next as WaitNode;
+
+            if (current.IsCompleted)
+            {
+                RemoveNode(current);
+                continue;
+            }
+
+            switch ((current.IsStrongLock, state.IsStrongLockAllowed))
+            {
+                case (true, true):
+                    if (current.TrySetResult(true))
+                    {
+                        RemoveNode(current);
+                        state.AcquireStrongLock();
+                        return;
+                    }
+
+                    continue;
+                case (true, false):
+                    return;
+                default:
+                    // no more locks to acquire
+                    if (!state.IsWeakLockAllowed)
+                        return;
+
+                    if (current.TrySetResult(true))
+                    {
+                        RemoveNode(current);
+                        state.AcquireWeakLock();
+                    }
+
+                    continue;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Releases the acquired weak lock or downgrade exclusive lock to the weak lock.
+    /// </summary>
+    /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public void Downgrade()
+    {
+        ThrowIfDisposed();
+
+        if (state.IsStrongLockAllowed) // nothing to release
+            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+
+        state.Downgrade();
+        DrainWaitQueue();
+    }
+
+    /// <summary>
+    /// Release the acquired lock.
+    /// </summary>
+    /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public void Release()
+    {
+        ThrowIfDisposed();
+
+        if (state.IsStrongLockAllowed) // nothing to release
+            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+
+        state.ExitLock();
+        DrainWaitQueue();
+
+        if (IsDisposeRequested && IsReadyToDispose)
+            Dispose(true);
+    }
+
+    private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && first is null;
 }

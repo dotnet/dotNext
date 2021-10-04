@@ -1,11 +1,5 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using Xunit;
 
 namespace DotNext
 {
@@ -15,24 +9,12 @@ namespace DotNext
     public abstract class Test : Assert
     {
         private protected static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
-        private static readonly Random rng = new();
 
         private protected static byte[] RandomBytes(int size)
         {
             var result = new byte[size];
-            rng.NextBytes(result);
+            Random.Shared.NextBytes(result);
             return result;
-        }
-
-        // TODO: Remove support of binary serialization for all types in .NEXT in the next major version
-        private protected static T SerializeDeserialize<T>(T value)
-            where T : ISerializable
-        {
-            IFormatter formatter = new BinaryFormatter();
-            using var ms = new MemoryStream(2048);
-            formatter.Serialize(ms, value);
-            ms.Position = 0;
-            return (T)formatter.Deserialize(ms);
         }
 
         private static IEnumerable<ReadOnlyMemory<T>> Split<T>(ReadOnlyMemory<T> memory, int chunkSize)

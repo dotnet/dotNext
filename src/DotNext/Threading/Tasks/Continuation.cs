@@ -1,214 +1,162 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using static System.Threading.Timeout;
+namespace DotNext.Threading.Tasks;
 
-namespace DotNext.Threading.Tasks
+using Generic;
+using static Runtime.Intrinsics;
+
+internal static class Continuation<T, TConstant>
+    where TConstant : Constant<T>, new()
 {
-    using Generic;
-    using static Reflection.TaskType;
-    using static Runtime.Intrinsics;
+    internal static readonly Func<Task<T>, object?, T> WhenFaulted = CompletedTask<T, TConstant>.WhenFaulted;
+    internal static readonly Func<Task<T>, T> WhenCanceled = CompletedTask<T, TConstant>.WhenCanceled;
+    internal static readonly Func<Task<T>, object?, T> WhenFaultedOrCanceled = CompletedTask<T, TConstant>.WhenFaultedOrCanceled;
+}
 
-    internal static class Continuation<T, TConstant>
+/// <summary>
+/// Represents various continuations.
+/// </summary>
+public static class Continuation
+{
+    private static readonly Action<Task, object?> WhenFaultedOrCanceledAction = WhenFaultedOrCanceled;
+
+    private static void WhenFaultedOrCanceled(Task task, object? state)
+        => task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+    /// <summary>
+    /// Allows to obtain original <see cref="Task"/> in its final state after <c>await</c> without
+    /// throwing exception produced by this task.
+    /// </summary>
+    /// <param name="task">The task to await.</param>
+    /// <returns><paramref name="task"/> in final state.</returns>
+    public static Task<Task> OnCompleted(this Task task)
+        => task.ContinueWith(Func.Identity<Task>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+
+    /// <summary>
+    /// Allows to obtain original <see cref="Task{R}"/> in its final state after <c>await</c> without
+    /// throwing exception produced by this task.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the task result.</typeparam>
+    /// <param name="task">The task to await.</param>
+    /// <returns><paramref name="task"/> in final state.</returns>
+    public static Task<Task<TResult>> OnCompleted<TResult>(this Task<TResult> task)
+        => task.ContinueWith(Func.Identity<Task<TResult>>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+
+    /// <summary>
+    /// Returns constant value if underlying task is failed.
+    /// </summary>
+    /// <remarks>
+    /// This continuation doesn't produce memory pressure. The delegate representing
+    /// continuation is cached for future reuse as well as constant value.
+    /// </remarks>
+    /// <param name="task">The task to check.</param>
+    /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
+    /// <typeparam name="T">The type of task result.</typeparam>
+    /// <typeparam name="TConstant">The type describing constant value.</typeparam>
+    /// <returns>The task representing continuation.</returns>
+    public static Task<T> OnFaulted<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
+        where TConstant : Constant<T>, new()
+        => OnFaulted<T, TConstant>(task, Predicate.True<AggregateException>(), scheduler);
+
+    /// <summary>
+    /// Returns constant value if underlying task is failed with the exception that matches
+    /// to the filter.
+    /// </summary>
+    /// <remarks>
+    /// This continuation doesn't produce memory pressure. The delegate representing
+    /// continuation is cached for future reuse as well as constant value.
+    /// </remarks>
+    /// <param name="task">The task to check.</param>
+    /// <param name="filter">The exception filter.</param>
+    /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
+    /// <typeparam name="T">The type of task result.</typeparam>
+    /// <typeparam name="TConstant">The type describing constant value.</typeparam>
+    /// <returns>The task representing continuation.</returns>
+    public static Task<T> OnFaulted<T, TConstant>(this Task<T> task, Predicate<AggregateException> filter, TaskScheduler? scheduler = null)
+        where TConstant : Constant<T>, new()
+        => task.Status switch
+        {
+            TaskStatus.Faulted when filter(task.Exception!) => CompletedTask<T, TConstant>.Task,
+            TaskStatus.RanToCompletion or TaskStatus.Canceled or TaskStatus.Faulted => task,
+            _ => task.ContinueWith(Continuation<T, TConstant>.WhenFaulted, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
+        };
+
+    /// <summary>
+    /// Returns constant value if underlying task is failed or canceled.
+    /// </summary>
+    /// <remarks>
+    /// This continuation doesn't produce memory pressure. The delegate representing
+    /// continuation is cached for future reuse as well as constant value.
+    /// </remarks>
+    /// <param name="task">The task to check.</param>
+    /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
+    /// <typeparam name="T">The type of task result.</typeparam>
+    /// <typeparam name="TConstant">The type describing constant value.</typeparam>
+    /// <returns>The task representing continuation.</returns>
+    public static Task<T> OnFaultedOrCanceled<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
+        where TConstant : Constant<T>, new()
+        => OnFaultedOrCanceled<T, TConstant>(task, Predicate.True<AggregateException>(), scheduler);
+
+    /// <summary>
+    /// Returns constant value if underlying task is canceled or failed with the exception that matches
+    /// to the filter.
+    /// </summary>
+    /// <remarks>
+    /// This continuation doesn't produce memory pressure. The delegate representing
+    /// continuation is cached for future reuse as well as constant value.
+    /// </remarks>
+    /// <param name="task">The task to check.</param>
+    /// <param name="filter">The exception filter.</param>
+    /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
+    /// <typeparam name="T">The type of task result.</typeparam>
+    /// <typeparam name="TConstant">The type describing constant value.</typeparam>
+    /// <returns>The task representing continuation.</returns>
+    public static Task<T> OnFaultedOrCanceled<T, TConstant>(this Task<T> task, Predicate<AggregateException> filter, TaskScheduler? scheduler = null)
         where TConstant : Constant<T>, new()
     {
-        internal static readonly Func<Task<T>, object?, T> WhenFaulted = CompletedTask<T, TConstant>.WhenFaulted;
-        internal static readonly Func<Task<T>, T> WhenCanceled = CompletedTask<T, TConstant>.WhenCanceled;
-        internal static readonly Func<Task<T>, object?, T> WhenFaultedOrCanceled = CompletedTask<T, TConstant>.WhenFaultedOrCanceled;
+        switch (task.Status)
+        {
+            case TaskStatus.Faulted when filter(task.Exception!):
+            case TaskStatus.Canceled:
+                task = CompletedTask<T, TConstant>.Task;
+                break;
+            case TaskStatus.RanToCompletion or TaskStatus.Faulted:
+                break;
+            default:
+                task = task.ContinueWith(Continuation<T, TConstant>.WhenFaultedOrCanceled, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
+                break;
+        }
+
+        return task;
     }
 
     /// <summary>
-    /// Represents various continuations.
+    /// Returns constant value if underlying task is canceled.
     /// </summary>
-    public static class Continuation
+    /// <remarks>
+    /// This continuation doesn't produce memory pressure. The delegate representing
+    /// continuation is cached for future reuse as well as constant value.
+    /// </remarks>
+    /// <param name="task">The task to check.</param>
+    /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
+    /// <typeparam name="T">The type of task result.</typeparam>
+    /// <typeparam name="TConstant">The type describing constant value.</typeparam>
+    /// <returns>The task representing continuation.</returns>
+    public static Task<T> OnCanceled<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
+        where TConstant : Constant<T>, new()
+        => task.Status switch
+        {
+            TaskStatus.Canceled => CompletedTask<T, TConstant>.Task,
+            TaskStatus.RanToCompletion or TaskStatus.Faulted => task,
+            _ => task.ContinueWith(Continuation<T, TConstant>.WhenCanceled, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
+        };
+
+    internal static void OnCompleted(this Task task, AsyncCallback callback)
     {
-        private static readonly Action<Task, object?> WhenFaultedOrCanceledAction = WhenFaultedOrCanceled;
-
-        private static void WhenFaultedOrCanceled(Task task, object? state)
-            => task.ConfigureAwait(false).GetAwaiter().GetResult();
-
-        /// <summary>
-        /// Allows to obtain original <see cref="Task"/> in its final state after <c>await</c> without
-        /// throwing exception produced by this task.
-        /// </summary>
-        /// <param name="task">The task to await.</param>
-        /// <returns><paramref name="task"/> in final state.</returns>
-        public static Task<Task> OnCompleted(this Task task)
-            => task.ContinueWith(Func.Identity<Task>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
-
-        /// <summary>
-        /// Allows to obtain original <see cref="Task{R}"/> in its final state after <c>await</c> without
-        /// throwing exception produced by this task.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the task result.</typeparam>
-        /// <param name="task">The task to await.</param>
-        /// <returns><paramref name="task"/> in final state.</returns>
-        public static Task<Task<TResult>> OnCompleted<TResult>(this Task<TResult> task)
-            => task.ContinueWith(Func.Identity<Task<TResult>>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
-
-        /// <summary>
-        /// Returns constant value if underlying task is failed.
-        /// </summary>
-        /// <remarks>
-        /// This continuation doesn't produce memory pressure. The delegate representing
-        /// continuation is cached for future reuse as well as constant value.
-        /// </remarks>
-        /// <param name="task">The task to check.</param>
-        /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
-        /// <typeparam name="T">The type of task result.</typeparam>
-        /// <typeparam name="TConstant">The type describing constant value.</typeparam>
-        /// <returns>The task representing continuation.</returns>
-        public static Task<T> OnFaulted<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
-            where TConstant : Constant<T>, new()
-            => OnFaulted<T, TConstant>(task, Predicate.True<AggregateException>(), scheduler);
-
-        /// <summary>
-        /// Returns constant value if underlying task is failed with the exception that matches
-        /// to the filter.
-        /// </summary>
-        /// <remarks>
-        /// This continuation doesn't produce memory pressure. The delegate representing
-        /// continuation is cached for future reuse as well as constant value.
-        /// </remarks>
-        /// <param name="task">The task to check.</param>
-        /// <param name="filter">The exception filter.</param>
-        /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
-        /// <typeparam name="T">The type of task result.</typeparam>
-        /// <typeparam name="TConstant">The type describing constant value.</typeparam>
-        /// <returns>The task representing continuation.</returns>
-        public static Task<T> OnFaulted<T, TConstant>(this Task<T> task, Predicate<AggregateException> filter, TaskScheduler? scheduler = null)
-            where TConstant : Constant<T>, new()
-            => task.Status switch
-            {
-                TaskStatus.Faulted when filter(task.Exception!) => CompletedTask<T, TConstant>.Task,
-                TaskStatus.RanToCompletion or TaskStatus.Canceled or TaskStatus.Faulted => task,
-                _ => task.ContinueWith(Continuation<T, TConstant>.WhenFaulted, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
-            };
-
-        /// <summary>
-        /// Returns constant value if underlying task is failed or canceled.
-        /// </summary>
-        /// <remarks>
-        /// This continuation doesn't produce memory pressure. The delegate representing
-        /// continuation is cached for future reuse as well as constant value.
-        /// </remarks>
-        /// <param name="task">The task to check.</param>
-        /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
-        /// <typeparam name="T">The type of task result.</typeparam>
-        /// <typeparam name="TConstant">The type describing constant value.</typeparam>
-        /// <returns>The task representing continuation.</returns>
-        public static Task<T> OnFaultedOrCanceled<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
-            where TConstant : Constant<T>, new()
-            => OnFaultedOrCanceled<T, TConstant>(task, Predicate.True<AggregateException>(), scheduler);
-
-        /// <summary>
-        /// Returns constant value if underlying task is canceled or failed with the exception that matches
-        /// to the filter.
-        /// </summary>
-        /// <remarks>
-        /// This continuation doesn't produce memory pressure. The delegate representing
-        /// continuation is cached for future reuse as well as constant value.
-        /// </remarks>
-        /// <param name="task">The task to check.</param>
-        /// <param name="filter">The exception filter.</param>
-        /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
-        /// <typeparam name="T">The type of task result.</typeparam>
-        /// <typeparam name="TConstant">The type describing constant value.</typeparam>
-        /// <returns>The task representing continuation.</returns>
-        public static Task<T> OnFaultedOrCanceled<T, TConstant>(this Task<T> task, Predicate<AggregateException> filter, TaskScheduler? scheduler = null)
-            where TConstant : Constant<T>, new()
-        {
-            switch (task.Status)
-            {
-                case TaskStatus.Faulted when filter(task.Exception!):
-                case TaskStatus.Canceled:
-                    task = CompletedTask<T, TConstant>.Task;
-                    break;
-                case TaskStatus.RanToCompletion or TaskStatus.Faulted:
-                    break;
-                default:
-                    task = task.ContinueWith(Continuation<T, TConstant>.WhenFaultedOrCanceled, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
-                    break;
-            }
-
-            return task;
-        }
-
-        /// <summary>
-        /// Returns constant value if underlying task is canceled.
-        /// </summary>
-        /// <remarks>
-        /// This continuation doesn't produce memory pressure. The delegate representing
-        /// continuation is cached for future reuse as well as constant value.
-        /// </remarks>
-        /// <param name="task">The task to check.</param>
-        /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
-        /// <typeparam name="T">The type of task result.</typeparam>
-        /// <typeparam name="TConstant">The type describing constant value.</typeparam>
-        /// <returns>The task representing continuation.</returns>
-        public static Task<T> OnCanceled<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
-            where TConstant : Constant<T>, new()
-            => task.Status switch
-            {
-                TaskStatus.Canceled => CompletedTask<T, TConstant>.Task,
-                TaskStatus.RanToCompletion or TaskStatus.Faulted => task,
-                _ => task.ContinueWith(Continuation<T, TConstant>.WhenCanceled, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
-            };
-
-        internal static void OnCompleted(this Task task, AsyncCallback callback)
-        {
-            if (task.IsCompleted)
-                callback(task);
-            else
-                task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
-        }
-
-        internal static Task AttachState(this Task task, object? state, CancellationToken token = default)
-            => task.ContinueWith(WhenFaultedOrCanceledAction, state, token, TaskContinuationOptions.None, TaskScheduler.Default);
-
-        private static async Task<T> WaitAsyncImpl<T>(Task<T> task, TimeSpan timeout, CancellationToken token)
-        {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-            {
-                if (ReferenceEquals(task, await Task.WhenAny(task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   // ensure that Delay task is cancelled
-                    return await task.ConfigureAwait(false);
-                }
-            }
-
-            token.ThrowIfCancellationRequested();
-            throw new TimeoutException();
-        }
-
-        /// <summary>
-        /// Attaches timeout and, optionally, token to the task.
-        /// </summary>
-        /// <param name="task">The source task.</param>
-        /// <param name="timeout">The timeout of the asynchronous task.</param>
-        /// <param name="token">The token that can be used to cancel the constructed task.</param>
-        /// <typeparam name="T">The type of the task.</typeparam>
-        /// <returns>The task with attached timeout and token.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="TimeoutException">The timeout has occurred.</exception>
-        public static Task<T> ContinueWithTimeout<T>(this Task<T> task, TimeSpan timeout, CancellationToken token = default)
-        {
-            // TODO: Replace with Task.WaitAsync in .NET 6
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                return Task.FromException<T>(new ArgumentOutOfRangeException(nameof(timeout)));
-            if (token.IsCancellationRequested)
-                return Task.FromCanceled<T>(token);
-            if (task.IsCompleted)
-                return task;
-
-            return timeout.CompareTo(TimeSpan.Zero) switch
-            {
-                0 => Task.FromException<T>(new TimeoutException()),
-                > 0 => WaitAsyncImpl(task, timeout, token),
-                _ when token.CanBeCanceled => task.ContinueWith(GetResultGetter<T>(), token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default),
-                _ => task,
-            };
-        }
+        if (task.IsCompleted)
+            callback(task);
+        else
+            task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
     }
+
+    internal static Task AttachState(this Task task, object? state, CancellationToken token = default)
+        => task.ContinueWith(WhenFaultedOrCanceledAction, state, token, TaskContinuationOptions.None, TaskScheduler.Default);
 }

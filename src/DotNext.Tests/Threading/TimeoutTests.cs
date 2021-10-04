@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading
@@ -19,7 +18,7 @@ namespace DotNext.Threading
         [Fact]
         public static void DefaultValue()
         {
-            InfiniteTest(default);
+            InfiniteTest(Timeout.Infinite);
             InfiniteTest(new Timeout(InfiniteTimeSpan));
         }
     }

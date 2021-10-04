@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
-using Xunit;
 
 namespace DotNext
 {
@@ -20,10 +18,9 @@ namespace DotNext
         public static void RandomStringTest()
         {
             const string AllowedChars = "abcd123456789";
-            var rnd = new Random();
-            var str = rnd.NextString(AllowedChars, 6);
+            var str = Random.Shared.NextString(AllowedChars, 6);
             Equal(6, str.Length);
-            using (var generator = new RNGCryptoServiceProvider())
+            using (var generator = RandomNumberGenerator.Create())
             {
                 str = generator.NextString(AllowedChars, 7);
             }
@@ -41,6 +38,10 @@ namespace DotNext
         public static void TrimLengthTest()
         {
             Equal("ab", "abcd".TrimLength(2));
+            Null(default(string).TrimLength(2));
+            Equal("ab", "ab".TrimLength(3));
+            Equal(string.Empty, "ab".TrimLength(0));
+            Null(default(string).TrimLength(0));
         }
 
         [Fact]

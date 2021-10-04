@@ -1,7 +1,4 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading
 {
@@ -64,7 +61,7 @@ namespace DotNext.Threading
             Equal(0, ev.CurrentCount);
 
             // Now reset the event and check its count.
-            ev.Reset();
+            True(ev.Reset());
             Equal(ev.InitialCount, ev.CurrentCount);
         }
     }

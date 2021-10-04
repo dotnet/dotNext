@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Diagnostics
 {
@@ -21,7 +18,7 @@ namespace DotNext.Diagnostics
         }
 
         [Fact]
-        public static void Operators()
+        public static void ComparisonOperators()
         {
             var ts = Timestamp.Current;
             var ts2 = ts;
@@ -57,6 +54,17 @@ namespace DotNext.Diagnostics
             Equal(ts, Timestamp.VolatileRead(ref ts));
             Timestamp.VolatileWrite(ref ts, default(Timestamp));
             Equal(default(Timestamp), ts);
+        }
+
+        [Fact]
+        public static void ArithmeticOperators()
+        {
+            var current = Timestamp.Current;
+            var result = current + TimeSpan.FromMilliseconds(100);
+            Equal(TimeSpan.FromMilliseconds(100), result.Value - current.Value);
+
+            result = current - TimeSpan.FromMilliseconds(100);
+            Equal(TimeSpan.FromMilliseconds(100), current.Value - result.Value);
         }
     }
 }

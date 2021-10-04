@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Collections.Generic
 {
@@ -60,10 +57,9 @@ namespace DotNext.Collections.Generic
         public static void PeekRandomFromCollection()
         {
             IReadOnlyCollection<int> collection = new int[] { 10, 20, 30 };
-            var rnd = new Random();
             for (var i = 0; i < 3; i++)
             {
-                var item = collection.PeekRandom(rnd);
+                var item = collection.PeekRandom(Random.Shared);
                 True(item == 10 || item == 20 || item == 30);
             }
         }

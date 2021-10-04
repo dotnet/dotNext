@@ -1,8 +1,5 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Xunit;
 
 namespace DotNext
 {
@@ -31,24 +28,6 @@ namespace DotNext
             Equal(0, array1.BitwiseCompare(array2));
             array2[1] = Guid.Empty;
             True(array1.BitwiseCompare(array2) > 0);
-        }
-
-        [Fact]
-        [Obsolete("This test is for obsolete member")]
-        public static void Sorting()
-        {
-            Span<ulong> span = new ulong[] { 3, 2, 6, 4 };
-            span.Sort();
-            Equal(2UL, span[0]);
-            Equal(3UL, span[1]);
-            Equal(4UL, span[2]);
-            Equal(6UL, span[3]);
-
-            span.Sort(static (x1, x2) => (int)(x2 - x1));
-            Equal(6UL, span[0]);
-            Equal(4UL, span[1]);
-            Equal(3UL, span[2]);
-            Equal(2UL, span[3]);
         }
 
         [Fact]

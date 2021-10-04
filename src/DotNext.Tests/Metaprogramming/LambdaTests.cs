@@ -1,13 +1,8 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Metaprogramming
 {
@@ -53,19 +48,19 @@ namespace DotNext.Metaprogramming
             var result = new StrongBox<int>();
             var lambda = AsyncLambda<Func<StrongBox<int>, Task>>(fun =>
             {
-                Try(() =>
+                Try(new Action(() =>
                 {
                     Await(Expression.Call(typeof(Task), nameof(Task.Yield), Type.EmptyTypes));
                     Throw<InvalidOperationException>();
-                })
+                }))
                 .Catch(typeof(InvalidOperationException), e =>
                 {
                     Throw<ArithmeticException>();
                 })
-                .Finally(() =>
+                .Finally(new Action(() =>
                 {
                     Assign(Expression.Field(fun[0], "Value"), 45.Const());
-                })
+                }))
                 .End();
             }).Compile();
 
@@ -191,13 +186,13 @@ namespace DotNext.Metaprogramming
             {
                 var arg = fun[0];
                 If((Expression)(arg.AsDynamic() > 10L))
-                    .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await()))
-                    .Else(() =>
+                    .Then(new Action(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await())))
+                    .Else(new Action(() =>
                     {
                         var local = DeclareVariable<long>("myVar");
                         Assign(local, Expression.Call(null, sumMethod, arg, 90L.Const()).Await());
                         Return(local);
-                    })
+                    }))
                     .End();
             });
             var fn = lambda.Compile();
@@ -234,7 +229,7 @@ namespace DotNext.Metaprogramming
         {
             var lambda = AsyncLambda<Func<Task, Action, Task>>(static fun =>
             {
-                Try(() => Await(fun[0])).Finally(fun[1].Invoke()).End();
+                Try(new Action(() => Await(fun[0]))).Finally(fun[1].Invoke()).End();
             });
 
             var fn = lambda.Compile();
@@ -253,12 +248,12 @@ namespace DotNext.Metaprogramming
             var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
             {
                 var arg = fun[0];
-                Try(() =>
+                Try(new Action(() =>
                 {
                     If((Expression)(arg.AsDynamic() < 0L)).Then(Throw<InvalidOperationException>).End();
-                    If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
-                })
-                .Catch<ArgumentException>(() => Return((-42L).Const()))
+                    If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(new Action(() => Return(arg))).End();
+                }))
+                .Catch<ArgumentException>(new Action(() => Return((-42L).Const())))
                 .Catch<InvalidOperationException>(Rethrow)
                 .End();
             });
@@ -420,12 +415,11 @@ namespace DotNext.Metaprogramming
 
             var asyncTryCatchExpression = AsyncLambda<Func<Task<string>>>((lambdaContext, result) =>
             {
-                Try(() =>
+                Try(new Action(() =>
                     {
-
                         Assign(result, Expression.Call(null, exprThrowException).Await());
                         Return(result);
-                    })
+                    }))
                     .Catch<Exception>(() =>
                     {
                         Assign(result, Expression.Call(null, exprReprocess).Await());

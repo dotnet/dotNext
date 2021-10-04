@@ -1,8 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using IO;

@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
+﻿namespace DotNext.Runtime.CompilerServices;
 
-namespace DotNext.Runtime.CompilerServices
+internal sealed class StateTransitionTable : SortedDictionary<uint, StateTransition>
 {
-    internal sealed class StateTransitionTable : SortedDictionary<uint, StateTransition>
-    {
-    }
 }

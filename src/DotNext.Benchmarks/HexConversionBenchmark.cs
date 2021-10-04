@@ -6,51 +6,49 @@ using System;
 using System.Collections.Generic;
 using static System.Globalization.CultureInfo;
 
-namespace DotNext
+namespace DotNext;
+
+[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
+[Orderer(SummaryOrderPolicy.Declared)]
+public class HexConversionBenchmark
 {
-    [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    public class HexConversionBenchmark
+    public readonly struct ByteArrayParam : IParam
     {
-        public readonly struct ByteArrayParam : IParam
-        {
-            public readonly byte[] Value;
+        public readonly byte[] Value;
 
-            internal ByteArrayParam(byte[] bytes) => Value = bytes;
+        internal ByteArrayParam(byte[] bytes) => Value = bytes;
 
-            object IParam.Value => Value;
+        object IParam.Value => Value;
 
-            string IParam.DisplayText => ToString();
+        string IParam.DisplayText => ToString();
 
-            string IParam.ToSourceCode() => $"new byte[{Value.LongLength}];";
+        string IParam.ToSourceCode() => $"new byte[{Value.LongLength}];";
 
-            public override string ToString() => $"{Value.LongLength.ToString(InvariantCulture)} bytes";
-        }
-
-        [ParamsSource(nameof(RandomArrays))]
-        public ByteArrayParam Bytes;
-
-        public static IEnumerable<ByteArrayParam> RandomArrays
-        {
-            get
-            {
-                var rnd = new Random();
-                byte[] bytes;
-                rnd.NextBytes(bytes = new byte[16]);
-                yield return new ByteArrayParam(bytes);
-                rnd.NextBytes(bytes = new byte[64]);
-                yield return new ByteArrayParam(bytes);
-                rnd.NextBytes(bytes = new byte[128]);
-                yield return new ByteArrayParam(bytes);
-                rnd.NextBytes(bytes = new byte[256]);
-                yield return new ByteArrayParam(bytes);
-            }
-        }
-
-        [Benchmark]
-        public string ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
-
-        [Benchmark]
-        public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
+        public override string ToString() => $"{Value.LongLength.ToString(InvariantCulture)} bytes";
     }
+
+    [ParamsSource(nameof(RandomArrays))]
+    public ByteArrayParam Bytes;
+
+    public static IEnumerable<ByteArrayParam> RandomArrays
+    {
+        get
+        {
+            byte[] bytes;
+            Random.Shared.NextBytes(bytes = new byte[16]);
+            yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[64]);
+            yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[128]);
+            yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[256]);
+            yield return new ByteArrayParam(bytes);
+        }
+    }
+
+    [Benchmark(Description = "BitConverter.ToString")]
+    public string ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
+
+    [Benchmark(Description = "Span.ToHex")]
+    public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
 }

@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading
 {
@@ -15,14 +10,14 @@ namespace DotNext.Threading
         {
             using var barrier = new AsyncBarrier(4);
             var task = barrier.SignalAndWaitAsync();
-            while (barrier.ParticipantsRemaining > 3)
-                await Task.Delay(100);
+            Equal(3, barrier.ParticipantsRemaining);
             barrier.RemoveParticipants(2);
             Equal(1, barrier.ParticipantsRemaining);
             Throws<ArgumentOutOfRangeException>(() => barrier.RemoveParticipants(20));
             Equal(1, barrier.ParticipantsRemaining);
             barrier.RemoveParticipant();
             Equal(0, barrier.ParticipantsRemaining);
+            await task;
         }
 
         [Fact]
@@ -53,39 +48,21 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task CorrectGarbageCollection()
-        {
-            for (int j = 0; j < 10; j++)
-            {
-                Task t1, t2;
-                using var barrier = new AsyncBarrier(3);
-                t1 = barrier.SignalAndWaitAsync();
-                t2 = barrier.SignalAndWaitAsync();
-
-                await barrier.SignalAndWaitAsync();
-
-                GC.Collect();
-
-                await Task.WhenAll(t1, t2);
-            }
-        }
-
-        [Fact]
         public static async Task PhaseCompletion()
         {
             using var barrier = new AsyncBarrier(3);
             ICollection<Task> tasks = new LinkedList<Task>();
             Equal(0, barrier.CurrentPhaseNumber);
-            tasks.Add(barrier.SignalAndWaitAsync());
-            tasks.Add(barrier.SignalAndWaitAsync());
-            tasks.Add(barrier.SignalAndWaitAsync());
+            tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+            tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+            tasks.Add(barrier.SignalAndWaitAsync().AsTask());
             await Task.WhenAll(tasks);
             Equal(1, barrier.CurrentPhaseNumber);
 
             tasks.Clear();
-            tasks.Add(barrier.SignalAndWaitAsync());
-            tasks.Add(barrier.SignalAndWaitAsync());
-            tasks.Add(barrier.SignalAndWaitAsync());
+            tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+            tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+            tasks.Add(barrier.SignalAndWaitAsync().AsTask());
             await Task.WhenAll(tasks);
             Equal(2, barrier.CurrentPhaseNumber);
         }

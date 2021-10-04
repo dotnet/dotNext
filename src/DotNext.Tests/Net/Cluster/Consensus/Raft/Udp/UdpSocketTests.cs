@@ -1,19 +1,17 @@
 using Microsoft.Extensions.Logging.Abstractions;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     using TransportServices;
 
     [ExcludeFromCodeCoverage]
+    [Collection(TestCollections.Raft)]
     public sealed class UdpSocketTests : TransportTestSuite
     {
         private static readonly IPEndPoint LocalHostRandomPort = new(IPAddress.Loopback, 0);
-        private readonly Func<long> appIdGenerator = new Random().Next<long>;
+        private readonly Func<long> appIdGenerator = Random.Shared.Next<long>;
 
         [Fact]
         public Task RequestResponse()
@@ -113,7 +111,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
+        }
+
+        [Theory]
+        [InlineData(512)]
+        [InlineData(50)]
+        public Task SendingConfiguration(int payloadSize)
+        {
+            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                ReceiveTimeout = timeout,
+                DontFragment = true
+            };
+            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                DontFragment = true
+            };
+
+            return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
         }
     }
 }

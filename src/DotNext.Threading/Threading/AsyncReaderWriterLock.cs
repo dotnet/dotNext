@@ -1,563 +1,575 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Threading
+namespace DotNext.Threading;
+
+using Tasks.Pooling;
+
+/// <summary>
+/// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.
+/// </summary>
+/// <remarks>
+/// This lock doesn't support recursion.
+/// </remarks>
+public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 {
-    using Runtime;
-    using static Tasks.TaskHelpers;
-
-    /// <summary>
-    /// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.
-    /// </summary>
-    /// <remarks>
-    /// This lock doesn't support recursion.
-    /// </remarks>
-    public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
+    private enum LockType : byte
     {
-        private sealed class WriteLockNode : WaitNode
-        {
-            internal WriteLockNode()
-                : base()
-            {
-            }
+        Read = 0,
+        Upgrade,
+        Exclusive,
+    }
 
-            internal WriteLockNode(WaitNode previous)
-                : base(previous)
-            {
-            }
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+    {
+        private Action<WaitNode>? consumedCallback;
+        internal LockType Type;
+
+        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
+
+        private protected override void ResetCore()
+        {
+            consumedCallback = null;
+            base.ResetCore();
         }
 
-        private class ReadLockNode : WaitNode
+        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
         {
-            internal readonly bool Upgradeable;
-
-            private protected ReadLockNode(bool upgradeable)
-                : base() => Upgradeable = upgradeable;
-
-            private protected ReadLockNode(WaitNode previous, bool upgradeable)
-                : base(previous) => Upgradeable = upgradeable;
-
-            internal ReadLockNode()
-                : this(false)
-            {
-            }
-
-            internal ReadLockNode(WaitNode previous)
-                : this(previous, false)
-            {
-            }
+            set => consumedCallback = value;
         }
 
-        private sealed class UpgradeableReadLockNode : ReadLockNode
-        {
-            internal UpgradeableReadLockNode()
-                : base(true)
-            {
-            }
+        internal bool IsReadLock => Type != LockType.Exclusive;
 
-            internal UpgradeableReadLockNode(WaitNode previous)
-                : base(previous, true)
-            {
-            }
+        internal bool IsUpgradeableLock => Type == LockType.Upgrade;
+
+        internal bool IsWriteLock => Type == LockType.Exclusive;
+    }
+
+    // describes internal state of reader/writer lock
+    internal sealed class State
+    {
+        private long version;  // version of write lock
+
+        // number of acquired read locks
+        private long readLocks; // volatile
+        private volatile bool writeLock;
+
+        internal State(long version)
+        {
+            this.version = version;
+            writeLock = false;
+            readLocks = 0L;
         }
 
-        // describes internal state of reader/writer lock
-        [StructLayout(LayoutKind.Auto)]
-        internal struct State : ILockManager<WriteLockNode>, ILockManager<ReadLockNode>, ILockManager<UpgradeableReadLockNode>
+        internal bool WriteLock => writeLock;
+
+        internal void DowngradeFromWriteLock()
         {
-            private long version;  // version of write lock
+            writeLock = false;
+            ReadLocks = 1L;
+        }
 
-            // number of acquired read locks
-            internal long ReadLocks;
-            /*
-             * writeLock = false, upgradeable = false: regular read lock
-             * writeLock = true,  upgradeable = true : regular write lock
-             * writeLock = false, upgradeable = true : upgradeable read lock
-             * writeLock = true,  upgradeable = true : upgraded write lock
-             */
-            internal volatile bool WriteLock;
-            internal volatile bool Upgradeable;
-
-            internal State(long version)
+        internal void ExitLock()
+        {
+            if (writeLock)
             {
-                this.version = version;
-                WriteLock = false;
-                Upgradeable = false;
+                writeLock = false;
                 ReadLocks = 0L;
             }
-
-            internal readonly long Version => version.VolatileRead();
-
-            internal void IncrementVersion() => version.IncrementAndGet();
-
-            // write lock management
-            readonly WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
-
-            bool ILockManager<WriteLockNode>.TryAcquire()
+            else
             {
-                if (WriteLock || ReadLocks > 1L)
-                    return false;
-
-                // no readers or single upgradeable read lock
-                if (ReadLocks == 0L || ReadLocks == 1L && Upgradeable)
-                {
-                    WriteLock = true;
-                    IncrementVersion();
-                    return true;
-                }
-
-                return false;
-            }
-
-            // read lock management
-            readonly ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
-
-            bool ILockManager<ReadLockNode>.TryAcquire()
-            {
-                if (WriteLock)
-                    return false;
-                ReadLocks++;
-                return true;
-            }
-
-            // upgradeable read lock management
-            readonly UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
-
-            bool ILockManager<UpgradeableReadLockNode>.TryAcquire()
-            {
-                if (WriteLock || Upgradeable)
-                    return false;
-                ReadLocks++;
-                Upgradeable = true;
-                return true;
+                readLocks.DecrementAndGet();
             }
         }
 
-        /// <summary>
-        /// Represents lock stamp used for optimistic reading.
-        /// </summary>
-        [StructLayout(LayoutKind.Auto)]
-        public readonly struct LockStamp : IEquatable<LockStamp>
+        internal long ReadLocks
         {
-            private readonly long version;
-            private readonly bool valid;
+            get => readLocks.VolatileRead();
+            private set => readLocks.VolatileWrite(value);
+        }
 
-            internal LockStamp(in State state)
+        internal long Version => version.VolatileRead();
+
+        internal bool IsWriteLockAllowed => !writeLock && ReadLocks == 0L;
+
+        internal bool IsUpgradeToWriteLockAllowed => !writeLock && ReadLocks == 1L;
+
+        internal void AcquireWriteLock()
+        {
+            readLocks.VolatileWrite(0L);
+            writeLock = true;
+            version.IncrementAndGet();
+        }
+
+        internal bool IsReadLockAllowed => !writeLock;
+
+        internal void AcquireReadLock() => readLocks.IncrementAndGet();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ReadLockManager : ILockManager<WaitNode>
+    {
+        private readonly State state;
+
+        internal ReadLockManager(State state) => this.state = state;
+
+        bool ILockManager.IsLockAllowed => state.IsReadLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireReadLock();
+
+        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+            => node.Type = LockType.Read;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct WriteLockManager : ILockManager<WaitNode>
+    {
+        private readonly State state;
+
+        internal WriteLockManager(State state) => this.state = state;
+
+        bool ILockManager.IsLockAllowed => state.IsWriteLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireWriteLock();
+
+        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+            => node.Type = LockType.Exclusive;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct UpgradeManager : ILockManager<WaitNode>
+    {
+        private readonly State state;
+
+        internal UpgradeManager(State state) => this.state = state;
+
+        bool ILockManager.IsLockAllowed => state.IsUpgradeToWriteLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireWriteLock();
+
+        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+            => node.Type = LockType.Upgrade;
+    }
+
+    /// <summary>
+    /// Represents lock stamp used for optimistic reading.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct LockStamp : IEquatable<LockStamp>
+    {
+        private readonly long version;
+        private readonly bool valid;
+
+        internal LockStamp(in State state)
+        {
+            version = state.Version;
+            valid = true;
+        }
+
+        internal bool IsValid(in State state)
+            => valid && state.Version == version;
+
+        private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
+
+        /// <summary>
+        /// Determines whether this stamp represents the same version of the lock state
+        /// as the given stamp.
+        /// </summary>
+        /// <param name="other">The lock stamp to compare.</param>
+        /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(LockStamp other) => Equals(in other);
+
+        /// <summary>
+        /// Determines whether this stamp represents the same version of the lock state
+        /// as the given stamp.
+        /// </summary>
+        /// <param name="other">The lock stamp to compare.</param>
+        /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals([NotNullWhen(true)] object? other) => other is LockStamp stamp && Equals(in stamp);
+
+        /// <summary>
+        /// Computes hash code for this stamp.
+        /// </summary>
+        /// <returns>The hash code of this stamp.</returns>
+        public override int GetHashCode() => HashCode.Combine(valid, version);
+
+        /// <summary>
+        /// Determines whether the first stamp represents the same version of the lock state
+        /// as the second stamp.
+        /// </summary>
+        /// <param name="first">The first lock stamp to compare.</param>
+        /// <param name="second">The second lock stamp to compare.</param>
+        /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in LockStamp first, in LockStamp second)
+            => first.Equals(in second);
+
+        /// <summary>
+        /// Determines whether the first stamp represents the different version of the lock state
+        /// as the second stamp.
+        /// </summary>
+        /// <param name="first">The first lock stamp to compare.</param>
+        /// <param name="second">The second lock stamp to compare.</param>
+        /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in LockStamp first, in LockStamp second)
+            => !first.Equals(in second);
+    }
+
+    private readonly ValueTaskPool<WaitNode> pool;
+    private readonly State state;
+
+    /// <summary>
+    /// Initializes a new reader/writer lock.
+    /// </summary>
+    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
+    public AsyncReaderWriterLock(int concurrencyLevel)
+    {
+        if (concurrencyLevel <= 0)
+            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+
+        state = new(long.MinValue);
+        pool = new ValueTaskPool<WaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue);
+    }
+
+    /// <summary>
+    /// Initializes a new reader/writer lock.
+    /// </summary>
+    public AsyncReaderWriterLock()
+    {
+        state = new(long.MinValue);
+        pool = new(RemoveAndDrainWaitQueue);
+    }
+
+    /// <summary>
+    /// Gets the total number of unique readers.
+    /// </summary>
+    public long CurrentReadCount => state.ReadLocks;
+
+    /// <summary>
+    /// Gets a value that indicates whether the read lock taken.
+    /// </summary>
+    public bool IsReadLockHeld => CurrentReadCount != 0L;
+
+    /// <summary>
+    /// Gets a value that indicates whether the write lock taken.
+    /// </summary>
+    public bool IsWriteLockHeld => state.WriteLock;
+
+    /// <summary>
+    /// Returns a stamp that can be validated later.
+    /// </summary>
+    /// <returns>Optimistic read stamp. May be invalid.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public LockStamp TryOptimisticRead()
+    {
+        ThrowIfDisposed();
+        return state.WriteLock ? new LockStamp() : new LockStamp(in state);
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp.
+    /// </summary>
+    /// <param name="stamp">A stamp to check.</param>
+    /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
+    public bool Validate(in LockStamp stamp) => stamp.IsValid(in state);
+
+    /// <summary>
+    /// Attempts to obtain reader lock synchronously without blocking caller thread.
+    /// </summary>
+    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool TryEnterReadLock()
+    {
+        ThrowIfDisposed();
+
+        var manager = new ReadLockManager(state);
+        return TryAcquire(ref manager);
+    }
+
+    /// <summary>
+    /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns><see langword="true"/> if the caller entered read mode; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new ReadLockManager(state);
+        return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Enters the lock in read mode asynchronously.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new ReadLockManager(state);
+        return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Enters the lock in read mode asynchronously.
+    /// </summary>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask EnterReadLockAsync(CancellationToken token = default)
+        => EnterReadLockAsync(InfiniteTimeSpan, token);
+
+    /// <summary>
+    /// Attempts to acquire write lock without blocking.
+    /// </summary>
+    /// <param name="stamp">The stamp of the read lock.</param>
+    /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool TryEnterWriteLock(in LockStamp stamp)
+    {
+        ThrowIfDisposed();
+        if (stamp.IsValid(in state))
+        {
+            var manager = new WriteLockManager(state);
+            return TryAcquire(ref manager);
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to obtain writer lock synchronously without blocking caller thread.
+    /// </summary>
+    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool TryEnterWriteLock()
+    {
+        ThrowIfDisposed();
+
+        var manager = new WriteLockManager(state);
+        return TryAcquire(ref manager);
+    }
+
+    /// <summary>
+    /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns><see langword="true"/> if the caller entered write mode; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new WriteLockManager(state);
+        return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Enters the lock in write mode asynchronously.
+    /// </summary>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask EnterWriteLockAsync(CancellationToken token = default)
+        => EnterWriteLockAsync(InfiniteTimeSpan, token);
+
+    /// <summary>
+    /// Enters the lock in write mode asynchronously.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new WriteLockManager(state);
+        return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
+    /// </summary>
+    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool TryUpgradeToWriteLock()
+    {
+        ThrowIfDisposed();
+
+        var manager = new UpgradeManager(state);
+        return TryAcquire(ref manager);
+    }
+
+    /// <summary>
+    /// Tries to upgrade the read lock to the write lock asynchronously.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns><see langword="true"/> if the caller entered upgradeable mode; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new UpgradeManager(state);
+        return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Upgrades the read lock to the write lock asynchronously.
+    /// </summary>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
+        => UpgradeToWriteLockAsync(InfiniteTimeSpan, token);
+
+    /// <summary>
+    /// Upgrades the read lock to the write lock asynchronously.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new UpgradeManager(state);
+        return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+    }
+
+    private protected sealed override void DrainWaitQueue()
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        {
+            next = current.Next as WaitNode;
+
+            if (current.IsCompleted)
             {
-                version = state.Version;
-                valid = true;
+                RemoveNode(current);
+                continue;
             }
 
-            internal bool IsValid(in State state)
-                => valid && state.Version == version;
-
-            private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
-
-            /// <summary>
-            /// Determines whether this stamp represents the same version of the lock state
-            /// as the given stamp.
-            /// </summary>
-            /// <param name="other">The lock stamp to compare.</param>
-            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public bool Equals(LockStamp other) => Equals(in other);
-
-            /// <summary>
-            /// Determines whether this stamp represents the same version of the lock state
-            /// as the given stamp.
-            /// </summary>
-            /// <param name="other">The lock stamp to compare.</param>
-            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object? other) => other is LockStamp stamp && Equals(in stamp);
-
-            /// <summary>
-            /// Computes hash code for this stamp.
-            /// </summary>
-            /// <returns>The hash code of this stamp.</returns>
-            public override int GetHashCode() => HashCode.Combine(valid, version);
-
-            /// <summary>
-            /// Determines whether the first stamp represents the same version of the lock state
-            /// as the second stamp.
-            /// </summary>
-            /// <param name="first">The first lock stamp to compare.</param>
-            /// <param name="second">The second lock stamp to compare.</param>
-            /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-            public static bool operator ==(in LockStamp first, in LockStamp second)
-                => first.Equals(in second);
-
-            /// <summary>
-            /// Determines whether the first stamp represents the different version of the lock state
-            /// as the second stamp.
-            /// </summary>
-            /// <param name="first">The first lock stamp to compare.</param>
-            /// <param name="second">The second lock stamp to compare.</param>
-            /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-            public static bool operator !=(in LockStamp first, in LockStamp second)
-                => !first.Equals(in second);
-        }
-
-        private readonly Box<State> state;
-
-        /// <summary>
-        /// Initializes a new reader/writer lock.
-        /// </summary>
-        public AsyncReaderWriterLock() => state = new Box<State>(new State(long.MinValue));
-
-        /// <summary>
-        /// Gets the total number of unique readers.
-        /// </summary>
-        public long CurrentReadCount => AtomicInt64.VolatileRead(in state.Value.ReadLocks);
-
-        /// <summary>
-        /// Gets a value that indicates whether the read lock taken.
-        /// </summary>
-        public bool IsReadLockHeld => CurrentReadCount != 0L;
-
-        /// <summary>
-        /// Gets a value that indicates whether the current upgradeable read lock taken.
-        /// </summary>
-        public bool IsUpgradeableReadLockHeld
-        {
-            get
+            switch (current.Type)
             {
-                ref var currentState = ref state.Value;
-                return currentState.Upgradeable && !currentState.WriteLock;
-            }
-        }
+                case LockType.Upgrade:
+                    if (!state.IsUpgradeToWriteLockAllowed)
+                        return;
 
-        /// <summary>
-        /// Gets a value that indicates whether the write lock taken.
-        /// </summary>
-        public bool IsWriteLockHeld => state.Value.WriteLock;
+                    if (current.TrySetResult(true))
+                    {
+                        RemoveNode(current);
+                        state.AcquireWriteLock();
+                        return;
+                    }
 
-        /// <summary>
-        /// Returns a stamp that can be validated later.
-        /// </summary>
-        /// <returns>Optimistic read stamp. May be invalid.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public LockStamp TryOptimisticRead()
-        {
-            ThrowIfDisposed();
-            ref State state = ref this.state.Value;
-            return state.WriteLock ? new LockStamp() : new LockStamp(in state);
-        }
+                    continue;
+                case LockType.Exclusive:
+                    if (!state.IsWriteLockAllowed)
+                        return;
 
-        /// <summary>
-        /// Returns <see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp.
-        /// </summary>
-        /// <param name="stamp">A stamp to check.</param>
-        /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-        public bool Validate(in LockStamp stamp) => stamp.IsValid(in state.Value);
+                    // skip dead node
+                    if (current.TrySetResult(true))
+                    {
+                        RemoveNode(current);
+                        state.AcquireWriteLock();
+                        return;
+                    }
 
-        /// <summary>
-        /// Attempts to acquire write lock without blocking.
-        /// </summary>
-        /// <param name="stamp">The stamp of the read lock.</param>
-        /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock(in LockStamp stamp)
-        {
-            ThrowIfDisposed();
-            ref State state = ref this.state.Value;
-            return stamp.IsValid(in state) && TryAcquire<WriteLockNode, State>(ref state);
-        }
-
-        /// <summary>
-        /// Attempts to obtain reader lock synchronously without blocking caller thread.
-        /// </summary>
-        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterReadLock()
-        {
-            ThrowIfDisposed();
-            return TryAcquire<ReadLockNode, State>(ref state.Value);
-        }
-
-        /// <summary>
-        /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns><see langword="true"/> if the caller entered read mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync<ReadLockNode, State>(ref state.Value, timeout, token);
-
-        /// <summary>
-        /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns><see langword="true"/> if the caller entered read mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterReadLockAsync(TimeSpan timeout) => TryEnterReadLockAsync(timeout, CancellationToken.None);
-
-        /// <summary>
-        /// Enters the lock in read mode asynchronously.
-        /// </summary>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterReadLockAsync(CancellationToken token) => TryEnterReadLockAsync(InfiniteTimeSpan, token);
-
-        /// <summary>
-        /// Enters the lock in read mode asynchronously.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterReadLockAsync(timeout, token).CheckOnTimeout();
-
-        /// <summary>
-        /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns><see langword="true"/> if the caller entered write mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync<WriteLockNode, State>(ref state.Value, timeout, token);
-
-        /// <summary>
-        /// Attempts to obtain writer lock synchronously without blocking caller thread.
-        /// </summary>
-        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock()
-        {
-            ThrowIfDisposed();
-            return TryAcquire<WriteLockNode, State>(ref state.Value);
-        }
-
-        /// <summary>
-        /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns><see langword="true"/> if the caller entered write mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterWriteLockAsync(TimeSpan timeout) => TryEnterWriteLockAsync(timeout, CancellationToken.None);
-
-        /// <summary>
-        /// Enters the lock in write mode asynchronously.
-        /// </summary>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing lock acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterWriteLockAsync(CancellationToken token) => TryEnterWriteLockAsync(InfiniteTimeSpan, token);
-
-        /// <summary>
-        /// Enters the lock in write mode asynchronously.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing lock acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterWriteLockAsync(timeout, token).CheckOnTimeout();
-
-        /// <summary>
-        /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns><see langword="true"/> if the caller entered upgradeable mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync<UpgradeableReadLockNode, State>(ref state.Value, timeout, token);
-
-        /// <summary>
-        /// Attempts to obtain upgradeable reader lock synchronously without blocking caller thread.
-        /// </summary>
-        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterUpgradeableReadLock()
-        {
-            ThrowIfDisposed();
-            return TryAcquire<UpgradeableReadLockNode, State>(ref state.Value);
-        }
-
-        /// <summary>
-        /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns><see langword="true"/> if the caller entered upgradeable mode; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterUpgradeableReadLockAsync(TimeSpan timeout) => TryEnterUpgradeableReadLockAsync(timeout, CancellationToken.None);
-
-        /// <summary>
-        /// Enters the lock in upgradeable mode asynchronously.
-        /// </summary>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing lock acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterUpgradeableReadLockAsync(CancellationToken token) => TryEnterUpgradeableReadLockAsync(InfiniteTimeSpan, token);
-
-        /// <summary>
-        /// Enters the lock in upgradeable mode asynchronously.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort lock acquisition.</param>
-        /// <returns>The task representing lock acquisition operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task EnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterUpgradeableReadLockAsync(timeout, token).CheckOnTimeout();
-
-        private void ProcessReadLocks()
-        {
-            Debug.Assert(Monitor.IsEntered(this));
-
-            var readLock = first as ReadLockNode;
-            ref var currentState = ref state.Value;
-            for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)
-            {
-                next = readLock.Next;
-
-                // remove all read locks and leave upgradeable read locks until first write lock
-                if (readLock.Upgradeable)
-                {
-                    if (currentState.Upgradeable) // already in upgradeable lock, leave the current node alive
-                        continue;
-                    else
-                        currentState.Upgradeable = true;    // enter upgradeable read lock
-                }
-
-                RemoveNode(readLock);
-                readLock.SetResult();
-                currentState.ReadLocks += 1L;
-
-                if (IsTerminalNode(next))
                     break;
+                default:
+                    if (!state.IsReadLockAllowed)
+                        return;
+
+                    if (current.TrySetResult(true))
+                    {
+                        RemoveNode(current);
+                        state.AcquireReadLock();
+                    }
+
+                    continue;
             }
-        }
-
-        /// <summary>
-        /// Exits upgradeable mode.
-        /// </summary>
-        /// <remarks>
-        /// Exiting from the lock is synchronous non-blocking operation.
-        /// Lock acquisition is an asynchronous operation.
-        /// </remarks>
-        /// <exception cref="SynchronizationLockException">The caller has not entered the lock in upgradeable mode.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void ExitUpgradeableReadLock()
-        {
-            ThrowIfDisposed();
-            ref var currentState = ref state.Value;
-            if (currentState.WriteLock || !currentState.Upgradeable || currentState.ReadLocks == 0L)
-                throw new SynchronizationLockException(ExceptionMessages.NotInUpgradeableReadLock);
-            if (ProcessDisposeQueue())
-                return;
-
-            currentState.Upgradeable = false;
-
-            // no more readers, write lock can be acquired
-            if (--currentState.ReadLocks == 0L && first is WriteLockNode writeLock)
-            {
-                RemoveNode(writeLock);
-                writeLock.SetResult();
-                currentState.WriteLock = true;
-                currentState.IncrementVersion();
-            }
-            else
-            {
-                ProcessReadLocks();
-            }
-        }
-
-        /// <summary>
-        /// Exits write mode.
-        /// </summary>
-        /// <remarks>
-        /// Exiting from the lock is synchronous non-blocking operation.
-        /// Lock acquisition is an asynchronous operation.
-        /// </remarks>
-        /// <exception cref="SynchronizationLockException">The caller has not entered the lock in write mode.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void ExitWriteLock()
-        {
-            ThrowIfDisposed();
-            ref var currentState = ref state.Value;
-            if (!currentState.WriteLock)
-                throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            if (ProcessDisposeQueue())
-                return;
-
-            if (first is WriteLockNode writeLock)
-            {
-                RemoveNode(writeLock);
-                writeLock.SetResult();
-            }
-            else
-            {
-                currentState.WriteLock = false;
-                ProcessReadLocks();
-            }
-        }
-
-        /// <summary>
-        /// Exits read mode.
-        /// </summary>
-        /// <remarks>
-        /// Exiting from the lock is synchronous non-blocking operation.
-        /// Lock acquisition is an asynchronous operation.
-        /// </remarks>
-        /// <exception cref="SynchronizationLockException">The caller has not entered the lock in read mode.</exception>
-        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void ExitReadLock()
-        {
-            ThrowIfDisposed();
-            ref var currentState = ref state.Value;
-            if (currentState.WriteLock || currentState.ReadLocks == 1L && currentState.Upgradeable || currentState.ReadLocks == 0L)
-                throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
-
-            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && first is WriteLockNode writeLock)
-            {
-                RemoveNode(writeLock);
-                writeLock.SetResult();
-                currentState.WriteLock = true;
-                currentState.IncrementVersion();
-            }
-        }
-
-        /// <summary>
-        /// Disposes this lock asynchronously and gracefully.
-        /// </summary>
-        /// <remarks>
-        /// If this lock is not acquired then the method just completes synchronously.
-        /// Otherwise, it waits for calling of <see cref="ExitReadLock"/>,  method.
-        /// </remarks>
-        /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public unsafe ValueTask DisposeAsync()
-        {
-            return IsDisposed ? new ValueTask() : DisposeAsync(this, &IsLockHeld);
-
-            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
         }
     }
+
+    /// <summary>
+    /// Exits previously acquired mode.
+    /// </summary>
+    /// <remarks>
+    /// Exiting from the lock is synchronous non-blocking operation.
+    /// Lock acquisition is an asynchronous operation.
+    /// </remarks>
+    /// <exception cref="SynchronizationLockException">The caller has not entered the lock in write mode.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public void Release()
+    {
+        ThrowIfDisposed();
+
+        if (state.IsWriteLockAllowed)
+            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+
+        state.ExitLock();
+        DrainWaitQueue();
+
+        if (IsDisposeRequested && IsReadyToDispose)
+            Dispose(true);
+    }
+
+    /// <summary>
+    /// Downgrades the write lock to the read lock.
+    /// </summary>
+    /// <remarks>
+    /// Exiting from the lock is synchronous non-blocking operation.
+    /// Lock acquisition is an asynchronous operation.
+    /// </remarks>
+    /// <exception cref="SynchronizationLockException">The caller has not entered the lock in write mode.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public void DowngradeFromWriteLock()
+    {
+        ThrowIfDisposed();
+
+        if (state.IsWriteLockAllowed)
+            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+
+        state.DowngradeFromWriteLock();
+        DrainWaitQueue();
+    }
+
+    private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && first is null;
 }

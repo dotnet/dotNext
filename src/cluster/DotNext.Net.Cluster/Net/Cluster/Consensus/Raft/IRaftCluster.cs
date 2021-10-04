@@ -1,65 +1,56 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+namespace DotNext.Net.Cluster.Consensus.Raft;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+using IO.Log;
+using Replication;
+
+/// <summary>
+/// Represents cluster of nodes coordinated using Raft consensus protocol.
+/// </summary>
+public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IRaftClusterMember>
 {
-    using IO.Log;
-    using Replication;
-    using Timeout = Threading.Timeout;
+    /// <summary>
+    /// Gets term number used by Raft algorithm to check the consistency of the cluster.
+    /// </summary>
+    long Term => AuditTrail.Term;
 
     /// <summary>
-    /// Represents cluster of nodes coordinated using Raft consensus protocol.
+    /// Gets election timeout used by local cluster member.
     /// </summary>
-    public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>
-    {
-        /// <summary>
-        /// Gets term number used by Raft algorithm to check the consistency of the cluster.
-        /// </summary>
-        long Term => AuditTrail.Term;
+    TimeSpan ElectionTimeout { get; }
 
-        /// <summary>
-        /// Gets election timeout used by local cluster member.
-        /// </summary>
-        TimeSpan ElectionTimeout { get; }
+    /// <summary>
+    /// Gets a set of visible cluster members.
+    /// </summary>
+    IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
-        /// <summary>
-        /// Establishes metrics collector.
-        /// </summary>
-        MetricsCollector Metrics { set; }
+    /// <summary>
+    /// Establishes metrics collector.
+    /// </summary>
+    MetricsCollector Metrics { set; }
 
-        /// <summary>
-        /// Defines persistent state for the Raft-based cluster.
-        /// </summary>
-        new IPersistentState AuditTrail { get; set; }
+    /// <summary>
+    /// Defines persistent state for the Raft-based cluster.
+    /// </summary>
+    new IPersistentState AuditTrail { get; set; }
 
-        /// <inheritdoc/>
-        IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => AuditTrail;
+    /// <summary>
+    /// Gets the lease that can be used to perform read with linerizability guarantees.
+    /// </summary>
+    ILeaderLease? Lease { get; }
 
-        private async Task<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, Timeout timeout, CancellationToken token)
-            where TEntryImpl : notnull, IRaftLogEntry
-        {
-            var log = AuditTrail;
+    /// <summary>
+    /// Gets the token that can be used to track leader state.
+    /// </summary>
+    /// <remarks>
+    /// The token moves to canceled state if the current node downgrades to the follower state.
+    /// </remarks>
+    CancellationToken LeadershipToken { get; }
 
-            // 1 - append entry to the log
-            var index = await log.AppendAsync(entry, token).ConfigureAwait(false);
-            timeout.ThrowIfExpired(out var remaining);
+    /// <summary>
+    /// Represents a task indicating that the current node is ready to serve requests.
+    /// </summary>
+    Task Readiness { get; }
 
-            // 2 - force replication
-            if (await ForceReplicationAsync(remaining, token).ConfigureAwait(false))
-                timeout.ThrowIfExpired(out remaining);
-            else
-                throw new TimeoutException();
-
-            // 3 - wait for commit
-            if (!await log.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false))
-                throw new TimeoutException();
-
-            return Term == entry.Term;
-        }
-
-        /// <inheritdoc />
-        Task<bool> IReplicationCluster<IRaftLogEntry>.ReplicateAsync<TEntryImpl>(TEntryImpl entry, TimeSpan timeout, CancellationToken token)
-            => ReplicateAsync(entry, new Timeout(timeout), token);
-    }
+    /// <inheritdoc/>
+    IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => AuditTrail;
 }

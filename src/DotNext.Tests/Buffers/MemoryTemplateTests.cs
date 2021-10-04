@@ -1,9 +1,6 @@
-using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using System.IO;
-using Xunit;
 
 namespace DotNext.Buffers
 {

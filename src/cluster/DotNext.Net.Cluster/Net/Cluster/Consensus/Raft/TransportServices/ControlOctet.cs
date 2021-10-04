@@ -1,34 +1,32 @@
-using System;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+
+using Buffers;
+
+[StructLayout(LayoutKind.Auto)]
+internal readonly struct ControlOctet : IBinaryFormattable<ControlOctet>
 {
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly struct ControlOctet
-    {
-        private const int MessageTypeMask = 0B_0000_1111;
-        private const int FlowControlMask = 0B_1111_0000;
-        private readonly byte value;
+    internal const int Size = sizeof(byte);
+    private const int MessageTypeMask = 0B_0000_1111;
+    private const int FlowControlMask = 0B_1111_0000;
+    private readonly byte value;
 
-        internal ControlOctet(MessageType type, FlowControl control)
-            => value = (byte)((int)type | (int)control);
+    internal ControlOctet(MessageType type, FlowControl control)
+        => value = (byte)((int)type | (int)control);
 
-        internal ControlOctet(ReadOnlyMemory<byte> input, out int consumedBytes)
-        {
-            value = input.Span[0];
-            consumedBytes = sizeof(byte);
-        }
+    internal ControlOctet(ref SpanReader<byte> input)
+        => value = input.Read();
 
-        internal void WriteTo(ref Memory<byte> output)
-        {
-            output.Span[0] = value;
-            output = output.Slice(sizeof(byte));
-        }
+    static ControlOctet IBinaryFormattable<ControlOctet>.Parse(ref SpanReader<byte> input) => new(ref input);
 
-        internal MessageType Type => (MessageType)(value & MessageTypeMask);
+    static int IBinaryFormattable<ControlOctet>.Size => Size;
 
-        internal FlowControl Control => (FlowControl)(value & FlowControlMask);
+    public void Format(ref SpanWriter<byte> output) => output.Write(value);
 
-        public static implicit operator byte(ControlOctet value) => value.value;
-    }
+    internal MessageType Type => (MessageType)(value & MessageTypeMask);
+
+    internal FlowControl Control => (FlowControl)(value & FlowControlMask);
+
+    public static implicit operator byte(ControlOctet value) => value.value;
 }

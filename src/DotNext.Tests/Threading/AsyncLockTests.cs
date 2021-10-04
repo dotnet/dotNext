@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Threading
 {
@@ -72,7 +68,7 @@ namespace DotNext.Threading
         [Fact]
         public static void CanceledState()
         {
-            var t = Task.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
+            var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
             True(t.IsCanceled);
             t = t.SuppressCancellation();
             False(t.IsCanceled);
@@ -82,11 +78,11 @@ namespace DotNext.Threading
         [Fact]
         public static void DisposedOrCanceledState()
         {
-            var t = Task.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
+            var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
             t = t.SuppressDisposedStateOrCancellation();
             False(t.IsCanceled);
             False(t.Result);
-            t = Task.FromException<AsyncLock.Holder>(new ObjectDisposedException("obj"));
+            t = ValueTask.FromException<AsyncLock.Holder>(new ObjectDisposedException("obj"));
             t = t.SuppressDisposedStateOrCancellation();
             False(t.IsFaulted);
             False(t.Result);

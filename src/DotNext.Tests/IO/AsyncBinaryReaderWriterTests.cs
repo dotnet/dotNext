@@ -1,17 +1,11 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
-using TimeSpanStyles = System.Globalization.TimeSpanStyles;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO
 {
@@ -163,8 +157,53 @@ namespace DotNext.IO
             public ValueTask DisposeAsync() => stream.DisposeAsync();
         }
 
+        private sealed class FileSource : Disposable, IAsyncBinaryReaderWriterSource, IFlushable
+        {
+            private readonly SafeFileHandle handle;
+            private readonly FileWriter writer;
+            private readonly FileReader reader;
+
+            public FileSource(int bufferSize)
+            {
+                var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
+                writer = new(handle, bufferSize: bufferSize);
+                reader = new(handle, bufferSize: bufferSize);
+            }
+
+            public IAsyncBinaryWriter CreateWriter() => writer;
+
+            public IAsyncBinaryReader CreateReader() => reader;
+
+            public Task FlushAsync(CancellationToken token) => writer.WriteAsync(token).AsTask();
+
+            void IFlushable.Flush()
+            {
+                using (var task = FlushAsync(CancellationToken.None))
+                    task.Wait(DefaultTimeout);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    writer.Dispose();
+                    reader.Dispose();
+                    handle.Dispose();
+                }
+
+                base.Dispose(disposing);
+            }
+
+            public new ValueTask DisposeAsync() => base.DisposeAsync();
+        }
+
         public static IEnumerable<object[]> GetDataForPrimitives()
         {
+            yield return new object[] { new FileSource(128), true, Encoding.UTF8 };
+            yield return new object[] { new FileSource(128), false, Encoding.UTF8 };
+            yield return new object[] { new FileSource(1024), true, Encoding.UTF8 };
+            yield return new object[] { new FileSource(1024), false, Encoding.UTF8 };
             yield return new object[] { new StreamSource(), true, Encoding.UTF8 };
             yield return new object[] { new StreamSource(), false, Encoding.UTF8 };
             yield return new object[] { new PipeSource(), true, Encoding.UTF8 };
@@ -178,6 +217,10 @@ namespace DotNext.IO
             yield return new object[] { new DefaultSource(), true, Encoding.UTF8 };
             yield return new object[] { new DefaultSource(), false, Encoding.UTF8 };
 
+            yield return new object[] { new FileSource(128), true, Encoding.Unicode };
+            yield return new object[] { new FileSource(128), false, Encoding.Unicode };
+            yield return new object[] { new FileSource(1024), true, Encoding.Unicode };
+            yield return new object[] { new FileSource(1024), false, Encoding.Unicode };
             yield return new object[] { new StreamSource(), true, Encoding.Unicode };
             yield return new object[] { new StreamSource(), false, Encoding.Unicode };
             yield return new object[] { new PipeSource(), true, Encoding.Unicode };
@@ -211,6 +254,7 @@ namespace DotNext.IO
                 var valueT = TimeSpan.FromMilliseconds(1024);
                 var blob = RandomBytes(128);
                 var bi = new BigInteger(RandomBytes(64));
+                var memberId = new Net.Cluster.ClusterMemberId(Random.Shared);
 
                 var writer = source.CreateWriter();
                 await writer.WriteInt16Async(value16, littleEndian);
@@ -218,24 +262,28 @@ namespace DotNext.IO
                 await writer.WriteInt64Async(value64, littleEndian);
                 await writer.WriteAsync(valueM);
                 var encodingContext = new EncodingContext(encoding, true);
-                await writer.WriteByteAsync(value8, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
-                await writer.WriteInt16Async(value16, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
-                await writer.WriteInt32Async(value32, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
-                await writer.WriteInt64Async(value64, LengthFormat.PlainBigEndian, encodingContext, provider: InvariantCulture);
-                await writer.WriteDecimalAsync(valueM, LengthFormat.PlainLittleEndian, encodingContext, provider: InvariantCulture);
-                await writer.WriteSingleAsync(valueF, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
-                await writer.WriteDoubleAsync(valueD, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
-                await writer.WriteGuidAsync(valueG, LengthFormat.Plain, encodingContext);
-                await writer.WriteGuidAsync(valueG, LengthFormat.Plain, encodingContext, "X");
-                await writer.WriteDateTimeAsync(valueDT, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
-                await writer.WriteDateTimeOffsetAsync(valueDTO, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
-                await writer.WriteDateTimeAsync(valueDT, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
-                await writer.WriteDateTimeOffsetAsync(valueDTO, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
-                await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext);
-                await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext, "G", InvariantCulture);
+                await writer.WriteFormattableAsync(value8, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(value16, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(value32, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(value64, LengthFormat.PlainBigEndian, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueM, LengthFormat.PlainLittleEndian, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueF, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueD, LengthFormat.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueG, LengthFormat.Plain, encodingContext);
+                await writer.WriteFormattableAsync(valueG, LengthFormat.Plain, encodingContext, "X");
+                await writer.WriteFormattableAsync(valueDT, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueDTO, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueDT, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueDTO, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteFormattableAsync(valueT, LengthFormat.Plain, encodingContext);
+                await writer.WriteFormattableAsync(valueT, LengthFormat.Plain, encodingContext, "G", InvariantCulture);
                 await writer.WriteAsync(blob, LengthFormat.Compressed);
-                await writer.WriteBigIntegerAsync(bi, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
+                await writer.WriteFormattableAsync(bi, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
                 await writer.WriteBigIntegerAsync(bi, littleEndian, LengthFormat.Compressed);
+                await writer.WriteFormattableAsync(memberId);
+
+                if (source is IFlushable flushable)
+                    await flushable.FlushAsync();
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
@@ -243,25 +291,26 @@ namespace DotNext.IO
                 Equal(value64, await reader.ReadInt64Async(littleEndian));
                 Equal(valueM, await reader.ReadAsync<decimal>());
                 var decodingContext = new DecodingContext(encoding, true);
-                Equal(value8, await reader.ReadByteAsync(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
-                Equal(value16, await reader.ReadInt16Async(LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
-                Equal(value32, await reader.ReadInt32Async(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
-                Equal(value64, await reader.ReadInt64Async(LengthFormat.PlainBigEndian, decodingContext, provider: InvariantCulture));
-                Equal(valueM, await reader.ReadDecimalAsync(LengthFormat.PlainLittleEndian, decodingContext, provider: InvariantCulture));
-                Equal(valueF, await reader.ReadSingleAsync(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
-                Equal(valueD, await reader.ReadDoubleAsync(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
-                Equal(valueG, await reader.ReadGuidAsync(LengthFormat.Plain, decodingContext));
-                Equal(valueG, await reader.ReadGuidAsync(LengthFormat.Plain, decodingContext, "X"));
-                Equal(valueDT, await reader.ReadDateTimeAsync(LengthFormat.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
-                Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(LengthFormat.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
-                Equal(valueDT, await reader.ReadDateTimeAsync(LengthFormat.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
-                Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(LengthFormat.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
-                Equal(valueT, await reader.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, InvariantCulture));
-                Equal(valueT, await reader.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, new[] { "G" }, TimeSpanStyles.None, InvariantCulture));
+                Equal(value8, await reader.ParseAsync<byte>(static (c, p) => byte.Parse(c, provider: p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(value16, await reader.ParseAsync<short>(static (c, p) => short.Parse(c, provider: p), LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
+                Equal(value32, await reader.ParseAsync<int>(static (c, p) => int.Parse(c, provider: p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(value64, await reader.ParseAsync<long>(static (c, p) => long.Parse(c, provider: p), LengthFormat.PlainBigEndian, decodingContext, provider: InvariantCulture));
+                Equal(valueM, await reader.ParseAsync<decimal>(static (c, p) => decimal.Parse(c, provider: p), LengthFormat.PlainLittleEndian, decodingContext, provider: InvariantCulture));
+                Equal(valueF, await reader.ParseAsync<float>(static (c, p) => float.Parse(c, provider: p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueD, await reader.ParseAsync<double>(static (c, p) => double.Parse(c, provider: p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueG, await reader.ParseAsync<Guid>(static (c, p) => Guid.Parse(c), LengthFormat.Plain, decodingContext));
+                Equal(valueG, await reader.ParseAsync<Guid>(static (c, p) => Guid.ParseExact(c, "X"), LengthFormat.Plain, decodingContext));
+                Equal(valueDT, await reader.ParseAsync<DateTime>(static (c, p) => DateTime.Parse(c, p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueDTO, await reader.ParseAsync<DateTimeOffset>(static (c, p) => DateTimeOffset.Parse(c, p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueDT, await reader.ParseAsync<DateTime>(static (c, p) => DateTime.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueDTO, await reader.ParseAsync<DateTimeOffset>(static (c, p) => DateTimeOffset.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueT, await reader.ParseAsync<TimeSpan>(TimeSpan.Parse, LengthFormat.Plain, decodingContext, InvariantCulture));
+                Equal(valueT, await reader.ParseAsync<TimeSpan>(static (c, p) => TimeSpan.ParseExact(c, "G", p), LengthFormat.Plain, decodingContext, InvariantCulture));
                 using var decodedBlob = await reader.ReadAsync(LengthFormat.Compressed);
                 Equal(blob, decodedBlob.Memory.ToArray());
-                Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
+                Equal(bi, await reader.ParseAsync<BigInteger>(static (c, p) => BigInteger.Parse(c, provider: p), LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
                 Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
+                Equal(memberId, await reader.ParseAsync<Net.Cluster.ClusterMemberId>());
             }
         }
 
@@ -306,7 +355,7 @@ namespace DotNext.IO
             {
                 const string value = "Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!";
                 var writer = source.CreateWriter();
-                await writer.WriteAsync(value.AsMemory(), encoding, lengthFormat);
+                await writer.WriteStringAsync(value.AsMemory(), encoding, lengthFormat);
 
                 var reader = source.CreateReader();
                 var result = await (lengthFormat is null ?
@@ -439,15 +488,8 @@ namespace DotNext.IO
             Equal(0, writer.WrittenCount);
 
             var context = new DecodingContext();
-            await ThrowsAsync<EndOfStreamException>(reader.ReadByteAsync(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadInt16Async(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadInt32Async(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadInt64Async(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadSingleAsync(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadDoubleAsync(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadDecimalAsync(LengthFormat.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ParseAsync<byte>(static (c, p) => byte.Parse(c, provider: p), LengthFormat.Plain, context).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadStringAsync(LengthFormat.Plain, context).AsTask);
-            await ThrowsAsync<EndOfStreamException>(reader.ReadBigIntegerAsync(LengthFormat.Plain, context).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadBigIntegerAsync(10, true).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadStringAsync(10, context).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadAsync<decimal>().AsTask);
@@ -513,17 +555,7 @@ namespace DotNext.IO
             Empty(reader.ReadStringAsync(0, default).Result);
             Throws<EndOfStreamException>(() => reader.ReadStringAsync(LengthFormat.Plain, default).Result);
 
-            Throws<EndOfStreamException>(() => reader.ReadByteAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadInt16Async(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadInt32Async(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadInt64Async(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadSingleAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadDoubleAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadGuidAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadTimeSpanAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadDateTimeAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadDateTimeOffsetAsync(LengthFormat.Plain, default).Result);
-            Throws<EndOfStreamException>(() => reader.ReadDecimalAsync(LengthFormat.Plain, default).Result);
+            Throws<EndOfStreamException>(() => reader.ParseAsync<byte>(static (c, p) => byte.Parse(c, provider: p), LengthFormat.Plain, default).Result);
         }
     }
 }

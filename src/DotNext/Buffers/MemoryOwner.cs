@@ -1,4 +1,3 @@
-using System;
 using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -13,7 +12,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
+    public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<ReadOnlyMemory<T>>
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
@@ -32,6 +31,7 @@ namespace DotNext.Buffers
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
             Debug.Assert(array.Length >= length);
+
             this.array = array;
             owner = pool;
             this.length = length;
@@ -39,9 +39,16 @@ namespace DotNext.Buffers
 
         internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
         {
-            array = pool.Rent(length);
-            owner = pool;
-            this.length = exactSize ? length : array.Length;
+            if (length == 0)
+            {
+                this = default;
+            }
+            else
+            {
+                array = pool.Rent(length);
+                owner = pool;
+                this.length = exactSize ? length : array.Length;
+            }
         }
 
         /// <summary>
@@ -61,10 +68,17 @@ namespace DotNext.Buffers
         /// <param name="length">The number of elements to rent; or <c>-1</c> to rent default amount of memory.</param>
         public MemoryOwner(MemoryPool<T> pool, int length = -1)
         {
-            array = null;
-            IMemoryOwner<T> owner;
-            this.owner = owner = pool.Rent(length);
-            this.length = length < 0 ? owner.Memory.Length : length;
+            if (length == 0)
+            {
+                this = default;
+            }
+            else
+            {
+                array = null;
+                IMemoryOwner<T> owner;
+                this.owner = owner = pool.Rent(length);
+                this.length = length < 0 ? owner.Memory.Length : length;
+            }
         }
 
         /// <summary>
@@ -74,10 +88,17 @@ namespace DotNext.Buffers
         /// <param name="length">The number of elements to rent.</param>
         public MemoryOwner(Func<int, IMemoryOwner<T>> provider, int length)
         {
-            array = null;
-            IMemoryOwner<T> owner;
-            this.owner = owner = provider(length);
-            this.length = Math.Min(owner.Memory.Length, length);
+            if (length == 0)
+            {
+                this = default;
+            }
+            else
+            {
+                array = null;
+                IMemoryOwner<T> owner;
+                this.owner = owner = provider(length);
+                this.length = Math.Min(owner.Memory.Length, length);
+            }
         }
 
         /// <summary>
@@ -102,6 +123,7 @@ namespace DotNext.Buffers
         {
             if (length > array.Length || length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
+
             this.array = array;
             this.length = length;
             owner = null;
@@ -137,7 +159,7 @@ namespace DotNext.Buffers
             if (provider == null)
                 throw new ArgumentNullException(nameof(provider));
 
-            return new(provider(length, arg), exactSize ? length : null);
+            return length == 0 ? default : new(provider(length, arg), exactSize ? length : null);
         }
 
         /// <summary>
@@ -255,17 +277,16 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
+        /// <inheritdoc/>
+        readonly ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => Memory;
+
         internal readonly ref T First
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 if (array is not null)
-#if NETSTANDARD2_1
-                    return ref array[0];
-#else
                     return ref MemoryMarshal.GetArrayDataReference(array);
-#endif
                 if (owner is not null)
                     return ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
 

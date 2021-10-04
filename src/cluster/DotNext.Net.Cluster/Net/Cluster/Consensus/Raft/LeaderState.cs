@@ -1,182 +1,205 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft;
+
+using IO.Log;
+using Membership;
+using static Threading.LinkedTokenSourceFactory;
+using static Threading.Tasks.Continuation;
+using AsyncResultSet = Buffers.PooledArrayBufferWriter<Task<Result<bool>>>;
+using Timestamp = Diagnostics.Timestamp;
+
+internal sealed partial class LeaderState : RaftState, ILeaderLease
 {
-    using IO.Log;
-    using static Threading.Tasks.Continuation;
-    using Timestamp = Diagnostics.Timestamp;
+    private const int MaxTermCacheSize = 100;
+    private readonly long currentTerm;
+    private readonly bool allowPartitioning;
+    private readonly CancellationTokenSource timerCancellation;
+    internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
-    internal sealed partial class LeaderState : RaftState
+    // key is log entry index, value is log entry term
+    private readonly TermCache precedingTermCache;
+    private readonly TimeSpan maxLease;
+    private Timestamp replicatedAt;
+    private Task? heartbeatTask;
+    internal ILeaderStateMetrics? Metrics;
+
+    internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term, TimeSpan maxLease)
+        : base(stateMachine)
     {
-        private sealed class AsyncResultSet : LinkedList<Task<Result<bool>>>
+        currentTerm = term;
+        this.allowPartitioning = allowPartitioning;
+        timerCancellation = new();
+        LeadershipToken = timerCancellation.Token;
+        replicationEvent = new();
+        replicationQueue = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        precedingTermCache = new TermCache(MaxTermCacheSize);
+        this.maxLease = maxLease;
+    }
+
+    private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    {
+        var start = Timestamp.Current;
+        long commitIndex = auditTrail.GetLastIndex(true),
+            currentIndex = auditTrail.GetLastIndex(false),
+            term = currentTerm,
+            minPrecedingIndex = 0L;
+
+        var activeConfig = configurationStorage.ActiveConfiguration;
+        var proposedConfig = configurationStorage.ProposedConfiguration;
+
+        var leaseRenewalThreshold = 0;
+
+        // send heartbeat in parallel
+        foreach (var member in stateMachine.Members)
         {
+            leaseRenewalThreshold++;
+
+            if (member.IsRemote)
+            {
+                long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm;
+                minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
+
+                // try to get term from the cache to avoid touching audit trail for each member
+                if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
+                    precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
+
+                taskBuffer.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
+            }
         }
 
-        private const int MaxTermCacheSize = 100;
-        private readonly long currentTerm;
-        private readonly bool allowPartitioning;
-        private readonly CancellationTokenSource timerCancellation;
+        // clear cache
+        if (precedingTermCache.Count > MaxTermCacheSize)
+            precedingTermCache.Clear();
+        else
+            precedingTermCache.RemoveHead(minPrecedingIndex);
 
-        // key is log entry index, value is log entry term
-        private readonly TermCache precedingTermCache;
-        private Task? heartbeatTask;
-        internal ILeaderStateMetrics? Metrics;
+        leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
-            : base(stateMachine)
+        int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
+        foreach (var task in taskBuffer)
         {
-            currentTerm = term;
-            this.allowPartitioning = allowPartitioning;
-            timerCancellation = new();
-            replicationEvent = new();
-            replicationQueue = new();
-            precedingTermCache = new TermCache(MaxTermCacheSize);
+            try
+            {
+                var result = await task.ConfigureAwait(false);
+                term = Math.Max(term, result.Term);
+                quorum++;
+
+                if (result.Value)
+                {
+                    if (--leaseRenewalThreshold == 0)
+                        Timestamp.VolatileWrite(ref replicatedAt, start + maxLease); // renew lease
+
+                    commitQuorum++;
+                }
+                else
+                {
+                    commitQuorum--;
+                }
+            }
+            catch (MemberUnavailableException)
+            {
+                quorum -= 1;
+                commitQuorum -= 1;
+            }
+            catch (OperationCanceledException)
+            {
+                // leading was canceled
+                Metrics?.ReportBroadcastTime(start.Elapsed);
+                return false;
+            }
+            catch (Exception e)
+            {
+                stateMachine.Logger.LogError(e, ExceptionMessages.UnexpectedError);
+            }
         }
 
-        private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
+        Metrics?.ReportBroadcastTime(start.Elapsed);
+
+        if (term <= currentTerm && (quorum > 0 || allowPartitioning))
         {
-            var timeStamp = Timestamp.Current;
-            var tasks = new AsyncResultSet();
+            Debug.Assert(quorum >= commitQuorum);
 
-            long commitIndex = auditTrail.GetLastIndex(true),
-                currentIndex = auditTrail.GetLastIndex(false),
-                term = currentTerm,
-                minPrecedingIndex = 0L;
-
-            // send heartbeat in parallel
-            foreach (var member in stateMachine.Members)
-            {
-                if (member.IsRemote)
-                {
-                    long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm;
-                    minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
-
-                    // try to get term from the cache to avoid touching audit trail for each member
-                    if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
-                        precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
-
-                    tasks.AddLast(new Replicator(auditTrail, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
-                }
-            }
-
-            // clear cache
-            if (precedingTermCache.Count > MaxTermCacheSize)
-                precedingTermCache.Clear();
-            else
-                precedingTermCache.RemoveHead(minPrecedingIndex);
-
-            int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
-#if NETSTANDARD2_1
-            for (var task = tasks.First; task is not null; task.Value = default!, task = task.Next)
-#else
-            for (var task = tasks.First; task is not null; task.ValueRef = default!, task = task.Next)
-#endif
-            {
-                try
-                {
-#if NETSTANDARD2_1
-                    var result = await task.Value.ConfigureAwait(false);
-#else
-                    var result = await task.ValueRef.ConfigureAwait(false);
-#endif
-                    term = Math.Max(term, result.Term);
-                    quorum += 1;
-                    commitQuorum += result.Value ? 1 : -1;
-                }
-                catch (MemberUnavailableException)
-                {
-                    quorum -= 1;
-                    commitQuorum -= 1;
-                }
-                catch (OperationCanceledException)
-                {
-                    // leading was canceled
-                    tasks.Clear();
-                    Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
-                    return false;
-                }
-                catch (Exception e)
-                {
-                    stateMachine.Logger.LogError(e, ExceptionMessages.UnexpectedError);
-                }
-            }
-
-            tasks.Clear();
-            Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
-
-            // majority of nodes accept entries with a least one entry from the current term
             if (commitQuorum > 0)
             {
-                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries started from first uncommitted index to the end
+                // majority of nodes accept entries with at least one entry from the current term
+                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
-                goto check_term;
             }
-
-            stateMachine.Logger.CommitFailed(quorum, commitIndex);
-
-            // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum <= 0 && !allowPartitioning)
-                goto stop_leading;
-
-            check_term:
-            if (term <= currentTerm)
-                return true;
-
-            // it is partitioned network with absolute majority, not possible to have more than one leader
-            stop_leading:
-            stateMachine.MoveToFollowerState(false, term);
-            return false;
-        }
-
-        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
-        {
-            using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);
-            token = cancellationSource.Token;
-            for (var forced = false; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+            else
             {
-                if (forced)
-                    DrainReplicationQueue();
-            }
-        }
-
-        /// <summary>
-        /// Starts cluster synchronization.
-        /// </summary>
-        /// <param name="period">Time period of Heartbeats.</param>
-        /// <param name="transactionLog">Transaction log.</param>
-        /// <param name="token">The toke that can be used to cancel the operation.</param>
-        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, CancellationToken token)
-        {
-            foreach (var member in stateMachine.Members)
-                member.NextIndex = transactionLog.GetLastIndex(false) + 1;
-            heartbeatTask = DoHeartbeats(period, transactionLog, token);
-            return this;
-        }
-
-        internal override Task StopAsync()
-        {
-            timerCancellation.Cancel(false);
-            return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                timerCancellation.Dispose();
-                heartbeatTask = null;
-
-                // cancel replication queue
-                replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
-
-                Metrics = null;
+                stateMachine.Logger.CommitFailed(quorum, commitIndex);
             }
 
-            base.Dispose(disposing);
+            await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
+            return true;
         }
+
+        // it is partitioned network with absolute majority, not possible to have more than one leader
+        stateMachine.MoveToFollowerState(false, term);
+        return false;
+    }
+
+    private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    {
+        using var cancellationSource = token.LinkTo(LeadershipToken);
+
+        // reuse this buffer to place responses from other nodes
+        using var taskBuffer = new AsyncResultSet(stateMachine.Members.Count);
+
+        for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+        {
+            if (forced)
+                DrainReplicationQueue();
+
+            taskBuffer.Clear(true);
+        }
+    }
+
+    /// <summary>
+    /// Starts cluster synchronization.
+    /// </summary>
+    /// <param name="period">Time period of Heartbeats.</param>
+    /// <param name="transactionLog">Transaction log.</param>
+    /// <param name="configurationStorage">Cluster configuration storage.</param>
+    /// <param name="token">The toke that can be used to cancel the operation.</param>
+    internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    {
+        foreach (var member in stateMachine.Members)
+        {
+            member.NextIndex = transactionLog.GetLastIndex(false) + 1;
+            member.ConfigurationFingerprint = 0L;
+        }
+
+        heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
+        return this;
+    }
+
+    bool ILeaderLease.IsExpired
+        => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt) < Timestamp.Current;
+
+    internal override Task StopAsync()
+    {
+        timerCancellation.Cancel(false);
+        replicationEvent.CancelSuspendedCallers(timerCancellation.Token);
+        return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            timerCancellation.Dispose();
+            heartbeatTask = null;
+
+            // cancel replication queue
+            replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            replicationEvent.Dispose();
+
+            Metrics = null;
+        }
+
+        base.Dispose(disposing);
     }
 }

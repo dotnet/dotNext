@@ -1,87 +1,71 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Debug = System.Diagnostics.Debug;
+namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+using IO;
+using Membership;
+using HttpEndPoint = Net.Http.HttpEndPoint;
+
+internal partial class RaftHttpCluster
 {
-    internal partial class RaftHttpCluster
+    private sealed class ReceivedClusterConfiguration : MemoryTransferObject, IClusterConfiguration
     {
-        private readonly IMemberDiscoveryService? discoveryService;
-        private IDisposable? membershipWatch;
-
-        private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
-
-        private async Task<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
+        internal ReceivedClusterConfiguration(int length)
+            : base(length)
         {
-            var selector = configurator?.LocalMemberSelector;
-            RaftClusterMember? member;
+        }
 
-            if (selector is null)
+        public long Fingerprint { get; init; }
+
+        long IClusterConfiguration.Length => Content.Length;
+    }
+
+    private readonly ClusterMemberAnnouncer<HttpEndPoint>? announcer;
+    private Task pollingLoopTask;
+
+    private async Task ConfigurationPollingLoop()
+    {
+        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken))
+        {
+            if (eventInfo.IsAdded)
             {
-                var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
-                member = FindMember(addresses.Contains);
+                var member = CreateMember(eventInfo.Id, eventInfo.Address);
+                if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
+                    member.IsRemote = eventInfo.Address != localNode;
+                else
+                    member.Dispose();
             }
             else
             {
-                member = await FindMemberAsync(selector, token).ConfigureAwait(false);
-            }
-
-            return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-        }
-
-        // TODO: ISet<Uri> should be replaced with IReadOnlySet<Uri> in .NET 6
-        private void ChangeMembers(in MemberCollectionBuilder builder, ISet<Uri> members)
-        {
-            var existingMembers = new HashSet<Uri>();
-
-            // remove members
-            foreach (var holder in builder)
-            {
-                Debug.Assert(holder.Member.BaseAddress is not null);
-                if (members.Contains(holder.Member.BaseAddress))
+                var member = await RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                if (member is not null)
                 {
-                    existingMembers.Add(holder.Member.BaseAddress);
-                }
-                else if (holder.Member.IsRemote)
-                {
-                    using var member = holder.Remove();
-                    MemberRemoved?.Invoke(this, member);
                     member.CancelPendingRequests();
+                    member.Dispose();
                 }
             }
-
-            // add new members
-            foreach (var memberUri in members)
-            {
-                if (!existingMembers.Contains(memberUri))
-                {
-                    var member = CreateMember(memberUri);
-                    builder.Add(member);
-                    MemberAdded?.Invoke(this, member);
-                }
-            }
-
-            // help GC
-            existingMembers.Clear();
         }
+    }
 
-        private async Task DiscoverMembersAsync(IMemberDiscoveryService discovery, CancellationToken token)
+    async Task<bool> IRaftHttpCluster.AddMemberAsync(ClusterMemberId id, HttpEndPoint address, CancellationToken token)
+    {
+        using var member = CreateMember(id, address);
+        member.IsRemote = localNode != address;
+        return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
+    }
+
+    Task<bool> IRaftHttpCluster.RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
+        => RemoveMemberAsync(id, ConfigurationStorage, token);
+
+    Task<bool> IRaftHttpCluster.RemoveMemberAsync(HttpEndPoint address, CancellationToken token)
+    {
+        foreach (var member in Members)
         {
-            // cache delegate instance to avoid allocations
-            MemberCollectionMutator<ISet<Uri>> mutator = ChangeMembers;
-
-            var members = (await discovery.DiscoverAsync(token).ConfigureAwait(false)).ToImmutableHashSet();
-            await ChangeMembersAsync(mutator, members, token).ConfigureAwait(false);
-
-            // start watching (Token should be used here as long-living cancellation token associated with this instance)
-            membershipWatch = await discovery.WatchAsync(ApplyChanges, token).ConfigureAwait(false);
-
-            Task ApplyChanges(IReadOnlyCollection<Uri> members, CancellationToken token)
-                => ChangeMembersAsync(mutator, members.ToImmutableHashSet(), token);
+            if (member.EndPoint == address)
+            {
+                member.CancelPendingRequests();
+                return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
+            }
         }
+
+        return Task.FromResult<bool>(false);
     }
 }

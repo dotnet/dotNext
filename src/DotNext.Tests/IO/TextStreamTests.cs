@@ -1,12 +1,8 @@
-using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
-using Xunit;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.IO

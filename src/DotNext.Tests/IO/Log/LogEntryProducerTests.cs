@@ -1,8 +1,8 @@
-using System.Threading.Tasks;
-using Xunit;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.IO.Log
 {
+    [ExcludeFromCodeCoverage]
     public sealed class LogEntryProducerTests : Test
     {
         [Fact]

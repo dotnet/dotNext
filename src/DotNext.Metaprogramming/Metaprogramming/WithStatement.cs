@@ -1,22 +1,20 @@
-using System;
 using System.Linq.Expressions;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Metaprogramming;
+
+using WithExpression = Linq.Expressions.WithExpression;
+
+internal sealed class WithStatement : Statement, ILexicalScope<WithExpression, Action<ParameterExpression>>
 {
-    using WithExpression = Linq.Expressions.WithExpression;
+    private readonly Expression obj;
 
-    internal sealed class WithStatement : Statement, ILexicalScope<WithExpression, Action<ParameterExpression>>
+    internal WithStatement(Expression obj) => this.obj = obj;
+
+    WithExpression ILexicalScope<WithExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope)
     {
-        private readonly Expression obj;
-
-        internal WithStatement(Expression obj) => this.obj = obj;
-
-        WithExpression ILexicalScope<WithExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope)
-        {
-            var result = new WithExpression(obj);
-            scope(result.Variable);
-            result.Body = Build();
-            return result;
-        }
+        var result = new WithExpression(obj);
+        scope(result.Variable);
+        result.Body = Build();
+        return result;
     }
 }

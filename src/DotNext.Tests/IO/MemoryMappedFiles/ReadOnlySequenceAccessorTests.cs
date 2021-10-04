@@ -1,9 +1,6 @@
-using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.IO.MemoryMappedFiles;
-using Xunit;
 
 namespace DotNext.IO.MemoryMappedFiles
 {
@@ -40,7 +37,7 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             var tempFile = Path.GetTempFileName();
             var content = new byte[1024];
-            new Random().NextBytes(content);
+            Random.Shared.NextBytes(content);
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Write, FileShare.None))
             {
                 fs.Write(content);

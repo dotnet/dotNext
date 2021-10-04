@@ -1,8 +1,4 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DotNext.Threading
 {
@@ -48,7 +44,7 @@ namespace DotNext.Threading
         {
             await using var exchanger = new AsyncExchanger<int>();
             var task = exchanger.ExchangeAsync(42, new CancellationToken(true));
-            await ThrowsAsync<TaskCanceledException>(task.AsTask);
+            await ThrowsAsync<OperationCanceledException>(task.AsTask);
             task = exchanger.ExchangeAsync(42);
             False(task.IsCompleted);
             Equal(42, await exchanger.ExchangeAsync(56));
@@ -87,6 +83,26 @@ namespace DotNext.Threading
                 var tmp = 0;
                 exchanger.TryExchange(ref tmp);
             });
+        }
+
+        [Fact]
+        public static async Task StressTest()
+        {
+            await using var exchanger = new AsyncExchanger<int>();
+
+            var task1 = Task.Run(async () =>
+            {
+                for (var i = 0; i < 200; i++)
+                    Equal(52, await exchanger.ExchangeAsync(42));
+            });
+
+            var task2 = Task.Run(async () =>
+            {
+                for (var i = 0; i < 200; i++)
+                    Equal(42, await exchanger.ExchangeAsync(52));
+            });
+
+            await Task.WhenAll(task1, task2);
         }
     }
 }

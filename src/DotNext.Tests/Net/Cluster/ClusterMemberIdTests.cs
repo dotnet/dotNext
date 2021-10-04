@@ -1,8 +1,6 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
-using Xunit;
 
 namespace DotNext.Net.Cluster
 {
@@ -12,9 +10,8 @@ namespace DotNext.Net.Cluster
         [Fact]
         public static void Equality()
         {
-            var random = new Random();
-            var id1 = random.Next<ClusterMemberId>();
-            var id2 = random.Next<ClusterMemberId>();
+            var id1 = new ClusterMemberId(Random.Shared);
+            var id2 = new ClusterMemberId(Random.Shared);
             NotEqual(id1, id2);
             False(id1 == id2);
             True(id1 != id2);
@@ -27,16 +24,9 @@ namespace DotNext.Net.Cluster
         }
 
         [Fact]
-        public static void SerializationDeserialization()
-        {
-            var id = new Random().Next<ClusterMemberId>();
-            Equal(id, SerializeDeserialize(id));
-        }
-
-        [Fact]
         public static unsafe void RestoreFromBytes()
         {
-            var id1 = new Random().Next<ClusterMemberId>();
+            var id1 = new ClusterMemberId(Random.Shared);
             var bytes = Span.AsReadOnlyBytes(id1);
             var id2 = new ClusterMemberId(bytes);
             Equal(id1, id2);
@@ -45,7 +35,7 @@ namespace DotNext.Net.Cluster
         [Fact]
         public static void Parsing()
         {
-            var expected = new Random().Next<ClusterMemberId>();
+            var expected = new ClusterMemberId(Random.Shared);
             True(ClusterMemberId.TryParse(expected.ToString().AsSpan(), out var actual));
             Equal(expected, actual);
             var invalidHex = "AB142244";

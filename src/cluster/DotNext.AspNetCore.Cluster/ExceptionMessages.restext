@@ -1,9 +1,11 @@
 UnresolvedHostName = Unable to resolve host name {0}
 MissingHeader=Raft protocol header {0} is missing
 IncorrectResponse=Incorrect response according with Raft protocol
-UnresolvedLocalMember=Configured list of members in cluster doesn't contain address of entire application
 UnavailableMember=Member is not reachable through the network
 LeaderIsUnavailable=Leader node is not yet elected
 InvalidRpcTimeout=Raft RPC timeout cannot be larger than HTTP request timeout
 UnsupportedRedirection=Redirection is not suppported because the underlying network transport for Raft cannot provide correct resolution of the leader address compatible with HTTP protocol
 ReadLogEntryTwice=Attempt to read the log entry twice while it's not reusable
+InvalidDnsEndPointFormat=DNS endpoint is in incorrect format
+UnknownLocalNodeAddress=The address of the local node is not defined
+UnknownContactNodeAddress=The address of the contact node is not defined

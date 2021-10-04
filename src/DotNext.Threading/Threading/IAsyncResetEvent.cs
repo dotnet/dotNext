@@ -1,15 +1,12 @@
-using System.Threading;
+namespace DotNext.Threading;
 
-namespace DotNext.Threading
+/// <summary>
+/// Represents asynchronous flow synchronization event.
+/// </summary>
+public interface IAsyncResetEvent : IAsyncEvent
 {
     /// <summary>
-    /// Represents asynchronous flow synchronization event.
+    /// Gets reset mode.
     /// </summary>
-    public interface IAsyncResetEvent : IAsyncEvent
-    {
-        /// <summary>
-        /// Gets reset mode.
-        /// </summary>
-        EventResetMode ResetMode { get; }
-    }
+    EventResetMode ResetMode { get; }
 }

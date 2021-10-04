@@ -1,36 +1,33 @@
-﻿using System;
+﻿namespace DotNext.Reflection;
 
-namespace DotNext.Reflection
+/// <summary>
+/// Indicates that requested field doesn't exist.
+/// </summary>
+public sealed class MissingFieldException : ConstraintViolationException
 {
     /// <summary>
-    /// Indicates that requested field doesn't exist.
+    /// Initializes a new exception indicating that requested field doesn't exist.
     /// </summary>
-    public sealed class MissingFieldException : ConstraintViolationException
+    /// <param name="declaringType">The inspected type.</param>
+    /// <param name="fieldName">The name of the missing field.</param>
+    /// <param name="fieldType">The type of the missing field.</param>
+    public MissingFieldException(Type declaringType, string fieldName, Type fieldType)
+        : base(declaringType, ExceptionMessages.MissingField(fieldName, fieldType, declaringType))
     {
-        /// <summary>
-        /// Initializes a new exception indicating that requested field doesn't exist.
-        /// </summary>
-        /// <param name="declaringType">The inspected type.</param>
-        /// <param name="fieldName">The name of the missing field.</param>
-        /// <param name="fieldType">The type of the missing field.</param>
-        public MissingFieldException(Type declaringType, string fieldName, Type fieldType)
-            : base(declaringType, ExceptionMessages.MissingField(fieldName, fieldType, declaringType))
-        {
-            FieldType = fieldType;
-            FieldName = fieldName;
-        }
-
-        internal static MissingFieldException Create<T, TValue>(string fieldName)
-            => new(typeof(T), fieldName, typeof(TValue));
-
-        /// <summary>
-        /// Gets type of the field.
-        /// </summary>
-        public Type FieldType { get; }
-
-        /// <summary>
-        /// Gets name of the missing field.
-        /// </summary>
-        public string FieldName { get; }
+        FieldType = fieldType;
+        FieldName = fieldName;
     }
+
+    internal static MissingFieldException Create<T, TValue>(string fieldName)
+        => new(typeof(T), fieldName, typeof(TValue));
+
+    /// <summary>
+    /// Gets type of the field.
+    /// </summary>
+    public Type FieldType { get; }
+
+    /// <summary>
+    /// Gets name of the missing field.
+    /// </summary>
+    public string FieldName { get; }
 }
