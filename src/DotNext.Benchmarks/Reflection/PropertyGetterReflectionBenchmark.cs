@@ -8,7 +8,7 @@ using System.Reflection;
 namespace DotNext.Reflection;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[Orderer(SummaryOrderPolicy.Declared)]
 public class PropertyGetterReflectionBenchmark
 {
     private sealed class IndexOfCalculator
@@ -36,21 +36,21 @@ public class PropertyGetterReflectionBenchmark
 
     private static readonly DynamicInvoker DynamicAccessor = ReflectedGetter.Unreflect();
 
-    [Benchmark]
+    [Benchmark(Description = "Direct call", Baseline = true)]
     public int NoReflection() => IndexOfCalc.IndexOf;
 
-    [Benchmark]
-    public object UseObjectAccessor() => Accessor[nameof(IndexOfCalculator.IndexOf)];
-
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type MemberGetter<IndexOfCalculator, int>")]
     public int UseFastTypedReflection() => StaticallyReflected(IndexOfCalc);
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using DynamicInvoker")]
+    public object UseDynamicInvoker() => DynamicAccessor(IndexOfCalc, Array.Empty<object>());
+
+    [Benchmark(Description = "Reflection with DotNext using delegate type Function<object, ValueTuple, object>")]
     public object UseFastUntypedReflection() => UntypedReflected(IndexOfCalc, new ValueTuple());
 
-    [Benchmark]
-    public object UseReflection() => ReflectedGetter.Invoke(IndexOfCalc, Array.Empty<object>());
+    [Benchmark(Description = "ObjectAccess class from FastMember library")]
+    public object UseObjectAccessor() => Accessor[nameof(IndexOfCalculator.IndexOf)];
 
-    [Benchmark]
-    public object UseDynamicInvoker() => DynamicAccessor(IndexOfCalc, Array.Empty<object>());
+    [Benchmark(Description = ".NET reflection")]
+    public object UseReflection() => ReflectedGetter.Invoke(IndexOfCalc, Array.Empty<object>());
 }

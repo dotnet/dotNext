@@ -24,15 +24,15 @@ public class ArrayEqualityBenchmark
             LongGuidArray1[i] = LongGuidArray2[i] = Guid.NewGuid();
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Guid[].BitwiseEquals, small array (~10 elements)")]
     public bool ShortGuidArrayBitwiseEquals()
         => ShortGuidArray1.BitwiseEquals(ShortGuidArray2);
 
-    [Benchmark]
+    [Benchmark(Description = "ReadOnlySpan<Guid>.SequenceEqual, small array (~10 elements)")]
     public bool ShortGuidArraySequenceEqual()
         => new ReadOnlySpan<Guid>(ShortGuidArray1).SequenceEqual(ShortGuidArray2);
 
-    [Benchmark]
+    [Benchmark(Description = "for loop, small array, (~10 elements)")]
     public void ShortGuidArrayForEachEqual()
     {
         for (var i = default(long); i < ShortGuidArray1.LongLength; i++)
@@ -40,15 +40,15 @@ public class ArrayEqualityBenchmark
                 return;
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Guid[].BitwiseEquals, large array (~100 elements)")]
     public bool LongGuidArrayBitwiseEquals()
         => LongGuidArray1.BitwiseEquals(LongGuidArray2);
 
-    [Benchmark]
+    [Benchmark(Description = "ReadOnlySpan<Guid>.SequenceEqual, large array (~100 elements)")]
     public bool LongGuidArraySequenceEqual()
         => new ReadOnlySpan<Guid>(LongGuidArray1).SequenceEqual(LongGuidArray2);
 
-    [Benchmark]
+    [Benchmark(Description = "for loop, large array, (~100 elements)")]
     public void LongGuidArrayForEachEqual()
     {
         for (var i = default(long); i < LongGuidArray1.LongLength; i++)

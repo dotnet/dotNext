@@ -118,7 +118,7 @@ public class AtomicContainerBenchmark
         lWrite = new Thread(SpinLockWrite);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Synchronized")]
     public void ReadWriteUsingSynchronizedAccess()
     {
         sWrite.Start();
@@ -130,7 +130,7 @@ public class AtomicContainerBenchmark
         sRead2.Join();
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Atomic")]
     public void ReadWriteUsingAtomicAccess()
     {
         vWrite.Start();
@@ -142,7 +142,7 @@ public class AtomicContainerBenchmark
         vRead2.Join();
     }
 
-    [Benchmark]
+    [Benchmark(Description = "SpinLock")]
     public void ReadWriteUsingSpinLock()
     {
         lWrite.Start();
