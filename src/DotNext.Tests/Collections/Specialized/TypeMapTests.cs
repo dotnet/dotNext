@@ -8,9 +8,9 @@ namespace DotNext.Collections.Specialized
         public static IEnumerable<object[]> GetMaps()
         {
             yield return new object[] { new TypeMap<int>() };
-            yield return new object[] { new TypeMap<int>(10) };
+            yield return new object[] { new TypeMap<int>(1) };
             yield return new object[] { new ConcurrentTypeMap<int>() };
-            yield return new object[] { new ConcurrentTypeMap<int>(10) };
+            yield return new object[] { new ConcurrentTypeMap<int>(1) };
         }
 
         [Theory]
@@ -85,6 +85,28 @@ namespace DotNext.Collections.Specialized
             True(map.AddOrUpdate<string>(60L));
 
             Equal(60L, map.Replace<string>(70L));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMaps))]
+        public static void ResizeMap(ITypeMap<int> map)
+        {
+            map.Set<int>(42);
+            map.Set<long>(43);
+            map.Set<float>(44);
+            map.Set<double>(45);
+
+            True(map.TryGetValue<int>(out var result));
+            Equal(42, result);
+
+            True(map.TryGetValue<long>(out result));
+            Equal(43, result);
+
+            True(map.TryGetValue<float>(out result));
+            Equal(44, result);
+
+            True(map.TryGetValue<double>(out result));
+            Equal(45, result);
         }
     }
 }

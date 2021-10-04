@@ -112,20 +112,15 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return;
 
         // do resize
-        Resize(ref entries);
+        var firstUnitialized = entries.Length;
+        Array.Resize(ref entries, ITypeMap<TValue>.RecommendedCapacity);
+
+        // initializes the rest of the array
+        for (var i = firstUnitialized; i < entries.Length; i++)
+            entries[i] = new();
 
         // commit resized storage
         this.entries = entries;
-
-        static void Resize(ref Entry[] entries)
-        {
-            var firstUnitialized = entries.Length;
-            Array.Resize(ref entries, ITypeMap<TValue>.RecommendedCapacity);
-
-            // initializes the rest of the array
-            for (var i = firstUnitialized; i < entries.Length; i++)
-                entries[i] = new();
-        }
     }
 
     /// <inheritdoc />
