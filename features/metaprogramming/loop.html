@@ -8,7 +8,7 @@
     <title>Loops | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Loops | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,8 +68,8 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="loops">Loops</h1>
 
-<p>Metaprogramming library provides construction of <strong>for</strong>, <strong>foreach</strong> and <strong>while</strong> loops. The lexical scope constructor may have optional parameter of type <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.3.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/LoopContext">LoopContext</a> that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <strong>goto</strong>.</p>
-<p><code>Continue()</code> or <code>Break()</code> methods from <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.3.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/CodeGenerator">CodeGenerator</a> are used to pass the control to the next iteration or out of scope respectively.</p>
+<p>Metaprogramming library provides construction of <strong>for</strong>, <strong>foreach</strong> and <strong>while</strong> loops. The lexical scope constructor may have optional parameter of type <a class="xref" href="../../api/DotNext.Metaprogramming.LoopContext.html">LoopContext</a> that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <strong>goto</strong>.</p>
+<p><code>Continue()</code> or <code>Break()</code> methods from <a class="xref" href="../../api/DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator</a> are used to pass the control to the next iteration or out of scope respectively.</p>
 <h1 id="foreach-loop">foreach Loop</h1>
 <p><strong>foreach</strong> statement may accept any expression of type implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable">IEnumerable</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a> interface, or having public instance parameterless method <code>GetEnumerator()</code> which return type has the public instance property <code>Current</code> and public instance parameterless method <code>MoveNext()</code>.</p>
 <pre><code class="lang-csharp">using System;

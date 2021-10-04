@@ -8,7 +8,7 @@
     <title>Multi-line Lambdas | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Multi-line Lambdas | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="multi-line-lambdas">Multi-line Lambdas</h1>
 
-<p>Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.3.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/CodeGenerator">CodeGenerator.Lambda</a> construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.</p>
+<p>Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using <a class="xref" href="../../api/DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator.Lambda</a> construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.</p>
 <p>The following example shows how to generate lambda function which performs factorial computation using recursion:</p>
 <pre><code class="lang-csharp">using System;
 using System.Linq.Expressions;
@@ -86,7 +86,7 @@ Func&lt;long, long&gt; fact = Lambda&lt;Func&lt;long, long&gt;&gt;(fun =&gt;
 }).Compile();
 fact(3);    // == 6
 </code></pre>
-<p><code>fun</code> parameter is of type <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.3.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Metaprogramming/LambdaContext">LambdaContext</a> and provide access to the function parameters. <code>arg</code> is the lambda function parameter. <code>If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Invoke</code> method allows to invoke lambda function recursively. <code>OfType</code> describes type of conditional expression that was started by <code>If</code> call. <code>End</code> method call represents end of conditional expression. <code>AsDynamic</code> extension method allows to convert expression node to it's dynamically-typed representation that allows to use dynamic features of C# for building expression trees.</p>
+<p><code>fun</code> parameter is of type <a class="xref" href="../../api/DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a> and provide access to the function parameters. <code>arg</code> is the lambda function parameter. <code>If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Invoke</code> method allows to invoke lambda function recursively. <code>OfType</code> describes type of conditional expression that was started by <code>If</code> call. <code>End</code> method call represents end of conditional expression. <code>AsDynamic</code> extension method allows to convert expression node to it's dynamically-typed representation that allows to use dynamic features of C# for building expression trees.</p>
 <p><code>LambdaContext</code> type supports decomposition so it is possible to use convenient syntax to obtain function parameters:</p>
 <pre><code class="lang-csharp">using System;
 using static DotNext.Metaprogramming.CodeGenerator;

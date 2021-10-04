@@ -8,7 +8,7 @@
     <title>Value Type Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Value Type Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,7 +69,7 @@
 <h1 id="value-type-enhancements">Value Type Enhancements</h1>
 
 <p>It's a challenge to implement <em>Equals</em> and <em>GetHashCode</em> methods for custom value type. Moreover, third-party library may provide value type without these methods and without overloaded equality/inequality operators. As a result, there is no way to identify whether the struct value is the default value.</p>
-<p>.NEXT library provides generic methods for equality check and hash code calculation for any value type. These methods are located in <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext/BitwiseComparer%601">BitwiseComparer</a> and <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> classes and not extension methods to avoid ambiguity with overridden methods.</p>
+<p>.NEXT library provides generic methods for equality check and hash code calculation for any value type. These methods are located in <a class="xref" href="../../api/DotNext.BitwiseComparer-1.html">BitwiseComparer</a> and <a class="xref" href="../../api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> classes and not extension methods to avoid ambiguity with overridden methods.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
 

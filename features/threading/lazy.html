@@ -8,7 +8,7 @@
     <title>Async Lazy | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Async Lazy | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="async-lazy">Async Lazy</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncLazy%601">AsyncLazy&lt;T&gt;</a> provides support for asynchronous lazy initialization. This is asynchronous alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1">Lazy&lt;T&gt;</a> from .NET library.</p>
+<p><a class="xref" href="../../api/DotNext.Threading.AsyncLazy-1.html">AsyncLazy&lt;T&gt;</a> provides support for asynchronous lazy initialization. This is asynchronous alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1">Lazy&lt;T&gt;</a> from .NET library.</p>
 <p>This class is useful when some object requires resource-intensive asynchronous initialization. Additionally, it is possible to erase initialized object and force initialization again using <code>Reset</code> method. To do that, <code>AsyncLazy</code> should be created as <em>resettable</em> object through passing appropriate argument into its constructor.</p>
 <p>The following example demonstrates how to use asynchrous lazy initialization:</p>
 <pre><code class="lang-csharp">using DotNext.Threading;

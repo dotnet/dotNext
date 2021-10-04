@@ -47,7 +47,7 @@ Proposed configuration is similar to uncommitted log entries in Raft log. Due to
 
 It's not possible to remove or add multiple members at a time. Instead, you need to add or remove single member and replicate that change. When the proposed configuration is accepted by the majority of nodes, the leader node turns that configuration into the active configuration.
 
-[IClusterConfigurationStorage](xref:DotNext.Net.Cluster.Raft.Membership.IClusterConfigurationStorage) interface is responsible for maintaining cluster configuration. There are two possible storages:
+[IClusterConfigurationStorage](xref:DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage) interface is responsible for maintaining cluster configuration. There are two possible storages:
 * _In-memory_ storage that stores configuration in the memory. Restarting the node leads to configuration loss
 * _Persistent_ storage that stores configuration in the file system
 
@@ -100,7 +100,7 @@ The configuration of the local node depends on chosen network transport. [NodeCo
 
 By default, all transport bindings for Raft use in-memory configuration storage.
 
-Cluster configuration management is represented by the following methods declared in [RaftCluster](xref:DotNext.Net.Cluster.Raft.RaftCluster) class:
+Cluster configuration management is represented by the following methods declared in [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class:
 * `AddMemberAsync` to add and catch up a new node
 * `RemoveMemberAsync` to remove the existing node
 

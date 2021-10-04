@@ -16,4 +16,4 @@ Span<char> writtenSpan = writer.WrittenSpan;
 string result = writer.ToString();
 ```
 
-`BufferWriterSlim<char>` is ref-like **struct** so it's not suitable for async scenarios. However, it's possible to use [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as a dynamic buffer of characters for building strings. Read [this](./io/buffers.md) article to find a workaround.
+`BufferWriterSlim<char>` is ref-like **struct** so it's not suitable for async scenarios. However, it's possible to use [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as a dynamic buffer of characters for building strings. Read [this](../io/buffers.md) article to find a workaround.

@@ -8,7 +8,7 @@
     <title>Synchronization Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Synchronization Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -77,7 +77,7 @@
 <li>Writer lock</li>
 <li>Semaphore</li>
 </ul>
-<p>This unification is implemented in the form of the single type <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock">Lock</a>. It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock.Holder">lock holder</a>. The only purpose of this object is to hold the acquired lock. The lock can be released using <code>Dispose</code> method of the holder.</p>
+<p>This unification is implemented in the form of the single type <a class="xref" href="../../api/DotNext.Threading.Lock.html">Lock</a>. It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by <a class="xref" href="../../api/DotNext.Threading.Lock.Holder.html">lock holder</a>. The only purpose of this object is to hold the acquired lock. The lock can be released using <code>Dispose</code> method of the holder.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System.Threading;
 
@@ -112,18 +112,18 @@ using DotNext.Threading;
 var builder = new StringBuilder();
 
 //reader
-using(builder.AcquireReadLock())
+using (builder.AcquireReadLock())
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using(builder.AcquireWriteLock())
+using (builder.AcquireWriteLock())
 {
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside of <a class="xref" href="https://fuget.org/packages/DotNext/3.3.0/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition">LockAcquisition</a> class.</p>
+<p>For more information check extension methods inside of <a class="xref" href="../../api/DotNext.Threading.LockAcquisition.html">LockAcquisition</a> class.</p>
 </article>
           </div>
           

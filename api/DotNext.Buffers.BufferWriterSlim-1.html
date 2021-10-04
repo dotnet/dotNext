@@ -1,0 +1,758 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct BufferWriterSlim&lt;T&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct BufferWriterSlim&lt;T&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Buffers.BufferWriterSlim`1">
+  
+  
+  <h1 id="DotNext_Buffers_BufferWriterSlim_1" data-uid="DotNext.Buffers.BufferWriterSlim`1" class="text-break">Struct BufferWriterSlim&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents stack-allocated buffer builder.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Buffers_BufferWriterSlim_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ref struct BufferWriterSlim&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_BufferWriterSlim_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This type is similar to <a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> and <a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a>
+classes but it tries to avoid on-heap allocation. Moreover, it can use pre-allocated stack
+memory as a initial buffer used for writing. If builder requires more space then pooled
+memory used.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1__ctor_DotNext_Span__0__DotNext_Buffers_MemoryAllocator__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.%23ctor(DotNext.Span%7B%600%7D%2CDotNext.Buffers.MemoryAllocator%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L41">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1__ctor_" data-uid="DotNext.Buffers.BufferWriterSlim`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1__ctor_DotNext_Span__0__DotNext_Buffers_MemoryAllocator__0__" data-uid="DotNext.Buffers.BufferWriterSlim`1.#ctor(DotNext.Span{`0},DotNext.Buffers.MemoryAllocator{`0})">BufferWriterSlim(Span&lt;T&gt;, MemoryAllocator&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes growable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BufferWriterSlim(Span&lt;T&gt; buffer, MemoryAllocator&lt;T&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>Pre-allocated buffer used by this builder.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The memory allocator used to rent the memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_BufferWriterSlim_1__ctor_DotNext_Span__0__DotNext_Buffers_MemoryAllocator__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The builder created with this constructor is growable. However, additional memory will not be
+requested using <code data-dev-comment-type="paramref" class="paramref">allocator</code> while <code data-dev-comment-type="paramref" class="paramref">buffer</code> space is sufficient.
+If <code data-dev-comment-type="paramref" class="paramref">allocator</code> is <span class="xref">null</span> then <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#System_Buffers_ArrayPool_1_Shared">Shared</a>
+is used for memory pooling.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1__ctor_System_Int32_DotNext_Buffers_MemoryAllocator__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.%23ctor(System.Int32%2CDotNext.Buffers.MemoryAllocator%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L55">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1__ctor_" data-uid="DotNext.Buffers.BufferWriterSlim`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1__ctor_System_Int32_DotNext_Buffers_MemoryAllocator__0__" data-uid="DotNext.Buffers.BufferWriterSlim`1.#ctor(System.Int32,DotNext.Buffers.MemoryAllocator{`0})">BufferWriterSlim(Int32, MemoryAllocator&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes growable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BufferWriterSlim(int initialCapacity, MemoryAllocator&lt;T&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">initialCapacity</span></td>
+        <td><p>The initial capacity of the internal buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The memory allocator used to rent the memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L76">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Capacity_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Capacity*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Capacity" data-uid="DotNext.Buffers.BufferWriterSlim`1.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"><p>Gets the total amount of space within the underlying memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int Capacity { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_FreeCapacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.FreeCapacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L81">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_FreeCapacity_" data-uid="DotNext.Buffers.BufferWriterSlim`1.FreeCapacity*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_FreeCapacity" data-uid="DotNext.Buffers.BufferWriterSlim`1.FreeCapacity">FreeCapacity</h4>
+  <div class="markdown level1 summary"><p>Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int FreeCapacity { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L192">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Item_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Item*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Item_System_Int32_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Item(System.Int32)">Item[Int32]</h4>
+  <div class="markdown level1 summary"><p>Gets the element at the specified zero-based index within this builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ref T this[int index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>he zero-based index of the element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The element at the specified index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_WrittenCount.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.WrittenCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L71">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_WrittenCount_" data-uid="DotNext.Buffers.BufferWriterSlim`1.WrittenCount*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_WrittenCount" data-uid="DotNext.Buffers.BufferWriterSlim`1.WrittenCount">WrittenCount</h4>
+  <div class="markdown level1 summary"><p>Gets the amount of data written to the underlying memory so far.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int WrittenCount { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_WrittenSpan.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.WrittenSpan%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L89">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_WrittenSpan_" data-uid="DotNext.Buffers.BufferWriterSlim`1.WrittenSpan*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_WrittenSpan" data-uid="DotNext.Buffers.BufferWriterSlim`1.WrittenSpan">WrittenSpan</h4>
+  <div class="markdown level1 summary"><p>Gets span over constructed memory block.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ReadOnlySpan&lt;T&gt; WrittenSpan { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;T&gt;</td>
+        <td><p>The constructed memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Add__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Add(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L184">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Add_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Add*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Add__0_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Add(`0)">Add(T)</h4>
+  <div class="markdown level1 summary"><p>Adds single element to this builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Add(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The item to be added.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Advance_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Advance(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L154">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Advance_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Advance*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Advance_System_Int32_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Advance(System.Int32)">Advance(Int32)</h4>
+  <div class="markdown level1 summary"><p>Notifies this writer that <code data-dev-comment-type="paramref" class="paramref">count</code> of data items were written.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Advance(int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of data items written to the underlying buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Clear(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L231">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Clear_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Clear*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Clear(System.Boolean)">Clear(Boolean)</h4>
+  <div class="markdown level1 summary"><p>lears the data written to the underlying buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear(bool reuseBuffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">reuseBuffer</span></td>
+        <td><p><span class="xref">true</span> to reuse the internal buffer; <span class="xref">false</span> to destroy the internal buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L250">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Dispose_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Dispose*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Dispose" data-uid="DotNext.Buffers.BufferWriterSlim`1.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Releases internal buffer used by this builder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.GetSpan(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L104">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_GetSpan_" data-uid="DotNext.Buffers.BufferWriterSlim`1.GetSpan*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_GetSpan_System_Int32_" data-uid="DotNext.Buffers.BufferWriterSlim`1.GetSpan(System.Int32)">GetSpan(Int32)</h4>
+  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Span&lt;T&gt; GetSpan(int sizeHint = 0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">sizeHint</span></td>
+        <td><p>The minimum length of the returned memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td><p>The memory block of at least the size <code data-dev-comment-type="paramref" class="paramref">sizeHint</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L264">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_ToString_" data-uid="DotNext.Buffers.BufferWriterSlim`1.ToString*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_ToString" data-uid="DotNext.Buffers.BufferWriterSlim`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Converts this buffer to the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The textual representation of this object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
+  <h5 id="DotNext_Buffers_BufferWriterSlim_1_ToString_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> is <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a> then
+this method returns constructed string instance.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_TryDetachBuffer_DotNext_Buffers_MemoryOwner__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.TryDetachBuffer(DotNext.Buffers.MemoryOwner%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L212">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_TryDetachBuffer_" data-uid="DotNext.Buffers.BufferWriterSlim`1.TryDetachBuffer*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_TryDetachBuffer_DotNext_Buffers_MemoryOwner__0___" data-uid="DotNext.Buffers.BufferWriterSlim`1.TryDetachBuffer(DotNext.Buffers.MemoryOwner{`0}@)">TryDetachBuffer(out MemoryOwner&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Detaches the underlying buffer with written content from this writer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryDetachBuffer(out MemoryOwner&lt;T&gt; owner)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
+        <td><span class="parametername">owner</span></td>
+        <td><p>The buffer owner.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the written content is in rented buffer because initial buffer overflows;
+<span class="xref">false</span> if the written content is in preallocated buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Write_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Write(ReadOnlySpan%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L170">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferWriterSlim_1_Write_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Write*"></a>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Write_ReadOnlySpan__0__" data-uid="DotNext.Buffers.BufferWriterSlim`1.Write(ReadOnlySpan{`0})">Write(ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes elements to this buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Write(ReadOnlySpan&lt;T&gt; input)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;T&gt;</td>
+        <td><span class="parametername">input</span></td>
+        <td><p>The span of elements to be written.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter</a>&lt;T&gt;</div>
+      <div><a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter</a>&lt;T&gt;</div>
+      <div><a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html">SparseBufferWriter</a>&lt;T&gt;</div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L21" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>.NEXT 3.x | .NEXT </title>
+    <title>.NEXT 4.x | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content=".NEXT 3.x | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="title" content=".NEXT 4.x | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -59,19 +59,19 @@
         <div class="article row grid">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="next-3x">.NEXT 3.x</h1>
+<h1 id="next-4x">.NEXT 4.x</h1>
 
 <p>.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features. The project is supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>.</p>
 <div class="NOTE">
 <h5>Note</h5>
-<p>Use menu <em>Old Versions</em> in the navigation bar to choose documentation for previous versions of .NEXT. Migration guides are <a href="migration/index.html">here</a>.</p>
+<p>The documentation for previous major versions is no longer available on this website. However, API docs are still available on <a href="https://www.fuget.org/">FuGet</a> website for any specific library version. Migration guides are <a href="migration/index.html">here</a>.</p>
 </div>
 <p>This chapter gives quick overview of these libraries. Read <a href="features/core/index.html">articles</a> for closer look at all available features.</p>
 <p>Prerequisites:</p>
 <ul>
-<li>Runtime: .NET 5 or any runtime compatible with .NET Standard 2.1</li>
-<li>OS: Linux, Windows, MacOS</li>
-<li>Architecture: any if supported by underlying .NET Runtime</li>
+<li>Runtime: .NET 6</li>
+<li>OS: Linux, Windows, MacOS, WebAssembly</li>
+<li>Architecture: any if supported by the underlying .NET Runtime</li>
 </ul>
 <h1 id="dotnext">DotNext</h1>
 <p><a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?logo=NuGet"></a> <img src="https://img.shields.io/nuget/dt/dotnext.svg" alt="Downloads"><br>
@@ -82,10 +82,12 @@ This library is the core of .NEXT which extends .NET standard library with</p>
 <li>Unified representation of various synchronization primitives in the form of the lock</li>
 <li>Generic specialization with constant values</li>
 <li>Generation of random strings</li>
-<li>Low-level methods to work with value types</li>
 <li>Fast comparison of arrays</li>
 <li>Ad-hoc user data associated with arbitrary object</li>
-<li>Rich set of advanced buffer types</li>
+<li>A rich set of dynamic buffer types</li>
+<li>Fast HEX conversion</li>
+<li>Fast Base64 encoding/decoding in streaming scenarios</li>
+<li><em>Optional</em> and <em>Result</em> monads</li>
 </ul>
 <h1 id="dotnextreflection">DotNext.Reflection</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.reflection.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.reflection.svg" alt="Downloads"><br>
@@ -118,27 +120,27 @@ The library allows you to reuse experience of blocking synchronization with help
 <tbody>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a></td>
-<td><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock">AsyncReaderWriterLock</a></td>
+<td><a class="xref" href="api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a></td>
-<td><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExclusiveLock">AsyncExclusiveLock</a></td>
+<td><a class="xref" href="api/DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a></td>
-<td><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncManualResetEvent">AsyncManualResetEvent</a></td>
+<td><a class="xref" href="api/DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent">AutoResetEvent</a></td>
-<td><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncAutoResetEvent">AsyncAutoResetEvent</a></td>
+<td><a class="xref" href="api/DotNext.Threading.AsyncAutoResetEvent.html">AsyncAutoResetEvent</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier">Barrier</a></td>
-<td><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBarrier">AsyncBarrier</a></td>
+<td><a class="xref" href="api/DotNext.Threading.AsyncBarrier.html">AsyncBarrier</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent">CountdownEvent</a></td>
-<td><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncCountdownEvent">AsyncCountdownEvent</a></td>
+<td><a class="xref" href="api/DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a></td>
 </tr>
 </tbody>
 </table>
@@ -148,10 +150,10 @@ The library allows you to reuse experience of blocking synchronization with help
 Extending streams and I/O pipelines with methods for reading and writing typed values including strings asynchronously. Arbitrary character encodings are supported. Now encoding or decoding data using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe">pipes</a> is much easier and comparable with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter">BinaryWriter</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader">BinaryReader</a>. Read more <a href="features/io/index.html">here</a>.</p>
 <h1 id="dotnextnetcluster">DotNext.Net.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.net.cluster.svg" alt="Downloads"><br>
-Provides rich framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and distributed messaging. It includes transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algorithm</a> that can be adopted for any communication protocol, TCP/UDP transports for Raft, high-performance persistent Write-Ahead Log suitable for general-purpose usage.</p>
+Provides rich framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and Gossip-based messaging. It includes transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algorithm</a> that can be adopted for any communication protocol, TCP/UDP transports for Raft, high-performance persistent Write-Ahead Log suitable for general-purpose usage. Transport-agnostic implementation of <a href="https://asc.di.fct.unl.pt/%7Ejleitao/pdf/dsn07-leitao.pdf">HyParView</a> membership protocol included as well.</p>
 <h1 id="dotnextaspnetcorecluster">DotNext.AspNetCore.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.aspnetcore.cluster.svg" alt="Downloads"><br>
-Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of <a href="https://raft.github.io/">Raft</a> Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
+Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of <a href="https://raft.github.io/">Raft</a> Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node, HTTP binding for HyParView.</p>
 </article>
           </div>
           

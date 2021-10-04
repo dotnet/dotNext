@@ -1,0 +1,370 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Gossip-based Communication | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Gossip-based Communication | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="gossip-based-communication">Gossip-based Communication</h1>
+
+<p><a href="https://en.wikipedia.org/wiki/Gossip_protocol">Gossip-based communication</a> is a way to spread a message (rumor) across all cluster nodes using infection-style message exchange. This approach is very efficient in comparison to naive broadcasting especially in large-scale clusters. But how the node knows how to join the cluster and discover other peers? The answer is <em>membership protocol</em> that allows to discover and keep the view of cluster members.</p>
+<h1 id="hyparview">HyParView</h1>
+<p><a href="https://asc.di.fct.unl.pt/%7Ejleitao/pdf/dsn07-leitao.pdf">HyParView</a> is an implementation of <em>membership protocol</em> for peers that want to communicate with each other using infection-style message exchange. This algorithm is highly scalable up to thousands of nodes. However, it has one major drawback: every node has partial view of the entire cluster.</p>
+<p>.NEXT offers transport-agnostic implementation of HyParView algorithm represented by <a class="xref" href="../../api/DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a> class. It's an entry point for building a peer with messaging capabilities. The controller is responsible for all key aspects of the algorithm:</p>
+<ul>
+<li>Implementation of joining procedure</li>
+<li>Maintaining a list of neighbors</li>
+<li>Announcing of new peers</li>
+<li>Removing peers from the mesh</li>
+</ul>
+<p><a class="xref" href="../../api/DotNext.Net.Cluster.Discovery.HyParView.IPeerConfiguration.html">IPeerConfiguration</a> interface provides the configuration model of HyParView-enabled peer. When the peer configured properly, you need to bootstrap the controller using <code>StartAsync</code> method. The method accepts an address of the <em>contact node</em> optionally. This address is not needed when you starting the first peer in the mesh. However, if you already have a mesh of peers then you need to announce a new peer correctly. <em>Contact node</em> is responsible for announcing joined peer across all peers in the mesh. There is no preference in choosing the appropriate node for that purpose.</p>
+<p>When the node is joined to the mesh then it will be able to discover a list of neighbors automatically. <code>PeerDiscovered</code> and <code>PeerGone</code> events of <code>PeerController</code> class provide ability to track changes in the list of visible peers. <code>Neighbors</code> property provides a list of the peers visible by the local node.</p>
+<p><code>StopAsync</code> method provides a way for graceful shutdown of the node. All neighbors will be informed that the stopped node is no longer accessible and it must be removed from the list of neighbors.</p>
+<p><code>EnqueueBroadcastAsync</code> method can be used to broadcast the message (rumor) to all neighbors. This is a core of Gossip-based messaging. The method requires an implementation of <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.Gossip.IRumorSender.html">IRumorSender</a> interface that provides the delivery of the message using the specific transport. Additionally, the method controls the delivery status. If it suspects that the peer is unavailable then it removes the peer from the list of neighbors.</p>
+<h2 id="integration-with-aspnet-core">Integration with ASP.NET Core</h2>
+<p><code>DotNext.AspNetCore.Cluster</code> provides implementation of HyParView protocol using HTTP transport and <a class="xref" href="../../api/DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a> class on the top of ASP.NET Core infrastructure.</p>
+<p>There are two main components of HyParView implementation that must be registered in ASP.NET Core application:</p>
+<ul>
+<li>Singleton service that implements <a class="xref" href="../../api/DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a> abstract class and maintain the state of the peer</li>
+<li>ASP.NET Core Middleware that is responsible for processing HyParView messages over HTTP</li>
+</ul>
+<p>The following code demonstrates a basic setup of HyParView:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+sealed class Startup
+{
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseHyParViewProtocolHandler();	// informs that processing pipeline should handle HyParView-specific requests
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOptions();
+    }
+}
+
+IHost host = new HostBuilder()
+    .ConfigureWebHost(webHost =&gt; webHost
+        .UseKestrel(options =&gt; options.ListenLocalhost(80))
+        .UseStartup&lt;Startup&gt;()
+    )
+    .JoinMesh()  //registers all necessary services required for normal cluster node operation
+    .Build();
+</code></pre>
+<p>Note that <code>JoinMesh</code> method should be called after <code>ConfigureWebHost</code>. Otherwise, the behavior of this method is undefined.</p>
+<p><code>JoinMesh</code> method has overloads that allow to specify custom configuration section containing the configuration of the local peer.</p>
+<p><code>UseHyParViewProtocolHandler</code> method should be called before registration of any authentication/authorization middleware.</p>
+<h3 id="dependency-injection">Dependency Injection</h3>
+<p>The application may request the following services from ASP.NET Core DI container:</p>
+<ul>
+<li><a class="xref" href="../../api/DotNext.Net.IPeerMesh-1.html">IPeerMesh&lt;HttpPeerClient&gt;</a> provides access to all peers visible from the local node, discovery events, configured <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient">HttpClient</a> for communication with neighbors</li>
+<li><a class="xref" href="../../api/DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a> maintains the state of the local peer, handles HyParView-specific messages and exposes <code>EnqueueBroadcastAsync</code> method for rumor spreading</li>
+</ul>
+<h3 id="configuration">Configuration</h3>
+<p>The application should be configured properly to serve HyParView messages. The following JSON represents the example of configuration:</p>
+<pre><code class="lang-json">{
+    &quot;resourcePath&quot; : &quot;/membership/hyparview&quot;,
+    &quot;protocolVersion&quot; : &quot;http2&quot;,
+    &quot;protocolVersionPolicy&quot; : &quot;RequestVersionOrLower&quot;,
+    &quot;requestTimeout&quot; : &quot;00:01:00&quot;,
+    &quot;clientHandlerName&quot; : &quot;HyParViewClient&quot;,
+    &quot;contactNode&quot; : &quot;https://192.168.0.2:3232/&quot;,
+    &quot;localNode&quot; : &quot;https://192.168.0.1:3232&quot;,
+    &quot;activeViewCapacity&quot; : 5,
+    &quot;passiveViewCapacity&quot; : 10,
+    &quot;activeRandomWalkLength&quot; : 3,
+    &quot;passiveRandomWalkLength&quot; : 2,
+    &quot;shuffleActiveViewCount&quot; : 2,
+    &quot;shufflePassiveViewCount&quot; : 5,
+    &quot;shuffleRandomWalkLength&quot; : 2,
+    &quot;queueCapacity&quot; : 15,
+    &quot;lowerShufflePeriod&quot; : 1000,
+    &quot;upperShufflePeriod&quot; : 1500,
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Configuration parameter</th>
+<th>Required</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resourcePath</td>
+<td>No</td>
+<td>/membership/hyparview</td>
+<td>The relative path to the endpoint responsible for handling internal HyParView messages</td>
+</tr>
+<tr>
+<td>protocolVersion</td>
+<td>No</td>
+<td>auto</td>
+<td>HTTP protocol version to be used for the communication between members. Possible values are <code>auto</code>, <code>http1</code>, <code>http2</code>, <code>http3</code></td>
+</tr>
+<tr>
+<td>protocolVersionPolicy</td>
+<td>No</td>
+<td>RequestVersionOrLower</td>
+<td>Specifies behaviors for selecting and negotiating the HTTP version for a request. Possible values are <code>RequestVersionExact</code>, <code>RequestVersionOrHigher</code>, <code>RequestVersionOrLower</code></td>
+</tr>
+<tr>
+<td>requestTimeout</td>
+<td>No</td>
+<td>00:30:00</td>
+<td>Request timeout used to access peers across the network using HTTP client</td>
+</tr>
+<tr>
+<td>clientHandlerName</td>
+<td>No</td>
+<td>HyParViewClient</td>
+<td>The name to be passed into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a> to create <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessageinvoker">HttpMessageInvoker</a> used by HyParView client code</td>
+</tr>
+<tr>
+<td>contactNode</td>
+<td>No</td>
+<td>N/A</td>
+<td>The address of the contact node used as an entry point to announce the local node. This property should not be specified if the local node is the first node launched as a part of the mesh</td>
+</tr>
+<tr>
+<td>localNode</td>
+<td>Yes</td>
+<td>N/A</td>
+<td>The addres of the local node visible by other peers in the mesh</td>
+</tr>
+<tr>
+<td>activeViewCapacity</td>
+<td>No</td>
+<td>5</td>
+<td>The maximum number of neighbors visible by the local node. The recommended value of this property can be calculated as <em>log(n) + c</em>, where <em>n</em> is a maximum  number of peers, <em>c</em> is a constant value. According to HyParView paper, the recommended value of <em>c</em> is 1</td>
+</tr>
+<tr>
+<td>passiveViewCapacity</td>
+<td>No</td>
+<td>10</td>
+<td>The maximum number of peers stored in the backlog that is used to replace the peers removed from the active view. The recommended value of this property can be calculated as <em>k(log(n) + c)</em>, where <em>k</em> is a constant value. According to HyParView paper, the recommended value of <em>k</em> is 6</td>
+</tr>
+<tr>
+<td>activeRandomWalkLength</td>
+<td>No</td>
+<td>3</td>
+<td>The maximum number of hops a <em>ForwardJoin</em> request is propagated</td>
+</tr>
+<tr>
+<td>passiveRandomWalkLength</td>
+<td>No</td>
+<td>2</td>
+<td>The value specifies at which point in the walk the peer is inserted into passive view. The value should be less than <code>activeRandomWalkLength</code> configuration property</td>
+</tr>
+<tr>
+<td>shuffleActiveViewCount</td>
+<td>No</td>
+<td><code>activeViewCapacity / 2</code></td>
+<td>The number of peers from active view to be included into <em>Shuffle</em> message</td>
+</tr>
+<tr>
+<td>shufflePassiveViewCount</td>
+<td>No</td>
+<td><code>shufflePassiveViewCount / 2</code></td>
+<td>The number of peers from passive view to be included into Shuffle message</td>
+</tr>
+<tr>
+<td>shuffleRandomWalkLength</td>
+<td>No</td>
+<td><code>passiveRandomWalkLength</code></td>
+<td>The maximum number of hops a Shuffle message is propagated</td>
+</tr>
+<tr>
+<td>queueCapacity</td>
+<td>No</td>
+<td><code>activeViewCapacity + passiveViewCapacity</code></td>
+<td>The capacity of the internal queue used to process HyParView messages</td>
+</tr>
+<tr>
+<td>lowerShufflePeriod</td>
+<td>No</td>
+<td>1000</td>
+<td>The lower bound of randomly selected shuffle period, in milliseconds</td>
+</tr>
+<tr>
+<td>upperShufflePeriod</td>
+<td>No</td>
+<td>3000</td>
+<td>The upper bound of randomly selected shuffle period</td>
+</tr>
+</tbody>
+</table>
+<p>If <em>lowerShufflePeriod</em> &lt; <em>upperShufflePeriod</em> then the actual period will be chosen randomly in the specified range. If <em>lowerShufflePeriod = upperShufflePeriod</em> then the actual period is determined by a constant value. Otherwise, the controller never sends <em>Shuffle</em> message to other peers.</p>
+<h3 id="controlling-node-lifetime">Controlling node lifetime</h3>
+<p>The service implementing <code>PeerController</code> abstract class is registered as singleton service. It starts receiving HyParView-specific messages immediately. Therefore, you can loose some events raised by the service such as <code>PeerDiscovered</code> at starting point. To avoid that, you can implement <a class="xref" href="../../api/DotNext.Net.Cluster.Discovery.HyParView.IPeerLifetime.html">IPeerLifetime</a> interface and register implementation as a singleton.</p>
+<pre><code class="lang-csharp">using DotNext.Net;
+using DotNext.Net.Cluster.Discovery.HyParView;
+
+internal sealed class MemberLifetime : IPeerLifetime
+{
+	private static void OnPeerDiscovered(PeerController controller, PeerEventArgs args) {}
+
+	void IPeerLifetime.OnStart(PeerController controller)
+	{
+		controller.PeerDiscovered += OnPeerDiscovered;
+	}
+
+	void IPeerLifetime.OnStop(PeerController controller)
+	{
+		controller.PeerDiscovered -= OnPeerDiscovered;
+	}
+}
+</code></pre>
+<h2 id="example">Example</h2>
+<p>There is HyParView playground represented by HyParViewPeer application. You can find this app <a href="https://github.com/dotnet/dotNext/tree/master/src/examples/HyParViewPeer">here</a>. This playground allows to test HyParView membership protocol in real world.</p>
+<p>The following command starts the first peer in the mesh:</p>
+<pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/HyParViewPeer
+dotnet run -- 3262
+</code></pre>
+<p><em>3262</em> is a port number that can be used to access the peer. When a mesh has at least one launched peer, you can select any peer as a contact node and specify its port when starting a new node:</p>
+<pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/HyParViewPeer
+dotnet run -- 3263 3262
+</code></pre>
+<p><em>3263</em> is a port of the started node. The second argument (port <em>3262</em>) specifies the port of the contact node. This node must be launched.</p>
+<p>You can launch as many peers as you want, but the port number must be unique for each instance.</p>
+<p>The terminal window of the peer will display discovery events. Each peer exposes the following HTTP resources that can be examined using Web Browser:</p>
+<ul>
+<li>GET <em>https://localhost:3262/neighbors</em> can be used to obtain a list of neighbors visible by the peer. You can change <em>3262</em> to the port number of the appropriate peer. According to HyParView, each peer may have partial view of the entire cluster so the list of neighbors may differ</li>
+<li>GET <em>https://localhost:3262/rumor</em> can be used to spread the rumor across all peers in the mesh. The terminal window associated with each launched peer will display the identifier of the broadcast message</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/cluster/gossip.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

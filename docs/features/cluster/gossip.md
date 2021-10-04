@@ -17,7 +17,7 @@ When the node is joined to the mesh then it will be able to discover a list of n
 
 `StopAsync` method provides a way for graceful shutdown of the node. All neighbors will be informed that the stopped node is no longer accessible and it must be removed from the list of neighbors.
 
-`EnqueueBroadcastAsync` method can be used to broadcast the message (rumor) to all neighbors. This is a core of Gossip-based messaging. The method requires an implementation of [IRumourSender](xref:DotNext.Net.Cluster.Messaging.Gossip.IRumourSender) interface that provides the delivery of the message using the specific transport. Additionally, the method controls the delivery status. If it suspects that the peer is unavailable then it removes the peer from the list of neighbors.
+`EnqueueBroadcastAsync` method can be used to broadcast the message (rumor) to all neighbors. This is a core of Gossip-based messaging. The method requires an implementation of [IRumorSender](xref:DotNext.Net.Cluster.Messaging.Gossip.IRumorSender) interface that provides the delivery of the message using the specific transport. Additionally, the method controls the delivery status. If it suspects that the peer is unavailable then it removes the peer from the list of neighbors.
 
 ## Integration with ASP.NET Core
 `DotNext.AspNetCore.Cluster` provides implementation of HyParView protocol using HTTP transport and [PeerController](xref:DotNext.Net.Cluster.Discovery.HyParView.PeerController) class on the top of ASP.NET Core infrastructure.

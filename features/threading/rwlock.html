@@ -8,7 +8,7 @@
     <title>Async Reader/Writer Lock | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Async Reader/Writer Lock | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="async-readerwriter-lock">Async Reader/Writer Lock</h1>
 
-<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncReaderWriterLock">AsyncReaderWriterLock</a> is a non-blocking asynchronous alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a> with the same semantics.</p>
+<p><a class="xref" href="../../api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a> is a non-blocking asynchronous alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a> with the same semantics.</p>
 <p>This class supports methods to determine whether locks are held or contended. These methods are designed for monitoring system state, not for synchronization control.</p>
 <p>The reader lock and writer lock both support interruption during lock acquisition using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>.</p>
 <pre><code class="lang-csharp">using System.Threading;
@@ -83,7 +83,7 @@ try
 }
 finally
 {
-    rwlock.ExitReadLock();
+    rwlock.Release();
 }
 
 await rwlock.EnterWriteLockAsync(TimeSpan.FromSecond(2));
@@ -93,34 +93,32 @@ try
 }
 finally
 {
-    rwlock.ExitWriteLock();
+    rwlock.Release();
 }
 
-await rwlock.EnterUpgradeableReadLockAsync(TimeSpan.FromSecond(2), CancellationToken.None);
+await rwlock.UpgradeToWriteLockAsync(TimeSpan.FromSecond(2), CancellationToken.None);
 try
 {
-    //reader stuff here
-    await rwlock.EnterWriteLockAsync(CancellationToken.None);
     //writer stuff here
-    rwlock.ExitWriteLock();
 }
 finally
 {
-    rwlock.ExitWriteLock();
+    rwlock.DowngradeFromWriteLock();
 }
 
 //or with 'using statement'
-using(await rwlock.AcquireReadLockAsync(CancellationToken.None))
+using (await rwlock.AcquireReadLockAsync(CancellationToken.None))
 {
     //reader stuff here
 }
 
-using(await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
+using (await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
 {
     //writer stuff here
 }
 </code></pre>
 <p>Exclusive lock should be destroyed if no longer needed by calling <code>Dispose</code> method which is not thread-safe.</p>
+<p>Behavior of <code>UpgradeToWriteLockAsync</code> and <code>DowngradeFromWriteLock</code> methods is the same as in <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlock">ReaderWriterLock</a>. You need to be in the read lock to call the upgrade. After calling of <code>DowngradeFromWriteLock</code> method the current flow keeping the read lock so you need to call <code>Release</code> method to release the lock completely.</p>
 <h2 id="acquisition-order">Acquisition Order</h2>
 <p>This lock does not impose a reader or writer preference ordering for lock access. However, it respects fairness policy. It means that callers contend for entry using an approximately arrival-order policy. When the currently held lock is released either the longest-waiting single writer will be assigned the write lock, or if there is a group of readers waiting longer than all waiting writers, that group will be assigned the read lock.</p>
 <p>A caller that tries to acquire a read lock (non-reentrantly) will enqueued if either the write lock is held, or there is a waiting writer. The caller will not acquire the read lock until after the oldest currently waiting writer has acquired and released the write lock. Of course, if a waiting writer abandons its wait, leaving one or more readers as the longest waiters in the queue with the write lock free, then those readers will be assigned the read lock.</p>

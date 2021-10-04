@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Typed Reference | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Typed Reference | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="typed-reference">Typed Reference</h1>
+
+<p>C# has <code>ref</code> keyword that allows to pass the location in the memory where the value is stored. Under the hood, at IL level it is represented by special type called <em>managed pointer</em> indicated as <em>T&amp;</em> (in opposite to unmanaged pointer <em>T*</em>). Internally, .NET BCL allows to declare the field of managed pointer type using <a href="https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/ByReference.cs">ByReference&lt;T&gt;</a> data type. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a> and other <strong>ref</strong> structs built on top of <code>ref</code> fields. Parameters of managed pointer or <strong>ref</strong> struct type cannot be declared for asynchronous methods or stored in the fields of regular classes or value types.</p>
+<p><a class="xref" href="../../api/DotNext.Runtime.Reference-1.html">Reference&lt;T&gt;</a> data type is a regular value type that allows to represent the memory location of the value without restriction of <strong>ref</strong> struct. As a result, you can use it in asynchronous methods or store in the field.</p>
+<p>There is no magic under the hood and no violation of GC tracking rules. Under the hood, <code>Reference&lt;T&gt;</code> efficiently encapsulates the access to the memory location. You can obtain a reference to the following things:</p>
+<ul>
+<li>A reference to the array element</li>
+<li>A reference to the static field</li>
+<li>A reference to the instance field</li>
+<li>A reference to the value allocated in the unmanaged memory (act as a wrapper for unmanaged pointer)</li>
+<li>A reference to boxed value type</li>
+</ul>
+<p>There is no way to obtain a reference to the local variable. Technically, it is possible but very dangerous because the lifetime of the reference may be greater than the lifetime of the local variable.</p>
+<p><a class="xref" href="../../api/DotNext.Runtime.Reference-1.html">Reference&lt;T&gt;</a> can be constructed using the factory methods exposed by <a class="xref" href="../../api/DotNext.Runtime.Reference.html">Reference</a> static class:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime;
+
+// obtains a reference to the first element of the array
+int[] array = { 10, 20, 30 };
+Reference&lt;int&gt; r = Reference.ArrayElement(array, 0);
+r.Target = 20; // mutates the array element
+
+class MyClass
+{
+    internal static int StaticField;
+
+    internal int field;
+
+    static ref int GetInstanceFieldReference(MyClass obj) =&gt; ref obj.field;
+
+    static ref int GetStaticFieldReference() =&gt; ref StaticField;
+}
+
+// instance field
+Reference&lt;int&gt; r = Reference.Create&lt;MyClass, int&gt;(new MyClass(), &amp;MyClass.GetInstanceFieldReference);
+r.Target = 20; // mutates the instance field
+
+// static field
+Reference&lt;int&gt; r = Reference.Create&lt;int&gt;(&amp;MyClass.GetStaticFieldReference);
+r.Target = 20; // mutates the static field
+
+// obtains a reference to the boxed value
+object boxed = 42;
+Reference&lt;int&gt; r = Reference.Unbox&lt;int&gt;(boxed);
+</code></pre>
+<p>Additionally, <code>Reference</code> allows to allocate anonymous memory storage of the specified type:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime;
+
+Reference&lt;string&gt; r = Reference.Allocate&lt;string&gt;(string.Empty);
+r.Target = &quot;Hello, world!&quot;;
+</code></pre>
+<p>The allocated storage can be used to pass the value by reference to asynchronous method.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/core/ref.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

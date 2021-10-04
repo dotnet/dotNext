@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Migration from 3.x | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Migration from 3.x | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="migration-from-3x">Migration from 3.x</h1>
+
+<p>4.x introduces a number of breaking changes in the following libraries: <em>DotNext</em>, <em>DotNext.Threading</em>, <em>DotNext.Net.Cluster</em>, <em>DotNext.AspNetCore.Cluster</em>.</p>
+<h1 id="core-library">Core Library</h1>
+<h2 id="waitasync-and-continuewithtimeout-methods">WaitAsync and ContinueWithTimeout methods</h2>
+<p>Both methods have been removed from the library because they can be replaced with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task.waitasync">WaitAsync</a> method from .NET 6 standard library.</p>
+<h2 id="boxt">Box&lt;T&gt;</h2>
+<p><code>DotNext.Runtime.Box&lt;T&gt;</code> value type is replaced by <code>DotNext.Runtime.Reference&lt;T&gt;</code> value type. A new type allows to hold the reference to the various memory locations: array element, static of instance field, boxed value type. As a result, you need to use the factory method to make a reference to the boxed value:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime;
+
+object boxed = 25;
+Reference&lt;int&gt; referenceToBoxedValue = Reference.Unbox&lt;int&gt;(boxed);
+Console.WriteLine(referenceToBoxedValue.Target);
+</code></pre>
+<h1 id="io">IO</h1>
+<p><code>SequenceBinaryReader</code> has been renamed to <code>SequenceReader</code>.</p>
+<h2 id="iasyncbinaryreader-and-iasyncbinarywriter">IAsyncBinaryReader and IAsyncBinaryWriter</h2>
+<p><code>IAsyncBinaryWriter</code> prior to 3.x had a set of methods (<code>WriteGuidAsync</code>, <code>WriteDateTimeAsync</code>) for encoding various value types as a string using the specified encoding. Starting from .NET 6, there is a special public interface <a href="https://docs.microsoft.com/en-us/dotnet/api/system.ispanformattable">ISpanFormattable</a> that is implemented by all formattable data types in .NET Base Class Library. It's reasonable to offer a single method that can work with any type implementing the necessary interface instead of multiple methods for each formattable data type.</p>
+<pre><code class="lang-csharp">using System.Text;
+using DotNext.IO;
+
+IAsyncBinaryWriter writer;
+await writer.WriteFormattableAsync&lt;int&gt;(42, LengthFormat.Plain, Encoding.UTF8, &quot;X&quot;); // encode int as as set of bytes using UTF-8 encoding
+</code></pre>
+<p>The same change was applied to <code>IAsyncBinaryReader</code> interface. All methods for parsing various value types have been replaced with <code>ParseAsync</code> method. It accepts the delegate responsible for parsing of the value from the sequence of characters represented by <code>ReadOnlySpan&lt;char&gt;</code> data type:</p>
+<pre><code class="lang-csharp">using System.Text;
+using DotNext.IO;
+
+IAsyncBinaryReader reader;
+var i = await reader.ParseAsync&lt;int&gt;(static (chars, provider) =&gt; int.Parse(chars, provider: provider), Encoding.UTF8);
+</code></pre>
+<h1 id="threading">Threading</h1>
+<p><code>QueuedSynchronizer</code> and <code>Synchronizer</code> classes as well as <code>ISynchronizer</code> interface are merged into single <code>QueuedSynchronizer</code> class. Lock acquisition methods now return <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;T&gt;</a> value type instead of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> class. If you still need a <code>Task</code> then use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask.astask">AsTask()</a> instance method.</p>
+<h2 id="asyncreaderwriterlock">AsyncReaderWriterLock</h2>
+<p>Presence of upgradeable read lock was a huge mistake in architecture. It allows to upgrade the read lock to the write lock by concurrent flow, e.g.:</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+
+using var rwLock = new AsyncReaderWriterLock();
+
+// async flow #1
+await rwLock.EnterUpgradeableReadLockAsync();
+
+// async flow #2
+await rwLock.EnterWriteLockAsync(); // this flow can upgrade the existing read lock
+</code></pre>
+<p>To avoid that, starting from 4.0 version of the library you need to upgrade the lock manually:</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+
+using var rwLock = new AsyncReaderWriterLock();
+await rwLock.EnterReadLockAsync();
+await rwLock.UpgradeToWriteLockAsync();
+rwLock.DowngradeFromWriteLock();
+rwLock.Release();
+</code></pre>
+<p><code>UpgradeToWriteLockAsync</code> should be called by the same flow after the invocation of <code>EnterReadLockAsync</code> method.</p>
+<p><code>ExitReadLock</code> and <code>ExitWriteLock</code> methods replaced with a single <code>Release</code> method.</p>
+<h2 id="asynctrigger">AsyncTrigger</h2>
+<p><code>AsyncTrigger</code> divided to two classes: generic <code>AsyncTrigger&lt;T&gt;</code> class and non-generic <code>AsyncTrigger</code> class. For producer-consumer scenario without coordinated state you need to use non-generic version. If you have coordinated state then use generic version. Read more <a href="../features/threading/trigger.html">here</a> for detailed information about the differences.</p>
+<h1 id="cluster-programming-suite">Cluster Programming Suite</h1>
+<p><code>DotNext.Net.Cluster</code> and <code>DotNext.AspNetCore.Cluster</code> have breaking changes in Raft implementation.</p>
+<h2 id="icluster-interface">ICluster interface</h2>
+<p>All custom delegate types for Cluster events have been replaced with delegate types from .NET Base Class Library. <code>Members</code> property is replaced by <code>IPeerMesh.Peers</code> property.</p>
+<h2 id="iexpandablecluster-interface">IExpandableCluster interface</h2>
+<p>The interface is completely replaced with <code>IPeerMesh</code> interface that has more reusable design.</p>
+<h2 id="ip-safelist">IP safelist</h2>
+<p><code>allowedNetworks</code> configuration parameter is no longer available. It's easily to implement it by the user through ASP.NET Core <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/middleware/">Middleware</a> and amazing <a href="https://www.nuget.org/packages/IPNetwork2/">IPNetwork</a> library. Also, there is <a href="https://docs.microsoft.com/en-us/aspnet/core/security/ip-safelist">perfect article</a> about how to organize IP safelist.</p>
+<h2 id="interpreter-framework">Interpreter Framework</h2>
+<p><code>DotNext.Runtime.Serialization.IFormatter&lt;T&gt;</code> interface has been replaced with <code>DotNext.Runtime.Serialization.ISerializable&lt;TSelf&gt;</code> interface so now the type itself must control its serialization/deserialization logic. <code>ISerializable&lt;TSelf&gt;</code> interface is more reusable across various scenarios and not tightly coupled with Interpreter Framework anymore.</p>
+<p>The next thing is <code>CommandAttribute&lt;T&gt;</code>. Thanks to C# 10, we can use generic attributes. Therefore, you don't need to annotate command DTO with this attribute. Instead, you need to apply the attribute for each command type on the class that derives from <code>CommandInterpreter</code> class:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Commands;
+
+[Command&lt;BinaryOperationCommand&gt;(BinaryOperationCommand.Id)]
+[Command&lt;UnaryOperationCommand&gt;(UnaryOperationCommand.Id)]
+[Command&lt;SnapshotCommand&gt;(SnapshotCommand.Id)]
+sealed class CustomInterpreter : CommandInterpreter
+{
+}
+</code></pre>
+<h2 id="typed-messages">Typed Messages</h2>
+<p><code>MessageHandler</code> uses the same concept of generic attributes as Interpreter Framework. All typed messages must be registered with generic <code>MessageAttribute&lt;T&gt;</code> attribute instead of annotating individual types:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Messaging;
+
+[Message&lt;AddMessage&gt;(AddMessage.Name)]
+[Message&lt;SubtractMessage&gt;(SubtractMessage.Name)]
+[Message&lt;ResultMessage&gt;(ResultMessage.Name)]
+public class TestMessageHandler : MessageHandler
+{
+}
+</code></pre>
+<p>Each typed message must implement <code>DotNext.Runtime.Serialization.ISerializable&lt;TSelf&gt;</code> interface to provide serialization/deserialization logic.</p>
+<p><code>MessageClient</code> is no longer use <code>MessageAttribute&lt;T&gt;</code> for registering message types. Instead, message types can be registered using <code>RegisterMessage</code> method as follows:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Messaging;
+
+var typedClient = new MessagingClient(client)
+    .RegisterMessage&lt;AddMessage&gt;(AddMessage.Name)
+    .RegisterMessage&lt;SubtractMessage&gt;(SubtractMessage.Name)
+    .RegisterMessage&lt;ResultMessage&gt;(ResultMessage.Name);
+</code></pre>
+<h2 id="configuration-of-cluster-members">Configuration of cluster members</h2>
+<p><code>members</code> configuration property is no longer available. The way of configuring, adding and removing of cluster members is changed completely. It happened because Raft provides a mechanism of cluster configuration management on top of itself without involving external discovery. Raft-native cluster membership protocol allows to avoid some critical issues associated with the external discovery mechanism. One of them - a probability of having two leaders in the same cluster during modification of the cluster configuration.</p>
+<p>A new cluster configuration management model introduces <code>DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage</code> interface. Currently, there are two storages supported:</p>
+<ul>
+<li>In-memory configuration suitable for testing purposes</li>
+<li>Persistent configuration suitable for production use</li>
+</ul>
+<p>Raft-native membership protocol offers the easy and safe way of adding and removing new cluster members. All we need is to provide a guarantee that only one member can be removed or added at a time in the same cluster. When the modified configuration will be committed by the majority of nodes, you can perform the next change.</p>
+<p>Therefore, <code>IClusterConfigurationStorage</code> actually holds the two configurations:</p>
+<ul>
+<li>Active configuration which is applied and commited by the majority of nodes</li>
+<li>Proposed configuration which reflects the requested change (added or removed member) and must be replicated and committed by the majority of nodes.</li>
+</ul>
+<p><code>IClusterConfigurationStorage&lt;TAddress&gt;</code> generic interface allows to add or remove members dynamically and wait until the proposed configuration turned into active configuration.</p>
+<p>This mechanism for membership management dictates how the node must be bootstrapped:</p>
+<ul>
+<li><code>coldStart=true</code> (<em>Cold Start</em> mode) configuration property means that you want to start a first node in the cluster. It means that the node adds itself to the cluster configuration as proposed change and wait for other nodes</li>
+<li><code>coldStart=false</code> (<em>Announcement</em> mode) configuration property means that the node must be added to existing cluster.</li>
+</ul>
+<p>Any change in configuration must be processed by the leader node as well as any other write operation.</p>
+<p><code>IRaftHttpCluster</code> offers high-level API for managing cluster members:</p>
+<ul>
+<li><code>AddMemberAsync</code> that allows to announce and warmup the node</li>
+<li><code>RemoveMemberAsync</code> that allows to remove the node from the cluster</li>
+</ul>
+<p>These methods are callable on leader node only. It's possible to automate announcement of a new node. <code>ClusterMemberAnnouncer&lt;TAddress&gt;</code> delegate instance can be registered in DI container and then called automatically when the node started in <em>Announcement</em> mode. In case of HTTP, the announcer can utilize redirection to leader capability and send the announcement to the leader node. Then, the announcement endpoint on the leader node can call <code>AddMemberAsync</code> method to propose and commit a new cluster configuration. Read <a href="../features/cluster/raft.html">this</a> for more information.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/migration/3.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1388 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct PinnedArray&lt;T&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct PinnedArray&lt;T&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1">
+  
+  
+  <h1 id="DotNext_Runtime_InteropServices_PinnedArray_1" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1" class="text-break">Struct PinnedArray&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents pinned array that can be passed to unmanaged code
+without marshalling overhead.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedArray-1.html">IUnmanagedArray</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></div>
+    <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<span class="xref">Stream</span>&gt;</div>
+    <div><span class="xref">IEnumerable</span>&lt;T&gt;</div>
+    <div><span class="xref">ICloneable</span></div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;T[]&gt;</div>
+    <div><span class="xref">System.Collections.IList</span>&lt;T&gt;</div>
+    <div><span class="xref">IReadOnlyList</span>&lt;T&gt;</div>
+    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.InteropServices.html">DotNext.Runtime.InteropServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
+  <h5 id="DotNext_Runtime_InteropServices_PinnedArray_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly struct PinnedArray&lt;T&gt; : IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, IDisposable, ISupplier&lt;Stream&gt;, IEnumerable&lt;T&gt;, ICloneable, ISupplier&lt;T[]&gt;, IList&lt;T&gt;, IReadOnlyList&lt;T&gt;, IEquatable&lt;PinnedArray&lt;T&gt;&gt; where T : struct</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the array elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1__ctor_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.%23ctor(System.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L24">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1__ctor_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.#ctor*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1__ctor_System_Int32_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.#ctor(System.Int32,System.Boolean)">PinnedArray(Int32, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Allocates a new pinned array in Pinned Object Heap.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PinnedArray(int length, bool zeroMem = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">zeroMem</span></td>
+        <td><p><span class="xref">true</span> to allocate the array with zeroed content; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Array.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Array%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L174">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Array_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Array*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Array" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Array">Array</h4>
+  <div class="markdown level1 summary"><p>Gets underlying array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly T[] Array { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Item_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Item(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Item*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Item_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Item(System.IntPtr)">Item[IntPtr]</h4>
+  <div class="markdown level1 summary"><p>Gets managed pointer to the array element at the specified index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ref T this[nint index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element in memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The managed pointer to the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L158">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Length_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Length*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Length" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets length of the pinned array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Memory.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Memory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L140">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Memory_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Memory*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Memory" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Memory">Memory</h4>
+  <div class="markdown level1 summary"><p>Represents underlying array as <see cref="!:Memory&lt;T>"></see>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Memory&lt;T&gt; Memory { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Memory</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Pointer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Pointer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L150">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Pointer_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Pointer*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Pointer" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Pointer">Pointer</h4>
+  <div class="markdown level1 summary"><p>Gets the pointer to the first element of the pinned array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Pointer&lt;T&gt; Pointer { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Span%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L135">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Span_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Span*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Span" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Span">Span</h4>
+  <div class="markdown level1 summary"><p>Gets the span over array elements.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Span&lt;T&gt; Span { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_AsStream.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.AsStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L123">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_AsStream_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.AsStream*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_AsStream" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.AsStream">AsStream()</h4>
+  <div class="markdown level1 summary"><p>Creates a stream over elements in this array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Stream AsStream()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Stream</span></td>
+        <td><p>The stream over elements in this array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_BitwiseCompare__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.BitwiseCompare(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L194">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_BitwiseCompare__0___" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.BitwiseCompare(`0[])">BitwiseCompare(T[])</h4>
+  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int BitwiseCompare(T[] other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Comparison result which has the semantics as return type of <see cref="!:IComparable.CompareTo(object)"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_BitwiseEquals__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.BitwiseEquals(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L187">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_BitwiseEquals__0___" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.BitwiseEquals(`0[])">BitwiseEquals(T[])</h4>
+  <div class="markdown level1 summary"><p>Computes bitwise equality between this array and the specified managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool BitwiseEquals(T[] other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if both memory blocks have the same bytes; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Clone.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Clone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L43">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Clone_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Clone*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Clone" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Clone">Clone()</h4>
+  <div class="markdown level1 summary"><p>Creates deep copy of this array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly PinnedArray&lt;T&gt; Clone()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><p>The deep copy of this array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Contains__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Contains(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L92">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Contains_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Contains*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Contains__0_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Contains(`0)">Contains(T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this array contains a specific value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool Contains(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The object to locate in this array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if item is found in this array; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_CopyTo__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.CopyTo(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_CopyTo_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.CopyTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_CopyTo__0___System_Int32_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.CopyTo(`0[],System.Int32)">CopyTo(T[], Int32)</h4>
+  <div class="markdown level1 summary"><p>Copies the elements of this array to another array, starting at a particular index in
+the destination array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly void CopyTo(T[] destination, int index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The array that is the destination of the elements copied from this array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The zero-based index in the destination at which copying begins.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Equals_DotNext_Runtime_InteropServices_PinnedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Equals(DotNext.Runtime.InteropServices.PinnedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L228">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Equals_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Equals_DotNext_Runtime_InteropServices_PinnedArray__0__" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Equals(DotNext.Runtime.InteropServices.PinnedArray{`0})">Equals(PinnedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the current object references the same array as other object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool Equals(PinnedArray&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the current object references the same array as <code data-dev-comment-type="paramref" class="paramref">other</code>; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L235">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_Equals_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_Equals_System_Object_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the current object references the same array as other object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly bool Equals(object other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the current object references the same array as <code data-dev-comment-type="paramref" class="paramref">other</code>; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L207">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_GetEnumerator_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_GetEnumerator" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"><p>Gets enumerator over array elements.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly IEnumerator&lt;T&gt; GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.IEnumerator</span>&lt;T&gt;</td>
+        <td><p>The enumerator over array elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L246">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.GetHashCode*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_GetHashCode" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Gets the identity of the referenced array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The identity of the referenced array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_GetReference_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.GetReference(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L68">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_GetReference_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.GetReference*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_GetReference_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.GetReference(System.IntPtr)">GetReference(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Gets a reference to the array element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Reference&lt;T&gt; GetReference(nint index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Reference-1.html">Reference</a>&lt;T&gt;</td>
+        <td><p>The reference to the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_IndexOf__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.IndexOf(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L85">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_IndexOf_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.IndexOf*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_IndexOf__0_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.IndexOf(`0)">IndexOf(T)</h4>
+  <div class="markdown level1 summary"><p>Returns the index of a specific item in this array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int IndexOf(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The object to locate in this array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The index of <code data-dev-comment-type="paramref" class="paramref">item</code> if found in this array; otherwise, -1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L221">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_ToString_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.ToString*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_ToString" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns a string that represents the current array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>A string that represents the current array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_op_Equality_DotNext_Runtime_InteropServices_PinnedArray__0__DotNext_Runtime_InteropServices_PinnedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.op_Equality(DotNext.Runtime.InteropServices.PinnedArray%7B%600%7D%2CDotNext.Runtime.InteropServices.PinnedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L254">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.op_Equality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_op_Equality_DotNext_Runtime_InteropServices_PinnedArray__0__DotNext_Runtime_InteropServices_PinnedArray__0__" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.op_Equality(DotNext.Runtime.InteropServices.PinnedArray{`0},DotNext.Runtime.InteropServices.PinnedArray{`0})">Equality(PinnedArray&lt;T&gt;, PinnedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the two objects represent the same array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(PinnedArray&lt;T&gt; first, PinnedArray&lt;T&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first array to be compared.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both objects represent the same array; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_op_Implicit_DotNext_Runtime_InteropServices_PinnedArray__0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.op_Implicit(DotNext.Runtime.InteropServices.PinnedArray%7B%600%7D)~%600%5B%5D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L201">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_op_Implicit_DotNext_Runtime_InteropServices_PinnedArray__0____0__" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.op_Implicit(DotNext.Runtime.InteropServices.PinnedArray{`0})~`0[]">Implicit(PinnedArray&lt;T&gt; to T[])</h4>
+  <div class="markdown level1 summary"><p>Gets underlying array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator T[](PinnedArray&lt;T&gt; array)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The pinned array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><p>The underlying array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_op_Inequality_DotNext_Runtime_InteropServices_PinnedArray__0__DotNext_Runtime_InteropServices_PinnedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.op_Inequality(DotNext.Runtime.InteropServices.PinnedArray%7B%600%7D%2CDotNext.Runtime.InteropServices.PinnedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L263">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.op_Inequality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_op_Inequality_DotNext_Runtime_InteropServices_PinnedArray__0__DotNext_Runtime_InteropServices_PinnedArray__0__" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.op_Inequality(DotNext.Runtime.InteropServices.PinnedArray{`0},DotNext.Runtime.InteropServices.PinnedArray{`0})">Inequality(PinnedArray&lt;T&gt;, PinnedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the two objects represent different arrays.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(PinnedArray&lt;T&gt; first, PinnedArray&lt;T&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first array to be compared.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.PinnedArray-1.html">PinnedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both objects represent different arrays; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_ISupplier_T____Invoke.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.DotNext%23ISupplier%7BT%5B%5D%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L180">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_ISupplier_T____Invoke_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#ISupplier{T[]}#Invoke*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_ISupplier_T____Invoke" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#ISupplier{T[]}#Invoke">ISupplier&lt;T[]&gt;.Invoke()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly T[] ISupplier&lt;T[]&gt;.Invoke()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedArray_T__ToArray.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedArray%7BT%7D%23ToArray%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L177">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedArray_T__ToArray_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedArray{T}#ToArray*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedArray_T__ToArray" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedArray{T}#ToArray">IUnmanagedArray&lt;T&gt;.ToArray()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly T[] IUnmanagedArray&lt;T&gt;.ToArray()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%23Bytes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L143">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Bytes*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Bytes">IUnmanagedMemory.Bytes</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly Span&lt;byte&gt; IUnmanagedMemory.Bytes { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%23Pointer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L153">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Pointer*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Pointer">IUnmanagedMemory.Pointer</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly Pointer&lt;byte&gt; IUnmanagedMemory.Pointer { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%23Size%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L169">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size">IUnmanagedMemory.Size</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly long IUnmanagedMemory.Size { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L210">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_PinnedArray_1_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.System#Collections#IEnumerable#GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_PinnedArray_1_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Runtime.InteropServices.PinnedArray`1.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly IEnumerator IEnumerable.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedArray-1.html">IUnmanagedArray&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a>
+  </div>
+  <div>
+      <span class="xref">IDisposable</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <span class="xref">IEnumerable&lt;&gt;</span>
+  </div>
+  <div>
+      <span class="xref">ICloneable</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <span class="xref">System.Collections.IList&lt;&gt;</span>
+  </div>
+  <div>
+      <span class="xref">IReadOnlyList&lt;&gt;</span>
+  </div>
+  <div>
+      <span class="xref">IEquatable&lt;&gt;</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_PinnedArray_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.PinnedArray%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/PinnedArray.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

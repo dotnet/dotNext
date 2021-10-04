@@ -1,0 +1,1589 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class FieldBase&lt;TValue&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class FieldBase&lt;TValue&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.FieldBase`1">
+  
+  
+  <h1 id="DotNext_Reflection_FieldBase_1" data-uid="DotNext.Reflection.FieldBase`1" class="text-break">Class FieldBase&lt;TValue&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents reflected field.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></div>
+    <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo">FieldInfo</a></div>
+    <div class="level3"><span class="xref">FieldBase&lt;TValue&gt;</span></div>
+      <div class="level4"><a class="xref" href="DotNext.Reflection.Field-1.html">Field&lt;TValue&gt;</a></div>
+      <div class="level4"><a class="xref" href="DotNext.Reflection.Field-2.html">Field&lt;T, TValue&gt;</a></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Reflection.IField.html">IField</a></div>
+    <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo">FieldInfo</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
+    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo">FieldInfo</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getfieldfromhandle#System_Reflection_FieldInfo_GetFieldFromHandle_System_RuntimeFieldHandle_">FieldInfo.GetFieldFromHandle(RuntimeFieldHandle)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getfieldfromhandle#System_Reflection_FieldInfo_GetFieldFromHandle_System_RuntimeFieldHandle_System_RuntimeTypeHandle_">FieldInfo.GetFieldFromHandle(RuntimeFieldHandle, RuntimeTypeHandle)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getvaluedirect#System_Reflection_FieldInfo_GetValueDirect_System_TypedReference_">FieldInfo.GetValueDirect(TypedReference)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.setvalue#System_Reflection_FieldInfo_SetValue_System_Object_System_Object_">FieldInfo.SetValue(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.setvaluedirect#System_Reflection_FieldInfo_SetValueDirect_System_TypedReference_System_Object_">FieldInfo.SetValueDirect(TypedReference, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isassembly#System_Reflection_FieldInfo_IsAssembly">FieldInfo.IsAssembly</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isfamily#System_Reflection_FieldInfo_IsFamily">FieldInfo.IsFamily</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isfamilyandassembly#System_Reflection_FieldInfo_IsFamilyAndAssembly">FieldInfo.IsFamilyAndAssembly</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isfamilyorassembly#System_Reflection_FieldInfo_IsFamilyOrAssembly">FieldInfo.IsFamilyOrAssembly</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isinitonly#System_Reflection_FieldInfo_IsInitOnly">FieldInfo.IsInitOnly</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isliteral#System_Reflection_FieldInfo_IsLiteral">FieldInfo.IsLiteral</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isnotserialized#System_Reflection_FieldInfo_IsNotSerialized">FieldInfo.IsNotSerialized</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.ispinvokeimpl#System_Reflection_FieldInfo_IsPinvokeImpl">FieldInfo.IsPinvokeImpl</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isprivate#System_Reflection_FieldInfo_IsPrivate">FieldInfo.IsPrivate</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.ispublic#System_Reflection_FieldInfo_IsPublic">FieldInfo.IsPublic</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isspecialname#System_Reflection_FieldInfo_IsSpecialName">FieldInfo.IsSpecialName</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.isstatic#System_Reflection_FieldInfo_IsStatic">FieldInfo.IsStatic</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.getcustomattributes#System_Reflection_MemberInfo_GetCustomAttributes_System_Type_System_Boolean_">MemberInfo.GetCustomAttributes(Type, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.hassamemetadatadefinitionas#System_Reflection_MemberInfo_HasSameMetadataDefinitionAs_System_Reflection_MemberInfo_">MemberInfo.HasSameMetadataDefinitionAs(MemberInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.isdefined#System_Reflection_MemberInfo_IsDefined_System_Type_System_Boolean_">MemberInfo.IsDefined(Type, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.iscollectible#System_Reflection_MemberInfo_IsCollectible">MemberInfo.IsCollectible</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
+  <h5 id="DotNext_Reflection_FieldBase_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class FieldBase&lt;TValue&gt; : FieldInfo, IField, IMember&lt;FieldInfo&gt;, ICustomAttributeProvider, IEquatable&lt;FieldInfo&gt;</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>Type of field value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Attributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Attributes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_Attributes_" data-uid="DotNext.Reflection.FieldBase`1.Attributes*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_Attributes" data-uid="DotNext.Reflection.FieldBase`1.Attributes">Attributes</h4>
+  <div class="markdown level1 summary"><p>Gets the attributes associated with this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override FieldAttributes Attributes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldattributes">FieldAttributes</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.attributes#System_Reflection_FieldInfo_Attributes">FieldInfo.Attributes</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_CustomAttributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.CustomAttributes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L112">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_CustomAttributes_" data-uid="DotNext.Reflection.FieldBase`1.CustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_CustomAttributes" data-uid="DotNext.Reflection.FieldBase`1.CustomAttributes">CustomAttributes</h4>
+  <div class="markdown level1 summary"><p>Gets a collection that contains this member's custom attributes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override IEnumerable&lt;CustomAttributeData&gt; CustomAttributes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.customattributes#System_Reflection_MemberInfo_CustomAttributes">MemberInfo.CustomAttributes</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_DeclaringType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.DeclaringType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L56">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_DeclaringType_" data-uid="DotNext.Reflection.FieldBase`1.DeclaringType*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_DeclaringType" data-uid="DotNext.Reflection.FieldBase`1.DeclaringType">DeclaringType</h4>
+  <div class="markdown level1 summary"><p>Gets the class that declares this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override Type? DeclaringType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">DotNext.Reflection.Type</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.declaringtype#System_Reflection_MemberInfo_DeclaringType">MemberInfo.DeclaringType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_FieldHandle.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.FieldHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L122">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_FieldHandle_" data-uid="DotNext.Reflection.FieldBase`1.FieldHandle*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_FieldHandle" data-uid="DotNext.Reflection.FieldBase`1.FieldHandle">FieldHandle</h4>
+  <div class="markdown level1 summary"><p>Gets a handle to the internal metadata representation of this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override RuntimeFieldHandle FieldHandle { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">RuntimeFieldHandle</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.fieldhandle#System_Reflection_FieldInfo_FieldHandle">FieldInfo.FieldHandle</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_FieldType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.FieldType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L127">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_FieldType_" data-uid="DotNext.Reflection.FieldBase`1.FieldType*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_FieldType" data-uid="DotNext.Reflection.FieldBase`1.FieldType">FieldType</h4>
+  <div class="markdown level1 summary"><p>Gets type of this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override Type FieldType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Reflection.Type</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.fieldtype#System_Reflection_FieldInfo_FieldType">FieldInfo.FieldType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsSecurityCritical.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsSecurityCritical%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L167">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_IsSecurityCritical_" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityCritical*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_IsSecurityCritical" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityCritical">IsSecurityCritical</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the field is security-critical or security-safe-critical at the current trust level,
+and therefore can perform critical operations.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override bool IsSecurityCritical { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.issecuritycritical#System_Reflection_FieldInfo_IsSecurityCritical">FieldInfo.IsSecurityCritical</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsSecuritySafeCritical.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsSecuritySafeCritical%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L173">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_IsSecuritySafeCritical_" data-uid="DotNext.Reflection.FieldBase`1.IsSecuritySafeCritical*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_IsSecuritySafeCritical" data-uid="DotNext.Reflection.FieldBase`1.IsSecuritySafeCritical">IsSecuritySafeCritical</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the field is security-safe-critical at the current trust level; that is,
+whether it can perform critical operations and can be accessed by transparent code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override bool IsSecuritySafeCritical { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.issecuritysafecritical#System_Reflection_FieldInfo_IsSecuritySafeCritical">FieldInfo.IsSecuritySafeCritical</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsSecurityTransparent.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsSecurityTransparent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L179">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_IsSecurityTransparent_" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityTransparent*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_IsSecurityTransparent" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityTransparent">IsSecurityTransparent</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the current field is transparent at the current trust level,
+and therefore cannot perform critical operations.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override bool IsSecurityTransparent { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.issecuritytransparent#System_Reflection_FieldInfo_IsSecurityTransparent">FieldInfo.IsSecurityTransparent</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_MemberType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.MemberType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_MemberType_" data-uid="DotNext.Reflection.FieldBase`1.MemberType*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_MemberType" data-uid="DotNext.Reflection.FieldBase`1.MemberType">MemberType</h4>
+  <div class="markdown level1 summary"><p>Always returns <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.membertypes#System_Reflection_MemberTypes_Field">Field</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override MemberTypes MemberType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.membertypes">MemberTypes</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.membertype#System_Reflection_FieldInfo_MemberType">FieldInfo.MemberType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_MetadataToken.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.MetadataToken%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L99">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_MetadataToken_" data-uid="DotNext.Reflection.FieldBase`1.MetadataToken*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_MetadataToken" data-uid="DotNext.Reflection.FieldBase`1.MetadataToken">MetadataToken</h4>
+  <div class="markdown level1 summary"><p>Gets a value that identifies a metadata element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override int MetadataToken { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.metadatatoken#System_Reflection_MemberInfo_MetadataToken">MemberInfo.MetadataToken</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Module.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Module%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L104">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_Module_" data-uid="DotNext.Reflection.FieldBase`1.Module*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_Module" data-uid="DotNext.Reflection.FieldBase`1.Module">Module</h4>
+  <div class="markdown level1 summary"><p>Gets the module in which the type that declares the field represented by the current instance is defined.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override Module Module { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.module">Module</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.module#System_Reflection_MemberInfo_Module">MemberInfo.Module</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Name.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L66">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_Name_" data-uid="DotNext.Reflection.FieldBase`1.Name*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_Name" data-uid="DotNext.Reflection.FieldBase`1.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Gets name of the field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override string Name { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.name#System_Reflection_MemberInfo_Name">MemberInfo.Name</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_ReflectedType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.ReflectedType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L71">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_ReflectedType_" data-uid="DotNext.Reflection.FieldBase`1.ReflectedType*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_ReflectedType" data-uid="DotNext.Reflection.FieldBase`1.ReflectedType">ReflectedType</h4>
+  <div class="markdown level1 summary"><p>Gets the class object that was used to obtain this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override Type? ReflectedType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">DotNext.Reflection.Type</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.reflectedtype#System_Reflection_MemberInfo_ReflectedType">MemberInfo.ReflectedType</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L222">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_Equals_" data-uid="DotNext.Reflection.FieldBase`1.Equals*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_Equals_System_Object_" data-uid="DotNext.Reflection.FieldBase`1.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this field is equal to the given field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override bool Equals(object other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other field to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this object reflects the same field as the specified object; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.equals#System_Reflection_FieldInfo_Equals_System_Object_">FieldInfo.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Equals_System_Reflection_FieldInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Equals(System.Reflection.FieldInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L209">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_Equals_" data-uid="DotNext.Reflection.FieldBase`1.Equals*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_Equals_System_Reflection_FieldInfo_" data-uid="DotNext.Reflection.FieldBase`1.Equals(System.Reflection.FieldInfo)">Equals(FieldInfo)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this field is equal to the given field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(FieldInfo other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo">FieldInfo</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other field to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this object reflects the same field as the specified object; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetCustomAttributes_DotNext_Reflection_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetCustomAttributes(DotNext.Reflection.Type%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L86">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetCustomAttributes_" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetCustomAttributes_DotNext_Reflection_Type_System_Boolean_" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributes(DotNext.Reflection.Type,System.Boolean)">GetCustomAttributes(Type, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override object[] GetCustomAttributes(Type attributeType, bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Reflection.Type</span></td>
+        <td><span class="parametername">attributeType</span></td>
+        <td><p>The type of attribute to search for. Only attributes that are assignable to this type are returned.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
+        <td><p>An array that contains all the custom attributes applied to this field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetCustomAttributes_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetCustomAttributes(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetCustomAttributes_" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetCustomAttributes_System_Boolean_" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributes(System.Boolean)">GetCustomAttributes(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override object[] GetCustomAttributes(bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
+        <td><p>An array that contains all the custom attributes applied to this field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.getcustomattributes#System_Reflection_MemberInfo_GetCustomAttributes_System_Boolean_">MemberInfo.GetCustomAttributes(Boolean)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetCustomAttributesData.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetCustomAttributesData%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L107">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetCustomAttributesData_" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributesData*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetCustomAttributesData" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributesData">GetCustomAttributesData()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override IList&lt;CustomAttributeData&gt; GetCustomAttributesData()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IList</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.getcustomattributesdata#System_Reflection_MemberInfo_GetCustomAttributesData">MemberInfo.GetCustomAttributesData()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L215">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetHashCode_" data-uid="DotNext.Reflection.FieldBase`1.GetHashCode*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetHashCode" data-uid="DotNext.Reflection.FieldBase`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Computes hash code uniquely identifies the reflected field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The hash code of the field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.gethashcode#System_Reflection_FieldInfo_GetHashCode">FieldInfo.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetOptionalCustomModifiers.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetOptionalCustomModifiers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L133">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetOptionalCustomModifiers_" data-uid="DotNext.Reflection.FieldBase`1.GetOptionalCustomModifiers*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetOptionalCustomModifiers" data-uid="DotNext.Reflection.FieldBase`1.GetOptionalCustomModifiers">GetOptionalCustomModifiers()</h4>
+  <div class="markdown level1 summary"><p>Gets an array of types that identify the optional custom modifiers of the field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override Type[] GetOptionalCustomModifiers()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Reflection.Type</span>[]</td>
+        <td><p>An array of objects that identify the optional custom modifiers of the current field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getoptionalcustommodifiers#System_Reflection_FieldInfo_GetOptionalCustomModifiers">FieldInfo.GetOptionalCustomModifiers()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetRawConstantValue.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetRawConstantValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L140">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetRawConstantValue_" data-uid="DotNext.Reflection.FieldBase`1.GetRawConstantValue*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetRawConstantValue" data-uid="DotNext.Reflection.FieldBase`1.GetRawConstantValue">GetRawConstantValue()</h4>
+  <div class="markdown level1 summary"><p>Returns a literal value associated with the field by a compiler.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override object GetRawConstantValue()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><p>The literal value associated with the field. If the literal value is a class type with an element value of zero,
+the return value is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getrawconstantvalue#System_Reflection_FieldInfo_GetRawConstantValue">FieldInfo.GetRawConstantValue()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetRequiredCustomModifiers.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetRequiredCustomModifiers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L146">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetRequiredCustomModifiers_" data-uid="DotNext.Reflection.FieldBase`1.GetRequiredCustomModifiers*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetRequiredCustomModifiers" data-uid="DotNext.Reflection.FieldBase`1.GetRequiredCustomModifiers">GetRequiredCustomModifiers()</h4>
+  <div class="markdown level1 summary"><p>Gets an array of types that identify the required custom modifiers of the field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override Type[] GetRequiredCustomModifiers()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Reflection.Type</span>[]</td>
+        <td><p>An array of objects that identify the required custom modifiers of the current field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getrequiredcustommodifiers#System_Reflection_FieldInfo_GetRequiredCustomModifiers">FieldInfo.GetRequiredCustomModifiers()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetValue_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetValue(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L153">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetValue_" data-uid="DotNext.Reflection.FieldBase`1.GetValue*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetValue_System_Object_" data-uid="DotNext.Reflection.FieldBase`1.GetValue(System.Object)">GetValue(Object)</h4>
+  <div class="markdown level1 summary"><p>Returns the value of a field supported by a given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override object GetValue(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object whose field value will be returned.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><p>An object containing the value of the field reflected by this instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.getvalue#System_Reflection_FieldInfo_GetValue_System_Object_">FieldInfo.GetValue(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetValue_System_Object__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetValue(System.Object%2C%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L43">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetValue_" data-uid="DotNext.Reflection.FieldBase`1.GetValue*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetValue_System_Object__0__" data-uid="DotNext.Reflection.FieldBase`1.GetValue(System.Object,`0@)">GetValue(Object, out TValue)</h4>
+  <div class="markdown level1 summary"><p>Returns the value of a field supported by a given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract bool GetValue(object obj, out TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object whose field value will be returned.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>An object containing the value of the field reflected by this instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if field value is obtained successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetValueDirect_TypedReference_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetValueDirect(TypedReference)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_GetValueDirect_" data-uid="DotNext.Reflection.FieldBase`1.GetValueDirect*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetValueDirect_TypedReference_" data-uid="DotNext.Reflection.FieldBase`1.GetValueDirect(TypedReference)">GetValueDirect(TypedReference)</h4>
+  <div class="markdown level1 summary"><p>Returns the value of a field supported by a given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override object GetValueDirect(TypedReference obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TypedReference</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>A managed pointer to a location and a runtime representation of the type that might be stored at that location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><p>An object containing the value of the field reflected by this instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsDefined_DotNext_Reflection_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsDefined(DotNext.Reflection.Type%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L94">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_IsDefined_" data-uid="DotNext.Reflection.FieldBase`1.IsDefined*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_IsDefined_DotNext_Reflection_Type_System_Boolean_" data-uid="DotNext.Reflection.FieldBase`1.IsDefined(DotNext.Reflection.Type,System.Boolean)">IsDefined(Type, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Determines whether one or more attributes of the specified type or of its derived types is applied to this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override bool IsDefined(Type attributeType, bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Reflection.Type</span></td>
+        <td><span class="parametername">attributeType</span></td>
+        <td><p>The type of custom attribute to search for. The search includes derived types.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if one or more instances of <code data-dev-comment-type="paramref" class="paramref">attributeType</code> or any of its derived types is applied to this field; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_SetValue_System_Object__0_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.SetValue(System.Object%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L51">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_SetValue_" data-uid="DotNext.Reflection.FieldBase`1.SetValue*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_SetValue_System_Object__0_" data-uid="DotNext.Reflection.FieldBase`1.SetValue(System.Object,`0)">SetValue(Object, TValue)</h4>
+  <div class="markdown level1 summary"><p>Sets the value of the field supported by the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract bool SetValue(object obj, TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object whose field value will be set.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to assign to the field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if field value is modified successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Globalization_CultureInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.SetValue(System.Object%2CSystem.Object%2CSystem.Reflection.BindingFlags%2CSystem.Reflection.Binder%2CSystem.Globalization.CultureInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_SetValue_" data-uid="DotNext.Reflection.FieldBase`1.SetValue*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Globalization_CultureInfo_" data-uid="DotNext.Reflection.FieldBase`1.SetValue(System.Object,System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Globalization.CultureInfo)">SetValue(Object, Object, BindingFlags, Binder, CultureInfo)</h4>
+  <div class="markdown level1 summary"><p>Sets the value of the field supported by the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object whose field value will be returned.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to assign to the field.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.bindingflags">BindingFlags</a></td>
+        <td><span class="parametername">invokeAttr</span></td>
+        <td><p>The type of binding that is desired.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.binder">Binder</a></td>
+        <td><span class="parametername">binder</span></td>
+        <td><p>A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></td>
+        <td><span class="parametername">culture</span></td>
+        <td><p>The software preferences of a particular culture.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo.setvalue#System_Reflection_FieldInfo_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Globalization_CultureInfo_">FieldInfo.SetValue(Object, Object, BindingFlags, Binder, CultureInfo)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_SetValueDirect_TypedReference_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.SetValueDirect(TypedReference%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L197">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_SetValueDirect_" data-uid="DotNext.Reflection.FieldBase`1.SetValueDirect*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_SetValueDirect_TypedReference_System_Object_" data-uid="DotNext.Reflection.FieldBase`1.SetValueDirect(TypedReference,System.Object)">SetValueDirect(TypedReference, Object)</h4>
+  <div class="markdown level1 summary"><p>Sets the value of the field supported by the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override void SetValueDirect(TypedReference obj, object value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TypedReference</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>A managed pointer to a location and a runtime representation of the type that might be stored at that location.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to assign to the field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L233">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_ToString_" data-uid="DotNext.Reflection.FieldBase`1.ToString*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_ToString" data-uid="DotNext.Reflection.FieldBase`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns textual representation of this field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The textual representation of this field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a></div>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_DotNext_Reflection_IMember_System_Reflection_FieldInfo__Metadata.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.DotNext%23Reflection%23IMember%7BSystem%23Reflection%23FieldInfo%7D%23Metadata%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L202">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_FieldBase_1_DotNext_Reflection_IMember_System_Reflection_FieldInfo__Metadata_" data-uid="DotNext.Reflection.FieldBase`1.DotNext#Reflection#IMember{System#Reflection#FieldInfo}#Metadata*"></a>
+  <h4 id="DotNext_Reflection_FieldBase_1_DotNext_Reflection_IMember_System_Reflection_FieldInfo__Metadata" data-uid="DotNext.Reflection.FieldBase`1.DotNext#Reflection#IMember{System#Reflection#FieldInfo}#Metadata">IMember&lt;FieldInfo&gt;.Metadata</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">FieldInfo IMember&lt;FieldInfo&gt;.Metadata { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo">FieldInfo</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IField.html">IField</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;TMember&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">System.Reflection.ICustomAttributeProvider</a>
+  </div>
+  <div>
+      <span class="xref">IEquatable&lt;&gt;</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_FieldInfo_">Reflector.Unreflect&lt;TValue&gt;(FieldInfo)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__2_System_Reflection_FieldInfo_">Reflector.Unreflect&lt;T, TValue&gt;(FieldInfo)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_System_Reflection_FieldInfo_System_Reflection_BindingFlags_System_Boolean_">Reflector.Unreflect(FieldInfo, BindingFlags, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L19" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

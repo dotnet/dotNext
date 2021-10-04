@@ -8,7 +8,7 @@
     <title>ValueTask Completion Source | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="ValueTask Completion Source | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,8 +69,8 @@
 <h1 id="valuetask-completion-source">ValueTask Completion Source</h1>
 
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskcompletionsource-1">TaskCompletionSource&lt;T&gt;</a> from .NET standard library represents the producer side of a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task&lt;T&gt;</a>. Once the source is completed, it cannot be reused. It happens because of nature of the <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> type: task instance can be awaited multiple times. This is not true for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">value task</a> because it must be awaited once. See <a href="https://itnext.io/why-can-a-valuetask-only-be-awaited-once-31169b324fa4">this</a> article for detailed explanation.</p>
-<p>The fact that value task must be consumed only once is actively used by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncvaluetaskmethodbuilder">AsyncValueTaskMethodBuilder</a> when constructing state machine for async methods in C#. The actual implementation of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.sources.ivaluetasksource">IValueTaskSource</a> can be reused between multiple instances of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>. When the task is completed, the builder waits for consumption of the task result. When the result is acquired, the source can be reset and placed to the pool for future use. However, .NET standard library doesn't offer this behavior as public API.</p>
-<p>.NEXT Threading library provides the producer side of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;T&gt;</a> suitable for pooling and reuse: <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskCompletionSource">ValueTaskCompletionSource</a> and <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading.Tasks/ValueTaskCompletionSource%601">ValueTaskCompletionSource&lt;T&gt;</a> respectively. In contrast to <code>TaskCompletionSource</code> type from .NET, these types can reused for multiple value tasks. As a result, you can place them to the pool and reduce memory allocation associated with tasks in async context. Additionally, these types support timeout and cancellation tracking.</p>
+<p>The fact that value task must be consumed only once is actively used by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncvaluetaskmethodbuilder">AsyncValueTaskMethodBuilder</a> when constructing state machine for async methods in C#. The actual implementation of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.sources.ivaluetasksource">IValueTaskSource</a> can be reused between multiple instances of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>. When the task is completed, the builder waits for consumption of the task result. When the result is acquired, the source can be reset and placed to the pool for future use. However, .NET standard library doesn't offer this behavior as a public API.</p>
+<p>.NEXT Threading library provides the producer side of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;T&gt;</a> suitable for pooling and reuse: <a class="xref" href="../../api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html">ValueTaskCompletionSource</a> and <a class="xref" href="../../api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html">ValueTaskCompletionSource&lt;T&gt;</a> respectively. In contrast to <code>TaskCompletionSource</code> type from .NET, these types can reused for multiple value tasks. As a result, you can place them to the pool and reduce memory allocation associated with tasks in async context. Additionally, these types support timeout and cancellation tracking.</p>
 <p>Completion source can be in the following states:</p>
 <ul>
 <li><strong>Ready for use</strong> means that the source can be used to obtain a fresh incompleted value task</li>
@@ -79,7 +79,6 @@
 </ul>
 <p>Completion source offers the following extension points:</p>
 <ul>
-<li><code>BeforeCompleted</code> virtual method that is called automatically when producer tries to turn the task source into completed state.</li>
 <li><code>AfterConsumed</code> virtual method that is called automatically when the task is awaited by the consumer. You can override it to return completion source back to the pool.</li>
 <li><code>OnTimeout</code> virtual method that is called when the task is timed out. The method allows to override the result to be passed to the task consumer. By default, it turns the task into failed state with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.timeoutexception">TimeoutException</a> exception.</li>
 <li><code>OnCanceled</code> virtual method that is called when the task is canceled. The method allows to override the result to be passed to the task consumer. By default, it turns the task into failed state with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> exception.</li>
@@ -87,7 +86,7 @@
 <p><code>CreateTask(TimeSpan timeout, CancellationToken token)</code> method allows to obtain the task from the source. The method must be called only if previously produced task has been awaited and <code>Reset</code> method has been called. The produced task can be completed using <code>TrySetCanceled</code>, <code>TrySetException</code> or <code>TrySetResult</code> methods.</p>
 <p>The common usage pattern for this kind of completion source:</p>
 <ol>
-<li>Create or obtain instance of completion source from the pool</li>
+<li>Create or obtain an instance of completion source from the pool</li>
 <li>Call <code>CreateTask</code> method (timeout and cancellation token are optional)</li>
 <li>Return the task to consumer</li>
 <li>Complete the task with <code>TrySetCanceled</code>, <code>TrySetException</code> or <code>TrySetResult</code> methods</li>

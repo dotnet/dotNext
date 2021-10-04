@@ -8,7 +8,7 @@
     <title>Interop with Other Asynchronous Patterns and Types | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interop with Other Asynchronous Patterns and Types | .NEXT ">
-    <meta name="generator" content="docfx 2.58.0.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="interop-with-other-asynchronous-patterns-and-types">Interop with Other Asynchronous Patterns and Types</h1>
 
-<p>.NEXT Threading library simplifies interop between Task-based programming model and other asynchronous patterns. Bridge methods located in <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.3.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBridge">AsyncBridge</a> class.</p>
+<p>.NEXT Threading library simplifies interop between Task-based programming model and other asynchronous patterns. Bridge methods located in <a class="xref" href="../../api/DotNext.Threading.AsyncBridge.html">AsyncBridge</a> class.</p>
 <h1 id="cancellation-token">Cancellation Token</h1>
 <p>If you have only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> and you need to synchronize with its cancellation then use <code>WaitAsync</code> extension method to do that. It converts token into awaitable object.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;

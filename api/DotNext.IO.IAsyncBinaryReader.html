@@ -1,0 +1,1729 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IAsyncBinaryReader
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IAsyncBinaryReader
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.IO.IAsyncBinaryReader">
+  
+  
+  <h1 id="DotNext_IO_IAsyncBinaryReader" data-uid="DotNext.IO.IAsyncBinaryReader" class="text-break">Interface IAsyncBinaryReader
+  </h1>
+  <div class="markdown level0 summary"><p>Providers a uniform way to decode the data
+from various sources such as streams, pipes, unmanaged memory etc.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
+  <h5 id="DotNext_IO_IAsyncBinaryReader_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IAsyncBinaryReader</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Empty.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Empty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L22">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_Empty_" data-uid="DotNext.IO.IAsyncBinaryReader.Empty*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_Empty" data-uid="DotNext.IO.IAsyncBinaryReader.Empty">Empty</h4>
+  <div class="markdown level1 summary"><p>Represents empty reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static IAsyncBinaryReader Empty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync_PipeWriter_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync(PipeWriter%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L247">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_PipeWriter_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync(PipeWriter,CancellationToken)">CopyToAsync(PipeWriter, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync(PipeWriter output, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PipeWriter</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync_Stream_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync(Stream%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L237">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_Stream_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync(Stream,CancellationToken)">CopyToAsync(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies the content to the specified stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync(Stream output, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Stream</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output stream receiving object content.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L257">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.Buffers.IBufferWriter{System.Byte},CancellationToken)">CopyToAsync(IBufferWriter&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies the content to the specified buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync(IBufferWriter&lt;byte&gt; writer, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L348">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync__1___0_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync``1(``0,CancellationToken)">CopyToAsync&lt;TConsumer&gt;(TConsumer, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, CancellationToken token = null)
+
+    where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TConsumer</span></td>
+        <td><span class="parametername">consumer</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TConsumer</span></td>
+        <td><p>The type of the consumer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_DotNext_Func___0_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask____0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync%60%601(DotNext.Func%7B%60%600%2CReadOnlyMemory%7BSystem.Byte%7D%2CCancellationToken%2CValueTask%7D%2C%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L337">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_DotNext_Func___0_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask____0_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync``1(DotNext.Func{``0,ReadOnlyMemory{System.Byte},CancellationToken,ValueTask},``0,CancellationToken)">CopyToAsync&lt;TArg&gt;(Func&lt;TArg, ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;, TArg, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync&lt;TArg&gt;(Func&lt;TArg, ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt; consumer, TArg arg, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;TArg, <span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</td>
+        <td><span class="parametername">consumer</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the content reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L297">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,CancellationToken)">CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;byte, TArg&gt; consumer, TArg arg, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>
+        <td><span class="parametername">consumer</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the content reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_PipeReader_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(PipeReader)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L406">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_Create_PipeReader_" data-uid="DotNext.IO.IAsyncBinaryReader.Create(PipeReader)">Create(PipeReader)</h4>
+  <div class="markdown level1 summary"><p>Creates default implementation of binary reader for the specifed pipe reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static IAsyncBinaryReader Create(PipeReader reader)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">PipeReader</span></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The pipe reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></td>
+        <td><p>The binary reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_IAsyncBinaryReader_Create_PipeReader__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It is recommended to use extension methods from <a class="xref" href="DotNext.IO.Pipelines.PipeExtensions.html">PipeExtensions</a> class
+for decoding data from the stream. This method is intended for situation
+when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_ReadOnlyMemory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(ReadOnlyMemory%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L393">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_Create_ReadOnlyMemory_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryReader.Create(ReadOnlyMemory{System.Byte})">Create(ReadOnlyMemory&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates default implementation of binary reader over contiguous memory block.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static SequenceReader Create(ReadOnlyMemory&lt;byte&gt; memory)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">memory</span></td>
+        <td><p>The block of memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.SequenceReader.html">SequenceReader</a></td>
+        <td><p>The binary reader for the memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_Stream_Memory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(Stream%2CMemory%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L378">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_Create_Stream_Memory_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryReader.Create(Stream,Memory{System.Byte})">Create(Stream, Memory&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates default implementation of binary reader for the stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static IAsyncBinaryReader Create(Stream input, Memory&lt;byte&gt; buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Stream</span></td>
+        <td><span class="parametername">input</span></td>
+        <td><p>The stream to be wrapped into the reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Memory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The buffer used for decoding data from the stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></td>
+        <td><p>The stream reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_IAsyncBinaryReader_Create_Stream_Memory_System_Byte___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It is recommended to use extension methods from <a class="xref" href="DotNext.IO.StreamExtensions.html">StreamExtensions</a> class
+for decoding data from the stream. This method is intended for situation
+when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L386">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryReader.Create(System.Buffers.ReadOnlySequence{System.Byte})">Create(ReadOnlySequence&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates default implementation of binary reader over sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static SequenceReader Create(ReadOnlySequence&lt;byte&gt; sequence)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">sequence</span></td>
+        <td><p>The sequence of bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.SequenceReader.html">SequenceReader</a></td>
+        <td><p>The binary reader for the sequence of bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ParseAsync__1_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ParseAsync%60%601(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L112">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ParseAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ParseAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ParseAsync__1_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ParseAsync``1(CancellationToken)">ParseAsync&lt;T&gt;(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses the value encoded as a sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(CancellationToken token = null)
+
+    where T : IBinaryFormattable&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The formattable type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ParseAsync__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Nullable_IFormatProvider__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ParseAsync%60%601(DotNext.Parser%7B%60%600%7D%2CDotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CSystem.Nullable%7BIFormatProvider%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L100">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ParseAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ParseAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ParseAsync__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Nullable_IFormatProvider__CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ParseAsync``1(DotNext.Parser{``0},DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,System.Nullable{IFormatProvider},CancellationToken)">ParseAsync&lt;T&gt;(Parser&lt;T&gt;, LengthFormat, DecodingContext, Nullable&lt;IFormatProvider&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses the value encoded as a set of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(Parser&lt;T&gt; parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Parser-1.html">Parser</a>&lt;T&gt;</td>
+        <td><span class="parametername">parser</span></td>
+        <td><p>The parser.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">IFormatProvider</span>&gt;</td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadAsync_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadAsync(DotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L193">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadAsync_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync(DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte},CancellationToken)">ReadAsync(LengthFormat, MemoryAllocator&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads length-prefixed block of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;MemoryOwner&lt;byte&gt;&gt; ReadAsync(LengthFormat lengthFormat, MemoryAllocator&lt;byte&gt; allocator = null, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the block length encoded in the underlying stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The memory allocator used to place the decoded block of bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</td>
+        <td><p>The decoded block of bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadAsync_Memory_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadAsync(Memory%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L162">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadAsync_Memory_System_Byte__CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync(Memory{System.Byte},CancellationToken)">ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the block of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask ReadAsync(Memory&lt;byte&gt; output, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Memory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The block of memory to fill.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadAsync__1_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadAsync%60%601(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L32">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadAsync__1_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync``1(CancellationToken)">ReadAsync&lt;T&gt;(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes the value of blittable type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = null)
+
+    where T : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_DotNext_IO_LengthFormat_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadBigIntegerAsync(DotNext.IO.LengthFormat%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L148">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadBigIntegerAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_DotNext_IO_LengthFormat_System_Boolean_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadBigIntegerAsync(DotNext.IO.LengthFormat,System.Boolean,CancellationToken)">ReadBigIntegerAsync(LengthFormat, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes an arbitrary integer value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;BigInteger&gt; ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the value length encoded in the underlying stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_System_Int32_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadBigIntegerAsync(System.Int32%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L129">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadBigIntegerAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_System_Int32_System_Boolean_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadBigIntegerAsync(System.Int32,System.Boolean,CancellationToken)">ReadBigIntegerAsync(Int32, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes an arbitrary integer value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;BigInteger&gt; ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the value, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt16Async(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L80">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt16Async*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt16Async(System.Boolean,CancellationToken)">ReadInt16Async(Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes 16-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;short&gt; ReadInt16Async(bool littleEndian, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt32Async(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L65">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt32Async*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt32Async(System.Boolean,CancellationToken)">ReadInt32Async(Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes 32-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;int&gt; ReadInt32Async(bool littleEndian, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt64Async(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L50">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt64Async*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt64Async(System.Boolean,CancellationToken)">ReadInt64Async(Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes 64-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;long&gt; ReadInt64Async(bool littleEndian, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadStringAsync(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L224">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,CancellationToken)">ReadStringAsync(LengthFormat, DecodingContext, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;string&gt; ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><p>The decoded string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadStringAsync(System.Int32%2CDotNext.Text.DecodingContext%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L204">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,CancellationToken)">ReadStringAsync(Int32, DecodingContext, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;string&gt; ReadStringAsync(int length, DecodingContext context, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the encoded string, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><p>The decoded string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_SkipAsync_System_Int32_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.SkipAsync(System.Int32%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L173">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_SkipAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.SkipAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_SkipAsync_System_Int32_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.SkipAsync(System.Int32,CancellationToken)">SkipAsync(Int32, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Skips the block of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual async ValueTask SkipAsync(int length, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the block to skip, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_TryGetSequence_System_Buffers_ReadOnlySequence_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.TryGetSequence(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L359">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_TryGetSequence_" data-uid="DotNext.IO.IAsyncBinaryReader.TryGetSequence*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_TryGetSequence_System_Buffers_ReadOnlySequence_System_Byte___" data-uid="DotNext.IO.IAsyncBinaryReader.TryGetSequence(System.Buffers.ReadOnlySequence{System.Byte}@)">TryGetSequence(out ReadOnlySequence&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Attempts to get the entire content represented by this reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual bool TryGetSequence(out ReadOnlySequence&lt;byte&gt; bytes)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>The content represented by this reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the content is available synchronously; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_IAsyncBinaryReader_TryGetSequence_System_Buffers_ReadOnlySequence_System_Byte____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can be used for efficient synchronous decoding.</p>
+</div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a></div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
