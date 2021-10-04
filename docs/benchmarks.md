@@ -225,5 +225,5 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 |           `Dictionary`, `Set` + `TryGetValue` | 34.212 ns | 0.1182 ns | 0.1048 ns |
 |    `ConcurrentTypeMap`, `Set` + `TryGetValue` | 20.773 ns | 0.1711 ns | 0.1600 ns |
 | `ConcurrentDictionary`, `Set` + `TryGetValue` | 58.532 ns | 0.2534 ns | 0.2247 ns |
-|             `ConcurrentTypeMap`, `GetOrAdd` | 10.064 ns | 0.0572 ns | 0.0535 ns |
-|          `ConcurrentDictionary`, `GetOrAdd` | 16.246 ns | 0.1248 ns | 0.1042 ns |
+|             `ConcurrentTypeMap`, `GetOrAdd`   | 10.064 ns | 0.0572 ns | 0.0535 ns |
+|          `ConcurrentDictionary`, `GetOrAdd`   | 16.246 ns | 0.1248 ns | 0.1042 ns |
