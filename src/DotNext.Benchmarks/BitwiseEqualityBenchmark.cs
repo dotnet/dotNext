@@ -41,18 +41,18 @@ public class BitwiseEqualityBenchmark
     private static readonly Guid NonEmptyGuid = Guid.NewGuid();
     private static readonly LargeStruct NonEmptyLargeStruct = new() { C = 30 };
 
-    [Benchmark]
+    [Benchmark(Description = "Guid.Equals")]
     public bool GuidEqualsMethod() => NonEmptyGuid.Equals(default);
 
     [Benchmark]
     public bool GuidEqualsUsingDefaultEqualityComparer()
         => EqualityComparer<Guid>.Default.Equals(NonEmptyGuid, default);
 
-    [Benchmark]
+    [Benchmark(Description = "BitwiseComparer<Guid>.Equals")]
     public bool GuidBitwiseEqualsMethod()
         => BitwiseComparer<Guid>.Equals<Guid>(NonEmptyGuid, default);
 
-    [Benchmark]
+    [Benchmark(Description = "ReadOnlySpan.SequenceEqual for Guid")]
     public unsafe bool GuidBitwiseEqualsUsingSpan()
     {
         var value = NonEmptyGuid;
@@ -62,18 +62,18 @@ public class BitwiseEqualityBenchmark
         return span1.SequenceEqual(span2);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "LargeStruct.Equals")]
     public bool LargeStructEqualsMethod() => NonEmptyLargeStruct.Equals(default);
 
     [Benchmark]
     public bool LargeStructEqualsUsingDefaultEqualityComparer()
         => EqualityComparer<LargeStruct>.Default.Equals(NonEmptyLargeStruct, default);
 
-    [Benchmark]
+    [Benchmark(Description = "BitwiseComparer<LargeStruct>.Equals")]
     public bool LargeStructBitwiseEqualsMethod()
         => BitwiseComparer<LargeStruct>.Equals<LargeStruct>(NonEmptyLargeStruct, default);
 
-    [Benchmark]
+    [Benchmark(Description = "ReadOnlySpan.SequenceEqual for LargeStruct")]
     public unsafe bool LargeStructEqualsUsingSpan()
     {
         var value = NonEmptyLargeStruct;

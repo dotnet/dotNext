@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace DotNext.Collections.Specialized;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[Orderer(SummaryOrderPolicy.Declared)]
 public class TypeMapBenchmark
 {
     private sealed class DictionaryBasedLookup<TValue> : Dictionary<Type, TValue>
@@ -32,7 +32,7 @@ public class TypeMapBenchmark
     private readonly DictionaryBasedLookup<int> dictionaryLookup = new();
     private readonly ConcurrentDictionaryBasedLookup<int> concurrentLookup = new();
 
-    [Benchmark]
+    [Benchmark(Description = "TypeMap, Set + TryGetValue")]
     public int TypeMapLookup()
     {
         threadUnsafeMap.Set<string>(42);
@@ -40,15 +40,7 @@ public class TypeMapBenchmark
         return result;
     }
 
-    [Benchmark]
-    public int ConcurrentTypeMapLookup()
-    {
-        threadSafeMap.Set<string>(42);
-        threadSafeMap.TryGetValue<string>(out var result);
-        return result;
-    }
-
-    [Benchmark]
+    [Benchmark(Description = "Dictionary, Set + TryGetValue")]
     public int DictionaryLookup()
     {
         dictionaryLookup.Set<string>(42);
@@ -56,7 +48,15 @@ public class TypeMapBenchmark
         return result;
     }
 
-    [Benchmark]
+    [Benchmark(Description = "ConcurrentTypeMap, Set + TryGetValue")]
+    public int ConcurrentTypeMapLookup()
+    {
+        threadSafeMap.Set<string>(42);
+        threadSafeMap.TryGetValue<string>(out var result);
+        return result;
+    }
+
+    [Benchmark(Description = "ConcurrentDictionary, Set + TryGetValue")]
     public int ConcurrentDictionaryLookup()
     {
         concurrentLookup.Set<string>(42);
@@ -64,9 +64,9 @@ public class TypeMapBenchmark
         return result;
     }
 
-    [Benchmark]
+    [Benchmark(Description = "ConcurrentTypeMap, GetOrAdd")]
     public int ConcurrentTypeMapAtomicLookup() => threadSafeMap.GetOrAdd<object>(42, out _);
 
-    [Benchmark]
+    [Benchmark(Description = "ConcurrentDictionary, GetOrAdd")]
     public int ConcurrentDictionaryAtomicLookup() => concurrentLookup.GetOrAdd<object>(42);
 }

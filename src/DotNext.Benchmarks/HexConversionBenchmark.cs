@@ -9,7 +9,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[Orderer(SummaryOrderPolicy.Declared)]
 public class HexConversionBenchmark
 {
     public readonly struct ByteArrayParam : IParam
@@ -46,9 +46,9 @@ public class HexConversionBenchmark
         }
     }
 
-    [Benchmark]
+    [Benchmark(Description = "BitConverter.ToString")]
     public string ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
 
-    [Benchmark]
+    [Benchmark(Description = "Span.ToHex")]
     public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
 }

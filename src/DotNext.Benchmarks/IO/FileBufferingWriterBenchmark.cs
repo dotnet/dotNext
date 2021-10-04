@@ -38,7 +38,7 @@ public class FileBufferingWriterBenchmark
         while (startIndex < content.Length);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "FileBufferingWriter, asynchronous mode")]
     public async Task BufferingWriterAsync()
     {
         using var writer = new FileBufferingWriter(memoryThreshold: MemoryThreshold, asyncIO: true);
@@ -50,7 +50,7 @@ public class FileBufferingWriterBenchmark
         await writer.CopyToAsync(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "FileBufferingWriteStream, asynchronous mode")]
     public async Task FileBufferWriteStreamFromAspNetCoreAsync()
     {
         using var writer = new FileBufferingWriteStream(memoryThreshold: MemoryThreshold);
@@ -62,7 +62,7 @@ public class FileBufferingWriterBenchmark
         await writer.DrainBufferAsync(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "FileBufferingWriter, synchronous mode")]
     public void BufferingWriter()
     {
         using var writer = new FileBufferingWriter(memoryThreshold: MemoryThreshold, asyncIO: false);
@@ -74,7 +74,7 @@ public class FileBufferingWriterBenchmark
         writer.CopyTo(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "FileBufferingWriteStream, synchronouse mode")]
     public void FileBufferWriteStreamFromAspNetCore()
     {
         using var writer = new FileBufferingWriteStream(memoryThreshold: MemoryThreshold);

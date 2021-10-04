@@ -29,21 +29,21 @@ public class MemoryStreamingBenchmark
         }
     }
 
-    [Benchmark(Baseline = true)]
+    [Benchmark(Description = "MemoryStream", Baseline = true)]
     public void WriteToMemoryStream()
     {
         using var ms = new MemoryStream();
         Write(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "RecyclableMemoryStream")]
     public void WriteToRecyclableMemoryStream()
     {
         using var ms = manager.GetStream();
         Write(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "SparseBufferWriter<byte>")]
     public void WriteToSparseBuffer()
     {
         using var buffer = new SparseBufferWriter<byte>(4096, SparseBufferGrowth.Exponential);
@@ -51,7 +51,7 @@ public class MemoryStreamingBenchmark
         Write(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "PooledArrayBufferWriter<byte>")]
     public void WriteToGrowableBuffer()
     {
         using var buffer = new PooledArrayBufferWriter<byte>();
@@ -59,7 +59,7 @@ public class MemoryStreamingBenchmark
         Write(ms);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "FileBufferingWriter")]
     public void WriteToBufferingWriter()
     {
         using var writer = new FileBufferingWriter(asyncIO: false);

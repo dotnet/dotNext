@@ -22,21 +22,21 @@ public class StringMethodReflectionBenchmark
     [Params("", "abccdahehkgbe387jwgr", "wfjwkhwfhwjgfkwjggwhjvfkwhwkgwjgbwjbwjbvbwvjwbvwjbvw")]
     public string StringValue;
 
-    [Benchmark]
+    [Benchmark(Description = "Direct call", Baseline = true)]
     public int WithoutReflection() => StringValue.IndexOf('7', 0);
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type Func<string, char, int, int>")]
     public int WithTypedFastReflection() => IndexOf(StringValue, '7', 0);
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type Function<string, (char, int), int>")]
     public int WithTypedFastReflectionSpecial() => IndexOfSpecial(StringValue, ('7', 0));
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type Function<object, (object, object), object>")]
     public object WithUntypedFastReflectionSpecial() => IndexOfSpecialUntyped(StringValue, ('7', 0));
 
-    [Benchmark]
-    public object WithReflection() => IndexOfReflected.Invoke(StringValue, new object[] { '7', 0 });
-
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using DynamicInvoker")]
     public object WithDynamicInvoker() => IndexOfDynamicInvoker.Invoke(StringValue, '7', 0);
+
+    [Benchmark(Description = ".NET reflection")]
+    public object WithReflection() => IndexOfReflected.Invoke(StringValue, new object[] { '7', 0 });
 }

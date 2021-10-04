@@ -24,28 +24,28 @@ public class TryParseReflectionBenchmark
 
     private const string StringValue = "748383565500";
 
-    [Benchmark]
+    [Benchmark(Description = "Direct call", Baseline = true)]
     public bool NoReflection() => decimal.TryParse(StringValue, out var _);
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using DynamicInvoker")]
     public object UseDynamicInvoker()
     {
         (object, object) args = (StringValue, decimal.Zero);
         return Invoker(null, args.AsSpan());
     }
 
-    [Benchmark]
+    [Benchmark(Description = ".NET reflection")]
     public object UseReflection() => ReflectedMethod.Invoke(null, new object[] { StringValue, decimal.Zero });
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type TryParseDelegate")]
     public bool UseStronglyTypedReflection() => StronglyTyped(StringValue, out var result);
 
     [Benchmark]
     public bool UseStronglyTypedSpecialReflection() => StronglyTypedSpecial((StringValue, decimal.Zero));
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type Function<(string text, decimal result), bool>")]
     public bool UseStronglyTypedSpecialUnreflected() => StronglyTypedSpecialUnreflected((StringValue, decimal.Zero));
 
-    [Benchmark]
+    [Benchmark(Description = "Reflection with DotNext using delegate type `Function<(object text, object result), object>`")]
     public object UseUntypedSpecialReflection() => UntypedSpecialUnreflected((StringValue, decimal.Zero));
 }
