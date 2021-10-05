@@ -5,3 +5,5 @@
       href: 1.md
     - name: Migration from 2.x
       href: 2.md
+    - name: Migration from 3.x
+      href: 3.md
