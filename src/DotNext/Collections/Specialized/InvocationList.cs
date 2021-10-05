@@ -222,6 +222,13 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <returns>The enumerator over delegates.</returns>
     public Enumerator GetEnumerator() => new(list);
 
+    /// <summary>
+    /// Checks whether the list is not empty.
+    /// </summary>
+    /// <param name="delegates">The list of delegates.</param>
+    /// <returns><see langword="true"/> if <paramref name="delegates"/> is not empty; otherwise, <see langword="false"/>.</returns>
+    public static implicit operator bool(InvocationList<TDelegate> delegates) => delegates.list is not null;
+
     private IEnumerator<TDelegate> GetEnumeratorCore()
     {
         if (list is null)
@@ -269,4 +276,30 @@ public static class InvocationList
     public static ReadOnlySpan<TDelegate> AsSpan<TDelegate>(this ref InvocationList<TDelegate> delegates)
         where TDelegate : MulticastDelegate
         => delegates.Span;
+
+    /// <summary>
+    /// Invokes all actions in the list.
+    /// </summary>
+    /// <typeparam name="T">The type of the action argument.</typeparam>
+    /// <param name="actions">The list of actions.</param>
+    /// <param name="arg">The argument of the action.</param>
+    public static void Invoke<T>(this ref InvocationList<Action<T>> actions, T arg)
+    {
+        foreach (var action in actions.Span)
+            action(arg);
+    }
+
+    /// <summary>
+    /// Invokes all actions in the list.
+    /// </summary>
+    /// <typeparam name="T1">The type of the first action argument.</typeparam>
+    /// <typeparam name="T2">The type of the second action argument.</typeparam>
+    /// <param name="actions">The list of actions.</param>
+    /// <param name="arg1">The first argument of the action.</param>
+    /// <param name="arg2">The second argument of the action.</param>
+    public static void Invoke<T1, T2>(this ref InvocationList<Action<T1, T2>> actions, T1 arg1, T2 arg2)
+    {
+        foreach (var action in actions.Span)
+            action(arg1, arg2);
+    }
 }
