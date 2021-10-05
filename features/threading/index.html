@@ -82,7 +82,6 @@
 <li><a class="xref" href="../../api/DotNext.Threading.AsyncSharedLock.html">Shared lock</a></li>
 <li>Reader lock</li>
 <li>Writer lock</li>
-<li>Upgradeable lock</li>
 <li>Semaphore</li>
 </ul>
 <p>The only one synchronization object can be shared between blocking and non-blocking representations of the lock.</p>
@@ -119,7 +118,6 @@ using (await asyncLock.AcquireAsync(CancellationToken.None))
 <ul>
 <li><code>AcquireReadLockAsync</code> acquires reader lock asynchronously</li>
 <li><code>AcquireWriteLockAsync</code> acquires exclusive lock asynchronously</li>
-<li><code>AcquireUpgradeableReadLockAsync</code> acquires read lock asynchronously which can be upgraded to write lock</li>
 </ul>
 <p>These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
