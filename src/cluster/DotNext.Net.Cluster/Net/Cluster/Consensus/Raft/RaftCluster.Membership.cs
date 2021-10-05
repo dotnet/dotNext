@@ -98,7 +98,7 @@ public partial class RaftCluster<TMember>
 
     private void OnMemberAdded(TMember member)
     {
-        if (memberAddedHandlers)
+        if (!memberAddedHandlers.IsEmpty)
             memberAddedHandlers.Invoke(this, new(member));
     }
 
@@ -120,7 +120,7 @@ public partial class RaftCluster<TMember>
 
     private void OnMemberRemoved(TMember member)
     {
-        if (memberRemovedHandlers)
+        if (!memberRemovedHandlers.IsEmpty)
             memberRemovedHandlers.Invoke(this, new(member));
     }
 
