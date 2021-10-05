@@ -68,16 +68,16 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="persistent-write-ahead-log">Persistent Write Ahead Log</h1>
 
-<p>Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">persistent Write-Ahead Log</a> providing the following features:</p>
+<p>.NEXT Cluster Programming Suite ships general-purpose high-performance <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">persistent Write-Ahead Log</a> with the following features:</p>
 <ul>
 <li>Log compaction based on snapshotting</li>
 <li>File-based persistent storage for the log entries</li>
 <li>Caching</li>
-<li>Fast writes</li>
+<li>Fast writes in parallel with compaction</li>
 <li>Parallel reads</li>
 <li>Automatic replays</li>
 </ul>
-<p>However, it is not used as default audit trail by Raft implementation. You need to register it explicitly using Dependency Injection or configurator object.</p>
+<p>However, it is not used as default audit trail by Raft implementation. You need to register it explicitly.</p>
 <p>Typically, <code>PersistentState</code> class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:</p>
 <ol>
 <li><code>ValueTask ApplyAsync(LogEntry entry)</code> method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.</li>
