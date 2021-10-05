@@ -10,7 +10,6 @@ namespace DotNext.Collections.Specialized
         {
             InvocationList<Predicate<string>> list = default;
             True(list.IsEmpty);
-            False(list);
             Empty(list);
 
             list += static str => str.Length > 10;
@@ -18,7 +17,6 @@ namespace DotNext.Collections.Specialized
             list += Predicate.True<object>();
             NotEmpty(list);
             False(list.IsEmpty);
-            True(list);
             Equal(3, list.Count);
 
             list -= CheckLength;
