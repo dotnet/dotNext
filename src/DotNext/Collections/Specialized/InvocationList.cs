@@ -78,7 +78,11 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     // null, TDelegate or TDelegate[]
     private readonly object? list;
 
-    private InvocationList(TDelegate d) => list = d;
+    /// <summary>
+    /// Creates a new list containing a single element.
+    /// </summary>
+    /// <param name="d">The delegate to add.</param>
+    public InvocationList(TDelegate d) => list = d;
 
     private InvocationList(TDelegate[] array, TDelegate d)
     {
