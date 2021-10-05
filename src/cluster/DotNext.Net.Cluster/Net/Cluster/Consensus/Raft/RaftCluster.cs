@@ -198,7 +198,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         private set
         {
             var oldLeader = Interlocked.Exchange(ref leader, value);
-            if (!ReferenceEquals(oldLeader, value))
+            if (!ReferenceEquals(oldLeader, value) && leaderChangedHandlers)
                 leaderChangedHandlers.Invoke(this, value);
         }
     }
@@ -438,7 +438,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                     // This node is in sync with the leader and no entries arrived
                     if (emptySet)
                     {
-                        if (senderMember is not null)
+                        if (senderMember is not null && replicationHandlers)
                             replicationHandlers.Invoke(this, senderMember);
 
                         await UnfreezeAsync().ConfigureAwait(false);

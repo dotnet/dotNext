@@ -97,7 +97,10 @@ public partial class RaftCluster<TMember>
     }
 
     private void OnMemberAdded(TMember member)
-        => memberAddedHandlers.Invoke(this, new(member));
+    {
+        if (memberAddedHandlers)
+            memberAddedHandlers.Invoke(this, new(member));
+    }
 
     /// <summary>
     /// An event raised when cluster member is removed gracefully.
@@ -116,7 +119,10 @@ public partial class RaftCluster<TMember>
     }
 
     private void OnMemberRemoved(TMember member)
-        => memberRemovedHandlers.Invoke(this, new(member));
+    {
+        if (memberRemovedHandlers)
+            memberRemovedHandlers.Invoke(this, new(member));
+    }
 
     /// <summary>
     /// Adds a new member to the collection of members visible by the current node.
