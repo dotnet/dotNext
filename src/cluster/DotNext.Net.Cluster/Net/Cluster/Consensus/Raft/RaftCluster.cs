@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Membership;
 using Threading;
-using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
+using IReplicationCluster = Replication.IReplicationCluster;
 using Timestamp = Diagnostics.Timestamp;
 
 /// <summary>
@@ -29,15 +29,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private readonly TaskCompletionSource readinessProbe;
 
     private ClusterMemberId localMemberId;
-
     private bool standbyNode;
-
     private AsyncLock transitionSync;  // used to synchronize state transitions
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
     private volatile RaftState? state;
     private volatile TMember? leader;
     private Action<RaftCluster<TMember>, TMember?>? leaderChangedHandlers;
+    private Action<RaftCluster<TMember>, TMember>? replicationHandlers;
     private volatile int electionTimeout;
     private IPersistentState auditTrail;
     private Timestamp lastUpdated; // volatile
@@ -173,7 +172,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// Represents an event raised when the local node completes its replication with another
     /// node.
     /// </summary>
-    public event ReplicationCompletedEventHandler? ReplicationCompleted;
+    public event Action<RaftCluster<TMember>, TMember> ReplicationCompleted
+    {
+        add => replicationHandlers += value;
+        remove => replicationHandlers -= value;
+    }
+
+    /// <inheritdoc />
+    event Action<IReplicationCluster, IClusterMember> IReplicationCluster.ReplicationCompleted
+    {
+        add => replicationHandlers += value;
+        remove => replicationHandlers -= value;
+    }
 
     /// <inheritdoc/>
     IClusterMember? ICluster.Leader => Leader;
@@ -428,7 +438,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                     if (emptySet)
                     {
                         if (senderMember is not null)
-                            ReplicationCompleted?.Invoke(this, senderMember);
+                            replicationHandlers?.Invoke(this, senderMember);
 
                         await UnfreezeAsync().ConfigureAwait(false);
                     }

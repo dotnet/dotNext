@@ -26,7 +26,7 @@ public interface IReplicationCluster : ICluster
     /// Represents an event raised when the local node completes its replication with another
     /// node.
     /// </summary>
-    event ReplicationCompletedEventHandler? ReplicationCompleted;
+    event Action<IReplicationCluster, IClusterMember> ReplicationCompleted;
 }
 
 /// <summary>
