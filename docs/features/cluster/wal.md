@@ -57,6 +57,7 @@ sealed class SimpleAuditTrail : PersistentState
 		private MemoryOwner<byte> sharedBuffer;
 
 		internal SimpleSnapshotBuilder(in SnapshotBuilderContext context)
+			: base(context)
 		{
 			sharedBuffer = context.Allocator.Invoke(2048, false);
 		}
