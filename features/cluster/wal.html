@@ -81,7 +81,7 @@
 <p>Typically, <code>PersistentState</code> class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:</p>
 <ol>
 <li><code>ValueTask ApplyAsync(LogEntry entry)</code> method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.</li>
-<li><code>SnapshotBuilder CreateSnapshotBuilder()</code> method is required if you want to enable log compaction. The returned builder squashes the series of log entries into the single log entry called <strong>snapshot</strong>. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns <strong>null</strong> which means that compaction is not supported.</li>
+<li><code>SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method is required if you want to enable log compaction. The returned builder squashes the series of log entries into the single log entry called <strong>snapshot</strong>. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns <strong>null</strong> which means that compaction is not supported.</li>
 </ol>
 <div class="NOTE">
 <h5>Note</h5>
@@ -118,14 +118,14 @@ sealed class SimpleAuditTrail : PersistentState
 	internal long Value;	//the current int64 value synchronized across all cluster nodes
 
 	//snapshot builder
-	private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+	private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
 	{
 		private long currentValue;
 		private MemoryOwner&lt;byte&gt; sharedBuffer;
 
-		internal SimpleSnapshotBuilder(MemoryAllocator&lt;byte&gt; allocator)
+		internal SimpleSnapshotBuilder(in SnapshotBuilderContext context)
 		{
-			sharedBuffer = allocator.Invoke(2048, false);
+			sharedBuffer = context.Allocator.Invoke(2048, false);
 		}
 
 		//2.1
@@ -155,21 +155,19 @@ sealed class SimpleAuditTrail : PersistentState
 		}
 	}
 
-	private readonly MemoryAllocator&lt;byte&gt;? snapshotBufferAllocator;
-
 	public SimpleAuditTrail(Options options)
+		: base(options)
 	{
-		snapshotBufferAllocator = options.GetMemoryAllocator&lt;byte&gt;();
 	}
 
 	//3
 	private static async Task&lt;long&gt; Decode(LogEntry entry) =&gt; ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
-	
+
 	//4
     protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; Value = await Decode(entry);
 	
 	//5
-    protected override SnapshotBuilder CreateSnapshotBuilder() =&gt; new SimpleSnapshotBuilder(snapshotBufferAllocator);
+    protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context) =&gt; new SimpleSnapshotBuilder(context);
 }
 </code></pre>
 <p>1)Aggregates the commited entry with the existing state; 2)called by infrastructure to serialize the aggregated state into stream; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder</p>
@@ -179,7 +177,6 @@ sealed class SimpleAuditTrail : PersistentState
 <p>The following methods allows to implement this scenario:</p>
 <ul>
 <li><code>AppendAsync</code> adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries</li>
-<li><code>AppendAndEnsureCommitAsync</code> adds a single log entry and waits untile the entry is committed</li>
 <li><code>DropAsync</code> removes the uncommitted entries from the log</li>
 <li><code>CommitAsync</code> marks appended entries as committed. Optionally, it can force log compaction</li>
 <li><code>EnsureConsistencyAsync</code> suspends the caller and waits until the last committed entry is from leader's term</li>
@@ -213,6 +210,21 @@ sealed class SimpleAuditTrail : PersistentState
 <li><em>Foreground</em> is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.</li>
 </ul>
 <p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD.</p>
+<h2 id="snapshot-building">Snapshot Building</h2>
+<p><code>CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class allows to provide a snapshot builder which is responsible for snapshot construction. There are two types of builders:</p>
+<ul>
+<li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.IncrementalSnapshotBuilder.html">Incremental builder</a> constructs the snapshot incrementally. The final snapshot is represented by the builder itself. The first applied log entry is always represented by the current snapshot. After the final log entry, the current snapshot will be rewritten completely by the constructed snapshot. In other words, the incremental builder has the following lifecycle:
+<ul>
+<li>Instantiate the builder</li>
+<li>Apply the current snapshot</li>
+<li>Apply other log entries</li>
+<li>Build a new snapshot and rewrite the current snapshot with a new one</li>
+</ul>
+</li>
+<li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.InlineSnapshotBuilder.html">Inline builder</a> allows to apply the change to the existing snapshot on-the-fly. In means that there is no temporary representation of the snapshot during build process.</li>
+</ul>
+<p><em>Incremental</em> approach is much simplier for programming. However, it is suitable for relatively simple WALs where the data in the log is of kilobytes or megabytes in size, because a whole snapshot must be interpreted at the start of build process.</p>
+<p><em>Inline</em> approach doesn't require interpretation of a whole snapshot. Instead, you can modify the current snapshot according to the data associated with the log entry included in the scope of log compaction.</p>
 <h1 id="interpreter-framework">Interpreter Framework</h1>
 <p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
 <p>There are two ways to do that:</p>
@@ -259,27 +271,28 @@ sealed class SimpleAuditTrail : PersistentState
 <p><code>DeserializeFromJsonAsync</code> accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.</p>
 <h2 id="command-interpreter">Command Interpreter</h2>
 <p>Interpreting of the custom log entries can be implemented with help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.</p>
-<p>First of all, it's needed to decorate command type with necessary attribute and write serialization and deserialization logic:</p>
+<p>First of all, we need to declare command types and write serialization/deserialization logic:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.Serialization;
 using DotNext.Net.Cluster.Consensus.Raft.Commands;
 using System.Threading;
 using System.Threading.Tasks;
 
-sealed class CommandFormatter : IFormatter&lt;SubtractCommand&gt;, IFormatter&lt;NegateCommand&gt;
+struct SubtractCommand : ISerializable&lt;SubtractCommand&gt;
 {
-	public static readonly CommandFormatter Instance = new CommandFormatter();
+	public const int Id = 0;
 
-	private CommandFormatter()
-	{
-	}
+	public int X { get; set; }
+	public int Y { get; set; }
 
-    async ValueTask IFormatter&lt;SubtractCommand&gt;.SerializeAsync&lt;TWriter&gt;(SubtractCommand command, TWriter writer, CancellationToken token)
+	public async ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
+		where TWriter : notnull, IAsyncBinaryWriter
 	{
 		await writer.WriteInt32Async(command.X, true, token);
 		await writer.WriteInt32Async(command.Y, true, token);
 	}
 
-	async ValueTask&lt;SubtractCommand&gt; IFormatter&lt;SubtractCommand&gt;.DeserializeAsync&lt;TReader&gt;(TReader reader, CancellationToken token)
+	public static async ValueTask&lt;SubtractCommand&gt; ReadFromAsync&lt;TReader&gt;(TReader reader, CancellationToken token)
+		where TReader : notnull, IAsyncBinaryReader
 	{
 		return new SubtractCommand
 		{
@@ -287,38 +300,36 @@ sealed class CommandFormatter : IFormatter&lt;SubtractCommand&gt;, IFormatter&lt
 			Y = await reader.ReadInt32Async(true, token)
 		};
 	}
+}
 
-	async ValueTask IFormatter&lt;NegateCommand&gt;.SerializeAsync&lt;TWriter&gt;(NegateCommand command, TWriter writer, CancellationToken token)
+struct NegateCommand : ISerializable&lt;NegateCommand&gt;
+{
+	public const int Id = 1;
+
+	public int X { get; set; }
+
+	public async ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
+		where TWriter : notnull, IAsyncBinaryWriter
 	{
-		await writer.WriteInt32Async(command.X, true, token);
+		await writer.WriteInt32Async(X, true, token);
 	}
 
-	async ValueTask&lt;NegateCommand&gt; IFormatter&lt;NegateCommand&gt;.DeserializeAsync&lt;TReader&gt;(TReader reader, CancellationToken token)
+	public static async ValueTask&lt;NegateCommand&gt; ReadFromAsync&lt;TReader&gt;(TReader reader, CancellationToken token)
+		where TReader : notnull, IAsyncBinaryReader
 	{
 		return new NegateCommand
 		{
-			X = await reader.ReadInt32Async(true, token),
+			X = await reader.ReadInt32Async(true, token)
 		};
 	}
-}
-
-[CommandAttribute(0, Formatter = typeof(CommandFormatter), FormatterMember = nameof(CommandFormatter.Instance))]
-struct SubtractCommand
-{
-	public int X { get; set; }
-	public int Y { get; set; }
-}
-
-[CommandAttribute(1, Formatter = typeof(CommandFormatter), FormatterMember = nameof(CommandFormatter.Instance))]
-struct NegateCommand
-{
-	public int X { get; set; }
 }
 </code></pre>
 <p>Each command must have unique identifier which is encoded transparently as a part of the log entry in WAL. This identifier is required by interpreter to correctly identify which serializer/deserializer must be called. Encoding of this identifier as a part of the custom serialization logic is not needed.</p>
 <p>Now the commands are described with their serialization logic. However, the interpreter still doesn't know how to interpet them. Let's derive from <code>CommandInterpreter</code> and write command handler for each command described above:</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Commands;
 
+[Command&lt;SubtractCommand&gt;(SubtractCommand.Id)]
+[Command&lt;NegateCommand&gt;(NegateCommand.Id)]
 public class MyInterpreter : CommandInterpreter
 {
 	private long state;
@@ -336,6 +347,7 @@ public class MyInterpreter : CommandInterpreter
 	}
 }
 </code></pre>
+<p>Command types must be associated with theirs identifiers using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandAttribute-1.html">CommandAttribute&lt;TCommand&gt;</a>.</p>
 <p>Each command handler must be decorated with <code>CommandHandlerAttribute</code> attribute and have the following signature:</p>
 <ul>
 <li>Return type is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></li>
@@ -350,6 +362,10 @@ public async ValueTask HandleSnapshotAsync(LogSnapshot command, CancellationToke
 }
 </code></pre>
 <p><code>LogSnapshot</code> here is a custom command describing a whole snapshot.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Snapshot command handler is applicable only if you're using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.IncrementalSnapshotBuilder.html">incremental snapshot builder</a>.</p>
+</div>
 <p><code>CommandInterpreter</code> automatically discovers all declared command handlers and associated command types. Now the log entry can be appended easily:</p>
 <pre><code class="lang-csharp">MyInterpreter interpreter = ...;
 PersistentState state = ...;
@@ -379,7 +395,7 @@ sealed class SimpleAuditTrail : PersistentState
 }
 
 var interpreter = new CommandInterpreter.Builder()
-	.Add&lt;SubtractCommand&gt;(SubtractAsync, CommandFormatter.Instance)
+	.Add&lt;SubtractCommand&gt;(SubtractCommand.Id, SubtractAsync)
 	.Build();
 </code></pre>
 <p>Builder style can be used when you don't want to derive state machine engine from <code>CommandInterpreter</code> class for some reason.</p>
