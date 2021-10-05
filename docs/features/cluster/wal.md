@@ -1,14 +1,14 @@
 Persistent Write Ahead Log
 ====
-Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance [persistent Write-Ahead Log](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) providing the following features:
+.NEXT Cluster Programming Suite ships general-purpose high-performance [persistent Write-Ahead Log](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) with the following features:
 * Log compaction based on snapshotting
 * File-based persistent storage for the log entries
 * Caching
-* Fast writes
+* Fast writes in parallel with compaction
 * Parallel reads
 * Automatic replays
 
-However, it is not used as default audit trail by Raft implementation. You need to register it explicitly using Dependency Injection or configurator object.
+However, it is not used as default audit trail by Raft implementation. You need to register it explicitly.
 
 Typically, `PersistentState` class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:
 1. `ValueTask ApplyAsync(LogEntry entry)` method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.
