@@ -65,7 +65,7 @@ public interface IClusterMember : IPeer
         where TMember : class, IClusterMember
     {
         var previousState = status.GetAndSet(newState);
-        if (previousState != newState && memberStatusChanged)
+        if (previousState != newState && !memberStatusChanged.IsEmpty)
             memberStatusChanged.Invoke(new ClusterMemberStatusChangedEventArgs<TMember>(member, previousState, newState));
     }
 }
