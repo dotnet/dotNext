@@ -8,6 +8,7 @@ using static System.Linq.Enumerable;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Collections.Specialized;
 using IO.Log;
 using Membership;
 using Threading;
@@ -35,8 +36,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
     private volatile RaftState? state;
     private volatile TMember? leader;
-    private Action<RaftCluster<TMember>, TMember?>? leaderChangedHandlers;
-    private Action<RaftCluster<TMember>, TMember>? replicationHandlers;
+    private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
+    private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
     private IPersistentState auditTrail;
     private Timestamp lastUpdated; // volatile
@@ -198,7 +199,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         {
             var oldLeader = Interlocked.Exchange(ref leader, value);
             if (!ReferenceEquals(oldLeader, value))
-                leaderChangedHandlers?.Invoke(this, value);
+                leaderChangedHandlers.Invoke(this, value);
         }
     }
 
@@ -438,7 +439,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                     if (emptySet)
                     {
                         if (senderMember is not null)
-                            replicationHandlers?.Invoke(this, senderMember);
+                            replicationHandlers.Invoke(this, senderMember);
 
                         await UnfreezeAsync().ConfigureAwait(false);
                     }
@@ -772,8 +773,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         TrySetDisposedException(readinessProbe);
         ConfigurationStorage.Dispose();
 
-        memberAddedHandlers = memberRemovedHandlers = null;
-        leaderChangedHandlers = null;
+        memberAddedHandlers = memberRemovedHandlers = default;
+        leaderChangedHandlers = default;
     }
 
     /// <summary>
