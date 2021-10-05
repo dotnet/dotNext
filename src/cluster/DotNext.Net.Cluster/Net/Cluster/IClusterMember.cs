@@ -1,5 +1,6 @@
 ﻿namespace DotNext.Net.Cluster;
 
+using Collections.Specialized;
 using Threading;
 
 /// <summary>
@@ -60,11 +61,11 @@ public interface IClusterMember : IPeer
     /// <param name="status">The member status holder.</param>
     /// <param name="newState">A new state of the member.</param>
     /// <param name="memberStatusChanged">A collection of event handlers.</param>
-    protected static void OnMemberStatusChanged<TMember>(TMember member, ref AtomicEnum<ClusterMemberStatus> status, ClusterMemberStatus newState, Action<ClusterMemberStatusChangedEventArgs<TMember>>? memberStatusChanged)
+    protected static void OnMemberStatusChanged<TMember>(TMember member, ref AtomicEnum<ClusterMemberStatus> status, ClusterMemberStatus newState, ref InvocationList<Action<ClusterMemberStatusChangedEventArgs<TMember>>> memberStatusChanged)
         where TMember : class, IClusterMember
     {
         var previousState = status.GetAndSet(newState);
-        if (previousState != newState)
-            memberStatusChanged?.Invoke(new(member, previousState, newState));
+        if (previousState != newState && memberStatusChanged)
+            memberStatusChanged.Invoke(new ClusterMemberStatusChangedEventArgs<TMember>(member, previousState, newState));
     }
 }

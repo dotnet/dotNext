@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
+using Collections.Specialized;
 using Membership;
 using Messaging;
 using Net.Http;
@@ -20,7 +21,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     internal readonly HttpEndPoint EndPoint;
     private AtomicEnum<ClusterMemberStatus> status;
     private volatile MemberMetadata? metadata;
-    private Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>? memberStatusChanged;
+    private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private long nextIndex, fingerprint;
     internal IClientMetricsCollector? Metrics;
 
@@ -42,7 +43,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     }
 
     private void ChangeStatus(ClusterMemberStatus newState)
-        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, memberStatusChanged);
+        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, ref memberStatusChanged);
 
     internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
