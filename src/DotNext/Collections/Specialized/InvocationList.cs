@@ -75,6 +75,11 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
         }
     }
 
+    /// <summary>
+    /// Gets an empty list.
+    /// </summary>
+    public static InvocationList<TDelegate> Empty => default;
+
     // null, TDelegate or TDelegate[]
     private readonly object? list;
 
