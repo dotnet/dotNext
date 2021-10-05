@@ -222,13 +222,6 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <returns>The enumerator over delegates.</returns>
     public Enumerator GetEnumerator() => new(list);
 
-    /// <summary>
-    /// Checks whether the list is not empty.
-    /// </summary>
-    /// <param name="delegates">The list of delegates.</param>
-    /// <returns><see langword="true"/> if <paramref name="delegates"/> is not empty; otherwise, <see langword="false"/>.</returns>
-    public static implicit operator bool(InvocationList<TDelegate> delegates) => delegates.list is not null;
-
     private IEnumerator<TDelegate> GetEnumeratorCore()
     {
         if (list is null)
