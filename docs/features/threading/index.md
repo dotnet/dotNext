@@ -16,7 +16,6 @@ It is hard to detect root cause of deadlocks occurred by asynchronous locks so u
 * [Shared lock](xref:DotNext.Threading.AsyncSharedLock)
 * Reader lock
 * Writer lock
-* Upgradeable lock
 * Semaphore
 
 The only one synchronization object can be shared between blocking and non-blocking representations of the lock.
@@ -55,7 +54,6 @@ Exclusive lock may not be applicable due to performance reasons for some data ty
 .NEXT Threading library provides several extension methods for more granular control over synchronization of any reference type:
 * `AcquireReadLockAsync` acquires reader lock asynchronously
 * `AcquireWriteLockAsync` acquires exclusive lock asynchronously
-* `AcquireUpgradeableReadLockAsync` acquires read lock asynchronously which can be upgraded to write lock
 
 These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.
 
