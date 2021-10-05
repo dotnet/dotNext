@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -72,6 +73,7 @@ namespace DotNext.Runtime
         /// </summary>
         public bool IsValid => accessor != null || owner is TValue[];
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private ref TValue RawValue
         {
             get
