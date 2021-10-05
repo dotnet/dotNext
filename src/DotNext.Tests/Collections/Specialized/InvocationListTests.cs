@@ -77,7 +77,7 @@ namespace DotNext.Collections.Specialized
         [Fact]
         public static void InterfaceEnumerator()
         {
-            InvocationList<Predicate<string>> list = default;
+            var list = InvocationList<Predicate<string>>.Empty;
 
             Null(list.SingleOrDefault());
 
@@ -86,6 +86,20 @@ namespace DotNext.Collections.Specialized
 
             list += Predicate.False<object>();
             Equal(2, list.Count());
+        }
+
+        [Fact]
+        public static void CombineDelegates()
+        {
+            var list = InvocationList<Predicate<string>>.Empty;
+
+            Null(list.Combine());
+
+            list += Predicate.True<string>();
+            Equal(Predicate.True<string>(), list.Combine());
+
+            list += Predicate.False<string>();
+            NotNull(list.Combine());
         }
     }
 }
