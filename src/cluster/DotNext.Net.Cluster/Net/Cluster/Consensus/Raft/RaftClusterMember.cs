@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Collections.Specialized;
 using Membership;
 using Threading;
 using TransportServices;
@@ -19,7 +20,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     internal readonly ClusterMemberId Id;
     private volatile IReadOnlyDictionary<string, string>? metadataCache;
     private AtomicEnum<ClusterMemberStatus> status;
-    private Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>? statusChangedHandlers;
+    private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
 
     private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
     {
@@ -87,7 +88,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     public abstract ValueTask CancelPendingRequestsAsync();
 
     private protected void ChangeStatus(ClusterMemberStatus newState)
-        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, statusChangedHandlers);
+        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, ref statusChangedHandlers);
 
     internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
