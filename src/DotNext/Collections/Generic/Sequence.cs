@@ -372,13 +372,11 @@ public static partial class Sequence
     /// <seealso cref="System.Runtime.InteropServices.MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
     public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
     {
-        if (memory.IsEmpty)
-            return GetEmptyEnumerator<T>();
-
-        if (MemoryMarshal.TryGetArray(memory, out var segment))
-            return segment.GetEnumerator();
-
-        return ToEnumeratorSlow(memory);
+        return memory.IsEmpty
+            ? GetEmptyEnumerator<T>()
+            : MemoryMarshal.TryGetArray(memory, out var segment)
+            ? segment.GetEnumerator()
+            : ToEnumeratorSlow(memory);
 
         static IEnumerator<T> ToEnumeratorSlow(ReadOnlyMemory<T> memory)
         {
