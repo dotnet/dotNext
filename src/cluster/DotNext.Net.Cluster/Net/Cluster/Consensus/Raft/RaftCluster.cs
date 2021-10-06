@@ -8,10 +8,11 @@ using static System.Linq.Enumerable;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Collections.Specialized;
 using IO.Log;
 using Membership;
 using Threading;
-using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
+using IReplicationCluster = Replication.IReplicationCluster;
 using Timestamp = Diagnostics.Timestamp;
 
 /// <summary>
@@ -29,15 +30,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private readonly TaskCompletionSource readinessProbe;
 
     private ClusterMemberId localMemberId;
-
     private bool standbyNode;
-
     private AsyncLock transitionSync;  // used to synchronize state transitions
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
     private volatile RaftState? state;
     private volatile TMember? leader;
-    private Action<RaftCluster<TMember>, TMember?>? leaderChangedHandlers;
+    private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
+    private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
     private IPersistentState auditTrail;
     private Timestamp lastUpdated; // volatile
@@ -173,7 +173,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// Represents an event raised when the local node completes its replication with another
     /// node.
     /// </summary>
-    public event ReplicationCompletedEventHandler? ReplicationCompleted;
+    public event Action<RaftCluster<TMember>, TMember> ReplicationCompleted
+    {
+        add => replicationHandlers += value;
+        remove => replicationHandlers -= value;
+    }
+
+    /// <inheritdoc />
+    event Action<IReplicationCluster, IClusterMember> IReplicationCluster.ReplicationCompleted
+    {
+        add => replicationHandlers += value;
+        remove => replicationHandlers -= value;
+    }
 
     /// <inheritdoc/>
     IClusterMember? ICluster.Leader => Leader;
@@ -187,8 +198,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         private set
         {
             var oldLeader = Interlocked.Exchange(ref leader, value);
-            if (!ReferenceEquals(oldLeader, value))
-                leaderChangedHandlers?.Invoke(this, value);
+            if (!ReferenceEquals(oldLeader, value) && !leaderChangedHandlers.IsEmpty)
+                leaderChangedHandlers.Invoke(this, value);
         }
     }
 
@@ -427,8 +438,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                     // This node is in sync with the leader and no entries arrived
                     if (emptySet)
                     {
-                        if (senderMember is not null)
-                            ReplicationCompleted?.Invoke(this, senderMember);
+                        if (senderMember is not null && !replicationHandlers.IsEmpty)
+                            replicationHandlers.Invoke(this, senderMember);
 
                         await UnfreezeAsync().ConfigureAwait(false);
                     }
@@ -762,8 +773,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         TrySetDisposedException(readinessProbe);
         ConfigurationStorage.Dispose();
 
-        memberAddedHandlers = memberRemovedHandlers = null;
-        leaderChangedHandlers = null;
+        memberAddedHandlers = memberRemovedHandlers = default;
+        leaderChangedHandlers = default;
     }
 
     /// <summary>

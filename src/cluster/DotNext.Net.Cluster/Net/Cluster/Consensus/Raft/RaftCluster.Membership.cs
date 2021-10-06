@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Collections.Specialized;
 using Membership;
 using Threading;
 
@@ -69,7 +70,7 @@ public partial class RaftCluster<TMember>
     }
 
     private MemberList members;
-    private Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>? memberAddedHandlers, memberRemovedHandlers;
+    private InvocationList<Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>> memberAddedHandlers, memberRemovedHandlers;
 
     /// <summary>
     /// Gets the member by its identifier.
@@ -96,7 +97,10 @@ public partial class RaftCluster<TMember>
     }
 
     private void OnMemberAdded(TMember member)
-        => memberAddedHandlers?.Invoke(this, new(member));
+    {
+        if (!memberAddedHandlers.IsEmpty)
+            memberAddedHandlers.Invoke(this, new(member));
+    }
 
     /// <summary>
     /// An event raised when cluster member is removed gracefully.
@@ -115,7 +119,10 @@ public partial class RaftCluster<TMember>
     }
 
     private void OnMemberRemoved(TMember member)
-        => memberRemovedHandlers?.Invoke(this, new(member));
+    {
+        if (!memberRemovedHandlers.IsEmpty)
+            memberRemovedHandlers.Invoke(this, new(member));
+    }
 
     /// <summary>
     /// Adds a new member to the collection of members visible by the current node.

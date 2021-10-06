@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView;
 
 using Buffers;
 using Collections.Generic;
+using Collections.Specialized;
 using static Threading.LinkedTokenSourceFactory;
 
 /// <summary>
@@ -29,7 +30,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     private readonly CancellationTokenSource lifecycleTokenSource;
     private readonly Channel<Command> queue;
     private ImmutableHashSet<EndPoint> activeView, passiveView;
-    private Action<PeerController, PeerEventArgs>? peerDiscoveredHandlers, peerGoneHandlers;
+    private InvocationList<Action<PeerController, PeerEventArgs>> peerDiscoveredHandlers, peerGoneHandlers;
     private Task queueLoopTask;
 
     /// <summary>
@@ -210,8 +211,8 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     private void OnPeerGone(EndPoint peer)
     {
         var handlers = peerGoneHandlers;
-        if (handlers is not null)
-            ThreadPool.QueueUserWorkItem<(Action<PeerController, PeerEventArgs> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, peer), false);
+        if (!handlers.IsEmpty)
+            ThreadPool.QueueUserWorkItem<(InvocationList<Action<PeerController, PeerEventArgs>> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler.Invoke(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, peer), false);
     }
 
     /// <summary>
@@ -292,8 +293,8 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     private void OnPeerDiscovered(EndPoint discoveredPeer)
     {
         var handlers = peerDiscoveredHandlers;
-        if (handlers is not null)
-            ThreadPool.QueueUserWorkItem<(Action<PeerController, PeerEventArgs> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, discoveredPeer), false);
+        if (!handlers.IsEmpty)
+            ThreadPool.QueueUserWorkItem<(InvocationList<Action<PeerController, PeerEventArgs>> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler.Invoke(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, discoveredPeer), false);
     }
 
     /// <summary>
@@ -399,8 +400,8 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
                 Destroy(peer);
 
             lifecycleTokenSource.Dispose();
-            peerDiscoveredHandlers = null;
-            peerGoneHandlers = null;
+            peerDiscoveredHandlers = default;
+            peerGoneHandlers = default;
         }
 
         base.Dispose(disposing);
@@ -420,8 +421,8 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
 
         lifecycleTokenSource.Dispose();
 
-        peerGoneHandlers = null;
-        peerDiscoveredHandlers = null;
+        peerGoneHandlers = default;
+        peerDiscoveredHandlers = default;
     }
 
     /// <inheritdoc />

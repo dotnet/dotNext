@@ -280,6 +280,7 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         readonly ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => Memory;
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal readonly ref T First
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
