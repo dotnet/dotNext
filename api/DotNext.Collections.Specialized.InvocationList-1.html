@@ -1,0 +1,654 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct InvocationList&lt;TDelegate&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct InvocationList&lt;TDelegate&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Collections.Specialized.InvocationList`1">
+  
+  
+  <h1 id="DotNext_Collections_Specialized_InvocationList_1" data-uid="DotNext.Collections.Specialized.InvocationList`1" class="text-break">Struct InvocationList&lt;TDelegate&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents immutable list of delegates.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">IReadOnlyCollection</span>&lt;TDelegate&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Collections.Specialized.html">DotNext.Collections.Specialized</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Collections_Specialized_InvocationList_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly struct InvocationList&lt;TDelegate&gt; : IReadOnlyCollection&lt;TDelegate&gt; where TDelegate : MulticastDelegate</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TDelegate</span></td>
+        <td><p>The type of delegates in the list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Specialized_InvocationList_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This type can be used to store a list of event handlers in situations
+when the delegate type allows variance. In this case, <see cref="!:Delegate.Combine(Delegate[])"></see>
+may not be applicable due to lack of variance support.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1__ctor_" data-uid="DotNext.Collections.Specialized.InvocationList`1.#ctor*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1__ctor__0_" data-uid="DotNext.Collections.Specialized.InvocationList`1.#ctor(`0)">InvocationList(TDelegate)</h4>
+  <div class="markdown level1 summary"><p>Creates a new list containing a single element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public InvocationList(TDelegate d)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TDelegate</span></td>
+        <td><span class="parametername">d</span></td>
+        <td><p>The delegate to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_Count.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L172">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_Count_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Count*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_Count" data-uid="DotNext.Collections.Specialized.InvocationList`1.Count">Count</h4>
+  <div class="markdown level1 summary"><p>Gets the number of delegates in this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int Count { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_Empty.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Empty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L81">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_Empty_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Empty*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_Empty" data-uid="DotNext.Collections.Specialized.InvocationList`1.Empty">Empty</h4>
+  <div class="markdown level1 summary"><p>Gets an empty list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly InvocationList&lt;TDelegate&gt; Empty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L108">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_IsEmpty_" data-uid="DotNext.Collections.Specialized.InvocationList`1.IsEmpty*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_IsEmpty" data-uid="DotNext.Collections.Specialized.InvocationList`1.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Indicates that this list is empty.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool IsEmpty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_Add__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Add(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L115">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_Add_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Add*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_Add__0_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Add(`0)">Add(TDelegate)</h4>
+  <div class="markdown level1 summary"><p>Adds a delegate to the list and return a new list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly InvocationList&lt;TDelegate&gt; Add(TDelegate d)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TDelegate</span></td>
+        <td><span class="parametername">d</span></td>
+        <td><p>The delegate to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td><p>The modified list of delegates.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_Combine.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Combine%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L190">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_Combine_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Combine*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_Combine" data-uid="DotNext.Collections.Specialized.InvocationList`1.Combine">Combine()</h4>
+  <div class="markdown level1 summary"><p>Combines the delegates in the list to a single delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly TDelegate Combine()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TDelegate</span></td>
+        <td><p>A list of delegates combined as a single delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L223">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_GetEnumerator_" data-uid="DotNext.Collections.Specialized.InvocationList`1.GetEnumerator*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_GetEnumerator" data-uid="DotNext.Collections.Specialized.InvocationList`1.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"><p>Gets enumerator over all delegates in this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly InvocationList&lt;TDelegate&gt;.Enumerator GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.Enumerator.html">InvocationList.Enumerator</a>&lt;&gt;</td>
+        <td><p>The enumerator over delegates.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_Remove__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Remove(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L143">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_Remove_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Remove*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_Remove__0_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Remove(`0)">Remove(TDelegate)</h4>
+  <div class="markdown level1 summary"><p>Removes the delegate from the list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly InvocationList&lt;TDelegate&gt; Remove(TDelegate d)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TDelegate</span></td>
+        <td><span class="parametername">d</span></td>
+        <td><p>The delegate to remove.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td><p>The modified list of delegates.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_op_Addition_DotNext_Collections_Specialized_InvocationList__0___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.op_Addition(DotNext.Collections.Specialized.InvocationList%7B%600%7D%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L207">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_op_Addition_" data-uid="DotNext.Collections.Specialized.InvocationList`1.op_Addition*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_op_Addition_DotNext_Collections_Specialized_InvocationList__0___0_" data-uid="DotNext.Collections.Specialized.InvocationList`1.op_Addition(DotNext.Collections.Specialized.InvocationList{`0},`0)">Addition(InvocationList&lt;TDelegate&gt;, TDelegate)</h4>
+  <div class="markdown level1 summary"><p>Addes the delegate to the list and returns modified list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static InvocationList&lt;TDelegate&gt; operator +(InvocationList&lt;TDelegate&gt; list, TDelegate d)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td><span class="parametername">list</span></td>
+        <td><p>The list of delegates.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TDelegate</span></td>
+        <td><span class="parametername">d</span></td>
+        <td><p>The delegate to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td><p>The modified list of delegates.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_op_Subtraction_DotNext_Collections_Specialized_InvocationList__0___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.op_Subtraction(DotNext.Collections.Specialized.InvocationList%7B%600%7D%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L216">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_op_Subtraction_" data-uid="DotNext.Collections.Specialized.InvocationList`1.op_Subtraction*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_op_Subtraction_DotNext_Collections_Specialized_InvocationList__0___0_" data-uid="DotNext.Collections.Specialized.InvocationList`1.op_Subtraction(DotNext.Collections.Specialized.InvocationList{`0},`0)">Subtraction(InvocationList&lt;TDelegate&gt;, TDelegate)</h4>
+  <div class="markdown level1 summary"><p>Removes the delegate from the list and returns modified list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static InvocationList&lt;TDelegate&gt; operator -(InvocationList&lt;TDelegate&gt; list, TDelegate d)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td><span class="parametername">list</span></td>
+        <td><p>The list of delegates.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TDelegate</span></td>
+        <td><span class="parametername">d</span></td>
+        <td><p>The delegate to remove.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;</td>
+        <td><p>The modified list of delegates.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L240">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_InvocationList_1_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Collections.Specialized.InvocationList`1.System#Collections#IEnumerable#GetEnumerator*"></a>
+  <h4 id="DotNext_Collections_Specialized_InvocationList_1_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Collections.Specialized.InvocationList`1.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly IEnumerator IEnumerable.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">IReadOnlyCollection&lt;&gt;</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_InvocationList_1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L19" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
