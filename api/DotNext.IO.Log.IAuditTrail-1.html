@@ -150,7 +150,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual ValueTask&lt;long&gt; AppendAsync&lt;TEntryImpl&gt;(TEntryImpl entry, CancellationToken token = null)
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -227,7 +226,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask AppendAsync&lt;TEntryImpl&gt;(TEntryImpl entry, long startIndex, CancellationToken token = null)
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -313,7 +311,6 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, CancellationToken token = null)
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -390,7 +387,6 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, long startIndex, bool skipCommitted = false, CancellationToken token = null)
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -812,7 +808,8 @@ with the audit trail segment with entries.</p>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.DotNext#IO#Log#IAuditTrail#ReadAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_Func_IReadOnlyList_DotNext_IO_Log_ILogEntry__System_Nullable_System_Int64__CancellationToken_ValueTask___0___System_Int64_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.DotNext#IO#Log#IAuditTrail#ReadAsync``1(DotNext.Func{IReadOnlyList{DotNext.IO.Log.ILogEntry},System.Nullable{System.Int64},CancellationToken,ValueTask{``0}},System.Int64,CancellationToken)">IAuditTrail.ReadAsync&lt;TResult&gt;(Func&lt;IReadOnlyList&lt;ILogEntry&gt;, Nullable&lt;Int64&gt;, CancellationToken, ValueTask&lt;TResult&gt;&gt;, Int64, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets log entries starting from the specified index to the last log entry.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -831,17 +828,20 @@ with the audit trail segment with entries.</p>
       <tr>
         <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a>&gt;, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&lt;TResult&gt;&gt;</td>
         <td><span class="parametername">reader</span></td>
-        <td></td>
+        <td><p>The reader of the log entries.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
-        <td></td>
+        <td><p>The index of the first requested log entry, inclusively.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -856,7 +856,8 @@ with the audit trail segment with entries.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span>&lt;TResult&gt;</td>
-        <td></td>
+        <td><p>The collection of log entries.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -871,10 +872,15 @@ with the audit trail segment with entries.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TResult</span></td>
-        <td></td>
+        <td><p>The type of the result.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_Func_IReadOnlyList_DotNext_IO_Log_ILogEntry__System_Nullable_System_Int64__CancellationToken_ValueTask___0___System_Int64_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.IO.Log.ILogEntry.html#DotNext_IO_Log_ILogEntry_IsSnapshot">IsSnapshot</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_Func_IReadOnlyList_DotNext_IO_Log_ILogEntry__System_Nullable_System_Int64__CancellationToken_ValueTask___0___System_Int64_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail%601.DotNext%23IO%23Log%23IAuditTrail%23ReadAsync%60%601(DotNext.Func%7BIReadOnlyList%7BDotNext.IO.Log.ILogEntry%7D%2CSystem.Nullable%7BSystem.Int64%7D%2CCancellationToken%2CValueTask%7B%60%600%7D%7D%2CSystem.Int64%2CSystem.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -884,7 +890,8 @@ with the audit trail segment with entries.</p>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync_" data-uid="DotNext.IO.Log.IAuditTrail`1.DotNext#IO#Log#IAuditTrail#ReadAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_Func_IReadOnlyList_DotNext_IO_Log_ILogEntry__System_Nullable_System_Int64__CancellationToken_ValueTask___0___System_Int64_System_Int64_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail`1.DotNext#IO#Log#IAuditTrail#ReadAsync``1(DotNext.Func{IReadOnlyList{DotNext.IO.Log.ILogEntry},System.Nullable{System.Int64},CancellationToken,ValueTask{``0}},System.Int64,System.Int64,CancellationToken)">IAuditTrail.ReadAsync&lt;TResult&gt;(Func&lt;IReadOnlyList&lt;ILogEntry&gt;, Nullable&lt;Int64&gt;, CancellationToken, ValueTask&lt;TResult&gt;&gt;, Int64, Int64, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets log entries in the specified range.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -903,22 +910,26 @@ with the audit trail segment with entries.</p>
       <tr>
         <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IReadOnlyList</span>&lt;<a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a>&gt;, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&lt;TResult&gt;&gt;</td>
         <td><span class="parametername">reader</span></td>
-        <td></td>
+        <td><p>The reader of the log entries.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
-        <td></td>
+        <td><p>The index of the first requested log entry, inclusively.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">endIndex</span></td>
-        <td></td>
+        <td><p>The index of the last requested log entry, inclusively.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -933,7 +944,8 @@ with the audit trail segment with entries.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span>&lt;TResult&gt;</td>
-        <td></td>
+        <td><p>The collection of log entries.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -948,10 +960,20 @@ with the audit trail segment with entries.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TResult</span></td>
-        <td></td>
+        <td><p>The type of the result.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_Func_IReadOnlyList_DotNext_IO_Log_ILogEntry__System_Nullable_System_Int64__CancellationToken_ValueTask___0___System_Int64_System_Int64_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method may return less entries than <code>endIndex - startIndex + 1</code>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="!:IDisposable.Dispose"></see> to release resources associated
+with the audit trail segment with entries.</p>
+</div>
+  <h5 id="DotNext_IO_Log_IAuditTrail_1_DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_Func_IReadOnlyList_DotNext_IO_Log_ILogEntry__System_Nullable_System_Int64__CancellationToken_ValueTask___0___System_Int64_System_Int64_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.IO.Log.ILogEntry.html#DotNext_IO_Log_ILogEntry_IsSnapshot">IsSnapshot</a></div>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>

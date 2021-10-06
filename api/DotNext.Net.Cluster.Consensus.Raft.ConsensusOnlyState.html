@@ -355,7 +355,9 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#IO#Log#IAuditTrail#IsLogEntryLengthAlwaysPresented*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#IO#Log#IAuditTrail#IsLogEntryLengthAlwaysPresented">IAuditTrail.IsLogEntryLengthAlwaysPresented</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a value indicating that the <a class="xref" href="DotNext.IO.IDataTransferObject.html#DotNext_IO_IDataTransferObject_Length">Length</a> of the log entries
+obtained from this audit trail is always not <span class="xref">null</span>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -385,7 +387,9 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#EnsureConsistencyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#EnsureConsistencyAsync(TimeSpan,CancellationToken)">IPersistentState.EnsureConsistencyAsync(TimeSpan, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Suspens the caller until the log entry with term equal to <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_Term">Term</a>
+will be committed.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -404,12 +408,14 @@ cannot append non-empty log entries.</p>
       <tr>
         <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
-        <td></td>
+        <td><p>The time to wait.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -424,7 +430,8 @@ cannot append non-empty log entries.</p>
     <tbody>
       <tr>
         <td><span class="xref">Task</span></td>
-        <td></td>
+        <td><p>The task representing state of the asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -437,7 +444,8 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IncrementTermAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IncrementTermAsync">IPersistentState.IncrementTermAsync()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Increments Term value.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -454,7 +462,8 @@ cannot append non-empty log entries.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
+        <td><p>The updated Term value.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -467,7 +476,8 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IsVotedFor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_System_Nullable_DotNext_Net_Cluster_ClusterMemberId___" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IsVotedFor(System.Nullable{DotNext.Net.Cluster.ClusterMemberId}@)">IPersistentState.IsVotedFor(in Nullable&lt;ClusterMemberId&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Determines whether the local member granted its vote for the specified remote member.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -486,7 +496,8 @@ cannot append non-empty log entries.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</td>
         <td><span class="parametername">id</span></td>
-        <td></td>
+        <td><p>The cluster member to check.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -501,7 +512,8 @@ cannot append non-empty log entries.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if the local member granted its vote for the specified remote member; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -514,7 +526,9 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#Term*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#Term">IPersistentState.Term</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reads Term value associated with the local member
+from the persistent storage.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -531,7 +545,8 @@ cannot append non-empty log entries.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td></td>
+        <td><p>The term restored from persistent storage.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -544,7 +559,8 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateTermAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateTermAsync(System.Int64,System.Boolean)">IPersistentState.UpdateTermAsync(Int64, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Persists the last actual Term.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -568,7 +584,9 @@ cannot append non-empty log entries.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">resetLastVote</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reset information about the last vote;
+<span class="xref">false</span> to keep information about the last vote unchanged.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -583,7 +601,8 @@ cannot append non-empty log entries.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing asynchronous execution of the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -596,7 +615,8 @@ cannot append non-empty log entries.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateVotedForAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_System_Nullable_DotNext_Net_Cluster_ClusterMemberId__" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateVotedForAsync(System.Nullable{DotNext.Net.Cluster.ClusterMemberId})">IPersistentState.UpdateVotedForAsync(Nullable&lt;ClusterMemberId&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Persists the item that was voted for on in the last vote.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -630,7 +650,8 @@ cannot append non-empty log entries.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing state of the asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>

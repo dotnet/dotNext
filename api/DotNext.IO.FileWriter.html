@@ -132,7 +132,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class FileWriter : Disposable, IAsyncBinaryWriter, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class FileWriter : Disposable, IAsyncBinaryWriter, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -491,7 +491,8 @@ performs buffered write.</p>
   </span>
   <a id="DotNext_IO_FileWriter_Dispose_" data-uid="DotNext.IO.FileWriter.Dispose*"></a>
   <h4 id="DotNext_IO_FileWriter_Dispose_System_Boolean_" data-uid="DotNext.IO.FileWriter.Dispose(System.Boolean)">Dispose(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -510,7 +511,8 @@ performs buffered write.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <span class="xref">false</span> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">Finalize()</a>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -734,7 +736,6 @@ according with the specified format.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public async ValueTask WriteAsync&lt;T&gt;(T value, CancellationToken token = null)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -876,7 +877,6 @@ according with the specified format.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public async ValueTask WriteFormattableAsync&lt;T&gt;(T value, CancellationToken token = null)
-
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -950,7 +950,6 @@ according with the specified format.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public async ValueTask WriteFormattableAsync&lt;T&gt;(T value, LengthFormat lengthFormat, EncodingContext context, string format = null, IFormatProvider? provider = null, CancellationToken token = null)
-
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1112,7 +1111,8 @@ according with the specified format.</p>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#CopyFromAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_CopyFromAsync__1_DotNext_Func___0_CancellationToken_ValueTask_ReadOnlyMemory_System_Byte______0_CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#CopyFromAsync``1(DotNext.Func{``0,CancellationToken,ValueTask{ReadOnlyMemory{System.Byte}}},``0,CancellationToken)">IAsyncBinaryWriter.CopyFromAsync&lt;TArg&gt;(Func&lt;TArg, CancellationToken, ValueTask&lt;ReadOnlyMemory&lt;Byte&gt;&gt;&gt;, TArg, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Writes the content from the delegate supplying memory blocks.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1131,17 +1131,20 @@ according with the specified format.</p>
       <tr>
         <td><span class="xref">DotNext.Func</span>&lt;TArg, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;&gt;</td>
         <td><span class="parametername">supplier</span></td>
-        <td></td>
+        <td><p>The delegate supplying memory blocks.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">TArg</span></td>
         <td><span class="parametername">arg</span></td>
-        <td></td>
+        <td><p>The argument to be passed to the supplier.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1156,7 +1159,8 @@ according with the specified format.</p>
     <tbody>
       <tr>
         <td><span class="xref">Task</span></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1171,10 +1175,14 @@ according with the specified format.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TArg</span></td>
-        <td></td>
+        <td><p>The type of the argument to be passed to the supplier.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_CopyFromAsync__1_DotNext_Func___0_CancellationToken_ValueTask_ReadOnlyMemory_System_Byte______0_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Copy process will be stopped when <code data-dev-comment-type="paramref" class="paramref">supplier</code> returns empty <see cref="!:ReadOnlyMemory&lt;T>"></see>.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_ReadOnlyMemory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23IO%23IAsyncBinaryWriter%23WriteAsync(ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -1184,7 +1192,9 @@ according with the specified format.</p>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_ReadOnlyMemory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync(ReadOnlyMemory{System.Byte},System.Nullable{DotNext.IO.LengthFormat},CancellationToken)">IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory&lt;Byte&gt;, Nullable&lt;LengthFormat&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
+according with the specified format.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1203,17 +1213,20 @@ according with the specified format.</p>
       <tr>
         <td><span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">input</span></td>
-        <td></td>
+        <td><p>A block of memory.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>&gt;</td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td></td>
+        <td><p>Indicates how the length of the BLOB must be encoded; or <span class="xref">null</span> to prevent length encoding.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1228,7 +1241,8 @@ according with the specified format.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1241,7 +1255,8 @@ according with the specified format.</p>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync__1_Action___0_System_Buffers_IBufferWriter_System_Byte_____0_CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync``1(Action{``0,System.Buffers.IBufferWriter{System.Byte}},``0,CancellationToken)">IAsyncBinaryWriter.WriteAsync&lt;TArg&gt;(Action&lt;TArg, IBufferWriter&lt;Byte&gt;&gt;, TArg, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Encodes a block of memory using synchronous encoder.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1260,17 +1275,20 @@ according with the specified format.</p>
       <tr>
         <td><span class="xref">Action</span>&lt;TArg, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</td>
         <td><span class="parametername">writer</span></td>
-        <td></td>
+        <td><p>The writer of the in-memory buffer.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">TArg</span></td>
         <td><span class="parametername">arg</span></td>
-        <td></td>
+        <td><p>The argument to be passed to the writer.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1285,7 +1303,8 @@ according with the specified format.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1300,7 +1319,8 @@ according with the specified format.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TArg</span></td>
-        <td></td>
+        <td><p>The type of the argument to be passed to the encoder.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1313,7 +1333,8 @@ according with the specified format.</p>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_" data-uid="DotNext.IO.FileWriter.DotNext#ISupplier{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}#Invoke*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_ReadOnlyMemory_System_Byte__CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#ISupplier{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}#Invoke(ReadOnlyMemory{System.Byte},CancellationToken)">ISupplier&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Invokes the supplier.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1352,7 +1373,8 @@ according with the specified format.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The value returned by this supplier.</p>
+</td>
       </tr>
     </tbody>
   </table>

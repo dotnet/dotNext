@@ -300,7 +300,6 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">Task CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, CancellationToken token = null)
-
     where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -746,7 +745,6 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(CancellationToken token = null)
-
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1022,7 +1020,6 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual async ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = null)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

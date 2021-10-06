@@ -128,7 +128,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TObject&gt; ReadFromAsync&lt;TObject&gt;(this PipeReader reader, CancellationToken token = null)
-
     where TObject : ISerializable&lt;TObject&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -202,7 +201,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TObject&gt; ReadFromAsync&lt;TObject&gt;(this Stream input, Memory&lt;byte&gt; buffer, CancellationToken token = null)
-
     where TObject : ISerializable&lt;TObject&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -282,7 +280,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;TObject&gt; ReadFromAsync&lt;TObject&gt;(this Stream input, int bufferSize = 128, CancellationToken token = null)
-
     where TObject : ISerializable&lt;TObject&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -362,7 +359,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TOutput&gt; TransformAsync&lt;TInput, TOutput&gt;(this TInput input, CancellationToken token = null)
-
     where TInput : IDataTransferObject where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -121,7 +121,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, CancellationToken, Task&gt; signalHandler)
-
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -195,7 +194,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, object, CancellationToken, Task&gt; signalHandler)
-
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -269,7 +267,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&gt; signalHandler)
-
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -343,7 +340,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, object, CancellationToken, Task&gt; signalHandler)
-
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -417,7 +413,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
-
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -508,7 +503,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, object, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
-
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -599,7 +593,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
-
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -690,7 +683,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, object, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
-
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
