@@ -7,7 +7,7 @@ using Buffers;
 /// <summary>
 /// Represents buffered file reader.
 /// </summary>
-public sealed partial class FileReader : Disposable
+public partial class FileReader : Disposable
 {
     private readonly SafeFileHandle handle;
     private MemoryOwner<byte> buffer;

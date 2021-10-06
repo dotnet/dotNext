@@ -269,8 +269,6 @@ public partial class PersistentState
             WriteMetadata(relativeIndex, in metadata);
         }
 
-        internal void Invalidate() => InvalidateReaders();
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -324,7 +322,6 @@ public partial class PersistentState
 
         internal async ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
         {
-            InvalidateReaders();
             await SetWritePositionAsync(0L, token).ConfigureAwait(false);
             metadata = new(index, timestamp, term, FileSize - SnapshotMetadata.Size);
             await writer.WriteFormattableAsync(metadata, token).ConfigureAwait(false);
@@ -332,7 +329,6 @@ public partial class PersistentState
 
         internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
         {
-            InvalidateReaders();
             await SetWritePositionAsync(SnapshotMetadata.Size, token).ConfigureAwait(false);
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
             metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - SnapshotMetadata.Size);
