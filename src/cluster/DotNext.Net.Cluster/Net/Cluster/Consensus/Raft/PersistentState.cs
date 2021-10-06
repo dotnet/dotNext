@@ -439,8 +439,6 @@ public partial class PersistentState : Disposable, IPersistentState
 
         writeCounter?.Invoke(supplier.RemainingCount);
 
-        long? invalidationIndex = null;
-
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
             if (supplier.Current.IsSnapshot)
@@ -448,7 +446,6 @@ public partial class PersistentState : Disposable, IPersistentState
 
             if (startIndex > state.CommitIndex)
             {
-                invalidationIndex ??= startIndex;
                 GetOrCreatePartition(startIndex, ref partition);
                 await partition.WriteAsync(supplier.Current, startIndex, token).ConfigureAwait(false);
 
@@ -461,9 +458,6 @@ public partial class PersistentState : Disposable, IPersistentState
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             }
         }
-
-        if (invalidationIndex.HasValue && invalidationIndex.GetValueOrDefault() <= state.LastIndex)
-            InvalidatePartitions(invalidationIndex.GetValueOrDefault());
 
         // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
@@ -512,7 +506,7 @@ public partial class PersistentState : Disposable, IPersistentState
         return partition.WriteAsync(entry, startIndex, token);
     }
 
-    private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, bool invalidate, CancellationToken token = default)
+    private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         Debug.Assert(startIndex <= state.TailIndex);
@@ -520,9 +514,6 @@ public partial class PersistentState : Disposable, IPersistentState
 
         await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
         await partition.FlushAsync(token).ConfigureAwait(false);
-
-        if (invalidate)
-            InvalidatePartitions(startIndex);
 
         state.LastIndex = startIndex;
         state.Flush();
@@ -589,21 +580,15 @@ public partial class PersistentState : Disposable, IPersistentState
                 if (startIndex > tailIndex)
                     throw new ArgumentOutOfRangeException(nameof(startIndex));
 
-                bool invalidatePartitions;
-                if (startIndex == tailIndex)
-                {
-                    invalidatePartitions = false;
-                }
-                else
+                if (startIndex != tailIndex)
                 {
                     // wrong assumption, tail of the log can be rewritten so we need exclusive lock
                     // write + compaction lock = exclusive lock
                     await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
                     lockType = LockType.ExclusiveLock;
-                    invalidatePartitions = true;
                 }
 
-                await UnsafeAppendAsync(entry, startIndex, invalidatePartitions, token).ConfigureAwait(false);
+                await UnsafeAppendAsync(entry, startIndex, token).ConfigureAwait(false);
             }
             finally
             {

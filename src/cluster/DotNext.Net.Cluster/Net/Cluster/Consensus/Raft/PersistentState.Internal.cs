@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using IO;
+using static Threading.AtomicInt64;
 
 public partial class PersistentState
 {
@@ -115,6 +116,25 @@ public partial class PersistentState
         }
     }
 
+    private sealed class VersionedFileReader : FileReader
+    {
+        private long version;
+
+        internal VersionedFileReader(SafeFileHandle handle, int bufferSize, MemoryAllocator<byte> allocator, long version)
+            : base(handle, bufferSize: bufferSize, allocator: allocator)
+        {
+            this.version = version;
+        }
+
+        internal void VerifyVersion(long expected)
+        {
+            if (version != expected)
+                ClearBuffer();
+
+            version = expected;
+        }
+    }
+
     internal abstract class ConcurrentStorageAccess : Disposable
     {
         internal readonly SafeFileHandle Handle;
@@ -124,33 +144,27 @@ public partial class PersistentState
 
         // A pool of read-only readers that can be shared between multiple consumers in parallel.
         // The reader will be created on demand.
-        private FileReader?[] readers;
+        private VersionedFileReader?[] readers;
+
+        // This field is used to control 'freshness' of the read buffers
+        private long version; // volatile
 
         private protected ConcurrentStorageAccess(string fileName, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
             Handle = File.OpenHandle(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
             writer = new(Handle, bufferSize: bufferSize, allocator: allocator);
-            readers = new FileReader[readersCount];
+            readers = new VersionedFileReader[readersCount];
             this.allocator = allocator;
             FileName = fileName;
+            version = long.MinValue;
 
             if (readersCount == 1)
-                readers[0] = new(Handle, bufferSize: bufferSize, allocator: allocator);
+                readers[0] = new(Handle, bufferSize, allocator, version);
         }
 
         private protected long FileSize => RandomAccess.GetLength(Handle);
 
-        /*
-         * This method allows to reset read cache. It's an expensive operation and we
-         * actually need this in two cases: when dropping log entries and when rewriting uncommitted entries
-         */
-        private protected void InvalidateReaders()
-        {
-            foreach (var reader in readers)
-            {
-                reader?.ClearBuffer();
-            }
-        }
+        internal void Invalidate() => version.IncrementAndGet();
 
         internal ValueTask SetWritePositionAsync(long value, CancellationToken token = default)
         {
@@ -178,15 +192,32 @@ public partial class PersistentState
             where TEntry : notnull, IRaftLogEntry;
 
         public virtual ValueTask FlushAsync(CancellationToken token = default)
-            => writer.WriteAsync(token);
+        {
+            Invalidate();
+            return writer.WriteAsync(token);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected FileReader GetSessionReader(int sessionId)
         {
             Debug.Assert(sessionId >= 0 && sessionId < readers.Length);
 
-            ref var reader = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
-            return reader ??= new(Handle, bufferSize: writer.MaxBufferSize, allocator: allocator);
+            var result = GetReader();
+
+            if (result is null)
+            {
+                GetReader() = result = new(Handle, writer.MaxBufferSize, allocator, version.VolatileRead());
+            }
+            else
+            {
+                result.VerifyVersion(version.VolatileRead());
+            }
+
+            return result;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            ref VersionedFileReader? GetReader()
+                => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
         }
 
         protected override void Dispose(bool disposing)
@@ -200,7 +231,7 @@ public partial class PersistentState
                     stream?.Dispose();
                 }
 
-                readers = Array.Empty<FileReader?>();
+                readers = Array.Empty<VersionedFileReader?>();
                 writer.Dispose();
                 Handle.Dispose();
             }

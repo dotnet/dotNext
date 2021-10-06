@@ -128,15 +128,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(0L, await auditTrail.CommitAsync(CancellationToken.None));
         }
 
-        [Fact]
-        public static async Task QueryAppendEntries()
+        [Theory]
+        [InlineData(0L, true, 65)]
+        [InlineData(1024, true, 65)]
+        [InlineData(0L, false, 65)]
+        [InlineData(1024, false, 65)]
+        [InlineData(0L, true, 3)]
+        [InlineData(1024, true, 3)]
+        [InlineData(0L, false, 3)]
+        [InlineData(1024, false, 3)]
+        public static async Task QueryAppendEntries(long partitionSize, bool caching, int concurrentReads)
         {
-            var entry = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { MaxConcurrentReads = 65 });
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { MaxConcurrentReads = concurrentReads, InitialPartitionSize = partitionSize, UseCaching = caching });
             try
             {
+                // entry 1
                 checker = (entries, snapshotIndex, token) =>
                 {
                     Null(snapshotIndex);
@@ -146,17 +156,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
                 await state.ReadAsync(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync(entry));
+                Equal(1L, await state.AppendAsync(entry1));
                 checker = async (entries, snapshotIndex, token) =>
                 {
                     Null(snapshotIndex);
                     Equal(2, entries.Count);
                     Equal(0L, entries[0].Term);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     return Missing.Value;
                 };
+
                 await state.ReadAsync(checker, 0L, CancellationToken.None);
+
+                // entry 2
+                Equal(2L, await state.AppendAsync(entry2));
+                checker = async (entries, snapshotIndex, token) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(1, entries.Count);
+                    Equal(43L, entries[0].Term);
+                    Equal(entry2.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                    return Missing.Value;
+                };
+
+                await state.ReadAsync(checker, 2L, CancellationToken.None);
             }
             finally
             {
