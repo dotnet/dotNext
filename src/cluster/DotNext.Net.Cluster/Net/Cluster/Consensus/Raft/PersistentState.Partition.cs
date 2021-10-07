@@ -184,15 +184,19 @@ public partial class PersistentState
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             ReadMetadata(relativeIndex, out var metadata);
 
-            if (hint == LogEntryReadOptimizationHint.MetadataOnly)
-                return new(in EmptyBuffer, in metadata, absoluteIndex);
+            ref readonly var cachedContent = ref EmptyBuffer;
 
-            ref readonly var cachedContent = ref entryCache.IsEmpty ?
-                ref EmptyBuffer :
-                ref entryCache[relativeIndex];
-            return cachedContent.IsEmpty && metadata.Length > 0L ?
-                new(GetSessionReader(sessionId), in metadata, absoluteIndex) :
-                new(in cachedContent, in metadata, absoluteIndex);
+            if (hint == LogEntryReadOptimizationHint.MetadataOnly)
+                goto return_cached;
+
+            if (!entryCache.IsEmpty)
+                cachedContent = ref entryCache[relativeIndex];
+
+            if (cachedContent.IsEmpty && metadata.Length > 0L)
+                return new(GetSessionReader(sessionId), in metadata, absoluteIndex);
+
+        return_cached:
+            return new(in cachedContent, in metadata, absoluteIndex);
         }
 
         private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)
