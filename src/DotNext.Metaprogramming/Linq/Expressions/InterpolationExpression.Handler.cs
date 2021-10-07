@@ -7,7 +7,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Linq.Expressions;
 
 using CharBufferAllocator = Buffers.MemoryAllocator<char>;
-using InterpolatedStringBuilder = Runtime.CompilerServices.InterpolatedStringBuilder;
+using InterpolatedStringTemplateBuilder = Runtime.CompilerServices.InterpolatedStringTemplateBuilder;
 
 public partial class InterpolationExpression
 {
@@ -21,7 +21,7 @@ public partial class InterpolationExpression
     {
         private Expression[]? arguments;
         private int index;
-        private InterpolatedStringBuilder builder;
+        private InterpolatedStringTemplateBuilder builder;
 
         /// <summary>
         /// Initializes a new handler.

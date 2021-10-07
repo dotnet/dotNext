@@ -15,7 +15,7 @@ using Buffers;
 /// </summary>
 [InterpolatedStringHandler]
 [StructLayout(LayoutKind.Auto)]
-public struct InterpolatedStringBuilder
+public struct InterpolatedStringTemplateBuilder
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Segment
@@ -103,7 +103,7 @@ public struct InterpolatedStringBuilder
     /// </summary>
     /// <param name="literalLength">The total number of characters in known at compile-time.</param>
     /// <param name="formattedCount">The number of placeholders.</param>
-    public InterpolatedStringBuilder(int literalLength, int formattedCount)
+    public InterpolatedStringTemplateBuilder(int literalLength, int formattedCount)
     {
         segments = new(formattedCount);
         this.literalLength = literalLength;

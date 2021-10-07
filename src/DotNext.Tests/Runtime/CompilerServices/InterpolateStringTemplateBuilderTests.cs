@@ -7,20 +7,18 @@ namespace DotNext.Runtime.CompilerServices
     using Buffers;
 
     [ExcludeFromCodeCoverage]
-    public sealed class InterpolatedStringBuilderTests : Test
+    public sealed class InterpolatedStringTemplateBuilderTests : Test
     {
         [Fact]
         public static void BuildRenderer()
         {
-            var expr = BuildTemplate($"{typeof(int):X} + {typeof(int):X} = {typeof(int):X}") as Expression<Func<IFormatProvider, int, int, int, MemoryAllocator<char>, string>>;
-            NotNull(expr);
-
-            var renderer = expr.Compile();
+            var template = BuildTemplate($"{typeof(int):X} + {typeof(int):X} = {typeof(int):X}").Compile() as Func<IFormatProvider, int, int, int, MemoryAllocator<char>, string>;
+            NotNull(template);
 
             int x = 10, y = 20;
-            Equal($"{x:X} + {y:X} = {x + y:X}", renderer(InvariantCulture, x, y, x + y, null));
+            Equal($"{x:X} + {y:X} = {x + y:X}", template(InvariantCulture, x, y, x + y, null));
 
-            static LambdaExpression BuildTemplate(ref InterpolatedStringBuilder builder)
+            static LambdaExpression BuildTemplate(ref InterpolatedStringTemplateBuilder builder)
                 => builder.Build();
         }
 
@@ -31,7 +29,7 @@ namespace DotNext.Runtime.CompilerServices
 
             Equal(@"{0,1:X} + {1:X} = {2:X}", template);
 
-            static string BuildTemplate(ref InterpolatedStringBuilder builder)
+            static string BuildTemplate(ref InterpolatedStringTemplateBuilder builder)
                 => builder.ToString();
         }
     }
