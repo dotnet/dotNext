@@ -75,7 +75,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Added support of interpolated string expression as described in [this article](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using `InterpolationExpression.Create` static method
 * Migration to C# 10 and .NET 6
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.0.0">DotNext.Reflection 4.0.0</a>
 * Migration to C# 10 and .NET 6
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.0.0">DotNext.Unsafe 4.0.0</a>
