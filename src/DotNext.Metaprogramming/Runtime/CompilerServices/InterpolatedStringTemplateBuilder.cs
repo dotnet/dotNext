@@ -127,9 +127,15 @@ public struct InterpolatedStringTemplateBuilder
     /// <param name="type">The type of the value.</param>
     /// <param name="alignment">The alignment of the value.</param>
     /// <param name="format">The format of the value.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/>.</exception>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void AppendFormatted(Type type, int alignment, string? format = null)
-        => Segments.Add(new(type, format, alignment));
+    {
+        if (type is null)
+            throw new ArgumentNullException(nameof(type));
+
+        Segments.Add(new(type, format, alignment));
+    }
 
     /// <summary>
     /// Appends placeholder.

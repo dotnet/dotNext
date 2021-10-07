@@ -74,7 +74,7 @@ public partial class InterpolationExpression
         /// Gets original template.
         /// </summary>
         /// <returns>The original template.</returns>
-        public override string ToString() => builder.ToString();
+        public readonly override string ToString() => builder.ToString();
     }
 
     private InterpolationExpression(ref InterpolatedStringExpressionHandler handler, Expression? formatProvider)
