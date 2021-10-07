@@ -137,7 +137,7 @@ public struct InterpolatedStringBuilder
     /// <param name="type">The type of the value.</param>
     /// <param name="format">The format of the value.</param>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void AppendFormatted(Type type, string? format)
+    public void AppendFormatted(Type type, string? format = null)
         => AppendFormatted(type, 0, format);
 
     /// <summary>
