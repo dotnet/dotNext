@@ -1,9 +1,9 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -110,8 +110,10 @@ public struct InterpolatedStringTemplateBuilder
         this.formattedCount = formattedCount;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private List<Segment> Segments => segments ??= new();
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly ReadOnlySpan<Segment> SegmentsSpan => CollectionsMarshal.AsSpan(segments);
 
     /// <summary>
