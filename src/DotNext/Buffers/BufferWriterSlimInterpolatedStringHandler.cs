@@ -224,4 +224,10 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
         }
     }
+
+    /// <summary>
+    /// Renders interpolated string.
+    /// </summary>
+    /// <returns>The rendered string.</returns>
+    public override string ToString() => buffer.ToString();
 }
