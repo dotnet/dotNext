@@ -112,7 +112,7 @@ public struct InterpolatedStringBuilder
 
     private List<Segment> Segments => segments ??= new();
 
-    private ReadOnlySpan<Segment> SegmentsSpan => CollectionsMarshal.AsSpan(segments);
+    private readonly ReadOnlySpan<Segment> SegmentsSpan => CollectionsMarshal.AsSpan(segments);
 
     /// <summary>
     /// Appends literal value.
@@ -143,14 +143,14 @@ public struct InterpolatedStringBuilder
     /// <summary>
     /// Removes all placeholders and literals from this builder.
     /// </summary>
-    public void Clear() => Segments.Clear();
+    public readonly void Clear() => segments?.Clear();
 
     /// <summary>
     /// Builds lambda expression that can be compiled to
     /// the renderer of the interpolated string.
     /// </summary>
     /// <returns>The lambda expression that encapsulates the rendering logic.</returns>
-    public LambdaExpression Build()
+    public readonly LambdaExpression Build()
     {
         var preallocatedBufferLocal = Expression.Variable(typeof(PreallocatedCharBuffer), "buffer");
         var writerLocal = Expression.Variable(typeof(BufferWriterSlim<char>), "writer");
@@ -158,7 +158,7 @@ public struct InterpolatedStringBuilder
         var providerParameter = Expression.Parameter(typeof(IFormatProvider), "provider");
         var allocatorParameter = Expression.Parameter(typeof(MemoryAllocator<char>), "allocator");
 
-        var parameters = new List<ParameterExpression>(Segments.Count + 2);
+        var parameters = new List<ParameterExpression>(SegmentsSpan.Length + 2);
         parameters.Add(providerParameter);
 
         var statements = new List<Expression>();
@@ -206,7 +206,7 @@ public struct InterpolatedStringBuilder
     /// Gets original template.
     /// </summary>
     /// <returns>The original template.</returns>
-    public override string ToString()
+    public readonly override string ToString()
     {
         var writer = new BufferWriterSlim<char>(stackalloc char[64]);
         try
