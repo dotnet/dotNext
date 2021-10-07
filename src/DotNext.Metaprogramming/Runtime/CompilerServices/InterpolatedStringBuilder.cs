@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static System.Globalization.CultureInfo;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.CompilerServices;
@@ -66,6 +67,32 @@ public struct InterpolatedStringBuilder
 
             statements.Add(statement);
         }
+
+        internal void WriteTo(ref int position, ref BufferWriterSlim<char> output)
+        {
+            if (argumentType is null)
+            {
+                output.Write(literalOrFormat);
+                return;
+            }
+
+            output.Add('{');
+            output.WriteFormattable(position++, provider: InvariantCulture);
+
+            if (alignment != 0)
+            {
+                output.Add(',');
+                output.WriteFormattable(alignment, provider: InvariantCulture);
+            }
+
+            if (!string.IsNullOrEmpty(literalOrFormat))
+            {
+                output.Add(':');
+                output.Write(literalOrFormat);
+            }
+
+            output.Add('}');
+        }
     }
 
     private readonly int literalLength, formattedCount;
@@ -85,6 +112,8 @@ public struct InterpolatedStringBuilder
 
     private List<Segment> Segments => segments ??= new();
 
+    private ReadOnlySpan<Segment> SegmentsSpan => CollectionsMarshal.AsSpan(segments);
+
     /// <summary>
     /// Appends literal value.
     /// </summary>
@@ -92,39 +121,24 @@ public struct InterpolatedStringBuilder
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void AppendLiteral(string? literal) => Segments.Add(new(literal));
 
-    private void AddPlaceholder(Type type, string? format, int alignment = 0)
-        => Segments.Add(new(type, format, alignment));
-
     /// <summary>
-    /// Appends a placeholder for the value.
+    /// Appends placeholder.
     /// </summary>
-    /// <typeparam name="T">The type of the placeholder.</typeparam>
-    /// <param name="value">The value or expression.</param>
-    /// <param name="format">The format of the value.</param>
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public void AppendFormatted<T>(T value, string? format = null)
-    {
-        if (value is Expression expression)
-            AddPlaceholder(expression.Type, format);
-        else
-            AddPlaceholder(typeof(T), format);
-    }
-
-    /// <summary>
-    /// Appends a placeholder for the value.
-    /// </summary>
-    /// <typeparam name="T">The type of the placeholder.</typeparam>
-    /// <param name="value">The value or expression.</param>
+    /// <param name="type">The type of the value.</param>
     /// <param name="alignment">The alignment of the value.</param>
     /// <param name="format">The format of the value.</param>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public void AppendFormatted<T>(T value, int alignment, string? format = null)
-    {
-        if (value is Expression expression)
-            AddPlaceholder(expression.Type, format, alignment);
-        else
-            AddPlaceholder(typeof(T), format, alignment);
-    }
+    public void AppendFormatted(Type type, int alignment, string? format = null)
+        => Segments.Add(new(type, format, alignment));
+
+    /// <summary>
+    /// Appends placeholder.
+    /// </summary>
+    /// <param name="type">The type of the value.</param>
+    /// <param name="format">The format of the value.</param>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public void AppendFormatted(Type type, string? format)
+        => AppendFormatted(type, 0, format);
 
     /// <summary>
     /// Removes all placeholders and literals from this builder.
@@ -169,7 +183,7 @@ public struct InterpolatedStringBuilder
             providerParameter);
         statements.Add(Expression.Assign(handlerLocal, expr));
 
-        foreach (var segment in Segments)
+        foreach (ref readonly var segment in SegmentsSpan)
         {
             segment.WriteStatement(statements, providerParameter, handlerLocal, out var parameter);
 
@@ -186,5 +200,26 @@ public struct InterpolatedStringBuilder
             Expression.Block(new[] { preallocatedBufferLocal, writerLocal, handlerLocal }, statements),
             false,
             parameters);
+    }
+
+    /// <summary>
+    /// Gets original template.
+    /// </summary>
+    /// <returns>The original template.</returns>
+    public override string ToString()
+    {
+        var writer = new BufferWriterSlim<char>(stackalloc char[64]);
+        try
+        {
+            var position = 0;
+            foreach (ref readonly var segment in SegmentsSpan)
+                segment.WriteTo(ref position, ref writer);
+
+            return writer.ToString();
+        }
+        finally
+        {
+            writer.Dispose();
+        }
     }
 }
