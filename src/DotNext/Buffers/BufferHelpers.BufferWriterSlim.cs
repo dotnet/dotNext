@@ -129,6 +129,23 @@ public static partial class BufferHelpers
         => WriteString(ref writer, null, ref handler);
 
     /// <summary>
+    /// Writes the value as a string.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <returns>The number of written characters.</returns>
+    public static int WriteAsString<T>(this ref BufferWriterSlim<char> writer, T value, string? format = null, IFormatProvider? provider = null)
+    {
+        var handler = new BufferWriterSlimInterpolatedStringHandler(0, 1, ref writer, provider);
+        handler.AppendFormatted(value, format);
+        handler.InstallWriter(out writer);
+        return handler.WrittenCount;
+    }
+
+    /// <summary>
     /// Writes the value as a sequence of characters.
     /// </summary>
     /// <typeparam name="T">The type of the value to convert.</typeparam>

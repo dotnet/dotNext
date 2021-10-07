@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers
 {
@@ -60,6 +61,48 @@ namespace DotNext.Buffers
             builder.Add(10);
             Equal(1, builder.WrittenCount);
             Equal(10, builder[0]);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(32)]
+        [InlineData(64)]
+        public static void MutableOnStackWriter(int initialBufferSize)
+        {
+            var writer = new BufferWriterSlim<char>(initialBufferSize > 0 ? stackalloc char[initialBufferSize] : Span<char>.Empty);
+            try
+            {
+                writer.Write("Hello, world");
+                writer.Add('!');
+                writer.WriteLine("!!");
+                writer.WriteFormattable<int>(42, provider: InvariantCulture);
+                writer.WriteFormattable<uint>(56U, provider: InvariantCulture);
+                writer.WriteFormattable<byte>(10, provider: InvariantCulture);
+                writer.WriteFormattable<sbyte>(22, provider: InvariantCulture);
+                writer.WriteFormattable<short>(88, provider: InvariantCulture);
+                writer.WriteFormattable<ushort>(99, provider: InvariantCulture);
+                writer.WriteFormattable<long>(77L, provider: InvariantCulture);
+                writer.WriteFormattable<ulong>(66UL, provider: InvariantCulture);
+
+                var guid = Guid.NewGuid();
+                writer.WriteFormattable(guid);
+
+                var dt = DateTime.Now;
+                writer.WriteFormattable(dt, provider: InvariantCulture);
+
+                var dto = DateTimeOffset.Now;
+                writer.WriteFormattable(dto, provider: InvariantCulture);
+
+                writer.WriteFormattable<decimal>(42.5M, provider: InvariantCulture);
+                writer.WriteFormattable<float>(32.2F, provider: InvariantCulture);
+                writer.WriteFormattable<double>(56.6D, provider: InvariantCulture);
+
+                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.ToString());
+            }
+            finally
+            {
+                writer.Dispose();
+            }
         }
 
         [Fact]
@@ -125,6 +168,25 @@ namespace DotNext.Buffers
             Equal(30, owner[2]);
             Equal(3, owner.Length);
             owner.Dispose();
+        }
+
+        [Fact]
+        public static void FormatValues()
+        {
+            var writer = new BufferWriterSlim<char>(stackalloc char[64]);
+            try
+            {
+                writer.WriteAsString("Hello, world!");
+                Equal("Hello, world!", writer.ToString());
+                writer.Clear();
+
+                writer.WriteAsString(56, provider: InvariantCulture);
+                Equal("56", writer.ToString());
+            }
+            finally
+            {
+                writer.Dispose();
+            }
         }
     }
 }
