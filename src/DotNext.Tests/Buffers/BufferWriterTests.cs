@@ -193,11 +193,12 @@ namespace DotNext.Buffers
         {
             using var writer = new PooledArrayBufferWriter<char>(64);
 
-            writer.WriteAsString("Hello, world!");
-            Equal("Hello, world!", writer.ToString());
+            const string expectedString = "Hello, world!";
+            Equal(expectedString.Length, writer.WriteAsString(expectedString));
+            Equal(expectedString, writer.ToString());
             writer.Clear();
 
-            writer.WriteAsString(56, provider: InvariantCulture);
+            Equal(2, writer.WriteAsString(56, provider: InvariantCulture));
             Equal("56", writer.ToString());
         }
 
