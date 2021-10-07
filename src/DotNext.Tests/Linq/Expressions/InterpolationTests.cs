@@ -14,6 +14,7 @@ namespace DotNext.Linq.Expressions
             Equal(typeof(string), str.Type);
             Equal("Hello, {0}", str.Format);
             IsType<ConstantExpression>(str.Arguments[0]);
+            IsAssignableFrom<MethodCallExpression>(str.Reduce());
         }
 
         [Fact]
@@ -24,6 +25,17 @@ namespace DotNext.Linq.Expressions
             Equal(typeof(FormattableString), str.Type);
             Equal("Hello, {0}", str.Format);
             IsType<ConstantExpression>(str.Arguments[0]);
+            IsAssignableFrom<MethodCallExpression>(str.Reduce());
+        }
+
+        [Fact]
+        public static void InterpolatedString()
+        {
+            var str = InterpolationExpression.Create($"Hello, {"Sally".Const()}");
+            NotEmpty(str.Arguments);
+            Equal(typeof(string), str.Type);
+            Equal("Hello, {0}", str.Format);
+            IsAssignableFrom<InvocationExpression>(str.Reduce());
         }
     }
 }

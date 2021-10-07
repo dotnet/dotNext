@@ -10,22 +10,27 @@ namespace DotNext.Linq.Expressions;
 /// </summary>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/interpolated">String Interpolation in C#</seealso>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/strings/interpolated-strings">String Interpolation in VB.NET</seealso>
-public sealed class InterpolationExpression : CustomExpression
+public sealed partial class InterpolationExpression : CustomExpression
 {
     private enum Kind : byte
     {
         PlainString = 0,
         FormattableString,
+        InterpolatedString
     }
 
     private readonly Expression[] arguments;
     private readonly Kind kind;
+    private readonly LambdaExpression? interpolation;
 
-    private InterpolationExpression(string format, object?[] arguments, Kind kind)
+    private InterpolationExpression(string format, object?[] arguments, Kind kind, Expression? formatProvider)
     {
         this.arguments = Array.ConvertAll(arguments, GetArgument);
         Format = format;
         this.kind = kind;
+        FormatProvider = formatProvider is not null && typeof(IFormatProvider).IsAssignableFrom(formatProvider.Type)
+            ? formatProvider
+            : Expression.Constant(null, typeof(IFormatProvider));
 
         static Expression GetArgument(object? arg) => arg switch
         {
@@ -35,8 +40,8 @@ public sealed class InterpolationExpression : CustomExpression
         };
     }
 
-    private InterpolationExpression(FormattableString str, Kind kind)
-        : this(str.Format, str.GetArguments(), kind)
+    private InterpolationExpression(FormattableString str, Kind kind, Expression? formatProvider = null)
+        : this(str.Format, str.GetArguments(), kind, formatProvider)
     {
     }
 
@@ -54,9 +59,10 @@ public sealed class InterpolationExpression : CustomExpression
     /// formatted string as <see cref="string"/> class.
     /// </summary>
     /// <param name="str">Formatting pattern and actual arguments.</param>
+    /// <param name="formatProvider">The expression of type <see cref="IFormatProvider"/>.</param>
     /// <returns>String interpolation expression.</returns>
-    public static InterpolationExpression PlainString(FormattableString str)
-        => new(str, Kind.PlainString);
+    public static InterpolationExpression PlainString(FormattableString str, Expression? formatProvider = null)
+        => new(str, Kind.PlainString, formatProvider);
 
     /// <summary>
     /// Returns a collection that contains one or more objects to format.
@@ -69,6 +75,11 @@ public sealed class InterpolationExpression : CustomExpression
     public string Format { get; }
 
     /// <summary>
+    /// Gets the format provider.
+    /// </summary>
+    public Expression FormatProvider { get; }
+
+    /// <summary>
     /// Gets type of this expression.
     /// </summary>
     /// <remarks>
@@ -79,7 +90,7 @@ public sealed class InterpolationExpression : CustomExpression
     {
         get => kind switch
         {
-            Kind.PlainString => typeof(string),
+            Kind.PlainString or Kind.InterpolatedString => typeof(string),
             Kind.FormattableString => typeof(FormattableString),
             _ => typeof(void),
         };
@@ -94,24 +105,25 @@ public sealed class InterpolationExpression : CustomExpression
             case 0:
                 return Constant(Format);
             case 1:
-                var formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object) });
+                var formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object) });
                 Debug.Assert(formatMethod is not null);
-                return Call(formatMethod, Constant(Format), arguments[0]);
+                return Call(formatMethod, FormatProvider, Constant(Format), arguments[0]);
             case 2:
-                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object), typeof(object) });
+                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object), typeof(object) });
                 Debug.Assert(formatMethod is not null);
-                return Call(formatMethod, Constant(Format), arguments[0], arguments[1]);
+                return Call(formatMethod, FormatProvider, Constant(Format), FormatProvider, arguments[0], arguments[1]);
             case 3:
-                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object), typeof(object), typeof(object) });
+                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object), typeof(object), typeof(object) });
                 Debug.Assert(formatMethod is not null);
-                return Call(formatMethod, Constant(Format), arguments[0], arguments[1], arguments[2]);
+                return Call(formatMethod, FormatProvider, Constant(Format), FormatProvider, arguments[0], arguments[1], arguments[2]);
             default:
-                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object[]) });
+                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object[]) });
                 Debug.Assert(formatMethod is not null);
-                return Call(formatMethod, Constant(Format), NewArrayInit(typeof(object), arguments));
+                return Call(formatMethod, FormatProvider, Constant(Format), FormatProvider, NewArrayInit(typeof(object), arguments));
         }
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(FormattableStringFactory))]
     private MethodCallExpression MakeFormattableString()
         => typeof(FormattableStringFactory).CallStatic(nameof(FormattableStringFactory.Create), Constant(Format), NewArrayInit(typeof(object), arguments));
 
@@ -124,6 +136,7 @@ public sealed class InterpolationExpression : CustomExpression
     {
         Kind.PlainString => MakePlainString(),
         Kind.FormattableString => MakeFormattableString(),
+        Kind.InterpolatedString => MakeInterpolatedString(),
         _ => Empty(),
     };
 }
