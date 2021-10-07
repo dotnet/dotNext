@@ -16,7 +16,7 @@ public sealed partial class InterpolationExpression : CustomExpression
     {
         PlainString = 0,
         FormattableString,
-        InterpolatedString
+        InterpolatedString,
     }
 
     private readonly Expression[] arguments;
