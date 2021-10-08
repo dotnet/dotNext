@@ -12,20 +12,6 @@ using TransportServices;
 
 internal sealed class TcpServer : TcpTransport, IServer
 {
-    private sealed class AcceptEventArgs : SocketAsyncEventSource
-    {
-        internal AcceptEventArgs()
-            : base(true)
-        {
-        }
-
-        internal override void Reset()
-        {
-            AcceptSocket = null;
-            base.Reset();
-        }
-    }
-
     private enum ExchangeResult : byte
     {
         Success = 0,
@@ -170,21 +156,14 @@ internal sealed class TcpServer : TcpTransport, IServer
 
     private async void Listen()
     {
-        using var args = new AcceptEventArgs();
         var token = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
         for (var pending = true; pending && !IsDisposed;)
         {
             try
             {
-                if (socket.AcceptAsync(args))
-                    await args.Task.ConfigureAwait(false);
-                else if (args.SocketError != SocketError.Success)
-                    throw new SocketException((int)args.SocketError);
-
-                Debug.Assert(args.AcceptSocket is not null);
-                ConfigureSocket(args.AcceptSocket, LingerOption, Ttl);
-                ThreadPool.QueueUserWorkItem(HandleConnection, (args.AcceptSocket, token), false);
-                args.Reset();
+                var remoteClient = await socket.AcceptAsync(token).ConfigureAwait(false);
+                ConfigureSocket(remoteClient, LingerOption, Ttl);
+                ThreadPool.QueueUserWorkItem(HandleConnection, (remoteClient, token), false);
             }
             catch (ObjectDisposedException)
             {
