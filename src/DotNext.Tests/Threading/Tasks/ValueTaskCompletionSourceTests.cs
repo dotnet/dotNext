@@ -42,8 +42,6 @@ namespace DotNext.Threading.Tasks
         {
             var source = new ValueTaskCompletionSource();
             var task = source.CreateTask(TimeSpan.FromMilliseconds(20), default);
-            await Task.Delay(100);
-            True(task.IsCompleted);
             await ThrowsAsync<TimeoutException>(task.AsTask);
             False(source.TrySetResult());
         }

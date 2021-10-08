@@ -65,7 +65,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         // box current token once and only if needed
         object? tokenHolder = null;
-        if (timeout != InfiniteTimeSpan)
+        if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
             tokenHolder = version;
@@ -131,6 +131,17 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private void InvokeContinuationCore()
     {
+        context = null;
+
+        var continuation = this.continuation;
+        this.continuation = null;
+
+        var continuationState = this.continuationState;
+        this.continuationState = null;
+
+        var capturedContext = this.capturedContext;
+        this.capturedContext = null;
+
         if (continuation is not null)
             InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
     }
@@ -157,9 +168,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         version += 1;
         completed = false;
         context = null;
-        capturedContext = null;
         continuation = null;
-        continuationState = null;
+        continuationState = capturedContext = null;
     }
 
     /// <summary>

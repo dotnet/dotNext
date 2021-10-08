@@ -288,7 +288,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// </summary>
     /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public override void Clear(bool reuseBuffer)
+    public override void Clear(bool reuseBuffer = false)
     {
         ThrowIfDisposed();
 

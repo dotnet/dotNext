@@ -50,14 +50,10 @@ public struct BufferWriterInterpolatedStringHandler
     public void AppendLiteral(string? value)
         => AppendFormatted(value.AsSpan());
 
-    /// <summary>
-    /// Writes the specified value to the handler.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to write.</typeparam>
-    /// <param name="value">The value to write.</param>
-    /// <param name="format">The format string.</param>
-    public void AppendFormatted<T>(T value, string? format = null)
+    internal static int AppendFormatted<T>(IBufferWriter<char> buffer, T value, string? format, IFormatProvider? provider)
     {
+        int charsWritten;
+
         if (value is IFormattable)
         {
             if (value is ISpanFormattable)
@@ -67,24 +63,45 @@ public struct BufferWriterInterpolatedStringHandler
                     var span = buffer.GetSpan(bufferSize);
 
                     // constrained call avoiding boxing for value types
-                    if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
+                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
                     {
                         buffer.Advance(charsWritten);
-                        count += charsWritten;
                         break;
                     }
                 }
             }
             else
             {
-                AppendLiteral(((IFormattable)value).ToString(format, provider)); // constrained call avoiding boxing for value types
+                // constrained call avoiding boxing for value types
+                charsWritten = Write(buffer, ((IFormattable)value).ToString(format, provider));
             }
         }
         else if (value is not null)
         {
-            AppendLiteral(value.ToString());
+            charsWritten = Write(buffer, value.ToString());
+        }
+        else
+        {
+            charsWritten = 0;
+        }
+
+        return charsWritten;
+
+        static int Write(IBufferWriter<char> buffer, ReadOnlySpan<char> chars)
+        {
+            buffer.Write(chars);
+            return chars.Length;
         }
     }
+
+    /// <summary>
+    /// Writes the specified value to the handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to write.</typeparam>
+    /// <param name="value">The value to write.</param>
+    /// <param name="format">The format string.</param>
+    public void AppendFormatted<T>(T value, string? format = null)
+        => count += AppendFormatted(buffer, value, format, provider);
 
     /// <summary>
     /// Writes the specified character span to the handler.

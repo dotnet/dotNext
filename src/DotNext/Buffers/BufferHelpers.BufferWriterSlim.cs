@@ -129,6 +129,18 @@ public static partial class BufferHelpers
         => WriteString(ref writer, null, ref handler);
 
     /// <summary>
+    /// Writes the value as a string.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <returns>The number of written characters.</returns>
+    public static int WriteAsString<T>(this ref BufferWriterSlim<char> writer, T value, string? format = null, IFormatProvider? provider = null)
+        => BufferWriterSlimInterpolatedStringHandler.AppendFormatted(ref writer, value, format, provider);
+
+    /// <summary>
     /// Writes the value as a sequence of characters.
     /// </summary>
     /// <typeparam name="T">The type of the value to convert.</typeparam>
@@ -136,15 +148,17 @@ public static partial class BufferHelpers
     /// <param name="value">The value to convert.</param>
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
-    public static void WriteFormattable<T>(this ref BufferWriterSlim<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    /// <returns>The number of written characters.</returns>
+    public static int WriteFormattable<T>(this ref BufferWriterSlim<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, ISpanFormattable
     {
+        int charsWritten;
         const int maxBufferSize = int.MaxValue / 2;
 
         for (int bufferSize = 0; ;)
         {
             var buffer = writer.GetSpan(bufferSize);
-            if (value.TryFormat(buffer, out var charsWritten, format, provider))
+            if (value.TryFormat(buffer, out charsWritten, format, provider))
             {
                 writer.Advance(charsWritten);
                 break;
@@ -152,6 +166,8 @@ public static partial class BufferHelpers
 
             bufferSize = bufferSize <= maxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
         }
+
+        return charsWritten;
     }
 
     /// <summary>

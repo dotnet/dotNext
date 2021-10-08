@@ -77,7 +77,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 => transport[receiver].EnqueueForwardJoinAsync(Address, joinedPeer, timeToLive, token).AsTask();
 
             protected override Task DisconnectAsync(EndPoint peer, bool isAlive, CancellationToken token)
-                => transport[peer].EnqueueDisconnectAsync(Address, isAlive, token).AsTask();
+                => transport.TryGetValue(peer, out var client) ? client.EnqueueDisconnectAsync(Address, isAlive, token).AsTask() : Task.CompletedTask;
 
             protected override Task ShuffleAsync(EndPoint receiver, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int timeToLive, CancellationToken token)
                 => transport[receiver].EnqueueShuffleAsync(Address, origin, peers, timeToLive, token).AsTask();

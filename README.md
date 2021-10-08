@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-04-2021
+Release Date: 10-08-2021
 
 .NEXT 4.0 beta is out! Its primary focus is .NET 6 support as well as some other key features:
 * Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
@@ -72,9 +72,10 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * `ITypeMap<T>` interface and implementing classes allow to associate an arbitrary value with the type
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.0.0">DotNext.Metaprogramming 4.0.0</a>
+* Added support of interpolated string expression as described in [this article](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using `InterpolationExpression.Create` static method
 * Migration to C# 10 and .NET 6
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/3.3.0">DotNext.Reflection 3.3.0</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.0.0">DotNext.Reflection 4.0.0</a>
 * Migration to C# 10 and .NET 6
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.0.0">DotNext.Unsafe 4.0.0</a>
