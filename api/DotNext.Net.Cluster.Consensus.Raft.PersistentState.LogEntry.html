@@ -415,6 +415,7 @@ for type resolution.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(TTransformation transformation, CancellationToken token)
+
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -539,8 +540,7 @@ as a uniform way to deserialize this payload.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_IO_IDataTransferObject_IsReusable_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#IO#IDataTransferObject#IsReusable*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_IO_IDataTransferObject_IsReusable" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#IO#IDataTransferObject#IsReusable">IDataTransferObject.IsReusable</h4>
-  <div class="markdown level1 summary"><p>Indicates that the content of this object can be copied to the output stream or pipe multiple times.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -570,8 +570,7 @@ as a uniform way to deserialize this payload.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_IO_IDataTransferObject_Length_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#IO#IDataTransferObject#Length*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_IO_IDataTransferObject_Length" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#IO#IDataTransferObject#Length">IDataTransferObject.Length</h4>
-  <div class="markdown level1 summary"><p>Gets length of the object payload, in bytes.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -592,9 +591,6 @@ as a uniform way to deserialize this payload.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_IO_IDataTransferObject_Length_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If value is <span class="xref">null</span> then length of the payload cannot be determined.</p>
-</div>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>

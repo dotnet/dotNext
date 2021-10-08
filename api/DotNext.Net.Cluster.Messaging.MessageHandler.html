@@ -159,8 +159,7 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_IsSupported_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.DotNext#Net#Cluster#Messaging#IInputChannel#IsSupported*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_IsSupported_System_String_System_Boolean_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.DotNext#Net#Cluster#Messaging#IInputChannel#IsSupported(System.String,System.Boolean)">IInputChannel.IsSupported(String, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the specified message can be processed by this handler.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -179,14 +178,12 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">messageName</span></td>
-        <td><p>The name of the message.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">oneWay</span></td>
-        <td><p><span class="xref">true</span> if message is one-way; <span class="xref">false</span> if message is request message that requires a response.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -201,8 +198,7 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if message can be processed by this handler; otherwise, <span class="xref">false</span>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -215,8 +211,7 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_ReceiveMessage_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.DotNext#Net#Cluster#Messaging#IInputChannel#ReceiveMessage*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_ReceiveMessage_DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IMessage_System_Object_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.DotNext#Net#Cluster#Messaging#IInputChannel#ReceiveMessage(DotNext.Net.Cluster.Messaging.ISubscriber,DotNext.Net.Cluster.Messaging.IMessage,System.Object,CancellationToken)">IInputChannel.ReceiveMessage(ISubscriber, IMessage, Object, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Handles incoming message from the specified cluster member.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -235,26 +230,22 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a></td>
         <td><span class="parametername">sender</span></td>
-        <td><p>The sender of the message.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
         <td><span class="parametername">message</span></td>
-        <td><p>The received message.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The context of the underlying network request.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -269,15 +260,10 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
     <tbody>
       <tr>
         <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a>&gt;</td>
-        <td><p>The response message.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_ReceiveMessage_DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IMessage_System_Object_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Implementation of this method should handle every exception inside of it
-and prepare response message representing such exception.</p>
-</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_ReceiveSignal_DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IMessage_System_Object_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessageHandler.DotNext%23Net%23Cluster%23Messaging%23IInputChannel%23ReceiveSignal(DotNext.Net.Cluster.Messaging.ISubscriber%2CDotNext.Net.Cluster.Messaging.IMessage%2CSystem.Object%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -287,8 +273,7 @@ and prepare response message representing such exception.</p>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_ReceiveSignal_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.DotNext#Net#Cluster#Messaging#IInputChannel#ReceiveSignal*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessageHandler_DotNext_Net_Cluster_Messaging_IInputChannel_ReceiveSignal_DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IMessage_System_Object_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.DotNext#Net#Cluster#Messaging#IInputChannel#ReceiveSignal(DotNext.Net.Cluster.Messaging.ISubscriber,DotNext.Net.Cluster.Messaging.IMessage,System.Object,CancellationToken)">IInputChannel.ReceiveSignal(ISubscriber, IMessage, Object, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Handles incoming signal from the specified cluster member.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -307,26 +292,22 @@ and prepare response message representing such exception.</p>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a></td>
         <td><span class="parametername">sender</span></td>
-        <td><p>The sender of the message.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
         <td><span class="parametername">signal</span></td>
-        <td><p>The received message representing signal.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The context of the underlying network request.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -341,8 +322,7 @@ and prepare response message representing such exception.</p>
     <tbody>
       <tr>
         <td><span class="xref">Task</span></td>
-        <td><p>The task representing asynchronous execution of the method.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

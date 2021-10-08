@@ -71,21 +71,21 @@
 <p>String Interpolation Expression allows to simplify code generation associated with string formatting. This feature is powered by string interpolation in <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/interpolated">C#</a> and <a href="https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/strings/interpolated-strings">VB.NET</a>.</p>
 <p>In Metaprogramming library, interpolated string expression is represented by <a class="xref" href="../../api/DotNext.Linq.Expressions.InterpolationExpression.html">InterpolationExpression</a> class.</p>
 <pre><code class="lang-csharp">using DotNext.Linq.Expressions;
-using static DotNext.Linq.Expressions.InterpolationExpression;
 using static DotNext.Metaprogramming.CodeGenerator;
 
 Lambda&lt;Action&lt;int, int&gt;&gt;(fun =&gt;
 {
 	var (x, y) = fun;
-	WriteLine(PlainString($&quot;Sum of {x} and {y} is {x.Add(y)}&quot;));
+	WriteLine(InterpolationExpression.PlainString($&quot;Sum of {x} and {y} is {x.Add(y)}&quot;));
 });
 
 //generated code is
 
 new Action&lt;int, int&gt;(x, y =&gt; Console.WriteLine($&quot;Sum of {x} and {y} is {x + y}&quot;));
 </code></pre>
-<p><code>PlainString</code> factory method converts interpolated string into expression node of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>. So, at runtime, it will be represented as formatted string.</p>
-<p><code>FormattableString</code> factory method converts interpolated string into expression node of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.formattablestring">FormattableString</a>. It can be helpful to change the culture of the string at runtime</p>
+<p><code>PlainString</code> factory method converts interpolated string into expression node of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>. So, at runtime, it will be represented as a formatted string. Under the hood, the generated expression is a call to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.string.format#System_String_Format_System_IFormatProvider_System_String_System_Object___">String.Format</a> method.</p>
+<p><code>FormattableString</code> factory method converts interpolated string into expression node of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.formattablestring">FormattableString</a>. It can be helpful to change the culture of the string at runtime.</p>
+<p><code>Create</code> factory method converts interpolated string to a series of statements according to the transformation described in <a href="https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/">this article</a>. This is the recommended way to express the interpolated string because it provides the best code generation quality. The generated code uses stack allocation and memory pooling to achieve zero heap allocation.</p>
 </article>
           </div>
           

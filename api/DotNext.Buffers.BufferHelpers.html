@@ -1663,6 +1663,174 @@ otherwise, <span class="xref">false</span>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteAsString__1_DotNext_Buffers_BufferWriterSlim_System_Char_____0_System_String_System_Nullable_IFormatProvider__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteAsString%60%601(DotNext.Buffers.BufferWriterSlim%7BSystem.Char%7D%40%2C%60%600%2CSystem.String%2CSystem.Nullable%7BIFormatProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L140">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferHelpers_WriteAsString_" data-uid="DotNext.Buffers.BufferHelpers.WriteAsString*"></a>
+  <h4 id="DotNext_Buffers_BufferHelpers_WriteAsString__1_DotNext_Buffers_BufferWriterSlim_System_Char_____0_System_String_System_Nullable_IFormatProvider__" data-uid="DotNext.Buffers.BufferHelpers.WriteAsString``1(DotNext.Buffers.BufferWriterSlim{System.Char}@,``0,System.String,System.Nullable{IFormatProvider})">WriteAsString&lt;T&gt;(ref BufferWriterSlim&lt;Char&gt;, T, String, Nullable&lt;IFormatProvider&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes the value as a string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int WriteAsString&lt;T&gt;(this ref BufferWriterSlim&lt;char&gt; writer, T value, string format = null, IFormatProvider? provider = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format of the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">IFormatProvider</span>&gt;</td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteAsString__1_System_Buffers_IBufferWriter_System_Char____0_System_String_System_Nullable_IFormatProvider__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteAsString%60%601(System.Buffers.IBufferWriter%7BSystem.Char%7D%2C%60%600%2CSystem.String%2CSystem.Nullable%7BIFormatProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L223">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferHelpers_WriteAsString_" data-uid="DotNext.Buffers.BufferHelpers.WriteAsString*"></a>
+  <h4 id="DotNext_Buffers_BufferHelpers_WriteAsString__1_System_Buffers_IBufferWriter_System_Char____0_System_String_System_Nullable_IFormatProvider__" data-uid="DotNext.Buffers.BufferHelpers.WriteAsString``1(System.Buffers.IBufferWriter{System.Char},``0,System.String,System.Nullable{IFormatProvider})">WriteAsString&lt;T&gt;(IBufferWriter&lt;Char&gt;, T, String, Nullable&lt;IFormatProvider&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes the value as a string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int WriteAsString&lt;T&gt;(this IBufferWriter&lt;char&gt; writer, T value, string format = null, IFormatProvider? provider = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format of the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">IFormatProvider</span>&gt;</td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteDouble_DotNext_Buffers_BufferWriterSlim_System_Byte___System_Double_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteDouble(DotNext.Buffers.BufferWriterSlim%7BSystem.Byte%7D%40%2CSystem.Double%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1758,7 +1926,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteFormattable__1_DotNext_Buffers_BufferWriterSlim_System_Byte_____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteFormattable%60%601(DotNext.Buffers.BufferWriterSlim%7BSystem.Byte%7D%40%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L181">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteFormattable_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteFormattable__1_DotNext_Buffers_BufferWriterSlim_System_Byte_____0_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable``1(DotNext.Buffers.BufferWriterSlim{System.Byte}@,``0)">WriteFormattable&lt;T&gt;(ref BufferWriterSlim&lt;Byte&gt;, T)</h4>
@@ -1816,7 +1984,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteFormattable__1_DotNext_Buffers_BufferWriterSlim_System_Byte___ReadOnlySpan___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteFormattable%60%601(DotNext.Buffers.BufferWriterSlim%7BSystem.Byte%7D%40%2CReadOnlySpan%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L195">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteFormattable_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteFormattable__1_DotNext_Buffers_BufferWriterSlim_System_Byte___ReadOnlySpan___0__" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable``1(DotNext.Buffers.BufferWriterSlim{System.Byte}@,ReadOnlySpan{``0})">WriteFormattable&lt;T&gt;(ref BufferWriterSlim&lt;Byte&gt;, ReadOnlySpan&lt;T&gt;)</h4>
@@ -1874,7 +2042,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteFormattable__1_DotNext_Buffers_BufferWriterSlim_System_Char_____0_ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteFormattable%60%601(DotNext.Buffers.BufferWriterSlim%7BSystem.Char%7D%40%2C%60%600%2CReadOnlySpan%7BSystem.Char%7D%2CSystem.Nullable%7BIFormatProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L139">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L152">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteFormattable_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteFormattable__1_DotNext_Buffers_BufferWriterSlim_System_Char_____0_ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable``1(DotNext.Buffers.BufferWriterSlim{System.Char}@,``0,ReadOnlySpan{System.Char},System.Nullable{IFormatProvider})">WriteFormattable&lt;T&gt;(ref BufferWriterSlim&lt;Char&gt;, T, ReadOnlySpan&lt;Char&gt;, Nullable&lt;IFormatProvider&gt;)</h4>
@@ -1883,7 +2051,7 @@ otherwise, <span class="xref">false</span>.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this ref BufferWriterSlim&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
+    <pre><code class="lang-csharp hljs">public static int WriteFormattable&lt;T&gt;(this ref BufferWriterSlim&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
 
     where T : ISpanFormattable</code></pre>
   </div>
@@ -1923,6 +2091,22 @@ otherwise, <span class="xref">false</span>.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -1944,7 +2128,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteFormattable%60%601(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L264">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L280">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteFormattable_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable``1(System.Buffers.IBufferWriter{System.Byte},``0)">WriteFormattable&lt;T&gt;(IBufferWriter&lt;Byte&gt;, T)</h4>
@@ -2002,7 +2186,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte__ReadOnlySpan___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteFormattable%60%601(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CReadOnlySpan%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L294">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteFormattable_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte__ReadOnlySpan___0__" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable``1(System.Buffers.IBufferWriter{System.Byte},ReadOnlySpan{``0})">WriteFormattable&lt;T&gt;(IBufferWriter&lt;Byte&gt;, ReadOnlySpan&lt;T&gt;)</h4>
@@ -2060,7 +2244,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Char____0_ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteFormattable%60%601(System.Buffers.IBufferWriter%7BSystem.Char%7D%2C%60%600%2CReadOnlySpan%7BSystem.Char%7D%2CSystem.Nullable%7BIFormatProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L240">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L253">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteFormattable_" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Char____0_ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__" data-uid="DotNext.Buffers.BufferHelpers.WriteFormattable``1(System.Buffers.IBufferWriter{System.Char},``0,ReadOnlySpan{System.Char},System.Nullable{IFormatProvider})">WriteFormattable&lt;T&gt;(IBufferWriter&lt;Char&gt;, T, ReadOnlySpan&lt;Char&gt;, Nullable&lt;IFormatProvider&gt;)</h4>
@@ -2069,7 +2253,7 @@ otherwise, <span class="xref">false</span>.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this IBufferWriter&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
+    <pre><code class="lang-csharp hljs">public static int WriteFormattable&lt;T&gt;(this IBufferWriter&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
 
     where T : ISpanFormattable</code></pre>
   </div>
@@ -2105,6 +2289,22 @@ otherwise, <span class="xref">false</span>.</p>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">IFormatProvider</span>&gt;</td>
         <td><span class="parametername">provider</span></td>
         <td><p>The format provider.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of written characters.</p>
 </td>
       </tr>
     </tbody>
@@ -2406,7 +2606,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteLine_DotNext_Buffers_BufferWriterSlim_System_Char___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteLine(DotNext.Buffers.BufferWriterSlim%7BSystem.Char%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L161">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L177">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteLine_" data-uid="DotNext.Buffers.BufferHelpers.WriteLine*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteLine_DotNext_Buffers_BufferWriterSlim_System_Char___" data-uid="DotNext.Buffers.BufferHelpers.WriteLine(DotNext.Buffers.BufferWriterSlim{System.Char}@)">WriteLine(ref BufferWriterSlim&lt;Char&gt;)</h4>
@@ -2440,7 +2640,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteLine_DotNext_Buffers_BufferWriterSlim_System_Char___ReadOnlySpan_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteLine(DotNext.Buffers.BufferWriterSlim%7BSystem.Char%7D%40%2CReadOnlySpan%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L169">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.BufferWriterSlim.cs/#L185">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteLine_" data-uid="DotNext.Buffers.BufferHelpers.WriteLine*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteLine_DotNext_Buffers_BufferWriterSlim_System_Char___ReadOnlySpan_System_Char__" data-uid="DotNext.Buffers.BufferHelpers.WriteLine(DotNext.Buffers.BufferWriterSlim{System.Char}@,ReadOnlySpan{System.Char})">WriteLine(ref BufferWriterSlim&lt;Char&gt;, ReadOnlySpan&lt;Char&gt;)</h4>
@@ -2480,7 +2680,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteLine_System_Buffers_IBufferWriter_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteLine(System.Buffers.IBufferWriter%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L218">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L230">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteLine_" data-uid="DotNext.Buffers.BufferHelpers.WriteLine*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteLine_System_Buffers_IBufferWriter_System_Char__" data-uid="DotNext.Buffers.BufferHelpers.WriteLine(System.Buffers.IBufferWriter{System.Char})">WriteLine(IBufferWriter&lt;Char&gt;)</h4>
@@ -2514,7 +2714,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteLine_System_Buffers_IBufferWriter_System_Char__ReadOnlySpan_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteLine(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CReadOnlySpan%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L226">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.cs/#L238">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteLine_" data-uid="DotNext.Buffers.BufferHelpers.WriteLine*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteLine_System_Buffers_IBufferWriter_System_Char__ReadOnlySpan_System_Char__" data-uid="DotNext.Buffers.BufferHelpers.WriteLine(System.Buffers.IBufferWriter{System.Char},ReadOnlySpan{System.Char})">WriteLine(IBufferWriter&lt;Char&gt;, ReadOnlySpan&lt;Char&gt;)</h4>

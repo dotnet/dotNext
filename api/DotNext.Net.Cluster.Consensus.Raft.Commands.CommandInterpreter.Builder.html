@@ -121,6 +121,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public CommandInterpreter.Builder Add&lt;TCommand&gt;(int commandId, Func&lt;TCommand, CancellationToken, ValueTask&gt; handler, bool snapshotHandler = false)
+
     where TCommand : ISerializable&lt;TCommand&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

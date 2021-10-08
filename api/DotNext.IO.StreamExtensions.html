@@ -236,6 +236,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void CopyTo&lt;TConsumer&gt;(this Stream source, TConsumer consumer, Span&lt;byte&gt; buffer, CancellationToken token = null)
+
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -590,6 +591,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async Task CopyToAsync&lt;TConsumer&gt;(this Stream source, TConsumer consumer, Memory&lt;byte&gt; buffer, CancellationToken token = null)
+
     where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1035,6 +1037,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Parse&lt;T&gt;(this Stream stream)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1198,6 +1201,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Parse&lt;T&gt;(this Stream stream, Span&lt;byte&gt; buffer)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1271,6 +1275,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(this Stream stream, CancellationToken token = null)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1542,6 +1547,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(this Stream stream, Memory&lt;byte&gt; buffer, CancellationToken token = null)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1621,6 +1627,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this Stream stream)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1688,6 +1695,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, CancellationToken token = null)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1761,6 +1769,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, Memory&lt;byte&gt; buffer, CancellationToken token = null)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3236,6 +3245,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this Stream stream, in T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3355,6 +3365,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask WriteAsync&lt;T&gt;(this Stream stream, T value, CancellationToken token = null)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3434,6 +3445,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask WriteAsync&lt;T&gt;(this Stream stream, T value, Memory&lt;byte&gt; buffer, CancellationToken token = null)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3938,6 +3950,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this Stream stream, T value)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3995,6 +4008,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this Stream stream, T value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
+
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -4076,6 +4090,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask WriteFormattableAsync&lt;T&gt;(this Stream stream, T value, CancellationToken token = null)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -4155,6 +4170,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask WriteFormattableAsync&lt;T&gt;(this Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, Memory&lt;byte&gt; buffer, string format = null, IFormatProvider? provider = null, CancellationToken token = null)
+
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -4264,6 +4280,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask WriteFormattableAsync&lt;T&gt;(this Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, string format = null, IFormatProvider? provider = null, CancellationToken token = null)
+
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -4367,6 +4384,7 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask WriteFormattableAsync&lt;T&gt;(this Stream stream, T value, Memory&lt;byte&gt; buffer, CancellationToken token = null)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

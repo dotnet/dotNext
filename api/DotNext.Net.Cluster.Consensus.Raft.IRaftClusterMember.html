@@ -192,6 +192,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">Task&lt;Result&lt;bool&gt;&gt; AppendEntriesAsync&lt;TEntry, TList&gt;(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+
     where TEntry : IRaftLogEntry where TList : IReadOnlyList&lt;TEntry&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -393,6 +393,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async Task CopyToAsync&lt;TConsumer&gt;(this PipeReader reader, TConsumer consumer, CancellationToken token = null)
+
     where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -640,6 +641,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(this PipeReader reader, CancellationToken token = null)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -809,6 +811,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this PipeReader reader, CancellationToken token = null)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1148,6 +1151,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask ReadBlockAsync&lt;TConsumer&gt;(this PipeReader reader, long length, TConsumer consumer, CancellationToken token = null)
+
     where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2022,6 +2026,7 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;FlushResult&gt; WriteAsync&lt;T&gt;(this PipeWriter writer, T value, CancellationToken token = null)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2330,6 +2335,7 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;FlushResult&gt; WriteFormattableAsync&lt;T&gt;(this PipeWriter writer, T value, CancellationToken token = null)
+
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2409,6 +2415,7 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;FlushResult&gt; WriteFormattableAsync&lt;T&gt;(this PipeWriter writer, T value, LengthFormat lengthFormat, EncodingContext context, string format = null, IFormatProvider? provider = null, CancellationToken token = null)
+
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
