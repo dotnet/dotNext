@@ -65,7 +65,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         // box current token once and only if needed
         object? tokenHolder = null;
-        if (timeout != InfiniteTimeSpan)
+        if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
             tokenHolder = version;
