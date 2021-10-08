@@ -131,13 +131,20 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private void InvokeContinuationCore()
     {
+        var contex = this.context;
+        this.context = null;
+
+        var continuation = this.continuation;
+        this.continuation = null;
+
+        var continuationState = this.continuationState;
+        this.continuationState = null;
+
+        var capturedContext = this.capturedContext;
+        this.capturedContext = null;
+
         if (continuation is not null)
             InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
-
-        // after invocation we don't need to hold the references to the related objects
-        context = null;
-        continuation = null;
-        capturedContext = continuationState = null;
     }
 
     private static void InvokeContinuation(object? source)
