@@ -134,7 +134,7 @@ internal sealed class TcpServer : TcpTransport, IServer
                         exchange.Reset();
                         continue;
                     case ExchangeResult.TimeOut:
-                        remoteClient.Disconnect(false);
+                        await remoteClient.DisconnectAsync(false, lifecycleToken).ConfigureAwait(false);
                         logger.RequestTimedOut();
                         goto default;
                 }
