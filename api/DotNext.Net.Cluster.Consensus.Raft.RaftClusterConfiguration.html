@@ -128,7 +128,6 @@ in DI container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IServiceCollection ConfigureCluster&lt;TConfig&gt;(this IServiceCollection services)
-
     where TConfig : class, IClusterMemberLifetime</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -196,7 +195,6 @@ in DI container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IServiceCollection UseConfigurationStorage&lt;TStorage&gt;(this IServiceCollection services)
-
     where TStorage : class, IClusterConfigurationStorage&lt;HttpEndPoint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -323,7 +321,6 @@ in DI container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IServiceCollection UsePersistenceEngine&lt;TPersistentState&gt;(this IServiceCollection services)
-
     where TPersistentState : PersistentState</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -395,7 +392,6 @@ in DI container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IServiceCollection UsePersistenceEngine&lt;TEngine, TImplementation&gt;(this IServiceCollection services)
-
     where TEngine : class where TImplementation : PersistentState, TEngine</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

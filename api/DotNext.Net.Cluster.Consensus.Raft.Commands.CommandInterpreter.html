@@ -131,7 +131,6 @@ with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandIn
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public LogEntry&lt;TCommand&gt; CreateLogEntry&lt;TCommand&gt;(TCommand command, long term)
-
     where TCommand : ISerializable&lt;TCommand&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -205,7 +204,6 @@ with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandIn
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; InterpretAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token = null)
-
     where TEntry : struct, IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

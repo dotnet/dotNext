@@ -751,7 +751,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected async Task&lt;Result&lt;bool&gt;&gt; AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1018,7 +1017,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected async Task&lt;Result&lt;bool&gt;&gt; InstallSnapshotAsync&lt;TSnapshot&gt;(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-
     where TSnapshot : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1313,7 +1311,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; ReplicateAsync&lt;TEntry&gt;(TEntry entry, TimeSpan timeout, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1842,7 +1839,8 @@ node.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#Consensus#Raft#IRaftCluster#Members*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#Consensus#Raft#IRaftCluster#Members">IRaftCluster.Members</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a set of visible cluster members.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1872,7 +1870,8 @@ node.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_Leader_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#Leader*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_Leader" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#Leader">ICluster.Leader</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the leader node.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1901,7 +1900,8 @@ node.</p>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs/#L166">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_LeaderChanged" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#LeaderChanged">ICluster.LeaderChanged</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>An event raised when leader has been changed.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1931,7 +1931,8 @@ node.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_ResignAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#ResignAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_ResignAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#ResignAsync(CancellationToken)">ICluster.ResignAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Revokes leadership and starts new election process.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1965,7 +1966,8 @@ node.</p>
     <tbody>
       <tr>
         <td><span class="xref">Task</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td></td>
+        <td><p><span class="xref">true</span> if leadership is revoked successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1977,7 +1979,9 @@ node.</p>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs/#L183">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_Replication_IReplicationCluster_ReplicationCompleted" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#Replication#IReplicationCluster#ReplicationCompleted">IReplicationCluster.ReplicationCompleted</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Represents an event raised when the local node completes its replication with another
+node.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2006,7 +2010,8 @@ node.</p>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs/#L93">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_PeerDiscovered" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh#PeerDiscovered">IPeerMesh.PeerDiscovered</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>An event raised when a new remote peer has been discovered.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2035,7 +2040,8 @@ node.</p>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Membership.cs/#L115">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_PeerGone" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh#PeerGone">IPeerMesh.PeerGone</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>An event raised when the visible neighbor becomes unavailable.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2065,7 +2071,8 @@ node.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_Peers_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh#Peers*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_Peers" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh#Peers">IPeerMesh.Peers</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a collection of visible peers.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2095,7 +2102,8 @@ node.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember__TryGetPeer_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh{DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember}#TryGetPeer*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember__TryGetPeer_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh{DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember}#TryGetPeer(System.Net.EndPoint)">IPeerMesh&lt;IRaftClusterMember&gt;.TryGetPeer(EndPoint)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a client used to communucate with a remote peer.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2114,7 +2122,8 @@ node.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a></td>
         <td><span class="parametername">peer</span></td>
-        <td></td>
+        <td><p>The address of the peer.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2129,7 +2138,8 @@ node.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a></td>
-        <td></td>
+        <td><p>The peer client; or <span class="xref">null</span> if the specified peer is not visible from the current peer.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2142,7 +2152,8 @@ node.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_DotNext_Net_Cluster_IClusterMember__TryGetPeer_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh{DotNext#Net#Cluster#IClusterMember}#TryGetPeer*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_DotNext_Net_Cluster_IClusterMember__TryGetPeer_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#IPeerMesh{DotNext#Net#Cluster#IClusterMember}#TryGetPeer(System.Net.EndPoint)">IPeerMesh&lt;IClusterMember&gt;.TryGetPeer(EndPoint)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a client used to communucate with a remote peer.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2161,7 +2172,8 @@ node.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a></td>
         <td><span class="parametername">peer</span></td>
-        <td></td>
+        <td><p>The address of the peer.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2176,7 +2188,8 @@ node.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a></td>
-        <td></td>
+        <td><p>The peer client; or <span class="xref">null</span> if the specified peer is not visible from the current peer.</p>
+</td>
       </tr>
     </tbody>
   </table>
