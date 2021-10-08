@@ -29,6 +29,10 @@ using Timeout = Threading.Timeout;
 /// <description>file containing log partition with log records</description>
 /// </item>
 /// <item>
+/// <term>&lt;snapshot&gt;.meta</term>
+/// <description>file containing metadata associated with the log partition</description>
+/// </item>
+/// <item>
 /// <term>snapshot</term>
 /// <description>file containing snapshot</description>
 /// </item>

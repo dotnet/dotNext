@@ -228,7 +228,7 @@ public ref struct BufferWriterSlim<T>
     /// lears the data written to the underlying buffer.
     /// </summary>
     /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
-    public void Clear(bool reuseBuffer)
+    public void Clear(bool reuseBuffer = false)
     {
         initialBuffer.Clear();
         if (!reuseBuffer)
