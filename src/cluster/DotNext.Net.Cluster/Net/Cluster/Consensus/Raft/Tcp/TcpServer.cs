@@ -81,6 +81,7 @@ internal sealed class TcpServer : TcpTransport, IServer
     private readonly int backlog;
     private readonly Func<IReusableExchange> exchangeFactory;
     private readonly CancellationTokenSource transmissionState;
+    private readonly CancellationToken lifecycleToken;
     private TimeSpan receiveTimeout;
     private volatile int connections;
     internal int GracefulShutdownTimeout;
@@ -92,6 +93,7 @@ internal sealed class TcpServer : TcpTransport, IServer
         this.backlog = backlog;
         this.exchangeFactory = exchangeFactory;
         transmissionState = new CancellationTokenSource();
+        lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
     }
 
     public TimeSpan ReceiveTimeout
@@ -110,7 +112,7 @@ internal sealed class TcpServer : TcpTransport, IServer
         set;
     }
 
-    private async void HandleConnection(Socket remoteClient, CancellationToken token)
+    private async void HandleConnection(Socket remoteClient)
     {
         var sslOptions = SslOptions;
         var stream = new ServerNetworkStream(remoteClient, sslOptions is not null);
@@ -120,11 +122,11 @@ internal sealed class TcpServer : TcpTransport, IServer
         try
         {
             if (sslOptions is not null)
-                await stream.Authenticate(sslOptions, token).ConfigureAwait(false);
+                await stream.Authenticate(sslOptions, lifecycleToken).ConfigureAwait(false);
 
             while (stream.Connected && !IsDisposed)
             {
-                switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, token).ConfigureAwait(false))
+                switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, lifecycleToken).ConfigureAwait(false))
                 {
                     default:
                         return;
@@ -152,18 +154,15 @@ internal sealed class TcpServer : TcpTransport, IServer
         }
     }
 
-    private void HandleConnection((Socket Client, CancellationToken Token) args) => HandleConnection(args.Client, args.Token);
-
     private async void Listen()
     {
-        var token = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
         for (var pending = true; pending && !IsDisposed;)
         {
             try
             {
-                var remoteClient = await socket.AcceptAsync(token).ConfigureAwait(false);
+                var remoteClient = await socket.AcceptAsync(lifecycleToken).ConfigureAwait(false);
                 ConfigureSocket(remoteClient, LingerOption, Ttl);
-                ThreadPool.QueueUserWorkItem(HandleConnection, (remoteClient, token), false);
+                ThreadPool.QueueUserWorkItem(HandleConnection, remoteClient, false);
             }
             catch (ObjectDisposedException)
             {
