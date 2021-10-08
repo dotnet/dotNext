@@ -204,8 +204,13 @@ public struct InterpolatedStringTemplateBuilder
         // call handler.ToString()
         statements.Add(Expression.Call(handlerLocal, nameof(BufferWriterSlimInterpolatedStringHandler.ToString), Type.EmptyTypes));
 
+        // try-finally block to dispose the writer
+        expr = Expression.Block(statements);
+        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<char>.Dispose), Type.EmptyTypes));
+        expr = Expression.Block(new[] { preallocatedBufferLocal, writerLocal, handlerLocal }, expr);
+
         return Expression.Lambda(
-            Expression.Block(new[] { preallocatedBufferLocal, writerLocal, handlerLocal }, statements),
+            expr,
             false,
             parameters);
     }
