@@ -114,23 +114,6 @@ internal abstract class UdpSocket : Socket, INetworkTransport
         }
     }
 
-    private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
-        where TChannel : struct, INetworkTransport.IChannel
-    {
-        try
-        {
-            action(ref channel, context);
-        }
-        catch (Exception e)
-        {
-            channel.Exchange.OnException(e);
-        }
-        finally
-        {
-            ThreadPool.QueueUserWorkItem(dispatcher, args, true);
-        }
-    }
-
     private protected virtual void ReportError(SocketError error)
         => logger.SockerErrorOccurred(error);
 
