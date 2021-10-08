@@ -21,10 +21,9 @@ internal sealed class Chunk<T> : ReadOnlySequenceSegment<T>
     {
         Debug.Assert(!segment.IsEmpty);
 
-        if (first is null || last is null)
-            first = last = new Chunk<T>(segment) { RunningIndex = 0L };
-        else
-            last = last.Next(segment);
+        last = first is null || last is null
+            ? first = new Chunk<T>(segment) { RunningIndex = 0L }
+            : last.Next(segment);
     }
 
     internal static ReadOnlySequence<T> CreateSequence(Chunk<T> head, Chunk<T> tail)
