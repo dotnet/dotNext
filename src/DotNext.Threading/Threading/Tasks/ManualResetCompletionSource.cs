@@ -133,6 +133,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         if (continuation is not null)
             InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
+
+        // after invocation we don't need to hold the references to the related objects
+        context = null;
+        continuation = null;
+        capturedContext = continuationState = null;
     }
 
     private static void InvokeContinuation(object? source)
@@ -157,9 +162,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         version += 1;
         completed = false;
         context = null;
-        capturedContext = null;
         continuation = null;
-        continuationState = null;
+        continuationState = capturedContext = null;
     }
 
     /// <summary>
