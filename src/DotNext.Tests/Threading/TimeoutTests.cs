@@ -13,6 +13,9 @@ namespace DotNext.Threading
             if (timeout) throw new Xunit.Sdk.XunitException();
             Equal(InfiniteTimeSpan, timeout);
             Equal(InfiniteTimeSpan, timeout.RemainingTime);
+
+            timeout.ThrowIfExpired(out var remaining);
+            Equal(InfiniteTimeSpan, remaining);
         }
 
         [Fact]
