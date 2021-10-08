@@ -131,7 +131,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private void InvokeContinuationCore()
     {
-        this.context = null;
+        context = null;
 
         var continuation = this.continuation;
         this.continuation = null;
