@@ -480,6 +480,12 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(60), ptr1);
             ptr1 -= (nint)1;
             Equal(new IntPtr(56), ptr1);
+
+            True(ptr1 > ptr2);
+            True(ptr1 >= ptr2);
+
+            False(ptr1 < ptr2);
+            False(ptr1 <= ptr2);
         }
 
         [Fact]
@@ -546,6 +552,15 @@ namespace DotNext.Runtime.InteropServices
 
             handle.Target = 52;
             Equal(52, handle.Target);
+        }
+
+        [Fact]
+        public static void CompareToMethod()
+        {
+            IComparable<Pointer<int>> x = new Pointer<int>((nint)9);
+            Equal(1, x.CompareTo(Pointer<int>.Null));
+            Equal(-1, x.CompareTo(new((nint)10)));
+            Equal(0, x.CompareTo(new((nint)9)));
         }
     }
 }

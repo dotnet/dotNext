@@ -11,65 +11,17 @@ using TransportServices;
 
 internal abstract class UdpSocket : Socket, INetworkTransport
 {
-    private protected static readonly IPEndPoint AnyRemoteEndpoint = new(IPAddress.Any, 0);
-
-    private sealed class SendEventArgs : SocketAsyncEventSource
-    {
-        private readonly Action<SendEventArgs> backToPool;
-
-        internal SendEventArgs(Action<SendEventArgs> backToPool)
-            : base(true) => this.backToPool = backToPool;
-
-        internal void Initialize(Memory<byte> buffer, EndPoint endPoint)
-        {
-            RemoteEndPoint = endPoint;
-            SetBuffer(buffer);
-            Reset();
-        }
-
-        internal ValueTask GetTask(bool pending)
-        {
-            if (pending)
-            {
-                return Task;
-            }
-            else
-            {
-                var error = SocketError;
-                backToPool?.Invoke(this);
-                return error == SocketError.Success
-                    ? ValueTask.CompletedTask
-                    : ValueTask.FromException(new SocketException((int)error));
-            }
-        }
-
-        protected override void OnCompleted(SocketAsyncEventArgs e)
-        {
-            base.OnCompleted(e);
-            backToPool(this);
-        }
-    }
-
-    private sealed class SendTaskPool : ConcurrentBag<SendEventArgs>
-    {
-        internal void Populate(int count)
-        {
-            Action<SendEventArgs> backToPool = Add;
-            for (var i = 0; i < count; i++)
-                Add(new SendEventArgs(backToPool));
-        }
-    }
-
     internal const int MaxDatagramSize = 65507;
     internal const int MinDatagramSize = 300;
+    private static readonly IPEndPoint AnyRemoteEndpoint = new(IPAddress.Any, 0);
+
     private protected readonly MemoryAllocator<byte> allocator;
     internal readonly IPEndPoint Address;
     private protected readonly ILogger logger;
+    private readonly CancellationTokenSource lifecycleControl;
+    private readonly int listeners;
 
     // I/O management
-    private readonly SocketAsyncEventArgs?[] receiverPool;
-    private readonly SendTaskPool senderPool;
-    private readonly Action<SocketAsyncEventArgs> dispatcher;
     private int datagramSize;
 
     private protected UdpSocket(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
@@ -80,11 +32,13 @@ internal abstract class UdpSocket : Socket, INetworkTransport
         Address = address;
         logger = loggerFactory.CreateLogger(GetType());
         this.allocator = allocator;
-        senderPool = new SendTaskPool();
-        receiverPool = new SocketAsyncEventArgs?[backlog];
-        dispatcher = BeginReceive;
+        lifecycleControl = new();
+        LifecycleToken = lifecycleControl.Token;
         datagramSize = MinDatagramSize;
+        listeners = backlog;
     }
+
+    private protected CancellationToken LifecycleToken { get; } // cached to avoid ObjectDisposedException
 
     IPEndPoint INetworkTransport.Address => Address;
 
@@ -97,84 +51,52 @@ internal abstract class UdpSocket : Socket, INetworkTransport
         set => datagramSize = ValidateDatagramSize(value);
     }
 
-    private protected abstract void EndReceive(SocketAsyncEventArgs args);
-
-    private void EndReceive(object? sender, SocketAsyncEventArgs args)
-    {
-        switch (args.SocketError)
-        {
-            default:
-                ReportError(args.SocketError);
-                break;
-            case SocketError.OperationAborted or SocketError.ConnectionAborted:
-                break;
-            case SocketError.Success:
-                EndReceive(args);
-                break;
-        }
-    }
-
-    private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
-        where TChannel : struct, INetworkTransport.IChannel
-    {
-        try
-        {
-            action(ref channel, context);
-        }
-        catch (Exception e)
-        {
-            channel.Exchange.OnException(e);
-        }
-        finally
-        {
-            ThreadPool.QueueUserWorkItem(dispatcher, args, true);
-        }
-    }
-
-    private protected virtual void ReportError(SocketError error)
-        => logger.SockerErrorOccurred(error);
-
     private protected abstract bool AllowReceiveFromAnyHost { get; }
 
-    private void BeginReceive(SocketAsyncEventArgs args)
+    private protected void Start()
     {
-        args.RemoteEndPoint = AllowReceiveFromAnyHost ? AnyRemoteEndpoint : Address;
-        bool result;
-        try
-        {
-            result = ReceiveFromAsync(args);
-        }
-        catch (ObjectDisposedException)
-        {
-            args.SocketError = SocketError.Shutdown;
-            result = false;
-        }
-
-        if (!result) // completed synchronously
-            EndReceive(this, args);
+        for (var i = 0; i < listeners; i++)
+            ThreadPool.QueueUserWorkItem<UdpSocket>(static socket => socket.ListenerLoopAsync(), this, false);
     }
 
-    private protected void Start(object? userToken = null)
+    private async void ListenerLoopAsync()
     {
-        EventHandler<SocketAsyncEventArgs> completedHandler = EndReceive;
-        for (var i = 0; i < receiverPool.Length; i++)
+        using var buffer = AllocDatagramBuffer();
+
+        while (!LifecycleToken.IsCancellationRequested)
         {
-            var args = new SocketAsyncEventArgs { UserToken = userToken };
-            args.SetBuffer(new byte[datagramSize]);
-            args.Completed += completedHandler;
-            receiverPool[i] = args;
-            BeginReceive(args);
+            try
+            {
+                var result = await ReceiveFromAsync(buffer.Memory, SocketFlags.None, AllowReceiveFromAnyHost ? AnyRemoteEndpoint : Address, LifecycleToken).ConfigureAwait(false);
+                ReadOnlyMemory<byte> datagram = buffer.Memory.Slice(0, result.ReceivedBytes);
+
+                datagram = datagram.Slice(ParseDatagram(datagram.Span, out var id, out var headers));
+                await ProcessDatagramAsync(result.RemoteEndPoint, id, headers, datagram).ConfigureAwait(false);
+            }
+            catch (Exception e) when (e is OperationCanceledException || e is ObjectDisposedException)
+            {
+                break;
+            }
         }
 
-        senderPool.Populate(receiverPool.Length);
+        static int ParseDatagram(ReadOnlySpan<byte> datagram, out CorrelationId id, out PacketHeaders headers)
+        {
+            var reader = new SpanReader<byte>(datagram);
+
+            id = new(ref reader);
+            headers = new(ref reader);
+
+            return reader.ConsumedCount;
+        }
     }
 
-    private protected async void ProcessDatagram<TChannel>(ConcurrentDictionary<CorrelationId, TChannel> channels, TChannel channel, CorrelationId correlationId, PacketHeaders headers, ReadOnlyMemory<byte> datagram, SocketAsyncEventArgs args)
+    private protected abstract ValueTask ProcessDatagramAsync(EndPoint ep, CorrelationId id, PacketHeaders headers, ReadOnlyMemory<byte> payload);
+
+    private protected async ValueTask ProcessDatagramAsync<TChannel>(EndPoint ep, ConcurrentDictionary<CorrelationId, TChannel> channels, TChannel channel, CorrelationId correlationId, PacketHeaders headers, ReadOnlyMemory<byte> datagram)
         where TChannel : struct, INetworkTransport.IChannel
     {
         bool stateFlag;
         var error = default(Exception);
-        var ep = args.RemoteEndPoint;
         Debug.Assert(ep is not null);
 
         // handle received packet
@@ -186,11 +108,6 @@ internal abstract class UdpSocket : Socket, INetworkTransport
         {
             stateFlag = false;
             error = e;
-        }
-        finally
-        {
-            // datagram buffer is no longer needed so we can return control to the event loop
-            ThreadPool.QueueUserWorkItem(dispatcher, args, true);
         }
 
         // send one more datagram if exchange requires this
@@ -218,19 +135,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
         }
     }
 
-    private ValueTask SendToAsync(Memory<byte> datagram, EndPoint endPoint)
-    {
-        // obtain sender task from the pool
-        if (senderPool.TryTake(out var task))
-        {
-            task.Initialize(datagram, endPoint);
-            return task.GetTask(SendToAsync(task));
-        }
-
-        return new(Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
-    }
-
-    private protected async Task<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)
+    private protected async ValueTask<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)
         where TChannel : struct, INetworkTransport.IChannel
     {
         bool waitForInput;
@@ -245,7 +150,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
 
             // write correlation ID and headers
             var prologueSize = WritePrologue(bufferHolder.Memory.Span, in id, headers);
-            await SendToAsync(bufferHolder.Memory.Slice(0, prologueSize + bytesWritten), endpoint).ConfigureAwait(false);
+            await SendToAsync(bufferHolder.Memory.Slice(0, prologueSize + bytesWritten), endpoint, channel.Token).ConfigureAwait(false);
         }
         finally
         {
@@ -265,37 +170,30 @@ internal abstract class UdpSocket : Socket, INetworkTransport
         }
     }
 
-    private protected MemoryOwner<byte> AllocDatagramBuffer()
-        => allocator(datagramSize);
-
-    private void Cleanup(bool disposing)
+    private async ValueTask SendToAsync(ReadOnlyMemory<byte> datagram, EndPoint endPoint, CancellationToken token)
     {
-        if (disposing)
+        for (int bytesWritten; !datagram.IsEmpty; datagram = datagram.Slice(bytesWritten))
         {
-            foreach (ref var args in receiverPool.AsSpan())
-            {
-                args?.Dispose();
-                args = null;
-            }
-
-            foreach (var task in senderPool)
-                task.Dispose();
-            senderPool.Clear();
+            bytesWritten = await SendToAsync(datagram, SocketFlags.None, endPoint, token).ConfigureAwait(false);
         }
     }
+
+    private protected MemoryOwner<byte> AllocDatagramBuffer()
+        => allocator(datagramSize);
 
     private protected static Memory<byte> AdjustToPayload(Memory<byte> packet)
         => packet.Slice(PacketHeaders.Size + CorrelationId.Size);
 
     protected override void Dispose(bool disposing)
     {
-        try
+        if (disposing)
         {
-            base.Dispose(disposing);
+            if (!lifecycleControl.IsCancellationRequested)
+                lifecycleControl.Cancel();
+
+            lifecycleControl.Dispose();
         }
-        finally
-        {
-            Cleanup(disposing);
-        }
+
+        base.Dispose(disposing);
     }
 }

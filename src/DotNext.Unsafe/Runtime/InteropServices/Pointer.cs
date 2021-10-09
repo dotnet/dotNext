@@ -21,7 +21,7 @@ using MemorySource = Buffers.UnmanagedMemory<byte>;
 /// Null-pointer is the only check performed by methods.
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplier<IntPtr>, ISupplier<UIntPtr>, IPinnable
+public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<T>>, IStrongBox, ISupplier<IntPtr>, ISupplier<UIntPtr>, IPinnable, ISpanFormattable
     where T : unmanaged
 {
     /// <summary>
@@ -739,7 +739,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, int offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
+        => pointer + (nint)offset;
 
     /// <summary>
     /// Adds an offset to the value of a pointer.
@@ -765,7 +765,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, int offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+        => pointer - (nint)offset;
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -791,7 +791,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, long offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
+        => pointer + (nint)offset;
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -804,7 +804,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, long offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+        => pointer - (nint)offset;
 
     /// <summary>
     /// Adds an offset to the value of a pointer.
@@ -839,14 +839,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     /// </summary>
     /// <param name="pointer">The pointer to add the offset to.</param>
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
-    public static Pointer<T> operator ++(Pointer<T> pointer) => pointer + 1;
+    public static Pointer<T> operator ++(Pointer<T> pointer) => pointer + (nint)1;
 
     /// <summary>
     /// Decrements this pointer by 1 element of type <typeparamref name="T"/>.
     /// </summary>
     /// <param name="pointer">The pointer to subtract the offset from.</param>
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
-    public static Pointer<T> operator --(Pointer<T> pointer) => pointer - 1;
+    public static Pointer<T> operator --(Pointer<T> pointer) => pointer - (nint)1;
 
     /// <summary>
     /// Indicates that the first pointer represents the same memory location as the second pointer.
@@ -867,6 +867,50 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(Pointer<T> first, Pointer<T> second)
         => !first.Equals(second);
+
+    /// <summary>
+    /// Determines whether the address of the first pointer is greater
+    /// than the address of the second pointer.
+    /// </summary>
+    /// <param name="first">The first pointer to compare.</param>
+    /// <param name="second">The second pointer to compare.</param>
+    /// <returns><see langword="true"/> if <paramref name="first"/> is greater than <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe bool operator >(Pointer<T> first, Pointer<T> second)
+        => first.value > second.value;
+
+    /// <summary>
+    /// Determines whether the address of the first pointer is less
+    /// than the address of the second pointer.
+    /// </summary>
+    /// <param name="first">The first pointer to compare.</param>
+    /// <param name="second">The second pointer to compare.</param>
+    /// <returns><see langword="true"/> if <paramref name="first"/> is less than <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe bool operator <(Pointer<T> first, Pointer<T> second)
+        => first.value < second.value;
+
+    /// <summary>
+    /// Determines whether the address of the first pointer is greater
+    /// than or equal to the address of the second pointer.
+    /// </summary>
+    /// <param name="first">The first pointer to compare.</param>
+    /// <param name="second">The second pointer to compare.</param>
+    /// <returns><see langword="true"/> if <paramref name="first"/> is greater than or equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe bool operator >=(Pointer<T> first, Pointer<T> second)
+        => first.value >= second.value;
+
+    /// <summary>
+    /// Determines whether the address of the first pointer is less
+    /// than or equal to the address of the second pointer.
+    /// </summary>
+    /// <param name="first">The first pointer to compare.</param>
+    /// <param name="second">The second pointer to compare.</param>
+    /// <returns><see langword="true"/> if <paramref name="first"/> is less than or equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe bool operator <=(Pointer<T> first, Pointer<T> second)
+        => first.value <= second.value;
 
     /// <summary>
     /// Converts non CLS-compliant pointer into its CLS-compliant representation.
@@ -969,6 +1013,18 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
     public unsafe bool Equals<TOther>(Pointer<TOther> other)
         where TOther : unmanaged => value == other.value;
 
+    /// <inheritdoc />
+    unsafe int IComparable<Pointer<T>>.CompareTo(Pointer<T> other)
+    {
+        if (value < other.value)
+            return -1;
+
+        if (value > other.value)
+            return 1;
+
+        return 0;
+    }
+
     /// <summary>
     /// Determines whether the value stored in the memory identified by this pointer is equal to the given value.
     /// </summary>
@@ -1001,6 +1057,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplie
         Pointer ptr => value == Pointer.Unbox(ptr),
         _ => false
     };
+
+    /// <inheritdoc />
+    string IFormattable.ToString(string? format, IFormatProvider? provider)
+        => Address.ToString(format, provider);
+
+    /// <inheritdoc />
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+        => Address.TryFormat(destination, out charsWritten, format, provider);
 
     /// <summary>
     /// Returns hexadecimal address represented by this pointer.

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -17,20 +16,6 @@ using Intrinsics = Runtime.Intrinsics;
 */
 internal sealed class TcpClient : TcpTransport, IClient
 {
-    private sealed class ConnectEventArgs : SocketAsyncEventSource
-    {
-        private readonly CancellationToken token;
-
-        internal ConnectEventArgs(CancellationToken token)
-            : base(false) => this.token = token;
-
-        private protected override bool IsCancellationRequested(out CancellationToken token)
-        {
-            token = this.token;
-            return this.token.IsCancellationRequested;
-        }
-    }
-
     private sealed class ClientNetworkStream : PacketStream
     {
         internal ClientNetworkStream(Socket socket, bool useSsl)
@@ -88,32 +73,28 @@ internal sealed class TcpClient : TcpTransport, IClient
         timeoutControl.CancelAfter(timeout);
         token = timeoutControl.Token;
 
-        using var args = new ConnectEventArgs(token)
-        {
-            RemoteEndPoint = endPoint,
-        };
+        var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
 
-        if (Socket.ConnectAsync(SocketType.Stream, ProtocolType.Tcp, args))
+        try
         {
-            using (token.Register(CancelConnectAsync, args))
-                await args.Task.ConfigureAwait(false);
+            await socket.ConnectAsync(endPoint, token).ConfigureAwait(false);
         }
-        else if (args.SocketError != SocketError.Success)
+        catch
         {
-            throw new SocketException((int)args.SocketError);
+            socket.Dispose();
+            throw;
         }
 
-        Debug.Assert(args.ConnectSocket is not null);
-        ConfigureSocket(args.ConnectSocket, linger, ttl);
+        ConfigureSocket(socket, linger, ttl);
         ClientNetworkStream result;
 
         if (sslOptions is null)
         {
-            result = new ClientNetworkStream(args.ConnectSocket, false);
+            result = new ClientNetworkStream(socket, useSsl: false);
         }
         else
         {
-            result = new ClientNetworkStream(args.ConnectSocket, true);
+            result = new ClientNetworkStream(socket, useSsl: true);
             await result.Authenticate(sslOptions, token).ConfigureAwait(false);
         }
 
