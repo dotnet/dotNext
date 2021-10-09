@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
@@ -16,24 +15,31 @@ internal sealed class UdpClient : UdpSocket, IClient
     private readonly struct Channel : INetworkTransport.IChannel
     {
         private readonly IExchange exchange;
+        private readonly CancellationTokenSource tokenSource;
         private readonly CancellationTokenRegistration cancellation;
 
-        internal Channel(IExchange exchange, Action<object?> cancellationCallback, CorrelationId id, CancellationToken token)
+        internal Channel(IExchange exchange, Action<object?, CancellationToken> cancellationCallback, CorrelationId id, CancellationToken token1, CancellationToken token2)
         {
             this.exchange = exchange;
-            cancellation = token.CanBeCanceled ? token.Register(cancellationCallback, id) : default;
+            tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token1, token2);
+            Token = tokenSource.Token;
+            cancellation = Token.IsCancellationRequested ? default : Token.Register(cancellationCallback, id);
         }
 
-        CancellationToken INetworkTransport.IChannel.Token => cancellation.Token;
+        public CancellationToken Token { get; }
 
         IExchange INetworkTransport.IChannel.Exchange => exchange;
 
         internal void Complete(Exception e) => exchange.OnException(e);
 
-        public void Dispose() => cancellation.Dispose();
+        public void Dispose()
+        {
+            cancellation.Dispose();
+            tokenSource.Dispose();
+        }
     }
 
-    private readonly Action<object?> cancellationHandler;
+    private readonly Action<object?, CancellationToken> cancellationHandler;
 
     // I/O management
     private readonly long applicationId;
@@ -57,25 +63,14 @@ internal sealed class UdpClient : UdpSocket, IClient
         return new();
     }
 
-    private protected override void ReportError(SocketError error)
-        => channels.ReportError(error);
-
-    private protected override void EndReceive(SocketAsyncEventArgs args)
+    private protected override ValueTask ProcessDatagramAsync(EndPoint ep, CorrelationId id, PacketHeaders headers, ReadOnlyMemory<byte> payload)
     {
-        ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
-        var reader = new SpanReader<byte>(datagram.Span);
-
         // dispatch datagram to appropriate exchange
-        var correlationId = new CorrelationId(ref reader);
-        if (channels.TryGetValue(correlationId, out var channel))
-        {
-            var headers = new PacketHeaders(ref reader);
-            ProcessDatagram(channels, channel, correlationId, headers, datagram.Slice(reader.ConsumedCount), args);
-        }
-        else
-        {
-            logger.PacketDropped(correlationId, args.RemoteEndPoint);
-        }
+        if (channels.TryGetValue(id, out var channel))
+            return ProcessDatagramAsync(ep, channels, channel, id, headers, payload);
+
+        logger.PacketDropped(id, ep);
+        return ValueTask.CompletedTask;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -110,8 +105,9 @@ internal sealed class UdpClient : UdpSocket, IClient
     {
         if (!IsBound && !Start(exchange))
             return;
+
         var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
-        var channel = new Channel(exchange, cancellationHandler, id, token);
+        var channel = new Channel(exchange, cancellationHandler, id, token, LifecycleToken);
         if (channels.TryAdd(id, channel))
         {
             try
@@ -141,7 +137,7 @@ internal sealed class UdpClient : UdpSocket, IClient
     {
         if (disposing)
         {
-            channels.ClearAndDestroyChannels();
+            channels.ClearAndDestroyChannels(LifecycleToken);
         }
     }
 
