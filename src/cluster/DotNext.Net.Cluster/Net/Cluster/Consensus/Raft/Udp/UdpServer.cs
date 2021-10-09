@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
@@ -18,17 +17,19 @@ internal sealed class UdpServer : UdpSocket, IServer
         private readonly CancellationTokenSource timeoutTokenSource;
         private readonly CancellationTokenRegistration cancellation;
 
-        internal Channel(IExchange exchange, IExchangePool exchanges, TimeSpan timeout, Action<object?> cancellationCallback, CorrelationId id)
+        internal Channel(IExchange exchange, IExchangePool exchanges, TimeSpan timeout, Action<object?, CancellationToken> cancellationCallback, CorrelationId id, CancellationToken token)
         {
             this.exchange = exchange;
-            timeoutTokenSource = new CancellationTokenSource(timeout);
-            cancellation = timeoutTokenSource.Token.Register(cancellationCallback, id);
+            timeoutTokenSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            Token = timeoutTokenSource.Token;
             exchangeOwner = exchanges;
+            cancellation = Token.Register(cancellationCallback, id);
+            timeoutTokenSource.CancelAfter(timeout);
         }
 
         IExchange INetworkTransport.IChannel.Exchange => exchange;
 
-        public CancellationToken Token => timeoutTokenSource.Token;
+        public CancellationToken Token { get; }
 
         public void Dispose()
         {
@@ -40,7 +41,7 @@ internal sealed class UdpServer : UdpSocket, IServer
 
     private readonly IExchangePool exchanges;
     private readonly INetworkTransport.ChannelPool<Channel> channels;
-    private readonly Action<object?> cancellationHandler;
+    private readonly Action<object?, CancellationToken> cancellationHandler;
     private TimeSpan receiveTimeout;
 
     internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
@@ -53,37 +54,35 @@ internal sealed class UdpServer : UdpSocket, IServer
 
     private protected override bool AllowReceiveFromAnyHost => true;
 
-    private protected override void EndReceive(SocketAsyncEventArgs args)
+    private protected override ValueTask ProcessDatagramAsync(EndPoint ep, CorrelationId id, PacketHeaders headers, ReadOnlyMemory<byte> payload)
     {
-        ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
-        var reader = new SpanReader<byte>(datagram.Span);
+        Channel channel;
 
-        // dispatch datagram to appropriate exchange
-        var correlationId = new CorrelationId(ref reader);
-        var headers = new PacketHeaders(ref reader);
-        datagram = datagram.Slice(reader.ConsumedCount);
-
-    request_channel:
-        if (!channels.TryGetValue(correlationId, out var channel))
+        while (true)
         {
-            // channel doesn't exist in the list of active channel but rented successfully
-            if (exchanges.TryRent(out var exchange))
+            if (!channels.TryGetValue(id, out channel))
             {
-                channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
-                if (!channels.TryAdd(correlationId, channel))
+                // channel doesn't exist in the list of active channel but rented successfully
+                if (exchanges.TryRent(out var exchange))
                 {
-                    channel.Dispose();
-                    goto request_channel;
+                    channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, id, LifecycleToken);
+                    if (!channels.TryAdd(id, channel))
+                    {
+                        channel.Dispose();
+                        continue;
+                    }
+                }
+                else
+                {
+                    logger.NotEnoughRequestHandlers();
+                    return ValueTask.CompletedTask;
                 }
             }
-            else
-            {
-                logger.NotEnoughRequestHandlers();
-                return;
-            }
+
+            break;
         }
 
-        ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
+        return ProcessDatagramAsync(ep, channels, channel, id, headers, payload);
     }
 
     public new TimeSpan ReceiveTimeout
@@ -96,7 +95,7 @@ internal sealed class UdpServer : UdpSocket, IServer
         }
     }
 
-    public void Start()
+    public new void Start()
     {
         Bind(Address);
         base.Start();
@@ -106,7 +105,7 @@ internal sealed class UdpServer : UdpSocket, IServer
     {
         if (disposing)
         {
-            channels.ClearAndDestroyChannels();
+            channels.ClearAndDestroyChannels(LifecycleToken);
             (exchanges as IDisposable)?.Dispose();
         }
     }
