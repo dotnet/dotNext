@@ -817,7 +817,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Pointer<T> operator +(Pointer<T> pointer, ulong offset)
+    public static unsafe Pointer<T> operator +(Pointer<T> pointer, nuint offset)
         => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
     /// <summary>
@@ -831,7 +831,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Pointer<T> operator -(Pointer<T> pointer, ulong offset)
+    public static unsafe Pointer<T> operator -(Pointer<T> pointer, nuint offset)
         => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
     /// <summary>
