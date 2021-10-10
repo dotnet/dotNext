@@ -170,7 +170,7 @@ public static class Optional
         where TException : struct, ISupplier<Exception>
     {
         ref readonly T result = ref Optional<T>.GetReference(in optional);
-        if (Unsafe.IsNullRef(ref Unsafe.AsRef(in result)))
+        if (!optional.HasValue)
             throw exceptionFactory.Invoke();
 
         return ref result;
@@ -261,11 +261,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         }
     }
 
-    // this method is dangerous and should be used with care
-    // because returned reference may be null
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref readonly T? GetReference(in Optional<T> optional)
-        => ref optional.HasValue ? ref optional.value : ref Unsafe.NullRef<T?>();
+        => ref optional.value;
 
     /// <summary>
     /// Represents optional container without value.
