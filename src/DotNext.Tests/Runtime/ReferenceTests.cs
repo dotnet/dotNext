@@ -79,5 +79,13 @@ namespace DotNext.Runtime
             Null(handle.ToString());
             Throws<NullReferenceException>(() => handle.Target);
         }
+
+        [Fact]
+        public static unsafe void InvalidArrayElementRef()
+        {
+            Throws<ArgumentException>(static () => Reference.Create<string[], string>(Array.Empty<string>(), &GetElementRef));
+
+            static ref string GetElementRef(string[] array) => ref array[0];
+        }
     }
 }

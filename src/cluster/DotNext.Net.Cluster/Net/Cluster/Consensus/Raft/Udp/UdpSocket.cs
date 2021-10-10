@@ -63,7 +63,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     {
         using var buffer = AllocDatagramBuffer();
 
-        while (!LifecycleToken.IsCancellationRequested)
+        for (var pending = true; pending && !LifecycleToken.IsCancellationRequested; )
         {
             try
             {
@@ -75,7 +75,24 @@ internal abstract class UdpSocket : Socket, INetworkTransport
             }
             catch (Exception e) when (e is OperationCanceledException || e is ObjectDisposedException)
             {
-                break;
+                pending = false;
+            }
+            catch (SocketException e)
+            {
+                switch (e.SocketErrorCode)
+                {
+                    case SocketError.OperationAborted:
+                    case SocketError.Shutdown:
+                        pending = false;
+                        break;
+                    default:
+                        logger.SockerErrorOccurred(e.SocketErrorCode);
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.SocketAcceptLoopTerminated(e);
             }
         }
 
