@@ -183,6 +183,9 @@ namespace DotNext.Runtime
         /// <paramref name="owner"/> is <see langword="null"/>;
         /// or <paramref name="getter"/> is <see langword="null"/>.
         /// </exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="owner"/> is a single-dimensional array.
+        /// </exception>
         [CLSCompliant(false)]
         public static unsafe Reference<TValue> Create<TOwner, TValue>(TOwner owner, delegate*<TOwner, ref TValue> getter)
             where TOwner : class
@@ -192,6 +195,9 @@ namespace DotNext.Runtime
 
             if (getter == null)
                 throw new ArgumentNullException(nameof(getter));
+
+            if (owner is Array array && array.Rank == 1)
+                throw new ArgumentException(ExceptionMessages.ObjectMustNotBeArray, nameof(owner));
 
             return Reference<TValue>.Create(owner, getter);
         }
