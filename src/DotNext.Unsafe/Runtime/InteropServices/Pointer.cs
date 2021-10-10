@@ -839,14 +839,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// </summary>
     /// <param name="pointer">The pointer to add the offset to.</param>
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
-    public static Pointer<T> operator ++(Pointer<T> pointer) => pointer + (nint)1;
+    public static Pointer<T> operator ++(Pointer<T> pointer) => pointer + 1;
 
     /// <summary>
     /// Decrements this pointer by 1 element of type <typeparamref name="T"/>.
     /// </summary>
     /// <param name="pointer">The pointer to subtract the offset from.</param>
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
-    public static Pointer<T> operator --(Pointer<T> pointer) => pointer - (nint)1;
+    public static Pointer<T> operator --(Pointer<T> pointer) => pointer - 1;
 
     /// <summary>
     /// Indicates that the first pointer represents the same memory location as the second pointer.
