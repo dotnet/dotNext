@@ -50,4 +50,6 @@ internal static class ExceptionMessages
         => string.Format(Resources.GetString("InvalidHexInput")!, ch);
 
     internal static string KeyAlreadyExists => Resources.GetString("KeyAlreadyExists")!;
+
+    internal static string ObjectMustNotBeArray => Resources.GetString("ObjectMustNotBeArray")!;
 }
