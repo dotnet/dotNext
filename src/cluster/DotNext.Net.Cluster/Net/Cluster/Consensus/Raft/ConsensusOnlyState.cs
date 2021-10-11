@@ -360,15 +360,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
         => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, token);
 
-    private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)
-    {
-        for (var timeoutTracker = new Timeout(timeout); term.VolatileRead() > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
-            timeoutTracker.ThrowIfExpired(out timeout);
-    }
-
     /// <inheritdoc/>
-    Task IPersistentState.EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
-        => term.VolatileRead() <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistency(timeout, token);
+    async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)
+    {
+        while (term.VolatileRead() != lastTerm.VolatileRead())
+            await commitEvent.WaitAsync(token).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Releases all resources associated with this audit trail.

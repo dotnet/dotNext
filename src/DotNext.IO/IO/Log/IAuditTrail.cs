@@ -1,7 +1,5 @@
 ﻿namespace DotNext.IO.Log;
 
-using Timeout = Threading.Timeout;
-
 /// <summary>
 /// Represents audit trail responsible for maintaining log entries.
 /// </summary>

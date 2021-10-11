@@ -1270,23 +1270,21 @@ public partial class PersistentState : Disposable, IPersistentState
 
     private bool IsConsistent => state.Term == lastTerm.VolatileRead() && state.CommitIndex == state.LastApplied;
 
-    private async Task EnsureConsistencyImpl(TimeSpan timeout, CancellationToken token)
-    {
-        for (var timeoutTracker = new Timeout(timeout); !IsConsistent; await commitEvent.WaitAsync(IsConsistentPredicate, this, timeout, token).ConfigureAwait(false))
-            timeoutTracker.ThrowIfExpired(out timeout);
-    }
-
     /// <summary>
     /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
     /// will be committed.
     /// </summary>
-    /// <param name="timeout">The time to wait.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="TimeoutException">Timeout occurred.</exception>
-    public Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
-        => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
+    public async ValueTask EnsureConsistencyAsync(CancellationToken token)
+    {
+        ThrowIfDisposed();
+
+        while (!IsConsistent)
+            await commitEvent.WaitAsync(IsConsistentPredicate, this, token).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);
