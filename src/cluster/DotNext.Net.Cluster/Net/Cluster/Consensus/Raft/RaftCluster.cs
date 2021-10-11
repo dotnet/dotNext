@@ -706,7 +706,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task ForceReplicationAsync(CancellationToken token = default)
-        => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(token) : Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+    {
+        if (IsDisposed)
+            return DisposedTask;
+
+        return state is LeaderState leaderState ? leaderState.ForceReplicationAsync(token) : Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+    }
 
     /// <summary>
     /// Appends a new log entry and ensures that it is replicated and committed.
@@ -720,6 +725,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     public async Task<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
+        ThrowIfDisposed();
+
         using var tokenSource = token.LinkTo(LifecycleToken);
 
         // 1 - append entry to the log
