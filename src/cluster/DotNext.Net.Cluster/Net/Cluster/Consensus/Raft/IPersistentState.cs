@@ -50,6 +50,10 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
     /// will be committed.
     /// </summary>
+    /// <remarks>
+    /// This method can be used to guarantee linearizable read when processing read-only request
+    /// on leader node.
+    /// </remarks>
     /// <param name="timeout">The time to wait.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
