@@ -150,30 +150,32 @@ internal partial class RaftHttpCluster : IOutputChannel
             await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
     }
 
-    private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
+    private async Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
     {
         var sender = TryGetMember(message.Sender);
-        var task = Task.CompletedTask;
+
         if (sender is null)
         {
             response.StatusCode = StatusCodes.Status404NotFound;
         }
-        else if (!message.RespectLeadership || IsLeaderLocal)
+        else if (!message.RespectLeadership)
         {
-            switch (message.Mode)
+            await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+        }
+        else if (IsLeaderLocal)
+        {
+            var tokenSource = token.LinkTo(LeadershipToken);
+            try
             {
-                case CustomMessage.DeliveryMode.RequestReply:
-                    task = ReceiveMessageAsync(sender, message, messageHandlers, response, token);
-                    break;
-                case CustomMessage.DeliveryMode.OneWay:
-                    task = ReceiveOneWayMessageAsync(sender, message, messageHandlers, true, response, token);
-                    break;
-                case CustomMessage.DeliveryMode.OneWayNoAck:
-                    task = ReceiveOneWayMessageAsync(sender, message, messageHandlers, false, response, token);
-                    break;
-                default:
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                    break;
+                await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+            }
+            finally
+            {
+                tokenSource?.Dispose();
             }
         }
         else
@@ -182,7 +184,30 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
 
         sender?.Touch();
-        return task;
+    }
+
+    private Task ReceiveMessageAsync(RaftClusterMember sender, CustomMessage message, HttpResponse response, CancellationToken token)
+    {
+        Task result;
+
+        switch (message.Mode)
+        {
+            case CustomMessage.DeliveryMode.RequestReply:
+                result = ReceiveMessageAsync(sender, message, messageHandlers, response, token);
+                break;
+            case CustomMessage.DeliveryMode.OneWay:
+                result = ReceiveOneWayMessageAsync(sender, message, messageHandlers, true, response, token);
+                break;
+            case CustomMessage.DeliveryMode.OneWayNoAck:
+                result = ReceiveOneWayMessageAsync(sender, message, messageHandlers, false, response, token);
+                break;
+            default:
+                response.StatusCode = StatusCodes.Status400BadRequest;
+                result = Task.CompletedTask;
+                break;
+        }
+
+        return result;
     }
 
     private async Task VoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
