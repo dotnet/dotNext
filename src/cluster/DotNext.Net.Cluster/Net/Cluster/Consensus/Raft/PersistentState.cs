@@ -1285,7 +1285,7 @@ public partial class PersistentState : Disposable, IPersistentState
         return replayOnInitialize ? ReplayAsync(token) : Task.CompletedTask;
     }
 
-    private bool IsConsistent => state.Term <= lastTerm.VolatileRead();
+    private bool IsConsistent => state.Term == lastTerm.VolatileRead() && state.CommitIndex == state.LastApplied;
 
     private async Task EnsureConsistencyImpl(TimeSpan timeout, CancellationToken token)
     {
