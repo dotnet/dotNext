@@ -807,28 +807,22 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <summary>
     /// Waits for the commit.
     /// </summary>
-    /// <param name="timeout">The timeout used to wait for the commit.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    public ValueTask<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
-        => commitEvent.WaitAsync(timeout, token);
+    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+    public ValueTask WaitForCommitAsync(CancellationToken token = default)
+        => commitEvent.WaitAsync(token);
 
     /// <summary>
-    /// Waits for specific commit.
+    /// Waits for the commit.
     /// </summary>
     /// <param name="index">The index of the log record to be committed.</param>
-    /// <param name="timeout">The timeout used to wait for the commit.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
-    /// <returns>
-    /// <see langword="true"/> if log entry at given index has been committed;
-    /// <see langword="false"/> in case of timeout.
-    /// </returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    public ValueTask<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
-        => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+    public ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
+        => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, token);
 
     // this operation doesn't require write lock
     private async ValueTask BuildSnapshotAsync(int sessionId, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)

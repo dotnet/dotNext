@@ -1,4 +1,5 @@
-﻿using DotNext.Net.Cluster;
+﻿using DotNext;
+using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Http;
@@ -42,7 +43,7 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(path))
         {
             services.AddSingleton<AppEventSource>();
-            services.UsePersistenceEngine<IValueProvider, SimplePersistentState>()
+            services.UsePersistenceEngine<ISupplier<long>, SimplePersistentState>()
                 .AddSingleton<IHostedService, DataModifier>();
         }
     }

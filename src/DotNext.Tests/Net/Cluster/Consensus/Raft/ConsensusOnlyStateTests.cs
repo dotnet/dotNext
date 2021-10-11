@@ -78,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(0, auditTrail.LastCommittedEntryIndex);
             //commit all entries
             Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
-            True(await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero));
+            await auditTrail.WaitForCommitAsync(2);
             Equal(2, auditTrail.LastCommittedEntryIndex);
             //check overlapping with committed entries
             await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());

@@ -27,7 +27,7 @@ internal sealed class BackgroundCompactionService : BackgroundService
 
         while (!token.IsCancellationRequested)
         {
-            await state.WaitForCommitAsync(Timeout.InfiniteTimeSpan, token).ConfigureAwait(false);
+            await state.WaitForCommitAsync(token).ConfigureAwait(false);
             await compaction(token).ConfigureAwait(false);
         }
     }

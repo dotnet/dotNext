@@ -36,33 +36,26 @@ public interface IAuditTrail
     /// Waits for the commit.
     /// </summary>
     /// <param name="index">The index of the log record to be committed.</param>
-    /// <param name="timeout">The timeout used to wait for the commit.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
-    /// <returns><see langword="true"/> if log entry with the specified <paramref name="index"/> is committed; otherwise, <see langword="false"/>.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    async ValueTask<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default)
+    async ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
     {
         if (index < 0L)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        for (var timeoutMeasurement = new Timeout(timeout); LastCommittedEntryIndex < index; await WaitForCommitAsync(timeout, token).ConfigureAwait(false))
-        {
-            if (!timeoutMeasurement.RemainingTime.TryGetValue(out timeout))
-                return false;
-        }
-
-        return true;
+        while (LastCommittedEntryIndex < index)
+            await WaitForCommitAsync(token).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Waits for the commit.
     /// </summary>
-    /// <param name="timeout">The timeout used to wait for the commit.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
-    /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    ValueTask<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token);
+    ValueTask WaitForCommitAsync(CancellationToken token = default);
 
     /// <summary>
     /// Commits log entries into the underlying storage and marks these entries as committed.

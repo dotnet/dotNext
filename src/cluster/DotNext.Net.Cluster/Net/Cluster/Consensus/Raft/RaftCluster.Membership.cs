@@ -223,7 +223,7 @@ public partial class RaftCluster<TMember>
         // proposes a new member
         if (await configurationStorage.AddMemberAsync(member.Id, addressProvider(member), token).ConfigureAwait(false))
         {
-            await ReplicateAsync(new EmptyLogEntry(Term), Timeout.Infinite, token).ConfigureAwait(false);
+            while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
 
             // ensure that the newly added member has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
@@ -253,7 +253,7 @@ public partial class RaftCluster<TMember>
         // remove the existing member
         if (await configurationStorage.RemoveMemberAsync(id, token).ConfigureAwait(false))
         {
-            await ReplicateAsync(new EmptyLogEntry(Term), Timeout.Infinite, token).ConfigureAwait(false);
+            while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
 
             // ensure that the removed member has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);

@@ -701,47 +701,38 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <summary>
     /// Forces replication.
     /// </summary>
-    /// <param name="timeout">The time to wait until replication ends.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
-        => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+    public Task ForceReplicationAsync(CancellationToken token = default)
+        => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(token) : Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
-    private async Task<bool> ReplicateAsync<TEntry>(TEntry entry, Timeout timeout, CancellationToken token)
+    /// <summary>
+    /// Appends a new log entry and ensures that it is replicated and committed.
+    /// </summary>
+    /// <typeparam name="TEntry">The type of the log entry.</typeparam>
+    /// <param name="entry">The log entry to be added.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if retry is required.</returns>
+    /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public async Task<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         using var tokenSource = token.LinkTo(LifecycleToken);
 
         // 1 - append entry to the log
         var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
-        timeout.ThrowIfExpired(out var remaining);
 
         // 2 - force replication
-        await ForceReplicationAsync(remaining, token).ConfigureAwait(false);
-        timeout.ThrowIfExpired(out remaining);
+        await ForceReplicationAsync(token).ConfigureAwait(false);
 
         // 3 - wait for commit
-        return await auditTrail.WaitForCommitAsync(index, remaining, token).ConfigureAwait(false)
-            ? auditTrail.Term == entry.Term
-            : throw new TimeoutException();
-    }
+        await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
 
-    /// <summary>
-    /// Appends and replicates the log entry.
-    /// </summary>
-    /// <typeparam name="TEntry">The type of the log entry.</typeparam>
-    /// <param name="entry">The log entry to append.</param>
-    /// <param name="timeout">The timeout for the operation.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>
-    /// <see langword="true"/> if the has been replicated successfully;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public Task<bool> ReplicateAsync<TEntry>(TEntry entry, TimeSpan timeout, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
-        => ReplicateAsync(entry, new(timeout), token);
+        return auditTrail.Term == entry.Term;
+    }
 
     private TMember? TryGetPeer(EndPoint peer)
     {

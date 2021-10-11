@@ -353,12 +353,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
-        => commitEvent.WaitAsync(timeout, token);
+    ValueTask IAuditTrail.WaitForCommitAsync(CancellationToken token)
+        => commitEvent.WaitAsync(token);
 
     /// <inheritdoc/>
-    ValueTask<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
-        => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, timeout, token);
+    ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
+        => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, token);
 
     private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)
     {

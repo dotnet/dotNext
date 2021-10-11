@@ -162,7 +162,7 @@ internal partial class LeaderState
     private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         => replicationEvent.WaitAsync(period, token);
 
-    internal Task ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
+    internal Task ForceReplicationAsync(CancellationToken token)
     {
         var result = replicationQueue.Task;
 
@@ -170,6 +170,6 @@ internal partial class LeaderState
         replicationEvent.Signal();
 
         // enqueue a new task representing completion callback
-        return result.WaitAsync(timeout, token);
+        return result.WaitAsync(token);
     }
 }
