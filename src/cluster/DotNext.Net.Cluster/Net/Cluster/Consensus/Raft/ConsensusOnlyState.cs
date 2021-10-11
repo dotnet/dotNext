@@ -242,12 +242,17 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <summary>
-    /// Gets index of the committed or last log entry.
+    /// Gets the index of the last committed log entry.
     /// </summary>
-    /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
-    /// <returns>The index of the log entry.</returns>
-    public long GetLastIndex(bool committed)
-        => committed ? commitIndex.VolatileRead() : index.VolatileRead();
+    public long LastCommittedEntryIndex => commitIndex.VolatileRead();
+
+    /// <summary>
+    /// Gets the index of the last uncommitted log entry.
+    /// </summary>
+    public long LastUncommittedEntryIndex => index.VolatileRead();
+
+    /// <inheritdoc />
+    long IAuditTrail.LastAppliedEntryIndex => LastCommittedEntryIndex;
 
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync() => new(term.IncrementAndGet());

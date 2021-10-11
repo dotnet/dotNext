@@ -712,9 +712,6 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <summary>
     /// Adds uncommitted log entries to the end of this log.
     /// </summary>
-    /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
-    /// </remarks>
     /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
     /// <param name="entries">The entries to be added into this log.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -1157,10 +1154,6 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <summary>
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
-    /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
-    /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
-    /// </remarks>
     /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The actual number of committed entries.</returns>
@@ -1170,10 +1163,6 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <summary>
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
-    /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
-    /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
-    /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The actual number of committed entries.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>

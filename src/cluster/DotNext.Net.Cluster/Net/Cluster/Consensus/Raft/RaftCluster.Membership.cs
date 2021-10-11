@@ -199,12 +199,12 @@ public partial class RaftCluster<TMember>
         using var tokenSource = token.LinkTo(LeadershipToken);
 
         // catch up node
-        member.NextIndex = auditTrail.GetLastIndex(false) + 1;
+        member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
         long currentIndex;
         do
         {
-            var commitIndex = auditTrail.GetLastIndex(true);
-            currentIndex = auditTrail.GetLastIndex(false);
+            var commitIndex = auditTrail.LastCommittedEntryIndex;
+            currentIndex = auditTrail.LastUncommittedEntryIndex;
             var precedingIndex = Math.Max(0, member.NextIndex - 1);
             var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
             var term = Term;

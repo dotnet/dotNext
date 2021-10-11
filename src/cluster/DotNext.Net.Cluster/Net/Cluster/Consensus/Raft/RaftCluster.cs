@@ -379,7 +379,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         using var tokenSource = token.LinkTo(LifecycleToken);
         using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
         var currentTerm = auditTrail.Term;
-        if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
+        if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.LastCommittedEntryIndex)
         {
             await StepDown(senderTerm).ConfigureAwait(false);
             Leader = TryGetMember(sender);
@@ -433,7 +433,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 */
                 await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
 
-                if (commitIndex <= auditTrail.GetLastIndex(true))
+                if (commitIndex <= auditTrail.LastCommittedEntryIndex)
                 {
                     // This node is in sync with the leader and no entries arrived
                     if (emptySet)
@@ -644,7 +644,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         // pre-vote logic that allow to decide about transition to candidate state
         async Task<bool> PreVoteAsync(long currentTerm)
         {
-            var lastIndex = auditTrail.GetLastIndex(false);
+            var lastIndex = auditTrail.LastUncommittedEntryIndex;
             var lastTerm = await auditTrail.GetTermAsync(lastIndex, LifecycleToken).ConfigureAwait(false);
 
             ICollection<Task<Result<bool>>> responses = new LinkedList<Task<Result<bool>>>();

@@ -113,9 +113,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var auditTrail = new PersistentState(dir, RecordsPerPartition);
             await auditTrail.AppendAsync(new EmptyLogEntry(10));
 
-            Equal(1, auditTrail.GetLastIndex(false));
+            Equal(1, auditTrail.LastUncommittedEntryIndex);
             await auditTrail.CommitAsync(1L, CancellationToken.None);
-            Equal(1, auditTrail.GetLastIndex(true));
+            Equal(1, auditTrail.LastCommittedEntryIndex);
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
             {
                 Equal(10, entries[0].Term);
@@ -263,11 +263,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var state = new PersistentState(dir, RecordsPerPartition);
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
-            Equal(5L, state.GetLastIndex(false));
-            Equal(0L, state.GetLastIndex(true));
+            Equal(5L, state.LastUncommittedEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
             Equal(5L, await state.DropAsync(1L, reuseSpace));
-            Equal(0L, state.GetLastIndex(false));
-            Equal(0L, state.GetLastIndex(true));
+            Equal(0L, state.LastUncommittedEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
         }
 
         [Fact]
@@ -283,18 +283,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var state = new PersistentState(dir, RecordsPerPartition))
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
-                Equal(4L, state.GetLastIndex(false));
-                Equal(0L, state.GetLastIndex(true));
+                Equal(4L, state.LastUncommittedEntryIndex);
+                Equal(0L, state.LastCommittedEntryIndex);
                 await state.AppendAsync(entry1, 1L);
-                Equal(1L, state.GetLastIndex(false));
-                Equal(0L, state.GetLastIndex(true));
+                Equal(1L, state.LastUncommittedEntryIndex);
+                Equal(0L, state.LastCommittedEntryIndex);
             }
 
             //read again
             using (var state = new PersistentState(dir, RecordsPerPartition))
             {
-                Equal(1L, state.GetLastIndex(false));
-                Equal(0L, state.GetLastIndex(true));
+                Equal(1L, state.LastUncommittedEntryIndex);
+                Equal(0L, state.LastCommittedEntryIndex);
                 checker = async (entries, snapshotIndex, token) =>
                 {
                     Null(snapshotIndex);
@@ -420,8 +420,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1L, await state.CommitAsync(1L, CancellationToken.None));
                 Equal(2L, await state.CommitAsync(3L, CancellationToken.None));
                 Equal(0L, await state.CommitAsync(2L, CancellationToken.None));
-                Equal(3L, state.GetLastIndex(true));
-                Equal(5L, state.GetLastIndex(false));
+                Equal(3L, state.LastCommittedEntryIndex);
+                Equal(5L, state.LastUncommittedEntryIndex);
 
                 await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(entry1, 1L).AsTask());
             }
@@ -429,8 +429,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //read again
             using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
-                Equal(3L, state.GetLastIndex(true));
-                Equal(5L, state.GetLastIndex(false));
+                Equal(3L, state.LastCommittedEntryIndex);
+                Equal(5L, state.LastUncommittedEntryIndex);
             }
         }
 
@@ -685,8 +685,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state = new PersistentState(dir, RecordsPerPartition);
             try
             {
-                Equal(5, state.GetLastIndex(false));
-                Equal(2, state.GetLastIndex(true));
+                Equal(5, state.LastUncommittedEntryIndex);
+                Equal(2, state.LastCommittedEntryIndex);
                 Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, token) =>
                 {
                     Equal(entry1.Term, entries[0].Term);

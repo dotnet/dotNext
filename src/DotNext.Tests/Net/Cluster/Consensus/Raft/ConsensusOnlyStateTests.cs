@@ -23,9 +23,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             IPersistentState auditTrail = new ConsensusOnlyState();
             await auditTrail.AppendAsync(new EmptyLogEntry(10));
-            Equal(1, auditTrail.GetLastIndex(false));
+            Equal(1, auditTrail.LastUncommittedEntryIndex);
             await auditTrail.CommitAsync(1L);
-            Equal(1, auditTrail.GetLastIndex(true));
+            Equal(1, auditTrail.LastCommittedEntryIndex);
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
             {
                 Equal(1, snapshotIndex);
@@ -42,13 +42,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task Appending()
         {
             IPersistentState auditTrail = new ConsensusOnlyState();
-            Equal(0, auditTrail.GetLastIndex(false));
-            Equal(0, auditTrail.GetLastIndex(true));
+            Equal(0, auditTrail.LastUncommittedEntryIndex);
+            Equal(0, auditTrail.LastCommittedEntryIndex);
             var entry1 = new EmptyLogEntry(41);
             var entry2 = new EmptyLogEntry(42);
             Equal(1, await auditTrail.AppendAsync(new LogEntryList(entry1, entry2)));
-            Equal(0, auditTrail.GetLastIndex(true));
-            Equal(2, auditTrail.GetLastIndex(false));
+            Equal(0, auditTrail.LastCommittedEntryIndex);
+            Equal(2, auditTrail.LastUncommittedEntryIndex);
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
             {
                 Null(snapshotIndex);
@@ -74,17 +74,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return default;
             };
             await auditTrail.ReadAsync(checker, 1, 2, CancellationToken.None);
-            Equal(2, auditTrail.GetLastIndex(false));
-            Equal(0, auditTrail.GetLastIndex(true));
+            Equal(2, auditTrail.LastUncommittedEntryIndex);
+            Equal(0, auditTrail.LastCommittedEntryIndex);
             //commit all entries
             Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
             True(await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero));
-            Equal(2, auditTrail.GetLastIndex(true));
+            Equal(2, auditTrail.LastCommittedEntryIndex);
             //check overlapping with committed entries
             await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());
             await auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2, true);
-            Equal(3, auditTrail.GetLastIndex(false));
-            Equal(2, auditTrail.GetLastIndex(true));
+            Equal(3, auditTrail.LastUncommittedEntryIndex);
+            Equal(2, auditTrail.LastCommittedEntryIndex);
             checker = static (entries, snapshotIndex, token) =>
             {
                 NotNull(snapshotIndex);

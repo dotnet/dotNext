@@ -81,7 +81,7 @@ internal sealed class SimplePersistentState : PersistentState, IValueProvider
 
     async Task IValueProvider.UpdateValueAsync(long value, TimeSpan timeout, CancellationToken token)
     {
-        var commitIndex = GetLastIndex(true);
+        var commitIndex = LastCommittedEntryIndex;
         await AppendAsync(new Int64LogEntry { Content = value, Term = Term }, token);
         await WaitForCommitAsync(commitIndex + 1L, timeout, token);
     }

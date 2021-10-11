@@ -41,8 +41,8 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         var start = Timestamp.Current;
-        long commitIndex = auditTrail.GetLastIndex(true),
-            currentIndex = auditTrail.GetLastIndex(false),
+        long commitIndex = auditTrail.LastCommittedEntryIndex,
+            currentIndex = auditTrail.LastUncommittedEntryIndex,
             term = currentTerm,
             minPrecedingIndex = 0L;
 
@@ -168,7 +168,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     {
         foreach (var member in stateMachine.Members)
         {
-            member.NextIndex = transactionLog.GetLastIndex(false) + 1;
+            member.NextIndex = transactionLog.LastUncommittedEntryIndex + 1;
             member.ConfigurationFingerprint = 0L;
         }
 

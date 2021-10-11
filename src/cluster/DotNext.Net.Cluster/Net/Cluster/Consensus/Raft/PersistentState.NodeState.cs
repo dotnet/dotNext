@@ -2,6 +2,7 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using IO.Log;
 using Threading;
 
 public partial class PersistentState
@@ -149,12 +150,17 @@ public partial class PersistentState
     private long lastTerm;  // term of last committed entry
 
     /// <summary>
-    /// Gets index of the committed or last log entry.
+    /// Gets the index of the last committed log entry.
     /// </summary>
-    /// <remarks>
-    /// This method is synchronous because returning value should be cached and updated in memory by implementing class.
-    /// </remarks>
-    /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
-    /// <returns>The index of the log entry.</returns>
-    public long GetLastIndex(bool committed) => committed ? state.CommitIndex : state.LastIndex;
+    public long LastCommittedEntryIndex => state.CommitIndex;
+
+    /// <summary>
+    /// Gets the index of the last uncommitted log entry.
+    /// </summary>
+    public long LastUncommittedEntryIndex => state.LastIndex;
+
+    /// <summary>
+    /// Gets the index of the last committed log entry applied to underlying state machine.
+    /// </summary>
+    public long LastAppliedEntryIndex => state.LastApplied;
 }
