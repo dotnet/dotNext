@@ -91,7 +91,7 @@ public class QueuedSynchronizer : Disposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected void RemoveAndDrainWaitQueue(WaitNode node)
+    private protected void RemoveAndDrainWaitQueue(LinkedValueTaskCompletionSource<bool> node)
     {
         if (RemoveNodeCore(node))
             DrainWaitQueue();
