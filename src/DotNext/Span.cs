@@ -691,4 +691,19 @@ public static class Span
         element = default;
         return false;
     }
+
+    /// <summary>
+    /// Initializes each element in the span.
+    /// </summary>
+    /// <remarks>
+    /// This method has the same behavior as <see cref="Array.Initialize"/> and supports reference types.
+    /// </remarks>
+    /// <typeparam name="T">The type of the element.</typeparam>
+    /// <param name="span">The span of elements.</param>
+    public static void Initialize<T>(this Span<T> span)
+        where T : new()
+    {
+        foreach (ref var item in span)
+            item = new T();
+    }
 }
