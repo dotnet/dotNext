@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using IO;
 using Messaging;
+using static IO.Pipelines.ResultExtensions;
 
 internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage?>
 {
@@ -131,7 +132,8 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
         response.Headers.Add(MessageNameHeader, message.Name);
         await response.StartAsync(token).ConfigureAwait(false);
         await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
-        await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);
+        var result = await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);
+        result.ThrowIfCancellationRequested(token);
     }
 
     Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
