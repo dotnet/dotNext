@@ -32,7 +32,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        replicationEvent = new();
+        replicationEvent = new(false);
         replicationQueue = new(TaskCreationOptions.RunContinuationsAsynchronously);
         precedingTermCache = new TermCache(MaxTermCacheSize);
         this.maxLease = maxLease;

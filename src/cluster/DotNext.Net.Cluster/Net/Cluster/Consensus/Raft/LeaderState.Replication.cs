@@ -153,7 +153,7 @@ internal partial class LeaderState
         }
     }
 
-    private readonly AsyncTrigger replicationEvent;
+    private readonly AsyncAutoResetEvent replicationEvent;
     private volatile TaskCompletionSource replicationQueue;
 
     private void DrainReplicationQueue()
@@ -167,7 +167,7 @@ internal partial class LeaderState
         var result = replicationQueue.Task;
 
         // resume heartbeat loop to force replication
-        replicationEvent.Signal();
+        replicationEvent.Set();
 
         // enqueue a new task representing completion callback
         return result.WaitAsync(token);
