@@ -105,10 +105,27 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         timeoutTracker.Dispose();
         timeoutTracker = default;
 
-        if (timeoutSource is not null && !timeoutSource.TryReset())
+        if (timeoutSource is not null && !TryReset(timeoutSource))
         {
             timeoutSource.Dispose();
             timeoutSource = null;
+        }
+
+        // TODO: Workaround for https://github.com/dotnet/runtime/issues/60182
+        static bool TryReset(CancellationTokenSource source)
+        {
+            bool result;
+
+            try
+            {
+                result = source.TryReset();
+            }
+            catch (ObjectDisposedException)
+            {
+                result = false;
+            }
+
+            return result;
         }
     }
 
