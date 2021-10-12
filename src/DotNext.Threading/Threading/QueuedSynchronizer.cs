@@ -248,19 +248,16 @@ public class QueuedSynchronizer : Disposable
     /// </summary>
     /// <param name="token">The canceled token.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void CancelSuspendedCallers(CancellationToken token)
     {
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = DetachWaitQueue(), next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
             current.TrySetCanceled(token);
         }
-
-        first = last = null;
     }
 
     private protected static long ResumeSuspendedCallers(WaitNode? queueHead)
@@ -293,13 +290,11 @@ public class QueuedSynchronizer : Disposable
     {
         var e = new ObjectDisposedException(GetType().Name);
 
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = DetachWaitQueue(), next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
             current.TrySetException(e);
         }
-
-        first = last = null;
     }
 
     /// <summary>
