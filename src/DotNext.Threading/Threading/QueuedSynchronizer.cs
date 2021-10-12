@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
@@ -16,21 +17,43 @@ public class QueuedSynchronizer : Disposable
 {
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
-        internal bool ThrowOnTimeout;
         private Timestamp createdAt;
+
+        private protected override void ResetCore()
+        {
+            LockDurationCounter = null;
+            base.ResetCore();
+        }
+
+        internal Action<double>? LockDurationCounter
+        {
+            private get;
+            set;
+        }
+
+        internal bool ThrowOnTimeout
+        {
+            private get;
+            set;
+        }
 
         internal void ResetAge() => createdAt = Timestamp.Current;
 
         protected sealed override Result<bool> OnTimeout() => ThrowOnTimeout ? base.OnTimeout() : false;
 
-        internal TimeSpan Age => createdAt.Elapsed;
+        private protected void ReportLockDuration()
+            => LockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
     {
         private Action<DefaultWaitNode>? consumedCallback;
 
-        protected sealed override void AfterConsumed() => consumedCallback?.Invoke(this);
+        protected sealed override void AfterConsumed()
+        {
+            ReportLockDuration();
+            consumedCallback?.Invoke(this);
+        }
 
         private protected override void ResetCore()
         {
@@ -99,6 +122,7 @@ public class QueuedSynchronizer : Disposable
     private bool RemoveNodeCore(WaitNode node)
     {
         bool isFirst;
+
         if (isFirst = ReferenceEquals(first, node))
             first = node.Next;
 
@@ -106,8 +130,6 @@ public class QueuedSynchronizer : Disposable
             last = node.Previous;
 
         node.Detach();
-        lockDurationCounter?.Invoke(node.Age.TotalMilliseconds);
-
         return isFirst;
     }
 
@@ -125,6 +147,7 @@ public class QueuedSynchronizer : Disposable
         var node = pool.Get();
         manager.InitializeNode(node);
         node.ThrowOnTimeout = throwOnTimeout;
+        node.LockDurationCounter = lockDurationCounter;
         node.ResetAge();
 
         if (last is null)
@@ -240,30 +263,30 @@ public class QueuedSynchronizer : Disposable
         first = last = null;
     }
 
-    private protected long ResumeSuspendedCallers()
+    private protected static long ResumeSuspendedCallers(WaitNode? queueHead)
     {
-        Debug.Assert(Monitor.IsEntered(this));
-
         var count = 0L;
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (WaitNode? next; queueHead is not null; queueHead = next)
         {
-            next = current.Next as WaitNode;
+            next = queueHead.CleanupAndGotoNext() as WaitNode;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (queueHead.TrySetResult(true))
                 count += 1L;
-            }
         }
 
         return count;
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private protected WaitNode? DetachWaitQueue()
+    {
+        ThrowIfDisposed();
+
+        var queueHead = first as WaitNode;
+        first = last = null;
+
+        return queueHead;
     }
 
     private void NotifyObjectDisposed()

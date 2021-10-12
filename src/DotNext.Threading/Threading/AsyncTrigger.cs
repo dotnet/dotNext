@@ -56,9 +56,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     private bool SignalCore()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        ThrowIfDisposed();
 
         for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
         {
@@ -89,13 +90,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Signal(bool resumeAll = false)
-    {
-        ThrowIfDisposed();
-
-        return resumeAll ? ResumeSuspendedCallers() > 0L : SignalCore();
-    }
+        => resumeAll ? ResumeSuspendedCallers(DetachWaitQueue()) > 0L : SignalCore();
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => first is null;
@@ -244,7 +240,11 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
 
-        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
+        protected override void AfterConsumed()
+        {
+            ReportLockDuration();
+            consumedCallback?.Invoke(this);
+        }
 
         private protected override void ResetCore()
         {

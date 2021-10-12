@@ -199,7 +199,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         if (manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers();
+            ResumeSuspendedCallers(DetachWaitQueue());
             return true;
         }
 
@@ -212,7 +212,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         if (manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers();
+            ResumeSuspendedCallers(DetachWaitQueue());
             manager.Current = manager.Initial;
             return true;
         }
