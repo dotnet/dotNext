@@ -6,6 +6,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous trigger that allows to resume and suspend
@@ -61,9 +62,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ThrowIfDisposed();
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource? current = first, next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            next = current.Next;
 
             if (current.IsCompleted)
             {
@@ -184,27 +185,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         return !Signal(resumeAll) && throwOnEmptyQueue
             ? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
             : WaitAsync(token);
-    }
-
-    /// <summary>
-    /// Waits for the specific state.
-    /// </summary>
-    /// <typeparam name="TStateMachine">The type of external state machine.</typeparam>
-    /// <param name="stateMachine">The state machine.</param>
-    /// <param name="condition">The condition.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task WaitAsync<TStateMachine>(TStateMachine stateMachine, Predicate<TStateMachine> condition, CancellationToken token = default)
-        where TStateMachine : class
-    {
-        ArgumentNullException.ThrowIfNull(stateMachine, nameof(stateMachine));
-        ArgumentNullException.ThrowIfNull(condition, nameof(condition));
-        ThrowIfDisposed();
-
-        while (!condition(stateMachine))
-            await WaitAsync(token).ConfigureAwait(false);
     }
 }
 

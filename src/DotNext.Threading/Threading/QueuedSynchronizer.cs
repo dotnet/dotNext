@@ -119,7 +119,7 @@ public class QueuedSynchronizer : Disposable
         init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
     }
 
-    private bool RemoveNodeCore(WaitNode node)
+    private bool RemoveNodeCore(LinkedValueTaskCompletionSource<bool> node)
     {
         bool isFirst;
 
@@ -134,7 +134,7 @@ public class QueuedSynchronizer : Disposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected bool RemoveNode(WaitNode node) => RemoveNodeCore(node);
+    private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node) => RemoveNodeCore(node);
 
     private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
 
@@ -173,9 +173,9 @@ public class QueuedSynchronizer : Disposable
 
         if (result = manager.IsLockAllowed)
         {
-            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
-                next = current.Next as WaitNode;
+                next = current.Next;
 
                 if (current.IsCompleted)
                 {
