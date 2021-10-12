@@ -31,10 +31,13 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
     {
         if (response.Content.Headers.ContentLength == sizeof(long))
         {
-            using var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
-            using var buffer = MemoryAllocator.Allocate<byte>(sizeof(long), exactSize: true);
-            await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-            return ReadInt64LittleEndian(buffer.Memory.Span);
+            var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            await using (stream.ConfigureAwait(false))
+            {
+                using var buffer = MemoryAllocator.Allocate<byte>(sizeof(long), exactSize: true);
+                await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                return ReadInt64LittleEndian(buffer.Memory.Span);
+            }
         }
 
         return null;

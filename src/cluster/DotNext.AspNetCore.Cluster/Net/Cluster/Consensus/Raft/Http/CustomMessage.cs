@@ -155,7 +155,7 @@ internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
 {
     private readonly MessageReader<T> reader;
 
-    internal CustomMessage(ClusterMemberId sender, IMessage message, MessageReader<T> reader)
+    internal CustomMessage(in ClusterMemberId sender, IMessage message, MessageReader<T> reader)
         : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
     Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
