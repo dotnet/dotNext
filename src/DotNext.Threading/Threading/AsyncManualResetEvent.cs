@@ -5,6 +5,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
@@ -97,7 +98,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool Set(bool autoReset, out WaitNode? queueHead)
+    private bool Set(bool autoReset, out LinkedValueTaskCompletionSource? queueHead)
     {
         ThrowIfDisposed();
         bool result;

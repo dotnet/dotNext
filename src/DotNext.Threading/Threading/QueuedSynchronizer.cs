@@ -260,13 +260,13 @@ public class QueuedSynchronizer : Disposable
         }
     }
 
-    private protected static long ResumeSuspendedCallers(WaitNode? queueHead)
+    private protected static long ResumeSuspendedCallers(LinkedValueTaskCompletionSource<bool>? queueHead)
     {
         var count = 0L;
 
-        for (WaitNode? next; queueHead is not null; queueHead = next)
+        for (LinkedValueTaskCompletionSource<bool>? next; queueHead is not null; queueHead = next)
         {
-            next = queueHead.CleanupAndGotoNext() as WaitNode;
+            next = queueHead.CleanupAndGotoNext();
 
             if (queueHead.TrySetResult(true))
                 count += 1L;
@@ -276,11 +276,11 @@ public class QueuedSynchronizer : Disposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected WaitNode? DetachWaitQueue()
+    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
         ThrowIfDisposed();
 
-        var queueHead = first as WaitNode;
+        var queueHead = first;
         first = last = null;
 
         return queueHead;
