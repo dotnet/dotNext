@@ -6,6 +6,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Buffers;
+using IO.Pipelines;
 using static IO.StreamExtensions;
 
 internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?>, IHttpMessageWriter<long?>
@@ -43,18 +44,17 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
         return null;
     }
 
-    public Task SaveResponse(HttpResponse response, long? commitIndex, CancellationToken token)
+    public async Task SaveResponse(HttpResponse response, long? commitIndex, CancellationToken token)
     {
         response.StatusCode = StatusCodes.Status200OK;
         if (commitIndex.HasValue)
         {
             response.ContentLength = sizeof(long);
             response.ContentType = MediaTypeNames.Application.Octet;
-            var buffer = response.BodyWriter.GetSpan(sizeof(long));
-            WriteInt64LittleEndian(buffer, commitIndex.GetValueOrDefault());
-            response.BodyWriter.Advance(sizeof(long));
-        }
 
-        return Task.CompletedTask;
+            await response.StartAsync(token).ConfigureAwait(false);
+            var result = await response.BodyWriter.WriteInt64Async(commitIndex.GetValueOrDefault(), true, token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(token);
+        }
     }
 }
