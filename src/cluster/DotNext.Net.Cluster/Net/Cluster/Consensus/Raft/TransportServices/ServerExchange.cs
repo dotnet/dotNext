@@ -22,6 +22,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         ReceivingSnapshotFinished,
         ConfigurationReceived,
         ReceivingConfigurationFinished,
+        SynchronizeReceived,
     }
 
     private readonly ILocalMember server;
@@ -122,6 +123,10 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
                 }
 
                 break;
+            case MessageType.Synchronize:
+                state = State.SynchronizeReceived;
+                BeginSynchronize(token);
+                break;
         }
 
         return result;
@@ -140,6 +145,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         State.ReceivingSnapshotFinished => EndReceiveSnapshot(output),
         State.ConfigurationReceived => RequestConfigurationChunk(),
         State.ReceivingConfigurationFinished => EndReceiveConfiguration(),
+        State.SynchronizeReceived => EndSynchronize(output),
         _ => default,
     };
 

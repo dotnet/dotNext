@@ -580,6 +580,56 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         return result;
     }
 
+    /// <summary>
+    /// Processes <see cref="IRaftClusterMember.SynchronizeAsync(CancellationToken)"/>
+    /// request.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The index of the last committed log entry.</returns>
+    protected async Task<long?> SynchronizeAsync(CancellationToken token)
+    {
+        using var tokenSource = token.LinkTo(LifecycleToken);
+
+        if (state is LeaderState leaderState)
+        {
+            await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+            return ReferenceEquals(state, leaderState) ? auditTrail.LastCommittedEntryIndex : null;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Ensures linearizable read from underlying state machine.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public async ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
+    {
+        for (; ; )
+        {
+            if (state is LeaderState leaderState)
+            {
+                await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+            }
+            else if (this.leader is TMember leader)
+            {
+                var commitIndex = await leader.SynchronizeAsync(token).ConfigureAwait(false);
+                if (commitIndex is null)
+                    continue;
+
+                await auditTrail.WaitForCommitAsync(commitIndex.GetValueOrDefault(), token).ConfigureAwait(false);
+            }
+            else
+            {
+                throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+            }
+
+            break;
+        }
+    }
+
     /// <inheritdoc/>
     async Task<bool> ICluster.ResignAsync(CancellationToken token)
     {
