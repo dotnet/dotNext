@@ -19,13 +19,30 @@ The underlying state machine can be reconstruced at application startup using `I
 
 # Client Interaction
 [Chapter 6](https://github.com/ongardie/dissertation/tree/master/clients) of Diego's dissertation contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in the paper. However, it offers all necessary tools for that:
-1. `IPersistentState.EnsureConsistencyAsync` waits until last committed entry is from leader's term
-1. `IReplicationCluster.ForceReplicationAsync` initiates a new round of heartbeats and waits for reply from the majority of nodes
-1. `IRaftCluster.Lease` to gets the lease that can be used for linearizable read
-1. `IRaftCluster.ReplicateAsync` to append, replicate and commit the log entry. Useful for implementing _write_ operations
-1. `IRaftCluster.LeadershipToken` provides [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) that represents a leadership state. If the local node is a leader then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state then the token will be moved to the canceled state. This token is useful when implementing _write_ operations and allow to abort asynchronous operation in case of downgrade
+1. `IPersistentState.EnsureConsistencyAsync` method waits until last committed entry is from leader's term
+1. `IReplicationCluster.ForceReplicationAsync` method initiates a new round of heartbeats and waits for reply from the majority of nodes
+1. `IRaftCluster.Lease` property to gets the lease that can be used for linearizable read
+1. `IRaftCluster.ReplicateAsync` method to append, replicate and commit the log entry. Useful for implementing _write_ operations
+1. `IRaftCluster.ApplyReadBarrierAsync` method to insert a barrier to achieve linearizable read
+1. `IRaftCluster.LeadershipToken` property provides [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) that represents a leadership state. If the local node is a leader then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state then the token will be moved to the canceled state. This token is useful when implementing _write_ operations and allow to abort asynchronous operation in case of downgrade
 
 Elimination of duplicate commands received from clients should be implemented manually because basic framework is not aware about underlying network transport.
+
+## Linearizability
+[Linearizability](https://en.wikipedia.org/wiki/Linearizability) requires the results of a read to reflect
+a state of the system sometime after the read was initiated; each read must at least return the results
+of the latest committed write. For instance, if the client performs _Write_ operation on variable _A_ and immediately requests variable _A_ back then _A_ must have the value which is equal to the value provided by _Write_ operation or more recent value. Without the linearizability, the client can see stale value of _A_. In other words, there is no guarantee that the client will able to see the result of its own _Write_ operation. A system that allowed stale reads would only provide serializability, which is a weaker form of consistency.
+
+Linearizable read can be achieved in Raft naturally. _Read_ operation can be performed on leader or follower nodes.
+
+`IRaftCluster.Lease` property exposes leadership lease than quarantees that the leader cannot be changed during that lease. This method of provoding linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on _clockDriftBound_. Here's the citation from Raft paper:
+> The lease approach assumes a bound on clock drift across servers (over a given time period, no server’s clock increases more than this bound times any other). Discovering and maintaining this bound might present operational challenges (e.g., due to scheduling and garbage collection pauses, virtual machine migrations, or clock rate adjustments for time synchronization). If the assumptions are violated, the system could return arbitrarily stale information.
+
+Lease approach can be used only if processing of all read-only queries performing by the leader node.
+
+Another approach is to use _read barrier_. The barrier is provided by `IRaftCluster.ApplyReadBarrierAsync` method. It allows to process read-only queries by follower nodes. In case of follower node, the method instructs leader node to execute a new round of heartbeats (with help of `ForceReplicationAsync` method). The follower waits for its state machine to advance at least as far as the index of the last committed log entry on the leader node. These actions are enough to satisfy linearizability. As you can see, this approach leads to extra overhead caused by network communication.
+
+Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each _Write_ request. The client can update and remember this value locally and provide it with read-only query. When _Read_ request is received, the server may call `IPersistentState.WaitForCommitAsync` to ensure that the log contains the index of the last committed log entry by the client.
 
 # Node Bootstrapping
 The node can be started in two modes:
