@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using Missing = System.Reflection.Missing;
 
@@ -117,6 +118,7 @@ public static partial class PipeExtensions
     /// <returns>The parsed value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    [RequiresPreviewFeatures]
     public static ValueTask<T> ParseAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
