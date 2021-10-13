@@ -155,12 +155,12 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         }
 
         [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
-        internal Task WaitAnyAsync(State state1, State state2)
-            => WaitAnyAsync(stackalloc State[] { state1, state2 });
+        internal Task WaitAnyAsync(State state1, State state2, CancellationToken token = default)
+            => WaitAnyAsync(stackalloc State[] { state1, state2 }, token);
 
         [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
-        internal Task WaitAnyAsync(State state1, State state2, State state3)
-            => WaitAnyAsync(stackalloc State[] { state1, state2, state3 });
+        internal Task WaitAnyAsync(State state1, State state2, State state3, CancellationToken token = default)
+            => WaitAnyAsync(stackalloc State[] { state1, state2, state3 }, token);
 
         internal void CancelSuspendedCallers()
         {
@@ -298,7 +298,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         int count;
         bool isContinueReceiving;
         var resultTask = Cast<Task<Result<bool>>>(task);
-        var stateTask = entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry);
+        var stateTask = entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry, token);
 
         // wait for result or state transition
         if (ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
