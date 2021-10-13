@@ -348,8 +348,8 @@ public struct SequenceReader : IAsyncBinaryReader
         else
         {
             result = allocator.Invoke(length, exactSize: true);
-            var bufferSize = Read<int, StringReader<ArrayBuffer<char>>>(new(in context, new ArrayBuffer<char>(result)));
-            result.TryResize(bufferSize);
+            length = Read<int, StringReader<ArrayBuffer<char>>>(new(in context, new ArrayBuffer<char>(result)));
+            result.TryResize(length);
         }
 
         return result;
