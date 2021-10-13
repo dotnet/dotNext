@@ -248,8 +248,11 @@ public class QueuedSynchronizer : Disposable
     /// </summary>
     /// <param name="token">The canceled token.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
+    /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     public void CancelSuspendedCallers(CancellationToken token)
     {
+        ThrowIfDisposed();
+
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
@@ -278,8 +281,6 @@ public class QueuedSynchronizer : Disposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
-        ThrowIfDisposed();
-
         var queueHead = first;
         first = last = null;
 
