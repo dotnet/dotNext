@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -153,6 +154,14 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             return result.WaitAsync(token);
         }
 
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
+        internal Task WaitAnyAsync(State state1, State state2)
+            => WaitAnyAsync(stackalloc State[] { state1, state2 });
+
+        [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
+        internal Task WaitAnyAsync(State state1, State state2, State state3)
+            => WaitAnyAsync(stackalloc State[] { state1, state2, state3 });
+
         internal void CancelSuspendedCallers()
         {
             rwLock.EnterWriteLock();
@@ -211,7 +220,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         // Insert barrier: informs writer that we are no longer interested in the currently receiving log entry.
         // Then, waits the writer to be completed
         await Reader.CompleteAsync().ConfigureAwait(false);
-        await entriesExchangeCoordinator.WaitAnyAsync(stackalloc State[] { State.EntryReceived, State.AppendEntriesReceived }).ConfigureAwait(false);
+        await entriesExchangeCoordinator.WaitAnyAsync(State.EntryReceived, State.AppendEntriesReceived).ConfigureAwait(false);
 
         // complete writer only for the first call of MoveNextAsync()
         if (runnningIndex < 0)
@@ -222,7 +231,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         entriesExchangeCoordinator.Signal(state = State.ReadyToReceiveEntry);
 
         // waits for the log entry
-        await entriesExchangeCoordinator.WaitAnyAsync(stackalloc State[] { State.ReceivingEntry, State.EntryReceived }).ConfigureAwait(false);
+        await entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntry, State.EntryReceived).ConfigureAwait(false);
         remainingCount -= 1;
         return true;
     }
@@ -289,7 +298,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         int count;
         bool isContinueReceiving;
         var resultTask = Cast<Task<Result<bool>>>(task);
-        var stateTask = entriesExchangeCoordinator.WaitAnyAsync(stackalloc State[] { State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry });
+        var stateTask = entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry);
 
         // wait for result or state transition
         if (ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
