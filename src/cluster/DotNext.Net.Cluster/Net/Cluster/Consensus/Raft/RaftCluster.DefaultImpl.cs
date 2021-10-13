@@ -293,6 +293,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         return InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
     }
 
+    /// <inheritdoc />
+    Task<long?> ILocalMember.SynchronizeAsync(CancellationToken token)
+        => SynchronizeAsync(token);
+
     private void Cleanup()
     {
         server?.Dispose();

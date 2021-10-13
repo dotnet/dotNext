@@ -14,3 +14,4 @@ MissingPartition=Log entry index is out of range. Index value is {0}
 UnknownCommand=Command with id {0} cannot be recognized by the interpreter
 MissingCommandId=Log entry must have associated command identifier
 MissingMessageName=Message must have associated type and name
+LeaderIsUnavailable=Leader node is not yet elected

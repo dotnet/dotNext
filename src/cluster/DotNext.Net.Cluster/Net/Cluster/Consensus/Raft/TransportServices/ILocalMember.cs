@@ -27,5 +27,7 @@ internal interface ILocalMember
     Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         where TSnapshot : notnull, IRaftLogEntry;
 
+    Task<long?> SynchronizeAsync(CancellationToken token);
+
     ILogger Logger => NullLogger.Instance;
 }

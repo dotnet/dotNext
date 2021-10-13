@@ -1,7 +1,9 @@
-﻿using DotNext.Net.Cluster;
+﻿using DotNext;
+using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Http;
+using static System.Globalization.CultureInfo;
 
 namespace RaftNode;
 
@@ -11,22 +13,33 @@ internal sealed class Startup
 
     public Startup(IConfiguration configuration) => this.configuration = configuration;
 
-    private static Task RedirectToLeader(HttpContext context)
+    private static Task RedirectToLeaderAsync(HttpContext context)
     {
         var cluster = context.RequestServices.GetRequiredService<IRaftCluster>();
         return context.Response.WriteAsync($"Leader address is {cluster.Leader?.EndPoint}. Current address is {context.Connection.LocalIpAddress}:{context.Connection.LocalPort}", context.RequestAborted);
     }
 
+    private static async Task GetValueAsync(HttpContext context)
+    {
+        var cluster = context.RequestServices.GetRequiredService<IRaftCluster>();
+        var provider = context.RequestServices.GetRequiredService<ISupplier<long>>();
+
+        await cluster.ApplyReadBarrierAsync(context.RequestAborted);
+        await context.Response.WriteAsync(provider.Invoke().ToString(InvariantCulture), context.RequestAborted);
+    }
+
     public void Configure(IApplicationBuilder app)
     {
         const string LeaderResource = "/leader";
+        const string ValueResource = "/value";
 
         app.UseConsensusProtocolHandler()
             .RedirectToLeader(LeaderResource)
             .UseRouting()
             .UseEndpoints(static endpoints =>
             {
-                endpoints.MapGet(LeaderResource, RedirectToLeader);
+                endpoints.MapGet(LeaderResource, RedirectToLeaderAsync);
+                endpoints.MapGet(ValueResource, GetValueAsync);
             });
     }
 
@@ -42,7 +55,7 @@ internal sealed class Startup
         if (!string.IsNullOrWhiteSpace(path))
         {
             services.AddSingleton<AppEventSource>();
-            services.UsePersistenceEngine<IValueProvider, SimplePersistentState>()
+            services.UsePersistenceEngine<ISupplier<long>, SimplePersistentState>()
                 .AddSingleton<IHostedService, DataModifier>();
         }
     }

@@ -202,5 +202,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             await host2.StopAsync();
             await host1.StopAsync();
         }
+
+        [Fact]
+        public Task RequestSynchronization()
+        {
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            {
+                TransmissionBlockSize = 350,
+                ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
+            };
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+            {
+                TransmissionBlockSize = 350
+            };
+
+            return SendingSynchronizationRequestTest(CreateServer, CreateClient);
+        }
     }
 }

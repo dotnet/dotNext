@@ -28,7 +28,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private Action<WaitNode>? consumedCallback;
         internal LockType Type;
 
-        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
+        protected override void AfterConsumed()
+        {
+            ReportLockDuration();
+            consumedCallback?.Invoke(this);
+        }
 
         private protected override void ResetCore()
         {

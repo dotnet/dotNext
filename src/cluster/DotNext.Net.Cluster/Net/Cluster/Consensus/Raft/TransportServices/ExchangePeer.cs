@@ -90,6 +90,9 @@ internal sealed class ExchangePeer : RaftClusterMember
     private protected override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
         => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), token);
 
+    private protected override Task<long?> SynchronizeAsync(CancellationToken token)
+        => SendAsync<long?, SynchronizeExchange>(new SynchronizeExchange(), token);
+
     /// <summary>
     /// Releases all resources associated with this cluster member.
     /// </summary>

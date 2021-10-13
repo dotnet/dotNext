@@ -1,10 +1,11 @@
-﻿using DotNext.IO;
+﻿using DotNext;
+using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
 using static DotNext.Threading.AtomicInt64;
 
 namespace RaftNode;
 
-internal sealed class SimplePersistentState : PersistentState, IValueProvider
+internal sealed class SimplePersistentState : PersistentState, ISupplier<long>
 {
     internal const string LogLocation = "logLocation";
 
@@ -67,7 +68,7 @@ internal sealed class SimplePersistentState : PersistentState, IValueProvider
         return result;
     }
 
-    long IValueProvider.Value => content.VolatileRead();
+    long ISupplier<long>.Invoke() => content.VolatileRead();
 
     private async ValueTask UpdateValue(LogEntry entry)
     {
@@ -78,13 +79,6 @@ internal sealed class SimplePersistentState : PersistentState, IValueProvider
 
     protected override ValueTask ApplyAsync(LogEntry entry)
         => entry.Length == 0L ? new ValueTask() : UpdateValue(entry);
-
-    async Task IValueProvider.UpdateValueAsync(long value, TimeSpan timeout, CancellationToken token)
-    {
-        var commitIndex = GetLastIndex(true);
-        await AppendAsync(new Int64LogEntry { Content = value, Term = Term }, token);
-        await WaitForCommitAsync(commitIndex + 1L, timeout, token);
-    }
 
     protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
     {

@@ -1,7 +1,5 @@
 ﻿namespace DotNext.IO.Log;
 
-using Timeout = Threading.Timeout;
-
 /// <summary>
 /// Represents audit trail responsible for maintaining log entries.
 /// </summary>
@@ -14,52 +12,54 @@ public interface IAuditTrail
     bool IsLogEntryLengthAlwaysPresented => false;
 
     /// <summary>
-    /// Gets index of the committed or last log entry.
+    /// Gets the index of the last committed log entry.
+    /// </summary>
+    long LastCommittedEntryIndex { get; }
+
+    /// <summary>
+    /// Gets the index of the last uncommitted log entry.
+    /// </summary>
+    long LastUncommittedEntryIndex { get; }
+
+    /// <summary>
+    /// Gets the index of the last committed log entry applied to underlying state machine.
     /// </summary>
     /// <remarks>
-    /// This method is synchronous because returning value should be cached and updated in memory by implementing class.
+    /// If this property makes no sense for the actual implementation of audit trail then just
+    /// return the value of <see cref="LastCommittedEntryIndex"/> property.
     /// </remarks>
-    /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
-    /// <returns>The index of the log entry.</returns>
-    long GetLastIndex(bool committed);
+    long LastAppliedEntryIndex { get; }
 
     /// <summary>
     /// Waits for the commit.
     /// </summary>
     /// <param name="index">The index of the log record to be committed.</param>
-    /// <param name="timeout">The timeout used to wait for the commit.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
-    /// <returns><see langword="true"/> if log entry with the specified <paramref name="index"/> is committed; otherwise, <see langword="false"/>.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    async ValueTask<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default)
+    async ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
     {
         if (index < 0L)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        for (var timeoutMeasurement = new Timeout(timeout); GetLastIndex(true) < index; await WaitForCommitAsync(timeout, token).ConfigureAwait(false))
-        {
-            if (!timeoutMeasurement.RemainingTime.TryGetValue(out timeout))
-                return false;
-        }
-
-        return true;
+        while (LastCommittedEntryIndex < index)
+            await WaitForCommitAsync(token).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Waits for the commit.
     /// </summary>
-    /// <param name="timeout">The timeout used to wait for the commit.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
-    /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
+    /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    ValueTask<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token);
+    ValueTask WaitForCommitAsync(CancellationToken token = default);
 
     /// <summary>
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
     /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
+    /// This method should updates cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
     /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
     /// </remarks>
     /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
@@ -72,7 +72,7 @@ public interface IAuditTrail
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
     /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
+    /// This method should updates cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
     /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -244,7 +244,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// Adds uncommitted log entries to the end of this log.
     /// </summary>
     /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
+    /// This method should updates cached value provided by method <see cref="IAuditTrail.LastUncommittedEntryIndex"/> called with argument of value <see langword="false"/>.
     /// </remarks>
     /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
     /// <param name="entries">The entries to be added into this log.</param>

@@ -6,6 +6,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
@@ -87,7 +88,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        for (WaitNode? current = first as WaitNode, next; ; current = next)
+        for (LinkedValueTaskCompletionSource? current = first, next; ; current = next)
         {
             if (current is null)
             {
@@ -95,7 +96,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                 break;
             }
 
-            next = current.Next as WaitNode;
+            next = current.Next;
             RemoveNode(current);
 
             // skip dead node
