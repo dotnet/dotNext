@@ -60,8 +60,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private bool SignalCore()
     {
-        ThrowIfDisposed();
-
         for (LinkedValueTaskCompletionSource? current = first, next; current is not null; current = next)
         {
             next = current.Next;
@@ -92,7 +90,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     public bool Signal(bool resumeAll = false)
-        => resumeAll ? ResumeSuspendedCallers(DetachWaitQueue()) > 0L : SignalCore();
+    {
+        ThrowIfDisposed();
+        return resumeAll ? ResumeSuspendedCallers(DetachWaitQueue()) > 0L : SignalCore();
+    }
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => first is null;
