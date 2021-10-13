@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using System.Reflection;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
@@ -8,7 +9,8 @@ using Runtime.Serialization;
 /// <summary>
 /// Represents typed client for sending messages to the nodes in the cluster.
 /// </summary>
-public partial class MessagingClient
+[RequiresPreviewFeatures]
+public class MessagingClient
 {
     private readonly IOutputChannel channel;
     private readonly IDictionary<Type, (string MessageName, ContentType MessageType)> messages;

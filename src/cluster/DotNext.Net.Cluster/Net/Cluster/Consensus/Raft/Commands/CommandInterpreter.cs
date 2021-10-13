@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
@@ -22,6 +23,7 @@ using static Runtime.Intrinsics;
 /// All command types must be registered using <see cref="CommandAttribute{TCommand}"/> attributes
 /// applied to the derived type.
 /// </remarks>
+[RequiresPreviewFeatures]
 public partial class CommandInterpreter : Disposable
 {
     /// <summary>

@@ -19,6 +19,7 @@ public partial class PersistentState
         HasIdentifier = 0x01,
     }
 
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
@@ -115,6 +116,7 @@ public partial class PersistentState
             RecordMetadata.Format(ref writer);
         }
     }
+#pragma warning restore CA2252
 
     private sealed class VersionedFileReader : FileReader
     {

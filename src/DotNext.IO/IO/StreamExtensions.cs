@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace DotNext.IO;
@@ -83,6 +84,7 @@ public static partial class StreamExtensions
     /// <param name="buffer">The buffer that is allocated by the caller.</param>
     /// <returns>The decoded value.</returns>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+    [RequiresPreviewFeatures]
     public static T Parse<T>(this Stream stream, Span<byte> buffer)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -102,6 +104,7 @@ public static partial class StreamExtensions
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <param name="stream">The stream to read from.</param>
     /// <returns>The decoded value.</returns>
+    [RequiresPreviewFeatures]
     public static T Parse<T>(this Stream stream)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -414,6 +417,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding value.</exception>
+    [RequiresPreviewFeatures]
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -434,6 +438,7 @@ public static partial class StreamExtensions
     /// <returns>The parsed value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    [RequiresPreviewFeatures]
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {

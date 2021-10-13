@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
@@ -27,6 +28,7 @@ using Runtime.CompilerServices;
 /// </code>
 /// Otherwise, command handlers can be registered through the builder.
 /// </remarks>
+[RequiresPreviewFeatures]
 public partial class MessageHandler : IInputChannel
 {
     private readonly IReadOnlyDictionary<string, RpcHandler> rpcHandlers;

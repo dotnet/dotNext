@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.IO;
 
@@ -95,6 +96,7 @@ public struct SequenceReader : IAsyncBinaryReader
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <returns>The parsed value.</returns>
+    [RequiresPreviewFeatures]
     public T Parse<T>()
         where T : notnull, IBinaryFormattable<T>
     {
@@ -554,6 +556,7 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc />
+    [RequiresPreviewFeatures]
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
     {
         ValueTask<T> result;
