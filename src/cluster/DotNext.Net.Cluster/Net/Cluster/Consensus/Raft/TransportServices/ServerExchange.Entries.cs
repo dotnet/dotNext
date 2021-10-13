@@ -7,7 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using IO;
 using IO.Log;
-using Threading;
 using static Runtime.Intrinsics;
 
 [StructLayout(LayoutKind.Auto)]
