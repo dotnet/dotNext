@@ -32,8 +32,14 @@ internal readonly struct PipeBinaryReader : IAsyncBinaryReader
     public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
         => input.ReadStringAsync(length, context, token);
 
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => input.ReadStringAsync(length, context, allocator, token);
+
     public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
         => input.ReadStringAsync(lengthFormat, context, token);
+
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => input.ReadStringAsync(lengthFormat, context, allocator, token);
 
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
         => input.ParseAsync(parser, lengthFormat, context, provider, token);

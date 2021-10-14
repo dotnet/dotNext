@@ -195,14 +195,46 @@ public static partial class PipeExtensions
     /// <param name="context">The text decoding context.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The decoded string.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<string> ReadStringAsync(this PipeReader reader, int length, DecodingContext context, CancellationToken token = default)
     {
+        using var chars = await ReadStringAsync(reader, length, context, null, token).ConfigureAwait(false);
+        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+    }
+
+    /// <summary>
+    /// Decodes string asynchronously from pipe.
+    /// </summary>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="length">The length of the string, in bytes.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+    /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this PipeReader reader, int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        MemoryOwner<char> result;
+
         if (length == 0)
-            return string.Empty;
-        using var resultBuffer = new ArrayBuffer<char>(length);
-        return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token).ConfigureAwait(false);
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator.Invoke<char>(length, exactSize: true);
+            length = await ReadAsync<int, StringReader<ArrayBuffer<char>>>(reader, new(context, new ArrayBuffer<char>(result)), token).ConfigureAwait(false);
+            result.TryResize(length);
+        }
+
+        return result;
     }
 
     private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, LengthFormat lengthFormat, CancellationToken token)
@@ -277,6 +309,21 @@ public static partial class PipeExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<string> ReadStringAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
         => await ReadStringAsync(reader, await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false), context, token).ConfigureAwait(false);
+
+    /// <summary>
+    /// Decodes string asynchronously from pipe.
+    /// </summary>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="lengthFormat">Represents string length encoding format.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
+        => await ReadStringAsync(reader, await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false), context, allocator, token).ConfigureAwait(false);
 
     /// <summary>
     /// Reads value of blittable type from pipe.
