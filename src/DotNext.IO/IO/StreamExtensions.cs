@@ -670,15 +670,8 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
     {
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-
-        if (length == 0)
-            return string.Empty;
-
-        using var result = MemoryAllocator.Allocate<char>(length, true);
-        length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
-        return new string(result.Memory.Slice(0, length).Span);
+        using var chars = await ReadStringAsync(stream, length, context, buffer, null, token).ConfigureAwait(false);
+        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
     }
 
     /// <summary>
@@ -773,22 +766,8 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding, CancellationToken token = default)
     {
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-
-        if (length == 0)
-            return string.Empty;
-
-        using var charBuffer = MemoryAllocator.Allocate<char>(length, exactSize: true);
-        int charCount;
-
-        using (var bytesBuffer = MemoryAllocator.Allocate<byte>(length, exactSize: true))
-        {
-            await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
-            charCount = encoding.GetChars(bytesBuffer.Memory.Span, charBuffer.Memory.Span);
-        }
-
-        return new string(charBuffer.Memory.Span.Slice(0, charCount));
+        using var chars = await ReadStringAsync(stream, length, encoding, null, token).ConfigureAwait(false);
+        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
     }
 
     /// <summary>
