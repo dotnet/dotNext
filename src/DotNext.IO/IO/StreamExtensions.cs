@@ -164,7 +164,7 @@ public static partial class StreamExtensions
     /// <summary>
     /// Reads the string using the specified encoding and supplied reusable buffer.
     /// </summary>
-    ///<remarks>
+    /// <remarks>
     /// <paramref name="buffer"/> length can be less than <paramref name="length"/>
     /// but should be enough to decode at least one character of the specified encoding.
     /// </remarks>
@@ -751,7 +751,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, MemoryAllocator<char>? allocator, CancellationToken token = default)
-        => await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, allocator, token);
+        => await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, allocator, token).ConfigureAwait(false);
 
     /// <summary>
     /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.

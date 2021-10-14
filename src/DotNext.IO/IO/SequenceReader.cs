@@ -685,6 +685,7 @@ public struct SequenceReader : IAsyncBinaryReader
         return result;
     }
 
+    /// <inheritdoc />
     ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
     {
         ValueTask<MemoryOwner<char>> result;
