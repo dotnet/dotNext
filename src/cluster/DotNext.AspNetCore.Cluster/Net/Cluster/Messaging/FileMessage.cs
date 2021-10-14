@@ -29,7 +29,13 @@ internal sealed class FileMessage : FileStream, IBufferedMessage
         }
     }
 
-    ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token) => source.WriteToAsync(this, BufferSize, token);
+    ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
+    {
+        if (source.Length.TryGetValue(out var length))
+            SetLength(length);
+
+        return source.WriteToAsync(this, BufferSize, token);
+    }
 
     void IBufferedMessage.PrepareForReuse() => Seek(0L, SeekOrigin.Begin);
 
