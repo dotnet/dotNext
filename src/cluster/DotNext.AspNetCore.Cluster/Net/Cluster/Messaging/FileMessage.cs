@@ -11,7 +11,7 @@ internal sealed class FileMessage : FileStream, IBufferedMessage
     private readonly string messageName;
 
     internal FileMessage(string name, ContentType type)
-        : base(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose)
+        : base(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose)
     {
         messageName = name;
         Type = type;
