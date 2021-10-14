@@ -74,8 +74,14 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
         => StreamExtensions.ReadStringAsync(stream, length, context, buffer, token);
 
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => StreamExtensions.ReadStringAsync(stream, length, context, buffer, allocator, token);
+
     public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
         => StreamExtensions.ReadStringAsync(stream, lengthFormat, context, buffer, token);
+
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => StreamExtensions.ReadStringAsync(stream, lengthFormat, context, buffer, allocator, token);
 
     async ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
     {
