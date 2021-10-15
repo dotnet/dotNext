@@ -18,6 +18,7 @@ using BitVector = Numerics.BitVector;
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 [EditorBrowsable(EditorBrowsableState.Advanced)]
+[SuppressMessage("Usage", "CA1001", Justification = "False positive")]
 public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
 {
     private const byte InMemoryFlag = 0x01;

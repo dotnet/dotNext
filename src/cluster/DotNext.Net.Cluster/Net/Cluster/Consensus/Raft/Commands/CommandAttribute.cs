@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using Runtime.Serialization;
@@ -24,6 +26,7 @@ public abstract class CommandAttribute : Attribute
 /// Registers command type in the interpreter.
 /// </summary>
 /// <typeparam name="TCommand">The type of the command.</typeparam>
+[RequiresPreviewFeatures]
 public sealed class CommandAttribute<TCommand> : CommandAttribute
     where TCommand : notnull, ISerializable<TCommand>
 {

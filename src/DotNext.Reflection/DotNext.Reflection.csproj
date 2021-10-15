@@ -47,7 +47,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Fody" Version="6.5.2" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.5.3" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.7.1" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" />

@@ -38,6 +38,9 @@ internal struct ArrayBuffer<T> : IBuffer<T>, IDisposable
     internal ArrayBuffer(int length)
         => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
 
+    internal ArrayBuffer(MemoryOwner<T> buffer)
+        => this.buffer = buffer;
+
     readonly int IBuffer<T>.Length => buffer.Length;
 
     readonly Span<T> IBuffer<T>.Span => buffer.Memory.Span;

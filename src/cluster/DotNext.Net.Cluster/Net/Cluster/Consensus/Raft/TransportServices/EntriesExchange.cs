@@ -113,7 +113,9 @@ internal abstract class EntriesExchange<TEntry> : EntriesExchange
     }
 
     private static ValueTask<FlushResult> WriteLogEntryMetadata(PipeWriter writer, TEntry entry, CancellationToken token)
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
         => writer.WriteFormattableAsync(LogEntryMetadata.Create(entry), token);
+#pragma warning restore CA2252
 
     private static async ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, TEntry entry, CancellationToken token)
     {

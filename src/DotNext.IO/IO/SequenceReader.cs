@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.IO;
 
@@ -95,6 +96,7 @@ public struct SequenceReader : IAsyncBinaryReader
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <returns>The parsed value.</returns>
+    [RequiresPreviewFeatures]
     public T Parse<T>()
         where T : notnull, IBinaryFormattable<T>
     {
@@ -316,12 +318,38 @@ public struct SequenceReader : IAsyncBinaryReader
         else if ((uint)length > (uint)MemoryRental<char>.StackallocThreshold)
         {
             using var buffer = new ArrayBuffer<char>(length);
-            result = Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
+            result = Read<string, StringReader<ArrayBuffer<char>>>(new(in context, buffer));
         }
         else
         {
             var buffer = stackalloc char[length];
-            result = Read<string, StringReader<UnsafeBuffer<char>>>(new StringReader<UnsafeBuffer<char>>(in context, new UnsafeBuffer<char>(buffer, length)));
+            result = Read<string, StringReader<UnsafeBuffer<char>>>(new(in context, new UnsafeBuffer<char>(buffer, length)));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Decodes the string.
+    /// </summary>
+    /// <param name="length">The length of the encoded string, in bytes.</param>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public unsafe MemoryOwner<char> ReadString(int length, in DecodingContext context, MemoryAllocator<char>? allocator)
+    {
+        MemoryOwner<char> result;
+
+        if (length == 0)
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator.Invoke(length, exactSize: true);
+            length = Read<int, StringReader<ArrayBuffer<char>>>(new(in context, new ArrayBuffer<char>(result)));
+            result.TryResize(length);
         }
 
         return result;
@@ -362,6 +390,17 @@ public struct SequenceReader : IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public string ReadString(LengthFormat lengthFormat, in DecodingContext context)
         => ReadString(ReadLength(lengthFormat), in context);
+
+    /// <summary>
+    /// Decodes the string.
+    /// </summary>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public MemoryOwner<char> ReadString(LengthFormat lengthFormat, in DecodingContext context, MemoryAllocator<char>? allocator)
+        => ReadString(ReadLength(lengthFormat), in context, allocator);
 
     /// <inheritdoc/>
     ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
@@ -554,6 +593,7 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc />
+    [RequiresPreviewFeatures]
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
     {
         ValueTask<T> result;
@@ -588,11 +628,34 @@ public struct SequenceReader : IAsyncBinaryReader
         {
             try
             {
-                result = new(ReadString(length, context));
+                result = new(ReadString(length, in context));
             }
             catch (Exception e)
             {
                 result = ValueTask.FromException<string>(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+    {
+        ValueTask<MemoryOwner<char>> result;
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<MemoryOwner<char>>(token);
+        }
+        else
+        {
+            try
+            {
+                result = new(ReadString(length, in context, allocator));
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<MemoryOwner<char>>(e);
             }
         }
 
@@ -616,6 +679,29 @@ public struct SequenceReader : IAsyncBinaryReader
             catch (Exception e)
             {
                 result = ValueTask.FromException<string>(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+    {
+        ValueTask<MemoryOwner<char>> result;
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<MemoryOwner<char>>(token);
+        }
+        else
+        {
+            try
+            {
+                result = new(ReadString(lengthFormat, in context, allocator));
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<MemoryOwner<char>>(e);
             }
         }
 

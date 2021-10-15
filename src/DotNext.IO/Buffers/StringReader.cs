@@ -6,7 +6,7 @@ namespace DotNext.Buffers;
 using DecodingContext = Text.DecodingContext;
 
 [StructLayout(LayoutKind.Auto)]
-internal struct StringReader<TBuffer> : IBufferReader<string>
+internal struct StringReader<TBuffer> : IBufferReader<string>, IBufferReader<int>
     where TBuffer : struct, IBuffer<char>
 {
     private readonly Decoder decoder;
@@ -28,6 +28,8 @@ internal struct StringReader<TBuffer> : IBufferReader<string>
     public readonly int RemainingBytes => length;
 
     readonly string IBufferReader<string>.Complete() => new(Complete());
+
+    readonly int IBufferReader<int>.Complete() => resultOffset;
 
     internal readonly Span<char> Complete() => result.Span.Slice(0, resultOffset);
 

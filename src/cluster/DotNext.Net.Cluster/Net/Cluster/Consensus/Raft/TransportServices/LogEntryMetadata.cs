@@ -6,6 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 using Buffers;
 using BitVector = Numerics.BitVector;
 
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 {
@@ -64,3 +65,4 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         writer.WriteInt64(length, true);
     }
 }
+#pragma warning restore CA2252

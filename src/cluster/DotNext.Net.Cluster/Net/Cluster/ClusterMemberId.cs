@@ -12,6 +12,7 @@ using HttpEndPoint = Net.Http.HttpEndPoint;
 /// <summary>
 /// Represents unique identifier of cluster member.
 /// </summary>
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFormattable<ClusterMemberId>
 {
@@ -239,3 +240,4 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
         => !x.Equals(in y);
 }
+#pragma warning restore CA2252

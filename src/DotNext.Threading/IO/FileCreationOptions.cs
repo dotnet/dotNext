@@ -26,6 +26,5 @@ internal readonly struct FileCreationOptions
         Access = Access,
         Share = Share,
         Options = Optimization,
-        PreallocationSize = InitialSize,
     };
 }

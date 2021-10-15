@@ -2,6 +2,7 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.IO.Pipelines;
 
@@ -31,12 +32,19 @@ internal readonly struct PipeBinaryReader : IAsyncBinaryReader
     public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
         => input.ReadStringAsync(length, context, token);
 
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => input.ReadStringAsync(length, context, allocator, token);
+
     public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
         => input.ReadStringAsync(lengthFormat, context, token);
+
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => input.ReadStringAsync(lengthFormat, context, allocator, token);
 
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
         => input.ParseAsync(parser, lengthFormat, context, provider, token);
 
+    [RequiresPreviewFeatures]
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
         => input.ParseAsync<T>(token);
 
@@ -223,6 +231,7 @@ internal readonly struct PipeBinaryWriter : IAsyncBinaryWriter
     unsafe ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         => WriteAsync(output, new Writer<T, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteFormattableAsync<T>), token);
 
+    [RequiresPreviewFeatures]
     unsafe ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
         => WriteAsync(output, new Writer<T>(value, &PipeExtensions.WriteFormattableAsync<T>), token);
 

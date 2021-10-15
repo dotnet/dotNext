@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace DotNext.IO;
@@ -83,6 +84,7 @@ public static partial class StreamExtensions
     /// <param name="buffer">The buffer that is allocated by the caller.</param>
     /// <returns>The decoded value.</returns>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+    [RequiresPreviewFeatures]
     public static T Parse<T>(this Stream stream, Span<byte> buffer)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -102,6 +104,7 @@ public static partial class StreamExtensions
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <param name="stream">The stream to read from.</param>
     /// <returns>The decoded value.</returns>
+    [RequiresPreviewFeatures]
     public static T Parse<T>(this Stream stream)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -142,6 +145,7 @@ public static partial class StreamExtensions
     /// <param name="context">The text decoding context.</param>
     /// <param name="buffer">The buffer that is allocated by the caller.</param>
     /// <returns>The string decoded from the log entry content stream.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     [SkipLocalsInit]
@@ -158,6 +162,42 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
+    /// Reads the string using the specified encoding and supplied reusable buffer.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="buffer"/> length can be less than <paramref name="length"/>
+    /// but should be enough to decode at least one character of the specified encoding.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="length">The length of the string, in bytes.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="buffer">The buffer that is allocated by the caller.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    public static MemoryOwner<char> ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer, MemoryAllocator<char>? allocator)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        MemoryOwner<char> result;
+        if (length == 0)
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator.Invoke(length, exactSize: true);
+            length = ReadString(stream, result.Memory.Span, in context, buffer);
+            result.TryResize(length);
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Decodes an arbitrary large big integer.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
@@ -165,12 +205,17 @@ public static partial class StreamExtensions
     /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
     /// <param name="buffer">The buffer that is allocated by the caller.</param>
     /// <returns>The decoded value.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     public static BigInteger ReadBigInteger(this Stream stream, int length, bool littleEndian, Span<byte> buffer)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         if (length == 0)
             return BigInteger.Zero;
+
         if (buffer.Length < length)
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
@@ -186,6 +231,7 @@ public static partial class StreamExtensions
     /// <param name="length">The length of the value, in bytes.</param>
     /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
     /// <returns>The decoded value.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     [SkipLocalsInit]
     public static BigInteger ReadBigInteger(this Stream stream, int length, bool littleEndian)
@@ -299,12 +345,32 @@ public static partial class StreamExtensions
         => ReadString(stream, stream.ReadLength(lengthFormat), in context, buffer);
 
     /// <summary>
+    /// Reads a length-prefixed string using the specified encoding and supplied reusable buffer.
+    /// </summary>
+    /// <remarks>
+    /// This method decodes string length (in bytes) from
+    /// stream in contrast to <see cref="ReadString(Stream, int, in DecodingContext, Span{byte}, MemoryAllocator{char})"/>.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="buffer">The buffer that is allocated by the caller.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static MemoryOwner<char> ReadString(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, MemoryAllocator<char>? allocator)
+        => ReadString(stream, stream.ReadLength(lengthFormat), in context, buffer, allocator);
+
+    /// <summary>
     /// Reads the string using the specified encoding.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
     /// <param name="length">The length of the string, in bytes.</param>
     /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
     /// <returns>The string decoded from the log entry content stream.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     [SkipLocalsInit]
     public static string ReadString(this Stream stream, int length, Encoding encoding)
@@ -328,6 +394,36 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
+    /// Reads the string using the specified encoding.
+    /// </summary>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="length">The length of the string, in bytes.</param>
+    /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    public static MemoryOwner<char> ReadString(this Stream stream, int length, Encoding encoding, MemoryAllocator<char>? allocator)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        MemoryOwner<char> result;
+        if (length == 0)
+        {
+            result = default;
+        }
+        else
+        {
+            using var bytesBuffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length);
+            stream.ReadBlock(bytesBuffer.Span);
+            result = encoding.GetChars(bytesBuffer.Span, allocator);
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Reads a length-prefixed string using the specified encoding.
     /// </summary>
     /// <remarks>
@@ -342,6 +438,23 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static string ReadString(this Stream stream, LengthFormat lengthFormat, Encoding encoding)
         => ReadString(stream, stream.ReadLength(lengthFormat), encoding);
+
+    /// <summary>
+    /// Reads a length-prefixed string using the specified encoding.
+    /// </summary>
+    /// <remarks>
+    /// This method decodes string length (in bytes) from
+    /// stream in contrast to <see cref="ReadString(Stream, int, Encoding)"/>.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static MemoryOwner<char> ReadString(this Stream stream, LengthFormat lengthFormat, Encoding encoding, MemoryAllocator<char>? allocator)
+        => ReadString(stream, stream.ReadLength(lengthFormat), encoding, allocator);
 
     /// <summary>
     /// Parses the value encoded as a set of characters.
@@ -414,6 +527,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding value.</exception>
+    [RequiresPreviewFeatures]
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -434,6 +548,7 @@ public static partial class StreamExtensions
     /// <returns>The parsed value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    [RequiresPreviewFeatures]
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -549,16 +664,52 @@ public static partial class StreamExtensions
     /// <param name="buffer">The buffer that is allocated by the caller.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The string decoded from the log entry content stream.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
     {
+        using var chars = await ReadStringAsync(stream, length, context, buffer, null, token).ConfigureAwait(false);
+        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+    }
+
+    /// <summary>
+    /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="buffer"/> length can be less than <paramref name="length"/>
+    /// but should be enough to decode at least one character of the specified encoding.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="length">The length of the string, in bytes.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="buffer">The buffer that is allocated by the caller.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        MemoryOwner<char> result;
         if (length == 0)
-            return string.Empty;
-        using var result = MemoryAllocator.Allocate<char>(length, true);
-        length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
-        return new string(result.Memory.Slice(0, length).Span);
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator.Invoke(length, exactSize: true);
+            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            result.TryResize(length);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -582,6 +733,27 @@ public static partial class StreamExtensions
         => await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, token).ConfigureAwait(false);
 
     /// <summary>
+    /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
+    /// </summary>
+    /// <remarks>
+    /// This method decodes string length (in bytes) from
+    /// stream in contrast to <see cref="ReadStringAsync(Stream, int, DecodingContext, Memory{byte}, MemoryAllocator{char}, CancellationToken)"/>.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="buffer">The buffer that is allocated by the caller.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, MemoryAllocator<char>? allocator, CancellationToken token = default)
+        => await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, allocator, token).ConfigureAwait(false);
+
+    /// <summary>
     /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
@@ -589,23 +761,45 @@ public static partial class StreamExtensions
     /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The string decoded from the log entry content stream.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding, CancellationToken token = default)
     {
+        using var chars = await ReadStringAsync(stream, length, encoding, null, token).ConfigureAwait(false);
+        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+    }
+
+    /// <summary>
+    /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+    /// </summary>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="length">The length of the string, in bytes.</param>
+    /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this Stream stream, int length, Encoding encoding, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        MemoryOwner<char> result;
         if (length == 0)
-            return string.Empty;
-
-        using var charBuffer = MemoryAllocator.Allocate<char>(length, true);
-        int charCount;
-
-        using (var bytesBuffer = MemoryAllocator.Allocate<byte>(length, true))
         {
+            result = default;
+        }
+        else
+        {
+            using var bytesBuffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
             await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
-            charCount = encoding.GetChars(bytesBuffer.Memory.Span, charBuffer.Memory.Span);
+            result = encoding.GetChars(bytesBuffer.Memory.Span, allocator);
         }
 
-        return new string(charBuffer.Memory.Span.Slice(0, charCount));
+        return result;
     }
 
     /// <summary>
@@ -625,8 +819,30 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<string> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, Encoding encoding, CancellationToken token = default)
     {
-        using var lengthDecodingBuffer = MemoryAllocator.Allocate<byte>(BufferSizeForLength, false);
+        using var lengthDecodingBuffer = MemoryAllocator.Allocate<byte>(BufferSizeForLength, exactSize: false);
         return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
+    /// </summary>
+    /// <remarks>
+    /// This method decodes string length (in bytes) from
+    /// stream in contrast to <see cref="ReadStringAsync(Stream, int, Encoding, MemoryAllocator{char}, CancellationToken)"/>.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, Encoding encoding, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    {
+        using var lengthDecodingBuffer = MemoryAllocator.Allocate<byte>(BufferSizeForLength, exactSize: false);
+        return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, allocator, token).ConfigureAwait(false);
     }
 
     /// <summary>

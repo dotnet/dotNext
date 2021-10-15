@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.Versioning;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
@@ -8,6 +9,7 @@ namespace DotNext.IO;
 using Buffers;
 using DecodingContext = Text.DecodingContext;
 using PipeConsumer = Pipelines.PipeConsumer;
+using static Text.EncodingExtensions;
 
 /// <summary>
 /// Providers a uniform way to decode the data
@@ -109,6 +111,7 @@ public interface IAsyncBinaryReader
     /// <returns>The parsed value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    [RequiresPreviewFeatures]
     async ValueTask<T> ParseAsync<T>(CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -206,9 +209,29 @@ public interface IAsyncBinaryReader
         if (length == 0)
             return string.Empty;
 
-        using var buffer = MemoryAllocator.Allocate<byte>(length, true);
+        using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
         return context.Encoding.GetString(buffer.Memory.Span);
+    }
+
+    /// <summary>
+    /// Decodes the string.
+    /// </summary>
+    /// <param name="length">The length of the encoded string, in bytes.</param>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    async ValueTask<MemoryOwner<char>> ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    {
+        if (length == 0)
+            return new();
+
+        using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+        await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+        return context.Encoding.GetChars(buffer.Memory.Span, allocator);
     }
 
     /// <summary>
@@ -225,6 +248,23 @@ public interface IAsyncBinaryReader
     {
         using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
         return context.Encoding.GetString(buffer.Memory.Span);
+    }
+
+    /// <summary>
+    /// Decodes the string.
+    /// </summary>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The buffer of characters.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    async ValueTask<MemoryOwner<char>> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    {
+        using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
+        return context.Encoding.GetChars(buffer.Memory.Span, allocator);
     }
 
     /// <summary>

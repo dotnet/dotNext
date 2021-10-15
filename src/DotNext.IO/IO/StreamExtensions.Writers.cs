@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace DotNext.IO;
@@ -222,6 +223,7 @@ public static partial class StreamExtensions
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="stream">The stream to write into.</param>
     /// <param name="value">The type value to be written as string.</param>
+    [RequiresPreviewFeatures]
     public static void WriteFormattable<T>(this Stream stream, T value)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -473,6 +475,7 @@ public static partial class StreamExtensions
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [RequiresPreviewFeatures]
     public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -498,6 +501,7 @@ public static partial class StreamExtensions
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [RequiresPreviewFeatures]
     public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {

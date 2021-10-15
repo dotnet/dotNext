@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.Versioning;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
@@ -224,6 +225,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <returns>The parsed value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    [RequiresPreviewFeatures]
     public ValueTask<T> ParseAsync<T>(CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {

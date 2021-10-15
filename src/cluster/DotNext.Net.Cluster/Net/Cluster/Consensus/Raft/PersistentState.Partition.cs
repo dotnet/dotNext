@@ -322,13 +322,17 @@ public partial class PersistentState
         }
 
         internal async ValueTask InitializeAsync()
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
             => metadata = FileSize >= SnapshotMetadata.Size ? await GetSessionReader(0).ParseAsync<SnapshotMetadata>().ConfigureAwait(false) : default;
+#pragma warning restore CA2252
 
         internal async ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
         {
             await SetWritePositionAsync(0L, token).ConfigureAwait(false);
             metadata = new(index, timestamp, term, FileSize - SnapshotMetadata.Size);
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
             await writer.WriteFormattableAsync(metadata, token).ConfigureAwait(false);
+#pragma warning restore CA2252
         }
 
         internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
@@ -337,7 +341,9 @@ public partial class PersistentState
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
             metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - SnapshotMetadata.Size);
             await SetWritePositionAsync(0L, token).ConfigureAwait(false);
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
             await writer.WriteFormattableAsync(metadata, token).ConfigureAwait(false);
+#pragma warning restore CA2252
         }
 
         // optimization hint is not supported for snapshots

@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.Versioning;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
@@ -178,6 +179,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
+    [RequiresPreviewFeatures]
     async ValueTask WriteFormattableAsync<T>(T value, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {

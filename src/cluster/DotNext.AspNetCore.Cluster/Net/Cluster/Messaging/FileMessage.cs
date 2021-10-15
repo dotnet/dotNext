@@ -11,7 +11,7 @@ internal sealed class FileMessage : FileStream, IBufferedMessage
     private readonly string messageName;
 
     internal FileMessage(string name, ContentType type)
-        : base(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose)
+        : base(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose)
     {
         messageName = name;
         Type = type;
@@ -29,7 +29,13 @@ internal sealed class FileMessage : FileStream, IBufferedMessage
         }
     }
 
-    ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token) => source.WriteToAsync(this, BufferSize, token);
+    ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
+    {
+        if (source.Length.TryGetValue(out var length))
+            SetLength(length);
+
+        return source.WriteToAsync(this, BufferSize, token);
+    }
 
     void IBufferedMessage.PrepareForReuse() => Seek(0L, SeekOrigin.Begin);
 
