@@ -19,6 +19,7 @@ public partial class PersistentState
         HasIdentifier = 0x01,
     }
 
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
@@ -115,6 +116,7 @@ public partial class PersistentState
             RecordMetadata.Format(ref writer);
         }
     }
+#pragma warning restore CA2252
 
     private sealed class VersionedFileReader : FileReader
     {
@@ -151,7 +153,10 @@ public partial class PersistentState
 
         private protected ConcurrentStorageAccess(string fileName, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
-            Handle = File.OpenHandle(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+            Handle = File.Exists(fileName)
+                ? File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, options)
+                : File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+
             writer = new(Handle, bufferSize: bufferSize, allocator: allocator);
             readers = new VersionedFileReader[readersCount];
             this.allocator = allocator;

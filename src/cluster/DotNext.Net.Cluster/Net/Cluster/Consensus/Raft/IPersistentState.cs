@@ -50,12 +50,14 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
     /// will be committed.
     /// </summary>
-    /// <param name="timeout">The time to wait.</param>
+    /// <remarks>
+    /// This method can be used to guarantee linearizable read when processing read-only request
+    /// on leader node.
+    /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="TimeoutException">Timeout occurred.</exception>
-    Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token = default);
+    ValueTask EnsureConsistencyAsync(CancellationToken token = default);
 
     internal static bool IsVotedFor(object? lastVote, in ClusterMemberId? expected)
         => lastVote is null || (expected.HasValue && Unsafe.Unbox<ClusterMemberId>(lastVote).Equals(expected.GetValueOrDefault()));

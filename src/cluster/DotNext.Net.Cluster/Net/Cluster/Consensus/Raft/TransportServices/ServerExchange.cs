@@ -22,6 +22,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         ReceivingSnapshotFinished,
         ConfigurationReceived,
         ReceivingConfigurationFinished,
+        SynchronizeReceived,
     }
 
     private readonly ILocalMember server;
@@ -31,7 +32,6 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
     internal ServerExchange(ILocalMember server, PipeOptions? options = null)
         : base(options)
     {
-        transmissionStateTrigger = new();
         this.server = server;
         state = State.Ready;
     }
@@ -122,6 +122,10 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
                 }
 
                 break;
+            case MessageType.Synchronize:
+                state = State.SynchronizeReceived;
+                BeginSynchronize(token);
+                break;
         }
 
         return result;
@@ -140,6 +144,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         State.ReceivingSnapshotFinished => EndReceiveSnapshot(output),
         State.ConfigurationReceived => RequestConfigurationChunk(),
         State.ReceivingConfigurationFinished => EndReceiveConfiguration(),
+        State.SynchronizeReceived => EndSynchronize(output),
         _ => default,
     };
 
@@ -148,14 +153,14 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         ReusePipe();
         task = null;
         state = State.Ready;
-        transmissionStateTrigger.CancelSuspendedCallers(new CancellationToken(true));
+        entriesExchangeCoordinator?.CancelSuspendedCallers();
     }
 
     private void Dispose(bool disposing)
     {
         if (disposing)
         {
-            transmissionStateTrigger.Dispose();
+            entriesExchangeCoordinator?.Dispose();
         }
     }
 

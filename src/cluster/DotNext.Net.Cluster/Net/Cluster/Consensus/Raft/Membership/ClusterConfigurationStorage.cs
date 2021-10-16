@@ -50,7 +50,9 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         foreach (var (id, address) in configuration)
         {
             // serialize id
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
             output.WriteFormattable(id);
+#pragma warning restore CA2252
 
             // serialize address
             Encode(address, ref output);

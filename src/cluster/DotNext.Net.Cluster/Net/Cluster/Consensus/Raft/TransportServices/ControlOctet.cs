@@ -4,6 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
 
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct ControlOctet : IBinaryFormattable<ControlOctet>
 {
@@ -30,3 +31,4 @@ internal readonly struct ControlOctet : IBinaryFormattable<ControlOctet>
 
     public static implicit operator byte(ControlOctet value) => value.value;
 }
+#pragma warning restore CA2252

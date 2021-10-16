@@ -6,6 +6,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous mutually exclusive lock.
@@ -114,9 +115,9 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource? current = first, next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            next = current.Next;
 
             if (current.IsCompleted)
             {

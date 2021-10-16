@@ -23,7 +23,7 @@ internal sealed class CandidateState : RaftState
 
         private static async Task<Result<VotingResult>> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
-            var lastIndex = auditTrail.GetLastIndex(false);
+            var lastIndex = auditTrail.LastUncommittedEntryIndex;
             var lastTerm = await auditTrail.GetTermAsync(lastIndex, token).ConfigureAwait(false);
             VotingResult result;
             try

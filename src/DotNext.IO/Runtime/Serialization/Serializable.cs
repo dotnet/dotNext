@@ -1,4 +1,5 @@
 using System.IO.Pipelines;
+using System.Runtime.Versioning;
 
 namespace DotNext.Runtime.Serialization;
 
@@ -11,6 +12,7 @@ using PipeBinaryReader = IO.Pipelines.PipeBinaryReader;
 /// Provides extension methods for decoding <see cref="ISerializable{TSelf}"/>
 /// from various sources.
 /// </summary>
+[RequiresPreviewFeatures]
 public static class Serializable
 {
     /// <summary>

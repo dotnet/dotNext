@@ -53,4 +53,12 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
 
     /// <inheritdoc/>
     IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => AuditTrail;
+
+    /// <summary>
+    /// Ensures linearizable read from underlying state machine.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    ValueTask ApplyReadBarrierAsync(CancellationToken token = default);
 }

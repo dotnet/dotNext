@@ -2,6 +2,7 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.IO;
 
@@ -73,8 +74,14 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
         => StreamExtensions.ReadStringAsync(stream, length, context, buffer, token);
 
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => StreamExtensions.ReadStringAsync(stream, length, context, buffer, allocator, token);
+
     public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
         => StreamExtensions.ReadStringAsync(stream, lengthFormat, context, buffer, token);
+
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => StreamExtensions.ReadStringAsync(stream, lengthFormat, context, buffer, allocator, token);
 
     async ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
     {
@@ -100,6 +107,7 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
         => StreamExtensions.ParseAsync(stream, parser, lengthFormat, context, buffer, provider, token);
 
+    [RequiresPreviewFeatures]
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
         => StreamExtensions.ParseAsync<T>(stream, buffer, token);
 
@@ -180,6 +188,7 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         => stream.WriteFormattableAsync(value, lengthFormat, context, buffer, format, provider, token);
 
+    [RequiresPreviewFeatures]
     ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
         => stream.WriteFormattableAsync(value, buffer, token);
 

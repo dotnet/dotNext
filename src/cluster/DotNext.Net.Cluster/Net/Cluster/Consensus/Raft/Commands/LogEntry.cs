@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
@@ -10,6 +11,7 @@ using Runtime.Serialization;
 /// </summary>
 /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[RequiresPreviewFeatures]
 public readonly struct LogEntry<TCommand> : IRaftLogEntry
     where TCommand : notnull, ISerializable<TCommand>
 {

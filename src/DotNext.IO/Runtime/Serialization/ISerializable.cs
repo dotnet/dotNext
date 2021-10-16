@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 namespace DotNext.Runtime.Serialization;
 
 using IO;
@@ -6,6 +8,7 @@ using IO;
 /// Represents an object that supports serialization and deserialization.
 /// </summary>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
+[RequiresPreviewFeatures]
 public interface ISerializable<TSelf> : IDataTransferObject
     where TSelf : ISerializable<TSelf>
 {

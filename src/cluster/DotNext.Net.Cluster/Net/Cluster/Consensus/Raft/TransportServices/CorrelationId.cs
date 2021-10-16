@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
 
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryFormattable<CorrelationId>
 {
@@ -62,3 +63,4 @@ internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryForma
     public static bool operator !=(in CorrelationId x, in CorrelationId y)
         => !x.Equals(in y);
 }
+#pragma warning restore CA2252

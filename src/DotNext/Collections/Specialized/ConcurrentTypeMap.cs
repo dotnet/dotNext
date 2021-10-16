@@ -90,7 +90,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
         var entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
-        entries.InstantiateElements();
+        entries.AsSpan().Initialize();
         this.entries = entries;
     }
 
@@ -100,7 +100,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public ConcurrentTypeMap()
     {
         var entries = new Entry[ITypeMap<TValue>.RecommendedCapacity];
-        entries.InstantiateElements();
+        entries.AsSpan().Initialize();
         this.entries = entries;
     }
 

@@ -88,7 +88,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal bool Remove(TKey expected, TValue value, IEqualityComparer<TKey> comparer)
         {
-            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+            for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
                 if (comparer.Equals(expected, current.Id))

@@ -242,12 +242,17 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <summary>
-    /// Gets index of the committed or last log entry.
+    /// Gets the index of the last committed log entry.
     /// </summary>
-    /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
-    /// <returns>The index of the log entry.</returns>
-    public long GetLastIndex(bool committed)
-        => committed ? commitIndex.VolatileRead() : index.VolatileRead();
+    public long LastCommittedEntryIndex => commitIndex.VolatileRead();
+
+    /// <summary>
+    /// Gets the index of the last uncommitted log entry.
+    /// </summary>
+    public long LastUncommittedEntryIndex => index.VolatileRead();
+
+    /// <inheritdoc />
+    long IAuditTrail.LastAppliedEntryIndex => LastCommittedEntryIndex;
 
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync() => new(term.IncrementAndGet());
@@ -348,22 +353,19 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
-        => commitEvent.WaitAsync(timeout, token);
+    ValueTask IAuditTrail.WaitForCommitAsync(CancellationToken token)
+        => commitEvent.WaitAsync(token);
 
     /// <inheritdoc/>
-    ValueTask<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
-        => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, timeout, token);
+    ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
+        => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, token);
 
-    private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)
+    /// <inheritdoc/>
+    async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)
     {
-        for (var timeoutTracker = new Timeout(timeout); term.VolatileRead() > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
-            timeoutTracker.ThrowIfExpired(out timeout);
+        while (term.VolatileRead() != lastTerm.VolatileRead())
+            await commitEvent.WaitAsync(token).ConfigureAwait(false);
     }
-
-    /// <inheritdoc/>
-    Task IPersistentState.EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
-        => term.VolatileRead() <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistency(timeout, token);
 
     /// <summary>
     /// Releases all resources associated with this audit trail.

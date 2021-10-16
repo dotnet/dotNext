@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 
 namespace DotNext.Buffers;
 
@@ -7,6 +8,7 @@ namespace DotNext.Buffers;
 /// Represents an object that can be converted to and restored from the binary representation.
 /// </summary>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
+[RequiresPreviewFeatures]
 public interface IBinaryFormattable<TSelf>
     where TSelf : notnull, IBinaryFormattable<TSelf>
 {

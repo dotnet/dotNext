@@ -60,6 +60,56 @@ namespace DotNext.IO
             ReadStringUsingEncoding(testString2, Encoding.UTF32, bufferSize);
         }
 
+        private static void ReadCharBufferUsingEncoding(string value, Encoding encoding, int bufferSize)
+        {
+            using var ms = new MemoryStream();
+            ms.Write(encoding.GetBytes(value));
+            ms.Position = 0;
+            var buffer = new byte[bufferSize];
+            using var chars = ms.ReadString(encoding.GetByteCount(value), encoding, buffer, null);
+            Equal(value, new string(chars.Memory.Span));
+        }
+
+        private static void ReadCharBufferUsingEncoding(string value, Encoding encoding)
+        {
+            using var ms = new MemoryStream();
+            ms.Write(encoding.GetBytes(value));
+            ms.Position = 0;
+            using var chars = ms.ReadString(encoding.GetByteCount(value), encoding, null);
+            Equal(value, new string(chars.Memory.Span));
+        }
+
+        [Fact]
+        public static void ReadCharsBufferWithoutByteBuffer()
+        {
+            const string testString1 = "Hello, world! &$@&@()&$YHWORww!";
+            ReadCharBufferUsingEncoding(testString1, Encoding.UTF8);
+            ReadCharBufferUsingEncoding(testString1, Encoding.Unicode);
+            ReadCharBufferUsingEncoding(testString1, Encoding.UTF32);
+            ReadCharBufferUsingEncoding(testString1, Encoding.ASCII);
+            const string testString2 = "������, ���!";
+            ReadCharBufferUsingEncoding(testString2, Encoding.UTF8);
+            ReadCharBufferUsingEncoding(testString2, Encoding.Unicode);
+            ReadCharBufferUsingEncoding(testString2, Encoding.UTF32);
+        }
+
+        [Theory]
+        [InlineData(4)]
+        [InlineData(15)]
+        [InlineData(128)]
+        public static void ReadCharsBuffer(int bufferSize)
+        {
+            const string testString1 = "Hello, world! &$@&@()&$YHWORww!";
+            ReadCharBufferUsingEncoding(testString1, Encoding.UTF8, bufferSize);
+            ReadCharBufferUsingEncoding(testString1, Encoding.Unicode, bufferSize);
+            ReadCharBufferUsingEncoding(testString1, Encoding.UTF32, bufferSize);
+            ReadCharBufferUsingEncoding(testString1, Encoding.ASCII, bufferSize);
+            const string testString2 = "������, ���!";
+            ReadCharBufferUsingEncoding(testString2, Encoding.UTF8, bufferSize);
+            ReadCharBufferUsingEncoding(testString2, Encoding.Unicode, bufferSize);
+            ReadCharBufferUsingEncoding(testString2, Encoding.UTF32, bufferSize);
+        }
+
         private static async Task ReadStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize)
         {
             using var ms = new MemoryStream();

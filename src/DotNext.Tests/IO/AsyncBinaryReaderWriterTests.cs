@@ -365,6 +365,24 @@ namespace DotNext.IO
             }
         }
 
+        [Theory]
+        [MemberData(nameof(GetDataForStringEncoding))]
+        public static async Task WriteReadStringBufferAsync(IAsyncBinaryReaderWriterSource source, Encoding encoding, LengthFormat? lengthFormat)
+        {
+            await using (source)
+            {
+                const string value = "Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!";
+                var writer = source.CreateWriter();
+                await writer.WriteStringAsync(value.AsMemory(), encoding, lengthFormat);
+
+                var reader = source.CreateReader();
+                using var result = await (lengthFormat is null ?
+                    reader.ReadStringAsync(encoding.GetByteCount(value), encoding, null) :
+                    reader.ReadStringAsync(lengthFormat.GetValueOrDefault(), encoding, null));
+                Equal(value, new string(result.Memory.Span));
+            }
+        }
+
         public static IEnumerable<object[]> GetSources()
         {
             yield return new object[] { new StreamSource() };

@@ -5,6 +5,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
@@ -89,13 +90,21 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="autoReset"><see langword="true"/> to reset this object to non-signaled state automatically; <see langword="false"/> to leave this object in signaled state.</param>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Set(bool autoReset)
     {
-        ThrowIfDisposed();
+        var result = Set(autoReset, out var queueHead);
+        ResumeSuspendedCallers(queueHead);
+        return result;
+    }
 
-        var result = !manager.Value;
-        ResumeSuspendedCallers();
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool Set(bool autoReset, out LinkedValueTaskCompletionSource? queueHead)
+    {
+        ThrowIfDisposed();
+        bool result;
+
+        result = !manager.Value;
+        queueHead = DetachWaitQueue();
         manager.Value = !autoReset;
 
         return result;

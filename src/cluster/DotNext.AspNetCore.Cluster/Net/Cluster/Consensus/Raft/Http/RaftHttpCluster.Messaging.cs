@@ -150,30 +150,32 @@ internal partial class RaftHttpCluster : IOutputChannel
             await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
     }
 
-    private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
+    private async Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
     {
         var sender = TryGetMember(message.Sender);
-        var task = Task.CompletedTask;
+
         if (sender is null)
         {
             response.StatusCode = StatusCodes.Status404NotFound;
         }
-        else if (!message.RespectLeadership || IsLeaderLocal)
+        else if (!message.RespectLeadership)
         {
-            switch (message.Mode)
+            await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+        }
+        else if (IsLeaderLocal)
+        {
+            var tokenSource = token.LinkTo(LeadershipToken);
+            try
             {
-                case CustomMessage.DeliveryMode.RequestReply:
-                    task = ReceiveMessageAsync(sender, message, messageHandlers, response, token);
-                    break;
-                case CustomMessage.DeliveryMode.OneWay:
-                    task = ReceiveOneWayMessageAsync(sender, message, messageHandlers, true, response, token);
-                    break;
-                case CustomMessage.DeliveryMode.OneWayNoAck:
-                    task = ReceiveOneWayMessageAsync(sender, message, messageHandlers, false, response, token);
-                    break;
-                default:
-                    response.StatusCode = StatusCodes.Status400BadRequest;
-                    break;
+                await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+            }
+            finally
+            {
+                tokenSource?.Dispose();
             }
         }
         else
@@ -182,7 +184,30 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
 
         sender?.Touch();
-        return task;
+    }
+
+    private Task ReceiveMessageAsync(RaftClusterMember sender, CustomMessage message, HttpResponse response, CancellationToken token)
+    {
+        Task result;
+
+        switch (message.Mode)
+        {
+            case CustomMessage.DeliveryMode.RequestReply:
+                result = ReceiveMessageAsync(sender, message, messageHandlers, response, token);
+                break;
+            case CustomMessage.DeliveryMode.OneWay:
+                result = ReceiveOneWayMessageAsync(sender, message, messageHandlers, true, response, token);
+                break;
+            case CustomMessage.DeliveryMode.OneWayNoAck:
+                result = ReceiveOneWayMessageAsync(sender, message, messageHandlers, false, response, token);
+                break;
+            default:
+                response.StatusCode = StatusCodes.Status400BadRequest;
+                result = Task.CompletedTask;
+                break;
+        }
+
+        return result;
     }
 
     private async Task VoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
@@ -249,31 +274,54 @@ internal partial class RaftHttpCluster : IOutputChannel
         await message.SaveResponse(response, result, token).ConfigureAwait(false);
     }
 
+    private async Task SynchronizeAsync(SynchronizeMessage message, HttpResponse response, CancellationToken token)
+    {
+        TryGetMember(message.Sender)?.Touch();
+
+        var result = await SynchronizeAsync(token).ConfigureAwait(false);
+        await message.SaveResponse(response, result, token).ConfigureAwait(false);
+    }
+
     internal Task ProcessRequest(HttpContext context)
     {
         context.Features.Set(duplicationDetector);
+
+        Task result;
 
         // process request
         switch (HttpMessage.GetMessageType(context.Request))
         {
             case RequestVoteMessage.MessageType:
-                return VoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
+                result = VoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
+                break;
             case PreVoteMessage.MessageType:
-                return PreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted);
+                result = PreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted);
+                break;
             case ResignMessage.MessageType:
-                return ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted);
+                result = ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted);
+                break;
             case MetadataMessage.MessageType:
-                return GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
+                result = GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
+                break;
             case AppendEntriesMessage.MessageType:
-                return AppendEntriesAsync(context.Request, context.Response, context.RequestAborted);
+                result = AppendEntriesAsync(context.Request, context.Response, context.RequestAborted);
+                break;
             case CustomMessage.MessageType:
-                return ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
+                result = ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
+                break;
             case InstallSnapshotMessage.MessageType:
-                return InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
+                result = InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
+                break;
+            case SynchronizeMessage.MessageType:
+                result = SynchronizeAsync(new SynchronizeMessage(context.Request), context.Response, context.RequestAborted);
+                break;
             default:
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                return Task.CompletedTask;
+                result = Task.CompletedTask;
+                break;
         }
+
+        return result;
     }
 
     private bool TryGetTimeout(Type messageType, out TimeSpan timeout)

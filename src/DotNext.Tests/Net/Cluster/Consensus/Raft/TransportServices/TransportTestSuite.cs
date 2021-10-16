@@ -153,6 +153,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<bool>(44L, true));
             }
 
+            Task<long?> ILocalMember.SynchronizeAsync(CancellationToken token)
+                => Task.FromResult<long?>(42L);
+
             public IReadOnlyDictionary<string, string> Metadata { get; }
         }
 
@@ -367,6 +370,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var result = await exchange.Task;
 
             True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config));
+        }
+
+        private protected async Task SendingSynchronizationRequestTest(ServerFactory serverFactory, ClientFactory clientFactory)
+        {
+            var timeout = TimeSpan.FromSeconds(20);
+            using var timeoutTokenSource = new CancellationTokenSource(timeout);
+            var member = new LocalMember(false);
+
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
+
+            //prepare client
+            using var client = clientFactory(serverAddr);
+
+            var exchange = new SynchronizeExchange();
+            client.Enqueue(exchange, timeoutTokenSource.Token);
+
+            Equal(42L, await exchange.Task);
         }
     }
 }

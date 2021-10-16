@@ -199,7 +199,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         if (manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers();
+            ResumeSuspendedCallers(DetachWaitQueue());
             return true;
         }
 
@@ -212,7 +212,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         if (manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers();
+            ResumeSuspendedCallers(DetachWaitQueue());
             manager.Current = manager.Initial;
             return true;
         }
@@ -222,11 +222,27 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
-        => (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+    {
+        if (IsDisposed || IsDisposeRequested)
+        {
+            completedSynchronously = true;
+            return new(GetDisposedTask<bool>());
+        }
+
+        return (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+    }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
-        => (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+    {
+        if (IsDisposed || IsDisposeRequested)
+        {
+            completedSynchronously = true;
+            return new(DisposedTask);
+        }
+
+        return (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+    }
 
     /// <summary>
     /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.

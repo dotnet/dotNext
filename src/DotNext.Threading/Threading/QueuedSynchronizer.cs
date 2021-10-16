@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
@@ -16,21 +17,43 @@ public class QueuedSynchronizer : Disposable
 {
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
-        internal bool ThrowOnTimeout;
         private Timestamp createdAt;
+
+        private protected override void ResetCore()
+        {
+            LockDurationCounter = null;
+            base.ResetCore();
+        }
+
+        internal Action<double>? LockDurationCounter
+        {
+            private get;
+            set;
+        }
+
+        internal bool ThrowOnTimeout
+        {
+            private get;
+            set;
+        }
 
         internal void ResetAge() => createdAt = Timestamp.Current;
 
         protected sealed override Result<bool> OnTimeout() => ThrowOnTimeout ? base.OnTimeout() : false;
 
-        internal TimeSpan Age => createdAt.Elapsed;
+        private protected void ReportLockDuration()
+            => LockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
     {
         private Action<DefaultWaitNode>? consumedCallback;
 
-        protected sealed override void AfterConsumed() => consumedCallback?.Invoke(this);
+        protected sealed override void AfterConsumed()
+        {
+            ReportLockDuration();
+            consumedCallback?.Invoke(this);
+        }
 
         private protected override void ResetCore()
         {
@@ -68,7 +91,7 @@ public class QueuedSynchronizer : Disposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected void RemoveAndDrainWaitQueue(WaitNode node)
+    private protected void RemoveAndDrainWaitQueue(LinkedValueTaskCompletionSource<bool> node)
     {
         if (RemoveNodeCore(node))
             DrainWaitQueue();
@@ -96,9 +119,10 @@ public class QueuedSynchronizer : Disposable
         init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
     }
 
-    private bool RemoveNodeCore(WaitNode node)
+    private bool RemoveNodeCore(LinkedValueTaskCompletionSource<bool> node)
     {
         bool isFirst;
+
         if (isFirst = ReferenceEquals(first, node))
             first = node.Next;
 
@@ -106,13 +130,11 @@ public class QueuedSynchronizer : Disposable
             last = node.Previous;
 
         node.Detach();
-        lockDurationCounter?.Invoke(node.Age.TotalMilliseconds);
-
         return isFirst;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected bool RemoveNode(WaitNode node) => RemoveNodeCore(node);
+    private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node) => RemoveNodeCore(node);
 
     private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
 
@@ -125,6 +147,7 @@ public class QueuedSynchronizer : Disposable
         var node = pool.Get();
         manager.InitializeNode(node);
         node.ThrowOnTimeout = throwOnTimeout;
+        node.LockDurationCounter = lockDurationCounter;
         node.ResetAge();
 
         if (last is null)
@@ -150,9 +173,9 @@ public class QueuedSynchronizer : Disposable
 
         if (result = manager.IsLockAllowed)
         {
-            for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
-                next = current.Next as WaitNode;
+                next = current.Next;
 
                 if (current.IsCompleted)
                 {
@@ -225,58 +248,54 @@ public class QueuedSynchronizer : Disposable
     /// </summary>
     /// <param name="token">The canceled token.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     public void CancelSuspendedCallers(CancellationToken token)
     {
+        ThrowIfDisposed();
+
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = DetachWaitQueue(), next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
             current.TrySetCanceled(token);
         }
-
-        first = last = null;
     }
 
-    private protected long ResumeSuspendedCallers()
+    private protected static long ResumeSuspendedCallers(LinkedValueTaskCompletionSource<bool>? queueHead)
     {
-        Debug.Assert(Monitor.IsEntered(this));
-
         var count = 0L;
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? next; queueHead is not null; queueHead = next)
         {
-            next = current.Next as WaitNode;
+            next = queueHead.CleanupAndGotoNext();
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (queueHead.TrySetResult(true))
                 count += 1L;
-            }
         }
 
         return count;
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
+    {
+        var queueHead = first;
+        first = last = null;
+
+        return queueHead;
     }
 
     private void NotifyObjectDisposed()
     {
         var e = new ObjectDisposedException(GetType().Name);
 
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = DetachWaitQueue(), next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
             current.TrySetException(e);
         }
-
-        first = last = null;
     }
 
     /// <summary>

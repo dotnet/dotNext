@@ -6,6 +6,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous trigger that allows to resume and suspend
@@ -56,13 +57,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     private bool SignalCore()
     {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource? current = first, next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            next = current.Next;
 
             if (current.IsCompleted)
             {
@@ -89,12 +89,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Signal(bool resumeAll = false)
     {
         ThrowIfDisposed();
-
-        return resumeAll ? ResumeSuspendedCallers() > 0L : SignalCore();
+        return resumeAll ? ResumeSuspendedCallers(DetachWaitQueue()) > 0L : SignalCore();
     }
 
     /// <inheritdoc/>
@@ -189,27 +187,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             ? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
             : WaitAsync(token);
     }
-
-    /// <summary>
-    /// Waits for the specific state.
-    /// </summary>
-    /// <typeparam name="TStateMachine">The type of external state machine.</typeparam>
-    /// <param name="stateMachine">The state machine.</param>
-    /// <param name="condition">The condition.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task WaitAsync<TStateMachine>(TStateMachine stateMachine, Predicate<TStateMachine> condition, CancellationToken token = default)
-        where TStateMachine : class
-    {
-        ArgumentNullException.ThrowIfNull(stateMachine, nameof(stateMachine));
-        ArgumentNullException.ThrowIfNull(condition, nameof(condition));
-        ThrowIfDisposed();
-
-        while (!condition(stateMachine))
-            await WaitAsync(token).ConfigureAwait(false);
-    }
 }
 
 /// <summary>
@@ -244,7 +221,11 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
 
-        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
+        protected override void AfterConsumed()
+        {
+            ReportLockDuration();
+            consumedCallback?.Invoke(this);
+        }
 
         private protected override void ResetCore()
         {

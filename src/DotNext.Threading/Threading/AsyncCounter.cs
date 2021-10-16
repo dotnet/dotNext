@@ -5,6 +5,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
+using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non zero.
@@ -109,9 +110,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         ThrowIfDisposed();
         manager.Increment();
 
-        for (WaitNode? current = first as WaitNode, next; current is not null && manager.Value > 0L; current = next)
+        for (LinkedValueTaskCompletionSource? current = first, next; current is not null && manager.Value > 0L; current = next)
         {
-            next = current.Next as WaitNode;
+            next = current.Next;
 
             if (current.TrySetResult(true))
             {

@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
@@ -42,6 +43,7 @@ public abstract class MessageAttribute : Attribute
 /// <typeparam name="TMessage">The type of the message payload.</typeparam>
 /// <seealso cref="MessagingClient"/>
 /// <seealso cref="MessageHandler"/>
+[RequiresPreviewFeatures]
 public sealed class MessageAttribute<TMessage> : MessageAttribute
     where TMessage : notnull, ISerializable<TMessage>
 {
