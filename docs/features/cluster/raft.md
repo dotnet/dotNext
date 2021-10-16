@@ -138,7 +138,7 @@ This implementation is WAN friendly because it uses reliable network transport a
 
 Web application is treated as cluster node. The following example demonstrates how to turn ASP.NET Core application into cluster node:
 ```csharp
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using DotNext.Net.Cluster.Consensus.Raft.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -293,7 +293,6 @@ Automatic redirection can be configured using [RedirectToLeader](xref:DotNext.Ne
 
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft.Http;
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -371,7 +370,6 @@ The metrics collector should be registered as singleton service using Dependency
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
