@@ -13,6 +13,7 @@ using LengthFormat = IO.LengthFormat;
 /// </summary>
 public static partial class BufferWriter
 {
+    private const int InitialCharBufferSize = 128;
     private const int MaxBufferSize = int.MaxValue / 2;
 
     /// <summary>
@@ -119,14 +120,15 @@ public static partial class BufferWriter
         Write(writer, value);
     }
 
-    internal static void Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
+    internal static int Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
     {
         var writer = new MemoryWriter(output.GetMemory(SevenBitEncodedInt.MaxSize));
         SevenBitEncodedInt.Encode(ref writer, (uint)value);
         output.Advance(writer.ConsumedBytes);
+        return writer.ConsumedBytes;
     }
 
-    internal static void WriteLength(this IBufferWriter<byte> writer, int length, LengthFormat lengthFormat)
+    internal static int WriteLength(this IBufferWriter<byte> writer, int length, LengthFormat lengthFormat)
     {
         switch (lengthFormat)
         {
@@ -140,30 +142,14 @@ public static partial class BufferWriter
                 goto case LengthFormat.Plain;
             case LengthFormat.Plain:
                 Write(writer, length);
-                break;
+                return sizeof(int);
             case LengthFormat.Compressed:
-                Write7BitEncodedInt(writer, length);
-                break;
+                return Write7BitEncodedInt(writer, length);
         }
     }
 
-    internal static void WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, LengthFormat lengthFormat, Encoding encoding)
+    internal static int WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, LengthFormat lengthFormat, Encoding encoding)
         => WriteLength(writer, encoding.GetByteCount(value), lengthFormat);
-
-    private static void WriteString(IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoder encoder, int bytesPerChar, int bufferSize)
-    {
-        for (int charsLeft = value.Length, charsUsed, maxChars; charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
-        {
-            var buffer = writer.GetMemory(bufferSize);
-            if (buffer.Length < bytesPerChar)
-                buffer = writer.GetMemory(bytesPerChar);
-
-            maxChars = buffer.Length / bytesPerChar;
-            charsUsed = Math.Min(maxChars, charsLeft);
-            encoder.Convert(value.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
-            writer.Advance(bytesUsed);
-        }
-    }
 
     /// <summary>
     /// Encodes string using the specified encoding.
@@ -171,26 +157,35 @@ public static partial class BufferWriter
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The sequence of characters.</param>
     /// <param name="context">The encoding context.</param>
-    /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
     /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
-    public static void WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, int bufferSize = 0, LengthFormat? lengthFormat = null)
+    /// <returns>The number of written bytes.</returns>
+    public static long WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, LengthFormat? lengthFormat = null)
     {
-        if (lengthFormat.HasValue)
-            WriteLength(writer, value, lengthFormat.GetValueOrDefault(), context.Encoding);
+        var result = lengthFormat.HasValue
+            ? WriteLength(writer, value, lengthFormat.GetValueOrDefault(), context.Encoding)
+            : 0L;
 
-        if (!value.IsEmpty)
-            WriteString(writer, value, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
+        context.GetEncoder().Convert(value, writer, true, out var bytesWritten, out _);
+        result += bytesWritten;
+
+        return result;
     }
 
-    private static bool TryWriteFormattable<T>(IBufferWriter<byte> writer, T value, Span<char> buffer, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, int bufferSize)
+    private static bool TryWriteFormattable<T>(IBufferWriter<byte> writer, T value, Span<char> buffer, LengthFormat? lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, out long bytesWritten)
         where T : notnull, ISpanFormattable
     {
         if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+        {
+            bytesWritten = 0L;
             return false;
+        }
 
         ReadOnlySpan<char> result = buffer.Slice(0, charsWritten);
-        WriteLength(writer, result, lengthFormat, context.Encoding);
-        WriteString(writer, result, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
+        bytesWritten = lengthFormat.HasValue
+            ? WriteLength(writer, result, lengthFormat.GetValueOrDefault(), context.Encoding)
+            : 0L;
+        context.GetEncoder().Convert(result, writer, true, out var bytesUsed, out _);
+        bytesWritten += bytesUsed;
         return true;
     }
 
@@ -204,24 +199,24 @@ public static partial class BufferWriter
     /// <param name="context">The context describing encoding of characters.</param>
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
-    /// <param name="bufferSize">The buffer size to be rented from the writer.</param>
+    /// <returns>The number of written bytes.</returns>
     [SkipLocalsInit]
-    public static void WriteFormattable<T>(this IBufferWriter<byte> writer, T value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+    public static long WriteFormattable<T>(this IBufferWriter<byte> writer, T value, LengthFormat? lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, ISpanFormattable
     {
-        const int initialCharBufferSize = 128;
-
         // attempt to allocate char buffer on the stack
-        Span<char> charBuffer = stackalloc char[initialCharBufferSize];
-        if (!TryWriteFormattable(writer, value, charBuffer, lengthFormat, in context, format, provider, bufferSize))
+        Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
+        if (!TryWriteFormattable(writer, value, charBuffer, lengthFormat, in context, format, provider, out var bytesWritten))
         {
-            for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
+            for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
                 using var owner = new MemoryRental<char>(charBufferSize, false);
-                if (TryWriteFormattable(writer, value, owner.Span, lengthFormat, in context, format, provider, bufferSize))
+                if (TryWriteFormattable(writer, value, owner.Span, lengthFormat, in context, format, provider, out bytesWritten))
                     break;
                 charBufferSize = owner.Length;
             }
         }
+
+        return bytesWritten;
     }
 }
