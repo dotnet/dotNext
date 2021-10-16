@@ -112,13 +112,19 @@ required by Raft consensus protocol.</p>
       <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented">IAuditTrail.IsLogEntryLengthAlwaysPresented</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_GetLastIndex_System_Boolean_">IAuditTrail.GetLastIndex(Boolean)</a>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">IAuditTrail.LastCommittedEntryIndex</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Int64_TimeSpan_CancellationToken_">IAuditTrail.WaitForCommitAsync(Int64, TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastUncommittedEntryIndex">IAuditTrail.LastUncommittedEntryIndex</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_TimeSpan_CancellationToken_">IAuditTrail.WaitForCommitAsync(TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastAppliedEntryIndex">IAuditTrail.LastAppliedEntryIndex</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Int64_CancellationToken_">IAuditTrail.WaitForCommitAsync(Int64, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_CancellationToken_">IAuditTrail.WaitForCommitAsync(CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_CommitAsync_System_Int64_CancellationToken_">IAuditTrail.CommitAsync(Int64, CancellationToken)</a>
@@ -181,20 +187,20 @@ from the persistent storage.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IPersistentState.EnsureConsistencyAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IPersistentState.EnsureConsistencyAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IPersistentState.cs/#L58">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IPersistentState.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.EnsureConsistencyAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.EnsureConsistencyAsync(TimeSpan,CancellationToken)">EnsureConsistencyAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.EnsureConsistencyAsync(CancellationToken)">EnsureConsistencyAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Suspens the caller until the log entry with term equal to <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_Term">Term</a>
 will be committed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask EnsureConsistencyAsync(CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -206,12 +212,6 @@ will be committed.</p>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><span class="xref">TimeSpan</span></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The time to wait.</p>
-</td>
-      </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
@@ -230,12 +230,16 @@ will be committed.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
+        <td><span class="xref">ValueTask</span></td>
         <td><p>The task representing state of the asynchronous execution.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_IPersistentState_EnsureConsistencyAsync_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can be used to guarantee linearizable read when processing read-only request
+on leader node.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>

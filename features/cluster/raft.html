@@ -85,13 +85,26 @@
 <h1 id="client-interaction">Client Interaction</h1>
 <p><a href="https://github.com/ongardie/dissertation/tree/master/clients">Chapter 6</a> of Diego's dissertation contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in the paper. However, it offers all necessary tools for that:</p>
 <ol>
-<li><code>IPersistentState.EnsureConsistencyAsync</code> waits until last committed entry is from leader's term</li>
-<li><code>IReplicationCluster.ForceReplicationAsync</code> initiates a new round of heartbeats and waits for reply from the majority of nodes</li>
-<li><code>IRaftCluster.Lease</code> to gets the lease that can be used for linearizable read</li>
-<li><code>IRaftCluster.ReplicateAsync</code> to append, replicate and commit the log entry. Useful for implementing <em>write</em> operations</li>
-<li><code>IRaftCluster.LeadershipToken</code> provides <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> that represents a leadership state. If the local node is a leader then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state then the token will be moved to the canceled state. This token is useful when implementing <em>write</em> operations and allow to abort asynchronous operation in case of downgrade</li>
+<li><code>IPersistentState.EnsureConsistencyAsync</code> method waits until last committed entry is from leader's term</li>
+<li><code>IReplicationCluster.ForceReplicationAsync</code> method initiates a new round of heartbeats and waits for reply from the majority of nodes</li>
+<li><code>IRaftCluster.Lease</code> property to gets the lease that can be used for linearizable read</li>
+<li><code>IRaftCluster.ReplicateAsync</code> method to append, replicate and commit the log entry. Useful for implementing <em>write</em> operations</li>
+<li><code>IRaftCluster.ApplyReadBarrierAsync</code> method to insert a barrier to achieve linearizable read</li>
+<li><code>IRaftCluster.LeadershipToken</code> property provides <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> that represents a leadership state. If the local node is a leader then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state then the token will be moved to the canceled state. This token is useful when implementing <em>write</em> operations and allow to abort asynchronous operation in case of downgrade</li>
 </ol>
 <p>Elimination of duplicate commands received from clients should be implemented manually because basic framework is not aware about underlying network transport.</p>
+<h2 id="linearizability">Linearizability</h2>
+<p><a href="https://en.wikipedia.org/wiki/Linearizability">Linearizability</a> requires the results of a read to reflect
+a state of the system sometime after the read was initiated; each read must at least return the results
+of the latest committed write. For instance, if the client performs <em>Write</em> operation on variable <em>A</em> and immediately requests variable <em>A</em> back then <em>A</em> must have the value which is equal to the value provided by <em>Write</em> operation or more recent value. Without the linearizability, the client can see stale value of <em>A</em>. In other words, there is no guarantee that the client will able to see the result of its own <em>Write</em> operation. A system that allowed stale reads would only provide serializability, which is a weaker form of consistency.</p>
+<p>Linearizable read can be achieved in Raft naturally. <em>Read</em> operation can be performed on leader or follower nodes.</p>
+<p><code>IRaftCluster.Lease</code> property exposes leadership lease than quarantees that the leader cannot be changed during that lease. This method of provoding linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on <em>clockDriftBound</em>. Here's the citation from Raft paper:</p>
+<blockquote>
+<p>The lease approach assumes a bound on clock drift across servers (over a given time period, no server’s clock increases more than this bound times any other). Discovering and maintaining this bound might present operational challenges (e.g., due to scheduling and garbage collection pauses, virtual machine migrations, or clock rate adjustments for time synchronization). If the assumptions are violated, the system could return arbitrarily stale information.</p>
+</blockquote>
+<p>Lease approach can be used only if processing of all read-only queries performing by the leader node.</p>
+<p>Another approach is to use <em>read barrier</em>. The barrier is provided by <code>IRaftCluster.ApplyReadBarrierAsync</code> method. It allows to process read-only queries by follower nodes. In case of follower node, the method instructs leader node to execute a new round of heartbeats (with help of <code>ForceReplicationAsync</code> method). The follower waits for its state machine to advance at least as far as the index of the last committed log entry on the leader node. These actions are enough to satisfy linearizability. As you can see, this approach leads to extra overhead caused by network communication.</p>
+<p>Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each <em>Write</em> request. The client can update and remember this value locally and provide it with read-only query. When <em>Read</em> request is received, the server may call <code>IPersistentState.WaitForCommitAsync</code> to ensure that the log contains the index of the last committed log entry by the client.</p>
 <h1 id="node-bootstrapping">Node Bootstrapping</h1>
 <p>The node can be started in two modes:</p>
 <ul>

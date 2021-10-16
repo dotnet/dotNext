@@ -81,13 +81,19 @@
       <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented">IAuditTrail.IsLogEntryLengthAlwaysPresented</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_GetLastIndex_System_Boolean_">IAuditTrail.GetLastIndex(Boolean)</a>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">IAuditTrail.LastCommittedEntryIndex</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Int64_TimeSpan_CancellationToken_">IAuditTrail.WaitForCommitAsync(Int64, TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastUncommittedEntryIndex">IAuditTrail.LastUncommittedEntryIndex</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_TimeSpan_CancellationToken_">IAuditTrail.WaitForCommitAsync(TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastAppliedEntryIndex">IAuditTrail.LastAppliedEntryIndex</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Int64_CancellationToken_">IAuditTrail.WaitForCommitAsync(Int64, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_CancellationToken_">IAuditTrail.WaitForCommitAsync(CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_CommitAsync_System_Int64_CancellationToken_">IAuditTrail.CommitAsync(Int64, CancellationToken)</a>
@@ -373,7 +379,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
     </tbody>
   </table>
   <h5 id="DotNext_IO_Log_IAuditTrail_1_AppendAsync__1_DotNext_IO_Log_ILogEntryProducer___0__CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_GetLastIndex_System_Boolean_">GetLastIndex(Boolean)</a> called with argument of value <span class="xref">false</span>.</p>
+  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastUncommittedEntryIndex">LastUncommittedEntryIndex</a> called with argument of value <span class="xref">false</span>.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>

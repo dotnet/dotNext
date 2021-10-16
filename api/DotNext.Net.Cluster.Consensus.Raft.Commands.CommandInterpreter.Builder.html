@@ -80,6 +80,34 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">CommandInterpreter.Builder</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.html">DotNext.Net.Cluster.Consensus.Raft.Commands</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_syntax">Syntax</h5>
@@ -108,13 +136,13 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add__1_System_Int32_Func___0_CancellationToken_ValueTask__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add%60%601(System.Int32%2CFunc%7B%60%600%2CCancellationToken%2CValueTask%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add__1_System_Int32_DotNext_Func___0_CancellationToken_ValueTask__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add%60%601(System.Int32%2CDotNext.Func%7B%60%600%2CCancellationToken%2CValueTask%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Commands/CommandRegistry.Builder.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add__1_System_Int32_Func___0_CancellationToken_ValueTask__System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add``1(System.Int32,Func{``0,CancellationToken,ValueTask},System.Boolean)">Add&lt;TCommand&gt;(Int32, Func&lt;TCommand, CancellationToken, ValueTask&gt;, Boolean)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add__1_System_Int32_DotNext_Func___0_CancellationToken_ValueTask__System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add``1(System.Int32,DotNext.Func{``0,CancellationToken,ValueTask},System.Boolean)">Add&lt;TCommand&gt;(Int32, Func&lt;TCommand, CancellationToken, ValueTask&gt;, Boolean)</h4>
   <div class="markdown level1 summary"><p>Registers command handler.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -141,7 +169,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Func</span>&lt;TCommand, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;TCommand, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</td>
         <td><span class="parametername">handler</span></td>
         <td><p>The command handler.</p>
 </td>
@@ -183,6 +211,22 @@
       <tr>
         <td><span class="parametername">TCommand</span></td>
         <td><p>The type of the command supported by the handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.GenericArgumentException.html">GenericArgumentException</a></td>
+        <td><p>Type <typaparamref name="TCommand"></typaparamref> is not annotated with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandAttribute.html">CommandAttribute</a> attribute.</p>
 </td>
       </tr>
     </tbody>
@@ -234,6 +278,42 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_DotNext_ISupplier_DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter__Invoke.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.DotNext%23ISupplier%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23Commands%23CommandInterpreter%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Commands/CommandRegistry.Builder.cs/#L67">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_DotNext_ISupplier_DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter__Invoke_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.DotNext#ISupplier{DotNext#Net#Cluster#Consensus#Raft#Commands#CommandInterpreter}#Invoke*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_DotNext_ISupplier_DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter__Invoke" data-uid="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.DotNext#ISupplier{DotNext#Net#Cluster#Consensus#Raft#Commands#CommandInterpreter}#Invoke">ISupplier&lt;CommandInterpreter&gt;.Invoke()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">CommandInterpreter ISupplier&lt;CommandInterpreter&gt;.Invoke()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

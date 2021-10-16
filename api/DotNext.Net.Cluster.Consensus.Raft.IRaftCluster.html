@@ -81,10 +81,10 @@
       <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html#DotNext_Net_Cluster_Replication_IReplicationCluster_1_DotNext_Net_Cluster_Replication_IReplicationCluster_AuditTrail">IReplicationCluster&lt;IRaftLogEntry&gt;.IReplicationCluster.AuditTrail</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html#DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_TimeSpan_CancellationToken_">IReplicationCluster&lt;IRaftLogEntry&gt;.ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl, TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html#DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_CancellationToken_">IReplicationCluster&lt;IRaftLogEntry&gt;.ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ForceReplicationAsync_TimeSpan_CancellationToken_">IReplicationCluster.ForceReplicationAsync(TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ForceReplicationAsync_CancellationToken_">IReplicationCluster.ForceReplicationAsync(CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ReplicationCompleted">IReplicationCluster.ReplicationCompleted</a>
@@ -367,6 +367,58 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L63">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync(CancellationToken)">ApplyReadBarrierAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Ensures linearizable read from underlying state machine.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask ApplyReadBarrierAsync(CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
       </tr>
     </tbody>
   </table>

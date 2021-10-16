@@ -78,7 +78,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ForceReplicationAsync_TimeSpan_CancellationToken_">IReplicationCluster.ForceReplicationAsync(TimeSpan, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ForceReplicationAsync_CancellationToken_">IReplicationCluster.ForceReplicationAsync(CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ReplicationCompleted">IReplicationCluster.ReplicationCompleted</a>
@@ -134,7 +134,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IReplicationCluster_1_AuditTrail.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IReplicationCluster%601.AuditTrail%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_AuditTrail_" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.AuditTrail*"></a>
   <h4 id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_AuditTrail" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.AuditTrail">AuditTrail</h4>
@@ -164,19 +164,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IReplicationCluster%601.ReplicateAsync%60%601(%60%600%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IReplicationCluster%601.ReplicateAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L58">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync_" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.ReplicateAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_TimeSpan_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.ReplicateAsync``1(``0,TimeSpan,CancellationToken)">ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl, TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.ReplicateAsync``1(``0,CancellationToken)">ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Appends a new log entry and ensures that it is replicated and committed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;bool&gt; ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl entry, TimeSpan timeout, CancellationToken token = null)
+    <pre><code class="lang-csharp hljs">Task&lt;bool&gt; ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl entry, CancellationToken token = null)
 
     where TEntryImpl : TEntry</code></pre>
   </div>
@@ -194,12 +194,6 @@
         <td><span class="xref">TEntryImpl</span></td>
         <td><span class="parametername">entry</span></td>
         <td><p>The log entry to be added.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">TimeSpan</span></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The timeout of the operation.</p>
 </td>
       </tr>
       <tr>
@@ -249,7 +243,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IReplicationCluster_1_DotNext_Net_Cluster_Replication_IReplicationCluster_AuditTrail.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IReplicationCluster%601.DotNext%23Net%23Cluster%23Replication%23IReplicationCluster%23AuditTrail%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L45">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L43">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_DotNext_Net_Cluster_Replication_IReplicationCluster_AuditTrail_" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.DotNext#Net#Cluster#Replication#IReplicationCluster#AuditTrail*"></a>
   <h4 id="DotNext_Net_Cluster_Replication_IReplicationCluster_1_DotNext_Net_Cluster_Replication_IReplicationCluster_AuditTrail" data-uid="DotNext.Net.Cluster.Replication.IReplicationCluster`1.DotNext#Net#Cluster#Replication#IReplicationCluster#AuditTrail">IReplicationCluster.AuditTrail</h4>
@@ -337,7 +331,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IReplicationCluster_1.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IReplicationCluster%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L36" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IReplicationCluster.cs/#L34" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

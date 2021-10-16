@@ -117,7 +117,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient__ctor_DotNext_Net_Cluster_Messaging_IOutputChannel_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient.%23ctor(DotNext.Net.Cluster.Messaging.IOutputChannel)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L21">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L23">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessagingClient__ctor_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessagingClient__ctor_DotNext_Net_Cluster_Messaging_IOutputChannel_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.#ctor(DotNext.Net.Cluster.Messaging.IOutputChannel)">MessagingClient(IOutputChannel)</h4>
@@ -153,7 +153,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient_GetMessageInfo__1.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient.GetMessageInfo%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L44">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessagingClient_GetMessageInfo_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.GetMessageInfo*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessagingClient_GetMessageInfo__1" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.GetMessageInfo``1">GetMessageInfo&lt;TMessage&gt;()</h4>
@@ -198,12 +198,28 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.GenericArgumentException-1.html">GenericArgumentException</a>&lt;T&gt;</td>
+        <td><p><code data-dev-comment-type="typeparamref" class="typeparamref">TMessage</code> is not registered via <a class="xref" href="DotNext.Net.Cluster.Messaging.MessagingClient.html#DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage__1_System_String_System_Net_Mime_ContentType_">RegisterMessage&lt;TMessage&gt;(String, ContentType)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage__1_DotNext_Net_Cluster_Messaging_MessageAttribute___0__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient.RegisterMessage%60%601(DotNext.Net.Cluster.Messaging.MessageAttribute%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L68">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.RegisterMessage*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage__1_DotNext_Net_Cluster_Messaging_MessageAttribute___0__" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.RegisterMessage``1(DotNext.Net.Cluster.Messaging.MessageAttribute{``0})">RegisterMessage&lt;TMessage&gt;(MessageAttribute&lt;TMessage&gt;)</h4>
@@ -271,7 +287,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage__1_System_String_System_Net_Mime_ContentType_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient.RegisterMessage%60%601(System.String%2CSystem.Net.Mime.ContentType)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.RegisterMessage*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessagingClient_RegisterMessage__1_System_String_System_Net_Mime_ContentType_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.RegisterMessage``1(System.String,System.Net.Mime.ContentType)">RegisterMessage&lt;TMessage&gt;(String, ContentType)</h4>
@@ -345,7 +361,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient_SendMessageAsync__2___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient.SendMessageAsync%60%602(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L82">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessagingClient_SendMessageAsync_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.SendMessageAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessagingClient_SendMessageAsync__2___0_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.SendMessageAsync``2(``0,CancellationToken)">SendMessageAsync&lt;TInput, TOutput&gt;(TInput, CancellationToken)</h4>
@@ -424,7 +440,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient_SendSignalAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient.SendSignalAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L108">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessagingClient_SendSignalAsync_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.SendSignalAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessagingClient_SendSignalAsync__1___0_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.MessagingClient.SendSignalAsync``1(``0,CancellationToken)">SendSignalAsync&lt;TInput&gt;(TInput, CancellationToken)</h4>
@@ -556,7 +572,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_MessagingClient.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.MessagingClient%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/MessagingClient.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
