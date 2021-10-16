@@ -290,7 +290,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <p>These extensions are located in <code>DotNext.Net.Cluster.Consensus.Raft.Http</code> namespace.</p>
 <p>This implementation is WAN friendly because it uses reliable network transport and supports TLS. It is good choice if your cluster nodes communicate over Internet or any other unreliable network. However, HTTP leads to performance and traffic overhead. Moreover, the library depends on ASP.NET Core.</p>
 <p>Web application is treated as cluster node. The following example demonstrates how to turn ASP.NET Core application into cluster node:</p>
-<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -526,7 +526,6 @@ internal sealed class RaftClientHandlerFactory : IHttpMessageHandlerFactory
 <p>Client interaction requires automatic detection of a leader node. Cluster Development Suite provides a way to automatically redirect requests to the leader node if it was originally received by a follower node. The redirection is organized with help of <em>307 Temporary Redirect</em> status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns <em>503 Service Unavailable</em>.</p>
 <p>Automatic redirection can be configured using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.ConfigurationExtensions.html">RedirectToLeader</a> extension method.</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Http;
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -586,7 +585,6 @@ public void Configure(IApplicationBuilder app)
 <p>The metrics collector should be registered as singleton service using Dependency Injection. However, the type of the service used for registration should of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a> type.</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
-using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
