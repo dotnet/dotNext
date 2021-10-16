@@ -35,10 +35,10 @@ namespace DotNext.Buffers
             Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
         }
 
-        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize, LengthFormat? lengthEnc)
+        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat? lengthEnc)
         {
             var writer = new ArrayBufferWriter<byte>();
-            writer.WriteString(value.AsSpan(), encoding, bufferSize, lengthEnc);
+            writer.WriteString(value.AsSpan(), encoding, lengthEnc);
             IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
             var result = await (lengthEnc is null ?
                 reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
@@ -47,27 +47,22 @@ namespace DotNext.Buffers
         }
 
         [Theory]
-        [InlineData(0, null)]
-        [InlineData(0, LengthFormat.Compressed)]
-        [InlineData(0, LengthFormat.Plain)]
-        [InlineData(0, LengthFormat.PlainLittleEndian)]
-        [InlineData(0, LengthFormat.PlainBigEndian)]
-        [InlineData(128, null)]
-        [InlineData(128, LengthFormat.Compressed)]
-        [InlineData(128, LengthFormat.Plain)]
-        [InlineData(128, LengthFormat.PlainLittleEndian)]
-        [InlineData(128, LengthFormat.PlainBigEndian)]
-        public static async Task ReadWriteBufferedStringAsync(int bufferSize, LengthFormat? lengthEnc)
+        [InlineData(null)]
+        [InlineData(LengthFormat.Compressed)]
+        [InlineData(LengthFormat.Plain)]
+        [InlineData(LengthFormat.PlainLittleEndian)]
+        [InlineData(LengthFormat.PlainBigEndian)]
+        public static async Task ReadWriteBufferedStringAsync(LengthFormat? lengthEnc)
         {
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, lengthEnc);
             const string testString2 = "������, ���!";
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
         }
 
         [Fact]
