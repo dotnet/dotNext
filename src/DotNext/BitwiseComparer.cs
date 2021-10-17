@@ -103,30 +103,29 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         return hash;
     }
 
-    private static int GetHashCode<THashFunction>(in T value, int hash, THashFunction hashFunction, bool salted)
-        where THashFunction : struct, ISupplier<int, int, int>
+    private static void GetHashCode<THashFunction>(in T value, ref THashFunction hashFunction, bool salted)
+        where THashFunction : struct, IHashFunction<int, int>
     {
         switch (SizeOf<T>())
         {
             default:
-                return GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, hashFunction, salted);
+                GetHashCode32(ref hashFunction, ref InToRef<T, byte>(value), SizeOf<T>());
+                break;
             case 0:
                 break;
             case sizeof(byte):
-                hash = hashFunction.Invoke(hash, InToRef<T, byte>(in value));
+                hashFunction.Add(InToRef<T, byte>(in value));
                 break;
             case sizeof(ushort):
-                hash = hashFunction.Invoke(hash, InToRef<T, ushort>(in value));
+                hashFunction.Add(InToRef<T, ushort>(in value));
                 break;
             case sizeof(int):
-                hash = hashFunction.Invoke(hash, InToRef<T, int>(in value));
+                hashFunction.Add(InToRef<T, int>(in value));
                 break;
         }
 
         if (salted)
-            hash = hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt);
-
-        return hash;
+            hashFunction.Add(RandomExtensions.BitwiseHashSalt);
     }
 
     /// <summary>
@@ -142,7 +141,11 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Bitwise hash code.</returns>
     public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => GetHashCode<DelegatingSupplier<int, int, int>>(in value, hash, hashFunction, salted);
+    {
+        var fn = new HashFunction<int, int>(hashFunction, hash);
+        GetHashCode(in value, ref fn, salted);
+        return fn.Result;
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the specified value.
@@ -151,14 +154,18 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// This method doesn't use <see cref="object.GetHashCode"/>
     /// even if it is overridden by value type.
     /// </remarks>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="value">A value to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Hashing function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Bitwise hash code.</returns>
     [CLSCompliant(false)]
-    public static unsafe int GetHashCode(in T value, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
-        => GetHashCode<Supplier<int, int, int>>(in value, hash, hashFunction, salted);
+    public static int GetHashCode<THashFunction>(in T value, bool salted = true)
+        where THashFunction : struct, IHashFunction<int, int>
+    {
+        var hash = new THashFunction();
+        GetHashCode(in value, ref hash, salted);
+        return hash.Result;
+    }
 
     /// <inheritdoc/>
     bool IEqualityComparer<T>.Equals(T x, T y) => Equals(in x, in y);

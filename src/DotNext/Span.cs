@@ -52,6 +52,7 @@ public static class Span
     {
         if (span.IsEmpty)
             return salted ? RandomExtensions.BitwiseHashSalt : 0;
+
         return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
     }
 
@@ -72,15 +73,15 @@ public static class Span
     /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static unsafe int BitwiseHashCode<T>(this Span<T> span, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
+    public static int BitwiseHashCode<T, THashFunction>(this Span<T> span, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
+        where THashFunction : struct, IHashFunction<int, int>
+        => BitwiseHashCode<T, THashFunction>((ReadOnlySpan<T>)span, salted);
 
     /// <summary>
     /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -99,24 +100,25 @@ public static class Span
     /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static unsafe long BitwiseHashCode64<T>(this Span<T> span, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+    public static long BitwiseHashCode64<T, THashFunction>(this Span<T> span, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
+        where THashFunction : struct, IHashFunction<long, long>
+        => BitwiseHashCode64<T, THashFunction>((ReadOnlySpan<T>)span, salted);
 
-    private static unsafe int BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, int hash, THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, ISupplier<int, int, int>
+        where THashFunction : struct, IHashFunction<int, int>
     {
-        if (span.IsEmpty)
-            return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        if (!span.IsEmpty)
+            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T));
 
-        return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, hashFunction, salted);
+        if (salted)
+            hashFunction.Add(RandomExtensions.BitwiseHashSalt);
     }
 
     /// <summary>
@@ -130,30 +132,39 @@ public static class Span
     /// <returns>32-bit hash code of the array content.</returns>
     public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode<T, DelegatingSupplier<int, int, int>>(span, hash, hashFunction, salted);
+    {
+        var fn = new HashFunction<int, int>(hashFunction, hash);
+        BitwiseHashCode(span, ref fn, salted);
+        return fn.Result;
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
+    public static int BitwiseHashCode<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode<T, Supplier<int, int, int>>(span, hash, hashFunction, salted);
-
-    private static unsafe long BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, long hash, THashFunction hashFunction, bool salted)
-        where T : unmanaged
-        where THashFunction : struct, ISupplier<long, long, long>
+        where THashFunction : struct, IHashFunction<int, int>
     {
-        if (span.IsEmpty)
-            return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        var hash = new THashFunction();
+        BitwiseHashCode(span, ref hash, salted);
+        return hash.Result;
+    }
 
-        return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, hashFunction, salted);
+    private static unsafe void BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
+        where T : unmanaged
+        where THashFunction : struct, IHashFunction<long, long>
+    {
+        if (!span.IsEmpty)
+            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T));
+
+        if (salted)
+            hashFunction.Add(RandomExtensions.BitwiseHashSalt);
     }
 
     /// <summary>
@@ -167,21 +178,29 @@ public static class Span
     /// <returns>64-bit hash code of the array content.</returns>
     public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode64<T, DelegatingSupplier<long, long, long>>(span, hash, hashFunction, salted);
+    {
+        var fn = new HashFunction<long, long>(hashFunction, hash);
+        BitwiseHashCode64(span, ref fn, salted);
+        return fn.Result;
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+    public static long BitwiseHashCode64<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode64<T, Supplier<long, long, long>>(span, hash, hashFunction, salted);
+        where THashFunction : struct, IHashFunction<long, long>
+    {
+        var hash = new THashFunction();
+        BitwiseHashCode64(span, ref hash, salted);
+        return hash.Result;
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the memory identified by the given span.
@@ -206,6 +225,7 @@ public static class Span
     {
         if (span.IsEmpty)
             return salted ? RandomExtensions.BitwiseHashSalt : 0L;
+
         return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
     }
 

@@ -16,25 +16,29 @@ namespace DotNext.Runtime;
 public static class Intrinsics
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct FNV1a32 : ISupplier<int, int, int>
+    private struct FNV1a32 : IHashFunction<int, int>
     {
-        internal const int Offset = unchecked((int)2166136261);
+        private const int Offset = unchecked((int)2166136261);
         private const int Prime = 16777619;
 
-        int ISupplier<int, int, int>.Invoke(int hash, int data) => GetHashCode(hash, data);
+        private int result = Offset;
 
-        internal static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
+        public readonly int Result => result;
+
+        public void Add(int data) => result = (result ^ data) * Prime;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct FNV1a64 : ISupplier<long, long, long>
+    private struct FNV1a64 : IHashFunction<long, long>
     {
-        internal const long Offset = unchecked((long)14695981039346656037);
+        private const long Offset = unchecked((long)14695981039346656037);
         private const long Prime = 1099511628211;
 
-        long ISupplier<long, long, long>.Invoke(long hash, long data) => GetHashCode(hash, data);
+        private long result = Offset;
 
-        internal static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
+        public readonly long Result => result;
+
+        public void Add(long data) => result = (result ^ data) * Prime;
     }
 
     /// <summary>
@@ -546,35 +550,52 @@ public static class Intrinsics
     #region Bitwise Hash Code
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    internal static unsafe long GetHashCode64<THashFunction>([In] ref byte source, long length, long hash, THashFunction hashFunction, bool salted)
-        where THashFunction : struct, ISupplier<long, long, long>
+    internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, long length)
+        where THashFunction : struct, IHashFunction<long, long>
     {
         switch (length)
         {
             default:
                 for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
-                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<long>(ref source));
+                    hash.Add(Unsafe.ReadUnaligned<long>(ref source));
                 for (; length > 0L; source = ref source.Advance<byte>(&length))
-                    hash = hashFunction.Invoke(hash, source);
+                    hash.Add(source);
                 break;
             case 0L:
                 break;
             case sizeof(byte):
-                hash = hashFunction.Invoke(hash, source);
+                hash.Add(source);
                 break;
             case sizeof(ushort):
-                hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
+                hash.Add(Unsafe.ReadUnaligned<ushort>(ref source));
                 break;
             case sizeof(uint):
-                hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<uint>(ref source));
+                hash.Add(Unsafe.ReadUnaligned<uint>(ref source));
                 break;
         }
-
-        return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
     }
 
     internal static unsafe long GetHashCode64([In] ref byte source, long length, bool salted)
-        => GetHashCode64(ref source, length, FNV1a64.Offset, new FNV1a64(), salted);
+    {
+        var hash = new FNV1a64();
+        GetHashCode64(ref hash, ref source, length);
+
+        if (salted)
+            hash.Add(RandomExtensions.BitwiseHashSalt);
+
+        return hash.Result;
+    }
+
+    private static THashFunction GetHashCode<T, TInput, TOutput, THashFunction>(Func<T, int, TInput> getter, int count, T arg)
+        where THashFunction : IHashFunction<TInput, TOutput>, new()
+    {
+        var hash = new THashFunction();
+
+        for (var i = 0; i < count; i++)
+            hash.Add(getter(arg, i));
+
+        return hash;
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the vector.
@@ -590,11 +611,12 @@ public static class Intrinsics
         if (getter is null)
             throw new ArgumentNullException(nameof(getter));
 
-        var hash = FNV1a64.Offset;
-        for (var i = 0; i < count; i++)
-            hash = FNV1a64.GetHashCode(hash, getter(arg, i));
+        var hash = GetHashCode<T, long, long, FNV1a64>(getter, count, arg);
 
-        return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        if (salted)
+            hash.Add(RandomExtensions.BitwiseHashSalt);
+
+        return hash.Result;
     }
 
     /// <summary>
@@ -611,11 +633,12 @@ public static class Intrinsics
         if (getter is null)
             throw new ArgumentNullException(nameof(getter));
 
-        var hash = FNV1a32.Offset;
-        for (var i = 0; i < count; i++)
-            hash = FNV1a32.GetHashCode(hash, getter(arg, i));
+        var hash = GetHashCode<T, int, int, FNV1a32>(getter, count, arg);
 
-        return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        if (salted)
+            hash.Add(RandomExtensions.BitwiseHashSalt);
+
+        return hash.Result;
     }
 
     /// <summary>
@@ -633,7 +656,15 @@ public static class Intrinsics
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        => GetHashCode64<DelegatingSupplier<long, long, long>>(source, length, hash, hashFunction, salted);
+    {
+        var fn = new HashFunction<long, long>(hashFunction, hash);
+        GetHashCode64(ref fn, ref ((byte*)source)[0], length);
+
+        if (salted)
+            fn.Add(RandomExtensions.BitwiseHashSalt);
+
+        return fn.Result;
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -645,14 +676,20 @@ public static class Intrinsics
     /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
     /// <param name="source">A pointer to the block of memory.</param>
     /// <param name="length">Length of memory block to be hashed, in bytes.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Hashing function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
-    public static unsafe long GetHashCode64<THashFunction>([In] void* source, long length, long hash, THashFunction hashFunction, bool salted = true)
-        where THashFunction : struct, ISupplier<long, long, long>
-        => GetHashCode64(ref ((byte*)source)[0], length, hash, hashFunction, salted);
+    public static unsafe long GetHashCode64<THashFunction>([In] void* source, long length, bool salted = true)
+        where THashFunction : struct, IHashFunction<long, long>
+    {
+        var hash = new THashFunction();
+        GetHashCode64(ref hash, ref ((byte*)source)[0], length);
+
+        if (salted)
+            hash.Add(RandomExtensions.BitwiseHashSalt);
+
+        return hash.Result;
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory.
@@ -684,35 +721,49 @@ public static class Intrinsics
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => GetHashCode32<DelegatingSupplier<int, int, int>>(source, length, hash, hashFunction, salted);
+    {
+        var fn = new HashFunction<int, int>(hashFunction, hash);
+        GetHashCode32(ref fn, ref ((byte*)source)[0], length);
+
+        if (salted)
+            fn.Add(RandomExtensions.BitwiseHashSalt);
+
+        return fn.Result;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    internal static unsafe int GetHashCode32<THashFunction>([In] ref byte source, long length, int hash, THashFunction hashFunction, bool salted)
-        where THashFunction : struct, ISupplier<int, int, int>
+    internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, long length)
+        where THashFunction : struct, IHashFunction<int, int>
     {
         switch (length)
         {
             default:
                 for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
-                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<int>(ref source));
+                    hash.Add(Unsafe.ReadUnaligned<int>(ref source));
                 for (; length > 0L; source = ref source.Advance<byte>(&length))
-                    hash = hashFunction.Invoke(hash, source);
+                    hash.Add(source);
                 break;
             case 0L:
                 break;
             case sizeof(byte):
-                hash = hashFunction.Invoke(hash, source);
+                hash.Add(source);
                 break;
             case sizeof(ushort):
-                hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
+                hash.Add(Unsafe.ReadUnaligned<ushort>(ref source));
                 break;
         }
-
-        return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
     }
 
     internal static unsafe int GetHashCode32([In] ref byte source, long length, bool salted)
-        => GetHashCode32(ref source, length, FNV1a32.Offset, new FNV1a32(), salted);
+    {
+        var hash = new FNV1a32();
+        GetHashCode32(ref hash, ref source, length);
+
+        if (salted)
+            hash.Add(RandomExtensions.BitwiseHashSalt);
+
+        return hash.Result;
+    }
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory.
@@ -724,14 +775,20 @@ public static class Intrinsics
     /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
     /// <param name="source">A pointer to the block of memory.</param>
     /// <param name="length">Length of memory block to be hashed, in bytes.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Hashing function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
-    public static unsafe int GetHashCode32<THashFunction>([In] void* source, long length, int hash, THashFunction hashFunction, bool salted = true)
-        where THashFunction : struct, ISupplier<int, int, int>
-        => GetHashCode32(ref ((byte*)source)[0], length, hash, hashFunction, salted);
+    public static unsafe int GetHashCode32<THashFunction>([In] void* source, long length, bool salted = true)
+        where THashFunction : struct, IHashFunction<int, int>
+    {
+        var hash = new THashFunction();
+        GetHashCode32(ref hash, ref ((byte*)source)[0], length);
+
+        if (salted)
+            hash.Add(RandomExtensions.BitwiseHashSalt);
+
+        return hash.Result;
+    }
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory.
