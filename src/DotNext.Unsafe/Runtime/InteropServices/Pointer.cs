@@ -507,8 +507,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         if (IsNull || length == 0L)
             return Array.Empty<byte>();
-        var result = new byte[sizeof(T) * length];
-        Intrinsics.Copy(in ((byte*)value)[0], out result[0], checked(length * sizeof(T)));
+        var result = new byte[checked(sizeof(T) * length)];
+        Intrinsics.Copy(in ((byte*)value)[0], out result[0], result.LongLength);
         return result;
     }
 
