@@ -104,7 +104,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     }
 
     private static void GetHashCode<THashFunction>(in T value, ref THashFunction hashFunction, bool salted)
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         switch (SizeOf<T>())
         {
@@ -142,7 +142,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <returns>Bitwise hash code.</returns>
     public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
-        var fn = new HashFunction<int, int>(hashFunction, hash);
+        var fn = new Accumulator<int, int>(hashFunction, hash);
         GetHashCode(in value, ref fn, salted);
         return fn.Result;
     }
@@ -160,7 +160,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <returns>Bitwise hash code.</returns>
     [CLSCompliant(false)]
     public static int GetHashCode<THashFunction>(in T value, bool salted = true)
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         var hash = new THashFunction();
         GetHashCode(in value, ref hash, salted);

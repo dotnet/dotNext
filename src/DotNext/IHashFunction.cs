@@ -3,37 +3,37 @@ using System.Runtime.InteropServices;
 namespace DotNext;
 
 /// <summary>
-/// Represents hash function.
+/// Represents accumulator.
 /// </summary>
-/// <typeparam name="TInput">The type of the input.</typeparam>
-/// <typeparam name="TOuput">The type of the hash result.</typeparam>
-public interface IHashFunction<in TInput, out TOuput>
+/// <typeparam name="TValue">The type of the value to accumulate.</typeparam>
+/// <typeparam name="TResult">The accumulation result.</typeparam>
+public interface IAccumulator<in TValue, out TResult>
 {
     /// <summary>
     /// Adds the data to the hash function.
     /// </summary>
     /// <param name="input">The input data.</param>
-    void Add(TInput input);
+    void Add(TValue input);
 
     /// <summary>
     /// Gets the result of the hash function.
     /// </summary>
-    TOuput Result { get; }
+    TResult Result { get; }
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct HashFunction<TInput, TOutput> : IHashFunction<TInput, TOutput>
+internal struct Accumulator<TValue, TResult> : IAccumulator<TValue, TResult>
 {
-    private readonly Func<TInput, TOutput, TOutput> hashFunction;
-    private TOutput result;
+    private readonly Func<TValue, TResult, TResult> accumulator;
+    private TResult result;
 
-    internal HashFunction(Func<TInput, TOutput, TOutput> hashFunction, TOutput initial)
+    internal Accumulator(Func<TValue, TResult, TResult> accumulator, TResult initial)
     {
-        this.hashFunction = hashFunction ?? throw new ArgumentNullException(nameof(hashFunction));
+        this.accumulator = accumulator ?? throw new ArgumentNullException(nameof(accumulator));
         result = initial;
     }
 
-    public void Add(TInput data) => result = hashFunction(data, result);
+    public void Add(TValue data) => result = accumulator(data, result);
 
-    public TOutput Result => result;
+    public TResult Result => result;
 }

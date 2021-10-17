@@ -80,7 +80,7 @@ public static class Span
     [CLSCompliant(false)]
     public static int BitwiseHashCode<T, THashFunction>(this Span<T> span, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
         => BitwiseHashCode<T, THashFunction>((ReadOnlySpan<T>)span, salted);
 
     /// <summary>
@@ -107,12 +107,12 @@ public static class Span
     [CLSCompliant(false)]
     public static long BitwiseHashCode64<T, THashFunction>(this Span<T> span, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
         => BitwiseHashCode64<T, THashFunction>((ReadOnlySpan<T>)span, salted);
 
     private static unsafe void BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         if (!span.IsEmpty)
             Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T));
@@ -133,7 +133,7 @@ public static class Span
     public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
     {
-        var fn = new HashFunction<int, int>(hashFunction, hash);
+        var fn = new Accumulator<int, int>(hashFunction, hash);
         BitwiseHashCode(span, ref fn, salted);
         return fn.Result;
     }
@@ -149,7 +149,7 @@ public static class Span
     [CLSCompliant(false)]
     public static int BitwiseHashCode<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         var hash = new THashFunction();
         BitwiseHashCode(span, ref hash, salted);
@@ -158,7 +158,7 @@ public static class Span
 
     private static unsafe void BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
     {
         if (!span.IsEmpty)
             Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T));
@@ -179,7 +179,7 @@ public static class Span
     public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
     {
-        var fn = new HashFunction<long, long>(hashFunction, hash);
+        var fn = new Accumulator<long, long>(hashFunction, hash);
         BitwiseHashCode64(span, ref fn, salted);
         return fn.Result;
     }
@@ -195,7 +195,7 @@ public static class Span
     [CLSCompliant(false)]
     public static long BitwiseHashCode64<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
     {
         var hash = new THashFunction();
         BitwiseHashCode64(span, ref hash, salted);

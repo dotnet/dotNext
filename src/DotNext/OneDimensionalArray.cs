@@ -341,7 +341,7 @@ public static class OneDimensionalArray
 
     private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         if (Intrinsics.GetLength(array) > 0)
             Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T));
@@ -362,7 +362,7 @@ public static class OneDimensionalArray
     public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
     {
-        var fn = new HashFunction<int, int>(hashFunction, hash);
+        var fn = new Accumulator<int, int>(hashFunction, hash);
         BitwiseHashCode(array, ref fn, salted);
         return fn.Result;
     }
@@ -378,7 +378,7 @@ public static class OneDimensionalArray
     [CLSCompliant(false)]
     public static int BitwiseHashCode<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         var hash = new THashFunction();
         BitwiseHashCode(array, ref hash, salted);
@@ -387,7 +387,7 @@ public static class OneDimensionalArray
 
     private static unsafe void BitwiseHashCode64<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
     {
         if (Intrinsics.GetLength(array) > 0)
             Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T));
@@ -408,7 +408,7 @@ public static class OneDimensionalArray
     public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
     {
-        var fn = new HashFunction<long, long>(hashFunction, hash);
+        var fn = new Accumulator<long, long>(hashFunction, hash);
         BitwiseHashCode64(array, ref fn, salted);
         return fn.Result;
     }
@@ -424,7 +424,7 @@ public static class OneDimensionalArray
     [CLSCompliant(false)]
     public static long BitwiseHashCode64<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
     {
         var hash = new THashFunction();
         BitwiseHashCode64(array, ref hash, salted);

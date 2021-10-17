@@ -16,7 +16,7 @@ namespace DotNext.Runtime;
 public static class Intrinsics
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct FNV1a32 : IHashFunction<int, int>
+    private struct FNV1a32 : IAccumulator<int, int>
     {
         private const int Offset = unchecked((int)2166136261);
         private const int Prime = 16777619;
@@ -29,7 +29,7 @@ public static class Intrinsics
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct FNV1a64 : IHashFunction<long, long>
+    private struct FNV1a64 : IAccumulator<long, long>
     {
         private const long Offset = unchecked((long)14695981039346656037);
         private const long Prime = 1099511628211;
@@ -551,7 +551,7 @@ public static class Intrinsics
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, long length)
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
     {
         switch (length)
         {
@@ -587,7 +587,7 @@ public static class Intrinsics
     }
 
     private static THashFunction GetHashCode<T, TInput, TOutput, THashFunction>(Func<T, int, TInput> getter, int count, T arg)
-        where THashFunction : IHashFunction<TInput, TOutput>, new()
+        where THashFunction : IAccumulator<TInput, TOutput>, new()
     {
         var hash = new THashFunction();
 
@@ -657,7 +657,7 @@ public static class Intrinsics
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
     {
-        var fn = new HashFunction<long, long>(hashFunction, hash);
+        var fn = new Accumulator<long, long>(hashFunction, hash);
         GetHashCode64(ref fn, ref ((byte*)source)[0], length);
 
         if (salted)
@@ -680,7 +680,7 @@ public static class Intrinsics
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64<THashFunction>([In] void* source, long length, bool salted = true)
-        where THashFunction : struct, IHashFunction<long, long>
+        where THashFunction : struct, IAccumulator<long, long>
     {
         var hash = new THashFunction();
         GetHashCode64(ref hash, ref ((byte*)source)[0], length);
@@ -722,7 +722,7 @@ public static class Intrinsics
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
-        var fn = new HashFunction<int, int>(hashFunction, hash);
+        var fn = new Accumulator<int, int>(hashFunction, hash);
         GetHashCode32(ref fn, ref ((byte*)source)[0], length);
 
         if (salted)
@@ -733,7 +733,7 @@ public static class Intrinsics
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, long length)
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         switch (length)
         {
@@ -779,7 +779,7 @@ public static class Intrinsics
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32<THashFunction>([In] void* source, long length, bool salted = true)
-        where THashFunction : struct, IHashFunction<int, int>
+        where THashFunction : struct, IAccumulator<int, int>
     {
         var hash = new THashFunction();
         GetHashCode32(ref hash, ref ((byte*)source)[0], length);
