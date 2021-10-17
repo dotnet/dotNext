@@ -337,14 +337,19 @@ public static class OneDimensionalArray
     /// <returns>32-bit hash code of the array content.</returns>
     public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
         where T : unmanaged
-        => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0;
+    {
+        var length = Intrinsics.GetLength(array);
+        return length > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0;
+    }
 
     private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
         where THashFunction : struct, IAccumulator<int, int>
     {
-        if (Intrinsics.GetLength(array) > 0)
-            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T));
+        var length = Intrinsics.GetLength(array);
+
+        if (length > 0)
+            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
 
         if (salted)
             hashFunction.Add(RandomExtensions.BitwiseHashSalt);
@@ -389,8 +394,10 @@ public static class OneDimensionalArray
         where T : unmanaged
         where THashFunction : struct, IAccumulator<long, long>
     {
-        if (Intrinsics.GetLength(array) > 0)
-            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T));
+        var length = Intrinsics.GetLength(array);
+
+        if (length > 0)
+            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
 
         if (salted)
             hashFunction.Add(RandomExtensions.BitwiseHashSalt);
@@ -440,7 +447,10 @@ public static class OneDimensionalArray
     /// <returns>64-bit hash code of the array content.</returns>
     public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
         where T : unmanaged
-        => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0L;
+    {
+        var length = Intrinsics.GetLength(array);
+        return length > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0L;
+    }
 
     private sealed class ArrayEqualityComparer
     {

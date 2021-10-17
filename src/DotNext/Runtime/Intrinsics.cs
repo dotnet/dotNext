@@ -489,7 +489,7 @@ public static class Intrinsics
         => ref Unsafe.Add(ref ptr, sizeof(T));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] long* length)
+    private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] nint* length)
         where T : unmanaged
     {
         *length -= sizeof(T);
@@ -497,7 +497,7 @@ public static class Intrinsics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static unsafe bool IsZero([In] ref byte address, long length)
+    private static unsafe bool IsZero([In] ref byte address, nint length)
     {
         var result = false;
         if (Vector.IsHardwareAccelerated)
@@ -513,7 +513,7 @@ public static class Intrinsics
 
         while (length >= sizeof(nuint))
         {
-            if (address.Read<nuint>() == 0)
+            if (address.Read<nuint>() == 0U)
                 address = ref address.Advance<nuint>(&length);
             else
                 goto exit;
@@ -538,11 +538,12 @@ public static class Intrinsics
     /// <param name="address">The pointer to the memory to be cleared.</param>
     /// <param name="length">The length of the memory to be cleared, in bytes.</param>
     [CLSCompliant(false)]
-    public static unsafe void ClearBits([In, Out] void* address, long length)
+    public static unsafe void ClearBits([In, Out] void* address, nint length)
     {
-        for (int count; length > 0L; length -= count, address = Unsafe.Add<byte>(address, count))
+        for (int count; length > 0; length -= count, address = Unsafe.Add<byte>(address, count))
         {
-            count = length.Truncate();
+            count = length > int.MaxValue ? int.MaxValue : (int)length;
+
             Unsafe.InitBlock(address, 0, (uint)count);
         }
     }
@@ -550,7 +551,7 @@ public static class Intrinsics
     #region Bitwise Hash Code
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, long length)
+    internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
         where THashFunction : struct, IAccumulator<long, long>
     {
         switch (length)
@@ -558,10 +559,10 @@ public static class Intrinsics
             default:
                 for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
                     hash.Add(Unsafe.ReadUnaligned<long>(ref source));
-                for (; length > 0L; source = ref source.Advance<byte>(&length))
+                for (; length > 0; source = ref source.Advance<byte>(&length))
                     hash.Add(source);
                 break;
-            case 0L:
+            case 0:
                 break;
             case sizeof(byte):
                 hash.Add(source);
@@ -575,7 +576,7 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe long GetHashCode64([In] ref byte source, long length, bool salted)
+    internal static unsafe long GetHashCode64([In] ref byte source, nint length, bool salted)
     {
         var hash = new FNV1a64();
         GetHashCode64(ref hash, ref source, length);
@@ -655,7 +656,7 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
-    public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+    public static unsafe long GetHashCode64([In] void* source, nint length, long hash, Func<long, long, long> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
         GetHashCode64(ref fn, ref ((byte*)source)[0], length);
@@ -679,7 +680,7 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
-    public static unsafe long GetHashCode64<THashFunction>([In] void* source, long length, bool salted = true)
+    public static unsafe long GetHashCode64<THashFunction>([In] void* source, nint length, bool salted = true)
         where THashFunction : struct, IAccumulator<long, long>
     {
         var hash = new THashFunction();
@@ -703,7 +704,7 @@ public static class Intrinsics
     /// <returns>Content hash code.</returns>
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
-    public static unsafe long GetHashCode64([In] void* source, long length, bool salted = true)
+    public static unsafe long GetHashCode64([In] void* source, nint length, bool salted = true)
         => GetHashCode64(ref ((byte*)source)[0], length, salted);
 
     /// <summary>
@@ -720,7 +721,7 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
-    public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+    public static unsafe int GetHashCode32([In] void* source, nint length, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
         GetHashCode32(ref fn, ref ((byte*)source)[0], length);
@@ -732,7 +733,7 @@ public static class Intrinsics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, long length)
+    internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
         where THashFunction : struct, IAccumulator<int, int>
     {
         switch (length)
@@ -740,10 +741,10 @@ public static class Intrinsics
             default:
                 for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
                     hash.Add(Unsafe.ReadUnaligned<int>(ref source));
-                for (; length > 0L; source = ref source.Advance<byte>(&length))
+                for (; length > 0; source = ref source.Advance<byte>(&length))
                     hash.Add(source);
                 break;
-            case 0L:
+            case 0:
                 break;
             case sizeof(byte):
                 hash.Add(source);
@@ -754,7 +755,7 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe int GetHashCode32([In] ref byte source, long length, bool salted)
+    internal static unsafe int GetHashCode32([In] ref byte source, nint length, bool salted)
     {
         var hash = new FNV1a32();
         GetHashCode32(ref hash, ref source, length);
@@ -778,7 +779,7 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
-    public static unsafe int GetHashCode32<THashFunction>([In] void* source, long length, bool salted = true)
+    public static unsafe int GetHashCode32<THashFunction>([In] void* source, nint length, bool salted = true)
         where THashFunction : struct, IAccumulator<int, int>
     {
         var hash = new THashFunction();
@@ -802,7 +803,7 @@ public static class Intrinsics
     /// <returns>Content hash code.</returns>
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
-    public static unsafe int GetHashCode32([In] void* source, long length, bool salted = true)
+    public static unsafe int GetHashCode32([In] void* source, nint length, bool salted = true)
         => GetHashCode32(ref ((byte*)source)[0], length, salted);
     #endregion
 

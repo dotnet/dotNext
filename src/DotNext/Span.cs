@@ -53,7 +53,7 @@ public static class Span
         if (span.IsEmpty)
             return salted ? RandomExtensions.BitwiseHashSalt : 0;
 
-        return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
+        return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)), salted);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public static class Span
         where THashFunction : struct, IAccumulator<int, int>
     {
         if (!span.IsEmpty)
-            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T));
+            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)));
 
         if (salted)
             hashFunction.Add(RandomExtensions.BitwiseHashSalt);
@@ -161,7 +161,7 @@ public static class Span
         where THashFunction : struct, IAccumulator<long, long>
     {
         if (!span.IsEmpty)
-            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T));
+            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)));
 
         if (salted)
             hashFunction.Add(RandomExtensions.BitwiseHashSalt);
@@ -226,7 +226,7 @@ public static class Span
         if (span.IsEmpty)
             return salted ? RandomExtensions.BitwiseHashSalt : 0L;
 
-        return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
+        return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)), salted);
     }
 
     /// <summary>
