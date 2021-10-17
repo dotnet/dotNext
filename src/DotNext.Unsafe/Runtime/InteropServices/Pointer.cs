@@ -328,13 +328,13 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         if (!destination.CanWrite)
             throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
         if (count > 0)
-            WriteTo((byte*)value, count * sizeof(T), destination);
+            WriteTo((byte*)value, checked(count * sizeof(T)), destination);
 
         static void WriteTo(byte* source, long length, Stream destination)
         {
             while (length > 0L)
             {
-                var bytes = new ReadOnlySpan<byte>(source, (int)Math.Min(int.MaxValue, length));
+                var bytes = new ReadOnlySpan<byte>(source, length.Truncate());
                 destination.Write(bytes);
                 length -= bytes.Length;
             }
@@ -345,7 +345,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         while (length > 0L)
         {
-            using var manager = new MemorySource(source, (int)Math.Min(int.MaxValue, length));
+            using var manager = new MemorySource(source, length.Truncate());
             await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
             length -= manager.Length;
             source += manager.Length;
@@ -374,7 +374,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
         if (count == 0)
             return new ValueTask();
-        return WriteToSteamAsync(Address, count * sizeof(T), destination, token);
+        return WriteToSteamAsync(Address, checked(count * sizeof(T)), destination, token);
     }
 
     /// <summary>
@@ -420,7 +420,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
         if (count == 0L)
             return 0L;
-        return ReadFrom(source, (byte*)value, sizeof(T) * count);
+        return ReadFrom(source, (byte*)value, checked(sizeof(T) * count));
 
         static long ReadFrom(Stream source, byte* destination, long length)
         {
@@ -476,7 +476,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
         if (count == 0L)
             return new ValueTask<long>(0L);
-        return ReadFromStreamAsync(source, Address, sizeof(T) * count, token);
+        return ReadFromStreamAsync(source, Address, checked(sizeof(T) * count), token);
     }
 
     /// <summary>
@@ -493,7 +493,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         if (IsNull)
             return Stream.Null;
-        count *= sizeof(T);
+        count = checked(count * sizeof(T));
         return new UnmanagedMemoryStream((byte*)value, count, count, access);
     }
 
@@ -657,7 +657,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -666,7 +666,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, bool salted = true)
-        => IsNull ? 0L : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -677,7 +677,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
