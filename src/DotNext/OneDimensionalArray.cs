@@ -521,9 +521,10 @@ public static class OneDimensionalArray
         if (second.IsNullOrEmpty())
             return 1;
 
-        var cmp = first.LongLength.CompareTo(second.LongLength);
+        var firstLength = Intrinsics.GetLength(first);
+        var cmp = firstLength.CompareTo(Intrinsics.GetLength(second));
         if (cmp == 0)
-            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(firstLength * sizeof(T)));
 
         return cmp;
     }
