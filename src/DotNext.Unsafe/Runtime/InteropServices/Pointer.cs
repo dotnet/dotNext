@@ -258,9 +258,11 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         if (IsNull)
             throw new NullPointerException();
-        if (count <= 0)
+
+        if ((ulong)count > (ulong)nint.MaxValue)
             throw new ArgumentOutOfRangeException(nameof(count));
-        Intrinsics.ClearBits(value, sizeof(T) * count);
+
+        Intrinsics.ClearBits(value, checked(sizeof(T) * (nint)count));
     }
 
     /// <summary>
@@ -506,7 +508,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         if (IsNull || length == 0L)
             return Array.Empty<byte>();
         var result = new byte[sizeof(T) * length];
-        Intrinsics.Copy(in ((byte*)value)[0], out result[0], length * sizeof(T));
+        Intrinsics.Copy(in ((byte*)value)[0], out result[0], checked(length * sizeof(T)));
         return result;
     }
 
@@ -644,7 +646,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             return true;
         if (IsNull || other.IsNull)
             return false;
-        return Intrinsics.Equals(value, other, count * sizeof(T));
+
+        return Intrinsics.Equals(value, other, checked((nint)count * sizeof(T)));
     }
 
     /// <summary>
@@ -654,7 +657,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode32(value, count * sizeof(T), salted);
+        => IsNull ? 0 : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -663,7 +666,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, bool salted = true)
-        => IsNull ? 0L : Intrinsics.GetHashCode64(value, count * sizeof(T), salted);
+        => IsNull ? 0L : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -674,31 +677,31 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
+        => IsNull ? 0 : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
     /// </summary>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
-    /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
-    /// <param name="hashFunction">The custom hash function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     [CLSCompliant(false)]
-    public unsafe int BitwiseHashCode(long count, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode32<Supplier<int, int, int>>(value, count * sizeof(T), hash, hashFunction, salted);
+    public unsafe int BitwiseHashCode<THashFunction>(long count, bool salted = true)
+        where THashFunction : struct, IAccumulator<int, int>
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
     /// </summary>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
-    /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
-    /// <param name="hashFunction">The custom hash function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     [CLSCompliant(false)]
-    public unsafe long BitwiseHashCode64(long count, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode64<Supplier<long, long, long>>(value, count * sizeof(T), hash, hashFunction, salted);
+    public unsafe long BitwiseHashCode64<THashFunction>(long count, bool salted = true)
+        where THashFunction : struct, IAccumulator<long, long>
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -709,7 +712,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        => IsNull ? 0 : Intrinsics.GetHashCode64(value, count * sizeof(T), hash, hashFunction, salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
 
     /// <summary>
     /// Bitwise comparison of two memory blocks.
@@ -725,7 +728,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new NullPointerException();
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
-        return Intrinsics.Compare(value, other, count * sizeof(T));
+
+        return Intrinsics.Compare(value, other, checked((nint)count * sizeof(T)));
     }
 
     /// <summary>

@@ -252,12 +252,12 @@ public static class Intrinsics
         return ref ReturnRef<T>();
     }
 
-    internal static int Compare(ref byte first, ref byte second, long length)
+    internal static int Compare(ref byte first, ref byte second, nint length)
     {
         var comparison = 0;
         for (int count; length > 0L && comparison == 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
-            count = length.Truncate();
+            count = length > int.MaxValue ? int.MaxValue : (int)length;
             comparison = MemoryMarshal.CreateSpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateSpan(ref second, count));
         }
 
@@ -277,11 +277,11 @@ public static class Intrinsics
     /// <param name="length">The length of the first and second memory blocks.</param>
     /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
     [CLSCompliant(false)]
-    public static unsafe int Compare([In] void* first, [In] void* second, long length)
+    public static unsafe int Compare([In] void* first, [In] void* second, nint length)
         => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    internal static unsafe bool EqualsAligned(ref byte first, ref byte second, long length)
+    internal static unsafe bool EqualsAligned(ref byte first, ref byte second, nint length)
     {
         var result = false;
         if (Vector.IsHardwareAccelerated)
@@ -325,12 +325,12 @@ public static class Intrinsics
     /// <param name="length">Length of first and second memory blocks, in bytes.</param>
     /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
     [CLSCompliant(false)]
-    public static unsafe bool Equals([In] void* first, [In] void* second, long length)
+    public static unsafe bool Equals([In] void* first, [In] void* second, nint length)
     {
         var result = true;
-        for (int count; length > 0L && result; length -= count, first = Unsafe.Add<byte>(first, count), second = Unsafe.Add<byte>(first, count))
+        for (int count; length > 0 && result; length -= count, first = Unsafe.Add<byte>(first, count), second = Unsafe.Add<byte>(first, count))
         {
-            count = length.Truncate();
+            count = length > int.MaxValue ? int.MaxValue : (int)length;
             result = new ReadOnlySpan<byte>(first, count).SequenceEqual(new ReadOnlySpan<byte>(second, count));
         }
 
@@ -417,11 +417,11 @@ public static class Intrinsics
         where T : unmanaged
         => Copy(in input[0], out output[0]);
 
-    private static void Copy([In] ref byte source, [In] ref byte destination, long length)
+    private static void Copy([In] ref byte source, [In] ref byte destination, nint length)
     {
-        for (int count; length > 0L; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
+        for (int count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
         {
-            count = length.Truncate();
+            count = length > int.MaxValue ? int.MaxValue : (int)length;
             Unsafe.CopyBlock(ref destination, ref source, (uint)count);
         }
     }
@@ -439,7 +439,7 @@ public static class Intrinsics
         where T : unmanaged
     {
         Unsafe.SkipInit(out destination);
-        Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
+        Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nint)count * sizeof(T)));
     }
 
     /// <summary>

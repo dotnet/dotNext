@@ -325,7 +325,7 @@ public static class OneDimensionalArray
         if (Intrinsics.GetLength(first) == 0)
             return true;
 
-        return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+        return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
     }
 
     /// <summary>
@@ -523,7 +523,7 @@ public static class OneDimensionalArray
 
         var cmp = first.LongLength.CompareTo(second.LongLength);
         if (cmp == 0)
-            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
 
         return cmp;
     }
