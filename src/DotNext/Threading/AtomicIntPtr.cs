@@ -103,7 +103,7 @@ public static class AtomicIntPtr
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr GetAndBitwiseAnd(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
@@ -118,7 +118,7 @@ public static class AtomicIntPtr
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr BitwiseAndAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
@@ -133,7 +133,7 @@ public static class AtomicIntPtr
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr GetAndBitwiseOr(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
@@ -148,7 +148,7 @@ public static class AtomicIntPtr
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr BitwiseOrAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
@@ -163,7 +163,7 @@ public static class AtomicIntPtr
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr GetAndBitwiseXor(ref this IntPtr value, IntPtr operand)
@@ -174,7 +174,7 @@ public static class AtomicIntPtr
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr BitwiseXorAndGet(ref this IntPtr value, IntPtr operand)

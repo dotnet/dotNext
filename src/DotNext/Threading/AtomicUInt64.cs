@@ -99,7 +99,7 @@ public static class AtomicUInt64
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong GetAndBitwiseAnd(ref this ulong value, ulong operand)
@@ -110,7 +110,7 @@ public static class AtomicUInt64
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong BitwiseAndAndGet(ref this ulong value, ulong operand)
@@ -121,7 +121,7 @@ public static class AtomicUInt64
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong GetAndBitwiseOr(ref this ulong value, ulong operand)
@@ -132,7 +132,7 @@ public static class AtomicUInt64
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong BitwiseOrAndGet(ref this ulong value, ulong operand)
@@ -143,7 +143,7 @@ public static class AtomicUInt64
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong GetAndBitwiseXor(ref this ulong value, ulong operand)
@@ -154,7 +154,7 @@ public static class AtomicUInt64
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong BitwiseXorAndGet(ref this ulong value, ulong operand)

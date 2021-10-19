@@ -98,7 +98,7 @@ public static class AtomicInt32
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetAndBitwiseAnd(ref this int value, int operand)
@@ -109,7 +109,7 @@ public static class AtomicInt32
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int BitwiseAndAndGet(ref this int value, int operand)
@@ -120,7 +120,7 @@ public static class AtomicInt32
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetAndBitwiseOr(ref this int value, int operand)
@@ -131,7 +131,7 @@ public static class AtomicInt32
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int BitwiseOrAndGet(ref this int value, int operand)
@@ -142,7 +142,7 @@ public static class AtomicInt32
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetAndBitwiseXor(ref this int value, int operand)
@@ -153,7 +153,7 @@ public static class AtomicInt32
     /// as an atomic operation.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
-    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
     /// <returns>The modified value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int BitwiseXorAndGet(ref this int value, int operand)
