@@ -153,9 +153,9 @@ public static class AtomicIntPtr
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr BitwiseOrAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
     {
-        sizeof(int) => (nint)Interlocked.Or(ref Unsafe.As<IntPtr, int>(ref value), (int)operand),
-        sizeof(long) => (nint)Interlocked.Or(ref Unsafe.As<IntPtr, long>(ref value), (long)operand),
-        _ => Accumulate(ref value, operand, new BitwiseOr()).OldValue,
+        sizeof(int) => (nint)Interlocked.Or(ref Unsafe.As<IntPtr, int>(ref value), (int)operand) | operand,
+        sizeof(long) => (nint)Interlocked.Or(ref Unsafe.As<IntPtr, long>(ref value), (long)operand) | operand,
+        _ => Accumulate(ref value, operand, new BitwiseOr()).NewValue,
     };
 
     /// <summary>
