@@ -12,7 +12,6 @@ using Replication;
 using static IO.DataTransferObject;
 using static Threading.AtomicInt64;
 using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
-using Timeout = Threading.Timeout;
 
 /// <summary>
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
