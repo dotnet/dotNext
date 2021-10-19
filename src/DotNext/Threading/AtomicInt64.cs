@@ -144,7 +144,6 @@ public static class AtomicInt64
     /// <param name="value">Reference to a value to be modified.</param>
     /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long GetAndBitwiseXor(ref this long value, long operand)
         => Accumulate(ref value, operand, new BitwiseXor()).OldValue;

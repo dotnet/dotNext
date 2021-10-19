@@ -145,7 +145,6 @@ public static class AtomicUInt64
     /// <param name="value">Reference to a value to be modified.</param>
     /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
     /// <returns>The original value.</returns>
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong GetAndBitwiseXor(ref this ulong value, ulong operand)
         => Accumulate(ref value, operand, new BitwiseXor()).OldValue;
