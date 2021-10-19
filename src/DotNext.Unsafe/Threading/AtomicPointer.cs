@@ -470,6 +470,15 @@ public static class AtomicPointer
     /// </summary>
     /// <param name="pointer">A pointer to a value to be modified.</param>
     /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetAndAddValue(this Pointer<int> pointer, int value) => AtomicInt32.GetAndAdd(ref pointer.Value, value);
+
+    /// <summary>
+    /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IntPtr AddAndGetValue(this Pointer<IntPtr> pointer, IntPtr value) => AtomicIntPtr.AddAndGet(ref pointer.Value, value);
@@ -479,9 +488,27 @@ public static class AtomicPointer
     /// </summary>
     /// <param name="pointer">A pointer to a value to be modified.</param>
     /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndAddValue(this Pointer<IntPtr> pointer, IntPtr value) => AtomicIntPtr.GetAndAdd(ref pointer.Value, value);
+
+    /// <summary>
+    /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long AddAndGetValue(this Pointer<long> pointer, long value) => AtomicInt64.AddAndGet(ref pointer.Value, value);
+
+    /// <summary>
+    /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndAddValue(this Pointer<long> pointer, long value) => AtomicInt64.GetAndAdd(ref pointer.Value, value);
 
     /// <summary>
     /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
@@ -497,9 +524,27 @@ public static class AtomicPointer
     /// </summary>
     /// <param name="pointer">A pointer to a value to be modified.</param>
     /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float GetAndAddValue(this Pointer<float> pointer, float value) => AtomicSingle.GetAndAdd(ref pointer.Value, value);
+
+    /// <summary>
+    /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double AddAndGetValue(this Pointer<double> pointer, double value) => AtomicDouble.AddAndGet(ref pointer.Value, value);
+
+    /// <summary>
+    /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double GetAndAddValue(this Pointer<double> pointer, double value) => AtomicDouble.GetAndAdd(ref pointer.Value, value);
 
     /// <summary>
     /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
@@ -1428,4 +1473,316 @@ public static class AtomicPointer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static unsafe uint GetAndUpdateValue(this Pointer<uint> pointer, delegate*<uint, uint> updater) => AtomicUInt32.GetAndUpdate(ref pointer.Value, updater);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetAndBitwiseAndGetValue(this Pointer<int> pointer, int operand) => AtomicInt32.GetAndBitwiseAnd(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int BitwiseAndAndGetValue(this Pointer<int> pointer, int operand) => AtomicInt32.BitwiseAndAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndBitwiseAndGetValue(this Pointer<long> pointer, int operand) => AtomicInt64.GetAndBitwiseAnd(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long BitwiseAndAndGetValue(this Pointer<long> pointer, int operand) => AtomicInt64.BitwiseAndAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndBitwiseAndGetValue(this Pointer<IntPtr> pointer, IntPtr operand) => AtomicIntPtr.GetAndBitwiseAnd(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr BitwiseAndAndGetValue(this Pointer<IntPtr> pointer, IntPtr operand) => AtomicIntPtr.BitwiseAndAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static uint GetAndBitwiseAndGetValue(this Pointer<uint> pointer, uint operand) => AtomicUInt32.GetAndBitwiseAnd(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static uint BitwiseAndAndGetValue(this Pointer<uint> pointer, uint operand) => AtomicUInt32.BitwiseAndAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static ulong GetAndBitwiseAndGetValue(this Pointer<ulong> pointer, ulong operand) => AtomicUInt64.GetAndBitwiseAnd(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static ulong BitwiseAndAndGetValue(this Pointer<ulong> pointer, ulong operand) => AtomicUInt64.BitwiseAndAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetAndBitwiseOrValue(this Pointer<int> pointer, int operand) => AtomicInt32.GetAndBitwiseOr(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int BitwiseOrAndGetValue(this Pointer<int> pointer, int operand) => AtomicInt32.BitwiseOrAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndBitwiseOrValue(this Pointer<long> pointer, long operand) => AtomicInt64.GetAndBitwiseOr(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long BitwiseOrAndGetValue(this Pointer<long> pointer, long operand) => AtomicInt64.BitwiseOrAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndBitwiseOrValue(this Pointer<IntPtr> pointer, IntPtr operand) => AtomicIntPtr.GetAndBitwiseOr(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr BitwiseOrAndGetValue(this Pointer<IntPtr> pointer, IntPtr operand) => AtomicIntPtr.BitwiseOrAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static uint GetAndBitwiseOrValue(this Pointer<uint> pointer, uint operand) => AtomicUInt32.GetAndBitwiseOr(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static uint BitwiseOrAndGetValue(this Pointer<uint> pointer, uint operand) => AtomicUInt32.BitwiseOrAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static ulong GetAndBitwiseOrValue(this Pointer<ulong> pointer, ulong operand) => AtomicUInt64.GetAndBitwiseOr(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static ulong BitwiseOrAndGetValue(this Pointer<ulong> pointer, ulong operand) => AtomicUInt64.BitwiseOrAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetAndBitwiseXorValue(this Pointer<int> pointer, int operand) => AtomicInt32.GetAndBitwiseXor(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int BitwiseXorAndGetValue(this Pointer<int> pointer, int operand) => AtomicInt32.BitwiseXorAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndBitwiseXorValue(this Pointer<long> pointer, long operand) => AtomicInt64.GetAndBitwiseXor(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long BitwiseXorAndGetValue(this Pointer<long> pointer, long operand) => AtomicInt64.BitwiseXorAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndBitwiseXorValue(this Pointer<IntPtr> pointer, IntPtr operand) => AtomicIntPtr.GetAndBitwiseXor(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr BitwiseXorAndGetValue(this Pointer<IntPtr> pointer, IntPtr operand) => AtomicIntPtr.BitwiseXorAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static uint GetAndBitwiseXorValue(this Pointer<uint> pointer, uint operand) => AtomicUInt32.GetAndBitwiseXor(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static uint BitwiseXorAndGetValue(this Pointer<uint> pointer, uint operand) => AtomicUInt32.BitwiseXorAndGet(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static ulong GetAndBitwiseXorValue(this Pointer<ulong> pointer, ulong operand) => AtomicUInt64.GetAndBitwiseXor(ref pointer.Value, operand);
+
+    /// <summary>
+    /// Bitwise "xors" two integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="pointer">A pointer to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [CLSCompliant(false)]
+    public static ulong BitwiseXorAndGetValue(this Pointer<ulong> pointer, ulong operand) => AtomicUInt64.BitwiseXorAndGet(ref pointer.Value, operand);
 }
