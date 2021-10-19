@@ -688,7 +688,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>Content hash code.</returns>
     [CLSCompliant(false)]
     public unsafe int BitwiseHashCode<THashFunction>(long count, bool salted = true)
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
         => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>
@@ -700,7 +700,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>Content hash code.</returns>
     [CLSCompliant(false)]
     public unsafe long BitwiseHashCode64<THashFunction>(long count, bool salted = true)
-        where THashFunction : struct, IAccumulator<long, long>
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
         => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
 
     /// <summary>

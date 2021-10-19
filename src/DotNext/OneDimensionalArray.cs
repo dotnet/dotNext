@@ -344,7 +344,7 @@ public static class OneDimensionalArray
 
     private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>
     {
         var length = Intrinsics.GetLength(array);
 
@@ -352,7 +352,7 @@ public static class OneDimensionalArray
             Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
 
         if (salted)
-            hashFunction.Add(RandomExtensions.BitwiseHashSalt);
+            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
     }
 
     /// <summary>
@@ -369,7 +369,7 @@ public static class OneDimensionalArray
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
         BitwiseHashCode(array, ref fn, salted);
-        return fn.Result;
+        return fn.Invoke();
     }
 
     /// <summary>
@@ -383,16 +383,16 @@ public static class OneDimensionalArray
     [CLSCompliant(false)]
     public static int BitwiseHashCode<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
         BitwiseHashCode(array, ref hash, salted);
-        return hash.Result;
+        return hash.Invoke();
     }
 
     private static unsafe void BitwiseHashCode64<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, IAccumulator<long, long>
+        where THashFunction : struct, IConsumer<long>
     {
         var length = Intrinsics.GetLength(array);
 
@@ -400,7 +400,7 @@ public static class OneDimensionalArray
             Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
 
         if (salted)
-            hashFunction.Add(RandomExtensions.BitwiseHashSalt);
+            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
     }
 
     /// <summary>
@@ -417,7 +417,7 @@ public static class OneDimensionalArray
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
         BitwiseHashCode64(array, ref fn, salted);
-        return fn.Result;
+        return fn.Invoke();
     }
 
     /// <summary>
@@ -431,11 +431,11 @@ public static class OneDimensionalArray
     [CLSCompliant(false)]
     public static long BitwiseHashCode64<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
-        where THashFunction : struct, IAccumulator<long, long>
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
         var hash = new THashFunction();
         BitwiseHashCode64(array, ref hash, salted);
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <summary>

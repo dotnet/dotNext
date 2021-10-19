@@ -104,7 +104,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     }
 
     private static void GetHashCode<THashFunction>(in T value, ref THashFunction hashFunction, bool salted)
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>
     {
         switch (SizeOf<T>())
         {
@@ -114,18 +114,18 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
             case 0:
                 break;
             case sizeof(byte):
-                hashFunction.Add(InToRef<T, byte>(in value));
+                hashFunction.Invoke(InToRef<T, byte>(in value));
                 break;
             case sizeof(ushort):
-                hashFunction.Add(InToRef<T, ushort>(in value));
+                hashFunction.Invoke(InToRef<T, ushort>(in value));
                 break;
             case sizeof(int):
-                hashFunction.Add(InToRef<T, int>(in value));
+                hashFunction.Invoke(InToRef<T, int>(in value));
                 break;
         }
 
         if (salted)
-            hashFunction.Add(RandomExtensions.BitwiseHashSalt);
+            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
         GetHashCode(in value, ref fn, salted);
-        return fn.Result;
+        return fn.Invoke();
     }
 
     /// <summary>
@@ -160,11 +160,11 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <returns>Bitwise hash code.</returns>
     [CLSCompliant(false)]
     public static int GetHashCode<THashFunction>(in T value, bool salted = true)
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
         GetHashCode(in value, ref hash, salted);
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <inheritdoc/>

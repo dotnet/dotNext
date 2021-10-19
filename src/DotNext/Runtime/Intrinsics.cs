@@ -16,29 +16,29 @@ namespace DotNext.Runtime;
 public static class Intrinsics
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct FNV1a32 : IAccumulator<int, int>
+    private struct FNV1a32 : IConsumer<int>, ISupplier<int>
     {
         private const int Offset = unchecked((int)2166136261);
         private const int Prime = 16777619;
 
         private int result = Offset;
 
-        public readonly int Result => result;
+        public readonly int Invoke() => result;
 
-        public void Add(int data) => result = (result ^ data) * Prime;
+        public void Invoke(int data) => result = (result ^ data) * Prime;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct FNV1a64 : IAccumulator<long, long>
+    private struct FNV1a64 : IConsumer<long>, ISupplier<long>
     {
         private const long Offset = unchecked((long)14695981039346656037);
         private const long Prime = 1099511628211;
 
         private long result = Offset;
 
-        public readonly long Result => result;
+        public readonly long Invoke() => result;
 
-        public void Add(long data) => result = (result ^ data) * Prime;
+        public void Invoke(long data) => result = (result ^ data) * Prime;
     }
 
     /// <summary>
@@ -552,26 +552,26 @@ public static class Intrinsics
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
-        where THashFunction : struct, IAccumulator<long, long>
+        where THashFunction : struct, IConsumer<long>
     {
         switch (length)
         {
             default:
                 for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
-                    hash.Add(Unsafe.ReadUnaligned<long>(ref source));
+                    hash.Invoke(Unsafe.ReadUnaligned<long>(ref source));
                 for (; length > 0; source = ref source.Advance<byte>(&length))
-                    hash.Add(source);
+                    hash.Invoke(source);
                 break;
             case 0:
                 break;
             case sizeof(byte):
-                hash.Add(source);
+                hash.Invoke(source);
                 break;
             case sizeof(ushort):
-                hash.Add(Unsafe.ReadUnaligned<ushort>(ref source));
+                hash.Invoke(Unsafe.ReadUnaligned<ushort>(ref source));
                 break;
             case sizeof(uint):
-                hash.Add(Unsafe.ReadUnaligned<uint>(ref source));
+                hash.Invoke(Unsafe.ReadUnaligned<uint>(ref source));
                 break;
         }
     }
@@ -582,18 +582,18 @@ public static class Intrinsics
         GetHashCode64(ref hash, ref source, length);
 
         if (salted)
-            hash.Add(RandomExtensions.BitwiseHashSalt);
+            hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Result;
+        return hash.Invoke();
     }
 
-    private static THashFunction GetHashCode<T, TInput, TOutput, THashFunction>(Func<T, int, TInput> getter, int count, T arg)
-        where THashFunction : IAccumulator<TInput, TOutput>, new()
+    private static THashFunction GetHashCode<T, TInput, THashFunction>(Func<T, int, TInput> getter, int count, T arg)
+        where THashFunction : IConsumer<TInput>, new()
     {
         var hash = new THashFunction();
 
         for (var i = 0; i < count; i++)
-            hash.Add(getter(arg, i));
+            hash.Invoke(getter(arg, i));
 
         return hash;
     }
@@ -612,12 +612,12 @@ public static class Intrinsics
         if (getter is null)
             throw new ArgumentNullException(nameof(getter));
 
-        var hash = GetHashCode<T, long, long, FNV1a64>(getter, count, arg);
+        var hash = GetHashCode<T, long, FNV1a64>(getter, count, arg);
 
         if (salted)
-            hash.Add(RandomExtensions.BitwiseHashSalt);
+            hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <summary>
@@ -634,12 +634,12 @@ public static class Intrinsics
         if (getter is null)
             throw new ArgumentNullException(nameof(getter));
 
-        var hash = GetHashCode<T, int, int, FNV1a32>(getter, count, arg);
+        var hash = GetHashCode<T, int, FNV1a32>(getter, count, arg);
 
         if (salted)
-            hash.Add(RandomExtensions.BitwiseHashSalt);
+            hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <summary>
@@ -662,9 +662,9 @@ public static class Intrinsics
         GetHashCode64(ref fn, ref ((byte*)source)[0], length);
 
         if (salted)
-            fn.Add(RandomExtensions.BitwiseHashSalt);
+            fn.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return fn.Result;
+        return fn.Invoke();
     }
 
     /// <summary>
@@ -681,15 +681,15 @@ public static class Intrinsics
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64<THashFunction>([In] void* source, nint length, bool salted = true)
-        where THashFunction : struct, IAccumulator<long, long>
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
         var hash = new THashFunction();
         GetHashCode64(ref hash, ref ((byte*)source)[0], length);
 
         if (salted)
-            hash.Add(RandomExtensions.BitwiseHashSalt);
+            hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <summary>
@@ -727,30 +727,30 @@ public static class Intrinsics
         GetHashCode32(ref fn, ref ((byte*)source)[0], length);
 
         if (salted)
-            fn.Add(RandomExtensions.BitwiseHashSalt);
+            fn.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return fn.Result;
+        return fn.Invoke();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>
     {
         switch (length)
         {
             default:
                 for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
-                    hash.Add(Unsafe.ReadUnaligned<int>(ref source));
+                    hash.Invoke(Unsafe.ReadUnaligned<int>(ref source));
                 for (; length > 0; source = ref source.Advance<byte>(&length))
-                    hash.Add(source);
+                    hash.Invoke(source);
                 break;
             case 0:
                 break;
             case sizeof(byte):
-                hash.Add(source);
+                hash.Invoke(source);
                 break;
             case sizeof(ushort):
-                hash.Add(Unsafe.ReadUnaligned<ushort>(ref source));
+                hash.Invoke(Unsafe.ReadUnaligned<ushort>(ref source));
                 break;
         }
     }
@@ -761,9 +761,9 @@ public static class Intrinsics
         GetHashCode32(ref hash, ref source, length);
 
         if (salted)
-            hash.Add(RandomExtensions.BitwiseHashSalt);
+            hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <summary>
@@ -780,15 +780,15 @@ public static class Intrinsics
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32<THashFunction>([In] void* source, nint length, bool salted = true)
-        where THashFunction : struct, IAccumulator<int, int>
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
         GetHashCode32(ref hash, ref ((byte*)source)[0], length);
 
         if (salted)
-            hash.Add(RandomExtensions.BitwiseHashSalt);
+            hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Result;
+        return hash.Invoke();
     }
 
     /// <summary>
