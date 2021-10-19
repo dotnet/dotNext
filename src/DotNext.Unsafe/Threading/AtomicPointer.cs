@@ -463,7 +463,7 @@ public static class AtomicPointer
     /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int AddValue(this Pointer<int> pointer, int value) => AtomicInt32.Add(ref pointer.Value, value);
+    public static int AddAndGetValue(this Pointer<int> pointer, int value) => AtomicInt32.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
@@ -472,7 +472,7 @@ public static class AtomicPointer
     /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr AddValue(this Pointer<IntPtr> pointer, IntPtr value) => AtomicIntPtr.Add(ref pointer.Value, value);
+    public static IntPtr AddAndGetValue(this Pointer<IntPtr> pointer, IntPtr value) => AtomicIntPtr.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
@@ -481,7 +481,7 @@ public static class AtomicPointer
     /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long AddValue(this Pointer<long> pointer, long value) => AtomicInt64.Add(ref pointer.Value, value);
+    public static long AddAndGetValue(this Pointer<long> pointer, long value) => AtomicInt64.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
@@ -490,7 +490,7 @@ public static class AtomicPointer
     /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float AddValue(this Pointer<float> pointer, float value) => AtomicSingle.Add(ref pointer.Value, value);
+    public static float AddAndGetValue(this Pointer<float> pointer, float value) => AtomicSingle.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
@@ -499,7 +499,7 @@ public static class AtomicPointer
     /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double AddValue(this Pointer<double> pointer, double value) => AtomicDouble.Add(ref pointer.Value, value);
+    public static double AddAndGetValue(this Pointer<double> pointer, double value) => AtomicDouble.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
@@ -1137,7 +1137,7 @@ public static class AtomicPointer
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static ulong AddValue(this Pointer<ulong> pointer, ulong value) => AtomicUInt64.Add(ref pointer.Value, value);
+    public static ulong AddAndGetValue(this Pointer<ulong> pointer, ulong value) => AtomicUInt64.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
@@ -1301,7 +1301,7 @@ public static class AtomicPointer
     /// <returns>The new value stored at memory address.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static uint AddValue(this Pointer<uint> pointer, uint value) => AtomicUInt32.Add(ref pointer.Value, value);
+    public static uint AddAndGetValue(this Pointer<uint> pointer, uint value) => AtomicUInt32.AddAndGet(ref pointer.Value, value);
 
     /// <summary>
     /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.

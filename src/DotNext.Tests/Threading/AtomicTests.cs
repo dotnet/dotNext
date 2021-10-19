@@ -16,7 +16,7 @@ namespace DotNext.Threading
             Equal(30F, i);
             False(i.CompareAndSet(20F, 50F));
             Equal(30F, i);
-            Equal(80F, i.Add(50F));
+            Equal(80F, i.AddAndGet(50F));
             Equal(80F, i);
             Equal(80F, i.GetAndAccumulate(10F, static (x, y) => x + y));
             Equal(90F, i);
@@ -40,7 +40,7 @@ namespace DotNext.Threading
             Equal(30D, i);
             False(i.CompareAndSet(20D, 50D));
             Equal(30D, i);
-            Equal(80D, i.Add(50D));
+            Equal(80D, i.AddAndGet(50D));
             Equal(80D, i);
             Equal(80D, i.GetAndAccumulate(10D, static (x, y) => x + y));
             Equal(90D, i);
@@ -64,7 +64,7 @@ namespace DotNext.Threading
             Equal(30, i);
             False(i.CompareAndSet(20, 50));
             Equal(30, i);
-            Equal(80, i.Add(50));
+            Equal(80, i.AddAndGet(50));
             Equal(80, i);
             Equal(80, i.GetAndAccumulate(10, static (x, y) => x + y));
             Equal(90, i);
@@ -88,7 +88,7 @@ namespace DotNext.Threading
             Equal(30U, i);
             False(i.CompareAndSet(20U, 50U));
             Equal(30U, i);
-            Equal(80U, i.Add(50U));
+            Equal(80U, i.AddAndGet(50U));
             Equal(80U, i);
             Equal(80U, i.GetAndAccumulate(10, static (x, y) => x + y));
             Equal(90U, i);
@@ -112,7 +112,7 @@ namespace DotNext.Threading
             Equal(30UL, i);
             False(i.CompareAndSet(20UL, 50UL));
             Equal(30UL, i);
-            Equal(80UL, i.Add(50UL));
+            Equal(80UL, i.AddAndGet(50UL));
             Equal(80UL, i);
             Equal(80UL, i.GetAndAccumulate(10UL, static (x, y) => x + y));
             Equal(90UL, i);
@@ -136,7 +136,7 @@ namespace DotNext.Threading
             Equal(30L, i);
             False(i.CompareAndSet(20L, 50L));
             Equal(30L, i);
-            Equal(80L, i.Add(50L));
+            Equal(80L, i.AddAndGet(50L));
             Equal(80L, i);
             Equal(80L, i.GetAndAccumulate(10L, static (x, y) => x + y));
             Equal(90L, i);

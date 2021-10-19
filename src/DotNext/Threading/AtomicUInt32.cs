@@ -80,7 +80,7 @@ public static class AtomicUInt32
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Add(ref this uint value, uint operand)
+    public static uint AddAndGet(ref this uint value, uint operand)
         => Interlocked.Add(ref value, operand);
 
     /// <summary>

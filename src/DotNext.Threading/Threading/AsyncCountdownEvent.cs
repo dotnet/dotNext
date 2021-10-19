@@ -39,7 +39,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             set => initial.VolatileWrite(value);
         }
 
-        internal void Increment(long value) => current.Add(value);
+        internal void Increment(long value) => current.AddAndGet(value);
 
         internal unsafe bool Decrement(long value)
         {

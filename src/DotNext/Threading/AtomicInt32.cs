@@ -79,7 +79,7 @@ public static class AtomicInt32
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Add(ref this int value, int operand)
+    public static int AddAndGet(ref this int value, int operand)
         => Interlocked.Add(ref value, operand);
 
     /// <summary>

@@ -122,7 +122,7 @@ namespace DotNext.Runtime.InteropServices
             ptr.VolatileWrite(1);
             Equal(1UL, ptr.Value);
             Equal(1UL, ptr.Get());
-            ptr.AddValue(10);
+            ptr.AddAndGetValue(10);
             Equal(11UL, ptr.Value);
             Equal(11UL, ptr.Get());
             Equal(11UL, ptr.VolatileRead());
@@ -146,7 +146,7 @@ namespace DotNext.Runtime.InteropServices
             Pointer<uint> ptr = stackalloc uint[3];
             ptr.VolatileWrite(1);
             Equal(1U, ptr.Value);
-            ptr.AddValue(10);
+            ptr.AddAndGetValue(10);
             Equal(11U, ptr.Value);
             Equal(11U, ptr.VolatileRead());
             ptr.DecrementValue();
@@ -170,7 +170,7 @@ namespace DotNext.Runtime.InteropServices
             ptr.VolatileWrite(1);
             Equal(1, ptr.Value);
             Equal(1, ptr.Get());
-            ptr.AddValue(10);
+            ptr.AddAndGetValue(10);
             Equal(11, ptr.Value);
             Equal(11, ptr.Get());
             Equal(11, ptr.VolatileRead());
@@ -194,7 +194,7 @@ namespace DotNext.Runtime.InteropServices
             Pointer<int> ptr = stackalloc int[3];
             ptr.VolatileWrite(1);
             Equal(1, ptr.Value);
-            ptr.AddValue(10);
+            ptr.AddAndGetValue(10);
             Equal(11, ptr.Value);
             Equal(11, ptr.VolatileRead());
             ptr.DecrementValue();
@@ -217,7 +217,7 @@ namespace DotNext.Runtime.InteropServices
             Pointer<IntPtr> ptr = stackalloc IntPtr[3];
             ptr.VolatileWrite(new IntPtr(1));
             Equal(new IntPtr(1), ptr.Value);
-            ptr.AddValue(new IntPtr(10));
+            ptr.AddAndGetValue(new IntPtr(10));
             Equal(new IntPtr(11), ptr.Value);
             Equal(new IntPtr(11), ptr.VolatileRead());
             ptr.DecrementValue();
@@ -240,7 +240,7 @@ namespace DotNext.Runtime.InteropServices
             Pointer<float> ptr = stackalloc float[3];
             ptr.VolatileWrite(1F);
             Equal(1F, ptr.Value);
-            ptr.AddValue(10F);
+            ptr.AddAndGetValue(10F);
             Equal(11F, ptr.Value);
             Equal(11F, ptr.VolatileRead());
             ptr.DecrementValue();
@@ -258,7 +258,7 @@ namespace DotNext.Runtime.InteropServices
             Pointer<double> ptr = stackalloc double[3];
             ptr.VolatileWrite(1D);
             Equal(1D, ptr.Value);
-            ptr.AddValue(10F);
+            ptr.AddAndGetValue(10F);
             Equal(11D, ptr.Value);
             Equal(11D, ptr.VolatileRead());
             ptr.DecrementValue();

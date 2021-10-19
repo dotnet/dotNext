@@ -68,7 +68,7 @@ public static class AtomicDouble
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double Add(ref this double value, double operand)
+    public static double AddAndGet(ref this double value, double operand)
         => Accumulate(ref value, operand, new Adder()).NewValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

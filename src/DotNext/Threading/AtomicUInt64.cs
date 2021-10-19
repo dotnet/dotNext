@@ -80,7 +80,7 @@ public static class AtomicUInt64
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong Add(ref this ulong value, ulong operand)
+    public static ulong AddAndGet(ref this ulong value, ulong operand)
         => Interlocked.Add(ref value, operand);
 
     /// <summary>

@@ -2,6 +2,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
+using static Runtime.Intrinsics;
+
 /// <summary>
 /// Various atomic operations for <see cref="IntPtr"/> data type
 /// accessible as extension methods.
@@ -50,8 +52,12 @@ public static class AtomicIntPtr
     /// <param name="value">Reference to a value to be modified.</param>
     /// <returns>Incremented value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr IncrementAndGet(ref this IntPtr value)
-        => Update(ref value, new Increment()).NewValue;
+    public static IntPtr IncrementAndGet(ref this IntPtr value) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Increment(ref Unsafe.As<IntPtr, int>(ref value)),
+        sizeof(long) => (IntPtr)Interlocked.Increment(ref Unsafe.As<IntPtr, long>(ref value)),
+        _ => Update(ref value, new Increment()).NewValue,
+    };
 
     /// <summary>
     /// Atomically decrements the referenced value by one.
@@ -59,8 +65,12 @@ public static class AtomicIntPtr
     /// <param name="value">Reference to a value to be modified.</param>
     /// <returns>Decremented value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr DecrementAndGet(ref this IntPtr value)
-        => Update(ref value, new Decrement()).NewValue;
+    public static IntPtr DecrementAndGet(ref this IntPtr value) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Decrement(ref Unsafe.As<IntPtr, int>(ref value)),
+        sizeof(long) => (IntPtr)Interlocked.Decrement(ref Unsafe.As<IntPtr, long>(ref value)),
+        _ => Update(ref value, new Decrement()).NewValue,
+    };
 
     /// <summary>
     /// Adds two native integers and replaces referenced storage with the sum,
@@ -70,8 +80,12 @@ public static class AtomicIntPtr
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr Add(ref this IntPtr value, IntPtr operand)
-        => Accumulate(ref value, operand, new Adder()).NewValue;
+    public static IntPtr AddAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Add(ref Unsafe.As<IntPtr, int>(ref value), (int)operand),
+        sizeof(long) => (IntPtr)Interlocked.Add(ref Unsafe.As<IntPtr, long>(ref value), (long)operand),
+        _ => Accumulate(ref value, operand, new Adder()).NewValue,
+    };
 
     /// <summary>
     /// Atomically sets the referenced value to the given updated value if the current value == the expected value.
