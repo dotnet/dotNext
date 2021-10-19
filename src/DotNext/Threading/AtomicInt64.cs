@@ -83,6 +83,84 @@ public static class AtomicInt64
         => Interlocked.Add(ref value, operand);
 
     /// <summary>
+    /// Adds two 64-bit integers and replaces referenced integer with the sum,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be added to the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndAdd(ref this long value, long operand)
+        => Accumulate(ref value, operand, new Adder()).OldValue;
+
+    /// <summary>
+    /// Bitwise "ands" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndBitwiseAnd(ref this long value, long operand)
+        => Interlocked.And(ref value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long BitwiseAndAndGet(ref this long value, long operand)
+        => Interlocked.And(ref value, operand) & operand;
+
+    /// <summary>
+    /// Bitwise "ors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndBitwiseOr(ref this long value, long operand)
+        => Interlocked.Or(ref value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long BitwiseOrAndGet(ref this long value, long operand)
+        => Interlocked.Or(ref value, operand) | operand;
+
+    /// <summary>
+    /// Bitwise "xors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long GetAndBitwiseXor(ref this long value, long operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).OldValue;
+
+    /// <summary>
+    /// Bitwise "xors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be cmobined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long BitwiseXorAndGet(ref this long value, long operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).NewValue;
+
+    /// <summary>
     /// Modifies referenced value atomically.
     /// </summary>
     /// <param name="value">Reference to a value to be modified.</param>
