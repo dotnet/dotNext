@@ -58,15 +58,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         {
         }
 
-        private static int GetIndex(State state) => state switch
-        {
-            State.ReceivingEntriesFinished => 0,
-            State.ReadyToReceiveEntry => 1,
-            State.AppendEntriesReceived => 2,
-            State.ReceivingEntry => 3,
-            State.EntryReceived => 4,
-            _ => throw new ArgumentOutOfRangeException(nameof(state)),
-        };
+        private static int GetIndex(State state) => state - State.AppendEntriesReceived;
 
         internal void Signal(State state) => ResetAndPulse(GetIndex(state));
 
