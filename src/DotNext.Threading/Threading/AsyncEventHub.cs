@@ -15,7 +15,7 @@ public class AsyncEventHub : Disposable
     [StructLayout(LayoutKind.Auto)]
     private struct EventSource
     {
-        private readonly object index;
+        private readonly IEquatable<int> index;
         private TaskCompletionSource source;
 
         internal EventSource(int index)
@@ -548,7 +548,7 @@ public class AsyncEventHub : Disposable
             return GetDisposedTask<int>();
 
         if (eventIndexes.IsEmpty)
-            throw new ArgumentOutOfRangeException(nameof(eventIndexes));
+            return Task.FromException<int>(new ArgumentOutOfRangeException(nameof(eventIndexes)));
 
         return timeout < TimeSpan.Zero ? WaitAnyCoreAsync(eventIndexes, token) : WaitAnyCoreAsync(eventIndexes, timeout, token);
     }
@@ -568,7 +568,7 @@ public class AsyncEventHub : Disposable
             return GetDisposedTask<int>();
 
         if (eventIndexes.IsEmpty)
-            throw new ArgumentOutOfRangeException(nameof(eventIndexes));
+            return Task.FromException<int>(new ArgumentOutOfRangeException(nameof(eventIndexes)));
 
         return WaitAnyCoreAsync(eventIndexes, token);
     }
