@@ -68,7 +68,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             _ => throw new ArgumentOutOfRangeException(nameof(state)),
         };
 
-        internal void Pulse(State state) => Pulse(GetIndex(state));
+        internal void Signal(State state) => ResetAndPulse(GetIndex(state));
 
         [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
         internal Task WaitAnyAsync(State state1, State state2, CancellationToken token = default)
@@ -99,7 +99,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         if (remainingCount <= 0)
         {
             // resume wait thread to finalize response
-            entriesExchangeCoordinator.Pulse(state = State.ReceivingEntriesFinished);
+            entriesExchangeCoordinator.Signal(state = State.ReceivingEntriesFinished);
             return false;
         }
 
@@ -114,7 +114,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
 
         // informs that we are ready to receive a new log entry
         runnningIndex += 1;
-        entriesExchangeCoordinator.Pulse(state = State.ReadyToReceiveEntry);
+        entriesExchangeCoordinator.Signal(state = State.ReadyToReceiveEntry);
 
         // waits for the log entry
         await entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntry, State.EntryReceived).ConfigureAwait(false);
@@ -134,7 +134,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             entriesExchangeCoordinator.Reset();
         }
 
-        entriesExchangeCoordinator.Pulse(state = State.AppendEntriesReceived);
+        entriesExchangeCoordinator.Signal(state = State.AppendEntriesReceived);
         EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount, out var configState);
 
         task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState?.ApplyConfig ?? false, token);
@@ -156,7 +156,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             state = State.ReceivingEntry;
         }
 
-        entriesExchangeCoordinator.Pulse(state);
+        entriesExchangeCoordinator.Signal(state);
 
         return true;
     }
@@ -178,7 +178,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         if (completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);
-            entriesExchangeCoordinator.Pulse(state = State.EntryReceived);
+            entriesExchangeCoordinator.Signal(state = State.EntryReceived);
         }
 
         return true;
