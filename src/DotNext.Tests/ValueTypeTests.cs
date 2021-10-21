@@ -128,9 +128,9 @@ namespace DotNext
         [Fact]
         public static void CustomHashCode()
         {
-            var result = BitwiseComparer<Guid>.GetHashCode(new Guid(), 0, (hash, data) => hash + 1, false);
+            var result = BitwiseComparer<Guid>.GetHashCode(new Guid(), 0, static (data, hash) => hash + 1, false);
             Equal(4, result);
-            result = BitwiseComparer<Guid>.GetHashCode(new Guid(), 0, (hash, data) => hash + 1, true);
+            result = BitwiseComparer<Guid>.GetHashCode(new Guid(), 0, static (data, hash) => hash + 1, true);
             Equal(5, result);
         }
 

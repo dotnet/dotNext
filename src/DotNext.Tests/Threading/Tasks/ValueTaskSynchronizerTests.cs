@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks
 {
@@ -15,110 +14,279 @@ namespace DotNext.Threading.Tasks
             internal long Value => value;
         }
 
-        private sealed class ValueTaskCompletionSource
-        {
-            private AsyncValueTaskMethodBuilder builder = AsyncValueTaskMethodBuilder.Create();
-
-            internal void Complete() => builder.SetResult();
-
-            internal ValueTask Task => builder.Task;
-        }
-
-        private sealed class ValueTaskCompletionSource<R>
-        {
-            private AsyncValueTaskMethodBuilder<R> builder = AsyncValueTaskMethodBuilder<R>.Create();
-
-            internal void Complete(R result) => builder.SetResult(result);
-
-            internal ValueTask<R> Task => builder.Task;
-        }
-
         [Fact]
-        public static async Task WhenAny()
-        {
-            var box = new StrongBox<int>(0);
-            var source1 = new ValueTaskCompletionSource();
-            var source2 = new ValueTaskCompletionSource();
-            var source3 = new ValueTaskCompletionSource();
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                box.Value.VolatileWrite(1);
-                Thread.Sleep(50);
-                source1.Complete();
-            });
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                box.Value.VolatileWrite(2);
-                Thread.Sleep(200);
-                source2.Complete();
-            });
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                box.Value.VolatileWrite(3);
-                Thread.Sleep(150);
-                source3.Complete();
-            });
-            var completedTask = await ValueTaskSynchronization.WhenAny(source1.Task, source2.Task, source3.Task);
-            True(completedTask == source1.Task);
-            False(completedTask == source2.Task);
-            False(completedTask == source3.Task);
-        }
-
-        [Fact]
-        public static async Task WhenAnyWithResult()
-        {
-            var source1 = new ValueTaskCompletionSource<int>();
-            var source2 = new ValueTaskCompletionSource<int>();
-            var source3 = new ValueTaskCompletionSource<int>();
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                Thread.Sleep(50);
-                source1.Complete(1);
-            });
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                Thread.Sleep(200);
-                source2.Complete(2);
-            });
-            ThreadPool.QueueUserWorkItem(state =>
-            {
-                Thread.Sleep(150);
-                source3.Complete(3);
-            });
-            var completedTask = await ValueTaskSynchronization.WhenAny(source1.Task, source2.Task, source3.Task);
-            True(completedTask == source1.Task);
-            False(completedTask == source2.Task);
-            False(completedTask == source3.Task);
-            Equal(1, completedTask.Result);
-        }
-
-        [Fact]
-        public static async Task WhenAll()
+        public static async Task WhenAll2()
         {
             var counter = new SharedCounter();
-            var source1 = new ValueTaskCompletionSource();
-            var source2 = new ValueTaskCompletionSource();
-            var source3 = new ValueTaskCompletionSource();
+            var source1 = new TaskCompletionSource();
+            var source2 = new TaskCompletionSource();
+
             ThreadPool.QueueUserWorkItem(state =>
             {
                 counter.Inc();
                 Thread.Sleep(100);
-                source1.Complete();
+                source1.SetResult();
             });
             ThreadPool.QueueUserWorkItem(state =>
             {
                 counter.Inc();
                 Thread.Sleep(200);
-                source2.Complete();
+                source2.SetResult();
+            });
+
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task));
+            Equal(2, counter.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAllWithResult2()
+        {
+            var source1 = new TaskCompletionSource<int>();
+            var source2 = new TaskCompletionSource<int>();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(100);
+                source1.SetResult(10);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(200);
+                source2.SetResult(20);
+            });
+
+            var (result1, result2) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task));
+
+            Equal(10, result1.Value);
+            Equal(20, result2.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAll3()
+        {
+            var counter = new SharedCounter();
+            var source1 = new TaskCompletionSource();
+            var source2 = new TaskCompletionSource();
+            var source3 = new TaskCompletionSource();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(100);
+                source1.SetResult();
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(200);
+                source2.SetResult();
             });
             ThreadPool.QueueUserWorkItem(state =>
             {
                 counter.Inc();
                 Thread.Sleep(150);
-                source3.Complete();
+                source3.SetResult();
             });
-            await ValueTaskSynchronization.WhenAll(source1.Task, source2.Task, source3.Task);
+
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task));
             Equal(3, counter.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAllWithResult3()
+        {
+            var source1 = new TaskCompletionSource<int>();
+            var source2 = new TaskCompletionSource<int>();
+            var source3 = new TaskCompletionSource<int>();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(100);
+                source1.SetResult(10);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(200);
+                source2.SetResult(20);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(170);
+                source3.SetResult(30);
+            });
+
+            var (result1, result2, result3) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task));
+
+            Equal(10, result1.Value);
+            Equal(20, result2.Value);
+            Equal(30, result3.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAll4()
+        {
+            var counter = new SharedCounter();
+            var source1 = new TaskCompletionSource();
+            var source2 = new TaskCompletionSource();
+            var source3 = new TaskCompletionSource();
+            var source4 = new TaskCompletionSource();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(100);
+                source1.SetResult();
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(200);
+                source2.SetResult();
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(150);
+                source3.SetResult();
+            });
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(110);
+                source4.SetResult();
+            });
+
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task), new ValueTask(source4.Task));
+            Equal(4, counter.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAllWithResult4()
+        {
+            var source1 = new TaskCompletionSource<int>();
+            var source2 = new TaskCompletionSource<int>();
+            var source3 = new TaskCompletionSource<int>();
+            var source4 = new TaskCompletionSource<int>();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(100);
+                source1.SetResult(10);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(200);
+                source2.SetResult(20);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(170);
+                source3.SetResult(30);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(120);
+                source4.SetResult(40);
+            });
+
+            var (result1, result2, result3, result4) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task), new ValueTask<int>(source4.Task));
+
+            Equal(10, result1.Value);
+            Equal(20, result2.Value);
+            Equal(30, result3.Value);
+            Equal(40, result4.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAll5()
+        {
+            var counter = new SharedCounter();
+            var source1 = new TaskCompletionSource();
+            var source2 = new TaskCompletionSource();
+            var source3 = new TaskCompletionSource();
+            var source4 = new TaskCompletionSource();
+            var source5 = new TaskCompletionSource();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(100);
+                source1.SetResult();
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(200);
+                source2.SetResult();
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(150);
+                source3.SetResult();
+            });
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(110);
+                source4.SetResult();
+            });
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                counter.Inc();
+                Thread.Sleep(90);
+                source5.SetResult();
+            });
+
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task), new ValueTask(source4.Task), new ValueTask(source5.Task));
+            Equal(5, counter.Value);
+        }
+
+        [Fact]
+        public static async Task WhenAllWithResult5()
+        {
+            var source1 = new TaskCompletionSource<int>();
+            var source2 = new TaskCompletionSource<int>();
+            var source3 = new TaskCompletionSource<int>();
+            var source4 = new TaskCompletionSource<int>();
+            var source5 = new TaskCompletionSource<int>();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(100);
+                source1.SetResult(10);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(200);
+                source2.SetResult(20);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(170);
+                source3.SetResult(30);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(120);
+                source4.SetResult(40);
+            });
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                Thread.Sleep(180);
+                source5.SetResult(50);
+            });
+
+            var (result1, result2, result3, result4, result5) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task), new ValueTask<int>(source4.Task), new ValueTask<int>(source5.Task));
+
+            Equal(10, result1.Value);
+            Equal(20, result2.Value);
+            Equal(30, result3.Value);
+            Equal(40, result4.Value);
+            Equal(50, result5.Value);
         }
     }
 }

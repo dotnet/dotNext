@@ -2,6 +2,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
+using static Runtime.Intrinsics;
+
 /// <summary>
 /// Various atomic operations for <see cref="IntPtr"/> data type
 /// accessible as extension methods.
@@ -50,8 +52,12 @@ public static class AtomicIntPtr
     /// <param name="value">Reference to a value to be modified.</param>
     /// <returns>Incremented value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr IncrementAndGet(ref this IntPtr value)
-        => Update(ref value, new Increment()).NewValue;
+    public static IntPtr IncrementAndGet(ref this IntPtr value) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Increment(ref Unsafe.As<IntPtr, int>(ref value)),
+        sizeof(long) => (IntPtr)Interlocked.Increment(ref Unsafe.As<IntPtr, long>(ref value)),
+        _ => Update(ref value, new Increment()).NewValue,
+    };
 
     /// <summary>
     /// Atomically decrements the referenced value by one.
@@ -59,8 +65,12 @@ public static class AtomicIntPtr
     /// <param name="value">Reference to a value to be modified.</param>
     /// <returns>Decremented value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr DecrementAndGet(ref this IntPtr value)
-        => Update(ref value, new Decrement()).NewValue;
+    public static IntPtr DecrementAndGet(ref this IntPtr value) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Decrement(ref Unsafe.As<IntPtr, int>(ref value)),
+        sizeof(long) => (IntPtr)Interlocked.Decrement(ref Unsafe.As<IntPtr, long>(ref value)),
+        _ => Update(ref value, new Decrement()).NewValue,
+    };
 
     /// <summary>
     /// Adds two native integers and replaces referenced storage with the sum,
@@ -70,8 +80,105 @@ public static class AtomicIntPtr
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IntPtr Add(ref this IntPtr value, IntPtr operand)
-        => Accumulate(ref value, operand, new Adder()).NewValue;
+    public static IntPtr AddAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Add(ref Unsafe.As<IntPtr, int>(ref value), (int)operand),
+        sizeof(long) => (IntPtr)Interlocked.Add(ref Unsafe.As<IntPtr, long>(ref value), (long)operand),
+        _ => Accumulate(ref value, operand, new Adder()).NewValue,
+    };
+
+    /// <summary>
+    /// Adds two native integers and replaces referenced integer with the sum,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be added to the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndAdd(ref this IntPtr value, IntPtr operand)
+        => Accumulate(ref value, operand, new Adder()).OldValue;
+
+    /// <summary>
+    /// Bitwise "ands" two native integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndBitwiseAnd(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.And(ref Unsafe.As<IntPtr, int>(ref value), (int)operand),
+        sizeof(long) => (IntPtr)Interlocked.And(ref Unsafe.As<IntPtr, long>(ref value), (long)operand),
+        _ => Accumulate(ref value, operand, new BitwiseAnd()).OldValue,
+    };
+
+    /// <summary>
+    /// Bitwise "ands" two native integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr BitwiseAndAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
+    {
+        sizeof(int) => (nint)Interlocked.And(ref Unsafe.As<IntPtr, int>(ref value), (int)operand) & operand,
+        sizeof(long) => (nint)Interlocked.And(ref Unsafe.As<IntPtr, long>(ref value), (long)operand) & operand,
+        _ => Accumulate(ref value, operand, new BitwiseAnd()).NewValue,
+    };
+
+    /// <summary>
+    /// Bitwise "ors" two native integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndBitwiseOr(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
+    {
+        sizeof(int) => (IntPtr)Interlocked.Or(ref Unsafe.As<IntPtr, int>(ref value), (int)operand),
+        sizeof(long) => (IntPtr)Interlocked.Or(ref Unsafe.As<IntPtr, long>(ref value), (long)operand),
+        _ => Accumulate(ref value, operand, new BitwiseAnd()).OldValue,
+    };
+
+    /// <summary>
+    /// Bitwise "ors" two native integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr BitwiseOrAndGet(ref this IntPtr value, IntPtr operand) => IntPtr.Size switch
+    {
+        sizeof(int) => (nint)Interlocked.Or(ref Unsafe.As<IntPtr, int>(ref value), (int)operand) | operand,
+        sizeof(long) => (nint)Interlocked.Or(ref Unsafe.As<IntPtr, long>(ref value), (long)operand) | operand,
+        _ => Accumulate(ref value, operand, new BitwiseOr()).NewValue,
+    };
+
+    /// <summary>
+    /// Bitwise "xors" two native integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr GetAndBitwiseXor(ref this IntPtr value, IntPtr operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).OldValue;
+
+    /// <summary>
+    /// Bitwise "xors" two native integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IntPtr BitwiseXorAndGet(ref this IntPtr value, IntPtr operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).NewValue;
 
     /// <summary>
     /// Atomically sets the referenced value to the given updated value if the current value == the expected value.

@@ -80,8 +80,85 @@ public static class AtomicUInt64
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong Add(ref this ulong value, ulong operand)
+    public static ulong AddAndGet(ref this ulong value, ulong operand)
         => Interlocked.Add(ref value, operand);
+
+    /// <summary>
+    /// Adds two 64-bit integers and replaces referenced integer with the sum,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be added to the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong GetAndAdd(ref this ulong value, ulong operand)
+        => Accumulate(ref value, operand, new Adder()).OldValue;
+
+    /// <summary>
+    /// Bitwise "ands" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong GetAndBitwiseAnd(ref this ulong value, ulong operand)
+        => Interlocked.And(ref value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong BitwiseAndAndGet(ref this ulong value, ulong operand)
+        => Interlocked.And(ref value, operand) & operand;
+
+    /// <summary>
+    /// Bitwise "ors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong GetAndBitwiseOr(ref this ulong value, ulong operand)
+        => Interlocked.Or(ref value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong BitwiseOrAndGet(ref this ulong value, ulong operand)
+        => Interlocked.Or(ref value, operand) | operand;
+
+    /// <summary>
+    /// Bitwise "xors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong GetAndBitwiseXor(ref this ulong value, ulong operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).OldValue;
+
+    /// <summary>
+    /// Bitwise "xors" two 64-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong BitwiseXorAndGet(ref this ulong value, ulong operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).NewValue;
 
     /// <summary>
     /// Modifies referenced value atomically.

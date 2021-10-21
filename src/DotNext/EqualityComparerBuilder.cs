@@ -77,7 +77,7 @@ public readonly struct EqualityComparerBuilder<T>
     {
         var method = typeof(BitwiseComparer<>)
             .MakeGenericType(expr.Type)
-            .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { expr.Type.MakeByRefType(), typeof(bool) });
+            .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
 
         Debug.Assert(method is not null);
         return Expression.Call(method, expr, salted);

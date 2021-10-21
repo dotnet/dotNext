@@ -153,7 +153,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         ReusePipe();
         task = null;
         state = State.Ready;
-        entriesExchangeCoordinator?.CancelSuspendedCallers();
+        entriesExchangeCoordinator?.CancelSuspendedCallers(new(true));
     }
 
     private void Dispose(bool disposing)

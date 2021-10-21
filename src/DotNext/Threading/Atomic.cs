@@ -1,7 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Interlocked;
-using SpinWait = System.Threading.SpinWait;
 
 namespace DotNext.Threading;
 
@@ -72,7 +70,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     private T value;
 
     private AtomicBoolean lockState;
-    private volatile int version;    // used for optimistic lock
 
     /// <summary>
     /// Clones this container atomically.
@@ -95,15 +92,9 @@ public struct Atomic<T> : IStrongBox, ICloneable
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public readonly void Read(out T result)
     {
-        var spinner = new SpinWait();
-    spin_loop:
-        var stamp = version;
+        lockState.Acquire();
         Copy(in value, out result);
-        if (stamp != version || lockState.Value)
-        {
-            spinner.SpinOnce();
-            goto spin_loop;
-        }
+        lockState.Release();
     }
 
     /// <summary>
@@ -116,8 +107,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Swap(ref Atomic<T> other)
     {
         lockState.Acquire();
-        Increment(ref version);
-        Swap(ref other.value);
+        other.Swap(ref value);
         lockState.Release();
     }
 
@@ -128,7 +118,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Swap(ref T other)
     {
         lockState.Acquire();
-        Increment(ref version);
         Runtime.Intrinsics.Swap(ref value, ref other);
         lockState.Release();
     }
@@ -141,7 +130,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Write(in T newValue)
     {
         lockState.Acquire();
-        Increment(ref version);
         Copy(in newValue, out value);
         lockState.Release();
     }
@@ -152,7 +140,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         bool successful;
         lockState.Acquire();
-        Increment(ref version);
         var current = value;
         if (successful = comparer.Equals(in current, in expected))
             Copy(in update, out value);
@@ -199,7 +186,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
         where TComparer : struct, IEqualityComparer
     {
         lockState.Acquire();
-        Increment(ref version);
         bool result;
         if (result = comparer.Equals(in value, in expected))
             Copy(in update, out value);
@@ -246,7 +232,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Exchange(in T update, out T previous)
     {
         lockState.Acquire();
-        Increment(ref version);
         Copy(in value, out previous);
         Copy(in update, out value);
         lockState.Release();
@@ -264,7 +249,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
         if (updater is null)
             throw new ArgumentNullException(nameof(updater));
         lockState.Acquire();
-        Increment(ref version);
         try
         {
             updater(ref value);
@@ -288,8 +272,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         if (updater is null)
             throw new ArgumentNullException(nameof(updater));
+
         lockState.Acquire();
-        Increment(ref version);
         var previous = value;
         try
         {
@@ -318,8 +302,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         if (accumulator is null)
             throw new ArgumentNullException(nameof(accumulator));
+
         lockState.Acquire();
-        Increment(ref version);
         try
         {
             accumulator(ref value, in x);
@@ -347,8 +331,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         if (accumulator is null)
             throw new ArgumentNullException(nameof(accumulator));
+
         lockState.Acquire();
-        Increment(ref version);
         var previous = value;
         try
         {

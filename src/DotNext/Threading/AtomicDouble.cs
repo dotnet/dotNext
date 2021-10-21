@@ -68,8 +68,19 @@ public static class AtomicDouble
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double Add(ref this double value, double operand)
+    public static double AddAndGet(ref this double value, double operand)
         => Accumulate(ref value, operand, new Adder()).NewValue;
+
+    /// <summary>
+    /// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be added to the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double GetAndAdd(ref this double value, double operand)
+        => Accumulate(ref value, operand, new Adder()).OldValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool Equals(double x, double y)

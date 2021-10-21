@@ -80,8 +80,85 @@ public static class AtomicUInt32
     /// <param name="operand">The value to be added to the currently stored integer.</param>
     /// <returns>Result of sum operation.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Add(ref this uint value, uint operand)
+    public static uint AddAndGet(ref this uint value, uint operand)
         => Interlocked.Add(ref value, operand);
+
+    /// <summary>
+    /// Adds two 32-bit integers and replaces referenced integer with the sum,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be added to the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint GetAndAdd(ref this uint value, uint operand)
+        => Accumulate(ref value, operand, new Adder()).OldValue;
+
+    /// <summary>
+    /// Bitwise "ands" two 32-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint GetAndBitwiseAnd(ref this uint value, uint operand)
+        => Interlocked.And(ref value, operand);
+
+    /// <summary>
+    /// Bitwise "ands" two 32-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint BitwiseAndAndGet(ref this uint value, uint operand)
+        => Interlocked.And(ref value, operand) & operand;
+
+    /// <summary>
+    /// Bitwise "ors" two 32-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint GetAndBitwiseOr(ref this uint value, uint operand)
+        => Interlocked.Or(ref value, operand);
+
+    /// <summary>
+    /// Bitwise "ors" two 32-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint BitwiseOrAndGet(ref this uint value, uint operand)
+        => Interlocked.Or(ref value, operand) | operand;
+
+    /// <summary>
+    /// Bitwise "xors" two 32-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The original value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint GetAndBitwiseXor(ref this uint value, uint operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).OldValue;
+
+    /// <summary>
+    /// Bitwise "xors" two 32-bit integers and replaces referenced integer with the result,
+    /// as an atomic operation.
+    /// </summary>
+    /// <param name="value">Reference to a value to be modified.</param>
+    /// <param name="operand">The value to be combined with the currently stored integer.</param>
+    /// <returns>The modified value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint BitwiseXorAndGet(ref this uint value, uint operand)
+        => Accumulate(ref value, operand, new BitwiseXor()).NewValue;
 
     /// <summary>
     /// Modifies the referenced value atomically.

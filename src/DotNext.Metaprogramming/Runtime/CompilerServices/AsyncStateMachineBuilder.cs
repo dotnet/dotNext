@@ -480,26 +480,42 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     private sealed class StateMachineBuilder
     {
+        private readonly bool usePooling;
         private readonly Type returnType;
         internal ParameterExpression? StateMachine;
 
-        internal StateMachineBuilder(Type returnType) => this.returnType = returnType;
+        internal StateMachineBuilder(Type returnType, bool usePooling)
+        {
+            this.returnType = returnType;
+            this.usePooling = usePooling;
+        }
 
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncStateMachine<>))]
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncStateMachine<,>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PoolingAsyncStateMachine<>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PoolingAsyncStateMachine<,>))]
         internal MemberExpression Build(Type stateType)
         {
-            var stateMachineType = returnType == typeof(void) ?
-                typeof(AsyncStateMachine<>).MakeGenericType(stateType) :
-                typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType);
+            Type stateMachineType;
+            if (returnType == typeof(void))
+            {
+                stateMachineType = usePooling ? typeof(AsyncStateMachine<>) : typeof(PoolingAsyncStateMachine<>);
+                stateMachineType = stateMachineType.MakeGenericType(stateType);
+            }
+            else
+            {
+                stateMachineType = usePooling ? typeof(AsyncStateMachine<,>) : typeof(PoolingAsyncStateMachine<,>);
+                stateMachineType = stateMachineType.MakeGenericType(stateType, returnType);
+            }
+
             stateMachineType = stateMachineType.MakeByRefType();
             return GetStateField(StateMachine = Expression.Parameter(stateMachineType));
         }
     }
 
-    private static MemberExpression[] CreateStateHolderType(Type returnType, ParameterExpression[] variables, out ParameterExpression stateMachine)
+    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, ParameterExpression[] variables, out ParameterExpression stateMachine)
     {
-        var sm = new StateMachineBuilder(returnType);
+        var sm = new StateMachineBuilder(returnType, usePooling);
         MemberExpression[] slots;
         using (var builder = new ValueTupleBuilder())
         {
@@ -513,10 +529,10 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         return slots;
     }
 
-    private static ParameterExpression CreateStateHolderType(Type returnType, IDictionary<ParameterExpression, MemberExpression?> variables)
+    private static ParameterExpression CreateStateHolderType(Type returnType, bool usePooling, IDictionary<ParameterExpression, MemberExpression?> variables)
     {
         var vars = variables.Keys.ToArray();
-        var slots = CreateStateHolderType(returnType, vars, out var stateMachine);
+        var slots = CreateStateHolderType(returnType, usePooling, vars, out var stateMachine);
         for (var i = 0L; i < slots.LongLength; i++)
             variables[vars[i]] = slots[i];
         return stateMachine;
@@ -547,12 +563,12 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         };
     }
 
-    internal Expression<TDelegate> Build(Expression body, bool tailCall)
+    internal Expression<TDelegate> Build(Expression body, bool tailCall, bool usePooling)
     {
         body = methodBuilder.Rewrite(body) ?? Expression.Empty();
 
         // build state machine type
-        stateMachine = CreateStateHolderType(methodBuilder.Task.ResultType, methodBuilder.Variables);
+        stateMachine = CreateStateHolderType(methodBuilder.Task.ResultType, usePooling, methodBuilder.Variables);
 
         // replace all special expressions
         body = Visit(body);
