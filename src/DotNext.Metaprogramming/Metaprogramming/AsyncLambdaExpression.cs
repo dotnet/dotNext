@@ -10,11 +10,12 @@ using Seq = Collections.Generic.Sequence;
 internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>
     where TDelegate : Delegate
 {
+    private readonly bool usePooling;
     private readonly TaskType taskType;
     private ParameterExpression? recursion;
     private ParameterExpression? lambdaResult;
 
-    public AsyncLambdaExpression()
+    public AsyncLambdaExpression(bool usePooling)
         : base(false)
     {
         if (typeof(TDelegate).IsAbstract)
@@ -22,6 +23,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
         var invokeMethod = GetInvokeMethod<TDelegate>();
         taskType = new TaskType(invokeMethod.ReturnType);
         Parameters = GetParameters(invokeMethod.GetParameters());
+        this.usePooling = usePooling;
     }
 
     /// <summary>
@@ -62,7 +64,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
         Expression<TDelegate> lambda;
         using (var builder = new AsyncStateMachineBuilder<TDelegate>(Parameters))
         {
-            lambda = builder.Build(body, tailCall);
+            lambda = builder.Build(body, tailCall, usePooling);
         }
 
         // build lambda expression

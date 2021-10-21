@@ -325,7 +325,7 @@ public static class OneDimensionalArray
         if (Intrinsics.GetLength(first) == 0)
             return true;
 
-        return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+        return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
     }
 
     /// <summary>
@@ -337,12 +337,23 @@ public static class OneDimensionalArray
     /// <returns>32-bit hash code of the array content.</returns>
     public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
         where T : unmanaged
-        => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0;
+    {
+        var length = Intrinsics.GetLength(array);
+        return length > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0;
+    }
 
-    private static unsafe int BitwiseHashCode<T, THashFunction>(T[] array, int hash, THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, ISupplier<int, int, int>
-        => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+        where THashFunction : struct, IConsumer<int>
+    {
+        var length = Intrinsics.GetLength(array);
+
+        if (length > 0)
+            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
+
+        if (salted)
+            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
@@ -355,26 +366,42 @@ public static class OneDimensionalArray
     /// <returns>32-bit hash code of the array content.</returns>
     public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode<T, DelegatingSupplier<int, int, int>>(array, hash, hashFunction, salted);
+    {
+        var fn = new Accumulator<int, int>(hashFunction, hash);
+        BitwiseHashCode(array, ref fn, salted);
+        return fn.Invoke();
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
     /// </summary>
     /// <typeparam name="T">The type of array elements.</typeparam>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="array">The array to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
+    public static int BitwiseHashCode<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode<T, Supplier<int, int, int>>(array, hash, hashFunction, salted);
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
+    {
+        var hash = new THashFunction();
+        BitwiseHashCode(array, ref hash, salted);
+        return hash.Invoke();
+    }
 
-    private static unsafe long BitwiseHashCode64<T, THashFunction>(T[] array, long hash, THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode64<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
-        where THashFunction : struct, ISupplier<long, long, long>
-        => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+        where THashFunction : struct, IConsumer<long>
+    {
+        var length = Intrinsics.GetLength(array);
+
+        if (length > 0)
+            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
+
+        if (salted)
+            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
@@ -387,21 +414,29 @@ public static class OneDimensionalArray
     /// <returns>64-bit hash code of the array content.</returns>
     public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode64<T, DelegatingSupplier<long, long, long>>(array, hash, hashFunction, salted);
+    {
+        var fn = new Accumulator<long, long>(hashFunction, hash);
+        BitwiseHashCode64(array, ref fn, salted);
+        return fn.Invoke();
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
     /// </summary>
     /// <typeparam name="T">The type of array elements.</typeparam>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
     /// <param name="array">The array to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+    public static long BitwiseHashCode64<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
-        => BitwiseHashCode64<T, Supplier<long, long, long>>(array, hash, hashFunction, salted);
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
+    {
+        var hash = new THashFunction();
+        BitwiseHashCode64(array, ref hash, salted);
+        return hash.Invoke();
+    }
 
     /// <summary>
     /// Computes bitwise hash code for the array content.
@@ -412,7 +447,10 @@ public static class OneDimensionalArray
     /// <returns>64-bit hash code of the array content.</returns>
     public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
         where T : unmanaged
-        => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0L;
+    {
+        var length = Intrinsics.GetLength(array);
+        return length > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0L;
+    }
 
     private sealed class ArrayEqualityComparer
     {
@@ -483,9 +521,10 @@ public static class OneDimensionalArray
         if (second.IsNullOrEmpty())
             return 1;
 
-        var cmp = first.LongLength.CompareTo(second.LongLength);
+        var firstLength = Intrinsics.GetLength(first);
+        var cmp = firstLength.CompareTo(Intrinsics.GetLength(second));
         if (cmp == 0)
-            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(firstLength * sizeof(T)));
 
         return cmp;
     }

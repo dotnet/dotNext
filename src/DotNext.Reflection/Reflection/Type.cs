@@ -60,7 +60,7 @@ public static partial class Type<[DynamicallyAccessedMembers(DynamicallyAccessed
             {
                 method = typeof(BitwiseComparer<>)
                             .MakeGenericType(RuntimeType)
-                            .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType.MakeByRefType(), typeof(bool) });
+                            .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), 0, new[] { RuntimeType.MakeByRefType(), typeof(bool) });
                 Debug.Assert(method is not null);
                 GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
             }

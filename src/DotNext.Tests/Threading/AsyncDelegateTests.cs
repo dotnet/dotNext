@@ -13,11 +13,11 @@ namespace DotNext.Threading
 
             internal int Counter => counter;
 
-            internal void IncBy1() => counter.Add(1);
+            internal void IncBy1() => counter.AddAndGet(1);
 
-            internal void IncBy3() => counter.Add(3);
+            internal void IncBy3() => counter.AddAndGet(3);
 
-            internal void IncBy5() => counter.Add(5);
+            internal void IncBy5() => counter.AddAndGet(5);
 
             internal void Throw() => throw new Exception();
         }

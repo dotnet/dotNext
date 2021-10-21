@@ -69,7 +69,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     {
         ThrowIfDisposed();
         countdown.TryAddCount(participantCount, true);  // always returns true if autoReset==true
-        participants.Add(participantCount);
+        participants.AddAndGet(participantCount);
         return currentPhase;
     }
 
@@ -96,7 +96,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(participantCount));
 
         countdown.Signal(participantCount);
-        participants.Add(-participantCount);
+        participants.AddAndGet(-participantCount);
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
         {
             try
             {
-                await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
+                await PostPhase(currentPhase.AddAndGet(1L)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -159,7 +159,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
         {
             try
             {
-                await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
+                await PostPhase(currentPhase.AddAndGet(1L)).ConfigureAwait(false);
             }
             catch (Exception e)
             {

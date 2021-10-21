@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -1315,10 +1316,24 @@ public static class CodeGenerator
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
     public static Expression<TDelegate> AsyncLambda<TDelegate>(Action<LambdaContext> body)
         where TDelegate : Delegate
-    {
-        using var statement = new AsyncLambdaExpression<TDelegate>();
-        return statement.Build(body);
-    }
+        => AsyncLambda<TDelegate>(false, body);
+
+    /// <summary>
+    /// Constructs multi-line async lambda function capturing the current lexical scope.
+    /// </summary>
+    /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
+    /// <param name="usePooling">
+    /// <see langword="true"/> to use task pooling to avoid memory allocation;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <param name="body">Lambda function builder.</param>
+    /// <returns>Constructed lambda expression.</returns>
+    /// <seealso cref="AwaitExpression"/>
+    /// <seealso cref="AsyncResultExpression"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+    public static Expression<TDelegate> AsyncLambda<TDelegate>(bool usePooling, Action<LambdaContext> body)
+        where TDelegate : Delegate
+        => new AsyncLambdaExpression<TDelegate>(usePooling).Build(body);
 
     /// <summary>
     /// Constructs multi-line async lambda function capturing the current lexical scope.
@@ -1331,18 +1346,33 @@ public static class CodeGenerator
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
     public static Expression<TDelegate> AsyncLambda<TDelegate>(Action<LambdaContext, ParameterExpression> body)
         where TDelegate : Delegate
-    {
-        using var statement = new AsyncLambdaExpression<TDelegate>();
-        return statement.Build(body);
-    }
+        => AsyncLambda<TDelegate>(false, body);
 
-    private static LambdaExpressionTree AsyncLambda<TScope>(Type[] parameters, Type returnType, bool isValueTask, TScope scope)
+    /// <summary>
+    /// Constructs multi-line async lambda function capturing the current lexical scope.
+    /// </summary>
+    /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
+    /// <param name="usePooling">
+    /// <see langword="true"/> to use task pooling to avoid memory allocation;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <param name="body">Lambda function builder.</param>
+    /// <returns>Constructed lambda expression.</returns>
+    /// <seealso cref="AwaitExpression"/>
+    /// <seealso cref="AsyncResultExpression"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+    public static Expression<TDelegate> AsyncLambda<TDelegate>(bool usePooling, Action<LambdaContext, ParameterExpression> body)
+        where TDelegate : Delegate
+        => new AsyncLambdaExpression<TDelegate>(usePooling).Build(body);
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncLambdaExpression<>))]
+    private static LambdaExpressionTree AsyncLambda<TScope>(Type[] parameters, Type returnType, AsyncLambdaFlags flags, TScope scope)
         where TScope : MulticastDelegate
     {
-        var args = parameters.Concat(new Type[] { new TaskType(returnType, isValueTask) }, parameters.LongLength);
+        var args = parameters.Concat(new Type[] { new TaskType(returnType, (flags & AsyncLambdaFlags.UseValueTask) != 0) }, parameters.LongLength);
         var type = LambdaExpressionTree.GetDelegateType(args);
         type = typeof(AsyncLambdaExpression<>).MakeGenericType(type);
-        using var expression = (LambdaExpression?)Activator.CreateInstance(type);
+        using var expression = (LambdaExpression?)Activator.CreateInstance(type, new object[] { (flags & AsyncLambdaFlags.UseTaskPooling) != 0 });
         Debug.Assert(expression is ILexicalScope<LambdaExpressionTree, TScope>);
         return ((ILexicalScope<LambdaExpressionTree, TScope>)expression).Build(scope);
     }
@@ -1352,28 +1382,28 @@ public static class CodeGenerator
     /// </summary>
     /// <param name="parameters">The parameters.</param>
     /// <param name="returnType">The return type. Pass <c>typeof(void)</c> for void return type.</param>
-    /// <param name="isValueTask"><see langword="true"/> to use <see cref="ValueTask"/> as an actual return type; <see langword="false"/> to use <see cref="Task"/>.</param>
+    /// <param name="flags">A set of flags controlling dynamic construction of asynchronous lambda expression.</param>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
     /// <seealso cref="AwaitExpression"/>
     /// <seealso cref="AsyncResultExpression"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
-    public static LambdaExpressionTree AsyncLambda(Type[] parameters, Type returnType, bool isValueTask, Action<LambdaContext> body)
-        => AsyncLambda<Action<LambdaContext>>(parameters, returnType, isValueTask, body);
+    public static LambdaExpressionTree AsyncLambda(Type[] parameters, Type returnType, AsyncLambdaFlags flags, Action<LambdaContext> body)
+        => AsyncLambda<Action<LambdaContext>>(parameters, returnType, flags, body);
 
     /// <summary>
     /// Constructs multi-line async lambda function capturing the current lexical scope.
     /// </summary>
     /// <param name="parameters">The parameters.</param>
     /// <param name="returnType">The return type. Pass <c>typeof(void)</c> for void return type.</param>
-    /// <param name="isValueTask"><see langword="true"/> to use <see cref="ValueTask"/> as an actual return type; <see langword="false"/> to use <see cref="Task"/>.</param>
+    /// <param name="flags">A set of flags controlling dynamic construction of asynchronous lambda expression.</param>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
     /// <seealso cref="AwaitExpression"/>
     /// <seealso cref="AsyncResultExpression"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
-    public static LambdaExpressionTree AsyncLambda(Type[] parameters, Type returnType, bool isValueTask, Action<LambdaContext, ParameterExpression> body)
-        => AsyncLambda<Action<LambdaContext, ParameterExpression>>(parameters, returnType, isValueTask, body);
+    public static LambdaExpressionTree AsyncLambda(Type[] parameters, Type returnType, AsyncLambdaFlags flags, Action<LambdaContext, ParameterExpression> body)
+        => AsyncLambda<Action<LambdaContext, ParameterExpression>>(parameters, returnType, flags, body);
 
     /// <summary>
     /// Adds free-form expression as a statement to the current lexical scope.

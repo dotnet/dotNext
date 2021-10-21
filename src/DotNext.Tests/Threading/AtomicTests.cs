@@ -16,7 +16,7 @@ namespace DotNext.Threading
             Equal(30F, i);
             False(i.CompareAndSet(20F, 50F));
             Equal(30F, i);
-            Equal(80F, i.Add(50F));
+            Equal(80F, i.AddAndGet(50F));
             Equal(80F, i);
             Equal(80F, i.GetAndAccumulate(10F, static (x, y) => x + y));
             Equal(90F, i);
@@ -40,7 +40,7 @@ namespace DotNext.Threading
             Equal(30D, i);
             False(i.CompareAndSet(20D, 50D));
             Equal(30D, i);
-            Equal(80D, i.Add(50D));
+            Equal(80D, i.AddAndGet(50D));
             Equal(80D, i);
             Equal(80D, i.GetAndAccumulate(10D, static (x, y) => x + y));
             Equal(90D, i);
@@ -64,7 +64,7 @@ namespace DotNext.Threading
             Equal(30, i);
             False(i.CompareAndSet(20, 50));
             Equal(30, i);
-            Equal(80, i.Add(50));
+            Equal(80, i.AddAndGet(50));
             Equal(80, i);
             Equal(80, i.GetAndAccumulate(10, static (x, y) => x + y));
             Equal(90, i);
@@ -75,6 +75,21 @@ namespace DotNext.Threading
             Equal(42, i.UpdateAndGet(static current => 42));
             Equal(42, i.GetAndUpdate(static current => 52));
             Equal(52, i);
+
+            Equal(52, i.GetAndBitwiseOr(1));
+            Equal(53, i);
+            i = 52;
+            Equal(53, i.BitwiseOrAndGet(1));
+
+            Equal(53, i.GetAndBitwiseAnd(1 << 2));
+            Equal(4, i);
+            i = 53;
+            Equal(4, i.BitwiseAndAndGet(1 << 2));
+
+            Equal(4, i.GetAndBitwiseXor(3));
+            Equal(7, i);
+            i = 4;
+            Equal(7, i.BitwiseXorAndGet(3));
         }
 
         [Fact]
@@ -88,7 +103,7 @@ namespace DotNext.Threading
             Equal(30U, i);
             False(i.CompareAndSet(20U, 50U));
             Equal(30U, i);
-            Equal(80U, i.Add(50U));
+            Equal(80U, i.AddAndGet(50U));
             Equal(80U, i);
             Equal(80U, i.GetAndAccumulate(10, static (x, y) => x + y));
             Equal(90U, i);
@@ -99,6 +114,21 @@ namespace DotNext.Threading
             Equal(42U, i.UpdateAndGet(static current => 42U));
             Equal(42U, i.GetAndUpdate(static current => 52U));
             Equal(52U, i);
+
+            Equal(52U, i.GetAndBitwiseOr(1U));
+            Equal(53U, i);
+            i = 52U;
+            Equal(53U, i.BitwiseOrAndGet(1U));
+
+            Equal(53U, i.GetAndBitwiseAnd(1U << 2));
+            Equal(4U, i);
+            i = 53U;
+            Equal(4U, i.BitwiseAndAndGet(1U << 2));
+
+            Equal(4U, i.GetAndBitwiseXor(3U));
+            Equal(7U, i);
+            i = 4U;
+            Equal(7U, i.BitwiseXorAndGet(3U));
         }
 
         [Fact]
@@ -112,7 +142,7 @@ namespace DotNext.Threading
             Equal(30UL, i);
             False(i.CompareAndSet(20UL, 50UL));
             Equal(30UL, i);
-            Equal(80UL, i.Add(50UL));
+            Equal(80UL, i.AddAndGet(50UL));
             Equal(80UL, i);
             Equal(80UL, i.GetAndAccumulate(10UL, static (x, y) => x + y));
             Equal(90UL, i);
@@ -123,6 +153,21 @@ namespace DotNext.Threading
             Equal(42UL, i.UpdateAndGet(static current => 42UL));
             Equal(42UL, i.GetAndUpdate(static current => 52UL));
             Equal(52UL, i);
+
+            Equal(52UL, i.GetAndBitwiseOr(1UL));
+            Equal(53UL, i);
+            i = 52UL;
+            Equal(53UL, i.BitwiseOrAndGet(1UL));
+
+            Equal(53UL, i.GetAndBitwiseAnd(1UL << 2));
+            Equal(4UL, i);
+            i = 53;
+            Equal(4UL, i.BitwiseAndAndGet(1UL << 2));
+
+            Equal(4UL, i.GetAndBitwiseXor(3UL));
+            Equal(7UL, i);
+            i = 4UL;
+            Equal(7UL, i.BitwiseXorAndGet(3UL));
         }
 
         [Fact]
@@ -136,7 +181,7 @@ namespace DotNext.Threading
             Equal(30L, i);
             False(i.CompareAndSet(20L, 50L));
             Equal(30L, i);
-            Equal(80L, i.Add(50L));
+            Equal(80L, i.AddAndGet(50L));
             Equal(80L, i);
             Equal(80L, i.GetAndAccumulate(10L, static (x, y) => x + y));
             Equal(90L, i);
@@ -147,6 +192,21 @@ namespace DotNext.Threading
             Equal(42L, i.UpdateAndGet(static current => 42L));
             Equal(42L, i.GetAndUpdate(static current => 52L));
             Equal(52L, i);
+
+            Equal(52L, i.GetAndBitwiseOr(1L));
+            Equal(53L, i);
+            i = 52L;
+            Equal(53L, i.BitwiseOrAndGet(1L));
+
+            Equal(53L, i.GetAndBitwiseAnd(1L << 2));
+            Equal(4L, i);
+            i = 53L;
+            Equal(4L, i.BitwiseAndAndGet(1L << 2));
+
+            Equal(4L, i.GetAndBitwiseXor(3L));
+            Equal(7L, i);
+            i = 4L;
+            Equal(7L, i.BitwiseXorAndGet(3L));
         }
 
         [Fact]
@@ -252,6 +312,21 @@ namespace DotNext.Threading
             Equal(new IntPtr(42), i.UpdateAndGet(static current => new IntPtr(42)));
             Equal(new IntPtr(42), i.GetAndUpdate(static current => new IntPtr(52)));
             Equal(new IntPtr(52), i);
+
+            Equal((IntPtr)52, i.GetAndBitwiseOr((IntPtr)1));
+            Equal((IntPtr)53, i);
+            i = (IntPtr)52;
+            Equal((IntPtr)53, i.BitwiseOrAndGet((IntPtr)1));
+
+            Equal((IntPtr)53, i.GetAndBitwiseAnd((nint)1 << 2));
+            Equal((IntPtr)4, i);
+            i = (IntPtr)53;
+            Equal((IntPtr)4, i.BitwiseAndAndGet((nint)1 << 2));
+
+            Equal((IntPtr)4, i.GetAndBitwiseXor((IntPtr)3));
+            Equal((IntPtr)7, i);
+            i = (IntPtr)4;
+            Equal((IntPtr)7, i.BitwiseXorAndGet((IntPtr)3));
         }
 
         private enum LongEnum : long

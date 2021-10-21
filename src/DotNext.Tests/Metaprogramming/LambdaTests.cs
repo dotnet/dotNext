@@ -82,11 +82,13 @@ namespace DotNext.Metaprogramming
         private static Task<long> Sum(long x, long y)
             => Task.FromResult(x + y);
 
-        [Fact]
-        public static void SimpleAsyncLambda()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void SimpleAsyncLambda(bool usePooling)
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambda<Func<long, long, Task<long>>>(fun =>
+            var lambda = AsyncLambda<Func<long, long, Task<long>>>(usePooling, fun =>
             {
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
@@ -97,11 +99,14 @@ namespace DotNext.Metaprogramming
             Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
         }
 
-        [Fact]
-        public static void SimpleUntypedAsyncLambda()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void SimpleUntypedAsyncLambda(bool usePooling)
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambda(new[] { typeof(long), typeof(long) }, typeof(long), false, fun =>
+            var flags = usePooling ? AsyncLambdaFlags.UseTaskPooling : AsyncLambdaFlags.None;
+            var lambda = AsyncLambda(new[] { typeof(long), typeof(long) }, typeof(long), flags, fun =>
            {
                var (arg1, arg2) = fun;
                var temp = DeclareVariable<long>("tmp");
