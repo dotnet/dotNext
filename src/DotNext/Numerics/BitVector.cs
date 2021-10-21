@@ -43,10 +43,8 @@ public static class BitVector
     {
         var result = new TBuilder();
 
-        ref var first = ref MemoryMarshal.GetReference(bits);
-
         for (var position = 0; position < bits.Length; position++)
-            result.SetBit(position, Unsafe.Add(ref first, position));
+            result.SetBit(position, bits[position]);
 
         return result.Result;
     }
