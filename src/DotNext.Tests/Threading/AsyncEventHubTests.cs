@@ -38,6 +38,20 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        public static async Task WaitAny2()
+        {
+            using var hub = new AsyncEventHub(3);
+
+            int[] indexes = { 0 };
+            bool[] flags = { false };
+            hub.ResetAndPulse(indexes, flags);
+            True(flags[0]);
+
+            Equal(0, await hub.WaitAnyAsync());
+            Equal(0, await hub.WaitAnyAsync(new int[] { 0, 1 }));
+        }
+
+        [Fact]
         public static async Task WaitAll()
         {
             using var hub = new AsyncEventHub(3);
