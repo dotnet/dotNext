@@ -122,7 +122,7 @@ of the field even if it is not declared as volatile field.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_AccumulateAndGet_System_Int64__System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.AccumulateAndGet(System.Int64%40%2CSystem.Int64%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L160">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L237">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicInt64.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_AccumulateAndGet_System_Int64__System_Int64__" data-uid="DotNext.Threading.AtomicInt64.AccumulateAndGet(System.Int64@,System.Int64,)">AccumulateAndGet(ref Int64, Int64, delegate*&lt;Int64, Int64, Int64&gt;)</h4>
@@ -188,7 +188,7 @@ to the current and given values, returning the updated value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_AccumulateAndGet_System_Int64__System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.AccumulateAndGet(System.Int64%40%2CSystem.Int64%2CDotNext.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L145">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L222">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicInt64.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_AccumulateAndGet_System_Int64__System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicInt64.AccumulateAndGet(System.Int64@,System.Int64,DotNext.Func{System.Int64,System.Int64,System.Int64})">AccumulateAndGet(ref Int64, Int64, Func&lt;Int64, Int64, Int64&gt;)</h4>
@@ -251,20 +251,20 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_Add_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.Add(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_AddAndGet_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.AddAndGet(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L81">View Source</a>
   </span>
-  <a id="DotNext_Threading_AtomicInt64_Add_" data-uid="DotNext.Threading.AtomicInt64.Add*"></a>
-  <h4 id="DotNext_Threading_AtomicInt64_Add_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.Add(System.Int64@,System.Int64)">Add(ref Int64, Int64)</h4>
+  <a id="DotNext_Threading_AtomicInt64_AddAndGet_" data-uid="DotNext.Threading.AtomicInt64.AddAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_AddAndGet_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.AddAndGet(System.Int64@,System.Int64)">AddAndGet(ref Int64, Int64)</h4>
   <div class="markdown level1 summary"><p>Adds two 64-bit integers and replaces referenced integer with the sum,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long Add(this ref long value, long operand)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long AddAndGet(this ref long value, long operand)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -302,6 +302,177 @@ as an atomic operation.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>Result of sum operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_BitwiseAndAndGet_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.BitwiseAndAndGet(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L114">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_BitwiseAndAndGet_" data-uid="DotNext.Threading.AtomicInt64.BitwiseAndAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_BitwiseAndAndGet_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.BitwiseAndAndGet(System.Int64@,System.Int64)">BitwiseAndAndGet(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise &quot;ands&quot; two 64-bit integers and replaces referenced integer with the result,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long BitwiseAndAndGet(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The modified value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_BitwiseOrAndGet_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.BitwiseOrAndGet(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L136">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_BitwiseOrAndGet_" data-uid="DotNext.Threading.AtomicInt64.BitwiseOrAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_BitwiseOrAndGet_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.BitwiseOrAndGet(System.Int64@,System.Int64)">BitwiseOrAndGet(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise &quot;ors&quot; two 64-bit integers and replaces referenced integer with the result,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long BitwiseOrAndGet(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The modified value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_BitwiseXorAndGet_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.BitwiseXorAndGet(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L158">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_BitwiseXorAndGet_" data-uid="DotNext.Threading.AtomicInt64.BitwiseXorAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_BitwiseXorAndGet_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.BitwiseXorAndGet(System.Int64@,System.Int64)">BitwiseXorAndGet(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise &quot;xors&quot; two 64-bit integers and replaces referenced integer with the result,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long BitwiseXorAndGet(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The modified value.</p>
 </td>
       </tr>
     </tbody>
@@ -423,7 +594,7 @@ as an atomic operation.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndAccumulate_System_Int64__System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndAccumulate(System.Int64%40%2CSystem.Int64%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L191">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L268">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicInt64.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_GetAndAccumulate_System_Int64__System_Int64__" data-uid="DotNext.Threading.AtomicInt64.GetAndAccumulate(System.Int64@,System.Int64,)">GetAndAccumulate(ref Int64, Int64, delegate*&lt;Int64, Int64, Int64&gt;)</h4>
@@ -489,7 +660,7 @@ to the current and given values, returning the original value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndAccumulate_System_Int64__System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndAccumulate(System.Int64%40%2CSystem.Int64%2CDotNext.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L176">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L253">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicInt64.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_GetAndAccumulate_System_Int64__System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicInt64.GetAndAccumulate(System.Int64@,System.Int64,DotNext.Func{System.Int64,System.Int64,System.Int64})">GetAndAccumulate(ref Int64, Int64, Func&lt;Int64, Int64, Int64&gt;)</h4>
@@ -552,10 +723,238 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndAdd_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndAdd(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L92">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_GetAndAdd_" data-uid="DotNext.Threading.AtomicInt64.GetAndAdd*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_GetAndAdd_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.GetAndAdd(System.Int64@,System.Int64)">GetAndAdd(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Adds two 64-bit integers and replaces referenced integer with the sum,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long GetAndAdd(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be added to the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndBitwiseAnd_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndBitwiseAnd(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L103">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_GetAndBitwiseAnd_" data-uid="DotNext.Threading.AtomicInt64.GetAndBitwiseAnd*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_GetAndBitwiseAnd_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.GetAndBitwiseAnd(System.Int64@,System.Int64)">GetAndBitwiseAnd(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise &quot;ands&quot; two 64-bit integers and replaces referenced integer with the result,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long GetAndBitwiseAnd(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndBitwiseOr_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndBitwiseOr(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L125">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_GetAndBitwiseOr_" data-uid="DotNext.Threading.AtomicInt64.GetAndBitwiseOr*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_GetAndBitwiseOr_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.GetAndBitwiseOr(System.Int64@,System.Int64)">GetAndBitwiseOr(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise &quot;ors&quot; two 64-bit integers and replaces referenced integer with the result,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long GetAndBitwiseOr(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndBitwiseXor_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndBitwiseXor(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L147">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt64_GetAndBitwiseXor_" data-uid="DotNext.Threading.AtomicInt64.GetAndBitwiseXor*"></a>
+  <h4 id="DotNext_Threading_AtomicInt64_GetAndBitwiseXor_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.GetAndBitwiseXor(System.Int64@,System.Int64)">GetAndBitwiseXor(ref Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise &quot;xors&quot; two 64-bit integers and replaces referenced integer with the result,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long GetAndBitwiseXor(this ref long value, long operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndSet_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndSet(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L168">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_GetAndSet_" data-uid="DotNext.Threading.AtomicInt64.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_GetAndSet_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.GetAndSet(System.Int64@,System.Int64)">GetAndSet(ref Int64, Int64)</h4>
@@ -611,7 +1010,7 @@ to the current and given values, returning the original value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndUpdate_System_Int64___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndUpdate(System.Int64%40%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L237">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L314">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_GetAndUpdate_" data-uid="DotNext.Threading.AtomicInt64.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_GetAndUpdate_System_Int64___" data-uid="DotNext.Threading.AtomicInt64.GetAndUpdate(System.Int64@,)">GetAndUpdate(ref Int64, delegate*&lt;Int64, Int64&gt;)</h4>
@@ -668,7 +1067,7 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_GetAndUpdate_System_Int64__DotNext_Func_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.GetAndUpdate(System.Int64%40%2CDotNext.Func%7BSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L226">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L303">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_GetAndUpdate_" data-uid="DotNext.Threading.AtomicInt64.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_GetAndUpdate_System_Int64__DotNext_Func_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicInt64.GetAndUpdate(System.Int64@,DotNext.Func{System.Int64,System.Int64})">GetAndUpdate(ref Int64, Func&lt;Int64, Int64&gt;)</h4>
@@ -775,7 +1174,7 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_SetAndGet_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.SetAndGet(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_SetAndGet_" data-uid="DotNext.Threading.AtomicInt64.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_SetAndGet_System_Int64__System_Int64_" data-uid="DotNext.Threading.AtomicInt64.SetAndGet(System.Int64@,System.Int64)">SetAndGet(ref Int64, Int64)</h4>
@@ -831,7 +1230,7 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_UpdateAndGet_System_Int64___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.UpdateAndGet(System.Int64%40%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L214">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L291">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_UpdateAndGet_" data-uid="DotNext.Threading.AtomicInt64.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_UpdateAndGet_System_Int64___" data-uid="DotNext.Threading.AtomicInt64.UpdateAndGet(System.Int64@,)">UpdateAndGet(ref Int64, delegate*&lt;Int64, Int64&gt;)</h4>
@@ -888,7 +1287,7 @@ of applying the given function, returning the updated value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt64_UpdateAndGet_System_Int64__DotNext_Func_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt64.UpdateAndGet(System.Int64%40%2CDotNext.Func%7BSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L203">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt64.cs/#L280">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt64_UpdateAndGet_" data-uid="DotNext.Threading.AtomicInt64.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt64_UpdateAndGet_System_Int64__DotNext_Func_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicInt64.UpdateAndGet(System.Int64@,DotNext.Func{System.Int64,System.Int64})">UpdateAndGet(ref Int64, Func&lt;Int64, Int64&gt;)</h4>
