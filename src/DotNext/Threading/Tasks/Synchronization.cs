@@ -112,7 +112,30 @@ public static class Synchronization
     /// <param name="task1">The first task to await.</param>
     /// <param name="task2">The second task to await.</param>
     /// <returns>The task containing results of both tasks.</returns>
-    public static async Task<(T1, T2)> WhenAll<T1, T2>(Task<T1> task1, Task<T2> task2) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false));
+    public static async Task<(Result<T1>, Result<T2>)> WhenAll<T1, T2>(Task<T1> task1, Task<T2> task2)
+    {
+        (Result<T1>, Result<T2>) result;
+
+        try
+        {
+            result.Item1 = await task1.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item1 = new(e);
+        }
+
+        try
+        {
+            result.Item2 = await task2.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item2 = new(e);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Creates a task that will complete when all of the passed tasks have completed.
@@ -124,7 +147,39 @@ public static class Synchronization
     /// <param name="task2">The second task to await.</param>
     /// <param name="task3">The third task to await.</param>
     /// <returns>The task containing results of all tasks.</returns>
-    public static async Task<(T1, T2, T3)> WhenAll<T1, T2, T3>(Task<T1> task1, Task<T2> task2, Task<T3> task3) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false));
+    public static async Task<(Result<T1>, Result<T2>, Result<T3>)> WhenAll<T1, T2, T3>(Task<T1> task1, Task<T2> task2, Task<T3> task3)
+    {
+        (Result<T1>, Result<T2>, Result<T3>) result;
+
+        try
+        {
+            result.Item1 = await task1.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item1 = new(e);
+        }
+
+        try
+        {
+            result.Item2 = await task2.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item2 = new(e);
+        }
+
+        try
+        {
+            result.Item3 = await task3.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item3 = new(e);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Creates a task that will complete when all of the passed tasks have completed.
@@ -138,7 +193,48 @@ public static class Synchronization
     /// <param name="task3">The third task to await.</param>
     /// <param name="task4">The fourth task to await.</param>
     /// <returns>The task containing results of all tasks.</returns>
-    public static async Task<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false), await task4.ConfigureAwait(false));
+    public static async Task<(Result<T1>, Result<T2>, Result<T3>, Result<T4>)> WhenAll<T1, T2, T3, T4>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4)
+    {
+        (Result<T1>, Result<T2>, Result<T3>, Result<T4>) result;
+
+        try
+        {
+            result.Item1 = await task1.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item1 = new(e);
+        }
+
+        try
+        {
+            result.Item2 = await task2.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item2 = new(e);
+        }
+
+        try
+        {
+            result.Item3 = await task3.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item3 = new(e);
+        }
+
+        try
+        {
+            result.Item4 = await task4.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item4 = new(e);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Creates a task that will complete when all of the passed tasks have completed.
@@ -154,5 +250,55 @@ public static class Synchronization
     /// <param name="task4">The fourth task to await.</param>
     /// <param name="task5">The fifth task to await.</param>
     /// <returns>The task containing results of all tasks.</returns>
-    public static async Task<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4, Task<T5> task5) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false), await task4.ConfigureAwait(false), await task5.ConfigureAwait(false));
+    public static async Task<(Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>)> WhenAll<T1, T2, T3, T4, T5>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4, Task<T5> task5)
+    {
+        (Result<T1>, Result<T2>, Result<T3>, Result<T4>, Result<T5>) result;
+
+        try
+        {
+            result.Item1 = await task1.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item1 = new(e);
+        }
+
+        try
+        {
+            result.Item2 = await task2.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item2 = new(e);
+        }
+
+        try
+        {
+            result.Item3 = await task3.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item3 = new(e);
+        }
+
+        try
+        {
+            result.Item4 = await task4.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item4 = new(e);
+        }
+
+        try
+        {
+            result.Item5 = await task5.ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            result.Item5 = new(e);
+        }
+
+        return result;
+    }
 }
