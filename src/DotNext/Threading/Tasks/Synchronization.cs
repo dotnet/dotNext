@@ -1,9 +1,9 @@
 namespace DotNext.Threading.Tasks;
 
 /// <summary>
-/// Represents task synchronization and combination methods.
+/// Represents task synchronization methods.
 /// </summary>
-public static class Synchronization
+public static partial class Synchronization
 {
     /// <summary>
     /// Gets task result synchronously.

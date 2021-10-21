@@ -4,15 +4,7 @@ namespace DotNext.Threading.Tasks;
 
 using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
 
-/// <summary>
-/// Provides a set of methods for synchronization and combination of multiple <see cref="ValueTask"/>s.
-/// </summary>
-/// <remarks>
-/// Methods in this class exist for architectural symmetry with <c>WhenAll</c> and <c>WhenAny</c> methods
-/// from <see cref="Task"/> class when you have to work with tasks implemented as value types.
-/// Don't use these methods just to avoid allocation of memory inside of managed heap.
-/// </remarks>
-public static class ValueTaskSynchronization
+public static partial class Synchronization
 {
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private static async ValueTask WhenAll<T>(T tasks)

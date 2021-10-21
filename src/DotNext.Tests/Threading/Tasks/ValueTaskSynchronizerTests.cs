@@ -34,7 +34,7 @@ namespace DotNext.Threading.Tasks
                 source2.SetResult();
             });
 
-            await ValueTaskSynchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task));
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task));
             Equal(2, counter.Value);
         }
 
@@ -55,7 +55,7 @@ namespace DotNext.Threading.Tasks
                 source2.SetResult(20);
             });
 
-            var (result1, result2) = await ValueTaskSynchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task));
+            var (result1, result2) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task));
 
             Equal(10, result1.Value);
             Equal(20, result2.Value);
@@ -88,7 +88,7 @@ namespace DotNext.Threading.Tasks
                 source3.SetResult();
             });
 
-            await ValueTaskSynchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task));
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task));
             Equal(3, counter.Value);
         }
 
@@ -115,7 +115,7 @@ namespace DotNext.Threading.Tasks
                 source3.SetResult(30);
             });
 
-            var (result1, result2, result3) = await ValueTaskSynchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task));
+            var (result1, result2, result3) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task));
 
             Equal(10, result1.Value);
             Equal(20, result2.Value);
@@ -157,7 +157,7 @@ namespace DotNext.Threading.Tasks
                 source4.SetResult();
             });
 
-            await ValueTaskSynchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task), new ValueTask(source4.Task));
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task), new ValueTask(source4.Task));
             Equal(4, counter.Value);
         }
 
@@ -190,7 +190,7 @@ namespace DotNext.Threading.Tasks
                 source4.SetResult(40);
             });
 
-            var (result1, result2, result3, result4) = await ValueTaskSynchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task), new ValueTask<int>(source4.Task));
+            var (result1, result2, result3, result4) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task), new ValueTask<int>(source4.Task));
 
             Equal(10, result1.Value);
             Equal(20, result2.Value);
@@ -241,7 +241,7 @@ namespace DotNext.Threading.Tasks
                 source5.SetResult();
             });
 
-            await ValueTaskSynchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task), new ValueTask(source4.Task), new ValueTask(source5.Task));
+            await Synchronization.WhenAll(new ValueTask(source1.Task), new ValueTask(source2.Task), new ValueTask(source3.Task), new ValueTask(source4.Task), new ValueTask(source5.Task));
             Equal(5, counter.Value);
         }
 
@@ -280,7 +280,7 @@ namespace DotNext.Threading.Tasks
                 source5.SetResult(50);
             });
 
-            var (result1, result2, result3, result4, result5) = await ValueTaskSynchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task), new ValueTask<int>(source4.Task), new ValueTask<int>(source5.Task));
+            var (result1, result2, result3, result4, result5) = await Synchronization.WhenAll(new ValueTask<int>(source1.Task), new ValueTask<int>(source2.Task), new ValueTask<int>(source3.Task), new ValueTask<int>(source4.Task), new ValueTask<int>(source5.Task));
 
             Equal(10, result1.Value);
             Equal(20, result2.Value);
