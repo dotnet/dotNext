@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-08-2021
+Release Date: 10-21-2021
 
 .NEXT 4.0 beta is out! Its primary focus is .NET 6 support as well as some other key features:
 * Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
@@ -85,6 +85,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Polished `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. Also these types become a foundation for all synchronization primitives within the library
 * Return types of all methods of asynchronous locks now moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) and [ValueTask&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1) types
 * Together with previous change, all asynchronous locks are written on top of `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. It means that these asynchronous locks use task pooling that leads to zero allocation on the heap and low GC latency
+* Added `AsyncEventHub` synchronization primitve for asynchronous code
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.0.0">DotNext.IO 4.0.0</a>
 * Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
@@ -105,6 +106,8 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Optimized file I/O performance of persistent WAL
 * Reduced the number of opened file descriptors required by persistent WAL
 * Improved performance of partitions allocation in persistent WAL with preallocated file size feature introduced in .NET 6
+* Fixed packet loss for TCP/UDP transports
+* Added read barrier for linearizable reads on Raft follower nodes
 * Added transport-agnostic implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol suitable for Gossip-based messaging
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.0.0">DotNext.AspNetCore.Cluster 4.0.0</a>
