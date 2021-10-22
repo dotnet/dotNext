@@ -126,13 +126,16 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             case null:
                 if (!runAsynchronously || !ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false))
-                    continuation(state);
+                    goto default;
                 break;
             case SynchronizationContext context:
                 context.Post(continuation.Invoke, state);
                 break;
             case TaskScheduler scheduler:
                 Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+                break;
+            default:
+                continuation(state);
                 break;
         }
     }
