@@ -12,7 +12,16 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 {
     private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
 
-    private readonly Action<object?> cancellationCallback;
+    private sealed class BoxedVersion
+    {
+        internal readonly short Value;
+
+        internal BoxedVersion(short value) => Value = value;
+
+        public static implicit operator BoxedVersion(short value) => new(value);
+    }
+
+    private readonly Action<object?, CancellationToken> cancellationCallback;
     private readonly bool runContinuationsAsynchronously;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
     private CancellationTokenSource? timeoutSource;
@@ -22,7 +31,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private object? continuationState, capturedContext;
     private ExecutionContext? context;
     private protected short version;
-    private volatile bool completed;
+    private bool completed;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
@@ -35,14 +44,10 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected object SyncRoot => cancellationCallback;
 
-    private void CancellationRequested(object? token)
+    private void CancellationRequested(object? expectedVersion, CancellationToken token)
     {
-        Debug.Assert(token is short);
-        CancellationRequested((short)token);
-    }
+        Debug.Assert(expectedVersion is BoxedVersion);
 
-    private void CancellationRequested(short token)
-    {
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
@@ -50,12 +55,12 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             lock (SyncRoot)
             {
-                if (token == version && !completed)
+                if (!completed && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
                 {
-                    if (timeoutSource?.IsCancellationRequested ?? false)
-                        CompleteAsTimedOut();
+                    if (timeoutSource is null || timeoutSource.Token != token)
+                        CompleteAsCanceled(token);
                     else
-                        CompleteAsCanceled(tokenTracker.Token);
+                        CompleteAsTimedOut();
                 }
             }
         }
@@ -64,7 +69,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
     {
         // box current token once and only if needed
-        object? tokenHolder = null;
+        BoxedVersion? tokenHolder = null;
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
@@ -105,27 +110,10 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         timeoutTracker.Dispose();
         timeoutTracker = default;
 
-        if (timeoutSource is not null && !TryReset(timeoutSource))
+        if (timeoutSource is not null && !timeoutSource.TryReset())
         {
             timeoutSource.Dispose();
             timeoutSource = null;
-        }
-
-        // TODO: Workaround for https://github.com/dotnet/runtime/issues/60182
-        static bool TryReset(CancellationTokenSource source)
-        {
-            bool result;
-
-            try
-            {
-                result = source.TryReset();
-            }
-            catch (ObjectDisposedException)
-            {
-                result = false;
-            }
-
-            return result;
         }
     }
 
