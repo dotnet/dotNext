@@ -57,13 +57,16 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             {
                 if (!completed && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
                 {
-                    if (timeoutSource is null || timeoutSource.Token != token)
-                        CompleteAsCanceled(token);
-                    else
+                    if (CheckTokenSource(timeoutSource, token))
                         CompleteAsTimedOut();
+                    else
+                        CompleteAsCanceled(token);
                 }
             }
         }
+
+        static bool CheckTokenSource(CancellationTokenSource? source, CancellationToken token)
+            => source is not null && source.Token == token;
     }
 
     private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
