@@ -21,7 +21,8 @@ public static class BitVector
     {
         private uint result;
 
-        void IValueBuilder<uint>.SetBit(int position, bool bit) => result |= (uint)bit.ToByte() << position;
+        void IValueBuilder<uint>.SetBit(int position, bool bit)
+            => result = (result & ~(1U << position)) | ((uint)bit.ToInt32() << position);
 
         readonly uint IValueBuilder<uint>.Result => result;
     }
@@ -31,7 +32,8 @@ public static class BitVector
     {
         private ulong result;
 
-        void IValueBuilder<ulong>.SetBit(int position, bool bit) => result |= (ulong)bit.ToByte() << position;
+        void IValueBuilder<ulong>.SetBit(int position, bool bit)
+            => result = (result & ~(1UL << position)) | ((ulong)bit.ToInt32() << position);
 
         readonly ulong IValueBuilder<ulong>.Result => result;
     }
