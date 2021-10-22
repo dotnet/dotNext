@@ -23,7 +23,7 @@ public static class BitVector
 
         bool IBitVector<uint>.this[int position]
         {
-            readonly get => ValueTypeExtensions.ToBoolean((int)((result >> position) & 1U));
+            readonly get => ((result >> position) & 1U) != 0U;
             set => result = (result & ~(1U << position)) | ((uint)value.ToInt32() << position);
         }
 
@@ -41,7 +41,7 @@ public static class BitVector
 
         bool IBitVector<ulong>.this[int position]
         {
-            readonly get => ValueTypeExtensions.ToBoolean((int)((result >> position) & 1UL));
+            readonly get => ((result >> position) & 1UL) != 0UL;
             set => result = (result & ~(1UL << position)) | ((ulong)value.ToInt32() << position);
         }
 
