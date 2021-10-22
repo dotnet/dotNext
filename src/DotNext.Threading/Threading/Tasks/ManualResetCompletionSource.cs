@@ -309,11 +309,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        if (!IsCompleted)
+        if (!completed)
         {
             lock (SyncRoot)
             {
-                if (!IsCompleted)
+                if (!completed)
                     PrepareTaskCore(timeout, token);
             }
         }
