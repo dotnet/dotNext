@@ -19,6 +19,17 @@ public static class EnumConverter
     }
 
     /// <summary>
+    /// Gets underlying type of the enum.
+    /// </summary>
+    /// <remarks>
+    /// The call to this method can be effectively replaced with a constant by JIT.
+    /// </remarks>
+    /// <typeparam name="TEnum">The type of the enum.</typeparam>
+    /// <returns>The underlying type of <typeparamref name="TEnum"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TypeCode GetTypeCode<TEnum>() where TEnum : struct, Enum => EnumTypeCode<TEnum>.Value;
+
+    /// <summary>
     /// Converts <see cref="long"/> into enum of type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The target enum type.</typeparam>
