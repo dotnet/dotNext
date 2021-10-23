@@ -111,6 +111,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         readonly get => value.VolatileRead().ToEnum<TEnum>();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => this.value.VolatileWrite(value.ToInt64());
     }
