@@ -48,7 +48,7 @@ internal static unsafe class EnumConverter<TInput, TOutput>
         static TOutput ConvertSlow(TInput value) => (TOutput)value.ToType(typeof(TOutput), CurrentCulture);
     }
 
-    private static Type GetRealType(Type t) => t.IsEnum ? t.GetEnumUnderlyingType() : t;
+    private static Type GetRealType(Type t) => t.IsEnum ? Enum.GetUnderlyingType(t) : t;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TOutput Convert(TInput value)
