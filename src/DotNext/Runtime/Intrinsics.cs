@@ -85,7 +85,7 @@ public static class Intrinsics
     /// is equal to the corresponding bit in the object representation of <typeparamref name="T"/>.
     /// The values of padding bits in the returned <typeparamref name="TResult"/> object are unspecified.
     /// The method takes into account size of <typeparamref name="T"/> and <typeparamref name="TResult"/> types
-    /// and able to provide conversion between types of different size. However, the result may very between
+    /// and able to provide conversion between types of different size. However, the result may vary between
     /// CPU architectures if size of types is different.
     /// </remarks>
     /// <param name="input">A value to convert.</param>
