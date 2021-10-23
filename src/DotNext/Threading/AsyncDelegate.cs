@@ -60,12 +60,9 @@ public static class AsyncDelegate
 
     private static unsafe Task InvokeAsync<TDelegate, TContext>(TDelegate @delegate, in TContext context, delegate*<TDelegate, in TContext, void> invoker, CancellationToken token)
         where TDelegate : MulticastDelegate
-    {
-        if (token.IsCancellationRequested)
-            return Task.FromCanceled(token);
-
-        return Task.Factory.StartNew(new InvocationWorkItem<TDelegate, TContext>(@delegate, invoker, context, token).Invoke, token, TaskCreationOptions.None, TaskScheduler.Default);
-    }
+        => token.IsCancellationRequested
+            ? Task.FromCanceled(token)
+            : Task.Factory.StartNew(new InvocationWorkItem<TDelegate, TContext>(@delegate, invoker, context, token).Invoke, token, TaskCreationOptions.None, TaskScheduler.Default);
 
     /// <summary>
     /// Invokes a delegate of arbitrary type asynchronously.
