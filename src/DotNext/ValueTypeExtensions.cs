@@ -12,6 +12,11 @@ namespace DotNext
     /// </summary>
     public static class ValueTypeExtensions
     {
+        internal static TOutput ChangeType<TInput, TOutput>(this TInput input)
+            where TInput : struct, IConvertible
+            where TOutput : struct, IConvertible
+            => (TOutput)input.ToType(typeof(TOutput), InvariantCulture);
+
         /// <summary>
         /// Checks whether the specified value is equal to one
         /// of the specified values.
@@ -97,6 +102,14 @@ namespace DotNext
             Push(value);
             Conv_U1();
             return Return<byte>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static sbyte ToSByte(this bool value)
+        {
+            Push(value);
+            Conv_I1();
+            return Return<sbyte>();
         }
 
         /// <summary>
