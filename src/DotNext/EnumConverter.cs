@@ -10,10 +10,12 @@ internal static unsafe class EnumConverter<TInput, TOutput>
         where TInput : struct, IConvertible, IComparable, IFormattable
         where TOutput : struct, IConvertible, IComparable, IFormattable
 {
-    private static readonly delegate*<TInput, TOutput> Converter;
+    private static readonly delegate*<TInput, TOutput> Converter = GetRealType(typeof(TInput)) == GetRealType(typeof(TOutput))
+        ? null
+        : GetConverter();
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Convert))]
-    static EnumConverter()
+    private static unsafe delegate*<TInput, TOutput> GetConverter()
     {
         var conversionMethod = System.Type.GetTypeCode(typeof(TOutput)) switch
         {
@@ -33,28 +35,24 @@ internal static unsafe class EnumConverter<TInput, TOutput>
             TypeCode.DateTime => nameof(System.Convert.ToDateTime),
             _ => "<unknown>",
         };
-        var type = typeof(TInput);
-        if (type.IsEnum)
-            type = type.GetEnumUnderlyingType();
+        var type = GetRealType(typeof(TInput));
 
         // find conversion method using Reflection
         MethodInfo? method = typeof(Convert).GetMethod(conversionMethod, new[] { type });
         if (method is null)
-        {
-            Converter = &ConvertSlow;
-        }
-        else
-        {
-            Debug.Assert(method.IsStatic && method.IsPublic);
-            Converter = (delegate*<TInput, TOutput>)method.MethodHandle.GetFunctionPointer();
-        }
+            return &ConvertSlow;
+
+        Debug.Assert(method.IsStatic && method.IsPublic);
+        return (delegate*<TInput, TOutput>)method.MethodHandle.GetFunctionPointer();
 
         static TOutput ConvertSlow(TInput value) => (TOutput)value.ToType(typeof(TOutput), CurrentCulture);
     }
 
+    private static Type GetRealType(Type t) => t.IsEnum ? t.GetEnumUnderlyingType() : t;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TOutput Convert(TInput value)
-        => Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>() ? Unsafe.As<TInput, TOutput>(ref value) : Converter(value);
+        => Converter == null ? Unsafe.As<TInput, TOutput>(ref value) : Converter(value);
 }
 
 /// <summary>
