@@ -306,5 +306,23 @@ namespace DotNext.Runtime
             Equal(default, Intrinsics.GetLength(array));
             Equal(new IntPtr(4), (IntPtr)Intrinsics.GetLength(new int[2, 2]));
         }
+
+        [Fact]
+        public static void ThrowOnNullReference()
+        {
+            ref int value = ref Unsafe.NullRef<int>();
+
+            var thrown = false;
+            try
+            {
+                Intrinsics.ThrowIfNull(in value);
+            }
+            catch (NullReferenceException)
+            {
+                thrown = true;
+            }
+
+            True(thrown);
+        }
     }
 }
