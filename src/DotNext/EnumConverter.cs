@@ -241,6 +241,18 @@ public static class EnumConverter
         _ => value.ChangeType<ulong, T>(),
     };
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+    internal static T ToEnumUnchecked<T>(this ulong value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    {
+        TypeCode.Empty => default(T),
+        TypeCode.Byte or TypeCode.SByte => ReinterpretCast<byte, T>(unchecked((byte)value)),
+        TypeCode.Char or TypeCode.Int16 or TypeCode.UInt16 => ReinterpretCast<ushort, T>(unchecked((ushort)value)),
+        TypeCode.Int32 or TypeCode.UInt32 or TypeCode.Single => ReinterpretCast<uint, T>(unchecked((uint)value)),
+        TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => ReinterpretCast<ulong, T>(value),
+        _ => value.ChangeType<ulong, T>(),
+    };
+
     /// <summary>
     /// Converts enum value into primitive type <see cref="long"/>.
     /// </summary>
@@ -265,6 +277,18 @@ public static class EnumConverter
         TypeCode.Single => Convert.ToInt64(ReinterpretCast<T, float>(value)),
         TypeCode.Double => Convert.ToInt64(ReinterpretCast<T, double>(value)),
         _ => value.ChangeType<T, long>(),
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ulong ToUInt64Unchecked<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    {
+        TypeCode.Empty => 0UL,
+        TypeCode.Boolean => ReinterpretCast<T, bool>(value).ToByte(),
+        TypeCode.Byte or TypeCode.SByte => ReinterpretCast<T, byte>(value),
+        TypeCode.Int16 or TypeCode.UInt16 or TypeCode.Char => ReinterpretCast<T, ushort>(value),
+        TypeCode.Int32 or TypeCode.UInt32 or TypeCode.Single => ReinterpretCast<T, uint>(value),
+        TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => ReinterpretCast<T, ulong>(value),
+        _ => throw new NotSupportedException(),
     };
 
     /// <summary>
