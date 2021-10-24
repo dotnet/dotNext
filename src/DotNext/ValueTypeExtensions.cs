@@ -55,15 +55,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
-        {
-            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
-            {
-                if (values[i].Equals(value))
-                    return true;
-            }
-
-            return false;
-        }
+            => values.AsSpan().Contains(value);
 
         /// <summary>
         /// Attempts to get value from nullable container.
