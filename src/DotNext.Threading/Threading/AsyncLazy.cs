@@ -98,7 +98,7 @@ public class AsyncLazy<T>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Reset()
     {
-        if (resettable && (task is null || task.IsCompleted))
+        if (resettable && (task is null or { IsCompleted: true }))
         {
             task = null;
             return true;
