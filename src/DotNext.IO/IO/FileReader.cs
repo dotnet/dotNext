@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -172,6 +173,7 @@ public partial class FileReader : Disposable
             ? ReadBufferedAsync(output, token)
             : ReadDirectAsync(output, token);
 
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
         {
             var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
@@ -179,6 +181,7 @@ public partial class FileReader : Disposable
             return count;
         }
 
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<int> ReadBufferedAsync(Memory<byte> output, CancellationToken token)
         {
             var result = 0;

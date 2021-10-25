@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -142,6 +143,7 @@ public partial class FileWriter : Disposable
         return ValueTask.CompletedTask;
     }
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
         if (bufferOffset > 0)
