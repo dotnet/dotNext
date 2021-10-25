@@ -155,10 +155,9 @@ public sealed class UnaryOperator<TOperand, TResult> : Operator<Operator<TOperan
             return null;
 
         // handle situation when trying to cast two incompatible reference types
-        else if (overloaded is null && (op == ExpressionType.Convert || op == ExpressionType.ConvertChecked) && !parameter.Type.IsValueType && !typeof(TResult).IsAssignableFrom(parameter.Type))
-            return null;
-        else
-            return new UnaryOperator<TOperand, TResult>(result, op, overloaded);
+        return overloaded is null && (op == ExpressionType.Convert || op == ExpressionType.ConvertChecked) && !parameter.Type.IsValueType && !typeof(TResult).IsAssignableFrom(parameter.Type)
+            ? null
+            : new UnaryOperator<TOperand, TResult>(result, op, overloaded);
     }
 
     private static UnaryOperator<TOperand, TResult>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(TOperand)).GetOrCreate(op);
