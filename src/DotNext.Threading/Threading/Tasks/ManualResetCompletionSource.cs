@@ -57,7 +57,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             {
                 if (!completed && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
                 {
-                    if (timeoutSource?.Token.Equals(token) ?? false)
+                    if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
                     else
                         CompleteAsCanceled(token);
