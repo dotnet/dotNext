@@ -90,11 +90,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected static object? CaptureContext()
     {
-        var context = SynchronizationContext.Current;
+        object? context = SynchronizationContext.Current;
         if (context is null || context.GetType() == typeof(SynchronizationContext))
         {
             var scheduler = TaskScheduler.Current;
-            return ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
+            context = ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
         }
 
         return context;
@@ -117,13 +117,18 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously)
+    private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously, bool flowExecutionContext)
     {
         switch (capturedContext)
         {
             case null:
-                if (!runAsynchronously || !ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false))
+                if (!runAsynchronously)
                     goto default;
+
+                if (flowExecutionContext)
+                    ThreadPool.QueueUserWorkItem(continuation, state, preferLocal: true);
+                else
+                    ThreadPool.UnsafeQueueUserWorkItem(continuation, state, preferLocal: true);
                 break;
             case SynchronizationContext context:
                 context.Post(continuation.Invoke, state);
@@ -137,10 +142,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    private void InvokeContinuationCore()
+    private void InvokeContinuationCore(bool flowExecutionContext)
     {
-        context = null;
-
         var continuation = this.continuation;
         this.continuation = null;
 
@@ -151,22 +154,25 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         this.capturedContext = null;
 
         if (continuation is not null)
-            InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
+            InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously, flowExecutionContext);
     }
 
     private static void InvokeContinuation(object? source)
     {
         Debug.Assert(source is ManualResetCompletionSource);
 
-        Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore();
+        Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore(flowExecutionContext: true);
     }
 
     private protected void InvokeContinuation()
     {
-        if (context is null)
-            InvokeContinuationCore();
+        var contextCopy = context;
+        context = null;
+
+        if (contextCopy is null)
+            InvokeContinuationCore(flowExecutionContext: false);
         else
-            ExecutionContext.Run(context, ContinuationInvoker, this);
+            ExecutionContext.Run(contextCopy, ContinuationInvoker, this);
     }
 
     private protected virtual void ResetCore()
@@ -245,7 +251,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
 
     execute_inplace:
-        InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously);
+        InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously, flowExecutionContext);
 
     exit:
         return;
