@@ -27,7 +27,8 @@ public static class EnumConverter
     /// <typeparam name="TEnum">The type of the enum.</typeparam>
     /// <returns>The underlying type of <typeparamref name="TEnum"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TypeCode GetTypeCode<TEnum>() where TEnum : struct, Enum => EnumTypeCode<TEnum>.Value;
+    public static TypeCode GetTypeCode<TEnum>()
+        where TEnum : struct, Enum => EnumTypeCode<TEnum>.Value;
 
     /// <summary>
     /// Converts <see cref="long"/> into enum of type <typeparamref name="T"/>.
@@ -36,7 +37,8 @@ public static class EnumConverter
     /// <param name="value">The value to be converted.</param>
     /// <returns>Enum value equals to the given <see cref="long"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ToEnum<T>(this long value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this long value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -62,7 +64,8 @@ public static class EnumConverter
     /// <param name="value">The value to be converted.</param>
     /// <returns>Enum value equals to the given <see cref="int"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ToEnum<T>(this int value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this int value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -88,7 +91,8 @@ public static class EnumConverter
     /// <param name="value">The value to be converted.</param>
     /// <returns>Enum value equals to the given <see cref="short"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ToEnum<T>(this short value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this short value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -114,7 +118,8 @@ public static class EnumConverter
     /// <param name="value">The value to be converted.</param>
     /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ToEnum<T>(this byte value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this byte value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -141,7 +146,8 @@ public static class EnumConverter
     /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static T ToEnum<T>(this sbyte value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this sbyte value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -168,7 +174,8 @@ public static class EnumConverter
     /// <returns>Enum value equals to the given <see cref="ushort"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static T ToEnum<T>(this ushort value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this ushort value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -195,7 +202,8 @@ public static class EnumConverter
     /// <returns>Enum value equals to the given <see cref="uint"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static T ToEnum<T>(this uint value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this uint value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -222,7 +230,8 @@ public static class EnumConverter
     /// <returns>Enum value equals to the given <see cref="ulong"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static T ToEnum<T>(this ulong value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static T ToEnum<T>(this ulong value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Char => ReinterpretCast<char, T>(Convert.ToChar(value)),
@@ -243,7 +252,8 @@ public static class EnumConverter
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
-    internal static T ToEnumUnchecked<T>(this ulong value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    internal static T ToEnumUnchecked<T>(this ulong value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => default(T),
         TypeCode.Byte or TypeCode.SByte => ReinterpretCast<byte, T>(unchecked((byte)value)),
@@ -260,7 +270,8 @@ public static class EnumConverter
     /// <param name="value">Enum value to be converted.</param>
     /// <returns>Enum value represented as <see cref="long"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long ToInt64<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static long ToInt64<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0L,
         TypeCode.Char => ReinterpretCast<T, char>(value),
@@ -280,7 +291,8 @@ public static class EnumConverter
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong ToUInt64Unchecked<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    internal static ulong ToUInt64Unchecked<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0UL,
         TypeCode.Boolean => ReinterpretCast<T, bool>(value).ToByte(),
@@ -298,7 +310,8 @@ public static class EnumConverter
     /// <param name="value">Enum value to be converted.</param>
     /// <returns>Enum value represented as <see cref="int"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int ToInt32<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static int ToInt32<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0,
         TypeCode.Char => ReinterpretCast<T, char>(value),
@@ -324,7 +337,8 @@ public static class EnumConverter
     /// <param name="value">Enum value to be converted.</param>
     /// <returns>Enum value represented as <see cref="short"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static short ToInt16<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static short ToInt16<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0,
         TypeCode.Char => Convert.ToInt16(ReinterpretCast<T, char>(value)),
@@ -350,7 +364,8 @@ public static class EnumConverter
     /// <param name="value">Enum value to be converted.</param>
     /// <returns>Enum value represented as <see cref="byte"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte ToByte<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static byte ToByte<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0,
         TypeCode.Char => Convert.ToByte(ReinterpretCast<T, char>(value)),
@@ -377,7 +392,8 @@ public static class EnumConverter
     /// <returns>Enum value represented as <see cref="ulong"/>.</returns>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ToUInt64<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static ulong ToUInt64<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0UL,
         TypeCode.Char => ReinterpretCast<T, char>(value),
@@ -404,7 +420,8 @@ public static class EnumConverter
     /// <returns>Enum value represented as <see cref="uint"/>.</returns>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ToUInt32<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static uint ToUInt32<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0,
         TypeCode.Char => ReinterpretCast<T, char>(value),
@@ -431,7 +448,8 @@ public static class EnumConverter
     /// <returns>Enum value represented as <see cref="ushort"/>.</returns>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ushort ToUInt16<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static ushort ToUInt16<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0,
         TypeCode.Char => ReinterpretCast<T, char>(value),
@@ -458,7 +476,8 @@ public static class EnumConverter
     /// <returns>Enum value represented as <see cref="sbyte"/>.</returns>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static sbyte ToSByte<T>(this T value) where T : struct, Enum => EnumTypeCode<T>.Value switch
+    public static sbyte ToSByte<T>(this T value)
+        where T : struct, Enum => EnumTypeCode<T>.Value switch
     {
         TypeCode.Empty => 0,
         TypeCode.Char => Convert.ToSByte(ReinterpretCast<T, char>(value)),
