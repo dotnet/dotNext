@@ -15,7 +15,7 @@ namespace DotNext.Threading
         [Fact]
         public static void WaitOne()
         {
-            using var hub = new AsyncEventHub(3);
+            var hub = new AsyncEventHub(3);
             Equal(3, hub.Count);
 
             True(hub.Pulse(0));
@@ -26,7 +26,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WaitAny()
         {
-            using var hub = new AsyncEventHub(3);
+            var hub = new AsyncEventHub(3);
 
             int[] indexes = { 0 };
             bool[] flags = { false };
@@ -40,7 +40,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WaitAny2()
         {
-            using var hub = new AsyncEventHub(3);
+            var hub = new AsyncEventHub(3);
 
             int[] indexes = { 0 };
             bool[] flags = { false };
@@ -54,7 +54,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WaitAll()
         {
-            using var hub = new AsyncEventHub(3);
+            var hub = new AsyncEventHub(3);
 
             Equal(3, hub.PulseAll());
 
@@ -65,7 +65,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WaitAll2()
         {
-            using var hub = new AsyncEventHub(3);
+            var hub = new AsyncEventHub(3);
 
             bool[] flags = { false, false, false };
             hub.PulseAll(flags);
