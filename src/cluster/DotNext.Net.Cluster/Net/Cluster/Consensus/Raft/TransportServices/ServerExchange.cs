@@ -155,20 +155,4 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
         state = State.Ready;
         entriesExchangeCoordinator?.CancelSuspendedCallers(new(true));
     }
-
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            entriesExchangeCoordinator?.Dispose();
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    ~ServerExchange() => Dispose(false);
 }
