@@ -1,11 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
-using Var = InlineIL.LocalVar;
 
 namespace DotNext.Threading;
+
+using static Runtime.Intrinsics;
 
 /// <summary>
 /// Provides basic atomic operations for arbitrary enum type.
@@ -29,26 +28,17 @@ public static class AtomicEnum
     public static TEnum VolatileRead<TEnum>(this ref TEnum value)
         where TEnum : struct, Enum
     {
-        const string resultVar = "result";
-        const string nonFastPath = "nonFastPath";
-        DeclareLocals(false, new Var(resultVar, typeof(long)));
-        Push(ref value);
-        Emit.Sizeof<TEnum>();
-        Emit.Ldc_I4_8();
-        Emit.Beq(nonFastPath);
+        return Unsafe.SizeOf<TEnum>() == sizeof(long) && IntPtr.Size != sizeof(long)
+            ? ReinterpretCast<long, TEnum>(Volatile.Read(ref Unsafe.As<TEnum, long>(ref value)))
+            : ReadCore(ref value);
 
-        // fast path - use volatile read instruction
-        Emit.Volatile();
-        Emit.Ldobj<TEnum>();
-        Emit.Ret();
-
-        // non-fast path - use Volatile class
-        MarkLabel(nonFastPath);
-        Emit.Call(Method(typeof(Volatile), nameof(Volatile.Read), Type<long>().MakeByRefType()));
-        Emit.Stloc(resultVar);
-        Emit.Ldloca(resultVar);
-        Emit.Ldobj<TEnum>();
-        return Return<TEnum>();
+        static TEnum ReadCore(ref TEnum location)
+        {
+            PushInRef(in location);
+            Emit.Volatile();
+            Emit.Ldobj<TEnum>();
+            return Return<TEnum>();
+        }
     }
 
     /// <summary>
@@ -67,24 +57,19 @@ public static class AtomicEnum
     public static void VolatileWrite<TEnum>(this ref TEnum value, TEnum newValue)
         where TEnum : struct, Enum
     {
-        const string nonFastPath = "nonFastPath";
-        Push(ref value);
-        Emit.Sizeof<TEnum>();
-        Emit.Ldc_I4_8();
-        Emit.Beq(nonFastPath);
+        if (Unsafe.SizeOf<TEnum>() == sizeof(long) && IntPtr.Size != sizeof(long))
+            Volatile.Write(ref Unsafe.As<TEnum, long>(ref value), ReinterpretCast<TEnum, long>(newValue));
+        else
+            WriteCore(ref value, newValue);
 
-        // fast path - use volatile write instruction
-        Push(newValue);
-        Emit.Volatile();
-        Emit.Stobj<TEnum>();
-        Emit.Ret();
-
-        // non-fast path - use Volatile class
-        MarkLabel(nonFastPath);
-        Push(ref newValue);
-        Emit.Ldind_I8();
-        Emit.Call(Method(typeof(Volatile), nameof(Volatile.Write), Type<long>().MakeByRefType(), typeof(long)));
-        Emit.Ret();
+        static void WriteCore(ref TEnum location, TEnum value)
+        {
+            Push(ref location);
+            Push(value);
+            Emit.Volatile();
+            Emit.Stobj<TEnum>();
+            Emit.Ret();
+        }
     }
 }
 
@@ -96,13 +81,13 @@ public static class AtomicEnum
 public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     where TEnum : struct, Enum
 {
-    private long value;
+    private ulong value;
 
     /// <summary>
     /// Initializes a new atomic boolean container with initial value.
     /// </summary>
     /// <param name="value">Initial value of the atomic boolean.</param>
-    public AtomicEnum(TEnum value) => this.value = value.ToInt64();
+    public AtomicEnum(TEnum value) => this.value = value.ToUInt64Unchecked();
 
     /// <summary>
     /// Gets or sets enum value in volatile manner.
@@ -110,9 +95,10 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     public TEnum Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        readonly get => value.VolatileRead().ToEnum<TEnum>();
+        readonly get => value.VolatileRead().ToEnumUnchecked<TEnum>();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => this.value.VolatileWrite(value.ToInt64());
+        set => this.value.VolatileWrite(value.ToUInt64Unchecked());
     }
 
     /// <summary>
@@ -123,7 +109,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TEnum CompareExchange(TEnum update, TEnum expected)
-        => Interlocked.CompareExchange(ref value, update.ToInt64(), expected.ToInt64()).ToEnum<TEnum>();
+        => Interlocked.CompareExchange(ref value, update.ToUInt64Unchecked(), expected.ToUInt64Unchecked()).ToEnumUnchecked<TEnum>();
 
     /// <summary>
     /// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -140,7 +126,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     /// <param name="update">A new value to be stored into this container.</param>
     /// <returns>Original value before modification.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TEnum GetAndSet(TEnum update) => value.GetAndSet(update.ToInt64()).ToEnum<TEnum>();
+    public TEnum GetAndSet(TEnum update) => value.GetAndSet(update.ToUInt64Unchecked()).ToEnumUnchecked<TEnum>();
 
     /// <summary>
     /// Modifies the current value atomically.
@@ -161,9 +147,10 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
         TEnum oldValue, newValue;
         do
         {
-            newValue = updater.Invoke(oldValue = Volatile.Read(ref value).ToEnum<TEnum>());
+            newValue = updater.Invoke(oldValue = Value);
         }
         while (!CompareAndSet(oldValue, newValue));
+
         return (oldValue, newValue);
     }
 
@@ -174,9 +161,10 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
         TEnum oldValue, newValue;
         do
         {
-            newValue = accumulator.Invoke(oldValue = Volatile.Read(ref value).ToEnum<TEnum>(), x);
+            newValue = accumulator.Invoke(oldValue = Value, x);
         }
         while (!CompareAndSet(oldValue, newValue));
+
         return (oldValue, newValue);
     }
 
@@ -278,7 +266,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     /// </summary>
     /// <param name="other">Other value to compare.</param>
     /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-    public readonly bool Equals(TEnum other) => value.VolatileRead() == other.ToInt64();
+    public readonly bool Equals(TEnum other) => EqualityComparer<TEnum>.Default.Equals(Value, other);
 
     /// <summary>
     /// Determines whether stored value is equal to
@@ -289,7 +277,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     public override readonly bool Equals([NotNullWhen(true)] object? other) => other switch
     {
         TEnum b => Equals(b),
-        AtomicEnum<TEnum> b => b.value.VolatileRead() == value.VolatileRead(),
+        AtomicEnum<TEnum> b => Equals(b.Value),
         _ => false,
     };
 
@@ -297,7 +285,7 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     /// Computes hash code for the stored value.
     /// </summary>
     /// <returns>The hash code of the stored boolean value.</returns>
-    public override readonly int GetHashCode() => value.VolatileRead().GetHashCode();
+    public override readonly int GetHashCode() => Value.GetHashCode();
 
     /// <summary>
     /// Converts the value in this container to its textual representation.

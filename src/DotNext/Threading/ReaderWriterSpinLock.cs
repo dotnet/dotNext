@@ -28,7 +28,7 @@ public struct ReaderWriterSpinLock
             valid = true;
         }
 
-        internal bool IsValid(in int version) => valid && this.version == Unsafe.AsRef(in version).VolatileRead();
+        internal bool IsValid(in int version) => valid && this.version == version.VolatileRead();
 
         private bool Equals(in LockStamp other)
             => version == other.version && valid == other.valid;

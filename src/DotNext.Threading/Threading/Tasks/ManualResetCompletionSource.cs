@@ -12,7 +12,16 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 {
     private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
 
-    private readonly Action<object?> cancellationCallback;
+    private sealed class BoxedVersion
+    {
+        internal readonly short Value;
+
+        internal BoxedVersion(short value) => Value = value;
+
+        public static implicit operator BoxedVersion(short value) => new(value);
+    }
+
+    private readonly Action<object?, CancellationToken> cancellationCallback;
     private readonly bool runContinuationsAsynchronously;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
     private CancellationTokenSource? timeoutSource;
@@ -22,7 +31,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private object? continuationState, capturedContext;
     private ExecutionContext? context;
     private protected short version;
-    private volatile bool completed;
+    private bool completed;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
@@ -35,14 +44,10 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected object SyncRoot => cancellationCallback;
 
-    private void CancellationRequested(object? token)
+    private void CancellationRequested(object? expectedVersion, CancellationToken token)
     {
-        Debug.Assert(token is short);
-        CancellationRequested((short)token);
-    }
+        Debug.Assert(expectedVersion is BoxedVersion);
 
-    private void CancellationRequested(short token)
-    {
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
@@ -50,12 +55,12 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             lock (SyncRoot)
             {
-                if (token == version && !completed)
+                if (!completed && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
                 {
-                    if (timeoutSource?.IsCancellationRequested ?? false)
+                    if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
                     else
-                        CompleteAsCanceled(tokenTracker.Token);
+                        CompleteAsCanceled(token);
                 }
             }
         }
@@ -64,7 +69,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
     {
         // box current token once and only if needed
-        object? tokenHolder = null;
+        BoxedVersion? tokenHolder = null;
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
@@ -85,11 +90,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected static object? CaptureContext()
     {
-        var context = SynchronizationContext.Current;
+        object? context = SynchronizationContext.Current;
         if (context is null || context.GetType() == typeof(SynchronizationContext))
         {
             var scheduler = TaskScheduler.Current;
-            return ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
+            context = ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
         }
 
         return context;
@@ -105,37 +110,25 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         timeoutTracker.Dispose();
         timeoutTracker = default;
 
-        if (timeoutSource is not null && !TryReset(timeoutSource))
+        if (timeoutSource is not null && !timeoutSource.TryReset())
         {
             timeoutSource.Dispose();
             timeoutSource = null;
         }
-
-        // TODO: Workaround for https://github.com/dotnet/runtime/issues/60182
-        static bool TryReset(CancellationTokenSource source)
-        {
-            bool result;
-
-            try
-            {
-                result = source.TryReset();
-            }
-            catch (ObjectDisposedException)
-            {
-                result = false;
-            }
-
-            return result;
-        }
     }
 
-    private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously)
+    private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously, bool flowExecutionContext)
     {
         switch (capturedContext)
         {
             case null:
-                if (!runAsynchronously || !ThreadPool.UnsafeQueueUserWorkItem(continuation, state, false))
-                    continuation(state);
+                if (!runAsynchronously)
+                    goto default;
+
+                if (flowExecutionContext)
+                    ThreadPool.QueueUserWorkItem(continuation, state, preferLocal: true);
+                else
+                    ThreadPool.UnsafeQueueUserWorkItem(continuation, state, preferLocal: true);
                 break;
             case SynchronizationContext context:
                 context.Post(continuation.Invoke, state);
@@ -143,13 +136,14 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             case TaskScheduler scheduler:
                 Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
                 break;
+            default:
+                continuation(state);
+                break;
         }
     }
 
-    private void InvokeContinuationCore()
+    private void InvokeContinuationCore(bool flowExecutionContext)
     {
-        context = null;
-
         var continuation = this.continuation;
         this.continuation = null;
 
@@ -160,22 +154,25 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         this.capturedContext = null;
 
         if (continuation is not null)
-            InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously);
+            InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously, flowExecutionContext);
     }
 
     private static void InvokeContinuation(object? source)
     {
         Debug.Assert(source is ManualResetCompletionSource);
 
-        Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore();
+        Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore(flowExecutionContext: true);
     }
 
     private protected void InvokeContinuation()
     {
-        if (context is null)
-            InvokeContinuationCore();
+        var contextCopy = context;
+        context = null;
+
+        if (contextCopy is null)
+            InvokeContinuationCore(flowExecutionContext: false);
         else
-            ExecutionContext.Run(context, ContinuationInvoker, this);
+            ExecutionContext.Run(contextCopy, ContinuationInvoker, this);
     }
 
     private protected virtual void ResetCore()
@@ -254,7 +251,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
 
     execute_inplace:
-        InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously);
+        InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously, flowExecutionContext);
 
     exit:
         return;
@@ -318,11 +315,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        if (!IsCompleted)
+        if (!completed)
         {
             lock (SyncRoot)
             {
-                if (!IsCompleted)
+                if (!completed)
                     PrepareTaskCore(timeout, token);
             }
         }

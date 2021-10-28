@@ -12,6 +12,11 @@ namespace DotNext
     /// </summary>
     public static class ValueTypeExtensions
     {
+        internal static TOutput ChangeType<TInput, TOutput>(this TInput input)
+            where TInput : struct, IConvertible
+            where TOutput : struct, IConvertible
+            => (TOutput)input.ToType(typeof(TOutput), InvariantCulture);
+
         /// <summary>
         /// Checks whether the specified value is equal to one
         /// of the specified values.
@@ -50,15 +55,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
-        {
-            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
-            {
-                if (values[i].Equals(value))
-                    return true;
-            }
-
-            return false;
-        }
+            => values.AsSpan().Contains(value);
 
         /// <summary>
         /// Attempts to get value from nullable container.
@@ -97,6 +94,14 @@ namespace DotNext
             Push(value);
             Conv_U1();
             return Return<byte>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static sbyte ToSByte(this bool value)
+        {
+            Push(value);
+            Conv_I1();
+            return Return<sbyte>();
         }
 
         /// <summary>

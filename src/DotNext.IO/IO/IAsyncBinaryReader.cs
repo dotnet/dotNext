@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -36,9 +37,7 @@ public interface IAsyncBinaryReader
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        Unsafe.SkipInit(out T result);
-        buffer.Memory.Span.CopyTo(Span.AsBytes(ref result));
-        return result;
+        return MemoryMarshal.Read<T>(buffer.Memory.Span);
     }
 
     /// <summary>
