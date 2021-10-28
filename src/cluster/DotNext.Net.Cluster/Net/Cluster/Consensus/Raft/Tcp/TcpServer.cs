@@ -149,7 +149,6 @@ internal sealed class TcpServer : TcpTransport, IServer
             buffer.Dispose();
             stream.Close(GracefulShutdownTimeout);
             stream.Dispose();
-            exchange.Dispose();
             Interlocked.Decrement(ref connections);
         }
     }
