@@ -105,7 +105,8 @@ static Task UseUdpTransport(int port, string? persistentStorage)
     {
         LowerElectionTimeout = 150,
         UpperElectionTimeout = 300,
-        DatagramSize = 1024
+        DatagramSize = 1024,
+        ColdStart = false,
     };
     return UseConfiguration(configuration, persistentStorage);
 }
@@ -117,6 +118,7 @@ static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
         LowerElectionTimeout = 150,
         UpperElectionTimeout = 300,
         TransmissionBlockSize = 4096,
+        ColdStart = false,
         SslOptions = useSsl ? CreateSslOptions() : null
     };
 
