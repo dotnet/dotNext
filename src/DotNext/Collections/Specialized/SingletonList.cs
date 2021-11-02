@@ -18,16 +18,21 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
     [StructLayout(LayoutKind.Auto)]
     public struct Enumerator : IEnumerator<T>
     {
-        private bool requested;
+        private const byte NotRequestedState = 1;
+        private const byte RequestedState = 2;
+
+        private byte state;
+
+        internal Enumerator(T item)
+        {
+            Current = item;
+            state = NotRequestedState;
+        }
 
         /// <summary>
         /// Gets the current element.
         /// </summary>
-        public T Current
-        {
-            readonly get;
-            internal init;
-        }
+        public T Current { get; }
 
         /// <inheritdoc />
         readonly object? IEnumerator.Current => Current;
@@ -40,12 +45,24 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
         /// </summary>
         /// <returns><see langword="true"/> if the enumerator advanced successfully; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext()
-            => requested ? false : requested = true;
+        {
+            if (state == NotRequestedState)
+            {
+                state = RequestedState;
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Resets state of this enumerator.
         /// </summary>
-        public void Reset() => requested = false;
+        public void Reset()
+        {
+            if (state == RequestedState)
+                state = NotRequestedState;
+        }
     }
 
     /// <summary>
@@ -115,7 +132,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
     /// Gets enumerator for the single element in the list.
     /// </summary>
     /// <returns>The enumerator over single element.</returns>
-    public readonly Enumerator GetEnumerator() => new() { Current = Item };
+    public readonly Enumerator GetEnumerator() => new(Item);
 
     /// <inheritdoc />
     readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
