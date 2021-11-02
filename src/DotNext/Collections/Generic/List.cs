@@ -191,12 +191,12 @@ public static class List
         => new(list, converter);
 
     /// <summary>
-    /// Constructs read-only list with single item in it.
+    /// Constructs read-only list with a single item in it.
     /// </summary>
     /// <param name="item">An item to be placed into list.</param>
     /// <typeparam name="T">Type of list items.</typeparam>
     /// <returns>Read-only list containing single item.</returns>
-    public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T>(item);
+    public static IReadOnlyList<T> Singleton<T>(T item) => new Specialized.SingletonList<T>(item);
 
     /// <summary>
     /// Inserts the item into sorted list.

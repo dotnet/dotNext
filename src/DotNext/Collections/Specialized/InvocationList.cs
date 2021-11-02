@@ -228,7 +228,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
             return Sequence.GetEmptyEnumerator<TDelegate>();
 
         if (list is TDelegate d)
-            return new SingletonList<TDelegate>.Enumerator(d);
+            return new SingletonList<TDelegate>.Enumerator { Current = d };
 
         return Unsafe.As<TDelegate[]>(list).As<IEnumerable<TDelegate>>().GetEnumerator();
     }
