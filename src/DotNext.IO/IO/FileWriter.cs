@@ -10,7 +10,10 @@ using Buffers;
 /// </summary>
 public partial class FileWriter : Disposable
 {
-    private readonly SafeFileHandle handle;
+    /// <summary>
+    /// Represents the file handle.
+    /// </summary>
+    protected readonly SafeFileHandle handle;
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
