@@ -17,7 +17,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
 /// </summary>
 /// <remarks>
-/// The layout of of the audit trail file system:
+/// The layout of the audit trail file system:
 /// <list type="table">
 /// <item>
 /// <term>node.state</term>
@@ -28,7 +28,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <description>file containing log partition with log records</description>
 /// </item>
 /// <item>
-/// <term>&lt;snapshot&gt;.meta</term>
+/// <term>&lt;partition&gt;.meta</term>
 /// <description>file containing metadata associated with the log partition</description>
 /// </item>
 /// <item>
