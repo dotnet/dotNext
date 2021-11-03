@@ -855,15 +855,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             => entry.IsEmpty ? ValueTask.CompletedTask : builder.ApplyAsync(entry);
     }
 
-    private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder builder, long snapshotIndex)
-    {
-        // Persist snapshot (cannot be canceled to avoid inconsistency)
-        await builder.BuildAsync(snapshotIndex).ConfigureAwait(false);
-
-        // Remove squashed partitions
-        return DetachPartitions(snapshotIndex);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
         => upperBoundIndex - Volatile.Read(ref snapshot).Metadata.Index >= recordsPerPartition;
@@ -965,7 +956,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
                 try
                 {
-                    removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+                    // Persist snapshot (cannot be canceled to avoid inconsistency)
+                    await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+
+                    // Remove squashed partitions
+                    removedHead = DetachPartitions(upperBoundIndex);
                 }
                 finally
                 {
@@ -1031,7 +1026,12 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             {
                 using var builder = CreateSnapshotBuilder();
                 await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
-                removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+
+                // Persist snapshot (cannot be canceled to avoid inconsistency)
+                await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+
+                // Remove squashed partitions
+                removedHead = DetachPartitions(upperBoundIndex);
             }
             else
             {
@@ -1076,7 +1076,12 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 try
                 {
                     await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
-                    removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+
+                    // Persist snapshot (cannot be canceled to avoid inconsistency)
+                    await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+
+                    // Remove squashed partitions
+                    removedHead = DetachPartitions(upperBoundIndex);
                 }
                 finally
                 {
