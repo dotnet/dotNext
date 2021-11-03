@@ -378,7 +378,7 @@ public partial class PersistentState : Disposable, IPersistentState
     {
         // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-        using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: snapshot.Length.GetValueOrDefault()))
+        using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: SnapshotMetadata.Size + snapshot.Length.GetValueOrDefault()))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             await tempSnapshot.WriteAsync(snapshot, snapshotIndex).ConfigureAwait(false);
