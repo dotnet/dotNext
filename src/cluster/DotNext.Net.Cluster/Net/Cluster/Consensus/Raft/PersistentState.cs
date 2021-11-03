@@ -205,8 +205,7 @@ public partial class PersistentState : Disposable, IPersistentState
             // try to read snapshot out of the loop
             if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
             {
-                var snapshotEntry = snapshot.Read(sessionId);
-                BufferHelpers.GetReference(in list) = snapshotEntry;
+                BufferHelpers.GetReference(in list) = snapshot.Read(sessionId);
 
                 // skip squashed log entries
                 startIndex = snapshot.Metadata.Index + 1L;
