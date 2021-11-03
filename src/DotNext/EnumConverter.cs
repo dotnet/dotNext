@@ -251,7 +251,6 @@ public static class EnumConverter
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
     internal static T ToEnumUnchecked<T>(this ulong value)
         where T : struct, Enum => EnumTypeCode<T>.Value switch
     {

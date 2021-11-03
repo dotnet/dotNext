@@ -28,7 +28,7 @@ public partial class PersistentState
         private readonly int identifier;
         internal readonly long Term, Timestamp, Length, Offset;
 
-        internal LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id)
+        internal LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id = null)
         {
             Term = term;
             Timestamp = timeStamp.UtcTicks;

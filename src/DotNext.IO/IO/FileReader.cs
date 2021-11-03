@@ -10,7 +10,10 @@ using Buffers;
 /// </summary>
 public partial class FileReader : Disposable
 {
-    private readonly SafeFileHandle handle;
+    /// <summary>
+    /// Represents the file handle.
+    /// </summary>
+    protected readonly SafeFileHandle handle;
     private MemoryOwner<byte> buffer;
     private int bufferStart, bufferEnd;
     private long fileOffset;

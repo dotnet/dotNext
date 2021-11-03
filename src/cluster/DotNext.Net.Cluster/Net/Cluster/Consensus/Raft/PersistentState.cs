@@ -17,7 +17,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
 /// </summary>
 /// <remarks>
-/// The layout of of the audit trail file system:
+/// The layout of the audit trail file system:
 /// <list type="table">
 /// <item>
 /// <term>node.state</term>
@@ -28,7 +28,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <description>file containing log partition with log records</description>
 /// </item>
 /// <item>
-/// <term>&lt;snapshot&gt;.meta</term>
+/// <term>&lt;partition&gt;.meta</term>
 /// <description>file containing metadata associated with the log partition</description>
 /// </item>
 /// <item>
@@ -205,8 +205,7 @@ public partial class PersistentState : Disposable, IPersistentState
             // try to read snapshot out of the loop
             if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
             {
-                var snapshotEntry = snapshot.Read(sessionId);
-                list.GetPinnableReference() = snapshotEntry;
+                BufferHelpers.GetReference(in list) = snapshot.Read(sessionId);
 
                 // skip squashed log entries
                 startIndex = snapshot.Metadata.Index + 1L;
@@ -239,11 +238,11 @@ public partial class PersistentState : Disposable, IPersistentState
         ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
         {
             var entry = snapshot.Read(sessionId);
-            return reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(entry), entry.SnapshotIndex, token);
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token);
         }
 
         ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(LogEntry.Initial), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
     }
 
     /// <summary>
@@ -377,16 +376,16 @@ public partial class PersistentState : Disposable, IPersistentState
     private async ValueTask<Partition?> UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
         where TSnapshot : notnull, IRaftLogEntry
     {
-        // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
+        // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-        using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: snapshot.Length.GetValueOrDefault()))
+        using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: SnapshotMetadata.Size + snapshot.Length.GetValueOrDefault()))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             await tempSnapshot.WriteAsync(snapshot, snapshotIndex).ConfigureAwait(false);
             await tempSnapshot.FlushAsync().ConfigureAwait(false);
         }
 
-        // 2. Delete existing snapshot file
+        // Close existing snapshot file
         this.snapshot.Dispose();
 
         /*
