@@ -39,7 +39,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// The audit trail supports log compaction. However, it doesn't know how to interpret and reduce log records during compaction.
 /// To do that, you can override <see cref="CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext)"/> method and implement state machine logic.
 /// </remarks>
-public partial class PersistentState : Disposable, IPersistentState
+public abstract partial class PersistentState : Disposable, IPersistentState
 {
     private static readonly Predicate<PersistentState> IsConsistentPredicate;
 
@@ -72,7 +72,7 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-    public PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
+    protected PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
     {
         configuration ??= new();
         if (recordsPerPartition < 2L)
@@ -157,7 +157,7 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-    public PersistentState(string path, int recordsPerPartition, Options? configuration = null)
+    protected PersistentState(string path, int recordsPerPartition, Options? configuration = null)
         : this(new DirectoryInfo(path), recordsPerPartition, configuration)
     {
     }
@@ -937,11 +937,8 @@ public partial class PersistentState : Disposable, IPersistentState
         async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
         {
             Partition? removedHead;
-            var builder = CreateSnapshotBuilder();
-            if (builder is null)
-                return;
 
-            try
+            using (var builder = CreateSnapshotBuilder())
             {
                 var upperBoundIndex = 0L;
 
@@ -974,10 +971,6 @@ public partial class PersistentState : Disposable, IPersistentState
                 {
                     syncRoot.Release(LockType.CompactionLock);
                 }
-            }
-            finally
-            {
-                builder.Dispose();
             }
 
             DeletePartitions(removedHead);
@@ -1033,19 +1026,12 @@ public partial class PersistentState : Disposable, IPersistentState
 
         async ValueTask<Partition?> ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)
         {
-            SnapshotBuilder? builder;
             Partition? removedHead;
-            if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+            if (IsCompactionRequired(upperBoundIndex))
             {
-                try
-                {
-                    await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
-                    removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
-                }
-                finally
-                {
-                    builder.Dispose();
-                }
+                using var builder = CreateSnapshotBuilder();
+                await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
+                removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
             }
             else
             {
@@ -1083,9 +1069,9 @@ public partial class PersistentState : Disposable, IPersistentState
         async Task<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
         {
             Partition? removedHead;
-            SnapshotBuilder? builder;
-            if (upperBoundIndex > 0L && (builder = CreateSnapshotBuilder()) is not null)
+            if (upperBoundIndex > 0L)
             {
+                var builder = CreateSnapshotBuilder();
                 var session = sessionManager.Take();
                 try
                 {
@@ -1169,7 +1155,7 @@ public partial class PersistentState : Disposable, IPersistentState
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <seealso cref="Commands.CommandInterpreter"/>
-    protected virtual ValueTask ApplyAsync(LogEntry entry) => new();
+    protected abstract ValueTask ApplyAsync(LogEntry entry);
 
     private ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
 
