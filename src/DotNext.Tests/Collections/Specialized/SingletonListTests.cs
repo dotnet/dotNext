@@ -32,6 +32,7 @@ namespace DotNext.Collections.Specialized
             Throws<NotSupportedException>(() => list.RemoveAt(0));
             Throws<NotSupportedException>(() => list.Add(42));
             Throws<NotSupportedException>(() => list.Insert(0, 42));
+            Throws<NotSupportedException>(list.Clear);
         }
 
         [Fact]
