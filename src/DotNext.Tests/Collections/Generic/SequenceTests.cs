@@ -416,5 +416,13 @@ namespace DotNext.Collections.Generic
             using var copy = "abcd".Copy();
             Equal("abcd", copy.Memory.ToString());
         }
+
+        [Fact]
+        public static void SingletonCollection()
+        {
+            var collection = Sequence.Singleton(42);
+            NotEmpty(collection);
+            Equal(42, collection.First());
+        }
     }
 }
