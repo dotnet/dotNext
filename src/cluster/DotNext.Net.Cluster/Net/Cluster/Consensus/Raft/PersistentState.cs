@@ -239,11 +239,11 @@ public partial class PersistentState : Disposable, IPersistentState
         ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
         {
             var entry = snapshot.Read(sessionId);
-            return reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(entry), entry.SnapshotIndex, token);
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token);
         }
 
         ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(LogEntry.Initial), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
     }
 
     /// <summary>
@@ -377,7 +377,7 @@ public partial class PersistentState : Disposable, IPersistentState
     private async ValueTask<Partition?> UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
         where TSnapshot : notnull, IRaftLogEntry
     {
-        // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
+        // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
         using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: snapshot.Length.GetValueOrDefault()))
         {
@@ -386,7 +386,7 @@ public partial class PersistentState : Disposable, IPersistentState
             await tempSnapshot.FlushAsync().ConfigureAwait(false);
         }
 
-        // 2. Delete existing snapshot file
+        // Close existing snapshot file
         this.snapshot.Dispose();
 
         /*
