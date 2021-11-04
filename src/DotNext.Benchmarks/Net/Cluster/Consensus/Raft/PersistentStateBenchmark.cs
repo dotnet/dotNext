@@ -17,6 +17,19 @@ using IO.Log;
 [MemoryDiagnoser]
 public class PersistentStateBenchmark
 {
+    private sealed class TestPersistentState : PersistentState
+    {
+        internal TestPersistentState(string path, Options configuration)
+            : base(path, 10, configuration)
+        {
+        }
+
+        protected override ValueTask ApplyAsync(LogEntry entry) => ValueTask.CompletedTask;
+
+        protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
+            => throw new NotImplementedException();
+    }
+
     private sealed class BinaryLogEntry : BinaryTransferObject, IRaftLogEntry
     {
         internal BinaryLogEntry(long term, ReadOnlyMemory<byte> content)
@@ -58,9 +71,9 @@ public class PersistentStateBenchmark
     private readonly string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     private IPersistentState state;
 
-    private async Task SetupStateAsync(PersistentState.Options options, bool addToCache)
+    private async Task SetupStateAsync(PersistentState.Options configuration, bool addToCache)
     {
-        var state = new PersistentState(path, 10, options);
+        var state = new TestPersistentState(path, configuration);
         const int payloadSize = 2048;
         var bytes = new byte[payloadSize];
         Random.Shared.NextBytes(bytes);
@@ -72,11 +85,11 @@ public class PersistentStateBenchmark
 
     [GlobalSetup(Target = nameof(ReadPersistedLogEntriesAsync))]
     public Task SetupStateWithoutCacheAsync()
-        => SetupStateAsync(new PersistentState.Options { UseCaching = false }, false);
+        => SetupStateAsync(new PersistentState.Options { UseCaching = false, CompactionMode = PersistentState.CompactionMode.Background }, false);
 
     [GlobalSetup(Target = nameof(ReadCachedLogEntriesAsync))]
     public Task SetupStateWithCacheAsync()
-        => SetupStateAsync(new PersistentState.Options { UseCaching = true }, true);
+        => SetupStateAsync(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background }, true);
 
     [Benchmark]
     public ValueTask<long> ReadCachedLogEntriesAsync()

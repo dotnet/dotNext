@@ -97,6 +97,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Introduced a concept of a serializable Data Transfer Objects represented by `ISerializable<TSelf>` interface. The interface allows to control the serialization/deserialization behavior on top of `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces. Thanks to static abstract interface methods, the value of the type can be easily reconstructed from its serialized state
 * Added support of binary-formattable types to `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces
 * Improved performance of `FileBufferingWriter` I/O operations with preallocated file size feature introduced in .NET 6
+* `StreamExtensions.Combine` allows to represent multiple streams as a single stream
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.0.0">DotNext.Net.Cluster 4.0.0</a>
 * Optimized memory allocation for each hearbeat message emitted by Raft node in leader state

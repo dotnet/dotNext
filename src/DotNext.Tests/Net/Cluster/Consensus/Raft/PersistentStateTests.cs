@@ -37,7 +37,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private sealed class TestAuditTrail : PersistentState
+        private sealed class PersistentStateWithoutSnapshot : PersistentState
+        {
+            internal PersistentStateWithoutSnapshot(string path, int recordsPerPartition, Options configuration = null)
+                : base(path, recordsPerPartition, OrDefault(configuration))
+            {
+            }
+
+            private static Options OrDefault(Options configuration)
+            {
+                configuration ??= new();
+                configuration.CompactionMode = CompactionMode.Background;
+                return configuration;
+            }
+
+            protected override ValueTask ApplyAsync(LogEntry entry)
+            {
+                False(entry.IsEmpty);
+                return ValueTask.CompletedTask;
+            }
+
+            protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
+                => throw new NotImplementedException();
+        }
+
+        private sealed class PersistentStateWithSnapshot : PersistentState
         {
             internal long Value;
 
@@ -60,7 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     => writer.WriteAsync(currentValue, token);
             }
 
-            internal TestAuditTrail(string path, bool useCaching, PersistentState.CompactionMode compactionMode = default)
+            internal PersistentStateWithSnapshot(string path, bool useCaching, PersistentState.CompactionMode compactionMode = default)
                 : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode })
             {
             }
@@ -76,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task StateManipulations()
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
             {
@@ -93,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //now open state again to check persistence
-            state = new PersistentState(dir, RecordsPerPartition);
+            state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             try
             {
                 Equal(1, state.Term);
@@ -110,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task EmptyLogEntry()
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            using var auditTrail = new PersistentState(dir, RecordsPerPartition);
+            using var auditTrail = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             await auditTrail.AppendAsync(new EmptyLogEntry(10));
 
             Equal(1, auditTrail.LastUncommittedEntryIndex);
@@ -143,7 +167,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { MaxConcurrentReads = concurrentReads, InitialPartitionSize = partitionSize, UseCaching = caching });
+            IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new PersistentState.Options { MaxConcurrentReads = concurrentReads, InitialPartitionSize = partitionSize, UseCaching = caching });
             try
             {
                 // entry 1
@@ -193,7 +217,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new() { CopyOnReadOptions = new() });
+            IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { CopyOnReadOptions = new() });
             try
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
@@ -228,7 +252,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task AppendWhileReading()
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            using var state = new PersistentState(dir, RecordsPerPartition);
+            using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             await state.AppendAsync(entry);
 
@@ -261,7 +285,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            using var state = new PersistentState(dir, RecordsPerPartition);
+            using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.LastUncommittedEntryIndex);
             Equal(0L, state.LastCommittedEntryIndex);
@@ -280,7 +304,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            using (var state = new PersistentState(dir, RecordsPerPartition))
+            using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
                 Equal(4L, state.LastUncommittedEntryIndex);
@@ -291,7 +315,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            using (var state = new PersistentState(dir, RecordsPerPartition))
+            using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
             {
                 Equal(1L, state.LastUncommittedEntryIndex);
                 Equal(0L, state.LastCommittedEntryIndex);
@@ -319,7 +343,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
+            IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
             try
             {
                 checker = (entries, snapshotIndex, token) =>
@@ -366,7 +390,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
+            state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
             try
             {
                 checker = async (entries, snapshotIndex, token) =>
@@ -412,7 +436,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
+            using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
                 Equal(1L, await state.AppendAsync(entry1, true));
                 Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
@@ -427,7 +451,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
+            using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
                 Equal(3L, state.LastCommittedEntryIndex);
                 Equal(5L, state.LastUncommittedEntryIndex);
@@ -443,7 +467,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(3, await state.CommitAsync(3, CancellationToken.None));
@@ -462,7 +486,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
                 {
@@ -495,7 +519,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Sequential))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching, PersistentState.CompactionMode.Sequential))
             {
                 False(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
@@ -514,7 +538,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read agian
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
                 {
@@ -543,7 +567,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Background))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching, PersistentState.CompactionMode.Background))
             {
                 True(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
@@ -575,7 +599,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read agian
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
                 {
@@ -607,7 +631,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Foreground))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching, PersistentState.CompactionMode.Foreground))
             {
                 False(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
@@ -626,7 +650,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read agian
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
                 {
@@ -656,7 +680,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var backupFile = Path.GetTempFileName();
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
             {
@@ -682,7 +706,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await PersistentState.RestoreFromBackupAsync(backupStream, new DirectoryInfo(dir));
             }
             //ensure that all entries are recovered successfully
-            state = new PersistentState(dir, RecordsPerPartition);
+            state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
             try
             {
                 Equal(5, state.LastUncommittedEntryIndex);
@@ -710,7 +734,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using (var state = new TestAuditTrail(dir, true))
+            using (var state = new PersistentStateWithSnapshot(dir, true))
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 await state.CommitAsync(CancellationToken.None);
@@ -718,7 +742,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //reconstruct state
-            using (var state = new TestAuditTrail(dir, true))
+            using (var state = new PersistentStateWithSnapshot(dir, true))
             {
                 Equal(0L, state.Value);
                 await state.InitializeAsync();
@@ -784,7 +808,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly List<object> entries = new();
 
             internal JsonPersistentState(string location, bool caching)
-                : base(location, RecordsPerPartition, new Options { UseCaching = caching })
+                : base(location, RecordsPerPartition, new Options { UseCaching = caching, CompactionMode = CompactionMode.Background })
             {
             }
 
@@ -793,6 +817,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var content = await entry.DeserializeFromJsonAsync();
                 entries.Add(content);
             }
+
+            protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
+                => throw new NotImplementedException();
 
             internal IReadOnlyList<object> Entries => entries;
         }

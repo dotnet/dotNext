@@ -186,8 +186,8 @@ public partial class PersistentState
     /// </summary>
     /// <param name="context">The context of the snapshot builder.</param>
     /// <returns>The snapshot builder; or <see langword="null"/> if snapshotting is not supported.</returns>
-    protected virtual SnapshotBuilder? CreateSnapshotBuilder(in SnapshotBuilderContext context) => null;
+    protected abstract SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context);
 
-    private SnapshotBuilder? CreateSnapshotBuilder()
+    private SnapshotBuilder CreateSnapshotBuilder()
         => CreateSnapshotBuilder(new SnapshotBuilderContext(snapshot, bufferManager.BufferAllocator));
 }
