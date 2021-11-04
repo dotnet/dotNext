@@ -10,6 +10,7 @@ namespace DotNext.IO;
 using Buffers;
 using Text;
 using static Buffers.BufferReader;
+using static Collections.Generic.Sequence;
 
 /// <summary>
 /// Represents high-level read/write methods for the stream.
@@ -1206,4 +1207,20 @@ public static partial class StreamExtensions
             destination.Advance(count);
         }
     }
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="stream">The stream to combine.</param>
+    /// <param name="others">A collection of streams.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    public static Stream Combine(this Stream stream, params Stream[] others)
+        => others.IsNullOrEmpty() ? stream : new SparseStream(Singleton(stream).Concat(others));
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="streams">A collection of readable streams.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    public static Stream Combine(this IEnumerable<Stream> streams) => new SparseStream(streams);
 }
