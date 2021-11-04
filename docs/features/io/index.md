@@ -48,6 +48,20 @@ foreach(Action<Stream> consumer in consumers)
 }
 ```
 
+# Combining Streams
+`Combine` extension method of [StreamExtensions](xref:DotNext.IO.StreamExtensions) class allows to represent multiple streams as one logical stream. This can be helpful is situations when the data is distributed across several files and you need to represent their contents a one logical stream. It is called _Sparse Stream_. Moreover, it is helpful to create [IAsyncBinaryReader](xref:DotNext.IO.IAsyncBinaryReader) over multiple streams.
+```csharp
+using System.IO;
+using DotNext.IO;
+
+using var ms1 = new MemoryStream();
+using var ms2 = new MemoryStream();
+
+using var stream = ms1.Combine(ms2);
+```
+
+Note that the result stream is read-only and not seekable.
+
 # Pipelines
 [System.IO.Pipelines](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines) knowns as high-performance alternative to .NET streams. However, it doesn't have built-in helpers for encoding and decoding strongly-typed data such as blittable value types and strings that are provided by [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader) and [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) classes. .NEXT I/O library provides API surface in the form of extensions methods that cover all these needs and turns I/O pipelines into first-class citizen in the world of high-level I/O operations. With these methods you can easily swith from streams to pipes without increasing complexity of code.
 
