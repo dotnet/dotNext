@@ -179,5 +179,25 @@ namespace DotNext
             result = new(EnvironmentVariableTarget.Machine);
             Equal(EnvironmentVariableTarget.Machine, result.Convert(Convert.ToInt32).Error);
         }
+
+        [Fact]
+        public static void HandleException()
+        {
+            Result<int> result = 20;
+            Equal(20, result.OrInvoke(static e => 10));
+
+            result = new(new ArithmeticException());
+            Equal(10, result.OrInvoke(static e => 10));
+        }
+
+        [Fact]
+        public static void HandleException2()
+        {
+            Result<int, EnvironmentVariableTarget> result = 20;
+            Equal(20, result.OrInvoke(static e => 10));
+
+            result = new(EnvironmentVariableTarget.Machine);
+            Equal(10, result.OrInvoke(static e => 10));
+        }
     }
 }
