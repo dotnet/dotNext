@@ -183,7 +183,7 @@ public static class Optional
     /// <typeparam name="TException">The type of the exception to throw if the optional container has no value.</typeparam>
     /// <param name="optional">The optional container.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
-    public static ref readonly T GetReference<T, TException>(this in Optional<T> optional)
+    public static ref readonly T GetReference<T, TException>(in Optional<T> optional)
         where T : struct
         where TException : Exception, new()
         => ref GetReference(in optional, new Activator<TException>());
@@ -195,7 +195,7 @@ public static class Optional
     /// <param name="optional">The optional container.</param>
     /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
-    public static ref readonly T GetReference<T>(this in Optional<T> optional, Func<Exception> exceptionFactory)
+    public static ref readonly T GetReference<T>(in Optional<T> optional, Func<Exception> exceptionFactory)
         where T : struct
         => ref GetReference<T, DelegatingSupplier<Exception>>(in optional, exceptionFactory);
 
@@ -207,17 +207,29 @@ public static class Optional
     /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
     [CLSCompliant(false)]
-    public static unsafe ref readonly T GetReference<T>(this in Optional<T> optional, delegate*<Exception> exceptionFactory)
+    public static unsafe ref readonly T GetReference<T>(in Optional<T> optional, delegate*<Exception> exceptionFactory)
         where T : struct
         => ref GetReference<T, Supplier<Exception>>(in optional, exceptionFactory);
+
+    /// <summary>
+    /// Converts the monad to <see cref="Optional{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the underlying value.</typeparam>
+    /// <typeparam name="TMonad">The type of the monad.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
+    public static Optional<T> Create<T, TMonad>(TMonad value)
+        where TMonad : struct, IOptionMonad<T>
+        => value.HasValue ? new(value.OrDefault()) : None<T>();
 }
 
 /// <summary>
 /// A container object which may or may not contain a value.
 /// </summary>
 /// <typeparam name="T">Type of value.</typeparam>
+#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
-public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
+public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, IOptionMonad<T, Optional<T>>
 {
     private const byte UndefinedValue = 0;
     private const byte NullValue = 1;
@@ -670,3 +682,4 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <see cref="HasValue"/>
     public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
 }
+#pragma warning restore CA2252

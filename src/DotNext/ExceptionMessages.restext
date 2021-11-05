@@ -19,3 +19,4 @@ UndefinedEqualsNullSwitchEnabled=Converter is not supported if switch DotNext.Op
 InvalidHexInput=Character {0} is not a valid hexadecimal value
 KeyAlreadyExists=The key already exists
 ObjectMustNotBeArray=The object must not be represented by the array
+NoResult=The result of the operation is unavailable. Error code is {0}
