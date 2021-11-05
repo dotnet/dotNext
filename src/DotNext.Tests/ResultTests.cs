@@ -60,7 +60,7 @@ namespace DotNext
         public static void RaiseError2()
         {
             var r = new Result<decimal, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
-            Equal(EnvironmentVariableTarget.Machine, Throws<ResultUnavailableException<EnvironmentVariableTarget>>(() => r.Value).ErrorCode);
+            Equal(EnvironmentVariableTarget.Machine, Throws<UndefinedResultException<EnvironmentVariableTarget>>(() => r.Value).ErrorCode);
             Equal(EnvironmentVariableTarget.Machine, r.Error);
             Equal(20M, r.Or(20M));
             Equal(0M, r.OrDefault());

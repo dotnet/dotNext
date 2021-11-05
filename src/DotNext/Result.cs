@@ -90,7 +90,7 @@ public static class Result
     /// <typeparam name="TError">The type of the error code.</typeparam>
     /// <param name="result">The result container.</param>
     /// <returns>The reference to the result.</returns>
-    /// <exception cref="Exception">The result is unavailable.</exception>
+    /// <exception cref="UndefinedResultException{TError}">The result is undefined.</exception>
     public static ref readonly T GetReference<T, TError>(in Result<T, TError> result)
         where TError : struct, Enum
         => ref Result<T, TError>.GetReference(in result);
@@ -422,7 +422,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         if (result.IsSuccessful)
             return ref result.value;
 
-        throw new ResultUnavailableException<TError>(result.Error);
+        throw new UndefinedResultException<TError>(result.Error);
     }
 
     /// <summary>
@@ -434,8 +434,8 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <summary>
     /// Extracts the actual result.
     /// </summary>
-    /// <exception cref="ResultUnavailableException{TError}">The value is unavailable.</exception>
-    public T Value => IsSuccessful ? value : throw new ResultUnavailableException<TError>(Error);
+    /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
+    public T Value => IsSuccessful ? value : throw new UndefinedResultException<TError>(Error);
 
     /// <summary>
     /// Gets the error code.
@@ -555,7 +555,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// Converts this result into <see cref="Result{T}"/>.
     /// </summary>
     /// <returns>The converted result.</returns>
-    public Result<T> ToResult() => IsSuccessful ? new(value) : new(new ResultUnavailableException<TError>(Error));
+    public Result<T> ToResult() => IsSuccessful ? new(value) : new(new UndefinedResultException<TError>(Error));
 
     /// <summary>
     /// Returns textual representation of this object.
