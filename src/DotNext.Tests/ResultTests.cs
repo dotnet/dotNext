@@ -17,6 +17,17 @@ namespace DotNext
         }
 
         [Fact]
+        public static void EmptyResult2()
+        {
+            var r = default(Result<int, EnvironmentVariableTarget>);
+            Equal(default(EnvironmentVariableTarget), r.Error);
+            True(r.IsSuccessful);
+            Equal(0, r.Value);
+            Equal(default, r);
+            True(r.TryGet(out _));
+        }
+
+        [Fact]
         public static void Choice()
         {
             var r1 = new Result<int>(10);
@@ -46,6 +57,17 @@ namespace DotNext
         }
 
         [Fact]
+        public static void RaiseError2()
+        {
+            var r = new Result<decimal, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
+            Equal(EnvironmentVariableTarget.Machine, Throws<ResultUnavailableException<EnvironmentVariableTarget>>(() => r.Value).ErrorCode);
+            Equal(EnvironmentVariableTarget.Machine, r.Error);
+            Equal(20M, r.Or(20M));
+            Equal(0M, r.OrDefault());
+            Null(r.OrNull());
+        }
+
+        [Fact]
         public static void Operators()
         {
             var result = new Result<int>(10);
@@ -68,6 +90,9 @@ namespace DotNext
             Equal("Hello", new Result<string>("Hello").Box());
             Null(new Result<string>(default(string)).Box().Value);
             IsType<ArithmeticException>(new Result<int>(new ArithmeticException()).Box().Error);
+
+            Equal("Hello", new Result<string, EnvironmentVariableTarget>("Hello").Box());
+            Null(new Result<string>(default(string)).Box().Value);
         }
 
         [Fact]
@@ -88,14 +113,34 @@ namespace DotNext
         }
 
         [Fact]
+        public static void OptionalInterop2()
+        {
+            Result<string, EnvironmentVariableTarget> result = "Hello, world!";
+            Optional<string> opt = result;
+            Equal("Hello, world!", opt);
+
+            opt = Optional.Create<string, Result<string, EnvironmentVariableTarget>>(result);
+            Equal("Hello, world!", opt);
+
+            result = new(EnvironmentVariableTarget.Machine);
+            opt = result;
+            False(opt.HasValue);
+        }
+
+        [Fact]
         public static void UnderlyingType()
         {
             var type = Result.GetUnderlyingType(typeof(Result<>));
             Null(type);
+
             type = Result.GetUnderlyingType(typeof(int));
             Null(type);
+
             type = Result.GetUnderlyingType(typeof(Result<string>));
             Equal(typeof(string), type);
+
+            type = Result.GetUnderlyingType(typeof(Result<float, EnvironmentVariableTarget>));
+            Equal(typeof(float), type);
         }
     }
 }
