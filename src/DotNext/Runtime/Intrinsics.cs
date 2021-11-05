@@ -123,24 +123,15 @@ public static class Intrinsics
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">Value to check.</param>
     /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-    public static bool IsDefault<T>(in T value)
+    public static bool IsDefault<T>(in T value) => Unsafe.SizeOf<T>() switch
     {
-        switch (Unsafe.SizeOf<T>())
-        {
-            default:
-                return IsZero(ref InToRef<T, byte>(in value), Unsafe.SizeOf<T>());
-            case 0:
-                return true;
-            case sizeof(byte):
-                return InToRef<T, byte>(value) == 0;
-            case sizeof(ushort):
-                return InToRef<T, ushort>(value) == 0;
-            case sizeof(uint):
-                return InToRef<T, uint>(value) == 0;
-            case sizeof(ulong):
-                return InToRef<T, ulong>(value) == 0UL;
-        }
-    }
+        0 => true,
+        sizeof(byte) => InToRef<T, byte>(value) == 0,
+        sizeof(ushort) => InToRef<T, ushort>(value) == 0,
+        sizeof(uint) => InToRef<T, uint>(value) == 0,
+        sizeof(ulong) => InToRef<T, ulong>(value) == 0UL,
+        _ => IsZero(ref InToRef<T, byte>(in value), Unsafe.SizeOf<T>()),
+    };
 
     /// <summary>
     /// Returns the runtime handle associated with type <typeparamref name="T"/>.
@@ -162,24 +153,15 @@ public static class Intrinsics
     /// <param name="flag">An enumeration value.</param>
     /// <returns><see langword="true"/> if the bit field or bit fields that are set in <paramref name="flag"/> are also set in <paramref name="value"/>; otherwise, <see langword="false"/>.</returns>
     public static bool HasFlag<T>(T value, T flag)
-        where T : struct, Enum
-    {
-        switch (Unsafe.SizeOf<T>())
+        where T : struct, Enum => Unsafe.SizeOf<T>() switch
         {
-            default:
-                return value.HasFlag(flag);
-            case 0:
-                return true;
-            case sizeof(byte):
-                return (InToRef<T, byte>(value) & InToRef<T, byte>(flag)) != 0;
-            case sizeof(ushort):
-                return (InToRef<T, ushort>(value) & InToRef<T, ushort>(flag)) != 0;
-            case sizeof(uint):
-                return (InToRef<T, uint>(value) & InToRef<T, uint>(flag)) != 0;
-            case sizeof(ulong):
-                return (InToRef<T, ulong>(value) & InToRef<T, ulong>(flag)) != 0UL;
-        }
-    }
+            0 => true,
+            sizeof(byte) => (InToRef<T, byte>(value) & InToRef<T, byte>(flag)) != 0,
+            sizeof(ushort) => (InToRef<T, ushort>(value) & InToRef<T, ushort>(flag)) != 0,
+            sizeof(uint) => (InToRef<T, uint>(value) & InToRef<T, uint>(flag)) != 0,
+            sizeof(long) => (InToRef<T, ulong>(value) & InToRef<T, ulong>(flag)) != 0UL,
+            _ => value.HasFlag(flag),
+        };
 
     /// <summary>
     /// Provides unified behavior of type cast for reference and value types.
