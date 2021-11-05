@@ -70,6 +70,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Introduced `Reference<T>` type as a way to pass the reference to the memory location in asynchronous scenarios
 * `Box<T>` is replaced with `Reference<T>` value type
 * `ITypeMap<T>` interface and implementing classes allow to associate an arbitrary value with the type
+* Added overloaded `Result<T, TError>` value type for C-style error handling
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.0.0">DotNext.Metaprogramming 4.0.0</a>
 * Added support of interpolated string expression as described in [this article](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using `InterpolationExpression.Create` static method
