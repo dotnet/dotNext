@@ -52,4 +52,8 @@ internal static class ExceptionMessages
     internal static string KeyAlreadyExists => Resources.GetString("KeyAlreadyExists")!;
 
     internal static string ObjectMustNotBeArray => Resources.GetString("ObjectMustNotBeArray")!;
+
+    internal static string NoResult<TError>(TError errorCode)
+        where TError : struct, Enum
+        => string.Format(Resources.GetString("NoResult")!, errorCode);
 }

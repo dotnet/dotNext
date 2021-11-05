@@ -84,6 +84,7 @@ namespace DotNext
             result = (Result<string>)new Optional<string>("Hello, world!");
             True(result.IsSuccessful);
             Equal("Hello, world!", result.Value);
+            Equal("Hello, world!", Optional.Create<string, Result<string>>(result));
         }
 
         [Fact]
