@@ -134,15 +134,18 @@ public partial class PersistentState
             return ref ptr;
         }
 
-        private void ReadMetadata(nint index, out LogEntryMetadata metadata)
+        private unsafe T ReadMetadata<T>(nint index, delegate*<ref SpanReader<byte>, T> parser)
+            where T : unmanaged
         {
+            Debug.Assert(parser != null);
+
             var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
             var acquired = false;
             try
             {
                 var reader = new SpanReader<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
                 acquired = true;
-                metadata = new(ref reader);
+                return parser(ref reader);
             }
             finally
             {
@@ -168,21 +171,20 @@ public partial class PersistentState
             }
         }
 
-        internal long GetTerm(long absoluteIndex)
+        internal unsafe long GetTerm(long absoluteIndex)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
-            ReadMetadata(relativeIndex, out var metadata);
-            return metadata.Term;
+            return ReadMetadata(relativeIndex, &LogEntryMetadata.GetTerm);
         }
 
-        internal LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
+        internal unsafe LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
-            ReadMetadata(relativeIndex, out var metadata);
+            var metadata = ReadMetadata(relativeIndex, &LogEntryMetadata.Parse);
 
             ref readonly var cachedContent = ref EmptyBuffer;
 
@@ -199,7 +201,7 @@ public partial class PersistentState
             return new(in cachedContent, in metadata, absoluteIndex);
         }
 
-        private void UpdateCache(in CachedLogEntry entry, nint index, long offset, out LogEntryMetadata metadata)
+        private void UpdateCache(in CachedLogEntry entry, nint index, long offset)
         {
             Debug.Assert(entryCache.IsEmpty is false);
             Debug.Assert(index >= 0 && index < entryCache.Length);
@@ -207,7 +209,9 @@ public partial class PersistentState
             ref var cacheEntry = ref entryCache[index];
             cacheEntry.Dispose();
             cacheEntry = entry.Content;
-            metadata = LogEntryMetadata.Create(in entry, offset);
+
+            // save new log entry to the allocation table
+            WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
         }
 
         internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
@@ -250,40 +254,36 @@ public partial class PersistentState
         private bool IsFirstEntry(nint index)
             => index == 0 || index == 1 && FirstIndex == 0L;
 
-        internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+        private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, long offset, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            // slow path - persist log entry
+            await SetWritePositionAsync(offset, token).ConfigureAwait(false);
+            await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+
+            // save new log entry to the allocation table
+            WriteMetadata(index, LogEntryMetadata.Create(entry, offset, writer.WritePosition - offset));
+        }
+
+        internal override unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
         {
             // write operation always expects absolute index so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
             // calculate offset of the previous entry
-            long offset;
-            LogEntryMetadata metadata;
-            if (IsFirstEntry(relativeIndex))
-            {
-                offset = 0L;
-            }
-            else
-            {
-                ReadMetadata(relativeIndex - 1, out metadata);
-                offset = metadata.Length + metadata.Offset;
-            }
+            var offset = IsFirstEntry(relativeIndex)
+                ? 0L
+                : ReadMetadata(relativeIndex - 1, &LogEntryMetadata.GetEndOfLogEntry);
 
             if (typeof(TEntry) == typeof(CachedLogEntry))
             {
                 // fast path - just add cached log entry to the cache table
-                UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex, offset, out metadata);
-            }
-            else
-            {
-                // slow path - persist log entry
-                await SetWritePositionAsync(offset, token).ConfigureAwait(false);
-                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
-                metadata = LogEntryMetadata.Create(entry, offset, writer.WritePosition - offset);
+                UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex, offset);
+                return ValueTask.CompletedTask;
             }
 
-            // save new log entry to the allocation table
-            WriteMetadata(relativeIndex, in metadata);
+            return WriteAsync(entry, relativeIndex, offset, token);
         }
 
         protected override void Dispose(bool disposing)

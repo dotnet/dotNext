@@ -52,8 +52,7 @@ public partial class PersistentState
 
         static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
 
-        static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ref SpanReader<byte> input)
-            => new(ref input);
+        public static LogEntryMetadata Parse(ref SpanReader<byte> input) => new(ref input);
 
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
@@ -74,6 +73,14 @@ public partial class PersistentState
             writer.WriteInt64(Offset, true);
             writer.WriteUInt32((uint)flags, true);
             writer.WriteInt32(identifier, true);
+        }
+
+        internal static long GetTerm(ref SpanReader<byte> reader) => reader.ReadInt64(true);
+
+        internal static long GetEndOfLogEntry(ref SpanReader<byte> reader)
+        {
+            reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
+            return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
         }
     }
 

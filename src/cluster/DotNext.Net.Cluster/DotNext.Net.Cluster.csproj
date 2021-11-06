@@ -21,6 +21,10 @@
     <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
