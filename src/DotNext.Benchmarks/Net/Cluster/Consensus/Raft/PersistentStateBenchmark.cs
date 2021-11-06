@@ -69,9 +69,10 @@ public class PersistentStateBenchmark
     }
 
     private readonly string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    private IPersistentState state;
+    private PersistentState state;
+    private byte[] writePayload;
 
-    private async Task SetupStateAsync(PersistentState.Options configuration, bool addToCache)
+    private async Task PrepareForReadAsync(PersistentState.Options configuration, bool addToCache)
     {
         var state = new TestPersistentState(path, configuration);
         const int payloadSize = 2048;
@@ -83,19 +84,53 @@ public class PersistentStateBenchmark
         this.state = state;
     }
 
+    [GlobalCleanup]
+    public void DisposeState() => state.Dispose();
+
     [GlobalSetup(Target = nameof(ReadPersistedLogEntriesAsync))]
-    public Task SetupStateWithoutCacheAsync()
-        => SetupStateAsync(new PersistentState.Options { UseCaching = false, CompactionMode = PersistentState.CompactionMode.Background }, false);
+    public Task PrepareForReadWithoutCacheAsync()
+        => PrepareForReadAsync(new PersistentState.Options { UseCaching = false, CompactionMode = PersistentState.CompactionMode.Background }, false);
 
     [GlobalSetup(Target = nameof(ReadCachedLogEntriesAsync))]
-    public Task SetupStateWithCacheAsync()
-        => SetupStateAsync(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background }, true);
+    public Task PrepareForReadWithCacheAsync()
+        => PrepareForReadAsync(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background }, true);
 
     [Benchmark]
     public ValueTask<long> ReadCachedLogEntriesAsync()
-        => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
+        => state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
 
     [Benchmark]
     public ValueTask<long> ReadPersistedLogEntriesAsync()
-        => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
+        => state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
+
+    private void PrepareForWrite(PersistentState.Options configuration)
+    {
+        var state = new TestPersistentState(path, configuration);
+        const int payloadSize = 2048;
+        writePayload = new byte[payloadSize];
+        Random.Shared.NextBytes(writePayload);
+        this.state = state;
+    }
+
+    [GlobalSetup(Target = nameof(WriteUncachedLogEntryAsync))]
+    public void PrepareForWriteWithoutCache()
+        => PrepareForWrite(new PersistentState.Options { UseCaching = false, CompactionMode = PersistentState.CompactionMode.Background });
+
+    [GlobalSetup(Target = nameof(WriteCachedLogEntryAsync))]
+    public void PrepareForWriteWithCache()
+        => PrepareForWrite(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background });
+
+    [Benchmark]
+    public async ValueTask WriteCachedLogEntryAsync()
+    {
+        await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+        await state.DropAsync(1L, reuseSpace: true);
+    }
+
+    [Benchmark]
+    public async ValueTask WriteUncachedLogEntryAsync()
+    {
+        await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+        await state.DropAsync(1L, reuseSpace: true);
+    }
 }
