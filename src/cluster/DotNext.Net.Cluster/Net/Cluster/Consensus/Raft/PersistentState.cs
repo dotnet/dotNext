@@ -132,19 +132,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough, initialSize: initialSize);
         snapshot.Initialize();
 
-        // cluster config
-
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
         writeCounter = ToDelegate(configuration.WriteCounter);
         compactionCounter = ToDelegate(configuration.CompactionCounter);
         commitCounter = ToDelegate(configuration.CommitCounter);
 
-        static int ComparePartitions(Partition x, Partition y)
-        {
-            var xn = x.PartitionNumber;
-            return xn.CompareTo(y.PartitionNumber);
-        }
+        static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
 
         static Action<double>? ToDelegate(IncrementingEventCounter? counter)
             => counter is null ? null : counter.Increment;
