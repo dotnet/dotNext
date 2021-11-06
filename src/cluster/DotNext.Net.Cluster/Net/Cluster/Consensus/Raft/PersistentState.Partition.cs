@@ -237,7 +237,7 @@ public partial class PersistentState
             {
                 try
                 {
-                    await PersistAsync();
+                    await PersistAsync().ConfigureAwait(false);
                 }
                 finally
                 {
