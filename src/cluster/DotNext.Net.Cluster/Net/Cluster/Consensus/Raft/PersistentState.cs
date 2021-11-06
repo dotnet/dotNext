@@ -176,6 +176,45 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private partial Partition CreatePartition(long partitionNumber)
         => new(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
+    {
+        using var list = bufferManager.AllocLogEntryList(length);
+        Debug.Assert(list.Length >= length);
+
+        // try to read snapshot out of the loop
+        if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
+        {
+            BufferHelpers.GetReference(in list) = snapshot.Read(sessionId);
+
+            // skip squashed log entries
+            startIndex = snapshot.Metadata.Index + 1L;
+            length = 1;
+        }
+        else if (startIndex == 0L)
+        {
+            BufferHelpers.GetReference(in list) = LogEntry.Initial;
+            startIndex = length = 1;
+        }
+        else
+        {
+            length = 0;
+        }
+
+        return await UnsafeReadAsync(in reader, in list, sessionId, startIndex, endIndex, length, token).ConfigureAwait(false);
+    }
+
+    private ValueTask<TResult> UnsafeReadAsync<TResult>(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
+    {
+        ref var first = ref BufferHelpers.GetReference(in list);
+
+        // enumerate over partitions in search of log entries
+        for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
+            Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
+
+        return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
+    }
+
     private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, CancellationToken token)
     {
         if (startIndex > state.LastIndex)
@@ -190,58 +229,20 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         readCounter?.Invoke(length);
         if (HasPartitions)
-            return ReadEntriesAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
+            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
 
         if (!snapshot.IsEmpty)
-            return ReadSnapshotAsync(in reader, sessionId, token);
+            return ReadSnapshotAsync(snapshot, in reader, sessionId, token);
 
         return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
 
-        async ValueTask<TResult> ReadEntriesAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
-        {
-            using var list = bufferManager.AllocLogEntryList(length);
-            Debug.Assert(list.Length >= length);
-
-            // try to read snapshot out of the loop
-            if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
-            {
-                BufferHelpers.GetReference(in list) = snapshot.Read(sessionId);
-
-                // skip squashed log entries
-                startIndex = snapshot.Metadata.Index + 1L;
-                length = 1;
-            }
-            else if (startIndex == 0L)
-            {
-                BufferHelpers.GetReference(in list) = LogEntry.Initial;
-                startIndex = length = 1;
-            }
-            else
-            {
-                length = 0;
-            }
-
-            return await ReadEntries(in reader, in list, sessionId, startIndex, endIndex, length, token).ConfigureAwait(false);
-        }
-
-        ValueTask<TResult> ReadEntries(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
-        {
-            ref var first = ref BufferHelpers.GetReference(in list);
-
-            // enumerate over partitions in search of log entries
-            for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-                Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
-
-            return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
-        }
-
-        ValueTask<TResult> ReadSnapshotAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
+        static ValueTask<TResult> ReadSnapshotAsync(Snapshot snapshot, in LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
         {
             var entry = snapshot.Read(sessionId);
             return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token);
         }
 
-        ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
+        static ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
             => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
     }
 
