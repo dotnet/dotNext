@@ -193,7 +193,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             return ReadEntriesAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
 
         if (!snapshot.IsEmpty)
-            return ReadSnapshotAsync(reader, sessionId, token);
+            return ReadSnapshotAsync(in reader, sessionId, token);
 
         return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
 
@@ -235,7 +235,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
         }
 
-        ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
+        ValueTask<TResult> ReadSnapshotAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
         {
             var entry = snapshot.Read(sessionId);
             return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token);

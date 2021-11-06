@@ -210,25 +210,38 @@ public partial class PersistentState
             metadata = LogEntryMetadata.Create(in entry, offset);
         }
 
-        internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
+        internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
         {
             Debug.Assert(entryCache.IsEmpty is false);
 
             var index = ToRelativeIndex(absoluteIndex);
             Debug.Assert(index >= 0 && index < entryCache.Length);
 
-            var content = entryCache[index].Memory;
-            if (!content.IsEmpty)
+            ReadOnlyMemory<byte> content = entryCache[index].Memory;
+
+            return content.IsEmpty
+                ? ValueTask.CompletedTask
+                : removeFromMemory
+                ? PersistAndDeleteAsync()
+                : PersistAsync();
+
+            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+            async ValueTask PersistAsync()
+            {
+                await SetWritePositionAsync(offset).ConfigureAwait(false);
+                await writer.WriteAsync(content).ConfigureAwait(false);
+            }
+
+            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+            async ValueTask PersistAndDeleteAsync()
             {
                 try
                 {
-                    await SetWritePositionAsync(offset).ConfigureAwait(false);
-                    await writer.WriteAsync(content).ConfigureAwait(false);
+                    await PersistAsync();
                 }
                 finally
                 {
-                    if (removeFromMemory)
-                        entryCache[index].Dispose();
+                    entryCache[index].Dispose();
                 }
             }
         }

@@ -186,6 +186,7 @@ public partial class PersistentState
 
             return result;
 
+            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
             async ValueTask FlushAndSetPositionAsync(long value, CancellationToken token)
             {
                 await FlushAsync(token).ConfigureAwait(false);
