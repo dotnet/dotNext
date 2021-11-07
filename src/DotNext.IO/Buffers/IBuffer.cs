@@ -43,7 +43,7 @@ internal struct ArrayBuffer<T> : IBuffer<T>, IDisposable
 
     readonly int IBuffer<T>.Length => buffer.Length;
 
-    readonly Span<T> IBuffer<T>.Span => buffer.Memory.Span;
+    readonly Span<T> IBuffer<T>.Span => buffer.Span;
 
     public void Dispose() => buffer.Dispose();
 }

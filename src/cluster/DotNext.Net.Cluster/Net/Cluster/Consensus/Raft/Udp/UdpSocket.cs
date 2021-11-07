@@ -166,7 +166,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
             (headers, bytesWritten, waitForInput) = await channel.Exchange.CreateOutboundMessageAsync(AdjustToPayload(bufferHolder.Memory), channel.Token).ConfigureAwait(false);
 
             // write correlation ID and headers
-            var prologueSize = WritePrologue(bufferHolder.Memory.Span, in id, headers);
+            var prologueSize = WritePrologue(bufferHolder.Span, in id, headers);
             await SendToAsync(bufferHolder.Memory.Slice(0, prologueSize + bytesWritten), endpoint, channel.Token).ConfigureAwait(false);
         }
         finally

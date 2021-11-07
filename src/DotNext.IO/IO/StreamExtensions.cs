@@ -191,7 +191,7 @@ public static partial class StreamExtensions
         else
         {
             result = allocator.Invoke(length, exactSize: true);
-            length = ReadString(stream, result.Memory.Span, in context, buffer);
+            length = ReadString(stream, result.Span, in context, buffer);
             result.TryResize(length);
         }
 
@@ -616,7 +616,7 @@ public static partial class StreamExtensions
 
         using var buffer = MemoryAllocator.Allocate<byte>(length, true);
         await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-        return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
     /// <summary>
@@ -672,7 +672,7 @@ public static partial class StreamExtensions
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
     {
         using var chars = await ReadStringAsync(stream, length, context, buffer, null, token).ConfigureAwait(false);
-        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+        return chars.IsEmpty ? string.Empty : new string(chars.Span);
     }
 
     /// <summary>
@@ -768,7 +768,7 @@ public static partial class StreamExtensions
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding, CancellationToken token = default)
     {
         using var chars = await ReadStringAsync(stream, length, encoding, null, token).ConfigureAwait(false);
-        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+        return chars.IsEmpty ? string.Empty : new string(chars.Span);
     }
 
     /// <summary>
@@ -797,7 +797,7 @@ public static partial class StreamExtensions
         {
             using var bytesBuffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
             await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
-            result = encoding.GetChars(bytesBuffer.Memory.Span, allocator);
+            result = encoding.GetChars(bytesBuffer.Span, allocator);
         }
 
         return result;
@@ -877,7 +877,7 @@ public static partial class StreamExtensions
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            stream.ReadBlock(result.Memory.Span);
+            stream.ReadBlock(result.Span);
         }
         else
         {
@@ -980,7 +980,7 @@ public static partial class StreamExtensions
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
         await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-        return MemoryMarshal.Read<T>(buffer.Memory.Span);
+        return MemoryMarshal.Read<T>(buffer.Span);
     }
 
     /// <summary>

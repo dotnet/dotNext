@@ -31,15 +31,15 @@ public partial class PeerController
 
             using (var activeViewCopy = activeView.Remove(activePeer).Copy())
             {
-                activeViewCopy.Memory.Span.Shuffle(random);
+                activeViewCopy.Span.Shuffle(random);
 
                 using var passiveViewCopy = passiveView.Copy();
-                passiveViewCopy.Memory.Span.Shuffle(random);
+                passiveViewCopy.Span.Shuffle(random);
 
                 // add randomly selected peers from active and passive views
                 peersToSend = new PooledArrayBufferWriter<EndPoint>(shuffleActiveViewCount + shufflePassiveViewCount);
-                peersToSend.Write(activeViewCopy.Memory.Span.TrimLength(shuffleActiveViewCount));
-                peersToSend.Write(passiveViewCopy.Memory.Span.TrimLength(shufflePassiveViewCount));
+                peersToSend.Write(activeViewCopy.Span.TrimLength(shuffleActiveViewCount));
+                peersToSend.Write(passiveViewCopy.Span.TrimLength(shufflePassiveViewCount));
             }
 
             // attempts to send Shuffle message to the randomly selected peer

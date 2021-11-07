@@ -159,7 +159,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         {
             Debug.Assert(bufferOffset == 0);
             using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
-            value.TryWriteBytes(buffer.Memory.Span, out bytesWritten, isBigEndian: !littleEndian);
+            value.TryWriteBytes(buffer.Span, out bytesWritten, isBigEndian: !littleEndian);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += bytesCount;
         }
@@ -188,7 +188,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         {
             using var charBuffer = MemoryAllocator.Allocate<char>(charBufferSize, false);
 
-            if (value.TryFormat(charBuffer.Memory.Span, out var charsWritten, format, provider))
+            if (value.TryFormat(charBuffer.Span, out var charsWritten, format, provider))
             {
                 await WriteStringAsync(charBuffer.Memory.Slice(0, charsWritten), context, lengthFormat, token).ConfigureAwait(false);
                 break;
@@ -221,7 +221,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         else
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
-            IBinaryFormattable<T>.Format(value, buffer.Memory.Span);
+            IBinaryFormattable<T>.Format(value, buffer.Span);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += T.Size;
         }

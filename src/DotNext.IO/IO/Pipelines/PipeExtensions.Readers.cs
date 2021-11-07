@@ -142,7 +142,7 @@ public static partial class PipeExtensions
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
             await ReadBlockAsync(reader, buffer.Memory, token).ConfigureAwait(false);
-            return IBinaryFormattable<T>.Parse(buffer.Memory.Span);
+            return IBinaryFormattable<T>.Parse(buffer.Span);
         }
     }
 
@@ -201,7 +201,7 @@ public static partial class PipeExtensions
     public static async ValueTask<string> ReadStringAsync(this PipeReader reader, int length, DecodingContext context, CancellationToken token = default)
     {
         using var chars = await ReadStringAsync(reader, length, context, null, token).ConfigureAwait(false);
-        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+        return chars.IsEmpty ? string.Empty : new string(chars.Span);
     }
 
     /// <summary>

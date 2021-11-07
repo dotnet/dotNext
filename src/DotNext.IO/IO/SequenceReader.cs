@@ -168,7 +168,7 @@ public struct SequenceReader : IAsyncBinaryReader
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            Read(result.Memory.Span);
+            Read(result.Span);
         }
         else
         {

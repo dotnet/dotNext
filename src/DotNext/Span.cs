@@ -575,7 +575,7 @@ public static class Span
             new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
             allocator(length);
 
-        var output = result.Memory.Span;
+        var output = result.Span;
         first.CopyTo(output);
         second.CopyTo(output.Slice(first.Length));
 
@@ -601,7 +601,7 @@ public static class Span
             new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
             allocator(length);
 
-        var output = result.Memory.Span;
+        var output = result.Span;
         first.CopyTo(output);
         second.CopyTo(output = output.Slice(first.Length));
         third.CopyTo(output.Slice(second.Length));
@@ -625,7 +625,7 @@ public static class Span
             new MemoryOwner<T>(ArrayPool<T>.Shared, span.Length) :
             allocator(span.Length);
 
-        span.CopyTo(result.Memory.Span);
+        span.CopyTo(result.Span);
         return result;
     }
 

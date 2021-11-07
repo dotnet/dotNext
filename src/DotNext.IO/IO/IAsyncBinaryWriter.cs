@@ -29,7 +29,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         where T : unmanaged
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
-        Span.AsReadOnlyBytes(value).CopyTo(buffer.Memory.Span);
+        Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
         await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
     }
 
@@ -95,7 +95,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         else
         {
             using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
-            if (!value.TryWriteBytes(buffer.Memory.Span, out bytesCount, isBigEndian: !littleEndian))
+            if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
                 throw new InternalBufferOverflowException();
             await WriteAsync(buffer.Memory, lengthFormat, token).ConfigureAwait(false);
         }

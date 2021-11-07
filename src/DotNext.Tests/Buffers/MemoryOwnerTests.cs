@@ -48,7 +48,7 @@ namespace DotNext.Buffers
             using var owner = provider.ToAllocator().Invoke(10);
             Equal(10, owner.Memory.Length);
             owner[1] = 42;
-            Equal(42, owner.Memory.Span[1]);
+            Equal(42, owner.Span[1]);
         }
 
         [Fact]
