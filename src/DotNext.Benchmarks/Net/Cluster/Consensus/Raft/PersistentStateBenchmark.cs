@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -68,15 +69,16 @@ public class PersistentStateBenchmark
         }
     }
 
+    private const int PayloadSize = 2048;
     private readonly string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     private PersistentState state;
     private byte[] writePayload;
+    private SafeFileHandle tempFile;
 
     private async Task PrepareForReadAsync(PersistentState.Options configuration, bool addToCache)
     {
         var state = new TestPersistentState(path, configuration);
-        const int payloadSize = 2048;
-        var bytes = new byte[payloadSize];
+        var bytes = new byte[PayloadSize];
         Random.Shared.NextBytes(bytes);
         await state.AppendAsync(new BinaryLogEntry(10L, bytes), addToCache);
         Random.Shared.NextBytes(bytes);
@@ -106,8 +108,7 @@ public class PersistentStateBenchmark
     private void PrepareForWrite(PersistentState.Options configuration)
     {
         var state = new TestPersistentState(path, configuration);
-        const int payloadSize = 2048;
-        writePayload = new byte[payloadSize];
+        writePayload = new byte[PayloadSize];
         Random.Shared.NextBytes(writePayload);
         this.state = state;
     }
@@ -128,4 +129,21 @@ public class PersistentStateBenchmark
 
     [Benchmark]
     public ValueTask<long> WriteUncachedLogEntryAsync() => state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+
+    [GlobalSetup(Target = nameof(WriteToFileAsync))]
+    public void CreateTempFile()
+    {
+        tempFile = File.OpenHandle(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.Read, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        writePayload = new byte[PayloadSize];
+        Random.Shared.NextBytes(writePayload);
+    }
+
+    [GlobalCleanup(Target = nameof(WriteToFileAsync))]
+    public void DeleteTempFile()
+    {
+        tempFile.Dispose();
+    }
+
+    [Benchmark]
+    public ValueTask WriteToFileAsync() => RandomAccess.WriteAsync(tempFile, writePayload, 0L);
 }
