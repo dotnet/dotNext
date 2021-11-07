@@ -146,8 +146,7 @@ public partial class PersistentState
             Debug.Assert(metadata.Length == fileOffset);
 
             ref var ptr = ref BufferHelpers.GetReference(in metadata);
-            offset = index * LogEntryMetadata.Size;
-            return ref Unsafe.Add(ref ptr, offset);
+            return ref Unsafe.Add(ref ptr, offset = index * LogEntryMetadata.Size);
         }
 
         private unsafe T ReadMetadata<T>(int index, delegate*<ref SpanReader<byte>, T> parser)
