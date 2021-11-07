@@ -141,12 +141,12 @@ public partial class PersistentState
                 : base.FlushAsync(token);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ref byte GetMetadata(int index, out int offset)
         {
             Debug.Assert(metadata.Length == fileOffset);
 
-            ref var ptr = ref BufferHelpers.GetReference(in metadata);
-            return ref Unsafe.Add(ref ptr, offset = index * LogEntryMetadata.Size);
+            return ref Unsafe.Add(ref BufferHelpers.GetReference(in metadata), offset = index * LogEntryMetadata.Size);
         }
 
         private unsafe T ReadMetadata<T>(int index, delegate*<ref SpanReader<byte>, T> parser)
