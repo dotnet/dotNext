@@ -140,10 +140,7 @@ public partial class FileWriter : Disposable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
-        if (HasBufferedData)
-            return FlushCoreAsync(token);
-
-        return ValueTask.CompletedTask;
+        return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
