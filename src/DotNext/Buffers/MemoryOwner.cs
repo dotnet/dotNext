@@ -338,6 +338,8 @@ namespace DotNext.Buffers
         {
             switch (owner)
             {
+                case null:
+                    break;
                 case IDisposable disposable:
                     disposable.Dispose();
                     break;
