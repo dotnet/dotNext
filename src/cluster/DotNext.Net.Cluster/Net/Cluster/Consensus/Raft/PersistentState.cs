@@ -559,9 +559,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         if (IsDisposed)
             return new(DisposedTask);
 
-        return entry.IsSnapshot ? InstallSnapshotAsync(entry, startIndex, token) : AppendRegularEntryAsync(entry, startIndex, token);
+        return entry.IsSnapshot ? InstallSnapshotAsync() : AppendRegularEntryAsync();
 
-        async ValueTask AppendRegularEntryAsync(TEntry entry, long startIndex, CancellationToken token)
+        async ValueTask AppendRegularEntryAsync()
         {
             Debug.Assert(!entry.IsSnapshot);
 
@@ -593,7 +593,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
         }
 
-        async ValueTask InstallSnapshotAsync(TEntry entry, long startIndex, CancellationToken token)
+        async ValueTask InstallSnapshotAsync()
         {
             Debug.Assert(entry.IsSnapshot);
 
