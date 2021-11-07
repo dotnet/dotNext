@@ -98,12 +98,12 @@ public class PersistentStateBenchmark
         => PrepareForReadAsync(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background }, true);
 
     [Benchmark]
-    public ValueTask<long> ReadCachedLogEntriesAsync()
-        => state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
+    public async Task ReadCachedLogEntriesAsync()
+        => await state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
 
     [Benchmark]
-    public ValueTask<long> ReadPersistedLogEntriesAsync()
-        => state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
+    public async Task ReadPersistedLogEntriesAsync()
+        => await state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
 
     private void PrepareForWrite(PersistentState.Options configuration)
     {
@@ -125,10 +125,10 @@ public class PersistentStateBenchmark
     public void DropAddedLogEntryAsync() => state.DropAsync(1L, reuseSpace: true).AsTask().Wait();
 
     [Benchmark]
-    public ValueTask<long> WriteCachedLogEntryAsync() => state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+    public async Task WriteCachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
 
     [Benchmark]
-    public ValueTask<long> WriteUncachedLogEntryAsync() => state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+    public async Task WriteUncachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
 
     [GlobalSetup(Target = nameof(WriteToFileAsync))]
     public void CreateTempFile()
@@ -145,5 +145,5 @@ public class PersistentStateBenchmark
     }
 
     [Benchmark]
-    public ValueTask WriteToFileAsync() => RandomAccess.WriteAsync(tempFile, writePayload, 0L);
+    public async Task WriteToFileAsync() => await RandomAccess.WriteAsync(tempFile, writePayload, 0L);
 }
