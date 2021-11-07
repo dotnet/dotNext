@@ -26,29 +26,43 @@ public partial class PersistentState
      */
     private sealed class Partition : ConcurrentStorageAccess
     {
-        private const string MetadataTableFileExtension = "meta";
+        internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
         private static readonly MemoryOwner<byte> EmptyBuffer;
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
-        internal readonly string MetadataTableFileName;
-        private readonly MemoryMappedFile metadataFile;
-        private readonly MemoryMappedViewAccessor metadataFileAccessor;
         private MemoryOwner<MemoryOwner<byte>> entryCache;
         private Partition? previous, next;
 
+        // metadata management
+        private MemoryOwner<byte> metadata;
+        private int metadataFlushStartAddress;
+        private int metadataFlushEndAddress;
+
         internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
-            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
         {
             FirstIndex = partitionNumber * recordsPerPartition;
             LastIndex = FirstIndex + recordsPerPartition - 1L;
             PartitionNumber = partitionNumber;
 
-            // create metadata file
-            MetadataTableFileName = Path.ChangeExtension(FileName, MetadataTableFileExtension);
-            var metadataTableSize = Math.BigMul(LogEntryMetadata.Size, recordsPerPartition);
-            metadataFile = MemoryMappedFile.CreateFromFile(MetadataTableFileName, FileMode.OpenOrCreate, null, metadataTableSize, MemoryMappedFileAccess.ReadWrite);
-            metadataFileAccessor = metadataFile.CreateViewAccessor(0L, metadataTableSize);
+            // allocate metadata segment
+            metadata = manager.BufferAllocator.Invoke(fileOffset, true);
+            metadataFlushStartAddress = int.MaxValue;
+            metadataFlushEndAddress = 0;
+
             entryCache = manager.AllocLogEntryCache(recordsPerPartition);
+        }
+
+        private async Task InitializeAsync()
+        {
+            if (await RandomAccess.ReadAsync(Handle, metadata.Memory, 0L).ConfigureAwait(false) < fileOffset)
+                throw new CorruptedPartitionException();
+        }
+
+        internal void Initialize()
+        {
+            using var task = InitializeAsync();
+            task.Wait();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -60,8 +74,8 @@ public partial class PersistentState
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private nint ToRelativeIndex(long absoluteIndex)
-            => (nint)(absoluteIndex - FirstIndex);
+        private int ToRelativeIndex(long absoluteIndex)
+            => unchecked((int)(absoluteIndex - FirstIndex));
 
         internal bool IsHead => previous is null;
 
@@ -111,72 +125,55 @@ public partial class PersistentState
         internal bool Contains(long recordIndex)
             => recordIndex >= FirstIndex && recordIndex <= LastIndex;
 
+        private async ValueTask FlushAsync(ReadOnlyMemory<byte> metadata, CancellationToken token)
+        {
+            await RandomAccess.WriteAsync(Handle, metadata, metadataFlushStartAddress, token).ConfigureAwait(false);
+            metadataFlushStartAddress = int.MaxValue;
+            metadataFlushEndAddress = 0;
+
+            await base.FlushAsync(token).ConfigureAwait(false);
+        }
+
         public override ValueTask FlushAsync(CancellationToken token = default)
         {
-            try
-            {
-                metadataFileAccessor.Flush();
-            }
-            catch (Exception e)
-            {
-                return ValueTask.FromException(e);
-            }
-
-            return base.FlushAsync(token);
+            var size = metadataFlushEndAddress - metadataFlushStartAddress;
+            return size > 0
+                ? FlushAsync(metadata.Memory.Slice(metadataFlushStartAddress, size), token)
+                : base.FlushAsync(token);
         }
 
-        private static ref byte GetMetadata(nint index, SafeBuffer buffer)
+        private ref byte GetMetadata(int index, out int offset)
         {
-            ref var ptr = ref buffer.AcquirePointer();
-            if (!Unsafe.IsNullRef(ref ptr))
-                ptr = ref Unsafe.Add(ref ptr, index * LogEntryMetadata.Size);
+            Debug.Assert(metadata.Length == fileOffset);
 
-            return ref ptr;
+            ref var ptr = ref BufferHelpers.GetReference(in metadata);
+            offset = index * LogEntryMetadata.Size;
+            return ref Unsafe.Add(ref ptr, offset);
         }
 
-        private unsafe T ReadMetadata<T>(nint index, delegate*<ref SpanReader<byte>, T> parser)
+        private unsafe T ReadMetadata<T>(int index, delegate*<ref SpanReader<byte>, T> parser)
             where T : unmanaged
         {
             Debug.Assert(parser != null);
 
-            var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
-            var acquired = false;
-            try
-            {
-                var reader = new SpanReader<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
-                acquired = true;
-                return parser(ref reader);
-            }
-            finally
-            {
-                if (acquired)
-                    handle.ReleasePointer();
-            }
+            var reader = new SpanReader<byte>(ref GetMetadata(index, out _), LogEntryMetadata.Size);
+            return parser(ref reader);
         }
 
-        private void WriteMetadata(nint index, in LogEntryMetadata metadata)
+        private void WriteMetadata(int index, in LogEntryMetadata metadata)
         {
-            var handle = metadataFileAccessor.SafeMemoryMappedViewHandle;
-            var acquired = false;
-            try
-            {
-                var reader = new SpanWriter<byte>(ref GetMetadata(index, handle), LogEntryMetadata.Size);
-                acquired = true;
-                metadata.Format(ref reader);
-            }
-            finally
-            {
-                if (acquired)
-                    handle.ReleasePointer();
-            }
+            var reader = new SpanWriter<byte>(ref GetMetadata(index, out var offset), LogEntryMetadata.Size);
+            metadata.Format(ref reader);
+
+            metadataFlushStartAddress = Math.Min(metadataFlushStartAddress, offset);
+            metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
         }
 
         internal unsafe long GetTerm(long absoluteIndex)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
-            var relativeIndex = ToRelativeIndex(absoluteIndex);
-            return ReadMetadata(relativeIndex, &LogEntryMetadata.GetTerm);
+            return ReadMetadata(ToRelativeIndex(absoluteIndex), &LogEntryMetadata.GetTerm);
         }
 
         internal unsafe LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
@@ -201,7 +198,7 @@ public partial class PersistentState
             return new(in cachedContent, in metadata, absoluteIndex);
         }
 
-        private void UpdateCache(in CachedLogEntry entry, nint index, long offset)
+        private void UpdateCache(in CachedLogEntry entry, int index, long offset)
         {
             Debug.Assert(entryCache.IsEmpty is false);
             Debug.Assert(index >= 0 && index < entryCache.Length);
@@ -251,10 +248,10 @@ public partial class PersistentState
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsFirstEntry(nint index)
+        private bool IsFirstEntry(int index)
             => index == 0 || index == 1 && FirstIndex == 0L;
 
-        private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, long offset, CancellationToken token)
+        private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, long offset, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             // slow path - persist log entry
@@ -273,7 +270,7 @@ public partial class PersistentState
 
             // calculate offset of the previous entry
             var offset = IsFirstEntry(relativeIndex)
-                ? 0L
+                ? fileOffset
                 : ReadMetadata(relativeIndex - 1, &LogEntryMetadata.GetEndOfLogEntry);
 
             if (typeof(TEntry) == typeof(CachedLogEntry))
@@ -290,8 +287,7 @@ public partial class PersistentState
         {
             if (disposing)
             {
-                metadataFileAccessor.Dispose();
-                metadataFile.Dispose();
+                metadata.Dispose();
                 entryCache.ReleaseAll();
                 previous = next = null;
             }
@@ -310,11 +306,13 @@ public partial class PersistentState
         private new const string FileName = "snapshot";
         private const string TempFileName = "snapshot.new";
 
+        private MemoryOwner<byte> metadataBuffer;
         private SnapshotMetadata metadata;
 
         internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
-            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), SnapshotMetadata.Size, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
         {
+            metadataBuffer = manager.BufferAllocator.Invoke(SnapshotMetadata.Size, true);
         }
 
         // cache flag that allows to avoid expensive access to Length that can cause native call
@@ -330,33 +328,52 @@ public partial class PersistentState
 
         internal void Initialize()
         {
-            using var task = InitializeAsync().AsTask();
+            using var task = InitializeAsync();
             task.Wait();
         }
 
-        internal async ValueTask InitializeAsync()
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
-            => metadata = FileSize >= SnapshotMetadata.Size ? await GetSessionReader(0).ParseAsync<SnapshotMetadata>().ConfigureAwait(false) : default;
-#pragma warning restore CA2252
-
-        internal async ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
+        private async Task InitializeCoreAsync()
         {
-            await SetWritePositionAsync(0L, token).ConfigureAwait(false);
-            metadata = new(index, timestamp, term, FileSize - SnapshotMetadata.Size);
+            var memory = metadataBuffer.Memory;
+            if (await RandomAccess.ReadAsync(Handle, memory, 0L).ConfigureAwait(false) >= fileOffset)
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
-            await writer.WriteFormattableAsync(metadata, token).ConfigureAwait(false);
+                metadata = IBinaryFormattable<SnapshotMetadata>.Parse(memory.Span);
 #pragma warning restore CA2252
+            else
+                throw new CorruptedPartitionException();
+        }
+
+        internal Task InitializeAsync()
+            => FileSize >= fileOffset ? InitializeCoreAsync() : Task.CompletedTask;
+
+        private ReadOnlyMemory<byte> SerializeMetadata()
+        {
+            var result = metadataBuffer.Memory;
+            var writer = new SpanWriter<byte>(result.Span);
+            metadata.Format(ref writer);
+            return result;
+        }
+
+        public override async ValueTask FlushAsync(CancellationToken token = default)
+        {
+            await RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token).ConfigureAwait(false);
+            await base.FlushAsync(token).ConfigureAwait(false);
+        }
+
+        internal ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
+        {
+            metadata = new(index, timestamp, term, FileSize - fileOffset);
+            return RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token);
         }
 
         internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
         {
-            await SetWritePositionAsync(SnapshotMetadata.Size, token).ConfigureAwait(false);
+            // write snapshot
+            await SetWritePositionAsync(fileOffset, token).ConfigureAwait(false);
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
-            metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - SnapshotMetadata.Size);
-            await SetWritePositionAsync(0L, token).ConfigureAwait(false);
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
-            await writer.WriteFormattableAsync(metadata, token).ConfigureAwait(false);
-#pragma warning restore CA2252
+
+            // update metadata
+            metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - fileOffset);
         }
 
         // optimization hint is not supported for snapshots
@@ -365,6 +382,16 @@ public partial class PersistentState
 
         // cached index of the snapshotted entry
         internal ref readonly SnapshotMetadata Metadata => ref metadata;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                metadataBuffer.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 
     /// <summary>
@@ -380,6 +407,17 @@ public partial class PersistentState
         /// Gets the index of the log entry.
         /// </summary>
         public long Index { get; }
+    }
+
+    /// <summary>
+    /// Indicates that the partition containing log entries is corrupted.
+    /// </summary>
+    public sealed class CorruptedPartitionException : IntegrityException
+    {
+        internal CorruptedPartitionException()
+            : base(ExceptionMessages.CorruptedPartition)
+        {
+        }
     }
 
     private readonly int recordsPerPartition;
@@ -569,10 +607,9 @@ public partial class PersistentState
 
     private static void DeletePartition(Partition partition)
     {
-        string fileName = partition.FileName, metadataTableFileName = partition.MetadataTableFileName;
+        var fileName = partition.FileName;
         partition.Dispose();
         File.Delete(fileName);
-        File.Delete(metadataTableFileName);
     }
 
     // this method should be called for detached partition head only

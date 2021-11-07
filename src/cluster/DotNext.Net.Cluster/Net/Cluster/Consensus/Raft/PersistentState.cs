@@ -28,10 +28,6 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <description>file containing log partition with log records</description>
 /// </item>
 /// <item>
-/// <term>&lt;partition&gt;.meta</term>
-/// <description>file containing metadata associated with the log partition</description>
-/// </item>
-/// <item>
 /// <term>snapshot</term>
 /// <description>file containing snapshot</description>
 /// </item>
@@ -71,11 +67,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <param name="path">The path to the folder to be used by audit trail.</param>
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2 or too large.</exception>
     protected PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
     {
         configuration ??= new();
-        if (recordsPerPartition < 2L)
+        if (recordsPerPartition < 2 || recordsPerPartition > Partition.MaxRecordsPerPartition)
             throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
         if (!path.Exists)
             path.Create();
@@ -107,6 +103,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             if (long.TryParse(file.Name, out var partitionNumber))
             {
                 var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
+                partition.Initialize();
                 partitionTable.Add(partition);
             }
         }

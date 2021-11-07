@@ -44,4 +44,6 @@ internal static class ExceptionMessages
     internal static string MissingMessageName => (string)Resources.Get();
 
     internal static string LeaderIsUnavailable => (string)Resources.Get();
+
+    internal static string CorruptedPartition => (string)Resources.Get();
 }

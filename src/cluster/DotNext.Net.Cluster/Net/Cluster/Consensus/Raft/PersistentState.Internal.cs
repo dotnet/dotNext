@@ -129,8 +129,8 @@ public partial class PersistentState
     {
         private long version;
 
-        internal VersionedFileReader(SafeFileHandle handle, int bufferSize, MemoryAllocator<byte> allocator, long version)
-            : base(handle, bufferSize: bufferSize, allocator: allocator)
+        internal VersionedFileReader(SafeFileHandle handle, long fileOffset, int bufferSize, MemoryAllocator<byte> allocator, long version)
+            : base(handle, fileOffset, bufferSize, allocator)
         {
             this.version = version;
         }
@@ -148,6 +148,7 @@ public partial class PersistentState
     {
         internal readonly SafeFileHandle Handle;
         private protected readonly FileWriter writer;
+        private protected readonly int fileOffset;
         private readonly MemoryAllocator<byte> allocator;
         internal readonly string FileName;
 
@@ -158,20 +159,21 @@ public partial class PersistentState
         // This field is used to control 'freshness' of the read buffers
         private long version; // volatile
 
-        private protected ConcurrentStorageAccess(string fileName, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
+        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
             Handle = File.Exists(fileName)
                 ? File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, options)
-                : File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+                : File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, initialSize + fileOffset);
 
-            writer = new(Handle, bufferSize: bufferSize, allocator: allocator);
+            this.fileOffset = fileOffset;
+            writer = new(Handle, fileOffset, bufferSize, allocator);
             readers = new VersionedFileReader[readersCount];
             this.allocator = allocator;
             FileName = fileName;
             version = long.MinValue;
 
             if (readersCount == 1)
-                readers[0] = new(Handle, bufferSize, allocator, version);
+                readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
         }
 
         private protected long FileSize => RandomAccess.GetLength(Handle);
@@ -219,7 +221,7 @@ public partial class PersistentState
 
             if (result is null)
             {
-                GetReader() = result = new(Handle, writer.MaxBufferSize, allocator, version.VolatileRead());
+                GetReader() = result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version.VolatileRead());
             }
             else
             {
