@@ -67,8 +67,8 @@ public partial class PersistentState
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FileOptions GetOptions(bool writeThrough)
         {
-            const FileOptions skipBufferOptions = FileOptions.SequentialScan | FileOptions.WriteThrough | FileOptions.Asynchronous;
-            const FileOptions dontSkipBufferOptions = FileOptions.SequentialScan | FileOptions.Asynchronous;
+            const FileOptions skipBufferOptions = FileOptions.WriteThrough | FileOptions.Asynchronous;
+            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
             return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
         }
 
@@ -320,8 +320,8 @@ public partial class PersistentState
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FileOptions GetOptions(bool writeThrough)
         {
-            const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough;
-            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess;
+            const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.WriteThrough;
+            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
             return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
         }
 
