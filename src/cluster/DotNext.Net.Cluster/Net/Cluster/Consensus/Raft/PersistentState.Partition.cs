@@ -48,7 +48,6 @@ public partial class PersistentState
             // allocate metadata segment
             metadata = manager.BufferAllocator.Invoke(fileOffset, true);
             metadataFlushStartAddress = int.MaxValue;
-            metadataFlushEndAddress = 0;
 
             entryCache = manager.AllocLogEntryCache(recordsPerPartition);
         }
