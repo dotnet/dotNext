@@ -160,8 +160,8 @@ public partial class PersistentState
 
         private void WriteMetadata(int index, in LogEntryMetadata metadata)
         {
-            var reader = new SpanWriter<byte>(ref GetMetadata(index, out var offset), LogEntryMetadata.Size);
-            metadata.Format(ref reader);
+            var writer = new SpanWriter<byte>(ref GetMetadata(index, out var offset), LogEntryMetadata.Size);
+            metadata.Format(ref writer);
 
             metadataFlushStartAddress = Math.Min(metadataFlushStartAddress, offset);
             metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
