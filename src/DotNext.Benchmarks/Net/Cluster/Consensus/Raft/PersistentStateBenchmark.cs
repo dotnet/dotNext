@@ -72,6 +72,7 @@ public class PersistentStateBenchmark
     private const int PayloadSize = 2048;
     private readonly string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     private PersistentState state;
+    private readonly byte[] metadata = new byte[40];
     private byte[] writePayload;
     private SafeFileHandle tempFile;
 
@@ -145,5 +146,9 @@ public class PersistentStateBenchmark
     }
 
     [Benchmark]
-    public async Task WriteToFileAsync() => await RandomAccess.WriteAsync(tempFile, writePayload, 0L);
+    public async Task WriteToFileAsync()
+    {
+        await RandomAccess.WriteAsync(tempFile, writePayload, metadata.Length);
+        await RandomAccess.WriteAsync(tempFile, metadata, 0L);
+    }
 }
