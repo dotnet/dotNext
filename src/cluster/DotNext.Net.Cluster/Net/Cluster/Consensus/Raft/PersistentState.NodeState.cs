@@ -2,7 +2,6 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using IO.Log;
 using Threading;
 
 public partial class PersistentState
