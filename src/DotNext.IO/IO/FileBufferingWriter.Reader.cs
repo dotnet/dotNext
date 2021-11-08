@@ -104,19 +104,12 @@ public partial class FileBufferingWriter
 
     private Stream GetWrittenContentAsStream(bool useAsyncIO)
     {
-        Stream result;
-        if (fileBackend is null)
-        {
-            result = StreamSource.AsStream(buffer.Memory.Slice(0, position));
-        }
-        else
-        {
-            const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
-            const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-            result = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
-        }
+        const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
+        const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
-        return result;
+        return fileBackend is null
+            ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
+            : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
     /// <summary>
