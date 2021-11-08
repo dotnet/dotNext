@@ -8,6 +8,10 @@ using Buffers;
 /// <summary>
 /// Represents buffered file reader.
 /// </summary>
+/// <remarks>
+/// This class is not thread-safe. However, it's possible to share the same file
+/// handle across multiple readers and use dedicated reader in each thread.
+/// </remarks>
 public partial class FileReader : Disposable
 {
     /// <summary>

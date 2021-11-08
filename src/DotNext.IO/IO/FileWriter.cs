@@ -8,6 +8,10 @@ using Buffers;
 /// <summary>
 /// Represents buffered file writer.
 /// </summary>
+/// <remarks>
+/// This class is not thread-safe. However, it's possible to share the same file
+/// handle across multiple writers and use dedicated writer in each thread.
+/// </remarks>
 public partial class FileWriter : Disposable
 {
     /// <summary>
