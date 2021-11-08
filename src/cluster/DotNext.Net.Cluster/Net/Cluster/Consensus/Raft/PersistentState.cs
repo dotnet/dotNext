@@ -125,7 +125,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path);
+        state = new(path, bufferManager.BufferAllocator);
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough, initialSize: initialSize);
         snapshot.Initialize();
 
@@ -412,7 +412,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         lastTerm.VolatileWrite(snapshot.Term);
         state.LastApplied = snapshotIndex;
-        state.Flush();
+        await state.FlushAsync().ConfigureAwait(false);
         await FlushAsync().ConfigureAwait(false);
         commitEvent.Set(true);
         writeCounter?.Invoke(1D);
@@ -455,7 +455,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
-        state.Flush();
+        await state.FlushAsync(token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -510,7 +510,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await partition.FlushAsync(token).ConfigureAwait(false);
 
         state.LastIndex = startIndex;
-        state.Flush();
+        await state.FlushAsync(token).ConfigureAwait(false);
 
         writeCounter?.Invoke(1D);
     }
@@ -524,7 +524,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            state.Flush();
+            await state.FlushAsync(token).ConfigureAwait(false);
         }
         else
         {
@@ -753,7 +753,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             count = state.LastIndex - startIndex + 1L;
             state.LastIndex = startIndex - 1L;
-            state.Flush();
+            await state.FlushAsync(token).ConfigureAwait(false);
 
             if (reuseSpace)
                 InvalidatePartitions(startIndex);
@@ -1189,7 +1189,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
         }
 
-        state.Flush();
+        await state.FlushAsync(token).ConfigureAwait(false);
         await FlushAsync().ConfigureAwait(false);
     }
 
@@ -1282,7 +1282,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
         try
         {
-            result = state.IncrementTerm();
+            result = await state.IncrementTermAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -1298,7 +1298,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
         try
         {
-            state.UpdateTerm(term, resetLastVote);
+            await state.UpdateTermAsync(term, resetLastVote).ConfigureAwait(false);
         }
         finally
         {
@@ -1312,7 +1312,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
         try
         {
-            state.UpdateVotedFor(id);
+            await state.UpdateVotedForAsync(id).ConfigureAwait(false);
         }
         finally
         {

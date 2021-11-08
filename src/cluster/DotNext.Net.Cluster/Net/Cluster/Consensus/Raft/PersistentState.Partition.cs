@@ -52,7 +52,10 @@ public partial class PersistentState
         private async Task InitializeAsync()
         {
             if (await RandomAccess.ReadAsync(Handle, metadata.Memory, 0L).ConfigureAwait(false) < fileOffset)
-                throw new CorruptedPartitionException();
+            {
+                metadata.Span.Clear();
+                await RandomAccess.WriteAsync(Handle, metadata.Memory, 0L).ConfigureAwait(false);
+            }
         }
 
         internal void Initialize()
@@ -327,9 +330,13 @@ public partial class PersistentState
 
         private async Task InitializeCoreAsync()
         {
-            metadata = await RandomAccess.ReadAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false) >= fileOffset
-                ? new(metadataBuffer.Span)
-                : throw new CorruptedPartitionException();
+            if (await RandomAccess.ReadAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false) < fileOffset)
+            {
+                metadataBuffer.Span.Clear();
+                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false);
+            }
+
+            metadata = new(metadataBuffer.Span);
         }
 
         internal Task InitializeAsync()
@@ -394,17 +401,6 @@ public partial class PersistentState
         /// Gets the index of the log entry.
         /// </summary>
         public long Index { get; }
-    }
-
-    /// <summary>
-    /// Indicates that the partition containing log entries is corrupted.
-    /// </summary>
-    public sealed class CorruptedPartitionException : IntegrityException
-    {
-        internal CorruptedPartitionException()
-            : base(ExceptionMessages.CorruptedPartition)
-        {
-        }
     }
 
     private readonly int recordsPerPartition;

@@ -234,9 +234,19 @@ public partial class PersistentState
 
         private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
-            Handle = File.Exists(fileName)
-                ? File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, options)
-                : File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, initialSize + fileOffset);
+            FileMode fileMode;
+            if (File.Exists(fileName))
+            {
+                fileMode = FileMode.OpenOrCreate;
+                initialSize = 0L;
+            }
+            else
+            {
+                fileMode = FileMode.CreateNew;
+                initialSize += fileOffset;
+            }
+
+            Handle = File.OpenHandle(fileName, fileMode, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
 
             this.fileOffset = fileOffset;
             writer = new(Handle, fileOffset, bufferSize, allocator);
