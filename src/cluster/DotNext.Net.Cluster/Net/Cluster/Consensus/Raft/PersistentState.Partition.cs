@@ -142,26 +142,24 @@ public partial class PersistentState
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ref byte GetMetadata(int index, out int offset)
+        private Span<byte> GetMetadata(int index, out int offset)
         {
             Debug.Assert(metadata.Length == fileOffset);
 
-            return ref Unsafe.Add(ref BufferHelpers.GetReference(in metadata), offset = index * LogEntryMetadata.Size);
+            return metadata.Span.Slice(offset = index * LogEntryMetadata.Size);
         }
 
-        private unsafe T ReadMetadata<T>(int index, delegate*<ref SpanReader<byte>, T> parser)
+        private unsafe T ReadMetadata<T>(int index, delegate*<ReadOnlySpan<byte>, T> parser)
             where T : unmanaged
         {
             Debug.Assert(parser != null);
 
-            var reader = new SpanReader<byte>(ref GetMetadata(index, out _), LogEntryMetadata.Size);
-            return parser(ref reader);
+            return parser(GetMetadata(index, out _));
         }
 
         private void WriteMetadata(int index, in LogEntryMetadata metadata)
         {
-            var writer = new SpanWriter<byte>(ref GetMetadata(index, out var offset), LogEntryMetadata.Size);
-            metadata.Format(ref writer);
+            metadata.Format(GetMetadata(index, out var offset));
 
             metadataFlushStartAddress = Math.Min(metadataFlushStartAddress, offset);
             metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
@@ -332,13 +330,9 @@ public partial class PersistentState
 
         private async Task InitializeCoreAsync()
         {
-            var memory = metadataBuffer.Memory;
-            if (await RandomAccess.ReadAsync(Handle, memory, 0L).ConfigureAwait(false) >= fileOffset)
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
-                metadata = IBinaryFormattable<SnapshotMetadata>.Parse(memory.Span);
-#pragma warning restore CA2252
-            else
-                throw new CorruptedPartitionException();
+            metadata = await RandomAccess.ReadAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false) >= fileOffset
+                ? new(metadataBuffer.Span)
+                : throw new CorruptedPartitionException();
         }
 
         internal Task InitializeAsync()
@@ -346,10 +340,8 @@ public partial class PersistentState
 
         private ReadOnlyMemory<byte> SerializeMetadata()
         {
-            var result = metadataBuffer.Memory;
-            var writer = new SpanWriter<byte>(result.Span);
-            metadata.Format(ref writer);
-            return result;
+            metadata.Format(metadataBuffer.Span);
+            return metadataBuffer.Memory;
         }
 
         public override async ValueTask FlushAsync(CancellationToken token = default)

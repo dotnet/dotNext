@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -19,9 +20,8 @@ public partial class PersistentState
         HasIdentifier = 0x01,
     }
 
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
+    internal readonly struct LogEntryMetadata
     {
         internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
         private readonly LogEntryFlags flags;
@@ -40,19 +40,45 @@ public partial class PersistentState
             identifier = id.GetValueOrDefault();
         }
 
-        internal LogEntryMetadata(ref SpanReader<byte> reader)
+        internal LogEntryMetadata(ReadOnlySpan<byte> input)
         {
-            Term = reader.ReadInt64(true);
-            Timestamp = reader.ReadInt64(true);
-            Length = reader.ReadInt64(true);
-            Offset = reader.ReadInt64(true);
-            flags = (LogEntryFlags)reader.ReadUInt32(true);
-            identifier = reader.ReadInt32(true);
+            Debug.Assert(input.Length >= Size);
+
+            // fast path without any overhead for LE byte order
+            if (BitConverter.IsLittleEndian)
+            {
+                ref var ptr = ref MemoryMarshal.GetReference(input);
+
+                Term = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Timestamp = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Length = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Offset = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                flags = (LogEntryFlags)Unsafe.As<byte, uint>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(uint));
+
+                identifier = Unsafe.As<byte, int>(ref ptr);
+            }
+            else
+            {
+                var reader = new SpanReader<byte>(input);
+                Term = reader.ReadInt64(true);
+                Timestamp = reader.ReadInt64(true);
+                Length = reader.ReadInt64(true);
+                Offset = reader.ReadInt64(true);
+                flags = (LogEntryFlags)reader.ReadUInt32(true);
+                identifier = reader.ReadInt32(true);
+            }
         }
 
-        static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
-
-        public static LogEntryMetadata Parse(ref SpanReader<byte> input) => new(ref input);
+        public static LogEntryMetadata Parse(ReadOnlySpan<byte> input) => new(input);
 
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
@@ -65,27 +91,62 @@ public partial class PersistentState
         internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
             => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
-        public void Format(ref SpanWriter<byte> writer)
+        public void Format(Span<byte> output)
         {
-            writer.WriteInt64(Term, true);
-            writer.WriteInt64(Timestamp, true);
-            writer.WriteInt64(Length, true);
-            writer.WriteInt64(Offset, true);
-            writer.WriteUInt32((uint)flags, true);
-            writer.WriteInt32(identifier, true);
+            Debug.Assert(output.Length >= Size);
+
+            // fast path without any overhead for LE byte order
+            if (BitConverter.IsLittleEndian)
+            {
+                ref var ptr = ref MemoryMarshal.GetReference(output);
+                Unsafe.As<byte, long>(ref ptr) = Term;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, long>(ref ptr) = Timestamp;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, long>(ref ptr) = Length;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, long>(ref ptr) = Offset;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, uint>(ref ptr) = (uint)flags;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(uint));
+
+                Unsafe.As<byte, int>(ref ptr) = identifier;
+            }
+            else
+            {
+                var writer = new SpanWriter<byte>(output);
+                writer.WriteInt64(Term, true);
+                writer.WriteInt64(Timestamp, true);
+                writer.WriteInt64(Length, true);
+                writer.WriteInt64(Offset, true);
+                writer.WriteUInt32((uint)flags, true);
+                writer.WriteInt32(identifier, true);
+            }
         }
 
-        internal static long GetTerm(ref SpanReader<byte> reader) => reader.ReadInt64(true);
+        internal static long GetTerm(ReadOnlySpan<byte> input)
+            => BinaryPrimitives.ReadInt64LittleEndian(input);
 
-        internal static long GetEndOfLogEntry(ref SpanReader<byte> reader)
+        internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
         {
+            if (BitConverter.IsLittleEndian)
+            {
+                ref var ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), sizeof(long) + sizeof(long));
+                return Unsafe.As<byte, long>(ref ptr) + Unsafe.As<byte, long>(ref Unsafe.Add(ref ptr, sizeof(long)));
+            }
+
+            var reader = new SpanReader<byte>(input);
             reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
             return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
         }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct SnapshotMetadata : IBinaryFormattable<SnapshotMetadata>
+    internal readonly struct SnapshotMetadata
     {
         internal const int Size = sizeof(long) + LogEntryMetadata.Size;
         internal readonly long Index;
@@ -97,10 +158,10 @@ public partial class PersistentState
             RecordMetadata = metadata;
         }
 
-        internal SnapshotMetadata(ref SpanReader<byte> reader)
+        internal SnapshotMetadata(ReadOnlySpan<byte> reader)
         {
-            Index = reader.ReadInt64(true);
-            RecordMetadata = new(ref reader);
+            Index = BinaryPrimitives.ReadInt64LittleEndian(reader);
+            RecordMetadata = new(reader.Slice(sizeof(long)));
         }
 
         internal SnapshotMetadata(long index, DateTimeOffset timeStamp, long term, long length, int? id = null)
@@ -108,22 +169,16 @@ public partial class PersistentState
         {
         }
 
-        static int IBinaryFormattable<SnapshotMetadata>.Size => Size;
-
-        static SnapshotMetadata IBinaryFormattable<SnapshotMetadata>.Parse(ref SpanReader<byte> input)
-            => new(ref input);
-
         internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
             where TLogEntry : IRaftLogEntry
             => new(LogEntryMetadata.Create(snapshot, Size, length), index);
 
-        public void Format(ref SpanWriter<byte> writer)
+        public void Format(Span<byte> output)
         {
-            writer.WriteInt64(Index, true);
-            RecordMetadata.Format(ref writer);
+            BinaryPrimitives.WriteInt64LittleEndian(output, Index);
+            RecordMetadata.Format(output.Slice(sizeof(long)));
         }
     }
-#pragma warning restore CA2252
 
     private sealed class VersionedFileReader : FileReader
     {
