@@ -12,8 +12,8 @@ public partial class PersistentState
     /// This method should not be used in production.
     /// </remarks>
     /// <param name="index">The index.</param>
-    [Conditional("Debug")]
-    [Conditional("Bench")]
+    [Conditional("DEBUG")]
+    [Conditional("BENCH")]
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
     public void DbgChangeLastIndex(long index) => state.LastIndex = index;
