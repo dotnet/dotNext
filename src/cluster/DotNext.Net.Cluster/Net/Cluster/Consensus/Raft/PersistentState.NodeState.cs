@@ -4,7 +4,6 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
-using IO;
 using Threading;
 
 public partial class PersistentState
@@ -26,12 +25,17 @@ public partial class PersistentState
         private const byte False = 0;
         private const byte True = 1;
         private const int Capacity = 128;
-        private const int TermOffset = 0;
-        private const int CommitIndexOffset = TermOffset + sizeof(long);
+        private const int CommitIndexOffset = 0;
         private const int LastAppliedOffset = CommitIndexOffset + sizeof(long);
         private const int LastIndexOffset = LastAppliedOffset + sizeof(long);
-        private const int LastVotePresenceOffset = LastIndexOffset + sizeof(long);
+        private const int TermOffset = LastIndexOffset + sizeof(long);
+        private const int LastVotePresenceOffset = TermOffset + sizeof(long);
         private const int LastVoteOffset = LastVotePresenceOffset + sizeof(byte);
+
+        internal static readonly Range IndexesRange = CommitIndexOffset..TermOffset,
+                                        TermRange = TermOffset..LastVotePresenceOffset,
+                                        LastVoteRange = LastVotePresenceOffset..(LastVoteOffset + ClusterMemberId.Size),
+                                        TermAndLastVoteFlagRange = TermOffset..LastVoteOffset;
 
         private readonly SafeFileHandle handle;
         private MemoryOwner<byte> buffer;
@@ -85,8 +89,12 @@ public partial class PersistentState
         {
         }
 
-        internal ValueTask FlushAsync(CancellationToken token = default)
-            => RandomAccess.WriteAsync(handle, buffer.Memory, 0L, token);
+        internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
+        {
+            var memory = buffer.Memory;
+            var (offset, length) = range.GetOffsetAndLength(memory.Length);
+            return RandomAccess.WriteAsync(handle, memory.Slice(offset, length), offset, token);
+        }
 
         internal long CommitIndex
         {
@@ -124,7 +132,7 @@ public partial class PersistentState
 
         internal long Term => term.VolatileRead();
 
-        internal ValueTask UpdateTermAsync(long value, bool resetLastVote, CancellationToken token = default)
+        internal void UpdateTerm(long value, bool resetLastVote)
         {
             WriteInt64LittleEndian(buffer.Span.Slice(TermOffset), value);
             if (resetLastVote)
@@ -134,20 +142,18 @@ public partial class PersistentState
             }
 
             term.VolatileWrite(value);
-            return FlushAsync(token);
         }
 
-        internal async ValueTask<long> IncrementTermAsync()
+        internal long IncrementTerm()
         {
             var result = term.IncrementAndGet();
             WriteInt64LittleEndian(buffer.Span.Slice(TermOffset), result);
-            await FlushAsync().ConfigureAwait(false);
             return result;
         }
 
         internal bool IsVotedFor(in ClusterMemberId? expected) => IPersistentState.IsVotedFor(votedFor, expected);
 
-        internal ValueTask UpdateVotedForAsync(ClusterMemberId? member)
+        internal void UpdateVotedFor(ClusterMemberId? member)
         {
             if (member.HasValue)
             {
@@ -163,8 +169,6 @@ public partial class PersistentState
                 votedFor = null;
                 buffer[LastVotePresenceOffset] = False;
             }
-
-            return FlushAsync();
         }
 
         protected override void Dispose(bool disposing)

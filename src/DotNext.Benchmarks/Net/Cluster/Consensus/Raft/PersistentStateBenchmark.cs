@@ -123,7 +123,7 @@ public class PersistentStateBenchmark
         => PrepareForWrite(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background });
 
     [IterationCleanup(Targets = new[] { nameof(WriteCachedLogEntryAsync), nameof(WriteUncachedLogEntryAsync) })]
-    public void DropAddedLogEntryAsync() => state.DropAsync(1L, reuseSpace: true).AsTask().Wait();
+    public void DropAddedLogEntryAsync() => state.DbgChangeLastIndex(0L);
 
     [Benchmark]
     public async Task WriteCachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
