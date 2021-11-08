@@ -1,14 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
-using static Runtime.InteropServices.SafeBufferExtensions;
 using IntegrityException = IO.Log.IntegrityException;
 using LogEntryReadOptimizationHint = IO.Log.LogEntryReadOptimizationHint;
 
