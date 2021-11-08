@@ -40,6 +40,20 @@ public partial class PersistentState
             identifier = id.GetValueOrDefault();
         }
 
+        // slow version if target architecture has BE byte order
+        private LogEntryMetadata(ReadOnlySpan<byte> input, bool dummy)
+        {
+            Debug.Assert(dummy);
+
+            var reader = new SpanReader<byte>(input);
+            Term = reader.ReadInt64(true);
+            Timestamp = reader.ReadInt64(true);
+            Length = reader.ReadInt64(true);
+            Offset = reader.ReadInt64(true);
+            flags = (LogEntryFlags)reader.ReadUInt32(true);
+            identifier = reader.ReadInt32(true);
+        }
+
         internal LogEntryMetadata(ReadOnlySpan<byte> input)
         {
             Debug.Assert(input.Length >= Size);
@@ -68,17 +82,11 @@ public partial class PersistentState
             }
             else
             {
-                var reader = new SpanReader<byte>(input);
-                Term = reader.ReadInt64(true);
-                Timestamp = reader.ReadInt64(true);
-                Length = reader.ReadInt64(true);
-                Offset = reader.ReadInt64(true);
-                flags = (LogEntryFlags)reader.ReadUInt32(true);
-                identifier = reader.ReadInt32(true);
+                this = new(input, true);
             }
         }
 
-        public static LogEntryMetadata Parse(ReadOnlySpan<byte> input) => new(input);
+        internal static LogEntryMetadata Parse(ReadOnlySpan<byte> input) => new(input);
 
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
@@ -90,6 +98,17 @@ public partial class PersistentState
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
             => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
+
+        private void FormatSlow(Span<byte> output)
+        {
+            var writer = new SpanWriter<byte>(output);
+            writer.WriteInt64(Term, true);
+            writer.WriteInt64(Timestamp, true);
+            writer.WriteInt64(Length, true);
+            writer.WriteInt64(Offset, true);
+            writer.WriteUInt32((uint)flags, true);
+            writer.WriteInt32(identifier, true);
+        }
 
         public void Format(Span<byte> output)
         {
@@ -118,13 +137,7 @@ public partial class PersistentState
             }
             else
             {
-                var writer = new SpanWriter<byte>(output);
-                writer.WriteInt64(Term, true);
-                writer.WriteInt64(Timestamp, true);
-                writer.WriteInt64(Length, true);
-                writer.WriteInt64(Offset, true);
-                writer.WriteUInt32((uint)flags, true);
-                writer.WriteInt32(identifier, true);
+                FormatSlow(output);
             }
         }
 
@@ -139,9 +152,14 @@ public partial class PersistentState
                 return Unsafe.As<byte, long>(ref ptr) + Unsafe.As<byte, long>(ref Unsafe.Add(ref ptr, sizeof(long)));
             }
 
-            var reader = new SpanReader<byte>(input);
-            reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
-            return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
+            return GetEndOfLogEntrySlow(input);
+
+            static long GetEndOfLogEntrySlow(ReadOnlySpan<byte> input)
+            {
+                var reader = new SpanReader<byte>(input);
+                reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
+                return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
+            }
         }
     }
 
