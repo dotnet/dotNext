@@ -34,7 +34,7 @@ public partial class PersistentState
 
         internal static readonly Range IndexesRange = CommitIndexOffset..TermOffset,
                                         TermRange = TermOffset..LastVotePresenceOffset,
-                                        LastVoteRange = LastVotePresenceOffset..(LastVoteOffset + ClusterMemberId.Size),
+                                        LastVoteRange = LastVotePresenceOffset.. (LastVoteOffset + ClusterMemberId.Size),
                                         TermAndLastVoteFlagRange = TermOffset..LastVoteOffset;
 
         private readonly SafeFileHandle handle;
@@ -77,7 +77,7 @@ public partial class PersistentState
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
             var hasLastVote = ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]);
             if (hasLastVote)
-                this.votedFor = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset));
+                votedFor = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset));
 
             // reopen handle in asynchronous mode
             handle.Dispose();
