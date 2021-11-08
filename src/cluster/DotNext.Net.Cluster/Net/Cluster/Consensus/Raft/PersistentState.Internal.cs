@@ -61,8 +61,8 @@ public partial class PersistentState
                 Offset = Unsafe.As<byte, long>(ref ptr);
                 ptr = ref Unsafe.Add(ref ptr, sizeof(long));
 
-                flags = (LogEntryFlags)Unsafe.As<byte, uint>(ref ptr);
-                ptr = ref Unsafe.Add(ref ptr, sizeof(uint));
+                flags = Unsafe.As<byte, LogEntryFlags>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(LogEntryFlags));
 
                 identifier = Unsafe.As<byte, int>(ref ptr);
             }
@@ -111,8 +111,8 @@ public partial class PersistentState
                 Unsafe.As<byte, long>(ref ptr) = Offset;
                 ptr = ref Unsafe.Add(ref ptr, sizeof(long));
 
-                Unsafe.As<byte, uint>(ref ptr) = (uint)flags;
-                ptr = ref Unsafe.Add(ref ptr, sizeof(uint));
+                Unsafe.As<byte, LogEntryFlags>(ref ptr) = flags;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(LogEntryFlags));
 
                 Unsafe.As<byte, int>(ref ptr) = identifier;
             }
