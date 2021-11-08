@@ -10,10 +10,10 @@ public partial class PersistentState
 {
     /*
         State file format:
-        8 bytes = Term
         8 bytes = CommitIndex
         8 bytes = LastApplied
         8 bytes = LastIndex
+        8 bytes = Term
         1 byte = presence of cluster member id
         sizeof(ClusterMemberId) = last vote
      */
