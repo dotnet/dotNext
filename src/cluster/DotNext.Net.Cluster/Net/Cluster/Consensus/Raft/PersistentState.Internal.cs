@@ -176,10 +176,10 @@ public partial class PersistentState
             RecordMetadata = metadata;
         }
 
-        internal SnapshotMetadata(ReadOnlySpan<byte> reader)
+        internal SnapshotMetadata(ReadOnlySpan<byte> input)
         {
-            Index = BinaryPrimitives.ReadInt64LittleEndian(reader);
-            RecordMetadata = new(reader.Slice(sizeof(long)));
+            Index = BinaryPrimitives.ReadInt64LittleEndian(input);
+            RecordMetadata = new(input.Slice(sizeof(long)));
         }
 
         internal SnapshotMetadata(long index, DateTimeOffset timeStamp, long term, long length, int? id = null)
