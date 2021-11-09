@@ -970,9 +970,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         // otherwise - write lock which doesn't block background compaction
         return compaction switch
         {
-            CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(endIndex, token),
-            CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
-            _ => CommitWithoutCompactionAsync(endIndex, token),
+            CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(),
+            CompactionMode.Foreground => CommitAndCompactInParallelAsync(),
+            _ => CommitWithoutCompactionAsync(),
         };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -983,7 +983,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             return commitIndex - startIndex + 1L;
         }
 
-        async ValueTask<long> CommitAndCompactSequentiallyAsync(long? endIndex, CancellationToken token)
+        async ValueTask<long> CommitAndCompactSequentiallyAsync()
         {
             Partition? removedHead;
             long count;
@@ -1033,7 +1033,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             return removedHead;
         }
 
-        async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
+        async ValueTask<long> CommitWithoutCompactionAsync()
         {
             long count;
             await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
@@ -1089,7 +1089,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             return removedHead;
         }
 
-        async ValueTask<long> CommitAndCompactInParallelAsync(long? endIndex, CancellationToken token)
+        async ValueTask<long> CommitAndCompactInParallelAsync()
         {
             Partition? removedHead;
             long count;
