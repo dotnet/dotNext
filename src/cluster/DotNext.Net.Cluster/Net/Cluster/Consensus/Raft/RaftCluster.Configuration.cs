@@ -400,7 +400,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public int TransmissionBlockSize
             {
                 get => transmissionBlockSize;
-                set => TcpTransport.ValidateTranmissionBlockSize(value);
+                set => transmissionBlockSize = TcpTransport.ValidateTranmissionBlockSize(value);
             }
 
             /// <summary>
