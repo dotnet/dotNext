@@ -62,7 +62,7 @@ public static partial class PipeExtensions
         for (SequencePosition consumed; parser.RemainingBytes > 0 && !completed; reader.AdvanceTo(consumed))
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-            readResult.ThrowIfCancellationRequested(token);
+            readResult.ThrowIfCancellationRequested(reader, token);
             parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
             completed = readResult.IsCompleted;
         }
@@ -101,7 +101,7 @@ public static partial class PipeExtensions
         for (SequencePosition consumed; bufferReader.RemainingBytes > 0 & !completed; reader.AdvanceTo(consumed))
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-            readResult.ThrowIfCancellationRequested(token);
+            readResult.ThrowIfCancellationRequested(reader, token);
             bufferReader.Append<string, StringReader<ArrayBuffer<char>>>(readResult.Buffer, out consumed);
             completed = readResult.IsCompleted;
         }
@@ -357,7 +357,7 @@ public static partial class PipeExtensions
         static async ValueTask<T> ReadSlowAsync(PipeReader reader, CancellationToken token)
         {
             var result = await reader.ReadAtLeastAsync(Unsafe.SizeOf<T>(), token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(token);
+            result.ThrowIfCancellationRequested(reader, token);
             var value = Read(result.Buffer, out var consumed);
             reader.AdvanceTo(consumed);
             return value;
@@ -402,7 +402,7 @@ public static partial class PipeExtensions
         do
         {
             result = await reader.ReadAsync(token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(token);
+            result.ThrowIfCancellationRequested(reader, token);
             var buffer = result.Buffer;
             var consumed = buffer.Start;
 
@@ -640,7 +640,7 @@ public static partial class PipeExtensions
         for (SequencePosition consumed; length > 0L; reader.AdvanceTo(consumed))
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-            readResult.ThrowIfCancellationRequested(token);
+            readResult.ThrowIfCancellationRequested(reader, token);
             var buffer = readResult.Buffer;
             if (buffer.IsEmpty)
                 throw new EndOfStreamException();
@@ -693,7 +693,7 @@ public static partial class PipeExtensions
             while (length > 0L)
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-                readResult.ThrowIfCancellationRequested(token);
+                readResult.ThrowIfCancellationRequested(reader, token);
                 var buffer = readResult.Buffer;
                 if (buffer.IsEmpty)
                     throw new EndOfStreamException();
