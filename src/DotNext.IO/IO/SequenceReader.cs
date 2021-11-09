@@ -111,10 +111,11 @@ public struct SequenceReader : IAsyncBinaryReader
     /// <typeparam name="T">The type of the value to decode.</typeparam>
     /// <returns>The decoded value.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+    [SkipLocalsInit]
     public T Read<T>()
         where T : unmanaged
     {
-        var result = default(T);
+        Unsafe.SkipInit(out T result);
         Read(Span.AsBytes(ref result));
         return result;
     }
