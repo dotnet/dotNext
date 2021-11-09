@@ -59,7 +59,7 @@ public static partial class PipeExtensions
         where TParser : struct, IBufferReader<TResult>
     {
         var completed = false;
-        for (SequencePosition consumed; parser.RemainingBytes > 0 & !completed; reader.AdvanceTo(consumed))
+        for (SequencePosition consumed; parser.RemainingBytes > 0 && !completed; reader.AdvanceTo(consumed))
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
             readResult.ThrowIfCancellationRequested(token);
