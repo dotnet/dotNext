@@ -9,7 +9,7 @@ namespace DotNext.IO;
 
 using Buffers;
 using Text;
-using static Pipelines.ResultExtensions;
+using static Pipelines.PipeExtensions;
 
 public partial class FileWriter : IAsyncBinaryWriter
 {
@@ -257,27 +257,12 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task CopyFromAsync(PipeReader input, CancellationToken token = default)
-    {
-        await WriteAsync(token).ConfigureAwait(false);
-
-        ReadResult result;
-        do
-        {
-            result = await input.ReadAsync(token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(token);
-            var buffer = result.Buffer;
-            for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
-                await WriteAsync(block, token).ConfigureAwait(false);
-        }
-        while (!result.IsCompleted);
-    }
+    public Task CopyFromAsync(PipeReader input, CancellationToken token = default)
+        => input.CopyToAsync(this, token);
 
     /// <inheritdoc />
     async Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
     {
-        await WriteAsync(token).ConfigureAwait(false);
-
         for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty;)
             await WriteAsync(source, token).ConfigureAwait(false);
     }
@@ -292,8 +277,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (FreeCapacity == 0)
             await FlushCoreAsync(token).ConfigureAwait(false);
 
-        var buffer = Buffer;
-        using var output = new PreallocatedBufferWriter(buffer);
+        using var output = new PreallocatedBufferWriter(Buffer);
         writer(arg, output);
 
         var result = output.WrittenMemory;
