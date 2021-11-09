@@ -541,7 +541,7 @@ public static partial class PipeExtensions
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(result.Memory), token).ConfigureAwait(false);
+            await ReadBlockAsync(reader, result.Memory, token).ConfigureAwait(false);
         }
         else
         {
