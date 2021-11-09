@@ -617,17 +617,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         where TEntry : notnull, IRaftLogEntry
     {
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
-        long startIndex;
         try
         {
-            startIndex = await UnsafeAppendAsync(entry, true, token).ConfigureAwait(false);
+            return await UnsafeAppendAsync(entry, true, token).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(LockType.WriteLock);
         }
-
-        return startIndex;
     }
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -639,18 +636,15 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         var cachedEntry = new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId);
 
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
-        long startIndex;
         try
         {
             // append it to the log
-            startIndex = await UnsafeAppendAsync(cachedEntry, false, token).ConfigureAwait(false);
+            return await UnsafeAppendAsync(cachedEntry, false, token).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(LockType.WriteLock);
         }
-
-        return startIndex;
     }
 
     /// <summary>
