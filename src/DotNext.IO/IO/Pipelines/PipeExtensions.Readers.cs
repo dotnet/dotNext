@@ -335,7 +335,43 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : unmanaged
-        => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
+    {
+        ValueTask<T> result;
+
+        if (!TryReadBlock(reader, Unsafe.SizeOf<T>(), out var readResult))
+        {
+            result = ReadSlowAsync(reader, token);
+        }
+        else if (readResult.IsCanceled)
+        {
+            result = ValueTask.FromCanceled<T>(token.IsCancellationRequested ? token : new(true));
+        }
+        else
+        {
+            result = new(Read(readResult.Buffer, out var consumed));
+            reader.AdvanceTo(consumed);
+        }
+
+        return result;
+
+        static async ValueTask<T> ReadSlowAsync(PipeReader reader, CancellationToken token)
+        {
+            var result = await reader.ReadAtLeastAsync(Unsafe.SizeOf<T>(), token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(token);
+            var value = Read(result.Buffer, out var consumed);
+            reader.AdvanceTo(consumed);
+            return value;
+        }
+
+        [SkipLocalsInit]
+        static unsafe T Read(ReadOnlySequence<byte> sequence, out SequencePosition consumed)
+        {
+            Unsafe.SkipInit(out T result);
+            sequence.CopyTo(Span.AsBytes(ref result), out var count);
+            consumed = sequence.GetPosition(count);
+            return count == sizeof(T) ? result : throw new EndOfStreamException();
+        }
+    }
 
     /// <summary>
     /// Reads the entire content using the specified delegate.
