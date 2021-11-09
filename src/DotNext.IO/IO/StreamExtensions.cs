@@ -966,6 +966,15 @@ public static partial class StreamExtensions
         return MemoryMarshal.Read<T>(buffer.Span);
     }
 
+    internal static async ValueTask<TOutput> ReadAsync<TInput, TOutput, TConverter>(this Stream stream, TConverter converter, Memory<byte> buffer, CancellationToken token = default)
+        where TInput : unmanaged
+        where TOutput : unmanaged
+        where TConverter : struct, ISupplier<TInput, TOutput>
+    {
+        await stream.ReadBlockAsync(buffer.Slice(0, Unsafe.SizeOf<TInput>()), token).ConfigureAwait(false);
+        return converter.Invoke(MemoryMarshal.Read<TInput>(buffer.Span));
+    }
+
     /// <summary>
     /// Asynchronously deserializes the value type from the stream.
     /// </summary>
