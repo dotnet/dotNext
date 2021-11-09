@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
+using static System.Buffers.Binary.BinaryPrimitives;
 using Missing = System.Reflection.Missing;
 
 namespace DotNext.IO.Pipelines;
@@ -373,6 +374,12 @@ public static partial class PipeExtensions
         }
     }
 
+    private static async ValueTask<TOutput> ReadAsync<TInput, TOutput, TConverter>(this PipeReader reader, TConverter converter, CancellationToken token)
+        where TInput : unmanaged
+        where TOutput : unmanaged
+        where TConverter : struct, ISupplier<TInput, TOutput>
+        => converter.Invoke(await ReadAsync<TInput>(reader, token).ConfigureAwait(false));
+
     /// <summary>
     /// Reads the entire content using the specified delegate.
     /// </summary>
@@ -442,12 +449,8 @@ public static partial class PipeExtensions
     /// <returns>The decoded value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public static async ValueTask<long> ReadInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
-    {
-        var result = await reader.ReadAsync<long>(token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    public static unsafe ValueTask<long> ReadInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        => littleEndian == BitConverter.IsLittleEndian ? reader.ReadAsync<long>(token) : reader.ReadAsync<long, long, Supplier<long, long>>(new(&ReverseEndianness), token);
 
     /// <summary>
     /// Decodes 64-bit unsigned integer using the specified endianness.
@@ -459,12 +462,8 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     [CLSCompliant(false)]
-    public static async ValueTask<ulong> ReadUInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
-    {
-        var result = await reader.ReadAsync<ulong>(token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    public static unsafe ValueTask<ulong> ReadUInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        => littleEndian == BitConverter.IsLittleEndian ? reader.ReadAsync<ulong>(token) : reader.ReadAsync<ulong, ulong, Supplier<ulong, ulong>>(new(&ReverseEndianness), token);
 
     /// <summary>
     /// Decodes 32-bit signed integer using the specified endianness.
@@ -475,12 +474,8 @@ public static partial class PipeExtensions
     /// <returns>The decoded value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public static async ValueTask<int> ReadInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
-    {
-        var result = await reader.ReadAsync<int>(token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    public static unsafe ValueTask<int> ReadInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        => littleEndian == BitConverter.IsLittleEndian ? reader.ReadAsync<int>(token) : reader.ReadAsync<int, int, Supplier<int, int>>(new(&ReverseEndianness), token);
 
     /// <summary>
     /// Decodes 32-bit unsigned integer using the specified endianness.
@@ -492,12 +487,8 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     [CLSCompliant(false)]
-    public static async ValueTask<uint> ReadUInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
-    {
-        var result = await reader.ReadAsync<uint>(token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    public static unsafe ValueTask<uint> ReadUInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        => littleEndian == BitConverter.IsLittleEndian ? reader.ReadAsync<uint>(token) : reader.ReadAsync<uint, uint, Supplier<uint, uint>>(new(&ReverseEndianness), token);
 
     /// <summary>
     /// Decodes 16-bit signed integer using the specified endianness.
@@ -508,12 +499,8 @@ public static partial class PipeExtensions
     /// <returns>The decoded value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public static async ValueTask<short> ReadInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
-    {
-        var result = await reader.ReadAsync<short>(token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    public static unsafe ValueTask<short> ReadInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        => littleEndian == BitConverter.IsLittleEndian ? reader.ReadAsync<short>(token) : reader.ReadAsync<short, short, Supplier<short, short>>(new(&ReverseEndianness), token);
 
     /// <summary>
     /// Decodes 16-bit signed integer using the specified endianness.
@@ -525,12 +512,8 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     [CLSCompliant(false)]
-    public static async ValueTask<ushort> ReadUInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
-    {
-        var result = await reader.ReadAsync<ushort>(token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    public static unsafe ValueTask<ushort> ReadUInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        => littleEndian == BitConverter.IsLittleEndian ? reader.ReadAsync<ushort>(token) : reader.ReadAsync<ushort, ushort, Supplier<ushort, ushort>>(new(&ReverseEndianness), token);
 
     /// <summary>
     /// Reads the block of memory.
