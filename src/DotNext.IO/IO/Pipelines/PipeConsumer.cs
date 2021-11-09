@@ -1,4 +1,5 @@
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Pipelines;
@@ -10,6 +11,7 @@ internal readonly struct PipeConsumer : ISupplier<ReadOnlyMemory<byte>, Cancella
 
     internal PipeConsumer(PipeWriter writer) => this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private static async ValueTask Write(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
     {
         var result = await output.WriteAsync(input, token).ConfigureAwait(false);
