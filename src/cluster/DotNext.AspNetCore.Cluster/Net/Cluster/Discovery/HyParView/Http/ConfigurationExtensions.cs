@@ -152,8 +152,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <param name="builder">The application builder.</param>
     /// <param name="configSection">The name of configuration section containing configuration of the local peer.</param>
-    /// <returns></returns>
-    public static IHostBuilder JoinMesh(this WebApplicationBuilder builder, string configSection)
+    public static void JoinMesh(this WebApplicationBuilder builder, string configSection)
         => builder.Host.JoinMesh(configSection);
 
     private static void ConfigureHyParViewProtocolHandler(this HttpPeerController controller, IApplicationBuilder builder)
