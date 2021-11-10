@@ -591,8 +591,7 @@ public static class Intrinsics
     /// <returns>The computed hash.</returns>
     public static long GetHashCode64<T>(Func<T, int, long> getter, int count, T arg, bool salted = true)
     {
-        if (getter is null)
-            throw new ArgumentNullException(nameof(getter));
+        ArgumentNullException.ThrowIfNull(getter);
 
         var hash = GetHashCode<T, long, FNV1a64>(getter, count, arg);
 
@@ -613,8 +612,7 @@ public static class Intrinsics
     /// <returns>The computed hash.</returns>
     public static int GetHashCode32<T>(Func<T, int, int> getter, int count, T arg, bool salted = true)
     {
-        if (getter is null)
-            throw new ArgumentNullException(nameof(getter));
+        ArgumentNullException.ThrowIfNull(getter);
 
         var hash = GetHashCode<T, int, FNV1a32>(getter, count, arg);
 

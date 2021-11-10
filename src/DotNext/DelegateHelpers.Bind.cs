@@ -7,8 +7,8 @@ public static partial class DelegateHelpers
         where TOutput : MulticastDelegate
         where T : class
     {
-        if (obj is null)
-            throw new ArgumentNullException(nameof(obj));
+        ArgumentNullException.ThrowIfNull(obj);
+
         return d.Target is null ?
             ChangeType<TOutput, TargetRewriter>(d, new TargetRewriter(obj)) :
             closureFactory(d, obj);

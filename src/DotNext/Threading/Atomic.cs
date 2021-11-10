@@ -246,8 +246,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void UpdateAndGet(Updater updater, out T result)
     {
-        if (updater is null)
-            throw new ArgumentNullException(nameof(updater));
+        ArgumentNullException.ThrowIfNull(updater);
         lockState.Acquire();
         try
         {
@@ -270,9 +269,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void GetAndUpdate(Updater updater, out T result)
     {
-        if (updater is null)
-            throw new ArgumentNullException(nameof(updater));
-
+        ArgumentNullException.ThrowIfNull(updater);
         lockState.Acquire();
         var previous = value;
         try
@@ -300,9 +297,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
     {
-        if (accumulator is null)
-            throw new ArgumentNullException(nameof(accumulator));
-
+        ArgumentNullException.ThrowIfNull(accumulator);
         lockState.Acquire();
         try
         {
@@ -329,9 +324,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
     {
-        if (accumulator is null)
-            throw new ArgumentNullException(nameof(accumulator));
-
+        ArgumentNullException.ThrowIfNull(accumulator);
         lockState.Acquire();
         var previous = value;
         try

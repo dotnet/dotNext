@@ -38,8 +38,7 @@ public partial class CommandInterpreter
         public Builder Add<TCommand>(int commandId, Func<TCommand, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
             where TCommand : notnull, ISerializable<TCommand>
         {
-            if (handler is null)
-                throw new ArgumentNullException(nameof(handler));
+            ArgumentNullException.ThrowIfNull(handler);
 
             identifiers.Add(typeof(TCommand), commandId);
             interpreters.Add(commandId, new CommandHandler<TCommand>(handler));

@@ -22,9 +22,8 @@ public sealed class WhileExpression : CustomExpression, ILoopLabels
 
     internal WhileExpression(Expression test, LabelTarget? continueLabel, LabelTarget? breakLabel, bool checkConditionFirst)
     {
-        if (test is null)
-            throw new ArgumentNullException(nameof(test));
-        else if (test.Type != typeof(bool))
+        ArgumentNullException.ThrowIfNull(test);
+        if (test.Type != typeof(bool))
             throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
         Test = test;
         conditionFirst = checkConditionFirst;

@@ -72,8 +72,7 @@ public ref struct MemoryRental<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
     public MemoryRental(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
     {
-        if (pool is null)
-            throw new ArgumentNullException(nameof(pool));
+        ArgumentNullException.ThrowIfNull(pool);
         if (minBufferSize <= 0)
             throw new ArgumentOutOfRangeException(nameof(minBufferSize));
         var owner = pool.Rent(minBufferSize);
@@ -90,8 +89,7 @@ public ref struct MemoryRental<T>
     /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
     public MemoryRental(MemoryPool<T> pool)
     {
-        if (pool is null)
-            throw new ArgumentNullException(nameof(pool));
+        ArgumentNullException.ThrowIfNull(pool);
         var owner = pool.Rent();
         memory = owner.Memory.Span;
         this.owner = owner;
