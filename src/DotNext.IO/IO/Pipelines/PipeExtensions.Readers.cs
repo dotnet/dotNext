@@ -360,8 +360,17 @@ public static partial class PipeExtensions
         {
             var result = await reader.ReadAtLeastAsync(Unsafe.SizeOf<T>(), token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(reader, token);
-            var value = Read(result.Buffer, out var consumed);
-            reader.AdvanceTo(consumed);
+            var consumed = result.Buffer.Start;
+            T value;
+            try
+            {
+                value = Read(result.Buffer, out consumed);
+            }
+            finally
+            {
+                reader.AdvanceTo(consumed);
+            }
+
             return value;
         }
 
