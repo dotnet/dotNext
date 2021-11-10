@@ -28,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private PipeOptions? pipeConfig;
             private MemoryAllocator<byte>? allocator;
             private int serverChannels = 10;
+            private int? connectTimeout;
             private ILoggerFactory? loggerFactory;
             private TimeSpan? requestTimeout;
             private int warmupRounds;
@@ -161,8 +162,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public bool ColdStart { get; set; } = true;
 
-            private protected TimeSpan ConnectTimeout
-                => TimeSpan.FromMilliseconds(LowerElectionTimeout);
+            /// <summary>
+            /// Gets or sets TCP connection timeout, in milliseconds.
+            /// </summary>
+            public int ConnectTimeout
+            {
+                get => connectTimeout ?? LowerElectionTimeout;
+                set => connectTimeout = value;
+            }
 
             /// <summary>
             /// Gets or sets request processing timeout.
@@ -382,7 +389,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public TimeSpan GracefulShutdownTimeout
             {
-                get => gracefulShutdown ?? ConnectTimeout;
+                get => gracefulShutdown ?? TimeSpan.FromMilliseconds(ConnectTimeout);
                 set => gracefulShutdown = value;
             }
 
@@ -419,7 +426,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
                 SslOptions = SslOptions?.ClientOptions,
-                ConnectTimeout = ConnectTimeout,
+                ConnectTimeout = TimeSpan.FromMilliseconds(ConnectTimeout),
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
