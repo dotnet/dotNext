@@ -23,7 +23,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// or <see cref="IComparer{T}"/> interface. Otherwise, use static methods.
     /// </remarks>
     /// <returns>The instance of this comparer.</returns>
-    public static BitwiseComparer<T> Instance { get; } = new BitwiseComparer<T>();
+    public static BitwiseComparer<T> Instance { get; } = new();
 
     /// <summary>
     /// Checks bitwise equality between two values of different value types.

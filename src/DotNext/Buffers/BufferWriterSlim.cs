@@ -90,7 +90,7 @@ public ref struct BufferWriterSlim<T>
     {
         get
         {
-            var result = NoOverflow ? initialBuffer : extraBuffer.Memory.Span;
+            var result = NoOverflow ? initialBuffer : extraBuffer.Span;
             return result.Slice(0, position);
         }
     }
@@ -116,9 +116,9 @@ public ref struct BufferWriterSlim<T>
             if (newSize.HasValue)
             {
                 extraBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
-                initialBuffer.CopyTo(extraBuffer.Memory.Span);
+                result = extraBuffer.Span;
+                initialBuffer.CopyTo(result);
                 initialBuffer.Clear();
-                result = extraBuffer.Memory.Span;
             }
             else
             {
@@ -138,7 +138,7 @@ public ref struct BufferWriterSlim<T>
                 extraBuffer = newBuffer;
             }
 
-            result = extraBuffer.Memory.Span;
+            result = extraBuffer.Span;
         }
 
         return result.Slice(position);
@@ -196,8 +196,11 @@ public ref struct BufferWriterSlim<T>
             if (index < 0 || index >= position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            var buffer = NoOverflow ? initialBuffer : extraBuffer.Memory.Span;
-            return ref Unsafe.Add(ref MemoryMarshal.GetReference(buffer), index);
+            ref var first = ref NoOverflow
+                ? ref MemoryMarshal.GetReference(initialBuffer)
+                : ref extraBuffer.First;
+
+            return ref Unsafe.Add(ref first, index);
         }
     }
 
@@ -238,7 +241,7 @@ public ref struct BufferWriterSlim<T>
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            extraBuffer.Memory.Span.Clear();
+            extraBuffer.Span.Clear();
         }
 
         position = 0;

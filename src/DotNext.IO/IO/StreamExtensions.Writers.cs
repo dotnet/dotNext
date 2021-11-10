@@ -307,7 +307,7 @@ public static partial class StreamExtensions
         if (bytesCount == 0)
             return;
 
-        if (!value.TryWriteBytes(buffer.Memory.Span, out bytesCount, isBigEndian: !littleEndian))
+        if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
             throw new InternalBufferOverflowException();
 
         await stream.WriteAsync(buffer.Memory.Slice(0, bytesCount), token).ConfigureAwait(false);
@@ -408,7 +408,7 @@ public static partial class StreamExtensions
         if (bytesCount == 0)
             return;
 
-        encoding.GetBytes(value.Span, buffer.Memory.Span);
+        encoding.GetBytes(value.Span, buffer.Span);
         await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
@@ -434,7 +434,7 @@ public static partial class StreamExtensions
         {
             using var owner = MemoryAllocator.Allocate<char>(charBufferSize, false);
 
-            if (value.TryFormat(owner.Memory.Span, out var charsWritten, format, provider))
+            if (value.TryFormat(owner.Span, out var charsWritten, format, provider))
             {
                 await WriteStringAsync(stream, owner.Memory.Slice(0, charsWritten), context, buffer, lengthFormat, token).ConfigureAwait(false);
                 break;

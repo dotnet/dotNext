@@ -353,7 +353,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             EnsureBackingStore();
             Debug.Assert(fileBackend is not null);
-            fileBackend.Write(buffer.Memory.Span.Slice(0, position));
+            fileBackend.Write(buffer.Span.Slice(0, position));
             buffer.Dispose();
             position = 0;
         }
@@ -404,7 +404,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 PersistBuffer();
                 this.buffer = allocator.Invoke(buffer.Length, false);
                 allocationCounter?.WriteMetric(this.buffer.Length);
-                buffer.CopyTo(this.buffer.Memory.Span);
+                buffer.CopyTo(this.buffer.Span);
                 position = buffer.Length;
                 break;
             case MemoryEvaluationResult.PersistAll:
@@ -567,11 +567,11 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             using var buffer = allocator.Invoke(bufferSize, false);
             fileBackend.Position = 0L;
-            fileBackend.CopyTo(consumer, buffer.Memory.Span, token);
+            fileBackend.CopyTo(consumer, buffer.Span, token);
         }
 
         if (buffer.Length > 0 && position > 0)
-            consumer.Invoke(buffer.Memory.Span.Slice(0, position));
+            consumer.Invoke(buffer.Span.Slice(0, position));
     }
 
     /// <summary>
@@ -658,7 +658,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
         {
-            buffer.Memory.Span.Slice(0, position).CopyTo(output, out var subCount);
+            buffer.Span.Slice(0, position).CopyTo(output, out var subCount);
             totalBytes += subCount;
         }
 
@@ -685,7 +685,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
         {
-            buffer.Memory.Span.Slice(0, position).CopyTo(output.Span, out var subCount);
+            buffer.Span.Slice(0, position).CopyTo(output.Span, out var subCount);
             totalBytes += subCount;
         }
 

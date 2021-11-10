@@ -37,7 +37,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
             {
                 using var buffer = MemoryAllocator.Allocate<byte>(sizeof(long), exactSize: true);
                 await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-                return ReadInt64LittleEndian(buffer.Memory.Span);
+                return ReadInt64LittleEndian(buffer.Span);
             }
         }
 

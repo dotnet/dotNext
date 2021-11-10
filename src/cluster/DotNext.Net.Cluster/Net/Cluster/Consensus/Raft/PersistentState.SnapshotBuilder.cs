@@ -176,8 +176,10 @@ public partial class PersistentState
         internal sealed override async ValueTask BuildAsync(long snapshotIndex)
         {
             await FlushAsync().ConfigureAwait(false);
+
+            // write metadata and invalidate internal buffers because the snapshot file has been modified directly
             await Context.Snapshot.WriteMetadataAsync(snapshotIndex, Timestamp, Term).ConfigureAwait(false);
-            await Context.Snapshot.FlushAsync().ConfigureAwait(false);
+            Context.Snapshot.Invalidate();
         }
     }
 

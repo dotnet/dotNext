@@ -248,9 +248,22 @@ namespace DotNext.Buffers
                 else if (owner is not null)
                     result = Unsafe.As<IMemoryOwner<T>>(owner).Memory;
                 else
-                    result = default;
+                    result = Memory<T>.Empty;
 
                 return result.Slice(0, length);
+            }
+        }
+
+        /// <summary>
+        /// Gets the span over the memory belonging to this owner.
+        /// </summary>
+        /// <value>The span over the memory belonging to this owner.</value>
+        public readonly Span<T> Span
+        {
+            get
+            {
+                ref var first = ref First;
+                return Unsafe.IsNullRef(ref first) ? Span<T>.Empty : MemoryMarshal.CreateSpan(ref first, length);
             }
         }
 
@@ -332,6 +345,8 @@ namespace DotNext.Buffers
         {
             switch (owner)
             {
+                case null:
+                    break;
                 case IDisposable disposable:
                     disposable.Dispose();
                     break;

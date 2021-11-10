@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
 
 namespace DotNext;
@@ -8,12 +7,20 @@ namespace DotNext;
 /// </summary>
 /// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>
-public interface IResultMonad<T, out TError> : IOptionMonad<T>
+public interface IResultMonad<T, TError> : IOptionMonad<T>
+    where TError : notnull
 {
     /// <summary>
     /// Gets the error.
     /// </summary>
-    TError Error { get; }
+    TError? Error { get; }
+
+    /// <summary>
+    /// Returns the value if present; otherwise invoke delegate.
+    /// </summary>
+    /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+    /// <returns>The value, if present, otherwise returned from delegate.</returns>
+    T OrInvoke(Func<TError, T> defaultFunc);
 }
 
 /// <summary>
@@ -24,6 +31,7 @@ public interface IResultMonad<T, out TError> : IOptionMonad<T>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
 [RequiresPreviewFeatures]
 public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOptionMonad<T, TSelf>
+    where TError : notnull
     where TSelf : struct, IResultMonad<T, TError, TSelf>
 {
     /// <summary>
@@ -31,7 +39,7 @@ public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOpti
     /// </summary>
     /// <param name="error">The error representing unsuccessful result.</param>
     /// <returns>The unsuccessful result.</returns>
-    public static abstract TSelf FromError([DisallowNull] TError error);
+    public static abstract TSelf FromError(TError error);
 
     /// <summary>
     /// Converts the result to <see cref="Optional{T}"/> monad.

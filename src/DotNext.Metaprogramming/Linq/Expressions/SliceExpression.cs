@@ -24,10 +24,8 @@ public sealed class SliceExpression : CustomExpression
     /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't implement <c>Slice</c> method, <c>Length</c> or <c>Count</c> property; or <paramref name="range"/> is not of type <see cref="Range"/>.</exception>
     public SliceExpression(Expression collection, Expression range)
     {
-        if (collection is null)
-            throw new ArgumentNullException(nameof(collection));
-        if (range is null)
-            throw new ArgumentNullException(nameof(range));
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(range);
         if (range.Type != typeof(Range))
             throw new ArgumentException(ExceptionMessages.TypeExpected<Range>(), nameof(range));
         var resolved = false;

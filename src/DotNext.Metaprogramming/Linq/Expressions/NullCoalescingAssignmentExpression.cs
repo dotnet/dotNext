@@ -10,10 +10,8 @@ public sealed class NullCoalescingAssignmentExpression : CustomExpression
 {
     internal NullCoalescingAssignmentExpression(Expression left, Expression right)
     {
-        if (left is null)
-            throw new ArgumentNullException(nameof(left));
-        if (right is null)
-            throw new ArgumentNullException(nameof(right));
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
         if (!left.Type.IsAssignableFrom(right.Type))
             throw new ArgumentException(ExceptionMessages.TypeExpected(left.Type), nameof(right));
 

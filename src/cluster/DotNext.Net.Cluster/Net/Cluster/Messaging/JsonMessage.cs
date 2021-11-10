@@ -138,7 +138,7 @@ public sealed class JsonMessage<T> : IMessage
         static async ValueTask<T?> DeserializeSlowAsync(IDataTransferObject message, JsonSerializerOptions? options, MemoryAllocator<byte>? allocator, CancellationToken token)
         {
             using var utf8Bytes = await message.ToMemoryAsync(allocator, token).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<T>(utf8Bytes.Memory.Span, options);
+            return JsonSerializer.Deserialize<T>(utf8Bytes.Span, options);
         }
     }
 

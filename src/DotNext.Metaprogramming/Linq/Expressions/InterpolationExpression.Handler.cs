@@ -50,9 +50,7 @@ public partial class InterpolationExpression
         /// <exception cref="ArgumentNullException"><paramref name="arg"/> is <see langword="null"/>.</exception>
         public void AppendFormatted(Expression arg, int alignment, string? format = null)
         {
-            if (arg is null)
-                throw new ArgumentNullException(nameof(arg));
-
+            ArgumentNullException.ThrowIfNull(arg);
             builder.AppendFormatted(arg.Type, alignment, format);
             Arguments[index++] = arg;
         }

@@ -96,7 +96,7 @@ namespace DotNext.IO
             using var dto = new MemoryTransferObject(sizeof(long));
             Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
             using var memory = await dto.ToMemoryAsync();
-            Equal(42L, BitConverter.ToInt64(memory.Memory.Span));
+            Equal(42L, BitConverter.ToInt64(memory.Span));
         }
 
         [Fact]

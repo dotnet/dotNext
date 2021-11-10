@@ -8,6 +8,10 @@ using Buffers;
 /// <summary>
 /// Represents buffered file writer.
 /// </summary>
+/// <remarks>
+/// This class is not thread-safe. However, it's possible to share the same file
+/// handle across multiple writers and use dedicated writer in each thread.
+/// </remarks>
 public partial class FileWriter : Disposable
 {
     /// <summary>
@@ -33,7 +37,7 @@ public partial class FileWriter : Disposable
     /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
-        ArgumentNullException.ThrowIfNull(handle, nameof(handle));
+        ArgumentNullException.ThrowIfNull(handle);
 
         if (!handle.IsAsync)
             throw new ArgumentException(ExceptionMessages.AsyncFileExpected, nameof(handle));
@@ -140,10 +144,7 @@ public partial class FileWriter : Disposable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
-        if (HasBufferedData)
-            return FlushCoreAsync(token);
-
-        return ValueTask.CompletedTask;
+        return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]

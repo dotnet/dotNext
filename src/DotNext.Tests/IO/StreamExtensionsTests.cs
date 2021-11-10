@@ -67,7 +67,7 @@ namespace DotNext.IO
             ms.Position = 0;
             var buffer = new byte[bufferSize];
             using var chars = ms.ReadString(encoding.GetByteCount(value), encoding, buffer, null);
-            Equal(value, new string(chars.Memory.Span));
+            Equal(value, new string(chars.Span));
         }
 
         private static void ReadCharBufferUsingEncoding(string value, Encoding encoding)
@@ -76,7 +76,7 @@ namespace DotNext.IO
             ms.Write(encoding.GetBytes(value));
             ms.Position = 0;
             using var chars = ms.ReadString(encoding.GetByteCount(value), encoding, null);
-            Equal(value, new string(chars.Memory.Span));
+            Equal(value, new string(chars.Span));
         }
 
         [Fact]

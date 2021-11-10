@@ -57,7 +57,7 @@ public interface IBinaryFormattable<TSelf>
     public static MemoryOwner<byte> Format(TSelf value, MemoryAllocator<byte>? allocator = null)
     {
         var result = allocator.Invoke(TSelf.Size, true);
-        var writer = new SpanWriter<byte>(result.Memory.Span);
+        var writer = new SpanWriter<byte>(result.Span);
         value.Format(ref writer);
         return result;
     }

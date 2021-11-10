@@ -190,8 +190,7 @@ namespace DotNext.Runtime
         public static unsafe Reference<TValue> Create<TOwner, TValue>(TOwner owner, delegate*<TOwner, ref TValue> getter)
             where TOwner : class
         {
-            if (owner is null)
-                throw new ArgumentNullException(nameof(owner));
+            ArgumentNullException.ThrowIfNull(owner);
 
             if (getter == null)
                 throw new ArgumentNullException(nameof(getter));
@@ -223,8 +222,7 @@ namespace DotNext.Runtime
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero or greater than or equal to <paramref name="array"/> length.</exception>
         public static Reference<TValue> ArrayElement<TValue>(TValue[] array, nint index)
         {
-            if (array is null)
-                throw new ArgumentNullException(nameof(array));
+            ArgumentNullException.ThrowIfNull(array);
 
             if (index < 0 || index >= Intrinsics.GetLength(array))
                 throw new ArgumentOutOfRangeException(nameof(index));

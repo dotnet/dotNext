@@ -169,13 +169,13 @@ namespace DotNext
             owner = "Hello, ".AsSpan().Concat("world!", allocator);
             False(owner.IsEmpty);
             False(owner.Memory.IsEmpty);
-            Equal("Hello, world!", new string(owner.Memory.Span));
+            Equal("Hello, world!", new string(owner.Span));
             owner.Dispose();
 
             owner = "Hello, ".AsSpan().Concat("world", "!", allocator);
             False(owner.IsEmpty);
             False(owner.Memory.IsEmpty);
-            Equal("Hello, world!", new string(owner.Memory.Span));
+            Equal("Hello, world!", new string(owner.Span));
             owner.Dispose();
         }
 

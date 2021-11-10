@@ -133,9 +133,7 @@ public struct InterpolatedStringTemplateBuilder
     [EditorBrowsable(EditorBrowsableState.Never)]
     public void AppendFormatted(Type type, int alignment, string? format = null)
     {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
+        ArgumentNullException.ThrowIfNull(type);
         Segments.Add(new(type, format, alignment));
     }
 

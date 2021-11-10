@@ -90,7 +90,7 @@ public static class Result
     /// <typeparam name="TError">The type of the error code.</typeparam>
     /// <param name="result">The result container.</param>
     /// <returns>The reference to the result.</returns>
-    /// <exception cref="Exception">The result is unavailable.</exception>
+    /// <exception cref="UndefinedResultException{TError}">The result is undefined.</exception>
     public static ref readonly T GetReference<T, TError>(in Result<T, TError> result)
         where TError : struct, Enum
         => ref Result<T, TError>.GetReference(in result);
@@ -102,7 +102,7 @@ public static class Result
 /// <typeparam name="T">The type of the value stored in the Result monad.</typeparam>
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
-public readonly struct Result<T> : IResultMonad<T, Exception?, Result<T>>
+public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
 {
     private readonly T value;
     private readonly ExceptionDispatchInfo? exception;
@@ -145,7 +145,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception?, Result<T>>
     /// </summary>
     /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
     /// <returns>The unsuccessful result.</returns>
-    static Result<T> IResultMonad<T, Exception?, Result<T>>.FromError([DisallowNull]Exception? error) => new(error);
+    static Result<T> IResultMonad<T, Exception, Result<T>>.FromError(Exception error) => new(error);
 
     /// <summary>
     /// Creates <see cref="Result{T}"/> from <see cref="Optional{T}"/> instance.
@@ -422,7 +422,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         if (result.IsSuccessful)
             return ref result.value;
 
-        throw new ResultUnavailableException<TError>(result.Error);
+        throw new UndefinedResultException<TError>(result.Error);
     }
 
     /// <summary>
@@ -431,11 +431,13 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <returns>The boxed representation of the result.</returns>
     public Result<object?, TError> Box() => IsSuccessful ? new(value) : new(errorCode);
 
+    private static UndefinedResultException<TError> CreateException(TError errorCode) => new(errorCode);
+
     /// <summary>
     /// Extracts the actual result.
     /// </summary>
-    /// <exception cref="ResultUnavailableException{TError}">The value is unavailable.</exception>
-    public T Value => IsSuccessful ? value : throw new ResultUnavailableException<TError>(Error);
+    /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
+    public unsafe T Value => OrThrow(&CreateException);
 
     /// <summary>
     /// Gets the error code.
@@ -551,11 +553,35 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public unsafe T OrInvoke(delegate*<TError, T> defaultFunc)
         => OrInvokeWithError<Supplier<TError, T>>(defaultFunc);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private T OrThrow<TExceptionFactory>(TExceptionFactory factory)
+        where TExceptionFactory : struct, ISupplier<TError, Exception>
+        => IsSuccessful ? value : throw factory.Invoke(Error);
+
+    /// <summary>
+    /// Gets underlying value or throws an exception.
+    /// </summary>
+    /// <param name="exceptionFactory">The exception factory that accepts the error code.</param>
+    /// <returns>The underlying value.</returns>
+    /// <exception cref="Exception">The result is unsuccessful.</exception>
+    public T OrThrow(Func<TError, Exception> exceptionFactory)
+        => OrThrow<DelegatingSupplier<TError, Exception>>(exceptionFactory);
+
+    /// <summary>
+    /// Gets underlying value or throws an exception.
+    /// </summary>
+    /// <param name="exceptionFactory">The exception factory that accepts the error code.</param>
+    /// <returns>The underlying value.</returns>
+    /// <exception cref="Exception">The result is unsuccessful.</exception>
+    [CLSCompliant(false)]
+    public unsafe T OrThrow(delegate*<TError, Exception> exceptionFactory)
+        => OrThrow<Supplier<TError, Exception>>(exceptionFactory);
+
     /// <summary>
     /// Converts this result into <see cref="Result{T}"/>.
     /// </summary>
     /// <returns>The converted result.</returns>
-    public Result<T> ToResult() => IsSuccessful ? new(value) : new(new ResultUnavailableException<TError>(Error));
+    public Result<T> ToResult() => IsSuccessful ? new(value) : new(new UndefinedResultException<TError>(Error));
 
     /// <summary>
     /// Returns textual representation of this object.

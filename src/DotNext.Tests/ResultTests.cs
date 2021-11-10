@@ -60,7 +60,7 @@ namespace DotNext
         public static void RaiseError2()
         {
             var r = new Result<decimal, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
-            Equal(EnvironmentVariableTarget.Machine, Throws<ResultUnavailableException<EnvironmentVariableTarget>>(() => r.Value).ErrorCode);
+            Equal(EnvironmentVariableTarget.Machine, Throws<UndefinedResultException<EnvironmentVariableTarget>>(() => r.Value).ErrorCode);
             Equal(EnvironmentVariableTarget.Machine, r.Error);
             Equal(20M, r.Or(20M));
             Equal(0M, r.OrDefault());
@@ -77,9 +77,26 @@ namespace DotNext
             Equal("10", result.ToString());
             Optional<int> opt = result;
             Equal(10, opt);
-            Equal(10, result.OrInvoke(() => 20));
+            Equal(10, result.OrInvoke(static () => 20));
             result = new Result<int>(new Exception());
-            Equal(20, result.OrInvoke(() => 20));
+            Equal(20, result.OrInvoke(static () => 20));
+            opt = result;
+            False(opt.HasValue);
+        }
+
+        [Fact]
+        public static void Operators2()
+        {
+            var result = new Result<int, EnvironmentVariableTarget>(10);
+            if (result) { }
+            else throw new Xunit.Sdk.XunitException();
+            Equal(10, (int)result);
+            Equal("10", result.ToString());
+            Optional<int> opt = result;
+            Equal(10, opt);
+            Equal(10, result.OrInvoke(static () => 20));
+            result = new Result<int, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
+            Equal(20, result.OrInvoke(static () => 20));
             opt = result;
             False(opt.HasValue);
         }
@@ -141,6 +158,46 @@ namespace DotNext
 
             type = Result.GetUnderlyingType(typeof(Result<float, EnvironmentVariableTarget>));
             Equal(typeof(float), type);
+        }
+
+        [Fact]
+        public static void Conversion()
+        {
+            Result<float> result = 20F;
+            Equal(20, result.Convert(Convert.ToInt32));
+
+            result = new(new Exception());
+            False(result.Convert(Convert.ToInt32).IsSuccessful);
+        }
+
+        [Fact]
+        public static void Conversion2()
+        {
+            Result<float, EnvironmentVariableTarget> result = 20F;
+            Equal(20, result.Convert(Convert.ToInt32));
+
+            result = new(EnvironmentVariableTarget.Machine);
+            Equal(EnvironmentVariableTarget.Machine, result.Convert(Convert.ToInt32).Error);
+        }
+
+        [Fact]
+        public static void HandleException()
+        {
+            Result<int> result = 20;
+            Equal(20, result.OrInvoke(static e => 10));
+
+            result = new(new ArithmeticException());
+            Equal(10, result.OrInvoke(static e => 10));
+        }
+
+        [Fact]
+        public static void HandleException2()
+        {
+            Result<int, EnvironmentVariableTarget> result = 20;
+            Equal(20, result.OrInvoke(static e => 10));
+
+            result = new(EnvironmentVariableTarget.Machine);
+            Equal(10, result.OrInvoke(static e => 10));
         }
     }
 }

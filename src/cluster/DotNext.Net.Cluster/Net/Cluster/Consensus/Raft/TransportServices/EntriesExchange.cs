@@ -82,12 +82,6 @@ internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDi
 
     private protected sealed override void OnCanceled(CancellationToken token) => OnException(new OperationCanceledException(token));
 
-    internal void AbortIO()
-    {
-        pipe.Writer.CancelPendingFlush();
-        pipe.Reader.CancelPendingRead();
-    }
-
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
         var e = new ObjectDisposedException(GetType().Name);
@@ -154,14 +148,12 @@ internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange<TEntry>
     private TList entries;
 
     private Task? writeSession;
-    private int currentIndex;
     private bool streamStart;
 
     internal EntriesExchange(long term, in TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, EmptyClusterConfiguration? configState, PipeOptions? options = null)
         : base(term, prevLogIndex, prevLogTerm, commitIndex, configState, options)
     {
         this.entries = entries;
-        currentIndex = -1;
     }
 
     public override async ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
@@ -170,19 +162,18 @@ internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange<TEntry>
         FlowControl control;
 
         // write portion of log entry
-        if (currentIndex >= 0)
-        {
-            count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
-            if (count == payload.Length)
-                control = streamStart ? FlowControl.StreamStart : FlowControl.Fragment;
-            else
-                control = FlowControl.StreamEnd;
-        }
-        else
+        if (writeSession is null)
         {
             // send announcement
             count = WriteAnnouncement(payload.Span, entries.Count);
             control = FlowControl.None;
+        }
+        else
+        {
+            count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
+            control = count == payload.Length
+                ? streamStart ? FlowControl.StreamStart : FlowControl.Fragment
+                : FlowControl.StreamEnd;
         }
 
         return (new PacketHeaders(MessageType.AppendEntries, control), count, true);
@@ -194,21 +185,21 @@ internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange<TEntry>
         writeSession = null;
     }
 
-    private Task WriteEntryAsync(CancellationToken token)
-        => WriteEntryAsync(pipe.Writer, entries[currentIndex], token);
+    private Task WriteEntryAsync(int index, CancellationToken token)
+        => WriteEntryAsync(pipe.Writer, entries[index], token);
 
     private async Task NextEntryAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
-        currentIndex = ReadInt32LittleEndian(input.Span);
+        var currentIndex = ReadInt32LittleEndian(input.Span);
         if (writeSession is not null)
         {
-            AbortIO();
+            await pipe.Writer.CompleteAsync().ConfigureAwait(false);
             await writeSession.ConfigureAwait(false);
             await pipe.Reader.CompleteAsync().ConfigureAwait(false);
             pipe.Reset();
         }
 
-        writeSession = WriteEntryAsync(token);
+        writeSession = WriteEntryAsync(currentIndex, token);
     }
 
     public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)

@@ -115,6 +115,7 @@ static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
 {
     var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
     {
+        ConnectTimeout = 50,
         LowerElectionTimeout = 150,
         UpperElectionTimeout = 300,
         TransmissionBlockSize = 4096,
