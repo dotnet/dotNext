@@ -67,6 +67,16 @@ public static class ConfigurationExtensions
     public static IHostBuilder JoinMesh(this IHostBuilder builder)
         => builder.ConfigureServices(JoinMesh);
 
+    /// <summary>
+    /// Allows to inject <see cref="PeerController"/>, <see cref="IPeerMesh{TPeer}"/>
+    /// to application services and establishes network communication with overlay.
+    /// </summary>
+    /// <param name="builder">The application builder.</param>
+    /// <seealso cref="JoinMesh(IHostBuilder)"/>
+    [CLSCompliant(false)]
+    public static void JoinMesh(this WebApplicationBuilder builder)
+        => builder.Host.JoinMesh();
+
     private static void JoinMesh(this Func<IConfiguration, IHostEnvironment, IConfiguration> peerConfig, HostBuilderContext context, IServiceCollection services)
         => services.ConfigureLocalPeer(peerConfig(context.Configuration, context.HostingEnvironment));
 
@@ -83,6 +93,17 @@ public static class ConfigurationExtensions
     /// <returns>The modified host builder.</returns>
     public static IHostBuilder JoinMesh(this IHostBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> peerConfig)
         => builder.ConfigureServices(peerConfig.JoinMesh);
+
+    /// <summary>
+    /// Allows to inject <see cref="PeerController"/>, <see cref="IPeerMesh{TPeer}"/>
+    /// to application services and establishes network communication with overlay.
+    /// </summary>
+    /// <param name="builder">The application builder.</param>
+    /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>
+    /// <seealso cref="JoinMesh(IHostBuilder, Func{IConfiguration, IHostEnvironment, IConfiguration})"/>
+    [CLSCompliant(false)]
+    public static void JoinMesh(this WebApplicationBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> peerConfig)
+        => builder.Host.JoinMesh(peerConfig);
 
     private static void JoinMesh(this Action<HttpPeerConfiguration, IConfiguration, IHostEnvironment> peerConfig, HostBuilderContext context, IServiceCollection services)
     {
@@ -102,6 +123,16 @@ public static class ConfigurationExtensions
     public static IHostBuilder JoinMesh(this IHostBuilder builder, Action<HttpPeerConfiguration, IConfiguration, IHostEnvironment> peerConfig)
         => builder.ConfigureServices(peerConfig.JoinMesh);
 
+    /// <summary>
+    /// Allows to inject <see cref="PeerController"/>, <see cref="IPeerMesh{TPeer}"/>
+    /// to application services and establishes network communication with overlay.
+    /// </summary>
+    /// <param name="builder">The application builder.</param>
+    /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>
+    /// <seealso cref="JoinMesh(IHostBuilder, Action{HttpPeerConfiguration, IConfiguration, IHostEnvironment})"/>
+    public static void JoinMesh(this WebApplicationBuilder builder, Action<HttpPeerConfiguration, IConfiguration, IHostEnvironment> peerConfig)
+        => builder.Host.JoinMesh(peerConfig);
+
     private static void JoinMesh(this string configSection, HostBuilderContext context, IServiceCollection services)
         => services.ConfigureLocalPeer(context.Configuration.GetSection(configSection));
 
@@ -114,6 +145,16 @@ public static class ConfigurationExtensions
     /// <returns>The modified host builder.</returns>
     public static IHostBuilder JoinMesh(this IHostBuilder builder, string configSection)
         => builder.ConfigureServices(configSection.JoinMesh);
+
+    /// <summary>
+    /// Allows to inject <see cref="PeerController"/>, <see cref="IPeerMesh{TPeer}"/>
+    /// to application services and establishes network communication with overlay.
+    /// </summary>
+    /// <param name="builder">The application builder.</param>
+    /// <param name="configSection">The name of configuration section containing configuration of the local peer.</param>
+    /// <returns></returns>
+    public static IHostBuilder JoinMesh(this WebApplicationBuilder builder, string configSection)
+        => builder.Host.JoinMesh(configSection);
 
     private static void ConfigureHyParViewProtocolHandler(this HttpPeerController controller, IApplicationBuilder builder)
         => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = HttpUtils.WriteExceptionContent }).Run(controller.ProcessRequest);
