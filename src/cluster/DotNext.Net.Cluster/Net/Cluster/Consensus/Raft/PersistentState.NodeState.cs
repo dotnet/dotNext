@@ -1,18 +1,19 @@
-﻿using System.IO.MemoryMappedFiles;
+﻿using static System.Buffers.Binary.BinaryPrimitives;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using IO.Log;
+using Buffers;
 using Threading;
 
 public partial class PersistentState
 {
     /*
         State file format:
-        8 bytes = Term
         8 bytes = CommitIndex
         8 bytes = LastApplied
         8 bytes = LastIndex
+        8 bytes = Term
         1 byte = presence of cluster member id
         sizeof(ClusterMemberId) = last vote
      */
@@ -20,48 +21,87 @@ public partial class PersistentState
     {
         internal static readonly Func<NodeState, long, bool> IsCommittedPredicate = IsCommitted;
 
-        private const byte True = 1;
-        private const byte False = 0;
         private const string FileName = "node.state";
-        private const long Capacity = 128;
-        private const long TermOffset = 0L;
-        private const long CommitIndexOffset = TermOffset + sizeof(long);
-        private const long LastAppliedOffset = CommitIndexOffset + sizeof(long);
-        private const long LastIndexOffset = LastAppliedOffset + sizeof(long);
-        private const long LastVotePresenceOffset = LastIndexOffset + sizeof(long);
-        private const long LastVoteOffset = LastVotePresenceOffset + sizeof(byte);
+        private const byte False = 0;
+        private const byte True = 1;
+        private const int Capacity = 128;
+        private const int CommitIndexOffset = 0;
+        private const int LastAppliedOffset = CommitIndexOffset + sizeof(long);
+        private const int LastIndexOffset = LastAppliedOffset + sizeof(long);
+        private const int TermOffset = LastIndexOffset + sizeof(long);
+        private const int LastVotePresenceOffset = TermOffset + sizeof(long);
+        private const int LastVoteOffset = LastVotePresenceOffset + sizeof(byte);
 
-        private readonly MemoryMappedFile mappedFile;
-        private readonly MemoryMappedViewAccessor stateView;
+        internal static readonly Range IndexesRange = CommitIndexOffset..TermOffset,
+                                        TermRange = TermOffset..LastVotePresenceOffset,
+                                        LastVoteRange = LastVotePresenceOffset.. (LastVoteOffset + ClusterMemberId.Size),
+                                        TermAndLastVoteFlagRange = TermOffset..LastVoteOffset;
+
+        private readonly SafeFileHandle handle;
+        private MemoryOwner<byte> buffer;
 
         // boxed ClusterMemberId or null if there is not last vote stored
         private volatile object? votedFor;
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
 
-        internal NodeState(DirectoryInfo location)
+        private NodeState(string fileName, MemoryAllocator<byte> allocator)
         {
-            mappedFile = MemoryMappedFile.CreateFromFile(Path.Combine(location.FullName, FileName), FileMode.OpenOrCreate, null, Capacity, MemoryMappedFileAccess.ReadWrite);
-            stateView = mappedFile.CreateViewAccessor();
-            term = stateView.ReadInt64(TermOffset);
-            commitIndex = stateView.ReadInt64(CommitIndexOffset);
-            lastIndex = stateView.ReadInt64(LastIndexOffset);
-            lastApplied = stateView.ReadInt64(LastAppliedOffset);
-            var hasLastVote = ValueTypeExtensions.ToBoolean(stateView.ReadByte(LastVotePresenceOffset));
-            if (hasLastVote)
+            buffer = allocator.Invoke(Capacity, true);
+
+            FileMode fileMode;
+            long initialSize;
+            if (File.Exists(fileName))
             {
-                stateView.Read(LastVoteOffset, out ClusterMemberId votedFor);
-                this.votedFor = votedFor;
+                fileMode = FileMode.OpenOrCreate;
+                initialSize = 0L;
             }
+            else
+            {
+                fileMode = FileMode.CreateNew;
+                initialSize = Capacity;
+            }
+
+            // open file in synchronous mode to restore the state
+            handle = File.OpenHandle(fileName, fileMode, FileAccess.ReadWrite, FileShare.Read, FileOptions.None, initialSize);
+            if (RandomAccess.Read(handle, buffer.Span, 0L) < Capacity)
+            {
+                buffer.Span.Clear();
+                RandomAccess.Write(handle, buffer.Span, 0L);
+            }
+
+            // restore state
+            ReadOnlySpan<byte> bufferSpan = buffer.Span;
+            term = ReadInt64LittleEndian(bufferSpan.Slice(TermOffset));
+            commitIndex = ReadInt64LittleEndian(bufferSpan.Slice(CommitIndexOffset));
+            lastIndex = ReadInt64LittleEndian(bufferSpan.Slice(LastIndexOffset));
+            lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
+            var hasLastVote = ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]);
+            if (hasLastVote)
+                votedFor = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset));
+
+            // reopen handle in asynchronous mode
+            handle.Dispose();
+            handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
         }
 
-        internal void Flush() => stateView.Flush();
+        internal NodeState(DirectoryInfo location, MemoryAllocator<byte> allocator)
+            : this(Path.Combine(location.FullName, FileName), allocator)
+        {
+        }
+
+        internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
+        {
+            var memory = buffer.Memory;
+            var (offset, length) = range.GetOffsetAndLength(memory.Length);
+            return RandomAccess.WriteAsync(handle, memory.Slice(offset, length), offset, token);
+        }
 
         internal long CommitIndex
         {
             get => commitIndex.VolatileRead();
             set
             {
-                stateView.Write(CommitIndexOffset, value);
+                WriteInt64LittleEndian(buffer.Span.Slice(CommitIndexOffset), value);
                 commitIndex.VolatileWrite(value);
             }
         }
@@ -73,7 +113,7 @@ public partial class PersistentState
             get => lastApplied.VolatileRead();
             set
             {
-                stateView.Write(LastAppliedOffset, value);
+                WriteInt64LittleEndian(buffer.Span.Slice(LastAppliedOffset), value);
                 lastApplied.VolatileWrite(value);
             }
         }
@@ -83,7 +123,7 @@ public partial class PersistentState
             get => lastIndex.VolatileRead();
             set
             {
-                stateView.Write(LastIndexOffset, value);
+                WriteInt64LittleEndian(buffer.Span.Slice(LastIndexOffset), value);
                 lastIndex.VolatileWrite(value);
             }
         }
@@ -94,22 +134,20 @@ public partial class PersistentState
 
         internal void UpdateTerm(long value, bool resetLastVote)
         {
-            stateView.Write(TermOffset, value);
+            WriteInt64LittleEndian(buffer.Span.Slice(TermOffset), value);
             if (resetLastVote)
             {
                 votedFor = null;
-                stateView.Write(LastVotePresenceOffset, False);
+                buffer[LastVotePresenceOffset] = False;
             }
 
-            stateView.Flush();
             term.VolatileWrite(value);
         }
 
         internal long IncrementTerm()
         {
             var result = term.IncrementAndGet();
-            stateView.Write(TermOffset, result);
-            stateView.Flush();
+            WriteInt64LittleEndian(buffer.Span.Slice(TermOffset), result);
             return result;
         }
 
@@ -121,24 +159,24 @@ public partial class PersistentState
             {
                 var id = member.GetValueOrDefault();
                 votedFor = id;
-                stateView.Write(LastVotePresenceOffset, True);
-                stateView.Write(LastVoteOffset, ref id);
+                buffer[LastVotePresenceOffset] = True;
+#pragma warning disable CA2252 // TODO: Remove in .NET 7
+                IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));
+#pragma warning restore CA2252
             }
             else
             {
                 votedFor = null;
-                stateView.Write(LastVotePresenceOffset, False);
+                buffer[LastVotePresenceOffset] = False;
             }
-
-            stateView.Flush();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                stateView.Dispose();
-                mappedFile.Dispose();
+                handle.Dispose();
+                buffer.Dispose();
                 votedFor = null;
             }
 

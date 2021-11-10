@@ -160,7 +160,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         using var result = MemoryAllocator.Allocate<char>(length, true);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
-        return new string(result.Memory.Span.Slice(0, length));
+        return new string(result.Span.Slice(0, length));
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         using var result = MemoryAllocator.Allocate<char>(length, true);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
-        return new string(result.Memory.Span.Slice(0, length));
+        return new string(result.Span.Slice(0, length));
     }
 
     /// <summary>
@@ -214,7 +214,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         using var result = MemoryAllocator.Allocate<char>(length, true);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
-        return parser(result.Memory.Span.Slice(0, length), provider);
+        return parser(result.Span.Slice(0, length), provider);
     }
 
     /// <summary>
@@ -257,7 +257,7 @@ public partial class FileReader : IAsyncBinaryReader
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
             await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-            return IBinaryFormattable<T>.Parse(buffer.Memory.Span);
+            return IBinaryFormattable<T>.Parse(buffer.Span);
         }
     }
 
@@ -284,7 +284,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         using var block = MemoryAllocator.Allocate<byte>(length, true);
         await ReadBlockAsync(block.Memory, token).ConfigureAwait(false);
-        return new BigInteger(block.Memory.Span, isBigEndian: !littleEndian);
+        return new BigInteger(block.Span, isBigEndian: !littleEndian);
     }
 
     /// <summary>

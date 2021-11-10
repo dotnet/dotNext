@@ -37,7 +37,7 @@ public interface IAsyncBinaryReader
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return MemoryMarshal.Read<T>(buffer.Memory.Span);
+        return MemoryMarshal.Read<T>(buffer.Span);
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public interface IAsyncBinaryReader
     {
         using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return IBinaryFormattable<T>.Parse(buffer.Memory.Span);
+        return IBinaryFormattable<T>.Parse(buffer.Span);
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public interface IAsyncBinaryReader
 
         using var buffer = MemoryAllocator.Allocate<byte>(length, true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ public interface IAsyncBinaryReader
     async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
     {
         using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
-        return buffer.IsEmpty ? BigInteger.Zero : new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        return buffer.IsEmpty ? BigInteger.Zero : new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public interface IAsyncBinaryReader
 
         using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return context.Encoding.GetString(buffer.Memory.Span);
+        return context.Encoding.GetString(buffer.Span);
     }
 
     /// <summary>
@@ -230,7 +230,7 @@ public interface IAsyncBinaryReader
 
         using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return context.Encoding.GetChars(buffer.Memory.Span, allocator);
+        return context.Encoding.GetChars(buffer.Span, allocator);
     }
 
     /// <summary>
@@ -246,7 +246,7 @@ public interface IAsyncBinaryReader
     async ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
     {
         using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
-        return context.Encoding.GetString(buffer.Memory.Span);
+        return context.Encoding.GetString(buffer.Span);
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public interface IAsyncBinaryReader
     async ValueTask<MemoryOwner<char>> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
     {
         using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
-        return context.Encoding.GetChars(buffer.Memory.Span, allocator);
+        return context.Encoding.GetChars(buffer.Span, allocator);
     }
 
     /// <summary>

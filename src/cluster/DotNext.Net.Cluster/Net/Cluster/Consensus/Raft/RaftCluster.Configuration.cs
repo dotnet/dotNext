@@ -161,9 +161,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public bool ColdStart { get; set; } = true;
 
-            private protected TimeSpan ConnectTimeout
-                => TimeSpan.FromMilliseconds(LowerElectionTimeout);
-
             /// <summary>
             /// Gets or sets request processing timeout.
             /// </summary>
@@ -354,7 +351,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public sealed class TcpConfiguration : NodeConfiguration
         {
-            private int transmissionBlockSize;
+            private int transmissionBlockSize, connectTimeout;
             private TimeSpan? gracefulShutdown;
 
             /// <summary>
@@ -365,6 +362,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 : base(localNodeHostAddress)
             {
                 transmissionBlockSize = 65535;
+                connectTimeout = int.MinValue;
                 LingerOption = new LingerOption(false, 0);
             }
 
@@ -382,7 +380,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public TimeSpan GracefulShutdownTimeout
             {
-                get => gracefulShutdown ?? ConnectTimeout;
+                get => gracefulShutdown ?? TimeSpan.FromMilliseconds(ConnectTimeout);
                 set => gracefulShutdown = value;
             }
 
@@ -400,7 +398,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public int TransmissionBlockSize
             {
                 get => transmissionBlockSize;
-                set => TcpTransport.ValidateTranmissionBlockSize(value);
+                set => transmissionBlockSize = TcpTransport.ValidateTranmissionBlockSize(value);
             }
 
             /// <summary>
@@ -413,13 +411,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set;
             }
 
+            /// <summary>
+            /// Gets or sets TCP connection timeout, in milliseconds.
+            /// </summary>
+            public int ConnectTimeout
+            {
+                get => connectTimeout > 0 ? connectTimeout : (LowerElectionTimeout / 2);
+                set => connectTimeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
             private TcpClient CreateClient(IPEndPoint address) => new(address, MemoryAllocator, LoggerFactory)
             {
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
                 SslOptions = SslOptions?.ClientOptions,
-                ConnectTimeout = ConnectTimeout,
+                ConnectTimeout = TimeSpan.FromMilliseconds(ConnectTimeout),
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)

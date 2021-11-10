@@ -8,9 +8,16 @@ using Buffers;
 /// <summary>
 /// Represents buffered file reader.
 /// </summary>
+/// <remarks>
+/// This class is not thread-safe. However, it's possible to share the same file
+/// handle across multiple readers and use dedicated reader in each thread.
+/// </remarks>
 public partial class FileReader : Disposable
 {
-    private readonly SafeFileHandle handle;
+    /// <summary>
+    /// Represents the file handle.
+    /// </summary>
+    protected readonly SafeFileHandle handle;
     private MemoryOwner<byte> buffer;
     private int bufferStart, bufferEnd;
     private long fileOffset;
@@ -30,7 +37,7 @@ public partial class FileReader : Disposable
     /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
     public FileReader(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
-        ArgumentNullException.ThrowIfNull(handle, nameof(handle));
+        ArgumentNullException.ThrowIfNull(handle);
 
         if (!handle.IsAsync)
             throw new ArgumentException(ExceptionMessages.AsyncFileExpected, nameof(handle));

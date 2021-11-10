@@ -78,7 +78,7 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            buffer.Memory.Span.Clear();
+            buffer.Span.Clear();
         }
 
         position = 0;

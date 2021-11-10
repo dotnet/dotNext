@@ -161,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             private readonly CustomInterpreter interpreter;
 
             public TestPersistenceState()
-                : base(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), 4)
+                : base(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), 4, new Options { CompactionMode = CompactionMode.Background })
             {
                 interpreter = new CustomInterpreter();
             }
@@ -174,6 +174,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
             protected override ValueTask ApplyAsync(LogEntry entry)
                 => new(interpreter.InterpretAsync(entry).AsTask());
+
+            protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
+                => throw new NotImplementedException();
 
             protected override void Dispose(bool disposing)
             {

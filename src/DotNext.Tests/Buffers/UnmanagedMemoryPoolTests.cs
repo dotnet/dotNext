@@ -56,7 +56,7 @@ namespace DotNext.Buffers
         public static unsafe void UnmanagedMemoryAllocation()
         {
             using var owner = UnmanagedMemoryAllocator.GetAllocator<ushort>(false).Invoke(3, false);
-            Span<ushort> array = owner.Memory.Span;
+            Span<ushort> array = owner.Span;
             array[0] = 10;
             array[1] = 20;
             array[2] = 30;

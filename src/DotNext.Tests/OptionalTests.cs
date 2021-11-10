@@ -222,10 +222,10 @@ namespace DotNext
         public static void GettingReference()
         {
             var optional = Optional<int>.None;
-            Throws<InvalidOperationException>(() => optional.GetReference<int, InvalidOperationException>());
+            Throws<InvalidOperationException>(() => Optional.GetReference<int, InvalidOperationException>(optional));
             optional = 23;
-            Equal(23, optional.GetReference<int, InvalidOperationException>());
-            Equal(23, optional.GetReference(static () => new InvalidOperationException()));
+            Equal(23, Optional.GetReference<int, InvalidOperationException>(optional));
+            Equal(23, Optional.GetReference(optional, static () => new InvalidOperationException()));
         }
 
         [Fact]

@@ -379,7 +379,7 @@ namespace DotNext.IO
                 using var result = await (lengthFormat is null ?
                     reader.ReadStringAsync(encoding.GetByteCount(value), encoding, null) :
                     reader.ReadStringAsync(lengthFormat.GetValueOrDefault(), encoding, null));
-                Equal(value, new string(result.Memory.Span));
+                Equal(value, new string(result.Span));
             }
         }
 

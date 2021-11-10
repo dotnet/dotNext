@@ -151,7 +151,7 @@ public static partial class BufferHelpers
     public static void ReleaseAll<T>(this ref MemoryOwner<T> owner)
         where T : notnull, IDisposable
     {
-        foreach (ref var item in owner.Memory.Span)
+        foreach (ref var item in owner.Span)
         {
             item.Dispose();
             item = default!;

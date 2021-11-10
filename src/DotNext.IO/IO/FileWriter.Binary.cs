@@ -9,7 +9,7 @@ namespace DotNext.IO;
 
 using Buffers;
 using Text;
-using static Pipelines.ResultExtensions;
+using static Pipelines.PipeExtensions;
 
 public partial class FileWriter : IAsyncBinaryWriter
 {
@@ -159,7 +159,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         {
             Debug.Assert(bufferOffset == 0);
             using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
-            value.TryWriteBytes(buffer.Memory.Span, out bytesWritten, isBigEndian: !littleEndian);
+            value.TryWriteBytes(buffer.Span, out bytesWritten, isBigEndian: !littleEndian);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += bytesCount;
         }
@@ -188,7 +188,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         {
             using var charBuffer = MemoryAllocator.Allocate<char>(charBufferSize, false);
 
-            if (value.TryFormat(charBuffer.Memory.Span, out var charsWritten, format, provider))
+            if (value.TryFormat(charBuffer.Span, out var charsWritten, format, provider))
             {
                 await WriteStringAsync(charBuffer.Memory.Slice(0, charsWritten), context, lengthFormat, token).ConfigureAwait(false);
                 break;
@@ -221,7 +221,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         else
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
-            IBinaryFormattable<T>.Format(value, buffer.Memory.Span);
+            IBinaryFormattable<T>.Format(value, buffer.Span);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += T.Size;
         }
@@ -257,27 +257,12 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task CopyFromAsync(PipeReader input, CancellationToken token = default)
-    {
-        await WriteAsync(token).ConfigureAwait(false);
-
-        ReadResult result;
-        do
-        {
-            result = await input.ReadAsync(token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(token);
-            var buffer = result.Buffer;
-            for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
-                await WriteAsync(block, token).ConfigureAwait(false);
-        }
-        while (!result.IsCompleted);
-    }
+    public Task CopyFromAsync(PipeReader input, CancellationToken token = default)
+        => input.CopyToAsync(this, token);
 
     /// <inheritdoc />
     async Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
     {
-        await WriteAsync(token).ConfigureAwait(false);
-
         for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty;)
             await WriteAsync(source, token).ConfigureAwait(false);
     }
@@ -292,8 +277,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (FreeCapacity == 0)
             await FlushCoreAsync(token).ConfigureAwait(false);
 
-        var buffer = Buffer;
-        using var output = new PreallocatedBufferWriter(buffer);
+        using var output = new PreallocatedBufferWriter(Buffer);
         writer(arg, output);
 
         var result = output.WrittenMemory;

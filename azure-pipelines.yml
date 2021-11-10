@@ -19,7 +19,7 @@ stages:
             displayName: Install .NET 6 SDK
             inputs:
               packageType: sdk
-              version: 6.0.100-rc.2.21505.57
+              version: 6.0.100
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
             inputs:
@@ -44,7 +44,7 @@ stages:
             displayName: Install .NET 6 SDK
             inputs:
               packageType: sdk
-              version: 6.0.100-rc.2.21505.57
+              version: 6.0.100
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
             inputs:
@@ -73,7 +73,7 @@ stages:
             displayName: Install .NET 6 SDK
             inputs:
               packageType: sdk
-              version: 6.0.100-rc.2.21505.57
+              version: 6.0.100
           - task: DotNetCoreCLI@2
             displayName: Pack
             inputs:

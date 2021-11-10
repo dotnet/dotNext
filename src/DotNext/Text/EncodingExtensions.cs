@@ -39,7 +39,7 @@ public static class EncodingExtensions
         else
         {
             owner = allocator.Invoke(encoding.GetByteCount(chars), true);
-            encoding.GetBytes(chars, owner.Memory.Span);
+            encoding.GetBytes(chars, owner.Span);
         }
 
         return owner;
@@ -62,7 +62,7 @@ public static class EncodingExtensions
         else
         {
             owner = allocator.Invoke(encoding.GetCharCount(bytes), true);
-            encoding.GetChars(bytes, owner.Memory.Span);
+            encoding.GetChars(bytes, owner.Span);
         }
 
         return owner;

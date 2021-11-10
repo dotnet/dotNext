@@ -70,7 +70,7 @@ public partial class PersistentState
 
         internal override int Take()
         {
-            // fast path attempt to obtain session ID in o(1)
+            // fast path attempt to obtain session ID is o(1)
             var sessionId = (Environment.CurrentManagedThreadId & int.MaxValue) % tokens.Length;
             ref var first = ref MemoryMarshal.GetArrayDataReference(tokens);
             if (Unsafe.Add(ref first, sessionId).TrueToFalse())

@@ -35,7 +35,7 @@ internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
         if (!buffer.IsEmpty)
         {
             using var rental = new MemoryOwner<byte>(ArrayPool<byte>.Shared, buffer.Length);
-            buffer.CopyTo(rental.Memory.Span);
+            buffer.CopyTo(rental.Span);
             using var source = new CancellationTokenSource(timeout);
             using var task = WriteAsync(rental.Memory, source.Token).AsTask();
             task.Wait(source.Token);

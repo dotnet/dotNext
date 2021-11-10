@@ -17,7 +17,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
 /// </summary>
 /// <remarks>
-/// The layout of of the audit trail file system:
+/// The layout of the audit trail file system:
 /// <list type="table">
 /// <item>
 /// <term>node.state</term>
@@ -28,10 +28,6 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <description>file containing log partition with log records</description>
 /// </item>
 /// <item>
-/// <term>&lt;snapshot&gt;.meta</term>
-/// <description>file containing metadata associated with the log partition</description>
-/// </item>
-/// <item>
 /// <term>snapshot</term>
 /// <description>file containing snapshot</description>
 /// </item>
@@ -39,7 +35,7 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// The audit trail supports log compaction. However, it doesn't know how to interpret and reduce log records during compaction.
 /// To do that, you can override <see cref="CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext)"/> method and implement state machine logic.
 /// </remarks>
-public partial class PersistentState : Disposable, IPersistentState
+public abstract partial class PersistentState : Disposable, IPersistentState
 {
     private static readonly Predicate<PersistentState> IsConsistentPredicate;
 
@@ -71,11 +67,11 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <param name="path">The path to the folder to be used by audit trail.</param>
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-    public PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2 or too large.</exception>
+    protected PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
     {
         configuration ??= new();
-        if (recordsPerPartition < 2L)
+        if (recordsPerPartition < 2 || recordsPerPartition > Partition.MaxRecordsPerPartition)
             throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
         if (!path.Exists)
             path.Create();
@@ -107,6 +103,7 @@ public partial class PersistentState : Disposable, IPersistentState
             if (long.TryParse(file.Name, out var partitionNumber))
             {
                 var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
+                partition.Initialize();
                 partitionTable.Add(partition);
             }
         }
@@ -128,11 +125,9 @@ public partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path);
+        state = new(path, bufferManager.BufferAllocator);
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough, initialSize: initialSize);
         snapshot.Initialize();
-
-        // cluster config
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -140,11 +135,7 @@ public partial class PersistentState : Disposable, IPersistentState
         compactionCounter = ToDelegate(configuration.CompactionCounter);
         commitCounter = ToDelegate(configuration.CommitCounter);
 
-        static int ComparePartitions(Partition x, Partition y)
-        {
-            var xn = x.PartitionNumber;
-            return xn.CompareTo(y.PartitionNumber);
-        }
+        static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
 
         static Action<double>? ToDelegate(IncrementingEventCounter? counter)
             => counter is null ? null : counter.Increment;
@@ -157,7 +148,7 @@ public partial class PersistentState : Disposable, IPersistentState
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-    public PersistentState(string path, int recordsPerPartition, Options? configuration = null)
+    protected PersistentState(string path, int recordsPerPartition, Options? configuration = null)
         : this(new DirectoryInfo(path), recordsPerPartition, configuration)
     {
     }
@@ -176,6 +167,45 @@ public partial class PersistentState : Disposable, IPersistentState
     private partial Partition CreatePartition(long partitionNumber)
         => new(location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
+    {
+        using var list = bufferManager.AllocLogEntryList(length);
+        Debug.Assert(list.Length >= length);
+
+        // try to read snapshot out of the loop
+        if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
+        {
+            BufferHelpers.GetReference(in list) = snapshot.Read(sessionId);
+
+            // skip squashed log entries
+            startIndex = snapshot.Metadata.Index + 1L;
+            length = 1;
+        }
+        else if (startIndex == 0L)
+        {
+            BufferHelpers.GetReference(in list) = LogEntry.Initial;
+            startIndex = length = 1;
+        }
+        else
+        {
+            length = 0;
+        }
+
+        return await UnsafeReadAsync(in reader, in list, sessionId, startIndex, endIndex, length, token).ConfigureAwait(false);
+    }
+
+    private ValueTask<TResult> UnsafeReadAsync<TResult>(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
+    {
+        ref var first = ref BufferHelpers.GetReference(in list);
+
+        // enumerate over partitions in search of log entries
+        for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
+            Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
+
+        return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
+    }
+
     private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, CancellationToken token)
     {
         if (startIndex > state.LastIndex)
@@ -190,60 +220,21 @@ public partial class PersistentState : Disposable, IPersistentState
 
         readCounter?.Invoke(length);
         if (HasPartitions)
-            return ReadEntriesAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
+            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
 
         if (!snapshot.IsEmpty)
-            return ReadSnapshotAsync(reader, sessionId, token);
+            return ReadSnapshotAsync(snapshot, in reader, sessionId, token);
 
         return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
 
-        async ValueTask<TResult> ReadEntriesAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
-        {
-            using var list = bufferManager.AllocLogEntryList(length);
-            Debug.Assert(list.Length >= length);
-
-            // try to read snapshot out of the loop
-            if (!snapshot.IsEmpty && startIndex <= snapshot.Metadata.Index)
-            {
-                var snapshotEntry = snapshot.Read(sessionId);
-                BufferHelpers.GetReference(in list) = snapshotEntry;
-
-                // skip squashed log entries
-                startIndex = snapshot.Metadata.Index + 1L;
-                length = 1;
-            }
-            else if (startIndex == 0L)
-            {
-                BufferHelpers.GetReference(in list) = LogEntry.Initial;
-                startIndex = length = 1;
-            }
-            else
-            {
-                length = 0;
-            }
-
-            return await ReadEntries(in reader, in list, sessionId, startIndex, endIndex, length, token).ConfigureAwait(false);
-        }
-
-        ValueTask<TResult> ReadEntries(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
-        {
-            ref var first = ref BufferHelpers.GetReference(in list);
-
-            // enumerate over partitions in search of log entries
-            for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-                Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
-
-            return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
-        }
-
-        ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
+        static ValueTask<TResult> ReadSnapshotAsync(Snapshot snapshot, in LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
         {
             var entry = snapshot.Read(sessionId);
-            return reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(entry), entry.SnapshotIndex, token);
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token);
         }
 
-        ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(LogEntry.Initial), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+        static ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
+            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
     }
 
     /// <summary>
@@ -377,16 +368,16 @@ public partial class PersistentState : Disposable, IPersistentState
     private async ValueTask<Partition?> UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
         where TSnapshot : notnull, IRaftLogEntry
     {
-        // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
+        // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-        using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: snapshot.Length.GetValueOrDefault()))
+        using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: SnapshotMetadata.Size + snapshot.Length.GetValueOrDefault()))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             await tempSnapshot.WriteAsync(snapshot, snapshotIndex).ConfigureAwait(false);
             await tempSnapshot.FlushAsync().ConfigureAwait(false);
         }
 
-        // 2. Delete existing snapshot file
+        // Close existing snapshot file
         this.snapshot.Dispose();
 
         /*
@@ -421,7 +412,7 @@ public partial class PersistentState : Disposable, IPersistentState
 
         lastTerm.VolatileWrite(snapshot.Term);
         state.LastApplied = snapshotIndex;
-        state.Flush();
+        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         await FlushAsync().ConfigureAwait(false);
         commitEvent.Set(true);
         writeCounter?.Invoke(1D);
@@ -464,7 +455,7 @@ public partial class PersistentState : Disposable, IPersistentState
 
         // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
-        state.Flush();
+        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -519,7 +510,7 @@ public partial class PersistentState : Disposable, IPersistentState
         await partition.FlushAsync(token).ConfigureAwait(false);
 
         state.LastIndex = startIndex;
-        state.Flush();
+        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
 
         writeCounter?.Invoke(1D);
     }
@@ -533,7 +524,7 @@ public partial class PersistentState : Disposable, IPersistentState
         {
             await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            state.Flush();
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
         }
         else
         {
@@ -565,9 +556,9 @@ public partial class PersistentState : Disposable, IPersistentState
         if (IsDisposed)
             return new(DisposedTask);
 
-        return entry.IsSnapshot ? InstallSnapshotAsync(entry, startIndex, token) : AppendRegularEntryAsync(entry, startIndex, token);
+        return entry.IsSnapshot ? InstallSnapshotAsync() : AppendRegularEntryAsync();
 
-        async ValueTask AppendRegularEntryAsync(TEntry entry, long startIndex, CancellationToken token)
+        async ValueTask AppendRegularEntryAsync()
         {
             Debug.Assert(!entry.IsSnapshot);
 
@@ -599,7 +590,7 @@ public partial class PersistentState : Disposable, IPersistentState
             }
         }
 
-        async ValueTask InstallSnapshotAsync(TEntry entry, long startIndex, CancellationToken token)
+        async ValueTask InstallSnapshotAsync()
         {
             Debug.Assert(entry.IsSnapshot);
 
@@ -626,17 +617,14 @@ public partial class PersistentState : Disposable, IPersistentState
         where TEntry : notnull, IRaftLogEntry
     {
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
-        long startIndex;
         try
         {
-            startIndex = await UnsafeAppendAsync(entry, true, token).ConfigureAwait(false);
+            return await UnsafeAppendAsync(entry, true, token).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(LockType.WriteLock);
         }
-
-        return startIndex;
     }
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -648,18 +636,15 @@ public partial class PersistentState : Disposable, IPersistentState
         var cachedEntry = new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId);
 
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
-        long startIndex;
         try
         {
             // append it to the log
-            startIndex = await UnsafeAppendAsync(cachedEntry, false, token).ConfigureAwait(false);
+            return await UnsafeAppendAsync(cachedEntry, false, token).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(LockType.WriteLock);
         }
-
-        return startIndex;
     }
 
     /// <summary>
@@ -762,7 +747,7 @@ public partial class PersistentState : Disposable, IPersistentState
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             count = state.LastIndex - startIndex + 1L;
             state.LastIndex = startIndex - 1L;
-            state.Flush();
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
 
             if (reuseSpace)
                 InvalidatePartitions(startIndex);
@@ -856,15 +841,6 @@ public partial class PersistentState : Disposable, IPersistentState
             => entry.IsEmpty ? ValueTask.CompletedTask : builder.ApplyAsync(entry);
     }
 
-    private async ValueTask<Partition?> UnsafeInstallSnapshotAsync(SnapshotBuilder builder, long snapshotIndex)
-    {
-        // Persist snapshot (cannot be canceled to avoid inconsistency)
-        await builder.BuildAsync(snapshotIndex).ConfigureAwait(false);
-
-        // Remove squashed partitions
-        return DetachPartitions(snapshotIndex);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
         => upperBoundIndex - Volatile.Read(ref snapshot).Metadata.Index >= recordsPerPartition;
@@ -938,11 +914,8 @@ public partial class PersistentState : Disposable, IPersistentState
         async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
         {
             Partition? removedHead;
-            var builder = CreateSnapshotBuilder();
-            if (builder is null)
-                return;
 
-            try
+            using (var builder = CreateSnapshotBuilder())
             {
                 var upperBoundIndex = 0L;
 
@@ -969,16 +942,16 @@ public partial class PersistentState : Disposable, IPersistentState
                 await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
                 try
                 {
-                    removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+                    // Persist snapshot (cannot be canceled to avoid inconsistency)
+                    await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+
+                    // Remove squashed partitions
+                    removedHead = DetachPartitions(upperBoundIndex);
                 }
                 finally
                 {
                     syncRoot.Release(LockType.CompactionLock);
                 }
-            }
-            finally
-            {
-                builder.Dispose();
             }
 
             DeletePartitions(removedHead);
@@ -991,9 +964,9 @@ public partial class PersistentState : Disposable, IPersistentState
         // otherwise - write lock which doesn't block background compaction
         return compaction switch
         {
-            CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(endIndex, token),
-            CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
-            _ => CommitWithoutCompactionAsync(endIndex, token),
+            CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(),
+            CompactionMode.Foreground => CommitAndCompactInParallelAsync(),
+            _ => CommitWithoutCompactionAsync(),
         };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1004,7 +977,7 @@ public partial class PersistentState : Disposable, IPersistentState
             return commitIndex - startIndex + 1L;
         }
 
-        async ValueTask<long> CommitAndCompactSequentiallyAsync(long? endIndex, CancellationToken token)
+        async ValueTask<long> CommitAndCompactSequentiallyAsync()
         {
             Partition? removedHead;
             long count;
@@ -1034,19 +1007,17 @@ public partial class PersistentState : Disposable, IPersistentState
 
         async ValueTask<Partition?> ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)
         {
-            SnapshotBuilder? builder;
             Partition? removedHead;
-            if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+            if (IsCompactionRequired(upperBoundIndex))
             {
-                try
-                {
-                    await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
-                    removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
-                }
-                finally
-                {
-                    builder.Dispose();
-                }
+                using var builder = CreateSnapshotBuilder();
+                await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
+
+                // Persist snapshot (cannot be canceled to avoid inconsistency)
+                await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+
+                // Remove squashed partitions
+                removedHead = DetachPartitions(upperBoundIndex);
             }
             else
             {
@@ -1056,7 +1027,7 @@ public partial class PersistentState : Disposable, IPersistentState
             return removedHead;
         }
 
-        async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
+        async ValueTask<long> CommitWithoutCompactionAsync()
         {
             long count;
             await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
@@ -1084,14 +1055,19 @@ public partial class PersistentState : Disposable, IPersistentState
         async Task<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
         {
             Partition? removedHead;
-            SnapshotBuilder? builder;
-            if (upperBoundIndex > 0L && (builder = CreateSnapshotBuilder()) is not null)
+            if (upperBoundIndex > 0L)
             {
+                var builder = CreateSnapshotBuilder();
                 var session = sessionManager.Take();
                 try
                 {
                     await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
-                    removedHead = await UnsafeInstallSnapshotAsync(builder, upperBoundIndex).ConfigureAwait(false);
+
+                    // Persist snapshot (cannot be canceled to avoid inconsistency)
+                    await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+
+                    // Remove squashed partitions
+                    removedHead = DetachPartitions(upperBoundIndex);
                 }
                 finally
                 {
@@ -1107,7 +1083,7 @@ public partial class PersistentState : Disposable, IPersistentState
             return removedHead;
         }
 
-        async ValueTask<long> CommitAndCompactInParallelAsync(long? endIndex, CancellationToken token)
+        async ValueTask<long> CommitAndCompactInParallelAsync()
         {
             Partition? removedHead;
             long count;
@@ -1170,7 +1146,7 @@ public partial class PersistentState : Disposable, IPersistentState
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <seealso cref="Commands.CommandInterpreter"/>
-    protected virtual ValueTask ApplyAsync(LogEntry entry) => new();
+    protected abstract ValueTask ApplyAsync(LogEntry entry);
 
     private ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
 
@@ -1207,7 +1183,7 @@ public partial class PersistentState : Disposable, IPersistentState
             }
         }
 
-        state.Flush();
+        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
         await FlushAsync().ConfigureAwait(false);
     }
 
@@ -1301,6 +1277,7 @@ public partial class PersistentState : Disposable, IPersistentState
         try
         {
             result = state.IncrementTerm();
+            await state.FlushAsync(in NodeState.TermRange).ConfigureAwait(false);
         }
         finally
         {
@@ -1317,6 +1294,7 @@ public partial class PersistentState : Disposable, IPersistentState
         try
         {
             state.UpdateTerm(term, resetLastVote);
+            await state.FlushAsync(in NodeState.TermAndLastVoteFlagRange).ConfigureAwait(false);
         }
         finally
         {
@@ -1331,6 +1309,7 @@ public partial class PersistentState : Disposable, IPersistentState
         try
         {
             state.UpdateVotedFor(id);
+            await state.FlushAsync(in NodeState.LastVoteRange).ConfigureAwait(false);
         }
         finally
         {

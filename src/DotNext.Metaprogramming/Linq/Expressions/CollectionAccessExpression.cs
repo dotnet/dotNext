@@ -26,10 +26,8 @@ public sealed class CollectionAccessExpression : CustomExpression
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
     public CollectionAccessExpression(Expression collection, Expression index)
     {
-        if (collection is null)
-            throw new ArgumentNullException(nameof(collection));
-        if (index is null)
-            throw new ArgumentNullException(nameof(index));
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(index);
         if (index.Type != typeof(Index))
             throw new ArgumentException(ExceptionMessages.TypeExpected<Index>(), nameof(index));
         var resolved = false;

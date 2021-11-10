@@ -1231,14 +1231,14 @@ public static partial class ExpressionBuilder
 
     internal static MethodCallExpression Assert(this Expression test, string? message)
     {
-        if (test is null)
-            throw new ArgumentNullException(nameof(test));
-        else if (test.Type != typeof(bool))
+        ArgumentNullException.ThrowIfNull(test);
+        if (test.Type != typeof(bool))
             throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
-        else if (string.IsNullOrEmpty(message))
+
+        if (string.IsNullOrEmpty(message))
             return CallStatic(typeof(Debug), nameof(Debug.Assert), test);
-        else
-            return CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message));
+
+        return CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message));
     }
 
     /// <summary>

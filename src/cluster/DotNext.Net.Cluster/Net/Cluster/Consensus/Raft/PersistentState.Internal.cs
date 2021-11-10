@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -19,16 +20,15 @@ public partial class PersistentState
         HasIdentifier = 0x01,
     }
 
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
+    internal readonly struct LogEntryMetadata
     {
         internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
         private readonly LogEntryFlags flags;
         private readonly int identifier;
         internal readonly long Term, Timestamp, Length, Offset;
 
-        internal LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id)
+        internal LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id = null)
         {
             Term = term;
             Timestamp = timeStamp.UtcTicks;
@@ -40,8 +40,12 @@ public partial class PersistentState
             identifier = id.GetValueOrDefault();
         }
 
-        internal LogEntryMetadata(ref SpanReader<byte> reader)
+        // slow version if target architecture has BE byte order
+        private LogEntryMetadata(ReadOnlySpan<byte> input, bool dummy)
         {
+            Debug.Assert(dummy);
+
+            var reader = new SpanReader<byte>(input);
             Term = reader.ReadInt64(true);
             Timestamp = reader.ReadInt64(true);
             Length = reader.ReadInt64(true);
@@ -50,10 +54,39 @@ public partial class PersistentState
             identifier = reader.ReadInt32(true);
         }
 
-        static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+        internal LogEntryMetadata(ReadOnlySpan<byte> input)
+        {
+            Debug.Assert(input.Length >= Size);
 
-        static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ref SpanReader<byte> input)
-            => new(ref input);
+            // fast path without any overhead for LE byte order
+            if (BitConverter.IsLittleEndian)
+            {
+                ref var ptr = ref MemoryMarshal.GetReference(input);
+
+                Term = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Timestamp = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Length = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Offset = Unsafe.As<byte, long>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                flags = Unsafe.As<byte, LogEntryFlags>(ref ptr);
+                ptr = ref Unsafe.Add(ref ptr, sizeof(LogEntryFlags));
+
+                identifier = Unsafe.As<byte, int>(ref ptr);
+            }
+            else
+            {
+                this = new(input, true);
+            }
+        }
+
+        internal static LogEntryMetadata Parse(ReadOnlySpan<byte> input) => new(input);
 
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
@@ -66,8 +99,9 @@ public partial class PersistentState
         internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
             => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
-        public void Format(ref SpanWriter<byte> writer)
+        private void FormatSlow(Span<byte> output)
         {
+            var writer = new SpanWriter<byte>(output);
             writer.WriteInt64(Term, true);
             writer.WriteInt64(Timestamp, true);
             writer.WriteInt64(Length, true);
@@ -75,10 +109,62 @@ public partial class PersistentState
             writer.WriteUInt32((uint)flags, true);
             writer.WriteInt32(identifier, true);
         }
+
+        public void Format(Span<byte> output)
+        {
+            Debug.Assert(output.Length >= Size);
+
+            // fast path without any overhead for LE byte order
+            if (BitConverter.IsLittleEndian)
+            {
+                ref var ptr = ref MemoryMarshal.GetReference(output);
+                Unsafe.As<byte, long>(ref ptr) = Term;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, long>(ref ptr) = Timestamp;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, long>(ref ptr) = Length;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, long>(ref ptr) = Offset;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+
+                Unsafe.As<byte, LogEntryFlags>(ref ptr) = flags;
+                ptr = ref Unsafe.Add(ref ptr, sizeof(LogEntryFlags));
+
+                Unsafe.As<byte, int>(ref ptr) = identifier;
+            }
+            else
+            {
+                FormatSlow(output);
+            }
+        }
+
+        internal static long GetTerm(ReadOnlySpan<byte> input)
+            => BinaryPrimitives.ReadInt64LittleEndian(input);
+
+        internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
+        {
+            if (BitConverter.IsLittleEndian)
+            {
+                ref var ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), sizeof(long) + sizeof(long));
+                return Unsafe.As<byte, long>(ref ptr) + Unsafe.As<byte, long>(ref Unsafe.Add(ref ptr, sizeof(long)));
+            }
+
+            return GetEndOfLogEntrySlow(input);
+
+            static long GetEndOfLogEntrySlow(ReadOnlySpan<byte> input)
+            {
+                var reader = new SpanReader<byte>(input);
+                reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
+                return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct SnapshotMetadata : IBinaryFormattable<SnapshotMetadata>
+    internal readonly struct SnapshotMetadata
     {
         internal const int Size = sizeof(long) + LogEntryMetadata.Size;
         internal readonly long Index;
@@ -90,10 +176,10 @@ public partial class PersistentState
             RecordMetadata = metadata;
         }
 
-        internal SnapshotMetadata(ref SpanReader<byte> reader)
+        internal SnapshotMetadata(ReadOnlySpan<byte> input)
         {
-            Index = reader.ReadInt64(true);
-            RecordMetadata = new(ref reader);
+            Index = BinaryPrimitives.ReadInt64LittleEndian(input);
+            RecordMetadata = new(input.Slice(sizeof(long)));
         }
 
         internal SnapshotMetadata(long index, DateTimeOffset timeStamp, long term, long length, int? id = null)
@@ -101,29 +187,23 @@ public partial class PersistentState
         {
         }
 
-        static int IBinaryFormattable<SnapshotMetadata>.Size => Size;
-
-        static SnapshotMetadata IBinaryFormattable<SnapshotMetadata>.Parse(ref SpanReader<byte> input)
-            => new(ref input);
-
         internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
             where TLogEntry : IRaftLogEntry
             => new(LogEntryMetadata.Create(snapshot, Size, length), index);
 
-        public void Format(ref SpanWriter<byte> writer)
+        public void Format(Span<byte> output)
         {
-            writer.WriteInt64(Index, true);
-            RecordMetadata.Format(ref writer);
+            BinaryPrimitives.WriteInt64LittleEndian(output, Index);
+            RecordMetadata.Format(output.Slice(sizeof(long)));
         }
     }
-#pragma warning restore CA2252
 
     private sealed class VersionedFileReader : FileReader
     {
         private long version;
 
-        internal VersionedFileReader(SafeFileHandle handle, int bufferSize, MemoryAllocator<byte> allocator, long version)
-            : base(handle, bufferSize: bufferSize, allocator: allocator)
+        internal VersionedFileReader(SafeFileHandle handle, long fileOffset, int bufferSize, MemoryAllocator<byte> allocator, long version)
+            : base(handle, fileOffset, bufferSize, allocator)
         {
             this.version = version;
         }
@@ -141,6 +221,7 @@ public partial class PersistentState
     {
         internal readonly SafeFileHandle Handle;
         private protected readonly FileWriter writer;
+        private protected readonly int fileOffset;
         private readonly MemoryAllocator<byte> allocator;
         internal readonly string FileName;
 
@@ -151,20 +232,31 @@ public partial class PersistentState
         // This field is used to control 'freshness' of the read buffers
         private long version; // volatile
 
-        private protected ConcurrentStorageAccess(string fileName, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
+        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
         {
-            Handle = File.Exists(fileName)
-                ? File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, options)
-                : File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+            FileMode fileMode;
+            if (File.Exists(fileName))
+            {
+                fileMode = FileMode.OpenOrCreate;
+                initialSize = 0L;
+            }
+            else
+            {
+                fileMode = FileMode.CreateNew;
+                initialSize += fileOffset;
+            }
 
-            writer = new(Handle, bufferSize: bufferSize, allocator: allocator);
+            Handle = File.OpenHandle(fileName, fileMode, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
+
+            this.fileOffset = fileOffset;
+            writer = new(Handle, fileOffset, bufferSize, allocator);
             readers = new VersionedFileReader[readersCount];
             this.allocator = allocator;
             FileName = fileName;
             version = long.MinValue;
 
             if (readersCount == 1)
-                readers[0] = new(Handle, bufferSize, allocator, version);
+                readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
         }
 
         private protected long FileSize => RandomAccess.GetLength(Handle);
@@ -186,6 +278,7 @@ public partial class PersistentState
 
             return result;
 
+            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
             async ValueTask FlushAndSetPositionAsync(long value, CancellationToken token)
             {
                 await FlushAsync(token).ConfigureAwait(false);
@@ -211,7 +304,7 @@ public partial class PersistentState
 
             if (result is null)
             {
-                GetReader() = result = new(Handle, writer.MaxBufferSize, allocator, version.VolatileRead());
+                GetReader() = result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version.VolatileRead());
             }
             else
             {

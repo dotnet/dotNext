@@ -85,7 +85,7 @@ public class BinaryTransferObject : IDataTransferObject, ISupplier<ReadOnlySeque
 
     /// <inheritdoc/>
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        => new(writer.WriteAsync(content, token));
+        => content.IsSingleSegment ? writer.WriteAsync(content.First, null, token) : new(writer.WriteAsync(content, token));
 
     /// <inheritdoc/>
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)

@@ -10,6 +10,7 @@ namespace DotNext.IO;
 using Buffers;
 using Text;
 using static Buffers.BufferReader;
+using static Collections.Generic.Sequence;
 
 /// <summary>
 /// Represents high-level read/write methods for the stream.
@@ -190,7 +191,7 @@ public static partial class StreamExtensions
         else
         {
             result = allocator.Invoke(length, exactSize: true);
-            length = ReadString(stream, result.Memory.Span, in context, buffer);
+            length = ReadString(stream, result.Span, in context, buffer);
             result.TryResize(length);
         }
 
@@ -615,7 +616,7 @@ public static partial class StreamExtensions
 
         using var buffer = MemoryAllocator.Allocate<byte>(length, true);
         await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-        return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
     /// <summary>
@@ -671,7 +672,7 @@ public static partial class StreamExtensions
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
     {
         using var chars = await ReadStringAsync(stream, length, context, buffer, null, token).ConfigureAwait(false);
-        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+        return chars.IsEmpty ? string.Empty : new string(chars.Span);
     }
 
     /// <summary>
@@ -767,7 +768,7 @@ public static partial class StreamExtensions
     public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding, CancellationToken token = default)
     {
         using var chars = await ReadStringAsync(stream, length, encoding, null, token).ConfigureAwait(false);
-        return chars.IsEmpty ? string.Empty : new string(chars.Memory.Span);
+        return chars.IsEmpty ? string.Empty : new string(chars.Span);
     }
 
     /// <summary>
@@ -796,7 +797,7 @@ public static partial class StreamExtensions
         {
             using var bytesBuffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
             await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
-            result = encoding.GetChars(bytesBuffer.Memory.Span, allocator);
+            result = encoding.GetChars(bytesBuffer.Span, allocator);
         }
 
         return result;
@@ -876,7 +877,7 @@ public static partial class StreamExtensions
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            stream.ReadBlock(result.Memory.Span);
+            stream.ReadBlock(result.Span);
         }
         else
         {
@@ -965,6 +966,15 @@ public static partial class StreamExtensions
         return MemoryMarshal.Read<T>(buffer.Span);
     }
 
+    internal static async ValueTask<TOutput> ReadAsync<TInput, TOutput, TConverter>(this Stream stream, TConverter converter, Memory<byte> buffer, CancellationToken token = default)
+        where TInput : unmanaged
+        where TOutput : unmanaged
+        where TConverter : struct, ISupplier<TInput, TOutput>
+    {
+        await stream.ReadBlockAsync(buffer.Slice(0, Unsafe.SizeOf<TInput>()), token).ConfigureAwait(false);
+        return converter.Invoke(MemoryMarshal.Read<TInput>(buffer.Span));
+    }
+
     /// <summary>
     /// Asynchronously deserializes the value type from the stream.
     /// </summary>
@@ -979,7 +989,7 @@ public static partial class StreamExtensions
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
         await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-        return MemoryMarshal.Read<T>(buffer.Memory.Span);
+        return MemoryMarshal.Read<T>(buffer.Span);
     }
 
     /// <summary>
@@ -1164,8 +1174,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async Task CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
     {
-        if (destination is null)
-            throw new ArgumentNullException(nameof(destination));
+        ArgumentNullException.ThrowIfNull(destination);
         if (bufferSize < 0)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
@@ -1192,8 +1201,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static void CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
     {
-        if (destination is null)
-            throw new ArgumentNullException(nameof(destination));
+        ArgumentNullException.ThrowIfNull(destination);
         if (bufferSize < 0)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
@@ -1206,4 +1214,20 @@ public static partial class StreamExtensions
             destination.Advance(count);
         }
     }
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="stream">The stream to combine.</param>
+    /// <param name="others">A collection of streams.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    public static Stream Combine(this Stream stream, params Stream[] others)
+        => others.IsNullOrEmpty() ? stream : new SparseStream(Singleton(stream).Concat(others));
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="streams">A collection of readable streams.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    public static Stream Combine(this IEnumerable<Stream> streams) => new SparseStream(streams);
 }

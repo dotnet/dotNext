@@ -7,7 +7,6 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.IO;
 
 using Buffers;
-using static Pipelines.ResultExtensions;
 using static Text.EncodingExtensions;
 using EncodingContext = Text.EncodingContext;
 
@@ -29,7 +28,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         where T : unmanaged
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
-        Span.AsReadOnlyBytes(value).CopyTo(buffer.Memory.Span);
+        Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
         await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
     }
 
@@ -95,7 +94,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         else
         {
             using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
-            if (!value.TryWriteBytes(buffer.Memory.Span, out bytesCount, isBigEndian: !littleEndian))
+            if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
                 throw new InternalBufferOverflowException();
             await WriteAsync(buffer.Memory, lengthFormat, token).ConfigureAwait(false);
         }
@@ -209,19 +208,8 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async Task CopyFromAsync(PipeReader input, CancellationToken token = default)
-    {
-        ReadResult result;
-        do
-        {
-            result = await input.ReadAsync(token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(token);
-            var buffer = result.Buffer;
-            for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
-                await WriteAsync(block, null, token).ConfigureAwait(false);
-        }
-        while (!result.IsCompleted);
-    }
+    Task CopyFromAsync(PipeReader input, CancellationToken token = default)
+        => Pipelines.PipeExtensions.CopyToAsync(input, this, token);
 
     /// <summary>
     /// Writes the content from the specified sequence of bytes.

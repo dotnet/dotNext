@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.IO;
 
@@ -83,26 +84,14 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
         => StreamExtensions.ReadStringAsync(stream, lengthFormat, context, buffer, allocator, token);
 
-    async ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
-    {
-        var result = await StreamExtensions.ReadAsync<short>(stream, buffer, token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    unsafe ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
+        => littleEndian == BitConverter.IsLittleEndian ? StreamExtensions.ReadAsync<short>(stream, buffer, token) : StreamExtensions.ReadAsync<short, short, Supplier<short, short>>(stream, new(&ReverseEndianness), buffer, token);
 
-    async ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
-    {
-        var result = await StreamExtensions.ReadAsync<int>(stream, buffer, token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    unsafe ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
+        => littleEndian == BitConverter.IsLittleEndian ? StreamExtensions.ReadAsync<int>(stream, buffer, token) : StreamExtensions.ReadAsync<int, int, Supplier<int, int>>(stream, new(&ReverseEndianness), buffer, token);
 
-    async ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
-    {
-        var result = await StreamExtensions.ReadAsync<long>(stream, buffer, token).ConfigureAwait(false);
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+    unsafe ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
+        => littleEndian == BitConverter.IsLittleEndian ? StreamExtensions.ReadAsync<long>(stream, buffer, token) : StreamExtensions.ReadAsync<long, long, Supplier<long, long>>(stream, new(&ReverseEndianness), buffer, token);
 
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
         => StreamExtensions.ParseAsync(stream, parser, lengthFormat, context, buffer, provider, token);

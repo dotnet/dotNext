@@ -16,9 +16,7 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter
     private protected TextBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
         : base(provider ?? InvariantCulture)
     {
-        if (writer is null)
-            throw new ArgumentNullException(nameof(writer));
-
+        ArgumentNullException.ThrowIfNull(writer);
         this.writer = writer;
         this.flush = flush;
         this.flushAsync = flushAsync;

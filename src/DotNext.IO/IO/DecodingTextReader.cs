@@ -28,7 +28,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         buffer = allocator.Invoke(bufferSize, false);
     }
 
-    private Span<char> Buffer => buffer.Memory.Span;
+    private Span<char> Buffer => buffer.Span;
 
     private Span<char> ReadyToReadChars => Buffer.Slice(charPos, charLen - charPos);
 
@@ -141,7 +141,7 @@ internal sealed class DecodingTextReader : TextBufferReader
     private string ReadToEnd(int bufferSize, bool bufferNotEmpty)
     {
         using var output = allocator.Invoke(bufferSize, false);
-        var writer = new SpanWriter<char>(output.Memory.Span);
+        var writer = new SpanWriter<char>(output.Span);
         if (bufferNotEmpty)
         {
             writer.Write(ReadyToReadChars);

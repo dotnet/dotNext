@@ -67,7 +67,7 @@ namespace DotNext.IO
             ms.Position = 0;
             var buffer = new byte[bufferSize];
             using var chars = ms.ReadString(encoding.GetByteCount(value), encoding, buffer, null);
-            Equal(value, new string(chars.Memory.Span));
+            Equal(value, new string(chars.Span));
         }
 
         private static void ReadCharBufferUsingEncoding(string value, Encoding encoding)
@@ -76,7 +76,7 @@ namespace DotNext.IO
             ms.Write(encoding.GetBytes(value));
             ms.Position = 0;
             using var chars = ms.ReadString(encoding.GetByteCount(value), encoding, null);
-            Equal(value, new string(chars.Memory.Span));
+            Equal(value, new string(chars.Span));
         }
 
         [Fact]
@@ -543,6 +543,91 @@ namespace DotNext.IO
             Equal(t, await stream.ParseAsync<TimeSpan>(static (c, p) => TimeSpan.ParseExact(c, "G", p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
             Equal(bi, await stream.ParseAsync<BigInteger>(static (c, p) => BigInteger.Parse(c, provider: p), LengthFormat.Plain, decodingContext, provider: InvariantCulture));
             Equal(memberId, await stream.ParseAsync<Net.Cluster.ClusterMemberId>());
+        }
+
+        [Fact]
+        public static void CombineStreams()
+        {
+            using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
+            using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
+            using var combined = ms1.Combine(ms2);
+            True(combined.CanRead);
+            False(combined.CanWrite);
+            False(combined.CanSeek);
+
+            Span<byte> buffer = stackalloc byte[6];
+            combined.ReadBlock(buffer);
+
+            Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, buffer.ToArray());
+        }
+
+        [Fact]
+        public static async Task CombineStreamsAsync()
+        {
+            await using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
+            await using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
+            await using var combined = new[] { ms1, ms2 }.Combine();
+
+            var buffer = new byte[6];
+            await combined.ReadBlockAsync(buffer);
+
+            Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, buffer);
+        }
+
+        [Fact]
+        public static void CopyCombinedStreams()
+        {
+            using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
+            using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
+            using var combined = ms1.Combine(ms2);
+            using var result = new MemoryStream();
+
+            combined.CopyTo(result, 128);
+            Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, result.ToArray());
+        }
+
+        [Fact]
+        public static async Task CopyCombinedStreamsAsync()
+        {
+            await using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
+            await using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
+            await using var combined = ms1.Combine(ms2);
+            await using var result = new MemoryStream();
+
+            await combined.CopyToAsync(result, 128);
+            Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, result.ToArray());
+        }
+
+        [Fact]
+        public static void ReadBytesFromCombinedStream()
+        {
+            using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
+            using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
+            using var combined = ms1.Combine(ms2);
+
+            Equal(1, combined.ReadByte());
+            Equal(2, combined.ReadByte());
+            Equal(3, combined.ReadByte());
+            Equal(4, combined.ReadByte());
+            Equal(5, combined.ReadByte());
+            Equal(6, combined.ReadByte());
+            Equal(-1, combined.ReadByte());
+        }
+
+        [Fact]
+        public static async Task UnsupportedMethodsOfSparseStream()
+        {
+            await using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
+            await using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
+            await using var combined = ms1.Combine(ms2);
+
+            Throws<NotSupportedException>(() => combined.SetLength(0L));
+            Throws<NotSupportedException>(() => combined.Seek(0L, default));
+            Throws<NotSupportedException>(() => combined.Position.ToString());
+            Throws<NotSupportedException>(() => combined.Position = 42L);
+            Throws<NotSupportedException>(() => combined.WriteByte(1));
+            Throws<NotSupportedException>(() => combined.Write(ReadOnlySpan<byte>.Empty));
+            await ThrowsAsync<NotSupportedException>(async () => await combined.WriteAsync(ReadOnlyMemory<byte>.Empty));
         }
     }
 }
