@@ -28,7 +28,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private PipeOptions? pipeConfig;
             private MemoryAllocator<byte>? allocator;
             private int serverChannels = 10;
-            private int? connectTimeout;
             private ILoggerFactory? loggerFactory;
             private TimeSpan? requestTimeout;
             private int warmupRounds;
@@ -161,15 +160,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets or sets a value indicating that the initial node in the cluster is starting.
             /// </summary>
             public bool ColdStart { get; set; } = true;
-
-            /// <summary>
-            /// Gets or sets TCP connection timeout, in milliseconds.
-            /// </summary>
-            public int ConnectTimeout
-            {
-                get => connectTimeout ?? (LowerElectionTimeout / 2);
-                set => connectTimeout = value;
-            }
 
             /// <summary>
             /// Gets or sets request processing timeout.
@@ -361,7 +351,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public sealed class TcpConfiguration : NodeConfiguration
         {
-            private int transmissionBlockSize;
+            private int transmissionBlockSize, connectTimeout;
             private TimeSpan? gracefulShutdown;
 
             /// <summary>
@@ -372,6 +362,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 : base(localNodeHostAddress)
             {
                 transmissionBlockSize = 65535;
+                connectTimeout = int.MinValue;
                 LingerOption = new LingerOption(false, 0);
             }
 
@@ -418,6 +409,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 get;
                 set;
+            }
+
+            /// <summary>
+            /// Gets or sets TCP connection timeout, in milliseconds.
+            /// </summary>
+            public int ConnectTimeout
+            {
+                get => connectTimeout > 0 ? connectTimeout : (LowerElectionTimeout / 2);
+                set => connectTimeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             private TcpClient CreateClient(IPEndPoint address) => new(address, MemoryAllocator, LoggerFactory)
