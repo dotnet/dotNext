@@ -345,6 +345,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <param name="arg">The argument to be passed to the transition.</param>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Signal<T>(Action<TState, T> transition, T arg)
     {
         ArgumentNullException.ThrowIfNull(transition);
