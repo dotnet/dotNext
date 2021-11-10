@@ -345,6 +345,7 @@ public static partial class PipeExtensions
         }
         else if (readResult.IsCanceled)
         {
+            reader.AdvanceTo(readResult.Buffer.Start);
             result = ValueTask.FromCanceled<T>(token.IsCancellationRequested ? token : new(true));
         }
         else
