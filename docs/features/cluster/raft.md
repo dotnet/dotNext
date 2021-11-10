@@ -284,7 +284,7 @@ internal sealed class RaftClientHandlerFactory : IHttpMessageHandlerFactory
 }
 ```
 
-In practice, `ConnectTimeout` should be equal to `lowerElectionTimeout` configuration property. Note that `name` parameter is equal to the `clientHandlerName` configuration property when handler creation is requested by Raft implementation.
+In practice, `ConnectTimeout` should be equal to or less than `lowerElectionTimeout` configuration property. Note that `name` parameter is equal to the `clientHandlerName` configuration property when handler creation is requested by Raft implementation.
 
 ### Redirection to Leader
 Client interaction requires automatic detection of a leader node. Cluster Development Suite provides a way to automatically redirect requests to the leader node if it was originally received by a follower node. The redirection is organized with help of _307 Temporary Redirect_ status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns _503 Service Unavailable_. 
@@ -432,6 +432,7 @@ The following table describes configuration properties applicable to TCP transpo
 | LingerOption | No | Not enabled | The configuration that specifies whether a TCP socket will delay its closing in an attempt to send all pending data |
 | GracefulShutdownTimeout | No | The same as _LowerElectionTimeout_ | The timeout of graceful shutdown of active incoming connections |
 | TransmissionBlockSize | No | 65535 | The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retransmission of large blocks. |
+| ConnectTimeout | No | The same as _LowerElectionTimeout / 2_ | TCP connection timeout. Must be less than or equal to _LowerElectionTimeout_ |
 | SslOptions | No | _N/A_ | Allows to enable and configure transport-level encryption using SSL and X.509 certificates |
 
 TCP transport is WAN friendly and support transport-level encryption. However, the underlying application-level protocol is binary and can be a problem for corporate firewalls.
