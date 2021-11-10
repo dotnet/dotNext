@@ -37,7 +37,7 @@ public partial class FileReader : Disposable
     /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
     public FileReader(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
-        ArgumentNullException.ThrowIfNull(handle, nameof(handle));
+        ArgumentNullException.ThrowIfNull(handle);
 
         if (!handle.IsAsync)
             throw new ArgumentException(ExceptionMessages.AsyncFileExpected, nameof(handle));

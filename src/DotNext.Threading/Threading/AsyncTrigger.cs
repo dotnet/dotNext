@@ -328,7 +328,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     [MethodImpl(MethodImplOptions.Synchronized)]
     public void Signal(Action<TState> transition)
     {
-        ArgumentNullException.ThrowIfNull(transition, nameof(transition));
+        ArgumentNullException.ThrowIfNull(transition);
         ThrowIfDisposed();
         transition(State);
         DrainWaitQueue();
@@ -347,7 +347,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
     public void Signal<T>(Action<TState, T> transition, T arg)
     {
-        ArgumentNullException.ThrowIfNull(transition, nameof(transition));
+        ArgumentNullException.ThrowIfNull(transition);
         ThrowIfDisposed();
         transition(State, arg);
         DrainWaitQueue();
@@ -366,7 +366,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TrySignal(ITransition transition)
     {
-        ArgumentNullException.ThrowIfNull(transition, nameof(transition));
+        ArgumentNullException.ThrowIfNull(transition);
         ThrowIfDisposed();
 
         var manager = new LockManager(State, transition);
@@ -387,8 +387,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(transition, nameof(transition));
-
+        ArgumentNullException.ThrowIfNull(transition);
         var manager = new LockManager(State, transition);
         return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
     }
@@ -406,8 +405,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(transition, nameof(transition));
-
+        ArgumentNullException.ThrowIfNull(transition);
         var manager = new LockManager(State, transition);
         return WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
     }
