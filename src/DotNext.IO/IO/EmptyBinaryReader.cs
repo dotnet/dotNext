@@ -34,6 +34,12 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader
     public ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
         => EndOfStream<MemoryOwner<byte>>();
 
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => EndOfStream<MemoryOwner<char>>();
+
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+        => length == 0 ? new(default(MemoryOwner<char>)) : EndOfStream<MemoryOwner<char>>();
+
     public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
         => length == 0 ? new(string.Empty) : EndOfStream<string>();
 
