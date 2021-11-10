@@ -133,11 +133,11 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class PersistentState : Disposable, IPersistentState, IAuditTrail&lt;IRaftLogEntry&gt;, IAuditTrail</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class PersistentState : Disposable, IPersistentState, IAuditTrail&lt;IRaftLogEntry&gt;, IAuditTrail</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>The layout of of the audit trail file system:</p>
-<table><tbody><tr><td>node.state</td><td>file containing internal state of Raft node</td></tr><tr><td>&lt;partition></td><td>file containing log partition with log records</td></tr><tr><td>&lt;snapshot>.meta</td><td>file containing metadata associated with the log partition</td></tr><tr><td>snapshot</td><td>file containing snapshot</td></tr></tbody></table>
+  <div class="markdown level0 remarks"><p>The layout of the audit trail file system:</p>
+<table><tbody><tr><td>node.state</td><td>file containing internal state of Raft node</td></tr><tr><td>&lt;partition></td><td>file containing log partition with log records</td></tr><tr><td>snapshot</td><td>file containing snapshot</td></tr></tbody></table>
 The audit trail supports log compaction. However, it doesn&apos;t know how to interpret and reduce log records during compaction.
 To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilderContext__">CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext)</a> method and implement state machine logic.
 </div>
@@ -148,7 +148,7 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.%23ctor(DirectoryInfo%2CSystem.Int32%2CDotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(DirectoryInfo,System.Int32,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)">PersistentState(DirectoryInfo, Int32, PersistentState.Options)</h4>
@@ -157,7 +157,7 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PersistentState(DirectoryInfo path, int recordsPerPartition, PersistentState.Options configuration = null)</code></pre>
+    <pre><code class="lang-csharp hljs">protected PersistentState(DirectoryInfo path, int recordsPerPartition, PersistentState.Options configuration = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -194,7 +194,7 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.%23ctor(System.String%2CSystem.Int32%2CDotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L160">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.String,System.Int32,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)">PersistentState(String, Int32, PersistentState.Options)</h4>
@@ -203,7 +203,7 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PersistentState(string path, int recordsPerPartition, PersistentState.Options configuration = null)</code></pre>
+    <pre><code class="lang-csharp hljs">protected PersistentState(string path, int recordsPerPartition, PersistentState.Options configuration = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -242,7 +242,7 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_CompactionCount.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.CompactionCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L887">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L863">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CompactionCount_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CompactionCount*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CompactionCount" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CompactionCount">CompactionCount</h4>
@@ -273,7 +273,7 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_IsBackgroundCompaction.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.IsBackgroundCompaction%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L170">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L161">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_IsBackgroundCompaction_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.IsBackgroundCompaction*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_IsBackgroundCompaction" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.IsBackgroundCompaction">IsBackgroundCompaction</h4>
@@ -306,7 +306,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastAppliedEntryIndex.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastAppliedEntryIndex%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.NodeState.cs/#L165">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.NodeState.cs/#L203">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastAppliedEntryIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastAppliedEntryIndex*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastAppliedEntryIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastAppliedEntryIndex">LastAppliedEntryIndex</h4>
@@ -337,7 +337,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastCommittedEntryIndex.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastCommittedEntryIndex%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.NodeState.cs/#L155">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.NodeState.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastCommittedEntryIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastCommittedEntryIndex*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastCommittedEntryIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastCommittedEntryIndex">LastCommittedEntryIndex</h4>
@@ -368,7 +368,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastUncommittedEntryIndex.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastUncommittedEntryIndex%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.NodeState.cs/#L160">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.NodeState.cs/#L198">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastUncommittedEntryIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastUncommittedEntryIndex*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastUncommittedEntryIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LastUncommittedEntryIndex">LastUncommittedEntryIndex</h4>
@@ -399,7 +399,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Term.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Term%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1294">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1270">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Term*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Term">Term</h4>
@@ -432,7 +432,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L676">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L661">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync``1(``0,CancellationToken)">AppendAsync&lt;TEntry&gt;(TEntry, CancellationToken)</h4>
@@ -509,7 +509,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync%60%601(%60%600%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L695">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L680">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Boolean_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync``1(``0,System.Boolean,CancellationToken)">AppendAsync&lt;TEntry&gt;(TEntry, Boolean, CancellationToken)</h4>
@@ -593,7 +593,7 @@ in the background.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync%60%601(%60%600%2CSystem.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L562">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L553">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync``1(``0,System.Int64,CancellationToken)">AppendAsync&lt;TEntry&gt;(TEntry, Int64, CancellationToken)</h4>
@@ -679,7 +679,7 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1_DotNext_IO_Log_ILogEntryProducer___0__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync%60%601(DotNext.IO.Log.ILogEntryProducer%7B%60%600%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L720">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L705">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1_DotNext_IO_Log_ILogEntryProducer___0__CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.AppendAsync``1(DotNext.IO.Log.ILogEntryProducer{``0},CancellationToken)">AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt;, CancellationToken)</h4>
@@ -753,7 +753,7 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1173">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1149">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ApplyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ApplyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)">ApplyAsync(PersistentState.LogEntry)</h4>
@@ -762,7 +762,7 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected virtual ValueTask ApplyAsync(PersistentState.LogEntry entry)</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask ApplyAsync(PersistentState.LogEntry entry)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -810,7 +810,7 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1162">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1138">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync(CancellationToken)">CommitAsync(CancellationToken)</h4>
@@ -860,7 +860,7 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1154">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1130">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync(System.Int64,CancellationToken)">CommitAsync(Int64, CancellationToken)</h4>
@@ -1055,7 +1055,7 @@ If <span class="xref">null</span> then <see cref="!:Type.AssemblyQualifiedName">
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilderContext__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.CreateSnapshotBuilder(DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilderContext%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.SnapshotBuilder.cs/#L189">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.SnapshotBuilder.cs/#L191">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateSnapshotBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CreateSnapshotBuilder*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilderContext__" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.CreateSnapshotBuilder(DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilderContext@)">CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext)</h4>
@@ -1064,7 +1064,7 @@ If <span class="xref">null</span> then <see cref="!:Type.AssemblyQualifiedName">
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected virtual PersistentState.SnapshotBuilder CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext context)</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract PersistentState.SnapshotBuilder CreateSnapshotBuilder(in PersistentState.SnapshotBuilderContext context)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1105,7 +1105,7 @@ If <span class="xref">null</span> then <see cref="!:Type.AssemblyQualifiedName">
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1345">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1324">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -1141,7 +1141,7 @@ If <span class="xref">null</span> then <see cref="!:Type.AssemblyQualifiedName">
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_System_Int64_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync(System.Int64%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L751">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L736">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_System_Int64_System_Boolean_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync(System.Int64,System.Boolean,CancellationToken)">DropAsync(Int64, Boolean, CancellationToken)</h4>
@@ -1204,7 +1204,7 @@ If <span class="xref">null</span> then <see cref="!:Type.AssemblyQualifiedName">
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.EnsureConsistencyAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1280">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1256">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.EnsureConsistencyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.EnsureConsistencyAsync(CancellationToken)">EnsureConsistencyAsync(CancellationToken)</h4>
@@ -1255,7 +1255,7 @@ will be committed.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_FlushAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1181">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1157">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_FlushAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_FlushAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync">FlushAsync()</h4>
@@ -1287,7 +1287,7 @@ will be committed.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_ForceCompactionAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.ForceCompactionAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L909">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L885">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ForceCompactionAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ForceCompactionAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ForceCompactionAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ForceCompactionAsync(System.Int64,CancellationToken)">ForceCompactionAsync(Int64, CancellationToken)</h4>
@@ -1354,7 +1354,7 @@ according with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Persiste
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_InitializeAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.InitializeAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1262">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1238">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_InitializeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.InitializeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_InitializeAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.InitializeAsync(CancellationToken)">InitializeAsync(CancellationToken)</h4>
@@ -1404,7 +1404,7 @@ according with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Persiste
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync%60%601(DotNext.IO.Log.LogEntryConsumer%7BDotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry%2C%60%600%7D%2CSystem.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L360">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L351">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync``1(DotNext.IO.Log.LogEntryConsumer{DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,``0},System.Int64,CancellationToken)">ReadAsync&lt;TResult&gt;(LogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, Int64, CancellationToken)</h4>
@@ -1482,7 +1482,7 @@ according with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Persiste
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync%60%601(DotNext.IO.Log.LogEntryConsumer%7BDotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry%2C%60%600%7D%2CSystem.Int64%2CSystem.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L265">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L256">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync``1(DotNext.IO.Log.LogEntryConsumer{DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,``0},System.Int64,System.Int64,CancellationToken)">ReadAsync&lt;TResult&gt;(LogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, Int64, Int64, CancellationToken)</h4>
@@ -1571,7 +1571,7 @@ with the audit trail segment with entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReplayAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1223">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1199">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReplayAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReplayAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync(CancellationToken)">ReplayAsync(CancellationToken)</h4>
@@ -1688,7 +1688,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.WaitForCommitAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L812">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L797">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.WaitForCommitAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.WaitForCommitAsync(CancellationToken)">WaitForCommitAsync(CancellationToken)</h4>
@@ -1738,7 +1738,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.WaitForCommitAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L823">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L808">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.WaitForCommitAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.WaitForCommitAsync(System.Int64,CancellationToken)">WaitForCommitAsync(Int64, CancellationToken)</h4>
@@ -1796,7 +1796,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext%23IO%23Log%23IAuditTrail%23IsLogEntryLengthAlwaysPresented%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L173">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#IO#Log#IAuditTrail#IsLogEntryLengthAlwaysPresented*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#IO#Log#IAuditTrail#IsLogEntryLengthAlwaysPresented">IAuditTrail.IsLogEntryLengthAlwaysPresented</h4>
@@ -1826,7 +1826,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext%23Net%23Cluster%23Consensus%23Raft%23IPersistentState%23IncrementTermAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1297">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1273">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IncrementTermAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IncrementTermAsync">IPersistentState.IncrementTermAsync()</h4>
@@ -1856,7 +1856,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_System_Nullable_DotNext_Net_Cluster_ClusterMemberId___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext%23Net%23Cluster%23Consensus%23Raft%23IPersistentState%23IsVotedFor(System.Nullable%7BDotNext.Net.Cluster.ClusterMemberId%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1289">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1265">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IsVotedFor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_System_Nullable_DotNext_Net_Cluster_ClusterMemberId___" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IsVotedFor(System.Nullable{DotNext.Net.Cluster.ClusterMemberId}@)">IPersistentState.IsVotedFor(in Nullable&lt;ClusterMemberId&gt;)</h4>
@@ -1903,7 +1903,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext%23Net%23Cluster%23Consensus%23Raft%23IPersistentState%23UpdateTermAsync(System.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1314">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1291">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateTermAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateTermAsync(System.Int64,System.Boolean)">IPersistentState.UpdateTermAsync(Int64, Boolean)</h4>
@@ -1955,7 +1955,7 @@ permanently.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_System_Nullable_DotNext_Net_Cluster_ClusterMemberId__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext%23Net%23Cluster%23Consensus%23Raft%23IPersistentState%23UpdateVotedForAsync(System.Nullable%7BDotNext.Net.Cluster.ClusterMemberId%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1328">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L1306">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateVotedForAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_System_Nullable_DotNext_Net_Cluster_ClusterMemberId__" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateVotedForAsync(System.Nullable{DotNext.Net.Cluster.ClusterMemberId})">IPersistentState.UpdateVotedForAsync(Nullable&lt;ClusterMemberId&gt;)</h4>

@@ -264,6 +264,79 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_Create__2___1_.md&amp;value=---%0Auid%3A%20DotNext.Optional.Create%60%602(%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L221">View Source</a>
+  </span>
+  <a id="DotNext_Optional_Create_" data-uid="DotNext.Optional.Create*"></a>
+  <h4 id="DotNext_Optional_Create__2___1_" data-uid="DotNext.Optional.Create``2(``1)">Create&lt;T, TMonad&gt;(TMonad)</h4>
+  <div class="markdown level1 summary"><p>Converts the monad to <a class="xref" href="DotNext.Optional-1.html">Optional&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; Create&lt;T, TMonad&gt;(TMonad value)
+
+    where TMonad : struct, IOptionMonad&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TMonad</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td><p>The value represented as <a class="xref" href="DotNext.Optional-1.html">Optional&lt;T&gt;</a> or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a> if there is no value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the underlying value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TMonad</span></td>
+        <td><p>The type of the monad.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_GetReference__1_DotNext_Optional___0____.md&amp;value=---%0Auid%3A%20DotNext.Optional.GetReference%60%601(DotNext.Optional%7B%60%600%7D%40%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -276,7 +349,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T&gt;(this in Optional&lt;T&gt; optional, delegate*&lt;Exception&gt; exceptionFactory)
+    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T&gt;(in Optional&lt;T&gt; optional, delegate*&lt;Exception&gt; exceptionFactory)
 
     where T : struct</code></pre>
   </div>
@@ -350,7 +423,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T&gt;(this in Optional&lt;T&gt; optional, Func&lt;Exception&gt; exceptionFactory)
+    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T&gt;(in Optional&lt;T&gt; optional, Func&lt;Exception&gt; exceptionFactory)
 
     where T : struct</code></pre>
   </div>
@@ -424,7 +497,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T, TException&gt;(this in Optional&lt;T&gt; optional)
+    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T, TException&gt;(in Optional&lt;T&gt; optional)
 
     where T : struct where TException : Exception, new()</code></pre>
   </div>

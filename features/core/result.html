@@ -68,13 +68,13 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="result-type">Result Type</h1>
 
-<p><a class="xref" href="../../api/DotNext.Result-1.html">Result&lt;R&gt;</a> is similar to <a href="https://doc.rust-lang.org/std/result/">std::result</a> data type in Rust programming language and allows to handle method call errors without <code>try-catch</code> block. The value can contain actual result returned from method or error in the form of exception.</p>
+<p><a class="xref" href="../../api/DotNext.Result-1.html">Result&lt;T&gt;</a> is similar to <a href="https://doc.rust-lang.org/std/result/">std::result</a> data type in Rust programming language and allows to handle method call errors without <code>try-catch</code> block. The value can contain actual result returned from method or error in the form of exception.</p>
 <p>.NET library provides <code>TryInvoke</code> extension methods to return <code>Result&lt;T&gt;</code> from popular delegate types such as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-1">Func</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter</a>. The type behaves like monad and the pipeline of calls can be constructed.</p>
 <pre><code class="lang-csharp">using DotNext;
 
 Func&lt;string, int&gt; parser = int.Parse;
 Result&lt;int&gt; result = parser.TryInvoke(&quot;42&quot;);
-if(result)  //successful
+if (result)  //successful
 {
     var i = (int) result;
 }
@@ -87,7 +87,23 @@ else
 <pre><code class="lang-csharp">using DotNext;
 
 Func&lt;string, int&gt; parser = int.Parse;
-int result = parser.TryInvoke(&quot;42&quot;).OrInvoke(error =&gt; 0);
+int result = parser.TryInvoke(&quot;42&quot;).OrInvoke(static error =&gt; 0);
+</code></pre>
+<h1 id="custom-error-codes">Custom error codes</h1>
+<p><a class="xref" href="../../api/DotNext.Result-1.html">Result&lt;T, TError&gt;</a> is an overloaded type that allows to use custom error codes instead of exceptions. The second generic parameter expects <strong>enum</strong> type that enumerates all possible error codes.</p>
+<pre><code class="lang-csharp">using DotNext;
+
+enum ErrorCode
+{
+    Success = 0,
+    InvalidInputString,
+}
+
+static Result&lt;int, ErrorCode&gt; TryParse(string input) =&gt; int.TryParse(input) ? input : new(ErrorCode.InvalidInputString);
+</code></pre>
+<p>Both types are interoperable:</p>
+<pre><code class="lang-csharp">Result&lt;int, ErrorCode&gt; result1 = TryParse(&quot;123&quot;);
+Result&lt;int&gt; result2 = result1;
 </code></pre>
 </article>
           </div>

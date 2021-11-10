@@ -521,7 +521,7 @@ internal sealed class RaftClientHandlerFactory : IHttpMessageHandlerFactory
 	public HttpMessageHandler CreateHandler(string name) =&gt; new SocketsHttpHandler { ConnectTimeout = TimeSpan.FromMilliseconds(100) };
 }
 </code></pre>
-<p>In practice, <code>ConnectTimeout</code> should be equal to <code>lowerElectionTimeout</code> configuration property. Note that <code>name</code> parameter is equal to the <code>clientHandlerName</code> configuration property when handler creation is requested by Raft implementation.</p>
+<p>In practice, <code>ConnectTimeout</code> should be equal to or less than <code>lowerElectionTimeout</code> configuration property. Note that <code>name</code> parameter is equal to the <code>clientHandlerName</code> configuration property when handler creation is requested by Raft implementation.</p>
 <h3 id="redirection-to-leader">Redirection to Leader</h3>
 <p>Client interaction requires automatic detection of a leader node. Cluster Development Suite provides a way to automatically redirect requests to the leader node if it was originally received by a follower node. The redirection is organized with help of <em>307 Temporary Redirect</em> status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns <em>503 Service Unavailable</em>.</p>
 <p>Automatic redirection can be configured using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.ConfigurationExtensions.html">RedirectToLeader</a> extension method.</p>
@@ -668,6 +668,12 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>No</td>
 <td>65535</td>
 <td>The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retransmission of large blocks.</td>
+</tr>
+<tr>
+<td>ConnectTimeout</td>
+<td>No</td>
+<td>The same as <em>LowerElectionTimeout / 2</em></td>
+<td>TCP connection timeout. Must be less than or equal to <em>LowerElectionTimeout</em></td>
 </tr>
 <tr>
 <td>SslOptions</td>
