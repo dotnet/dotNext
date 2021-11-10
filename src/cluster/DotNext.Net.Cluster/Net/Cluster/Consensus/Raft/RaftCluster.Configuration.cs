@@ -167,7 +167,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public int ConnectTimeout
             {
-                get => connectTimeout ?? LowerElectionTimeout;
+                get => connectTimeout ?? (LowerElectionTimeout / 2);
                 set => connectTimeout = value;
             }
 
