@@ -630,18 +630,26 @@ public static partial class PipeExtensions
         if (length < 0L)
             throw new ArgumentOutOfRangeException(nameof(length));
 
-        for (SequencePosition consumed; length > 0L; reader.AdvanceTo(consumed))
+        while (length > 0L)
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
             readResult.ThrowIfCancellationRequested(reader, token);
             var buffer = readResult.Buffer;
-            if (buffer.IsEmpty)
-                throw new EndOfStreamException();
-            consumed = buffer.Start;
-            for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
+            var consumed = buffer.Start;
+            try
             {
-                bytesToConsume = Math.Min(block.Length, length.Truncate());
-                await consumer.Invoke(block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
+                if (buffer.IsEmpty)
+                    throw new EndOfStreamException();
+
+                for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
+                {
+                    bytesToConsume = Math.Min(block.Length, length.Truncate());
+                    await consumer.Invoke(block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                reader.AdvanceTo(consumed);
             }
         }
     }
@@ -688,11 +696,20 @@ public static partial class PipeExtensions
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(reader, token);
                 var buffer = readResult.Buffer;
-                if (buffer.IsEmpty)
-                    throw new EndOfStreamException();
-                var bytesToConsume = Math.Min(buffer.Length, length);
-                length -= bytesToConsume;
-                reader.AdvanceTo(buffer.GetPosition(bytesToConsume));
+                var bytesToConsume = 0L;
+
+                try
+                {
+                    if (buffer.IsEmpty)
+                        throw new EndOfStreamException();
+
+                    bytesToConsume = Math.Min(buffer.Length, length);
+                    length -= bytesToConsume;
+                }
+                finally
+                {
+                    reader.AdvanceTo(buffer.GetPosition(bytesToConsume));
+                }
             }
         }
     }
