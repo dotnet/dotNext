@@ -66,14 +66,14 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
-            tokenHolder = new(version);
+            tokenHolder = version;
             timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder);
             timeoutSource.CancelAfter(timeout);
         }
 
         if (token.CanBeCanceled)
         {
-            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? new(version));
+            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? version);
         }
     }
 

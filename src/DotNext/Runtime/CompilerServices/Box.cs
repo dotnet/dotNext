@@ -1,9 +1,39 @@
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Runtime.CompilerServices;
 
-internal sealed class Box<T>
+/// <summary>
+/// Represents container for value type.
+/// </summary>
+/// <typeparam name="T">The value type.</typeparam>
+[EditorBrowsable(EditorBrowsableState.Advanced)]
+public sealed class Box<T>
     where T : struct
 {
-    internal readonly T Value;
+    /// <summary>
+    /// Represents a value in the container.
+    /// </summary>
+    public T Value;
 
-    internal Box(T value) => Value = value;
+    /// <summary>
+    /// Boxes nullable value type.
+    /// </summary>
+    /// <param name="value">The value to be placed to the container.</param>
+    /// <returns>The boxed representation of the value; or <see langword="null"/> if <paramref name="value"/> is <see langword="null"/>.</returns>
+    [return: NotNullIfNotNull("value")]
+    public static implicit operator Box<T>?(in T? value)
+        => value.HasValue ? new() { Value = value.GetValueOrDefault() } : null;
+
+    /// <summary>
+    /// Places the value to the container.
+    /// </summary>
+    /// <param name="value">The value to be placed to the container.</param>
+    public static implicit operator Box<T>(in T value) => new() { Value = value };
+
+    /// <summary>
+    /// Converts the value in this container to string.
+    /// </summary>
+    /// <returns><see cref="Value"/> converted to the string.</returns>
+    public override string? ToString() => Value.ToString();
 }

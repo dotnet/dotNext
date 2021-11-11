@@ -1,6 +1,6 @@
-﻿using Unsafe = System.Runtime.CompilerServices.Unsafe;
+﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
-namespace DotNext.Net.Cluster.Consensus.Raft;
+using BoxedClusterMemberId = Runtime.CompilerServices.Box<ClusterMemberId>;
 
 /// <summary>
 /// Represents persistent state of local cluster member
@@ -59,6 +59,6 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask EnsureConsistencyAsync(CancellationToken token = default);
 
-    internal static bool IsVotedFor(object? lastVote, in ClusterMemberId? expected)
-        => lastVote is null || (expected.HasValue && Unsafe.Unbox<ClusterMemberId>(lastVote).Equals(expected.GetValueOrDefault()));
+    internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId? expected)
+        => lastVote is null || (expected.HasValue && lastVote.Value.Equals(expected.GetValueOrDefault()));
 }

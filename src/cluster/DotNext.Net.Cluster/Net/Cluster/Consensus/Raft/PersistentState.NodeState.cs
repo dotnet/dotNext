@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using Threading;
+using BoxedClusterMemberId = Runtime.CompilerServices.Box<ClusterMemberId>;
 
 public partial class PersistentState
 {
@@ -41,7 +42,7 @@ public partial class PersistentState
         private MemoryOwner<byte> buffer;
 
         // boxed ClusterMemberId or null if there is not last vote stored
-        private volatile object? votedFor;
+        private volatile BoxedClusterMemberId? votedFor;
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
 
         private NodeState(string fileName, MemoryAllocator<byte> allocator)
@@ -77,7 +78,7 @@ public partial class PersistentState
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
             var hasLastVote = ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]);
             if (hasLastVote)
-                votedFor = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset));
+                votedFor = new() { Value = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)) };
 
             // reopen handle in asynchronous mode
             handle.Dispose();

@@ -21,7 +21,7 @@ public class AsyncEventHub
 
         internal EventSource(int index)
         {
-            this.index = new(index);
+            this.index = index;
             source = new(this.index, TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
