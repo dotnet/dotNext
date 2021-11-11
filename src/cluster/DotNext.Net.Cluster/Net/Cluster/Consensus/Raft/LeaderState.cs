@@ -52,7 +52,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         var leaseRenewalThreshold = 0;
 
         // send heartbeat in parallel
-        foreach (var member in stateMachine.Members)
+        foreach (var member in Members)
         {
             leaseRenewalThreshold++;
 
@@ -65,7 +65,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
                 if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                taskBuffer.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).ReplicateAsync());
+                taskBuffer.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync());
             }
         }
 
@@ -111,7 +111,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             }
             catch (Exception e)
             {
-                stateMachine.Logger.LogError(e, ExceptionMessages.UnexpectedError);
+                Logger.LogError(e, ExceptionMessages.UnexpectedError);
             }
         }
 
@@ -125,11 +125,11 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             {
                 // majority of nodes accept entries with at least one entry from the current term
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
+                Logger.CommitSuccessful(commitIndex + 1, count);
             }
             else
             {
-                stateMachine.Logger.CommitFailed(quorum, commitIndex);
+                Logger.CommitFailed(quorum, commitIndex);
             }
 
             await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
@@ -137,7 +137,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         }
 
         // it is partitioned network with absolute majority, not possible to have more than one leader
-        stateMachine.MoveToFollowerState(false, term);
+        ThreadPool.UnsafeQueueUserWorkItem(MoveToFollowerStateWorkItem(false, term), preferLocal: true);
         return false;
     }
 
@@ -146,7 +146,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         using var cancellationSource = token.LinkTo(LeadershipToken);
 
         // reuse this buffer to place responses from other nodes
-        using var taskBuffer = new AsyncResultSet(stateMachine.Members.Count);
+        using var taskBuffer = new AsyncResultSet(Members.Count);
 
         for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
         {
@@ -166,7 +166,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     /// <param name="token">The toke that can be used to cancel the operation.</param>
     internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
-        foreach (var member in stateMachine.Members)
+        foreach (var member in Members)
         {
             member.NextIndex = transactionLog.LastUncommittedEntryIndex + 1;
             member.ConfigurationFingerprint = 0L;
