@@ -5,21 +5,14 @@ using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTask
 
 namespace DotNext.Threading.Tasks;
 
+using BoxedVersion = Runtime.CompilerServices.Box<short>;
+
 /// <summary>
 /// Represents base class for producer of value task.
 /// </summary>
 public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 {
     private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
-
-    private sealed class BoxedVersion
-    {
-        internal readonly short Value;
-
-        internal BoxedVersion(short value) => Value = value;
-
-        public static implicit operator BoxedVersion(short value) => new(value);
-    }
 
     private readonly Action<object?, CancellationToken> cancellationCallback;
     private readonly bool runContinuationsAsynchronously;
@@ -73,14 +66,14 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
-            tokenHolder = version;
+            tokenHolder = new(version);
             timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder);
             timeoutSource.CancelAfter(timeout);
         }
 
         if (token.CanBeCanceled)
         {
-            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? version);
+            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? new(version));
         }
     }
 

@@ -6,19 +6,13 @@ namespace DotNext.Threading;
 
 using Diagnostics;
 using static Tasks.Conversion;
+using BoxedIndex = Runtime.CompilerServices.Box<int>;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
 /// </summary>
 public class AsyncEventHub
 {
-    private sealed class BoxedIndex
-    {
-        internal readonly int Value;
-
-        internal BoxedIndex(int value) => Value = value;
-    }
-
     [StructLayout(LayoutKind.Auto)]
     private struct EventSource
     {
