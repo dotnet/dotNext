@@ -12,19 +12,31 @@ using static Tasks.Conversion;
 /// </summary>
 public class AsyncEventHub
 {
+    private sealed class BoxedIndex
+    {
+        internal readonly int Value;
+
+        internal BoxedIndex(int value) => Value = value;
+    }
+
     [StructLayout(LayoutKind.Auto)]
     private struct EventSource
     {
-        private readonly IEquatable<int> index;
+        private readonly BoxedIndex index;
         private TaskCompletionSource source;
 
         internal EventSource(int index)
         {
-            this.index = index;
+            this.index = new(index);
             source = new(this.index, TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
-        internal static int GetIndex(Task task) => (int)task.AsyncState!;
+        internal static int GetIndex(Task task)
+        {
+            Debug.Assert(task.AsyncState is BoxedIndex);
+
+            return Unsafe.As<BoxedIndex>(task.AsyncState).Value;
+        }
 
         internal readonly bool TrySignal() => source.TrySetResult();
 
