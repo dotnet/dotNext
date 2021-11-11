@@ -104,10 +104,10 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        tokenTracker.Dispose();
+        tokenTracker.Unregister(); // Dispose() cannot be used here because it's a blocking call
         tokenTracker = default;
 
-        timeoutTracker.Dispose();
+        timeoutTracker.Unregister(); // Dispose() cannot be used here because it's a blocking call
         timeoutTracker = default;
 
         if (timeoutSource is not null && !timeoutSource.TryReset())

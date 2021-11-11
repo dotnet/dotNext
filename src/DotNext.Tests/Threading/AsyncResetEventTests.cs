@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Threading
 {
+    using Diagnostics;
+
     [ExcludeFromCodeCoverage]
     public sealed class AsyncResetEventTests : Test
     {
@@ -79,6 +81,29 @@ namespace DotNext.Threading
             True(are.Set());
             True(are.Reset());
             False(await are.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        }
+
+        [Fact]
+        public static async Task RegressionIssue82()
+        {
+            using var ev = new AsyncAutoResetEvent(false);
+            var start = Timestamp.Current;
+
+            var producer = Task.Run(() =>
+            {
+                while (start.Elapsed < TimeSpan.FromSeconds(1))
+                    ev.Set();
+            });
+
+            var consumer = Task.Run(async () =>
+            {
+                while (!producer.IsCompleted)
+                    await ev.WaitAsync(TimeSpan.FromMilliseconds(1));
+            });
+
+            await producer;
+            ev.Set();
+            await consumer;
         }
     }
 }
