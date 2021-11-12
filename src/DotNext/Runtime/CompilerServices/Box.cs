@@ -29,6 +29,7 @@ public sealed class Box<T>
     /// Places the value to the container.
     /// </summary>
     /// <param name="value">The value to be placed to the container.</param>
+    /// <returns>The boxed representation of the value.</returns>
     public static implicit operator Box<T>(T value) => new() { Value = value };
 
     /// <summary>
