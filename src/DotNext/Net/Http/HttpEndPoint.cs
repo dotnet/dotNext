@@ -104,7 +104,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// </summary>
     /// <param name="other">The object to compare.</param>
     /// <returns><see langword="true"/> if this object represents the same endpoint as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(HttpEndPoint? other)
+    public bool Equals([NotNullWhen(true)] HttpEndPoint? other)
         => other is not null && string.Equals(Host, other.Host, HostNameComparison) && Port == other.Port && IsSecure == other.IsSecure && AddressFamily == other.AddressFamily;
 
     /// <summary>
