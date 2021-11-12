@@ -17,9 +17,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// <param name="uri">The absolute path to Web resource.</param>
     public HttpEndPoint(Uri uri)
         : base(uri.IdnHost, GetPort(uri, out var secure), ToAddressFamily(uri.HostNameType))
-    {
-        IsSecure = secure;
-    }
+        => IsSecure = secure;
 
     /// <summary>
     /// Initializes a new HTTP endpoint.
@@ -30,9 +28,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// <param name="family">The type of the host name.</param>
     public HttpEndPoint(string hostName, int port, bool secure, AddressFamily family = AddressFamily.Unspecified)
         : base(hostName, port, family)
-    {
-        IsSecure = secure;
-    }
+        => IsSecure = secure;
 
     /// <summary>
     /// Initializes a new HTTP endpoint.
@@ -42,9 +38,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// <param name="secure"><see langword="true"/> for HTTPS; <see langword="false"/> for HTTP.</param>
     public HttpEndPoint(IPAddress address, int port, bool secure)
         : base(address.ToString(), port, address.AddressFamily)
-    {
-        IsSecure = secure;
-    }
+        => IsSecure = secure;
 
     /// <summary>
     /// Initializes a new HTTP endpoint.
