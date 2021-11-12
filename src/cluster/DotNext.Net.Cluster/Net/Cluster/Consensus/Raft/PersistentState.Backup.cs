@@ -20,7 +20,7 @@ public partial class PersistentState
         try
         {
             archive = new(output, ZipArchiveMode.Create, true);
-            foreach (var file in location.EnumerateFiles())
+            foreach (var file in Location.EnumerateFiles())
             {
                 var entry = archive.CreateEntry(file.Name, backupCompression);
                 entry.LastWriteTime = file.LastWriteTime;

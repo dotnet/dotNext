@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -8,8 +9,111 @@ using Buffers;
 using IO;
 using IO.Log;
 
-public partial class PersistentState
+public partial class MemoryBasedStateMachine
 {
+    /*
+     * Binary format:
+     * [struct SnapshotMetadata] X 1
+     * [octet string] X 1
+     */
+    internal sealed class Snapshot : ConcurrentStorageAccess, ISnapshotReader
+    {
+        private new const string FileName = "snapshot";
+        private const string TempFileName = "snapshot.new";
+
+        private MemoryOwner<byte> metadataBuffer;
+        private SnapshotMetadata metadata;
+
+        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
+            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), SnapshotMetadata.Size, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+        {
+            metadataBuffer = manager.BufferAllocator.Invoke(SnapshotMetadata.Size, true);
+        }
+
+        // cache flag that allows to avoid expensive access to Length that can cause native call
+        internal bool IsEmpty => metadata.Index == 0L;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static FileOptions GetOptions(bool writeThrough)
+        {
+            const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.WriteThrough;
+            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
+            return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
+        }
+
+        internal void Initialize()
+        {
+            using var task = InitializeAsync();
+            task.Wait();
+        }
+
+        private async Task InitializeCoreAsync()
+        {
+            if (await RandomAccess.ReadAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false) < fileOffset)
+            {
+                metadataBuffer.Span.Clear();
+                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false);
+            }
+
+            metadata = new(metadataBuffer.Span);
+        }
+
+        internal Task InitializeAsync()
+            => FileSize >= fileOffset ? InitializeCoreAsync() : Task.CompletedTask;
+
+        private ReadOnlyMemory<byte> SerializeMetadata()
+        {
+            metadata.Format(metadataBuffer.Span);
+            return metadataBuffer.Memory;
+        }
+
+        public override async ValueTask FlushAsync(CancellationToken token = default)
+        {
+            await RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token).ConfigureAwait(false);
+            await base.FlushAsync(token).ConfigureAwait(false);
+        }
+
+        internal ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
+        {
+            metadata = new(index, timestamp, term, FileSize - fileOffset);
+            return RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token);
+        }
+
+        internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
+        {
+            // write snapshot
+            await SetWritePositionAsync(fileOffset, token).ConfigureAwait(false);
+            await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+
+            // update metadata
+            metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - fileOffset);
+        }
+
+        // optimization hint is not supported for snapshots
+        internal LogEntry Read(int sessionId)
+            => new LogEntry(GetSessionReader(sessionId), in metadata);
+
+        // cached index of the snapshotted entry
+        public ref readonly SnapshotMetadata Metadata => ref metadata;
+
+        ValueTask<IAsyncBinaryReader> ISnapshotReader.BeginReadSnapshotAsync(int sessionId, CancellationToken token)
+            => token.IsCancellationRequested ? ValueTask.FromCanceled<IAsyncBinaryReader>(token) : new(GetSessionReader(sessionId));
+
+        void ISnapshotReader.EndReadSnapshot()
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                metadataBuffer.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
     /// <summary>
     /// Represents snapshot building context.
     /// </summary>
@@ -192,4 +296,7 @@ public partial class PersistentState
 
     private SnapshotBuilder CreateSnapshotBuilder()
         => CreateSnapshotBuilder(new SnapshotBuilderContext(snapshot, bufferManager.BufferAllocator));
+
+    private protected sealed override ISnapshotReader? SnapshotReader
+        => snapshot.IsEmpty ? null : snapshot;
 }

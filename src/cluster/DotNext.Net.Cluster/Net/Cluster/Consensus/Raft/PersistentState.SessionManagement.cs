@@ -12,7 +12,7 @@ public partial class PersistentState
     /// Represents session pool that is responsible
     /// for returning a unique value in range [0..N) for each requester.
     /// </summary>
-    private abstract class SessionIdPool
+    private protected abstract class SessionIdPool
     {
         internal abstract int Take();
 
@@ -95,5 +95,5 @@ public partial class PersistentState
     }
 
     // concurrent read sessions management
-    private readonly SessionIdPool sessionManager;
+    private protected readonly SessionIdPool sessionManager;
 }

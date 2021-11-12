@@ -5,7 +5,7 @@ using static DotNext.Threading.AtomicInt64;
 
 namespace RaftNode;
 
-internal sealed class SimplePersistentState : PersistentState, ISupplier<long>
+internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier<long>
 {
     internal const string LogLocation = "logLocation";
 

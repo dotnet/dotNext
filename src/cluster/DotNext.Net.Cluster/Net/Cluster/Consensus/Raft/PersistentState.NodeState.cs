@@ -186,20 +186,36 @@ public partial class PersistentState
     }
 
     private readonly NodeState state;
-    private long lastTerm;  // term of last committed entry
 
     /// <summary>
     /// Gets the index of the last committed log entry.
     /// </summary>
-    public long LastCommittedEntryIndex => state.CommitIndex;
+    public long LastCommittedEntryIndex
+    {
+        get => state.CommitIndex;
+        private protected set => state.CommitIndex = value;
+    }
 
     /// <summary>
     /// Gets the index of the last uncommitted log entry.
     /// </summary>
-    public long LastUncommittedEntryIndex => state.LastIndex;
+    public long LastUncommittedEntryIndex
+    {
+        get => state.LastIndex;
+        private protected set => state.LastIndex = value;
+    }
 
     /// <summary>
     /// Gets the index of the last committed log entry applied to underlying state machine.
     /// </summary>
-    public long LastAppliedEntryIndex => state.LastApplied;
+    public long LastAppliedEntryIndex
+    {
+        get => state.LastApplied;
+        private protected set => state.LastApplied = value;
+    }
+
+    private protected abstract long LastTerm { get; }
+
+    private protected ValueTask PersistInternalStateAsync(CancellationToken token = default)
+        => state.FlushAsync(in NodeState.IndexesRange, token);
 }
