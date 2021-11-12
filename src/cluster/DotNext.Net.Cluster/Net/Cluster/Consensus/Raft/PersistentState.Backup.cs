@@ -61,10 +61,10 @@ public partial class PersistentState
             file.Delete();
 
         // extract files from archive
-        using var archive = new ZipArchive(backup, ZipArchiveMode.Read, true);
+        using var archive = new ZipArchive(backup, ZipArchiveMode.Read, leaveOpen: true);
         foreach (var entry in archive.Entries)
         {
-            var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true);
+            var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, useAsync: true);
             var entryStream = entry.Open();
             await using (fs.ConfigureAwait(false))
             await using (entryStream.ConfigureAwait(false))
