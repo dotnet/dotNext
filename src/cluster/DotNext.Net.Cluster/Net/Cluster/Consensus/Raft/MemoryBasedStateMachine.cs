@@ -453,9 +453,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// Applies the command represented by the log entry to the underlying database engine.
     /// </summary>
     /// <param name="entry">The entry to be applied to the state machine.</param>
-    /// <remarks>
-    /// The base method does nothing so you don't need to call base implementation.
-    /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <seealso cref="Commands.CommandInterpreter"/>
     protected abstract ValueTask ApplyAsync(LogEntry entry);

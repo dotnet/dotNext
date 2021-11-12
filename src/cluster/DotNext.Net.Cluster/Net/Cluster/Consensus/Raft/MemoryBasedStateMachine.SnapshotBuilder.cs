@@ -291,7 +291,7 @@ public partial class MemoryBasedStateMachine
     /// Creates a new snapshot builder.
     /// </summary>
     /// <param name="context">The context of the snapshot builder.</param>
-    /// <returns>The snapshot builder; or <see langword="null"/> if snapshotting is not supported.</returns>
+    /// <returns>The snapshot builder.</returns>
     protected abstract SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context);
 
     private SnapshotBuilder CreateSnapshotBuilder()
