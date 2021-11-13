@@ -1,7 +1,7 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
@@ -18,6 +18,7 @@ public class QueuedSynchronizer : Disposable
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
         private Timestamp createdAt;
+        internal object? CallerInfo; // stores information about suspended caller for debugging purposes
 
         private protected override void ResetCore()
         {
@@ -53,6 +54,7 @@ public class QueuedSynchronizer : Disposable
         {
             ReportLockDuration();
             consumedCallback?.Invoke(this);
+            CallerInfo = null;
         }
 
         private protected override void ResetCore()
@@ -82,12 +84,16 @@ public class QueuedSynchronizer : Disposable
 
     private readonly Action<double>? contentionCounter, lockDurationCounter;
     private readonly TaskCompletionSource disposeTask;
+    private readonly ThreadLocal<object?> callerInfo;
+    private nuint suspendedCallersCount;
+    private bool trackSuspendedCallers;
     private protected LinkedValueTaskCompletionSource<bool>? first;
     private LinkedValueTaskCompletionSource<bool>? last;
 
     private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        callerInfo = new(false);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -102,6 +108,64 @@ public class QueuedSynchronizer : Disposable
         get;
         private set;
     }
+
+    /// <summary>
+    /// Enables capturing information about suspended callers in DEBUG configuration.
+    /// </summary>
+    [Conditional("DEBUG")]
+    public void TrackSuspendedCallers() => trackSuspendedCallers = true;
+
+    /// <summary>
+    /// Sets caller information in DEBUG configuration.
+    /// </summary>
+    /// <remarks>
+    /// It is recommended to inject caller information immediately before calling of <c>WaitAsync</c> method.
+    /// </remarks>
+    /// <param name="information">The object that identifies the caller.</param>
+    [Conditional("DEBUG")]
+    public void SetCallerInformation(object information)
+    {
+        ArgumentNullException.ThrowIfNull(information);
+
+        callerInfo.Value = information;
+    }
+
+    /// <summary>
+    /// Gets the number of suspended callers.
+    /// </summary>
+    [CLSCompliant(false)]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public nuint SuspendedCallersCount => suspendedCallersCount;
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private IReadOnlyList<object?> GetSuspendedCallersCore()
+    {
+        if (first is null)
+            return Array.Empty<Activity?>();
+
+        var list = new List<object?>(suspendedCallersCount > int.MaxValue ? int.MaxValue : (int)suspendedCallersCount);
+        for (LinkedValueTaskCompletionSource<bool>? current = first; current is not null; current = current.Next)
+        {
+            if (current is WaitNode node)
+                list.Add(node.CallerInfo);
+        }
+
+        list.TrimExcess();
+        return list;
+    }
+
+    /// <summary>
+    /// Gets a list of suspended callers respecting their order in wait queue.
+    /// </summary>
+    /// <remarks>
+    /// This method is introduced for debugging purposes only.
+    /// </remarks>
+    /// <returns>A list of suspended callers.</returns>
+    /// <seealso cref="TrackSuspendedCallers"/>
+    [CLSCompliant(false)]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public IReadOnlyList<object?> GetSuspendedCallers()
+        => trackSuspendedCallers ? GetSuspendedCallersCore() : Array.Empty<object?>();
 
     /// <summary>
     /// Sets counter for lock contention.
@@ -130,6 +194,7 @@ public class QueuedSynchronizer : Disposable
             last = node.Previous;
 
         node.Detach();
+        suspendedCallersCount -= 1;
         return isFirst;
     }
 
@@ -138,7 +203,7 @@ public class QueuedSynchronizer : Disposable
 
     private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
 
-    private TNode EnqueueNode<TNode, TLockManager>(ValueTaskPool<TNode> pool, ref TLockManager manager, bool throwOnTimeout)
+    private TNode EnqueueNode<TNode, TLockManager>(ValueTaskPool<TNode> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
         where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -160,7 +225,10 @@ public class QueuedSynchronizer : Disposable
             last = node;
         }
 
+        suspendedCallersCount += 1;
         contentionCounter?.Invoke(1L);
+        node.CallerInfo = callerInfo;
+
         return node;
     }
 
@@ -195,11 +263,28 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
+    private object? CaptureCallerInfo()
+    {
+        var result = callerInfo.Value;
+        if (result is null)
+        {
+            result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
+        }
+        else
+        {
+            callerInfo.Value = null;
+        }
+
+        return result;
+    }
+
     private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
+
+        var callerInfo = trackSuspendedCallers ? CaptureCallerInfo() : null;
 
         if (IsDisposed || IsDisposeRequested)
             return new(DisposedTask);
@@ -216,7 +301,7 @@ public class QueuedSynchronizer : Disposable
         if (timeout == TimeSpan.Zero)
             return ValueTask.FromException(new TimeoutException());
 
-        return EnqueueNode(pool, ref manager, true).As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
+        return EnqueueNode(pool, ref manager, throwOnTimeout: true, callerInfo).As<ISupplier<TimeSpan, CancellationToken, ValueTask>>().Invoke(timeout, token);
     }
 
     private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
@@ -224,6 +309,8 @@ public class QueuedSynchronizer : Disposable
         where TManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
+
+        var callerInfo = trackSuspendedCallers ? CaptureCallerInfo() : null;
 
         if (IsDisposed || IsDisposeRequested)
             return new(GetDisposedTask<bool>());
@@ -240,7 +327,7 @@ public class QueuedSynchronizer : Disposable
         if (timeout == TimeSpan.Zero)
             return new(false);    // if timeout is zero fail fast
 
-        return EnqueueNode(pool, ref manager, false).CreateTask(timeout, token);
+        return EnqueueNode(pool, ref manager, throwOnTimeout: false, callerInfo).CreateTask(timeout, token);
     }
 
     /// <summary>
@@ -313,6 +400,7 @@ public class QueuedSynchronizer : Disposable
         {
             NotifyObjectDisposed();
             disposeTask.TrySetResult();
+            callerInfo?.Dispose();
         }
 
         base.Dispose(disposing);
