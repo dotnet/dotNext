@@ -77,3 +77,15 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 ```
 
 For more information check extension methods inside of [AsyncLockAcquisition](xref:DotNext.Threading.LockAcquisition) class.
+
+# Diagnostics
+All synchronization primitives for asynchronous code mostly derive from [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) class that exposes a set of important diagnostics counters:
+* `LockContentionCounter` allows to measure a number of lock contentions detected in the specified time period
+* `LockDurationCounter` allows to measure amount of time spend by the suspended caller in the suspended state
+
+# Debugging
+In addition to diagnostics tools, [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) and all its derived classes support a rich set of debugging tools:
+* `TrackSuspendedCallers` method allows to enable tracking information about suspended caller. This method has effect only when building project using `Debug` configuration
+* `SetCallerInformation` method allows to associate information with the caller if it will be suspended during the call of `WaitAsync`. This method has effect only when building project using `Debug` configuration
+* `GetSuspendedCallers` method allows to capture a list of all suspended callers. The method is working only if tracking is enabled via `TrackSuspendedCallers` method. Typically, this method should be used in debugger's _Watch_ window when all threads are paused
+* `SuspendedCallersCount` property allows to get a number of suspended callers in the queue. This is the only property that works in all build configurations. Therefore, you can use this property in production code to implement various optimization techniques such as yielding or throttling
