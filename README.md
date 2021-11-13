@@ -88,6 +88,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Return types of all methods of asynchronous locks now moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) and [ValueTask&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1) types
 * Together with previous change, all asynchronous locks are written on top of `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. It means that these asynchronous locks use task pooling that leads to zero allocation on the heap and low GC latency
 * Added `AsyncEventHub` synchronization primitve for asynchronous code
+* Introduced diagnostics and debugging tools for all synchronization primitives: lock contentions, information about suspended callers, et. al.
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.0.0">DotNext.IO 4.0.0</a>
 * Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
