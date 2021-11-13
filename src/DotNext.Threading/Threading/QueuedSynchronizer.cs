@@ -113,6 +113,7 @@ public class QueuedSynchronizer : Disposable
     /// Enables capturing information about suspended callers in DEBUG configuration.
     /// </summary>
     [Conditional("DEBUG")]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public void TrackSuspendedCallers() => trackSuspendedCallers = true;
 
     /// <summary>
@@ -123,6 +124,7 @@ public class QueuedSynchronizer : Disposable
     /// </remarks>
     /// <param name="information">The object that identifies the caller.</param>
     [Conditional("DEBUG")]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public void SetCallerInformation(object information)
     {
         ArgumentNullException.ThrowIfNull(information);
