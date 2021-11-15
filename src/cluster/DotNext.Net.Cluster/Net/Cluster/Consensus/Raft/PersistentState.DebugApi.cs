@@ -17,4 +17,11 @@ public partial class PersistentState
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
     public void DbgChangeLastIndex(long index) => state.LastIndex = index;
+
+    /// <summary>
+    /// Gets the number of pending WAL tasks.
+    /// </summary>
+    [CLSCompliant(false)]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public nuint WaitQueueSize => syncRoot.SuspendedCallersCount;
 }

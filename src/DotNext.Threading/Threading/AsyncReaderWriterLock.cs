@@ -32,6 +32,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         {
             ReportLockDuration();
             consumedCallback?.Invoke(this);
+            CallerInfo = null;
         }
 
         private protected override void ResetCore()

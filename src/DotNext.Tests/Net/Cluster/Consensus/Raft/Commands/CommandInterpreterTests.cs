@@ -156,7 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             }
         }
 
-        private sealed class TestPersistenceState : PersistentState
+        private sealed class TestPersistenceState : MemoryBasedStateMachine
         {
             private readonly CustomInterpreter interpreter;
 

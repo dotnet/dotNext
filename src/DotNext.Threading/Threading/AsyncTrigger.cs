@@ -225,6 +225,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         {
             ReportLockDuration();
             consumedCallback?.Invoke(this);
+            CallerInfo = null;
         }
 
         private protected override void ResetCore()

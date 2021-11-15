@@ -18,7 +18,7 @@ using IO.Log;
 [MemoryDiagnoser]
 public class PersistentStateBenchmark
 {
-    private sealed class TestPersistentState : PersistentState
+    private sealed class TestPersistentState : MemoryBasedStateMachine
     {
         internal TestPersistentState(string path, Options configuration)
             : base(path, 10, configuration)
@@ -76,7 +76,7 @@ public class PersistentStateBenchmark
     private byte[] writePayload;
     private SafeFileHandle tempFile;
 
-    private async Task PrepareForReadAsync(PersistentState.Options configuration, bool addToCache)
+    private async Task PrepareForReadAsync(MemoryBasedStateMachine.Options configuration, bool addToCache)
     {
         var state = new TestPersistentState(path, configuration);
         var bytes = new byte[PayloadSize];
@@ -92,11 +92,11 @@ public class PersistentStateBenchmark
 
     [GlobalSetup(Target = nameof(ReadPersistedLogEntriesAsync))]
     public Task PrepareForReadWithoutCacheAsync()
-        => PrepareForReadAsync(new PersistentState.Options { UseCaching = false, CompactionMode = PersistentState.CompactionMode.Background }, false);
+        => PrepareForReadAsync(new MemoryBasedStateMachine.Options { UseCaching = false, CompactionMode = MemoryBasedStateMachine.CompactionMode.Background }, false);
 
     [GlobalSetup(Target = nameof(ReadCachedLogEntriesAsync))]
     public Task PrepareForReadWithCacheAsync()
-        => PrepareForReadAsync(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background }, true);
+        => PrepareForReadAsync(new MemoryBasedStateMachine.Options { UseCaching = true, CompactionMode = MemoryBasedStateMachine.CompactionMode.Background }, true);
 
     [Benchmark]
     public async Task ReadCachedLogEntriesAsync()
@@ -106,7 +106,7 @@ public class PersistentStateBenchmark
     public async Task ReadPersistedLogEntriesAsync()
         => await state.As<IPersistentState>().ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
 
-    private void PrepareForWrite(PersistentState.Options configuration)
+    private void PrepareForWrite(MemoryBasedStateMachine.Options configuration)
     {
         var state = new TestPersistentState(path, configuration);
         writePayload = new byte[PayloadSize];
@@ -116,11 +116,11 @@ public class PersistentStateBenchmark
 
     [GlobalSetup(Target = nameof(WriteUncachedLogEntryAsync))]
     public void PrepareForWriteWithoutCache()
-        => PrepareForWrite(new PersistentState.Options { UseCaching = false, CompactionMode = PersistentState.CompactionMode.Background });
+        => PrepareForWrite(new MemoryBasedStateMachine.Options { UseCaching = false, CompactionMode = MemoryBasedStateMachine.CompactionMode.Background });
 
     [GlobalSetup(Target = nameof(WriteCachedLogEntryAsync))]
     public void PrepareForWriteWithCache()
-        => PrepareForWrite(new PersistentState.Options { UseCaching = true, CompactionMode = PersistentState.CompactionMode.Background });
+        => PrepareForWrite(new MemoryBasedStateMachine.Options { UseCaching = true, CompactionMode = MemoryBasedStateMachine.CompactionMode.Background });
 
     [IterationCleanup(Targets = new[] { nameof(WriteCachedLogEntryAsync), nameof(WriteUncachedLogEntryAsync) })]
     public void DropAddedLogEntryAsync() => state.DbgChangeLastIndex(0L);

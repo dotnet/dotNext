@@ -15,13 +15,10 @@ public partial class PersistentState
         Partition file format:
         FileName - number of partition
         Payload:
+        [struct LogEntryMetadata] X Capacity - prologue with metadata
         [octet string] X number of entries
-
-        FileName.meta - metadata table for the partition
-        Payload:
-        [struct LogEntryMetadata] X Capacity
      */
-    private sealed class Partition : ConcurrentStorageAccess
+    private protected sealed class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
         private static readonly MemoryOwner<byte> EmptyBuffer;
@@ -76,9 +73,9 @@ public partial class PersistentState
         private int ToRelativeIndex(long absoluteIndex)
             => unchecked((int)(absoluteIndex - FirstIndex));
 
-        internal bool IsHead => previous is null;
+        internal bool IsFirst => previous is null;
 
-        internal bool IsTail => next is null;
+        internal bool IsLast => next is null;
 
         internal Partition? Next => next;
 
@@ -114,11 +111,18 @@ public partial class PersistentState
             next = previous = null;
         }
 
-        internal void DetachAncestor()
+        internal void DetachAscendant()
         {
             if (previous is not null)
                 previous.next = null;
             previous = null;
+        }
+
+        internal void DetachDescendant()
+        {
+            if (next is not null)
+                next.previous = null;
+            next = null;
         }
 
         internal bool Contains(long recordIndex)
@@ -258,7 +262,8 @@ public partial class PersistentState
             WriteMetadata(index, LogEntryMetadata.Create(entry, offset, writer.WritePosition - offset));
         }
 
-        internal override unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+        internal unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+            where TEntry : notnull, IRaftLogEntry
         {
             // write operation always expects absolute index so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);
@@ -292,102 +297,6 @@ public partial class PersistentState
         }
     }
 
-    /*
-     * Binary format:
-     * [struct SnapshotMetadata] X 1
-     * [octet string] X 1
-     */
-    internal sealed class Snapshot : ConcurrentStorageAccess
-    {
-        private new const string FileName = "snapshot";
-        private const string TempFileName = "snapshot.new";
-
-        private MemoryOwner<byte> metadataBuffer;
-        private SnapshotMetadata metadata;
-
-        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
-            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), SnapshotMetadata.Size, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
-        {
-            metadataBuffer = manager.BufferAllocator.Invoke(SnapshotMetadata.Size, true);
-        }
-
-        // cache flag that allows to avoid expensive access to Length that can cause native call
-        internal bool IsEmpty => metadata.Index == 0L;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static FileOptions GetOptions(bool writeThrough)
-        {
-            const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.WriteThrough;
-            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
-            return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
-        }
-
-        internal void Initialize()
-        {
-            using var task = InitializeAsync();
-            task.Wait();
-        }
-
-        private async Task InitializeCoreAsync()
-        {
-            if (await RandomAccess.ReadAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false) < fileOffset)
-            {
-                metadataBuffer.Span.Clear();
-                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false);
-            }
-
-            metadata = new(metadataBuffer.Span);
-        }
-
-        internal Task InitializeAsync()
-            => FileSize >= fileOffset ? InitializeCoreAsync() : Task.CompletedTask;
-
-        private ReadOnlyMemory<byte> SerializeMetadata()
-        {
-            metadata.Format(metadataBuffer.Span);
-            return metadataBuffer.Memory;
-        }
-
-        public override async ValueTask FlushAsync(CancellationToken token = default)
-        {
-            await RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token).ConfigureAwait(false);
-            await base.FlushAsync(token).ConfigureAwait(false);
-        }
-
-        internal ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
-        {
-            metadata = new(index, timestamp, term, FileSize - fileOffset);
-            return RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token);
-        }
-
-        internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
-        {
-            // write snapshot
-            await SetWritePositionAsync(fileOffset, token).ConfigureAwait(false);
-            await entry.WriteToAsync(writer, token).ConfigureAwait(false);
-
-            // update metadata
-            metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - fileOffset);
-        }
-
-        // optimization hint is not supported for snapshots
-        internal LogEntry Read(int sessionId)
-            => new LogEntry(GetSessionReader(sessionId), in metadata);
-
-        // cached index of the snapshotted entry
-        internal ref readonly SnapshotMetadata Metadata => ref metadata;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                metadataBuffer.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-    }
-
     /// <summary>
     /// Indicates that the log entry doesn't have a partition.
     /// </summary>
@@ -403,7 +312,7 @@ public partial class PersistentState
         public long Index { get; }
     }
 
-    private readonly int recordsPerPartition;
+    private protected readonly int recordsPerPartition;
 
     // Maintaining efficient data structure for a collection of partitions with the following characteristics:
     // 1. Committed partitions must be removed from the head of the list
@@ -414,12 +323,21 @@ public partial class PersistentState
     // concurrency with the thread that is adding new partitions
     // Under the hood, this is simply a sorted linked list
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed as a part of the linked list")]
-    private Partition? head, tail;
+    private protected Partition? FirstPartition
+    {
+        get;
+        private set;
+    }
+
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed as a part of the linked list")]
+    private protected Partition? LastPartition
+    {
+        get;
+        private set;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
-
-    private bool HasPartitions => tail is not null;
 
     private partial Partition CreatePartition(long partitionNumber);
 
@@ -429,16 +347,16 @@ public partial class PersistentState
     {
         var partitionNumber = PartitionOf(recordIndex);
 
-        if (tail is null)
+        if (LastPartition is null)
         {
-            Debug.Assert(head is null);
+            Debug.Assert(FirstPartition is null);
             Debug.Assert(partition is null);
-            head = tail = partition = CreatePartition(partitionNumber);
+            FirstPartition = LastPartition = partition = CreatePartition(partitionNumber);
             goto exit;
         }
 
-        Debug.Assert(head is not null);
-        partition ??= tail;
+        Debug.Assert(FirstPartition is not null);
+        partition ??= LastPartition;
 
         for (int previous = 0, current; ; previous = current)
         {
@@ -452,9 +370,9 @@ public partial class PersistentState
                     }
 
                     // nothing on the right side, create new tail
-                    if (partition.IsTail)
+                    if (partition.IsLast)
                     {
-                        tail = partition = Append(partitionNumber, partition);
+                        LastPartition = partition = Append(partitionNumber, partition);
                         goto exit;
                     }
 
@@ -468,9 +386,9 @@ public partial class PersistentState
                     }
 
                     // nothing on the left side, create new head
-                    if (partition.IsHead)
+                    if (partition.IsFirst)
                     {
-                        head = partition = Prepend(partitionNumber, partition);
+                        FirstPartition = partition = Prepend(partitionNumber, partition);
                         goto exit;
                     }
 
@@ -503,7 +421,7 @@ public partial class PersistentState
 
     private Partition? TryGetPartition(long partitionNumber)
     {
-        Partition? result = tail;
+        Partition? result = LastPartition;
         if (result is null)
             goto exit;
 
@@ -512,7 +430,7 @@ public partial class PersistentState
             switch (current = partitionNumber.CompareTo(result.PartitionNumber))
             {
                 case > 0:
-                    if (previous < 0 || result.IsTail)
+                    if (previous < 0 || result.IsLast)
                     {
                         result = null;
                         goto exit;
@@ -521,7 +439,7 @@ public partial class PersistentState
                     result = result.Next;
                     break;
                 case < 0:
-                    if (previous > 0 || result.IsHead)
+                    if (previous > 0 || result.IsFirst)
                     {
                         result = null;
                         goto exit;
@@ -541,20 +459,20 @@ public partial class PersistentState
     }
 
     // during reads the index is growing monothonically
-    private bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
+    private protected bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
     {
         if (partition is not null && partition.Contains(recordIndex))
             goto success;
 
-        if (tail is null)
+        if (LastPartition is null)
         {
-            Debug.Assert(head is null);
+            Debug.Assert(FirstPartition is null);
             Debug.Assert(partition is null);
             goto fail;
         }
 
-        Debug.Assert(head is not null);
-        partition ??= tail;
+        Debug.Assert(LastPartition is not null);
+        partition ??= LastPartition;
 
         var partitionNumber = PartitionOf(recordIndex);
 
@@ -563,13 +481,13 @@ public partial class PersistentState
             switch (current = partitionNumber.CompareTo(partition.PartitionNumber))
             {
                 case > 0:
-                    if (previous < 0 || partition.IsTail)
+                    if (previous < 0 || partition.IsLast)
                         goto fail;
 
                     partition = partition.Next;
                     break;
                 case < 0:
-                    if (previous > 0 || partition.IsHead)
+                    if (previous > 0 || partition.IsFirst)
                         goto fail;
 
                     partition = partition.Previous;
@@ -595,29 +513,29 @@ public partial class PersistentState
         File.Delete(fileName);
     }
 
-    // this method should be called for detached partition head only
-    private static void DeletePartitions(Partition? current)
+    // this method should be called for detached partition only
+    private protected static void DeletePartitions(Partition? head)
     {
-        for (Partition? next; current is not null; current = next)
+        for (Partition? next; head is not null; head = next)
         {
-            next = current.Next;
-            DeletePartition(current);
+            next = head.Next;
+            DeletePartition(head);
         }
     }
 
-    private Partition? DetachPartitions(long upperBoundIndex)
+    private protected Partition? DetachPartitions(long upperBoundIndex)
     {
-        Partition? result = head, current;
+        Partition? result = FirstPartition, current;
         for (current = result; current is not null && current.LastIndex <= upperBoundIndex; current = current.Next);
 
         if (current is null)
         {
-            head = tail = null;
+            FirstPartition = LastPartition = null;
         }
         else
         {
-            current.DetachAncestor();
-            head = current;
+            current.DetachAscendant();
+            FirstPartition = current;
         }
 
         return result;
@@ -625,7 +543,7 @@ public partial class PersistentState
 
     private void InvalidatePartitions(long upToIndex)
     {
-        for (Partition? partition = tail; partition is not null && partition.LastIndex >= upToIndex; partition = partition.Previous)
+        for (Partition? partition = LastPartition; partition is not null && partition.LastIndex >= upToIndex; partition = partition.Previous)
             partition.Invalidate();
     }
 }

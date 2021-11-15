@@ -78,25 +78,25 @@ internal sealed class CandidateState : RaftState
             // current node is outdated
             if (result.Term > Term)
             {
-                stateMachine.MoveToFollowerState(false, result.Term);
+                ThreadPool.UnsafeQueueUserWorkItem(MoveToFollowerStateWorkItem(false, result.Term), preferLocal: true);
                 return;
             }
 
             switch (result.Value)
             {
                 case VotingResult.Canceled: // candidate timeout happened
-                    stateMachine.MoveToFollowerState(false);
+                    ThreadPool.UnsafeQueueUserWorkItem(MoveToFollowerStateWorkItem(false), preferLocal: true);
                     return;
                 case VotingResult.Granted:
-                    stateMachine.Logger.VoteGranted(state.Voter.EndPoint);
+                    Logger.VoteGranted(state.Voter.EndPoint);
                     votes += 1;
                     break;
                 case VotingResult.Rejected:
-                    stateMachine.Logger.VoteRejected(state.Voter.EndPoint);
+                    Logger.VoteRejected(state.Voter.EndPoint);
                     votes -= 1;
                     break;
                 case VotingResult.NotAvailable:
-                    stateMachine.Logger.MemberUnavailable(state.Voter.EndPoint);
+                    Logger.MemberUnavailable(state.Voter.EndPoint);
                     votes -= 1;
                     break;
             }
@@ -106,11 +106,12 @@ internal sealed class CandidateState : RaftState
                 localMember = state.Voter;
         }
 
-        stateMachine.Logger.VotingCompleted(votes);
-        if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
-            stateMachine.MoveToFollowerState(true); // no clear consensus
-        else
-            stateMachine.MoveToLeaderState(localMember); // becomes a leader
+        Logger.VotingCompleted(votes);
+        ThreadPool.UnsafeQueueUserWorkItem(
+            votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null
+            ? MoveToFollowerStateWorkItem(true) // no clear consensus
+            : MoveToLeaderStateWorkItem(localMember),   // becomes a leader
+            preferLocal: true);
     }
 
     /// <summary>
@@ -120,12 +121,12 @@ internal sealed class CandidateState : RaftState
     /// <param name="auditTrail">The local transaction log.</param>
     internal CandidateState StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
-        stateMachine.Logger.VotingStarted(timeout);
+        Logger.VotingStarted(timeout);
         ICollection<VotingState> voters = new LinkedList<VotingState>();
         votingCancellation.CancelAfter(timeout);
 
         // start voting in parallel
-        foreach (var member in stateMachine.Members)
+        foreach (var member in Members)
             voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
         votingTask = EndVoting(voters);
         return this;

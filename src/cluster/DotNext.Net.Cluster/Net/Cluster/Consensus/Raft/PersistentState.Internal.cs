@@ -189,7 +189,7 @@ public partial class PersistentState
 
         internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
             where TLogEntry : IRaftLogEntry
-            => new(LogEntryMetadata.Create(snapshot, Size, length), index);
+            => new(LogEntryMetadata.Create(snapshot, 0L, length), index);
 
         public void Format(Span<byte> output)
         {
@@ -259,7 +259,7 @@ public partial class PersistentState
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
         }
 
-        private protected long FileSize => RandomAccess.GetLength(Handle);
+        internal long FileSize => RandomAccess.GetLength(Handle);
 
         internal void Invalidate() => version.IncrementAndGet();
 
@@ -285,9 +285,6 @@ public partial class PersistentState
                 writer.FilePosition = value;
             }
         }
-
-        internal abstract ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
-            where TEntry : notnull, IRaftLogEntry;
 
         public virtual ValueTask FlushAsync(CancellationToken token = default)
         {
