@@ -15,7 +15,7 @@ Correctness of consensus algorithm is tightly coupled with Write-Ahead Log defin
 # State Recovery
 The underlying state machine can be reconstruced at application startup using `InitializeAsync` method provided by implementation of [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. Usually, this method is called by .NEXT infrastructure automatically.
 
-[PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class exposes `ReplayAsync` method to do this manually. Read more about persistent Write-Ahead Log for Raft [here](./wal.md).
+[MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine) class exposes `ReplayAsync` method to do this manually. Read more about persistent Write-Ahead Log for Raft [here](./wal.md).
 
 # Client Interaction
 [Chapter 6](https://github.com/ongardie/dissertation/tree/master/clients) of Diego's dissertation contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in the paper. However, it offers all necessary tools for that:
@@ -356,7 +356,7 @@ Cluster Programming Suite supports messaging beween nodes through HTTP out-of-th
 Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via `LeaderRouter` property of [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface.
 
 ### Replication
-Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. By default, it is implemented as [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class or implement the interface manually. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface or implicitly via Dependency Injection. The explicit registration should be done inside of the user-defined implementation of [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of a singleton service implementing [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. `UsePersistenceEngine` extension method of [RaftClusterConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration) class can be used for that purpose.
+Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. By default, it is implemented as [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) which is suitable only for applications that doesn't have replicated state. If your application has it, then use [MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine) class or implement the interface from scratch. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface or implicitly via Dependency Injection. The explicit registration should be done inside of the user-defined implementation of [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of a singleton service implementing [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. `UsePersistenceEngine` extension method of [RaftClusterConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration) class can be used for that purpose.
 
 Information about reliable persistent state that uses non-volatile storage is located in the separated [article](./wal.md). However, its usage turns your microservice into stateful service because its state must be persisted on a disk. Consider this fact if you are using containerization technologies such as Docker or LXC.
 
@@ -500,29 +500,29 @@ It may be hard to reproduce the real cluster on developer's machine. You may wan
 # Performance
 The wire format is highly optimized for transferring log entries during the replication process over the wire. The most performance optimizations should be performed when configuring persistent Write-Ahead Log.
 
-[PersistentState]((xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState)) supports several log compaction modes. Some of them allow compaction in parallel with appending of new log entries. Read [this article](./wal.md) for more information about the available modes. _Background_ compaction provides precise control over the compaction. There are few ways to control it:
-1. If you're using `UsePersistenceEngine` extension method for registering your engine based on `PersistentState` then .NEXT infrastructure automatically detects the configured compaction mode. If it is _Background_ then it will register _compaction worker_ as a background service in ASP.NET Core. This worker provides _incremental background compaction_. You can override this behavior by implementing [ILogCompactionSupport](xref:DotNext.IO.Log.ILogCompactionSupport) in your persistence engine.
+[MemoryBasedStateMachine]((xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine)) supports several log compaction modes. Some of them allow compaction in parallel with appending of new log entries. Read [this article](./wal.md) for more information about the available modes. _Background_ compaction provides precise control over the compaction. There are few ways to control it:
+1. If you're using `UsePersistenceEngine` extension method for registering your engine based on `MemoryBasedStateMachine` then .NEXT infrastructure automatically detects the configured compaction mode. If it is _Background_ then it will register _compaction worker_ as a background service in ASP.NET Core. This worker provides _incremental background compaction_. You can override this behavior by implementing [ILogCompactionSupport](xref:DotNext.IO.Log.ILogCompactionSupport) in your persistence engine.
 1. If you're registering persistence engine in DI container manually, you need to implement background compaction worker manually using [BackgroundService](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.backgroundservice.startasync) class and call `ForceCompactionAsync` method in the overridden `ExecuteAsync` method.
 
-_Incremental background compaction_ is the default strategy when _Background_ compaction enabled. The worker just waits for the commit and checks whether `PersistentState.CompactionCount` property is greater than zero. If so, it calls `ForceCompactionAsync` with the compaction factor which is equal to 1. It provides minimal compaction of the log. As a result, the contention between the compaction worker and readers is minimal or close to zero.
+_Incremental background compaction_ is the default strategy when _Background_ compaction enabled. The worker just waits for the commit and checks whether `MemoryBasedStateMachine.CompactionCount` property is greater than zero. If so, it calls `ForceCompactionAsync` with the compaction factor which is equal to 1. It provides minimal compaction of the log. As a result, the contention between the compaction worker and readers is minimal or close to zero.
 
 # Guide: How To Implement Database
 This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.
 
-1. Derive from [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class to implement core logic related to manipulation with state machine
+For memory-based state machine:
+1. Derive from [MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine) class to implement core logic related to manipulation with state machine
     1. Override `ApplyAsync` method which contains interpretation of commands contained in log entries
-    1. Override `CreateSnapshot` method which is responsible for log compaction
+    1. Override `CreateSnapshotBuilder` method which is responsible for log compaction
     1. Expose high-level data operations declared in the derived class in the form of interface. Let's assume that its name is `IDataEngine`
-    1. Optionally override `FlushAsync` to handle notification from persistent log about the moment when the batch modification has completed
 1. Declare class that is responsible for communication with leader node using custom messages
     1. This class aggregates reference to `IDataEngine`
     1. This class encapsulates logic for messaging with leader node
     1. This class acting as controller for API exposed to external clients
-    1. Use `PersistentState.EnsureConsistencyAsync` to ensure that the node is fully synchronized with the leader node
-    1. Use `PersistentState.WaitForCommitAsync` and, optionally, `RaftCluster.ForceReplicationAsync` methods for write operations
+    1. Use `IRaftCluster.ApplyReadBarrierAsync` to ensure that the node is fully synchronized with the leader node
+    1. Use `IRaftCluster.ReplicateAsync` for write operations
 1. Expose data manipulation methods from class described above to clients using selected network transport
 1. Implement duplicates elimination logic for write requests from clients
-1. Call `ReplayAsync` method which is inherited from `PersistentState` class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.
+1. Call `ReplayAsync` method which is inherited from `MemoryBasedStateMachine` class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.
 
 `ForceReplicationAsync` method doesn't provide strong guarantees that the log entry at the specified index will be replicated and committed on return. A typical code for processing a new log entry from the client might be look like this:
 ```csharp
@@ -530,6 +530,8 @@ IRaftCluster cluster = ...;
 var term = cluster.Term;
 await cluster.ReplicateAsync(new MyLogEntry(term), Timeout.InfiniteTimeSpan, token);
 ```
+
+The same pattern is applicable to [disk-based state machine](xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine) except snapshotting except snapshotting.
 
 Designing binary format for custom log entries and interpreter for them may be hard. Examine [this](./wal.md) article to learn how to use Interpreter Framework shipped with the library.
 
