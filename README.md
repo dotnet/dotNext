@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-10-2021
+Release Date: 11-15-2021
 
 .NEXT 4.0 Release Candidate is out! Its primary focus is .NET 6 support as well as some other key features:
 * Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
