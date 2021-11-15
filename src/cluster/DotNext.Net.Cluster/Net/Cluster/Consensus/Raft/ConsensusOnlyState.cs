@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Threading;
 using static Replication.CommitEvent;
+using BoxedClusterMemberId = Runtime.CompilerServices.Box<ClusterMemberId>;
 
 /// <summary>
 /// Represents lightweight Raft node state that is suitable for distributed consensus only.
@@ -80,7 +81,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     private long term, commitIndex, lastTerm, index;
 
     // boxed ClusterMemberId or null if there is not last vote stored
-    private volatile object? lastVote;
+    private volatile BoxedClusterMemberId? lastVote;
     private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries
 
     /// <inheritdoc/>
@@ -250,9 +251,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// Gets the index of the last uncommitted log entry.
     /// </summary>
     public long LastUncommittedEntryIndex => index.VolatileRead();
-
-    /// <inheritdoc />
-    long IAuditTrail.LastAppliedEntryIndex => LastCommittedEntryIndex;
 
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync() => new(term.IncrementAndGet());

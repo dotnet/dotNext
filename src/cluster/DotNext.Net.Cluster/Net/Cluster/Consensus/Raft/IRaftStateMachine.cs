@@ -8,7 +8,7 @@ internal interface IRaftStateMachine
 
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
-    void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null);
+    void MoveToFollowerState(bool randomizeTimeout, long? newTerm);
 
     void MoveToCandidateState();
 

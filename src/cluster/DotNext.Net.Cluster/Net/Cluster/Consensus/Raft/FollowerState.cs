@@ -28,7 +28,7 @@ internal sealed class FollowerState : RaftState
         timedOut = true;
 
         // timeout happened, move to candidate state
-        stateMachine.MoveToCandidateState();
+        ThreadPool.UnsafeQueueUserWorkItem(MoveToCandidateStateWorkItem(), preferLocal: true);
     }
 
     internal FollowerState StartServing(TimeSpan timeout, CancellationToken token)
@@ -57,7 +57,7 @@ internal sealed class FollowerState : RaftState
 
     internal void Refresh()
     {
-        stateMachine.Logger.TimeoutReset();
+        Logger.TimeoutReset();
         refreshEvent.Signal();
         Metrics?.ReportHeartbeat();
     }

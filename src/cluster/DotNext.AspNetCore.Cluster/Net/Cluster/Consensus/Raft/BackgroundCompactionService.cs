@@ -3,26 +3,30 @@ using Microsoft.Extensions.Hosting;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using ILogCompactionSupport = IO.Log.ILogCompactionSupport;
+using IO.Log;
 
 [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
 internal sealed class BackgroundCompactionService : BackgroundService
 {
-    private readonly PersistentState state;
-    private readonly Func<CancellationToken, ValueTask> compaction;
+    private readonly IAuditTrail state;
+    private readonly Func<CancellationToken, ValueTask>? compaction;
 
     public BackgroundCompactionService(PersistentState state)
     {
         this.state = state;
-        compaction = state is ILogCompactionSupport support ?
-            support.ForceCompactionAsync :
-            state.ForceIncrementalCompactionAsync;
+
+        compaction = state switch
+        {
+            ILogCompactionSupport support => support.ForceCompactionAsync,
+            MemoryBasedStateMachine mbsm when mbsm.IsBackgroundCompaction => mbsm.ForceIncrementalCompactionAsync,
+            _ => null,
+        };
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
         // fail fast if log is not configured for background compaction
-        if (!state.IsBackgroundCompaction)
+        if (compaction is null)
             return;
 
         while (!token.IsCancellationRequested)

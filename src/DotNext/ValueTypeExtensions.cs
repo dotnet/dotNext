@@ -165,8 +165,8 @@ namespace DotNext
         public static double Normalize(this ulong value)
         {
             const ulong fraction = ulong.MaxValue >> (64 - 53);
-            const double exponent = 1L << 53;
-            return (fraction & value) / exponent;
+            const ulong exponent = 1UL << 53;
+            return BitConverter.UInt64BitsToDouble(fraction & value) / BitConverter.UInt64BitsToDouble(exponent);
         }
 
         /// <summary>
@@ -186,8 +186,8 @@ namespace DotNext
         public static float Normalize(this uint value)
         {
             const uint fraction = uint.MaxValue >> (32 - 24);
-            const float exponent = 1 << 24;
-            return (fraction & value) / exponent;
+            const uint exponent = 1U << 24;
+            return BitConverter.UInt32BitsToSingle(fraction & value) / BitConverter.UInt32BitsToSingle(exponent);
         }
 
         /// <summary>

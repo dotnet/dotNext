@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -8,8 +9,45 @@ using Buffers;
 using IO;
 using IO.Log;
 
-public partial class PersistentState
+public partial class MemoryBasedStateMachine
 {
+    /*
+     * Binary format:
+     * [struct SnapshotMetadata] X 1
+     * [octet string] X 1
+     */
+    internal sealed class Snapshot : ConcurrentStorageAccess
+    {
+        private new const string FileName = "snapshot";
+        private const string TempFileName = "snapshot.new";
+
+        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
+            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static FileOptions GetOptions(bool writeThrough)
+        {
+            const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.WriteThrough;
+            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
+            return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
+        }
+
+        internal async ValueTask<long> WriteAsync<TEntry>(TEntry entry, CancellationToken token = default)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            // write snapshot
+            await SetWritePositionAsync(fileOffset, token).ConfigureAwait(false);
+            await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+
+            // compute actual length of the snapshot
+            return writer.WritePosition - fileOffset;
+        }
+
+        internal IAsyncBinaryReader this[int sessionId] => GetSessionReader(sessionId);
+    }
+
     /// <summary>
     /// Represents snapshot building context.
     /// </summary>
@@ -48,9 +86,9 @@ public partial class PersistentState
             Timestamp = DateTimeOffset.UtcNow;
         }
 
-        internal abstract ValueTask InitializeAsync(int sessionId);
+        internal abstract ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata);
 
-        internal abstract ValueTask BuildAsync(long snapshotIndex);
+        internal abstract ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex);
 
         internal long Term
         {
@@ -122,13 +160,14 @@ public partial class PersistentState
         public abstract ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter;
 
-        internal sealed override ValueTask InitializeAsync(int sessionId)
-            => Context.Snapshot.IsEmpty ? ValueTask.CompletedTask : ApplyAsync(Context.Snapshot.Read(sessionId));
+        internal sealed override ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata)
+            => metadata.Index > 0L ? ApplyAsync(new(Context.Snapshot[sessionId], in metadata)) : ValueTask.CompletedTask;
 
-        internal sealed override async ValueTask BuildAsync(long snapshotIndex)
+        internal sealed override async ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex)
         {
-            await Context.Snapshot.WriteAsync(this, snapshotIndex).ConfigureAwait(false);
+            var snapshotLength = await Context.Snapshot.WriteAsync(this).ConfigureAwait(false);
             await Context.Snapshot.FlushAsync().ConfigureAwait(false);
+            return SnapshotMetadata.Create(this, snapshotIndex, snapshotLength);
         }
     }
 
@@ -162,8 +201,8 @@ public partial class PersistentState
         /// <summary>
         /// Flushes the data to the snapshot file.
         /// </summary>
-        /// <returns>The task representing asynchronous result.</returns>
-        protected virtual ValueTask FlushAsync() => ValueTask.CompletedTask;
+        /// <returns>The size of the snapshot, in bytes. It can be less than the size of the file.</returns>
+        protected virtual ValueTask<long> FlushAsync() => new(Context.Snapshot.FileSize);
 
         /// <summary>
         /// Initializes the builder.
@@ -171,15 +210,16 @@ public partial class PersistentState
         /// <returns>The task representing asynchronous result.</returns>
         protected virtual ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
-        internal sealed override ValueTask InitializeAsync(int sessionId) => InitializeAsync();
+        internal sealed override ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata)
+            => InitializeAsync();
 
-        internal sealed override async ValueTask BuildAsync(long snapshotIndex)
+        internal sealed override async ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex)
         {
-            await FlushAsync().ConfigureAwait(false);
+            var snapshotLength = await FlushAsync().ConfigureAwait(false);
 
-            // write metadata and invalidate internal buffers because the snapshot file has been modified directly
-            await Context.Snapshot.WriteMetadataAsync(snapshotIndex, Timestamp, Term).ConfigureAwait(false);
+            // invalidate internal buffers because the snapshot file has been modified directly
             Context.Snapshot.Invalidate();
+            return new SnapshotMetadata(snapshotIndex, Timestamp, Term, snapshotLength);
         }
     }
 
@@ -187,9 +227,17 @@ public partial class PersistentState
     /// Creates a new snapshot builder.
     /// </summary>
     /// <param name="context">The context of the snapshot builder.</param>
-    /// <returns>The snapshot builder; or <see langword="null"/> if snapshotting is not supported.</returns>
+    /// <returns>The snapshot builder.</returns>
     protected abstract SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context);
 
     private SnapshotBuilder CreateSnapshotBuilder()
         => CreateSnapshotBuilder(new SnapshotBuilderContext(snapshot, bufferManager.BufferAllocator));
+
+    private protected sealed override ValueTask<IAsyncBinaryReader> BeginReadSnapshotAsync(int sessionId, CancellationToken token)
+        => token.IsCancellationRequested ? ValueTask.FromCanceled<IAsyncBinaryReader>(token) : new(snapshot[sessionId]);
+
+    private protected sealed override void EndReadSnapshot(int sessionId)
+    {
+        // Nothing to do here
+    }
 }
