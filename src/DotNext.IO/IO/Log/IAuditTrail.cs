@@ -22,15 +22,6 @@ public interface IAuditTrail
     long LastUncommittedEntryIndex { get; }
 
     /// <summary>
-    /// Gets the index of the last committed log entry applied to underlying state machine.
-    /// </summary>
-    /// <remarks>
-    /// If this property makes no sense for the actual implementation of audit trail then just
-    /// return the value of <see cref="LastCommittedEntryIndex"/> property.
-    /// </remarks>
-    long LastAppliedEntryIndex { get; }
-
-    /// <summary>
     /// Waits for the commit.
     /// </summary>
     /// <param name="index">The index of the log record to be committed.</param>

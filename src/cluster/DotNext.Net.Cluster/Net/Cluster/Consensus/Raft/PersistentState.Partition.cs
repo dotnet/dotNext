@@ -111,11 +111,18 @@ public partial class PersistentState
             next = previous = null;
         }
 
-        internal void DetachAncestor()
+        internal void DetachAscendant()
         {
             if (previous is not null)
                 previous.next = null;
             previous = null;
+        }
+
+        internal void DetachDescendant()
+        {
+            if (next is not null)
+                next.previous = null;
+            next = null;
         }
 
         internal bool Contains(long recordIndex)
@@ -255,7 +262,8 @@ public partial class PersistentState
             WriteMetadata(index, LogEntryMetadata.Create(entry, offset, writer.WritePosition - offset));
         }
 
-        internal override unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+        internal unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+            where TEntry : notnull, IRaftLogEntry
         {
             // write operation always expects absolute index so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);
@@ -505,13 +513,31 @@ public partial class PersistentState
         File.Delete(fileName);
     }
 
-    // this method should be called for detached partition head only
-    private protected static void DeletePartitions(Partition? current)
+    // this method should be called for detached partition only
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected static void DeletePartitions(Partition? partition, bool isHead)
     {
-        for (Partition? next; current is not null; current = next)
+        if (isHead)
+            DeleteHeadPartition(partition);
+        else
+            DeleteTailPartition(partition);
+
+        static void DeleteHeadPartition(Partition? head)
         {
-            next = current.Next;
-            DeletePartition(current);
+            for (Partition? next; head is not null; head = next)
+            {
+                next = head.Next;
+                DeletePartition(head);
+            }
+        }
+
+        static void DeleteTailPartition(Partition? tail)
+        {
+            for (Partition? previous; tail is not null; tail = previous)
+            {
+                previous = tail.Previous;
+                DeletePartition(tail);
+            }
         }
     }
 
@@ -526,11 +552,28 @@ public partial class PersistentState
         }
         else
         {
-            current.DetachAncestor();
+            current.DetachAscendant();
             FirstPartition = current;
         }
 
         return result;
+    }
+
+    private protected void DetachTailPartition(Partition? tail)
+    {
+        if (tail is null)
+            goto exit;
+
+        if (ReferenceEquals(tail, LastPartition))
+            FirstPartition = LastPartition = null;
+
+        if (ReferenceEquals(tail, FirstPartition))
+            FirstPartition = tail.Next;
+
+        tail.DetachDescendant();
+
+    exit:
+        return;
     }
 
     private void InvalidatePartitions(long upToIndex)

@@ -16,22 +16,15 @@ public partial class MemoryBasedStateMachine
      * [struct SnapshotMetadata] X 1
      * [octet string] X 1
      */
-    internal sealed class Snapshot : ConcurrentStorageAccess, ISnapshotReader
+    internal sealed class Snapshot : ConcurrentStorageAccess
     {
         private new const string FileName = "snapshot";
         private const string TempFileName = "snapshot.new";
 
-        private MemoryOwner<byte> metadataBuffer;
-        private SnapshotMetadata metadata;
-
         internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
-            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), SnapshotMetadata.Size, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
         {
-            metadataBuffer = manager.BufferAllocator.Invoke(SnapshotMetadata.Size, true);
         }
-
-        // cache flag that allows to avoid expensive access to Length that can cause native call
-        internal bool IsEmpty => metadata.Index == 0L;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static FileOptions GetOptions(bool writeThrough)
@@ -41,77 +34,18 @@ public partial class MemoryBasedStateMachine
             return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
         }
 
-        internal void Initialize()
-        {
-            using var task = InitializeAsync();
-            task.Wait();
-        }
-
-        private async Task InitializeCoreAsync()
-        {
-            if (await RandomAccess.ReadAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false) < fileOffset)
-            {
-                metadataBuffer.Span.Clear();
-                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, 0L).ConfigureAwait(false);
-            }
-
-            metadata = new(metadataBuffer.Span);
-        }
-
-        internal Task InitializeAsync()
-            => FileSize >= fileOffset ? InitializeCoreAsync() : Task.CompletedTask;
-
-        private ReadOnlyMemory<byte> SerializeMetadata()
-        {
-            metadata.Format(metadataBuffer.Span);
-            return metadataBuffer.Memory;
-        }
-
-        public override async ValueTask FlushAsync(CancellationToken token = default)
-        {
-            await RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token).ConfigureAwait(false);
-            await base.FlushAsync(token).ConfigureAwait(false);
-        }
-
-        internal ValueTask WriteMetadataAsync(long index, DateTimeOffset timestamp, long term, CancellationToken token = default)
-        {
-            metadata = new(index, timestamp, term, FileSize - fileOffset);
-            return RandomAccess.WriteAsync(Handle, SerializeMetadata(), 0L, token);
-        }
-
-        internal override async ValueTask WriteAsync<TEntry>(TEntry entry, long index, CancellationToken token = default)
+        internal async ValueTask<long> WriteAsync<TEntry>(TEntry entry, CancellationToken token = default)
+            where TEntry : notnull, IRaftLogEntry
         {
             // write snapshot
             await SetWritePositionAsync(fileOffset, token).ConfigureAwait(false);
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
 
-            // update metadata
-            metadata = SnapshotMetadata.Create(entry, index, writer.WritePosition - fileOffset);
+            // compute actual length of the snapshot
+            return writer.WritePosition - fileOffset;
         }
 
-        // optimization hint is not supported for snapshots
-        internal LogEntry Read(int sessionId)
-            => new LogEntry(GetSessionReader(sessionId), in metadata);
-
-        // cached index of the snapshotted entry
-        public ref readonly SnapshotMetadata Metadata => ref metadata;
-
-        ValueTask<IAsyncBinaryReader> ISnapshotReader.BeginReadSnapshotAsync(int sessionId, CancellationToken token)
-            => token.IsCancellationRequested ? ValueTask.FromCanceled<IAsyncBinaryReader>(token) : new(GetSessionReader(sessionId));
-
-        void ISnapshotReader.EndReadSnapshot()
-        {
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                metadataBuffer.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
+        internal IAsyncBinaryReader this[int sessionId] => GetSessionReader(sessionId);
     }
 
     /// <summary>
@@ -152,9 +86,9 @@ public partial class MemoryBasedStateMachine
             Timestamp = DateTimeOffset.UtcNow;
         }
 
-        internal abstract ValueTask InitializeAsync(int sessionId);
+        internal abstract ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata);
 
-        internal abstract ValueTask BuildAsync(long snapshotIndex);
+        internal abstract ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex);
 
         internal long Term
         {
@@ -226,13 +160,14 @@ public partial class MemoryBasedStateMachine
         public abstract ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter;
 
-        internal sealed override ValueTask InitializeAsync(int sessionId)
-            => Context.Snapshot.IsEmpty ? ValueTask.CompletedTask : ApplyAsync(Context.Snapshot.Read(sessionId));
+        internal sealed override ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata)
+            => metadata.Index > 0L ? ApplyAsync(new(Context.Snapshot[sessionId], in metadata)) : ValueTask.CompletedTask;
 
-        internal sealed override async ValueTask BuildAsync(long snapshotIndex)
+        internal sealed override async ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex)
         {
-            await Context.Snapshot.WriteAsync(this, snapshotIndex).ConfigureAwait(false);
+            var snapshotLength = await Context.Snapshot.WriteAsync(this).ConfigureAwait(false);
             await Context.Snapshot.FlushAsync().ConfigureAwait(false);
+            return SnapshotMetadata.Create(this, snapshotIndex, snapshotLength);
         }
     }
 
@@ -266,8 +201,8 @@ public partial class MemoryBasedStateMachine
         /// <summary>
         /// Flushes the data to the snapshot file.
         /// </summary>
-        /// <returns>The task representing asynchronous result.</returns>
-        protected virtual ValueTask FlushAsync() => ValueTask.CompletedTask;
+        /// <returns>The size of the snapshot, in bytes. It can be less than the size of the file.</returns>
+        protected virtual ValueTask<long> FlushAsync() => new(Context.Snapshot.FileSize);
 
         /// <summary>
         /// Initializes the builder.
@@ -275,15 +210,16 @@ public partial class MemoryBasedStateMachine
         /// <returns>The task representing asynchronous result.</returns>
         protected virtual ValueTask InitializeAsync() => ValueTask.CompletedTask;
 
-        internal sealed override ValueTask InitializeAsync(int sessionId) => InitializeAsync();
+        internal sealed override ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata)
+            => InitializeAsync();
 
-        internal sealed override async ValueTask BuildAsync(long snapshotIndex)
+        internal sealed override async ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex)
         {
-            await FlushAsync().ConfigureAwait(false);
+            var snapshotLength = await FlushAsync().ConfigureAwait(false);
 
-            // write metadata and invalidate internal buffers because the snapshot file has been modified directly
-            await Context.Snapshot.WriteMetadataAsync(snapshotIndex, Timestamp, Term).ConfigureAwait(false);
+            // invalidate internal buffers because the snapshot file has been modified directly
             Context.Snapshot.Invalidate();
+            return new SnapshotMetadata(snapshotIndex, Timestamp, Term, snapshotLength);
         }
     }
 
@@ -297,6 +233,11 @@ public partial class MemoryBasedStateMachine
     private SnapshotBuilder CreateSnapshotBuilder()
         => CreateSnapshotBuilder(new SnapshotBuilderContext(snapshot, bufferManager.BufferAllocator));
 
-    private protected sealed override ISnapshotReader? SnapshotReader
-        => snapshot.IsEmpty ? null : snapshot;
+    private protected sealed override ValueTask<IAsyncBinaryReader> BeginReadSnapshotAsync(int sessionId, CancellationToken token)
+        => token.IsCancellationRequested ? ValueTask.FromCanceled<IAsyncBinaryReader>(token) : new(snapshot[sessionId]);
+
+    private protected sealed override void EndReadSnapshot(int sessionId)
+    {
+        // Nothing to do here
+    }
 }

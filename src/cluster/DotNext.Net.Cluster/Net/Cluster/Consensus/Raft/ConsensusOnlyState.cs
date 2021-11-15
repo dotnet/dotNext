@@ -252,9 +252,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// </summary>
     public long LastUncommittedEntryIndex => index.VolatileRead();
 
-    /// <inheritdoc />
-    long IAuditTrail.LastAppliedEntryIndex => LastCommittedEntryIndex;
-
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync() => new(term.IncrementAndGet());
 

@@ -57,6 +57,17 @@ public partial class PersistentState
             index = -metadata.Index;
         }
 
+        // for snapshot
+        internal LogEntry(in SnapshotMetadata metadata)
+        {
+            Debug.Assert(metadata.Index > 0L);
+
+            this.metadata = metadata.RecordMetadata;
+            content = null;
+            buffer = ReadOnlyMemory<byte>.Empty;
+            index = -metadata.Index;
+        }
+
         internal static LogEntry Initial => new();
 
         internal long? SnapshotIndex

@@ -8,6 +8,9 @@ using static Threading.AtomicInt64;
 /// <summary>
 /// Represents memory-based state machine with snapshotting support.
 /// </summary>
+/// Memory-based state machine keeps its state in the memory when the program is running.
+/// However, the state can be easily recovered by interprting committed log entries and the snapshot
+/// which are persisted on the disk.
 /// <remarks>
 /// The layout of the audit trail file system:
 /// <list type="table">
@@ -36,17 +39,17 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     private long lastTerm;  // term of last committed entry, volatile
 
-    // writer for this field must have exclusive async lock
+    // write to this field must be protected with exclusive async lock
     private Snapshot snapshot;
 
     /// <summary>
-    /// Initializes a new persistent audit trail.
+    /// Initializes a new memory-based state machine.
     /// </summary>
     /// <param name="path">The path to the folder to be used by audit trail.</param>
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-    protected MemoryBasedStateMachine(DirectoryInfo path, int recordsPerPartition, Options? configuration)
+    protected MemoryBasedStateMachine(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
         : base(path, recordsPerPartition, configuration ??= new())
     {
         compaction = configuration.CompactionMode;
@@ -55,13 +58,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
         compactionCounter = ToDelegate(configuration.CompactionCounter);
 
-        // initialize snapshot
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough, initialSize: configuration.InitialPartitionSize);
-        snapshot.Initialize();
     }
 
     /// <summary>
-    /// Initializes a new persistent audit trail.
+    /// Initializes a new memory-based state machine.
     /// </summary>
     /// <param name="path">The path to the folder to be used by audit trail.</param>
     /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
@@ -91,17 +92,17 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             : throw new MissingPartitionException(upperBoundIndex);
 
         // Initialize builder with snapshot record
-        await builder.InitializeAsync(sessionId).ConfigureAwait(false);
+        await builder.InitializeAsync(sessionId, SnapshotInfo).ConfigureAwait(false);
 
         current = FirstPartition;
         Debug.Assert(current is not null);
-        for (long startIndex = snapshot.Metadata.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
+        for (long startIndex = SnapshotInfo.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
         {
             await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
         }
 
         // update counter
-        compactionCounter?.Invoke(upperBoundIndex - snapshot.Metadata.Index);
+        compactionCounter?.Invoke(upperBoundIndex - SnapshotInfo.Index);
 
         bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, ref Partition? partition)
         {
@@ -116,7 +117,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
-        => upperBoundIndex - Volatile.Read(ref snapshot).Metadata.Index >= recordsPerPartition;
+        => upperBoundIndex - SnapshotInfo.Index >= recordsPerPartition;
 
     // In case of background compaction we need to have 1 fully committed partition as a divider
     // between partitions produced during writes and partitions to be compacted.
@@ -126,7 +127,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private long GetBackgroundCompactionCount(out long snapshotIndex)
     {
-        snapshotIndex = Volatile.Read(ref snapshot).Metadata.Index;
+        snapshotIndex = SnapshotInfo.Index;
         return Math.Max(((LastAppliedEntryIndex - snapshotIndex) / recordsPerPartition) - 1L, 0L);
     }
 
@@ -216,7 +217,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 try
                 {
                     // Persist snapshot (cannot be canceled to avoid inconsistency)
-                    await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+                    await UpdateSnapshotInfoAsync(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false)).ConfigureAwait(false);
 
                     // Remove squashed partitions
                     removedHead = DetachPartitions(upperBoundIndex);
@@ -227,18 +228,19 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 }
             }
 
-            DeletePartitions(removedHead);
+            DeletePartitions(removedHead, isHead: true);
         }
     }
 
-    private protected sealed override async ValueTask<Partition?> InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
+    private protected sealed override async ValueTask InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
     {
         // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: SnapshotMetadata.Size + snapshot.Length.GetValueOrDefault()))
+        var snapshotLength = snapshot.Length.GetValueOrDefault();
+        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: snapshotLength))
         {
             tempSnapshotFile = tempSnapshot.FileName;
-            await tempSnapshot.WriteAsync(snapshot, snapshotIndex).ConfigureAwait(false);
+            snapshotLength = await tempSnapshot.WriteAsync(snapshot).ConfigureAwait(false);
             await tempSnapshot.FlushAsync().ConfigureAwait(false);
         }
 
@@ -259,16 +261,17 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
         }
 
-        Volatile.Write(ref this.snapshot, await CreateSnapshotAsync().ConfigureAwait(false));
+        this.snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough);
+        UpdateSnapshotInfo(SnapshotMetadata.Create(snapshot, snapshotIndex, snapshotLength));
 
-        // 5. Apply snapshot to the underlying state machine
+        // Apply snapshot to the underlying state machine
         LastCommittedEntryIndex = snapshotIndex;
         LastUncommittedEntryIndex = Math.Max(snapshotIndex, LastUncommittedEntryIndex);
 
         var session = sessionManager.Take();
         try
         {
-            await ApplyCoreAsync(this.snapshot.Read(session)).ConfigureAwait(false);
+            await ApplyCoreAsync(new(this.snapshot[session], in SnapshotInfo)).ConfigureAwait(false);
         }
         finally
         {
@@ -277,17 +280,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         lastTerm.VolatileWrite(snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
-        await PersistInternalStateAsync().ConfigureAwait(false);
-        await FlushAsync().ConfigureAwait(false);
+        await PersistInternalStateAsync(includeSnapshotMetadata: true).ConfigureAwait(false);
         OnCommit(1L);
-        return DetachPartitions(snapshotIndex);
-
-        async ValueTask<Snapshot> CreateSnapshotAsync()
-        {
-            var result = new Snapshot(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough);
-            await result.InitializeAsync().ConfigureAwait(false);
-            return result;
-        }
     }
 
     private protected sealed override ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -300,14 +294,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             CompactionMode.Foreground => CommitAndCompactInParallelAsync(),
             _ => CommitWithoutCompactionAsync(),
         };
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        long GetCommitIndexAndCount(in long? endIndex, out long commitIndex)
-        {
-            var startIndex = LastCommittedEntryIndex + 1L;
-            commitIndex = endIndex.HasValue ? Math.Min(LastUncommittedEntryIndex, endIndex.GetValueOrDefault()) : LastUncommittedEntryIndex;
-            return commitIndex - startIndex + 1L;
-        }
 
         async ValueTask<long> CommitAndCompactSequentiallyAsync()
         {
@@ -332,7 +318,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
 
             OnCommit(count);
-            DeletePartitions(removedHead);
+            DeletePartitions(removedHead, isHead: true);
             return count;
         }
 
@@ -345,7 +331,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
 
                 // Persist snapshot (cannot be canceled to avoid inconsistency)
-                await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+                await UpdateSnapshotInfoAsync(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false)).ConfigureAwait(false);
 
                 // Remove squashed partitions
                 removedHead = DetachPartitions(upperBoundIndex);
@@ -394,7 +380,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                     await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
 
                     // Persist snapshot (cannot be canceled to avoid inconsistency)
-                    await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false);
+                    await UpdateSnapshotInfoAsync(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false)).ConfigureAwait(false);
 
                     // Remove squashed partitions
                     removedHead = DetachPartitions(upperBoundIndex);
@@ -425,7 +411,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 if (count <= 0L)
                     return 0L;
 
-                var compactionIndex = Math.Min(LastCommittedEntryIndex, snapshot.Metadata.Index + count);
+                var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
                 LastCommittedEntryIndex = commitIndex;
                 var compaction = Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token));
                 try
@@ -444,7 +430,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
 
             OnCommit(count);
-            DeletePartitions(removedHead);
+            DeletePartitions(removedHead, isHead: true);
             return count;
         }
     }
@@ -458,12 +444,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     protected abstract ValueTask ApplyAsync(LogEntry entry);
 
     private ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
-
-    /// <summary>
-    /// Flushes the underlying data storage.
-    /// </summary>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
-    protected virtual ValueTask FlushAsync() => new();
 
     private async ValueTask ApplyAsync(int sessionId, long startIndex, CancellationToken token)
     {
@@ -481,7 +461,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 {
                     await partition.PersistCachedEntryAsync(startIndex, entry.Position, evictOnCommit).ConfigureAwait(false);
 
-                    // Flush partition if we are finished or at the last entry in it.
+                    // Flush partition if we are finished or at the last entry in it
                     if (startIndex == commitIndex || startIndex == partition.LastIndex)
                         await partition.FlushAsync().ConfigureAwait(false);
                 }
@@ -492,8 +472,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
         }
 
-        await PersistInternalStateAsync(token).ConfigureAwait(false);
-        await FlushAsync().ConfigureAwait(false);
+        await PersistInternalStateAsync(includeSnapshotMetadata: false).ConfigureAwait(false);
     }
 
     private ValueTask ApplyAsync(int sessionId, CancellationToken token)
@@ -516,12 +495,12 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             long startIndex;
 
             // 1. Apply snapshot if it not empty
-            if (!snapshot.IsEmpty)
+            if (SnapshotInfo.Index > 0L)
             {
-                entry = snapshot.Read(session);
+                entry = new(snapshot[session], in SnapshotInfo);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
                 lastTerm.VolatileWrite(entry.Term);
-                startIndex = snapshot.Metadata.Index;
+                startIndex = entry.Index;
             }
             else
             {

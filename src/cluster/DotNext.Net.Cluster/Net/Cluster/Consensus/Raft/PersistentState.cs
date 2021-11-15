@@ -15,6 +15,8 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <summary>
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
 /// </summary>
+/// <seealso cref="MemoryBasedStateMachine"/>
+/// <seealso cref="DiskBasedStateMachine"/>
 public abstract partial class PersistentState : Disposable, IPersistentState
 {
     private static readonly Predicate<PersistentState> IsConsistentPredicate;
@@ -117,19 +119,29 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
     {
         var list = bufferManager.AllocLogEntryList(length);
-        var snapshot = SnapshotReader;
         Debug.Assert(list.Length >= length);
+        var snapshotRequested = SnapshotInfo.Index > 0L && startIndex <= SnapshotInfo.Index;
 
         try
         {
             // try to read snapshot out of the loop
-            if (snapshot is not null && startIndex <= snapshot.Metadata.Index)
+            if (snapshotRequested)
             {
-                var entry = await snapshot.BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false);
-                BufferHelpers.GetReference(in list) = new(entry, in snapshot.Metadata);
+                LogEntry snapshot;
+                if (reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+                {
+                    snapshot = new(in SnapshotInfo);
+                    snapshotRequested = false;
+                }
+                else
+                {
+                    snapshot = new(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
+                }
+
+                BufferHelpers.GetReference(in list) = snapshot;
 
                 // skip squashed log entries
-                startIndex = snapshot.Metadata.Index + 1L;
+                startIndex = snapshot.Index + 1L;
                 length = 1;
             }
             else if (startIndex == 0L)
@@ -147,7 +159,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         finally
         {
             list.Dispose();
-            snapshot?.EndReadSnapshot();
+
+            if (snapshotRequested)
+                EndReadSnapshot(sessionId);
         }
     }
 
@@ -178,24 +192,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         if (LastPartition is not null)
             return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
 
-        var snapshot = SnapshotReader;
-        if (snapshot is not null)
-            return ReadSnapshotAsync(snapshot, reader, sessionId, token);
+        if (SnapshotInfo.Index > 0L)
+            return ReadSnapshotAsync(reader, sessionId, token);
 
         return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
-
-        static async ValueTask<TResult> ReadSnapshotAsync(ISnapshotReader snapshot, LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
-        {
-            var entry = new LogEntry(await snapshot.BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in snapshot.Metadata);
-            try
-            {
-                return await reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                snapshot.EndReadSnapshot();
-            }
-        }
 
         static ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
             => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
@@ -505,14 +505,15 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             {
                 if (startIndex <= state.CommitIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                removedHead = await InstallSnapshotAsync<TEntry>(entry, startIndex).ConfigureAwait(false);
+                await InstallSnapshotAsync<TEntry>(entry, startIndex).ConfigureAwait(false);
+                removedHead = DetachPartitions(startIndex);
             }
             finally
             {
                 syncRoot.Release(LockType.ExclusiveLock);
             }
 
-            DeletePartitions(removedHead);
+            DeletePartitions(removedHead, isHead: true);
         }
     }
 
@@ -734,7 +735,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// Initializes this state asynchronously.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous state of the method.</returns>
+    /// <returns>The task representing asynchronous result of the method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     public abstract Task InitializeAsync(CancellationToken token = default);
 
@@ -760,6 +761,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         while (!IsConsistent)
             await commitEvent.WaitAsync(IsConsistentPredicate, this, token).ConfigureAwait(false);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected long GetCommitIndexAndCount(in long? endIndex, out long commitIndex)
+    {
+        var startIndex = state.CommitIndex + 1L;
+        commitIndex = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
+        return commitIndex - startIndex + 1L;
     }
 
     /// <inheritdoc/>

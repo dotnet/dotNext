@@ -1,4 +1,5 @@
 ﻿using static System.Buffers.Binary.BinaryPrimitives;
+using Debug = System.Diagnostics.Debug;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -14,9 +15,10 @@ public partial class PersistentState
         8 bytes = CommitIndex
         8 bytes = LastApplied
         8 bytes = LastIndex
+        [SnapshotMetadata.Size] bytes = snapshot metadata
         8 bytes = Term
         1 byte = presence of cluster member id
-        sizeof(ClusterMemberId) = last vote
+        [ClusterMemberId.Size] bytes = last vote
      */
     private sealed class NodeState : Disposable
     {
@@ -29,14 +31,17 @@ public partial class PersistentState
         private const int CommitIndexOffset = 0;
         private const int LastAppliedOffset = CommitIndexOffset + sizeof(long);
         private const int LastIndexOffset = LastAppliedOffset + sizeof(long);
-        private const int TermOffset = LastIndexOffset + sizeof(long);
+        private const int SnapshotMetadataOffset = LastIndexOffset + sizeof(long);
+        private const int TermOffset = SnapshotMetadataOffset + SnapshotMetadata.Size;
         private const int LastVotePresenceOffset = TermOffset + sizeof(long);
         private const int LastVoteOffset = LastVotePresenceOffset + sizeof(byte);
 
-        internal static readonly Range IndexesRange = CommitIndexOffset..TermOffset,
+        internal static readonly Range IndexesRange = CommitIndexOffset..SnapshotMetadataOffset,
                                         TermRange = TermOffset..LastVotePresenceOffset,
                                         LastVoteRange = LastVotePresenceOffset.. (LastVoteOffset + ClusterMemberId.Size),
-                                        TermAndLastVoteFlagRange = TermOffset..LastVoteOffset;
+                                        TermAndLastVoteFlagRange = TermOffset..LastVoteOffset,
+                                        IndexesAndSnapshotRange = CommitIndexOffset..TermOffset,
+                                        SnapshotRange = SnapshotMetadataOffset..TermOffset;
 
         private readonly SafeFileHandle handle;
         private MemoryOwner<byte> buffer;
@@ -44,9 +49,12 @@ public partial class PersistentState
         // boxed ClusterMemberId or null if there is not last vote stored
         private volatile BoxedClusterMemberId? votedFor;
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
+        private SnapshotMetadata snapshot; // cached snapshot metadata to avoid backward writes
 
         private NodeState(string fileName, MemoryAllocator<byte> allocator)
         {
+            Debug.Assert(Capacity >= LastVoteOffset + sizeof(long));
+
             buffer = allocator.Invoke(Capacity, true);
 
             FileMode fileMode;
@@ -76,8 +84,8 @@ public partial class PersistentState
             commitIndex = ReadInt64LittleEndian(bufferSpan.Slice(CommitIndexOffset));
             lastIndex = ReadInt64LittleEndian(bufferSpan.Slice(LastIndexOffset));
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
-            var hasLastVote = ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]);
-            if (hasLastVote)
+            snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
+            if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
                 votedFor = new() { Value = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)) };
 
             // reopen handle in asynchronous mode
@@ -172,6 +180,14 @@ public partial class PersistentState
             }
         }
 
+        internal ref readonly SnapshotMetadata Snapshot => ref snapshot;
+
+        internal void UpdateSnapshotMetadata(in SnapshotMetadata metadata)
+        {
+            snapshot = metadata;
+            metadata.Format(buffer.Span.Slice(SnapshotMetadataOffset));
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -205,17 +221,17 @@ public partial class PersistentState
         private protected set => state.LastIndex = value;
     }
 
-    /// <summary>
-    /// Gets the index of the last committed log entry applied to underlying state machine.
-    /// </summary>
-    public long LastAppliedEntryIndex
+    private protected long LastAppliedEntryIndex
     {
         get => state.LastApplied;
-        private protected set => state.LastApplied = value;
+        set => state.LastApplied = value;
     }
 
     private protected abstract long LastTerm { get; }
 
-    private protected ValueTask PersistInternalStateAsync(CancellationToken token = default)
-        => state.FlushAsync(in NodeState.IndexesRange, token);
+    private protected ValueTask PersistInternalStateAsync(bool includeSnapshotMetadata)
+    {
+        ref readonly Range range = ref includeSnapshotMetadata ? ref NodeState.IndexesAndSnapshotRange : ref NodeState.IndexesRange;
+        return state.FlushAsync(in range);
+    }
 }
