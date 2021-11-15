@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class SimpleStateMachine : DiskBasedStateMachine
         {
-            private const int RecordsPerPartition = 4;
+            internal const int RecordsPerPartition = 4;
             private const int InMemoryCapacity = 3;
 
             private byte[] snapshot;
@@ -245,6 +245,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task SnapshotInstallation(bool useCaching)
+        {
+            var entries = new Int64LogEntry[SimpleStateMachine.RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new SimpleStateMachine(dir, new DiskBasedStateMachine.Options { UseCaching = useCaching }))
+            {
+                await state.AppendAsync(new LogEntryList(entries));
+                Equal(3, await state.CommitAsync(3, CancellationToken.None));
+
+                //install snapshot and erase all existing entries up to 7th (inclusive)
+                await state.AppendAsync(new Int64LogEntry(100500L, true), 7);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
             }
         }
     }
