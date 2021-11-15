@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
-    public sealed class PersistentStateTests : Test
+    public sealed class MemoryBasedStateMachineTests : Test
     {
         private sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry
         {
