@@ -513,7 +513,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 syncRoot.Release(LockType.ExclusiveLock);
             }
 
-            DeletePartitions(removedHead, isHead: true);
+            DeletePartitions(removedHead);
         }
     }
 

@@ -514,30 +514,12 @@ public partial class PersistentState
     }
 
     // this method should be called for detached partition only
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected static void DeletePartitions(Partition? partition, bool isHead)
+    private protected static void DeletePartitions(Partition? head)
     {
-        if (isHead)
-            DeleteHeadPartition(partition);
-        else
-            DeleteTailPartition(partition);
-
-        static void DeleteHeadPartition(Partition? head)
+        for (Partition? next; head is not null; head = next)
         {
-            for (Partition? next; head is not null; head = next)
-            {
-                next = head.Next;
-                DeletePartition(head);
-            }
-        }
-
-        static void DeleteTailPartition(Partition? tail)
-        {
-            for (Partition? previous; tail is not null; tail = previous)
-            {
-                previous = tail.Previous;
-                DeletePartition(tail);
-            }
+            next = head.Next;
+            DeletePartition(head);
         }
     }
 
@@ -557,23 +539,6 @@ public partial class PersistentState
         }
 
         return result;
-    }
-
-    private protected void DetachTailPartition(Partition? tail)
-    {
-        if (tail is null)
-            goto exit;
-
-        if (ReferenceEquals(tail, LastPartition))
-            FirstPartition = LastPartition = null;
-
-        if (ReferenceEquals(tail, FirstPartition))
-            FirstPartition = tail.Next;
-
-        tail.DetachDescendant();
-
-    exit:
-        return;
     }
 
     private void InvalidatePartitions(long upToIndex)

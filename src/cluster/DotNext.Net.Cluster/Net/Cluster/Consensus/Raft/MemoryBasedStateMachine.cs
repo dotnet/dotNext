@@ -228,7 +228,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 }
             }
 
-            DeletePartitions(removedHead, isHead: true);
+            DeletePartitions(removedHead);
         }
     }
 
@@ -318,7 +318,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
 
             OnCommit(count);
-            DeletePartitions(removedHead, isHead: true);
+            DeletePartitions(removedHead);
             return count;
         }
 
@@ -430,7 +430,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
 
             OnCommit(count);
-            DeletePartitions(removedHead, isHead: true);
+            DeletePartitions(removedHead);
             return count;
         }
     }

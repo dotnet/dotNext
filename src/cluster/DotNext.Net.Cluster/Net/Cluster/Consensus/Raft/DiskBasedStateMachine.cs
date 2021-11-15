@@ -50,11 +50,11 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
     private protected sealed override long LastTerm => lastTerm.VolatileRead();
 
-    private async ValueTask<Partition?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
+    private async ValueTask<long?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
     {
         var commitIndex = LastCommittedEntryIndex;
-        var syncSnapshotMetadata = false;
-        Partition? removedTail = null;
+        long? removalIndex = null;
+
         for (Partition? partition = null; startIndex <= commitIndex; LastAppliedEntryIndex = startIndex++, token.ThrowIfCancellationRequested())
         {
             if (TryGetPartition(startIndex, ref partition))
@@ -63,25 +63,20 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
                 lastTerm.VolatileWrite(entry.Term);
 
-                var filledUp = startIndex == partition.LastIndex;
-
                 // Remove log entry from the cache according to eviction policy
                 if (entry.IsBuffered)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, entry.Position, snapshotLength.HasValue).ConfigureAwait(false);
 
                     // Flush partition if we are finished or at the last entry in it
-                    if (startIndex == commitIndex || filledUp)
+                    if (startIndex == commitIndex || startIndex == partition.LastIndex)
                         await partition.FlushAsync().ConfigureAwait(false);
                 }
 
                 if (snapshotLength.HasValue)
                 {
                     UpdateSnapshotInfo(new SnapshotMetadata(startIndex, DateTimeOffset.UtcNow, entry.Term, snapshotLength.GetValueOrDefault()));
-                    syncSnapshotMetadata = true;
-
-                    if (filledUp)
-                        removedTail = partition;
+                    removalIndex = startIndex;
                 }
             }
             else
@@ -90,16 +85,16 @@ public abstract partial class DiskBasedStateMachine : PersistentState
             }
         }
 
-        await PersistInternalStateAsync(syncSnapshotMetadata).ConfigureAwait(false);
-        return removedTail;
+        await PersistInternalStateAsync(includeSnapshotMetadata: removalIndex.HasValue).ConfigureAwait(false);
+        return removalIndex;
     }
 
-    private ValueTask<Partition?> ApplyAsync(int sessionId, CancellationToken token)
+    private ValueTask<long?> ApplyAsync(int sessionId, CancellationToken token)
         => ApplyAsync(sessionId, LastAppliedEntryIndex + 1L, token);
 
     private protected sealed override async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
     {
-        Partition? removedTail;
+        Partition? removedHead;
         long count;
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
@@ -110,8 +105,8 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 return 0L;
 
             LastCommittedEntryIndex = commitIndex;
-            removedTail = await ApplyAsync(session, token).ConfigureAwait(false);
-            DetachTailPartition(removedTail);
+            var removalIndex = await ApplyAsync(session, token).ConfigureAwait(false);
+            removedHead = removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null;
         }
         finally
         {
@@ -120,7 +115,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         }
 
         OnCommit(count);
-        DeletePartitions(removedTail, isHead: false);
+        DeletePartitions(removedHead);
         return count;
     }
 
