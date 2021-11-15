@@ -138,6 +138,20 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 }
 </code></pre>
 <p>For more information check extension methods inside of <a class="xref" href="../../api/DotNext.Threading.LockAcquisition.html">AsyncLockAcquisition</a> class.</p>
+<h1 id="diagnostics">Diagnostics</h1>
+<p>All synchronization primitives for asynchronous code mostly derive from <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> class that exposes a set of important diagnostics counters:</p>
+<ul>
+<li><code>LockContentionCounter</code> allows to measure a number of lock contentions detected in the specified time period</li>
+<li><code>LockDurationCounter</code> allows to measure amount of time spend by the suspended caller in the suspended state</li>
+</ul>
+<h1 id="debugging">Debugging</h1>
+<p>In addition to diagnostics tools, <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> and all its derived classes support a rich set of debugging tools:</p>
+<ul>
+<li><code>TrackSuspendedCallers</code> method allows to enable tracking information about suspended caller. This method has effect only when building project using <code>Debug</code> configuration</li>
+<li><code>SetCallerInformation</code> method allows to associate information with the caller if it will be suspended during the call of <code>WaitAsync</code>. This method has effect only when building project using <code>Debug</code> configuration</li>
+<li><code>GetSuspendedCallers</code> method allows to capture a list of all suspended callers. The method is working only if tracking is enabled via <code>TrackSuspendedCallers</code> method. Typically, this method should be used in debugger's <em>Watch</em> window when all threads are paused</li>
+<li><code>SuspendedCallersCount</code> property allows to get a number of suspended callers in the queue. This is the only property that works in all build configurations. Therefore, you can use this property in production code to implement various optimization techniques such as yielding or throttling</li>
+</ul>
 </article>
           </div>
           
