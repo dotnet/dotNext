@@ -28,8 +28,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 values = new(InMemoryCapacity);
             }
 
-            internal long Value => values.Count == 0 ? BitConverter.ToInt64(snapshot) : values.Last();
-
             protected override async ValueTask<long?> ApplyAsync(LogEntry entry)
             {
                 var value = await entry.ToTypeAsync<long, LogEntry>();
