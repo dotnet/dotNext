@@ -265,5 +265,5 @@ public ref partial struct BufferWriterSlim<T>
     /// this method returns constructed string instance.
     /// </remarks>
     /// <returns>The textual representation of this object.</returns>
-    public override string ToString() => WrittenSpan.ToString();
+    public readonly override string ToString() => WrittenSpan.ToString();
 }
