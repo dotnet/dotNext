@@ -814,7 +814,7 @@ public static class Intrinsics
     /// <param name="obj">The object to be thrown.</param>
     /// <exception cref="RuntimeWrappedException">The exception containing wrapped <paramref name="obj"/>.</exception>
     [DoesNotReturn]
-    [DebuggerHidden]
+    [StackTraceHidden]
     public static void Throw(object obj)
     {
         Push(obj);
@@ -834,7 +834,7 @@ public static class Intrinsics
     /// <exception cref="RuntimeWrappedException">The exception containing wrapped <paramref name="obj"/>.</exception>
     /// <seealso cref="Throw(object)"/>
     [DoesNotReturn]
-    [DebuggerHidden]
+    [StackTraceHidden]
     public static Exception Error(object obj)
     {
         Push(obj);
