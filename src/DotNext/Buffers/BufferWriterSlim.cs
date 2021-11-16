@@ -134,10 +134,7 @@ public ref partial struct BufferWriterSlim<T>
             // no need to copy initial buffer
             if (newSize.HasValue)
             {
-                var newBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
-                extraBuffer.Memory.CopyTo(newBuffer.Memory);
-                extraBuffer.Dispose();
-                extraBuffer = newBuffer;
+                extraBuffer.Resize(newSize.GetValueOrDefault(), false, allocator);
             }
 
             result = extraBuffer.Span;
