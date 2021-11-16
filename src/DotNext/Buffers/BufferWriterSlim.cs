@@ -20,7 +20,7 @@ namespace DotNext.Buffers;
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
-public ref struct BufferWriterSlim<T>
+public ref partial struct BufferWriterSlim<T>
 {
     private readonly Span<T> initialBuffer;
     private readonly MemoryAllocator<T>? allocator;
@@ -118,7 +118,9 @@ public ref struct BufferWriterSlim<T>
                 extraBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
                 result = extraBuffer.Span;
                 initialBuffer.CopyTo(result);
-                initialBuffer.Clear();
+
+                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                    initialBuffer.Clear();
             }
             else
             {
@@ -237,7 +239,6 @@ public ref struct BufferWriterSlim<T>
         if (!reuseBuffer)
         {
             extraBuffer.Dispose();
-            extraBuffer = default;
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
@@ -252,6 +253,9 @@ public ref struct BufferWriterSlim<T>
     /// </summary>
     public void Dispose()
     {
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            initialBuffer.Clear();
+
         extraBuffer.Dispose();
         this = default;
     }
