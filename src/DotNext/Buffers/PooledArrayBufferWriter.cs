@@ -333,6 +333,9 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Memory<T> GetMemory(int sizeHint = 0)
     {
+        if (sizeHint < 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
         CheckAndResizeBuffer(sizeHint);
         return buffer.AsMemory(position);
     }
@@ -346,6 +349,9 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Span<T> GetSpan(int sizeHint = 0)
     {
+        if (sizeHint < 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
         CheckAndResizeBuffer(sizeHint);
         return buffer.AsSpan(position);
     }
@@ -359,6 +365,9 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public ArraySegment<T> GetArray(int sizeHint = 0)
     {
+        if (sizeHint < 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
         CheckAndResizeBuffer(sizeHint);
         return new ArraySegment<T>(buffer, position, buffer.Length - position);
     }
@@ -369,7 +378,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         ThrowIfDisposed();
 
         var count = items.Count;
-        if (count == 0)
+        if (count <= 0)
             return;
 
         CheckAndResizeBuffer(count);
