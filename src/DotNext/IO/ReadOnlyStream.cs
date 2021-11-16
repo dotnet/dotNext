@@ -27,7 +27,12 @@ internal abstract class ReadOnlyStream : Stream, IFlushable
         return Read(CreateSpan(ref result, 1)) == 1 ? result : -1;
     }
 
-    public sealed override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+    public sealed override int Read(byte[] buffer, int offset, int count)
+    {
+        ValidateBufferArguments(buffer, offset, count);
+
+        return Read(buffer.AsSpan(offset, count));
+    }
 
     public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
     {
