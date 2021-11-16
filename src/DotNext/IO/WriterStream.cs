@@ -36,7 +36,12 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
 
     public abstract override void Write(ReadOnlySpan<byte> buffer);
 
-    public sealed override void Write(byte[] buffer, int offset, int count) => Write(new ReadOnlySpan<byte>(buffer, offset, count));
+    public sealed override void Write(byte[] buffer, int offset, int count)
+    {
+        ValidateBufferArguments(buffer, offset, count);
+
+        Write(new ReadOnlySpan<byte>(buffer, offset, count));
+    }
 
     public sealed override void WriteByte(byte value) => Write(CreateReadOnlySpan(ref value, 1));
 
