@@ -2,7 +2,12 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 using Debug = System.Diagnostics.Debug;
+using FieldRef = InlineIL.FieldRef;
+using MethodRef = InlineIL.MethodRef;
+using TypeRef = InlineIL.TypeRef;
 
 namespace DotNext.Buffers;
 
@@ -19,7 +24,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     private const char Whitespace = ' ';
 
     private readonly IFormatProvider? provider;
-    private BufferWriterSlim<char> buffer;
+    private readonly BufferWriterSlim<char>.Ref buffer;
     private int count;
 
     /// <summary>
@@ -31,14 +36,12 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// <param name="provider">Optional formatting provider.</param>
     public BufferWriterSlimInterpolatedStringHandler(int literalLength, int formattedCount, ref BufferWriterSlim<char> buffer, IFormatProvider? provider = null)
     {
-        this.buffer = buffer;
+        this.buffer = new(ref buffer);
         this.provider = provider;
 
-        this.buffer.GetSpan(literalLength + formattedCount);
+        buffer.GetSpan(literalLength + formattedCount);
         count = 0;
     }
-
-    internal void InstallWriter(out BufferWriterSlim<char> output) => output = buffer;
 
     /// <summary>
     /// Gets number of written characters.
@@ -103,7 +106,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// <param name="value">The value to write.</param>
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, string? format = null)
-        => count += AppendFormatted(ref buffer, value, format, provider);
+        => count += AppendFormatted(ref buffer.Value, value, format, provider);
 
     /// <summary>
     /// Writes the specified character span to the handler.
@@ -111,7 +114,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// <param name="value">The span to write.</param>
     public void AppendFormatted(ReadOnlySpan<char> value)
     {
-        buffer.Write(value);
+        buffer.Value.Write(value);
         count += value.Length;
     }
 
@@ -126,7 +129,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             return;
         }
 
-        var span = buffer.GetSpan(alignment);
+        var span = buffer.Value.GetSpan(alignment);
         if (leftAlign)
         {
             span.Slice(value.Length, padding).Fill(Whitespace);
@@ -138,7 +141,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             value.CopyTo(span.Slice(padding));
         }
 
-        buffer.Advance(alignment);
+        buffer.Value.Advance(alignment);
         count += alignment;
     }
 
@@ -189,7 +192,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             {
                 for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
-                    var span = buffer.GetSpan(bufferSize);
+                    var span = buffer.Value.GetSpan(bufferSize);
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
                         var padding = alignment - charsWritten;
@@ -208,7 +211,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
                             span.Slice(0, padding).Fill(Whitespace);
                         }
 
-                        buffer.Advance(alignment);
+                        buffer.Value.Advance(alignment);
                         count += alignment;
                         break;
                     }
@@ -229,5 +232,5 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// Renders interpolated string.
     /// </summary>
     /// <returns>The rendered string.</returns>
-    public override string ToString() => buffer.ToString();
+    public override string ToString() => buffer.Value.ToString();
 }
