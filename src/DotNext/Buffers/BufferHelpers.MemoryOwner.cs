@@ -19,7 +19,7 @@ public static partial class BufferHelpers
         if (!owner.TryResize(newLength))
         {
             var newBuffer = allocator.Invoke(newLength, exactSize);
-            owner.Memory.CopyTo(newBuffer.Memory);
+            owner.Span.CopyTo(newBuffer.Span);
             owner.Dispose();
             owner = newBuffer;
         }
