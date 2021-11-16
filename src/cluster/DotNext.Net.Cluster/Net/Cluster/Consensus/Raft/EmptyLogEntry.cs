@@ -59,7 +59,8 @@ public readonly struct EmptyLogEntry : IRaftLogEntry
     public DateTimeOffset Timestamp { get; }
 
     /// <inheritdoc/>
-    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new();
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        => ValueTask.CompletedTask;
 
     /// <inheritdoc/>
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
