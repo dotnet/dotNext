@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers;
 
 /// <summary>
-/// Represents stack-allocated buffer builder.
+/// Represents stack-allocated buffer writer.
 /// </summary>
 /// <remarks>
 /// This type is similar to <see cref="PooledArrayBufferWriter{T}"/> and <see cref="PooledBufferWriter{T}"/>
