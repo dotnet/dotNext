@@ -702,7 +702,7 @@ public static class Span
 
     internal static bool ElementAt<T>(ReadOnlySpan<T> span, int index, [MaybeNullWhen(false)] out T element)
     {
-        if (index >= 0 && index < span.Length)
+        if ((uint)index < (uint)span.Length)
         {
             element = span[index];
             return true;
