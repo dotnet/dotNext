@@ -178,7 +178,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         completed = false;
         context = null;
         continuation = null;
-        continuationState = capturedContext = null;
+        continuationState = capturedContext = UserData = null;
     }
 
     /// <summary>
@@ -202,6 +202,15 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Gets the arbitrary data associated with this source.
+    /// </summary>
+    public object? UserData
+    {
+        get;
+        private set;
     }
 
     /// <summary>
@@ -283,9 +292,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         private protected set => completed = value;
     }
 
-    private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
+    private void PrepareTaskCore(object? userData, TimeSpan timeout, CancellationToken token)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
+
+        UserData = userData;
 
         if (timeout == TimeSpan.Zero)
         {
@@ -305,7 +316,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         return;
     }
 
-    private protected void PrepareTask(TimeSpan timeout, CancellationToken token)
+    private protected void PrepareTask(object? userData, TimeSpan timeout, CancellationToken token)
     {
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
@@ -315,7 +326,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             lock (SyncRoot)
             {
                 if (!completed)
-                    PrepareTaskCore(timeout, token);
+                    PrepareTaskCore(userData, timeout, token);
             }
         }
     }
