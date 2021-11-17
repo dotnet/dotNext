@@ -529,9 +529,9 @@ public static class Span
     /// <typeparam name="T">The type of the pointer.</typeparam>
     /// <returns>The span of contiguous memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Span<byte> AsBytes<T>(ref T value)
+    public static unsafe Span<byte> AsBytes<T>(ref T value)
         where T : unmanaged
-        => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref value, 1));
+        => MemoryMarshal.CreateSpan(ref As<T, byte>(ref value), sizeof(T));
 
     /// <summary>
     /// Converts contiguous memory identified by the specified pointer
