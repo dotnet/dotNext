@@ -20,7 +20,7 @@ namespace DotNext.Threading.Tasks;
 /// </remarks>
 /// <typeparam name="T">>The type the task result.</typeparam>
 /// <seealso cref="ValueTaskCompletionSource"/>
-public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource
+public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<T>>
 {
     private sealed class LinkedTaskCompletionSource : TaskCompletionSource<T>
     {
@@ -247,30 +247,24 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <returns>A fresh incompleted task.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
-        => CreateTask(null, timeout, token);
-
-    /// <summary>
-    /// Creates a fresh task linked with this source.
-    /// </summary>
-    /// <remarks>
-    /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
-    /// </remarks>
-    /// <param name="userData">The custom data to be associated with the current version of the task.</param>
-    /// <param name="timeout">The timeout associated with the task.</param>
-    /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-    /// <returns>A fresh incompleted task.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
-    public ValueTask<T> CreateTask(object? userData, TimeSpan timeout, CancellationToken token)
     {
-        PrepareTask(userData, timeout, token);
+        PrepareTask(timeout, token);
         return new(this, version);
     }
 
-    internal ValueTask CreateVoidTask(object? userData, TimeSpan timeout, CancellationToken token)
+    /// <inheritdoc />
+    ValueTask<T> ISupplier<TimeSpan, CancellationToken, ValueTask<T>>.Invoke(TimeSpan timeout, CancellationToken token)
+        => CreateTask(timeout, token);
+
+    internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token)
     {
-        PrepareTask(userData, timeout, token);
+        PrepareTask(timeout, token);
         return new(this, version);
     }
+
+    /// <inheritdoc />
+    ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
+        => CreateVoidTask(timeout, token);
 
     private T GetResult(short token)
     {
@@ -334,7 +328,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     public TaskCompletionSource<T> CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
         var source = new LinkedTaskCompletionSource(userData);
-        PrepareTask(userData, timeout, token);
+        PrepareTask(timeout, token);
         source.LinkTo(this, version);
         return source;
     }
