@@ -85,7 +85,6 @@ public class QueuedSynchronizer : Disposable
     private readonly Action<double>? contentionCounter, lockDurationCounter;
     private readonly TaskCompletionSource disposeTask;
     private readonly ThreadLocal<object?> callerInfo;
-    private nuint suspendedCallersCount;
     private bool trackSuspendedCallers;
     private protected LinkedValueTaskCompletionSource<bool>? first;
     private LinkedValueTaskCompletionSource<bool>? last;
@@ -132,20 +131,13 @@ public class QueuedSynchronizer : Disposable
         callerInfo.Value = information;
     }
 
-    /// <summary>
-    /// Gets the number of suspended callers.
-    /// </summary>
-    [CLSCompliant(false)]
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public nuint SuspendedCallersCount => suspendedCallersCount;
-
     [MethodImpl(MethodImplOptions.Synchronized)]
     private IReadOnlyList<object?> GetSuspendedCallersCore()
     {
         if (first is null)
             return Array.Empty<Activity?>();
 
-        var list = new List<object?>(suspendedCallersCount > int.MaxValue ? int.MaxValue : (int)suspendedCallersCount);
+        var list = new List<object?>();
         for (LinkedValueTaskCompletionSource<bool>? current = first; current is not null; current = current.Next)
         {
             if (current is WaitNode node)
@@ -196,7 +188,6 @@ public class QueuedSynchronizer : Disposable
             last = node.Previous;
 
         node.Detach();
-        suspendedCallersCount -= 1;
         return isFirst;
     }
 
@@ -227,10 +218,8 @@ public class QueuedSynchronizer : Disposable
             last = node;
         }
 
-        suspendedCallersCount += 1;
         contentionCounter?.Invoke(1L);
         node.CallerInfo = callerInfo;
-
         return node;
     }
 
