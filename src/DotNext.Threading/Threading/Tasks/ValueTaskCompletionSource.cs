@@ -16,7 +16,7 @@ using NullExceptionConstant = Generic.DefaultConst<Exception?>;
 /// about behavior of the completion source.
 /// </remarks>
 /// <seealso cref="ValueTaskCompletionSource{T}"/>
-public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTaskSource
+public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask>
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct OperationCanceledExceptionFactory : ISupplier<OperationCanceledException>
@@ -254,24 +254,14 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <returns>A fresh incompleted task.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     public ValueTask CreateTask(TimeSpan timeout, CancellationToken token)
-        => CreateTask(null, timeout, token);
-
-    /// <summary>
-    /// Creates a fresh task linked with this source.
-    /// </summary>
-    /// <remarks>
-    /// This method must be called after <see cref="ManualResetCompletionSource.Reset()"/>.
-    /// </remarks>
-    /// <param name="userData">The custom data to be associated with the current version of the task.</param>
-    /// <param name="timeout">The timeout associated with the task.</param>
-    /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-    /// <returns>A fresh incompleted task.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
-    public ValueTask CreateTask(object? userData, TimeSpan timeout, CancellationToken token)
     {
-        PrepareTask(userData, timeout, token);
+        PrepareTask(timeout, token);
         return new(this, version);
     }
+
+    /// <inheritdoc />
+    ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
+        => CreateTask(timeout, token);
 
     /// <inheritdoc />
     void IValueTaskSource.GetResult(short token)
@@ -320,7 +310,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     public TaskCompletionSource CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
         var source = new LinkedTaskCompletionSource(userData);
-        PrepareTask(userData, timeout, token);
+        PrepareTask(timeout, token);
         source.LinkTo(this, version);
         return source;
     }

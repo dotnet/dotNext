@@ -292,7 +292,7 @@ public class QueuedSynchronizer : Disposable
         if (timeout == TimeSpan.Zero)
             return ValueTask.FromException(new TimeoutException());
 
-        return EnqueueNode(pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(null, timeout, token);
+        return EnqueueNode(pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(timeout, token);
     }
 
     private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
