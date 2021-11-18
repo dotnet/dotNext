@@ -858,8 +858,11 @@ public static class Intrinsics
     }
 
     /// <summary>
-    /// Gets length of the zero-base one-dimensional array.
+    /// Gets length of the array.
     /// </summary>
+    /// <remarks>
+    /// This method supports one-dimensional as well as multi-dimensional arrays.
+    /// </remarks>
     /// <param name="array">The array object.</param>
     /// <returns>The length of the array as native unsigned integer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
