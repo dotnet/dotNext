@@ -11,35 +11,17 @@ using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribu
 /// </summary>
 public sealed class OptionalConverterFactory : JsonConverterFactory
 {
-    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated implicitly inside of CreateConverter method")]
-    private sealed class DelegatingConverter<T> : JsonConverter<Optional<T>>
-    {
-        public override void Write(Utf8JsonWriter writer, Optional<T> value, JsonSerializerOptions options)
-        {
-            if (value.IsUndefined)
-                throw new InvalidOperationException(ExceptionMessages.UndefinedValueDetected);
-
-            if (value.IsNull)
-                writer.WriteNullValue();
-            else
-                JsonSerializer.Serialize<T>(writer, value.OrDefault()!, options);
-        }
-
-        public override Optional<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => new(reader.TokenType == JsonTokenType.Null ? default : JsonSerializer.Deserialize<T>(ref reader, options));
-    }
-
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert) => typeToConvert.IsOptional();
 
     /// <inheritdoc />
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(DelegatingConverter<>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(OptionalConverter<>))]
     [RuntimeFeaturesAttribute(RuntimeGenericInstantiation = true)]
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var underlyingType = Optional.GetUnderlyingType(typeToConvert);
         return underlyingType is null ?
             null :
-            Activator.CreateInstance(typeof(DelegatingConverter<>).MakeGenericType(underlyingType)) as JsonConverter;
+            Activator.CreateInstance(typeof(OptionalConverter<>).MakeGenericType(underlyingType)) as JsonConverter;
     }
 }
