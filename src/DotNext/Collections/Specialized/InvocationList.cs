@@ -112,28 +112,12 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// </summary>
     /// <param name="d">The delegate to add.</param>
     /// <returns>The modified list of delegates.</returns>
-    public InvocationList<TDelegate> Add(TDelegate? d)
+    public InvocationList<TDelegate> Add(TDelegate? d) => d is null ? this : list switch
     {
-        InvocationList<TDelegate> result;
-        if (d is null)
-        {
-            result = this;
-        }
-        else if (list is null)
-        {
-            result = new(d);
-        }
-        else if (list is TDelegate)
-        {
-            result = new(Unsafe.As<TDelegate>(list), d);
-        }
-        else
-        {
-            result = new(Unsafe.As<TDelegate[]>(list), d);
-        }
-
-        return result;
-    }
+        null => new(d),
+        TDelegate => new(Unsafe.As<TDelegate>(list), d),
+        _ => new(Unsafe.As<TDelegate[]>(list), d),
+    };
 
     /// <summary>
     /// Removes the delegate from the list.
@@ -169,34 +153,23 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <summary>
     /// Gets the number of delegates in this list.
     /// </summary>
-    public int Count
+    public int Count => list switch
     {
-        get
-        {
-            if (list is null)
-                return 0;
-
-            if (list is TDelegate)
-                return 1;
-
-            return Unsafe.As<TDelegate[]>(list).Length;
-        }
-    }
+        null => 0,
+        TDelegate => 1,
+        _ => Unsafe.As<TDelegate[]>(list).Length,
+    };
 
     /// <summary>
     /// Combines the delegates in the list to a single delegate.
     /// </summary>
     /// <returns>A list of delegates combined as a single delegate.</returns>
-    public TDelegate? Combine()
+    public TDelegate? Combine() => list switch
     {
-        if (list is null)
-            return null;
-
-        if (list is TDelegate)
-            return Unsafe.As<TDelegate>(list);
-
-        return Delegate.Combine(Unsafe.As<TDelegate[]>(list)) as TDelegate;
-    }
+        null => null,
+        TDelegate => Unsafe.As<TDelegate>(list),
+        _ => Delegate.Combine(Unsafe.As<TDelegate[]>(list)) as TDelegate,
+    };
 
     /// <summary>
     /// Addes the delegate to the list and returns modified list.
@@ -222,16 +195,12 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <returns>The enumerator over delegates.</returns>
     public Enumerator GetEnumerator() => new(list);
 
-    private IEnumerator<TDelegate> GetEnumeratorCore()
+    private IEnumerator<TDelegate> GetEnumeratorCore() => list switch
     {
-        if (list is null)
-            return Sequence.GetEmptyEnumerator<TDelegate>();
-
-        if (list is TDelegate d)
-            return new SingletonList<TDelegate>.Enumerator(d);
-
-        return Unsafe.As<TDelegate[]>(list).As<IEnumerable<TDelegate>>().GetEnumerator();
-    }
+        null => Sequence.GetEmptyEnumerator<TDelegate>(),
+        TDelegate d => new SingletonList<TDelegate>.Enumerator(d),
+        _ => Unsafe.As<IEnumerable<TDelegate>>(list).GetEnumerator(),
+    };
 
     /// <inheritdoc />
     IEnumerator<TDelegate> IEnumerable<TDelegate>.GetEnumerator() => GetEnumeratorCore();
@@ -240,19 +209,12 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     IEnumerator IEnumerable.GetEnumerator() => GetEnumeratorCore();
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal ReadOnlySpan<TDelegate> Span
+    internal ReadOnlySpan<TDelegate> Span => list switch
     {
-        get
-        {
-            if (list is null)
-                return ReadOnlySpan<TDelegate>.Empty;
-
-            if (list is TDelegate)
-                return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list)), 1);
-
-            return Unsafe.As<TDelegate[]>(list);
-        }
-    }
+        null => ReadOnlySpan<TDelegate>.Empty,
+        TDelegate => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list)), 1),
+        _ => Unsafe.As<TDelegate[]>(list),
+    };
 }
 
 /// <summary>
