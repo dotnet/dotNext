@@ -5,11 +5,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime;
 
-internal static class PointerTypeSentinel
-{
-    internal static readonly object Instance = new();
-}
-
 /// <summary>
 /// Provides a reference to the memory location.
 /// </summary>
@@ -25,7 +20,7 @@ public readonly unsafe struct Reference<TValue>
     /*
      * if owner is null then accessor is of type delegate*<ref TValue>,
      * if owner is TValue[] then accessor is of type nint;
-     * if owner is the same as PointerTypeSentinel.Instance then accessor is of type TValue*;
+     * if owner is the same as Sentinel.Instance then accessor is of type TValue*;
      * otherwise, access is of type delegate*<object, ref TValue>.
      */
     private readonly void* accessor;
@@ -60,7 +55,7 @@ public readonly unsafe struct Reference<TValue>
     {
         Debug.Assert(pointer != null);
 
-        owner = PointerTypeSentinel.Instance;
+        owner = Sentinel.Instance;
         accessor = pointer;
     }
 
@@ -93,7 +88,7 @@ public readonly unsafe struct Reference<TValue>
             {
                 result = ref ((delegate*<ref TValue>)accessor)();
             }
-            else if (ReferenceEquals(owner, PointerTypeSentinel.Instance))
+            else if (ReferenceEquals(owner, Sentinel.Instance))
             {
                 result = ref Unsafe.AsRef<TValue>(accessor);
             }
