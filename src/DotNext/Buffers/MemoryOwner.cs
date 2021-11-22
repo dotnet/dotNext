@@ -339,12 +339,14 @@ namespace DotNext.Buffers
             switch (owner)
             {
                 case null:
+                    if (array is not null && clearBuffer)
+                        Array.Clear(array);
+
                     break;
                 case IDisposable disposable:
                     disposable.Dispose();
                     break;
-                case ArrayPool<T> pool:
-                    Debug.Assert(array is not null);
+                case ArrayPool<T> pool when array is not null:
                     pool.Return(array, clearBuffer);
                     break;
             }
