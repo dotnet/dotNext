@@ -3,4 +3,3 @@ StreamNotWritable=Stream is not writable
 DirectoryNotFound=Directory {0} doesn't exist
 WriterInReadMode=The writer is in read-only mode. Dispose active memory manager obtained from writer
 NoConsumerProvided=No actual consumer is provided
-AsyncFileExpected=The file must be opened in asynchronous mode
