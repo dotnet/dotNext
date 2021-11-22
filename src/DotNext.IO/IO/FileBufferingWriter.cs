@@ -468,7 +468,9 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private static void EndWrite(Task task)
     {
         using (task)
-            task.ConfigureAwait(false).GetAwaiter().GetResult();
+        {
+            task.Wait();
+        }
     }
 
     /// <inheritdoc/>

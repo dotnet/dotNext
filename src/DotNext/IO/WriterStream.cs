@@ -86,7 +86,9 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
     private static void EndWrite(Task task)
     {
         using (task)
-            task.ConfigureAwait(false).GetAwaiter().GetResult();
+        {
+            task.Wait();
+        }
     }
 
     public override void EndWrite(IAsyncResult ar) => EndWrite((Task)ar);
