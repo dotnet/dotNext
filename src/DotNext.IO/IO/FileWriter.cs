@@ -34,13 +34,13 @@ public partial class FileWriter : Disposable
     /// or <paramref name="bufferSize"/> is less than 16 bytes.
     /// </exception>
     /// <exception cref="ArgumentNullException"><paramref name="handle"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="fileOffset"/> is less than zero;
+    /// or <paramref name="bufferSize"/> to small.
+    /// </exception>
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
-
-        if (!handle.IsAsync)
-            throw new ArgumentException(ExceptionMessages.AsyncFileExpected, nameof(handle));
 
         if (fileOffset < 0L)
             throw new ArgumentOutOfRangeException(nameof(fileOffset));
