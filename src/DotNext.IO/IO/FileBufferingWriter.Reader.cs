@@ -44,10 +44,18 @@ public partial class FileBufferingWriter
             => source.Read(output);
 
         public override int Read(byte[] buffer, int offset, int count)
-            => source.Read(buffer, offset, count);
+        {
+            ValidateBufferArguments(buffer, offset, count);
+
+            return source.Read(buffer, offset, count);
+        }
 
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => source.BeginRead(buffer, offset, count, callback, state);
+        {
+            ValidateBufferArguments(buffer, offset, count);
+
+            return source.BeginRead(buffer, offset, count, callback, state);
+        }
 
         public override int EndRead(IAsyncResult asyncResult)
             => source.EndRead(asyncResult);
@@ -63,7 +71,11 @@ public partial class FileBufferingWriter
         public override Task FlushAsync(CancellationToken token) => source.FlushAsync(token);
 
         public override void CopyTo(Stream destination, int bufferSize)
-            => source.CopyTo(destination, bufferSize);
+        {
+            ValidateCopyToArguments(destination, bufferSize);
+
+            source.CopyTo(destination, bufferSize);
+        }
 
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
             => source.CopyToAsync(destination, bufferSize, token);
@@ -108,12 +120,6 @@ public partial class FileBufferingWriter
     {
         const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-
-        if (fileName is null || fileBackend is null)
-            return StreamSource.AsStream(buffer.Memory.Slice(0, position));
-
-        if (!useAsyncIO)
-            return new FileStream(new SafeFileHandle(fileBackend.DangerousGetHandle(), false), FileAccess.Read, fileProvider.BufferSize);
 
         return fileName is null
             ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
