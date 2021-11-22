@@ -45,9 +45,16 @@ public partial class FileBufferingWriter
         {
             var buffer = writer.buffer;
             tail = buffer.Memory.Slice(0, writer.position);
-            accessor = writer.fileBackend is null ?
-                null :
-                new ReadOnlySequenceAccessor(writer.fileBackend, segmentLength);
+            if (writer.fileBackend is null)
+            {
+                accessor = null;
+            }
+            else
+            {
+                var fs = new FileStream(new(writer.fileBackend.DangerousGetHandle(), false), FileAccess.ReadWrite, 1);
+                accessor = new(fs, segmentLength);
+            }
+
             session = writer.EnterReadMode(this);
         }
 
@@ -100,31 +107,6 @@ public partial class FileBufferingWriter
             throw new ArgumentOutOfRangeException(nameof(segmentSize));
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
-
-        fileBackend?.Flush(true);
-        return new ReadOnlySequenceSource(this, segmentSize);
-    }
-
-    /// <summary>
-    /// Gets written content in the form of <see cref="ReadOnlySequence{T}"/> asynchronously.
-    /// </summary>
-    /// <param name="segmentSize">The size of the contiguous segment of file to be mapped to memory.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The factory of <see cref="ReadOnlySequence{T}"/> instances.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="segmentSize"/> is less than or equal to zero.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask<IReadOnlySequenceSource> GetWrittenContentAsync(int segmentSize, CancellationToken token = default)
-    {
-        if (segmentSize <= 0)
-            throw new ArgumentOutOfRangeException(nameof(segmentSize));
-        if (IsReading)
-            throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
-
-        if (fileBackend is not null)
-        {
-            await PersistBufferAsync(token).ConfigureAwait(false);
-            await fileBackend.FlushAsync(token).ConfigureAwait(false);
-        }
 
         return new ReadOnlySequenceSource(this, segmentSize);
     }
