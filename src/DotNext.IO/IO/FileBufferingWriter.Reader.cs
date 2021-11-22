@@ -1,3 +1,5 @@
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
+
 namespace DotNext.IO;
 
 public partial class FileBufferingWriter
@@ -107,9 +109,15 @@ public partial class FileBufferingWriter
         const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
-        return fileBackend is null
+        if (fileName is null || fileBackend is null)
+            return StreamSource.AsStream(buffer.Memory.Slice(0, position));
+
+        if (!useAsyncIO)
+            return new FileStream(new SafeFileHandle(fileBackend.DangerousGetHandle(), false), FileAccess.Read, fileProvider.BufferSize);
+
+        return fileName is null
             ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
-            : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
+            : new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
     /// <summary>
@@ -123,10 +131,7 @@ public partial class FileBufferingWriter
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
         if (fileBackend is not null)
-        {
             PersistBuffer();
-            fileBackend.Flush(true);
-        }
 
         return new ReaderStream(this, false);
     }
@@ -144,10 +149,7 @@ public partial class FileBufferingWriter
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
         if (fileBackend is not null)
-        {
             await PersistBufferAsync(token).ConfigureAwait(false);
-            await fileBackend.FlushAsync(token).ConfigureAwait(false);
-        }
 
         return new ReaderStream(this, true);
     }
