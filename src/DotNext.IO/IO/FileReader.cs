@@ -136,7 +136,8 @@ public partial class FileReader : Disposable
     /// <see langword="true"/> if the data has been copied from the file to the internal buffer;
     /// <see langword="false"/> if no more data to read.
     /// </returns>
-    /// <exception cref="InvalidOperationException">Internal buffer has no free space.</exception>
+    /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
+    /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
@@ -147,7 +148,7 @@ public partial class FileReader : Disposable
         switch (bufferStart)
         {
             case 0 when bufferEnd == buffer.Length:
-                throw new InvalidOperationException();
+                throw new InternalBufferOverflowException();
             case > 0:
                 // compact buffer
                 buffer.Slice(bufferStart, BufferLength).CopyTo(buffer);
@@ -162,11 +163,44 @@ public partial class FileReader : Disposable
     }
 
     /// <summary>
+    /// Reads the data from the file to the underlying buffer.
+    /// </summary>
+    /// <returns>
+    /// <see langword="true"/> if the data has been copied from the file to the internal buffer;
+    /// <see langword="false"/> if no more data to read.
+    /// </returns>
+    /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
+    /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
+    public bool Read()
+    {
+        ThrowIfDisposed();
+
+        var buffer = this.buffer.Span;
+
+        switch (bufferStart)
+        {
+            case 0 when bufferEnd == buffer.Length:
+                throw new InternalBufferOverflowException();
+            case > 0:
+                // compact buffer
+                buffer.Slice(bufferStart, BufferLength).CopyTo(buffer);
+                bufferEnd -= bufferStart;
+                bufferStart = 0;
+                break;
+        }
+
+        var count = RandomAccess.Read(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd);
+        bufferEnd += count;
+        return count > 0;
+    }
+
+    /// <summary>
     /// Reads the block of the memory.
     /// </summary>
     /// <param name="output">The output buffer.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token = default)
     {
@@ -205,6 +239,45 @@ public partial class FileReader : Disposable
 
             return result;
         }
+    }
+
+    /// <summary>
+    /// Reads the block of the memory.
+    /// </summary>
+    /// <param name="output">The output buffer.</param>
+    /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
+    public int Read(Span<byte> output)
+    {
+        ThrowIfDisposed();
+
+        int count;
+
+        if (output.IsEmpty)
+        {
+            count = 0;
+        }
+        else if (HasBufferedData || output.Length < buffer.Length)
+        {
+            count = 0;
+
+            for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
+            {
+                if (!HasBufferedData && !Read())
+                    break;
+
+                Buffer.Span.CopyTo(output, out writtenCount);
+                count += writtenCount;
+                Consume(writtenCount);
+            }
+        }
+        else
+        {
+            count = RandomAccess.Read(handle, output, fileOffset);
+            fileOffset += count;
+        }
+
+        return count;
     }
 
     /// <summary>
