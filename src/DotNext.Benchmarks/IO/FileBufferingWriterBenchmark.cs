@@ -11,6 +11,7 @@ namespace DotNext.IO;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[MemoryDiagnoser]
 public class FileBufferingWriterBenchmark
 {
     private const int MemoryThreshold = 500 * 1024; // 500 KB
