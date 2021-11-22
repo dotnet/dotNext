@@ -422,7 +422,10 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
     /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count)
-        => Write(new ReadOnlySpan<byte>(buffer, offset, count));
+    {
+        ValidateBufferArguments(buffer, offset, count);
+        Write(new ReadOnlySpan<byte>(buffer, offset, count));
+    }
 
     /// <inheritdoc/>
     public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
@@ -586,7 +589,10 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <param name="destination">The stream to drain buffered contents to.</param>
     /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
     public override void CopyTo(Stream destination, int bufferSize)
-        => CopyTo<StreamConsumer>(destination, bufferSize, CancellationToken.None);
+    {
+        ValidateCopyToArguments(destination, bufferSize);
+        CopyTo<StreamConsumer>(destination, bufferSize, CancellationToken.None);
+    }
 
     /// <summary>
     /// Drains buffered content to the buffer asynchronously.
