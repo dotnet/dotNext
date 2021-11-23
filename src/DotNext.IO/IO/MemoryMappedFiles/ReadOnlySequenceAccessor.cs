@@ -88,7 +88,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         {
             if (disposing)
             {
-                manager.As<IDisposable>().Dispose();
+                ((IDisposable)manager).Dispose();
             }
         }
 
@@ -211,8 +211,10 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         return new(ptr + segment.PointerOffset, window.Length);
     }
 
+    /// <inheritdoc />
     unsafe Span<byte> IMemorySegmentProvider.GetSpan(in Segment window) => GetSpan(in window);
 
+    /// <inheritdoc />
     unsafe MemoryHandle IMemorySegmentProvider.Pin(in Segment window, int elementIndex)
         => new(Unsafe.AsPointer(ref GetSpan(in window)[elementIndex]));
 

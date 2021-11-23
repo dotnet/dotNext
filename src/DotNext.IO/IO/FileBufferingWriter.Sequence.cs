@@ -99,7 +99,7 @@ public partial class FileBufferingWriter
         {
             if (disposing)
             {
-                manager.As<IDisposable>().Dispose();
+                ((IDisposable)manager).Dispose();
             }
         }
 
