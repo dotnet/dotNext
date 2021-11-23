@@ -18,33 +18,35 @@ public class QueuedSynchronizer : Disposable
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
         private Timestamp createdAt;
-        internal object? CallerInfo; // stores information about suspended caller for debugging purposes
+        private Action<double>? lockDurationCounter;
+        private bool throwOnTimeout;
+
+        // stores information about suspended caller for debugging purposes
+        internal object? CallerInfo
+        {
+            get;
+            private set;
+        }
 
         private protected override void ResetCore()
         {
-            LockDurationCounter = null;
+            lockDurationCounter = null;
             CallerInfo = null;
             base.ResetCore();
         }
 
-        internal Action<double>? LockDurationCounter
+        internal void Initialize(bool throwOnTimeout, Action<double>? lockDurationCounter, object? callerInfo)
         {
-            private get;
-            set;
+            this.throwOnTimeout = throwOnTimeout;
+            this.lockDurationCounter = lockDurationCounter;
+            CallerInfo = callerInfo;
+            createdAt = Timestamp.Current;
         }
 
-        internal bool ThrowOnTimeout
-        {
-            private get;
-            set;
-        }
-
-        internal void ResetAge() => createdAt = Timestamp.Current;
-
-        protected sealed override Result<bool> OnTimeout() => ThrowOnTimeout ? base.OnTimeout() : false;
+        protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
 
         private void ReportLockDuration()
-            => LockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
+            => lockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
 
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<T>
@@ -204,9 +206,7 @@ public class QueuedSynchronizer : Disposable
 
         var node = pool.Get();
         manager.InitializeNode(node);
-        node.ThrowOnTimeout = throwOnTimeout;
-        node.LockDurationCounter = lockDurationCounter;
-        node.ResetAge();
+        node.Initialize(throwOnTimeout, lockDurationCounter, callerInfo);
 
         if (last is null)
         {
@@ -219,7 +219,6 @@ public class QueuedSynchronizer : Disposable
         }
 
         contentionCounter?.Invoke(1L);
-        node.CallerInfo = callerInfo;
         return node;
     }
 
