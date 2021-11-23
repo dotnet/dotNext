@@ -24,7 +24,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private object? continuationState, capturedContext;
     private ExecutionContext? context;
     private protected short version;
-    private bool completed;
+    private volatile ManualResetCompletionSourceStatus status;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
@@ -44,11 +44,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
-        if (!completed)
+        if (status == ManualResetCompletionSourceStatus.Activated)
         {
             lock (SyncRoot)
             {
-                if (!completed && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
+                if (status == ManualResetCompletionSourceStatus.Activated && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
                 {
                     if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
@@ -175,7 +175,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         version += 1;
-        completed = false;
+        status = ManualResetCompletionSourceStatus.WaitForActivation;
         context = null;
         continuation = null;
         continuationState = capturedContext = null;
@@ -214,11 +214,16 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// <inheritdoc />
     void IThreadPoolWorkItem.Execute() => AfterConsumed();
 
-    private protected void QueueAfterConsumed()
+    private protected void OnConsumed<T>()
+        where T : ManualResetCompletionSource
     {
-        if (!ThreadPool.UnsafeQueueUserWorkItem(this, true))
-            AfterConsumed();
+        status = ManualResetCompletionSourceStatus.Consumed;
+
+        if (GetType() != typeof(T))
+            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
     }
+
+    private protected void OnCompleted() => status = ManualResetCompletionSourceStatus.WaitForConsumption;
 
     private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
     {
@@ -226,7 +231,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (token != version)
             goto invalid_token;
 
-        if (completed)
+        if (IsCompleted)
             goto execute_inplace;
 
         lock (SyncRoot)
@@ -235,7 +240,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             if (token != version)
                 goto invalid_token;
 
-            if (completed)
+            if (IsCompleted)
                 goto execute_inplace;
 
             this.continuation = continuation;
@@ -251,7 +256,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     exit:
         return;
     invalid_token:
-        throw new InvalidOperationException();
+        throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
     }
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
@@ -275,13 +280,18 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     public abstract bool TrySetCanceled(CancellationToken token);
 
     /// <summary>
-    /// Gets a value indicating that the source is in signaled state.
+    /// Gets the status of this source.
     /// </summary>
-    public bool IsCompleted
-    {
-        get => completed;
-        private protected set => completed = value;
-    }
+    public ManualResetCompletionSourceStatus Status => status;
+
+    /// <summary>
+    /// Gets a value indicating that this source is in signaled (completed) state.
+    /// </summary>
+    /// <remarks>
+    /// This property returns <see langword="true"/> if <see cref="Status"/> is <see cref="ManualResetCompletionSourceStatus.WaitForConsumption"/>
+    /// or <see cref="ManualResetCompletionSourceStatus.Consumed"/>.
+    /// </remarks>
+    public bool IsCompleted => status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
     private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
     {
@@ -299,6 +309,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             goto exit;
         }
 
+        status = ManualResetCompletionSourceStatus.Activated;
         StartTrackingCancellation(timeout, token);
 
     exit:
@@ -310,13 +321,23 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        if (!completed)
+        if (status == ManualResetCompletionSourceStatus.WaitForActivation)
         {
             lock (SyncRoot)
             {
-                if (!completed)
+                if (status == ManualResetCompletionSourceStatus.WaitForActivation)
+                {
                     PrepareTaskCore(timeout, token);
+                }
+                else
+                {
+                    throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+                }
             }
+        }
+        else
+        {
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
         }
     }
 }

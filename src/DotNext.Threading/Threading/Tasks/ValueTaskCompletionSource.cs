@@ -95,15 +95,13 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     {
     }
 
-    private bool IsDerived => GetType() != typeof(ValueTaskCompletionSource);
-
     private void SetResult(Exception? result)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         StopTrackingCancellation();
         this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
-        IsCompleted = true;
+        OnCompleted();
         InvokeContinuation();
     }
 
@@ -144,23 +142,12 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         where TFactory : notnull, ISupplier<Exception?>
     {
         bool result;
-        if (IsCompleted)
-        {
-            result = false;
-        }
-        else
+        if (result = Status == ManualResetCompletionSourceStatus.Activated)
         {
             lock (SyncRoot)
             {
-                if (IsCompleted)
-                {
-                    result = false;
-                }
-                else
-                {
+                if (result = Status == ManualResetCompletionSourceStatus.Activated)
                     SetResult(factory.Invoke());
-                    result = true;
-                }
             }
         }
 
@@ -171,23 +158,12 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         where TFactory : notnull, ISupplier<Exception?>
     {
         bool result;
-        if (IsCompleted)
-        {
-            result = false;
-        }
-        else
+        if (result = Status == ManualResetCompletionSourceStatus.Activated)
         {
             lock (SyncRoot)
             {
-                if (IsCompleted || completionToken != version)
-                {
-                    result = false;
-                }
-                else
-                {
+                if (result = Status == ManualResetCompletionSourceStatus.Activated && completionToken == version)
                     SetResult(factory.Invoke());
-                    result = true;
-                }
             }
         }
 
@@ -266,17 +242,18 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <inheritdoc />
     void IValueTaskSource.GetResult(short token)
     {
-        if (!IsCompleted || token != version)
-            throw new InvalidOperationException();
+        if (Status != ManualResetCompletionSourceStatus.WaitForConsumption)
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+
+        if (token != version)
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
 
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
         var resultCopy = result;
         Thread.MemoryBarrier();
 
-        if (IsDerived)
-            QueueAfterConsumed();
-
+        OnConsumed<ValueTaskCompletionSource>();
         resultCopy?.Throw();
     }
 
@@ -284,15 +261,14 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
     {
         if (token != version)
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
 
-        if (!IsCompleted)
-            return ValueTaskSourceStatus.Pending;
-
-        if (result is null)
-            return ValueTaskSourceStatus.Succeeded;
-
-        return result.SourceException is OperationCanceledException ? ValueTaskSourceStatus.Canceled : ValueTaskSourceStatus.Faulted;
+        return !IsCompleted ? ValueTaskSourceStatus.Pending : result switch
+        {
+            null => ValueTaskSourceStatus.Succeeded,
+            { SourceException: OperationCanceledException } => ValueTaskSourceStatus.Canceled,
+            _ => ValueTaskSourceStatus.Faulted,
+        };
     }
 
     /// <inheritdoc />
