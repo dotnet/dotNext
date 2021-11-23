@@ -86,7 +86,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         void IConsumer<WaitNode>.Invoke(WaitNode node) => Remove(node);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal bool Remove(TKey expected, TValue value, IEqualityComparer<TKey> comparer)
+        internal bool Remove(TKey expected, in Result<TValue> value, IEqualityComparer<TKey> comparer)
         {
             for (WaitNode? current = first, next; current is not null; current = next)
             {
@@ -95,7 +95,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
                 {
                     Remove(current);
                     current.Owner = null;
-                    return current.TrySetResult(value);
+                    return value.IsSuccessful ? current.TrySetResult(value.OrDefault()!) : current.TrySetException(value.Error);
                 }
             }
 
