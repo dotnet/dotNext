@@ -3,6 +3,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -73,7 +74,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     public bool Pulse(TKey eventId, in Result<TValue> value, out object? userData)
         => GetBucket(eventId).Remove(eventId, in value, comparer, out userData);
 
-    private unsafe void PulseAll<T>(delegate*<WaitNode, T, void> action, T arg)
+    private unsafe void PulseAll<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
     {
         Debug.Assert(action != null);
 
@@ -89,7 +90,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetResult, value);
 
-        static void SetResult(WaitNode slot, TValue value) => slot.TrySetResult(value);
+        static void SetResult(LinkedValueTaskCompletionSource<TValue> slot, TValue value) => slot.TrySetResult(value);
     }
 
     /// <summary>
@@ -100,7 +101,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetException, e);
 
-        static void SetException(WaitNode slot, Exception e) => slot.TrySetException(e);
+        static void SetException(LinkedValueTaskCompletionSource<TValue> slot, Exception e) => slot.TrySetException(e);
     }
 
     /// <summary>
@@ -111,7 +112,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetCanceled, token);
 
-        static void SetCanceled(WaitNode slot, CancellationToken token) => slot.TrySetCanceled(token);
+        static void SetCanceled(LinkedValueTaskCompletionSource<TValue> slot, CancellationToken token) => slot.TrySetCanceled(token);
     }
 
     /// <summary>

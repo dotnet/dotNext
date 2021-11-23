@@ -182,7 +182,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     }
 
     /// <summary>
-    /// Attempts to reset state of this object for reuse.
+    /// Resets the state of the source.
     /// </summary>
     /// <remarks>
     /// This methods acts as a barried for completion.
@@ -199,6 +199,35 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             StopTrackingCancellation();
             ResetCore();
             result = version;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Attempts to reset the state of this source.
+    /// </summary>
+    /// <param name="token">The version of the incompleted task.</param>
+    /// <returns><see langword="true"/> if the state was reset successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryReset(out short token)
+    {
+        bool result;
+        if (result = Monitor.TryEnter(SyncRoot))
+        {
+            try
+            {
+                StopTrackingCancellation();
+                ResetCore();
+                token = version;
+            }
+            finally
+            {
+                Monitor.Exit(SyncRoot);
+            }
+        }
+        else
+        {
+            token = default;
         }
 
         return result;

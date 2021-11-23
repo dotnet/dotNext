@@ -19,11 +19,7 @@ internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>
             return result;
         }
 
-        bool IPooledObjectPolicy<TNode>.Return(TNode obj)
-        {
-            obj.Reset();
-            return true;
-        }
+        bool IPooledObjectPolicy<TNode>.Return(TNode obj) => obj.TryReset(out _);
     }
 
     private sealed class ValueTaskPoolWeakReference : WeakReference

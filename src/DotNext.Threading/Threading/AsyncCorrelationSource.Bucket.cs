@@ -13,7 +13,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     private sealed class WaitNode : LinkedValueTaskCompletionSource<TValue>, IPooledManualResetCompletionSource<WaitNode>
     {
         private Action<WaitNode>? consumedCallback;
-        private volatile object? userData;
+        private object? userData;
         private volatile IConsumer<WaitNode>? owner;
         private TKey? id;
 
@@ -24,11 +24,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             this.userData = userData;
         }
 
-        internal object? Clear()
-        {
-            owner = null;
-            return Interlocked.Exchange(ref userData, null);
-        }
+        internal object? UserData => userData;
 
         internal bool Match(TKey other, IEqualityComparer<TKey> comparer)
             => comparer.Equals(id, other);
@@ -52,12 +48,6 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         {
             Interlocked.Exchange(ref owner, null)?.Invoke(this);
             consumedCallback?.Invoke(this);
-        }
-
-        internal override WaitNode? CleanupAndGotoNext()
-        {
-            owner = null;
-            return Unsafe.As<WaitNode>(base.CleanupAndGotoNext());
         }
 
         ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
@@ -106,7 +96,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
                 if (current.Match(expected, comparer))
                 {
                     Remove(current);
-                    userData = current.Clear();
+                    userData = current.UserData;
                     return value.IsSuccessful ? current.TrySetResult(value.OrDefault()!) : current.TrySetException(value.Error);
                 }
             }
@@ -116,11 +106,11 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal unsafe void Drain<T>(delegate*<WaitNode, T, void> action, T arg)
+        internal unsafe void Drain<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
         {
             Debug.Assert(action != null);
 
-            for (WaitNode? current = first, next; current is not null; current = next)
+            for (LinkedValueTaskCompletionSource<TValue>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 action(current, arg);
