@@ -18,7 +18,7 @@ using Tasks.Pooling;
 /// is a response. These two messages can be correlated with the key.
 /// The consumer and producer of the event must be protected by happens-before semantics.
 /// It means that the call to <see cref="WaitAsync(TKey, TimeSpan, CancellationToken)"/> by the consumer must happen
-/// before the call to <see cref="Pulse(TKey, TValue)"/> by the producer for the same key.
+/// before the call to <see cref="Pulse(TKey, in Result{TValue})"/> by the producer for the same key.
 /// </remarks>
 /// <typeparam name="TKey">The type of the event identifier.</typeparam>
 /// <typeparam name="TValue">The type of the event payload.</typeparam>
@@ -57,8 +57,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <param name="eventId">The unique identifier of the event.</param>
     /// <param name="value">The value to be passed to the listener.</param>
     /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
-    public bool Pulse(TKey eventId, TValue value)
-        => GetBucket(eventId).Remove(eventId, value, comparer);
+    public bool Pulse(TKey eventId, in Result<TValue> value)
+        => GetBucket(eventId).Remove(eventId, in value, comparer);
 
     private unsafe void PulseAll<T>(delegate*<WaitNode, T, void> action, T arg)
     {
@@ -105,7 +105,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// Returns the task linked with the specified event identifier.
     /// </summary>
     /// <param name="eventId">The unique identifier of the event.</param>
-    /// <param name="timeout">The time to wait for <see cref="Pulse(TKey, TValue)"/>.</param>
+    /// <param name="timeout">The time to wait for <see cref="Pulse(TKey, in Result{TValue})"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing the event arrival.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
