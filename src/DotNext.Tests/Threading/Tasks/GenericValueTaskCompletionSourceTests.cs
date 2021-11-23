@@ -10,10 +10,17 @@ namespace DotNext.Threading.Tasks
         public static async Task SuccessfulCompletion()
         {
             var source = new ValueTaskCompletionSource<int>();
+            Equal(ManualResetCompletionSourceStatus.WaitForActivation, source.Status);
+
             var task = source.CreateTask(InfiniteTimeSpan, default);
+            Equal(ManualResetCompletionSourceStatus.Activated, source.Status);
+
             False(task.IsCompleted);
             True(source.TrySetResult(42));
+            Equal(ManualResetCompletionSourceStatus.WaitForConsumption, source.Status);
+
             Equal(42, await task);
+            Equal(ManualResetCompletionSourceStatus.Consumed, source.Status);
         }
 
         [Fact]
@@ -66,8 +73,10 @@ namespace DotNext.Threading.Tasks
             var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult(42));
             Equal(42, await task);
+            Equal(ManualResetCompletionSourceStatus.Consumed, source.Status);
 
             source.Reset();
+            Equal(ManualResetCompletionSourceStatus.WaitForActivation, source.Status);
             task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult(43));
             Equal(43, await task);
