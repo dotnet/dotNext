@@ -221,12 +221,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
 
-        protected override void AfterConsumed()
-        {
-            ReportLockDuration();
-            consumedCallback?.Invoke(this);
-            CallerInfo = null;
-        }
+        protected override void AfterConsumed() => AfterConsumed(this);
 
         private protected override void ResetCore()
         {
@@ -235,10 +230,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             base.ResetCore();
         }
 
-        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
-        {
-            set => consumedCallback = value;
-        }
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
     }
 
     [StructLayout(LayoutKind.Auto)]
