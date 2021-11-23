@@ -23,6 +23,7 @@ public class QueuedSynchronizer : Disposable
         private protected override void ResetCore()
         {
             LockDurationCounter = null;
+            CallerInfo = null;
             base.ResetCore();
         }
 
@@ -42,20 +43,22 @@ public class QueuedSynchronizer : Disposable
 
         protected sealed override Result<bool> OnTimeout() => ThrowOnTimeout ? base.OnTimeout() : false;
 
-        private protected void ReportLockDuration()
+        private void ReportLockDuration()
             => LockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
+
+        private protected static void AfterConsumed<T>(T node)
+            where T : WaitNode, IPooledManualResetCompletionSource<T>
+        {
+            node.ReportLockDuration();
+            node.As<IPooledManualResetCompletionSource<T>>().OnConsumed?.Invoke(node);
+        }
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
     {
         private Action<DefaultWaitNode>? consumedCallback;
 
-        protected sealed override void AfterConsumed()
-        {
-            ReportLockDuration();
-            consumedCallback?.Invoke(this);
-            CallerInfo = null;
-        }
+        protected sealed override void AfterConsumed() => AfterConsumed(this);
 
         private protected override void ResetCore()
         {
@@ -63,10 +66,7 @@ public class QueuedSynchronizer : Disposable
             base.ResetCore();
         }
 
-        Action<DefaultWaitNode>? IPooledManualResetCompletionSource<DefaultWaitNode>.OnConsumed
-        {
-            set => consumedCallback = value;
-        }
+        ref Action<DefaultWaitNode>? IPooledManualResetCompletionSource<DefaultWaitNode>.OnConsumed => ref consumedCallback;
     }
 
     private protected interface ILockManager
