@@ -256,21 +256,45 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
     {
+        string errorMessage;
+
         // fast path - monitor lock is not needed
         if (token != version)
-            goto invalid_token;
-
-        if (IsCompleted)
-            goto execute_inplace;
+        {
+            errorMessage = ExceptionMessages.InvalidSourceToken;
+            goto invalid_state;
+        }
+        
+        switch (status)
+        {
+            default:
+                errorMessage = ExceptionMessages.InvalidSourceState;
+                goto invalid_state;
+            case ManualResetCompletionSourceStatus.WaitForConsumption:
+                goto execute_inplace;
+            case ManualResetCompletionSourceStatus.Activated:
+                break;
+        }
 
         lock (SyncRoot)
         {
             // avoid running continuation inside of the lock
             if (token != version)
-                goto invalid_token;
+            {
+                errorMessage = ExceptionMessages.InvalidSourceToken;
+                goto invalid_state;
+            }
 
-            if (IsCompleted)
-                goto execute_inplace;
+            switch (status)
+            {
+                default:
+                    errorMessage = ExceptionMessages.InvalidSourceState;
+                    goto invalid_state;
+                case ManualResetCompletionSourceStatus.WaitForConsumption:
+                    goto execute_inplace;
+                case ManualResetCompletionSourceStatus.Activated:
+                    break;
+            }
 
             this.continuation = continuation;
             continuationState = state;
@@ -284,8 +308,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     exit:
         return;
-    invalid_token:
-        throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
+    invalid_state:
+        throw new InvalidOperationException(errorMessage);
     }
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
