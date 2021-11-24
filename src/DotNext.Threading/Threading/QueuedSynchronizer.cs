@@ -368,7 +368,7 @@ public class QueuedSynchronizer : Disposable
             => source.TrySetException(e);
     }
 
-    private protected unsafe long DrainWaitQueue<T>(delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
+    private unsafe long DrainWaitQueue<T>(delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
     {
         Debug.Assert(Monitor.IsEntered(this));
         Debug.Assert(callback != null);
