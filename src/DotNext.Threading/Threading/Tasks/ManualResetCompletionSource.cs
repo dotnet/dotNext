@@ -264,7 +264,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             errorMessage = ExceptionMessages.InvalidSourceToken;
             goto invalid_state;
         }
-        
+
         switch (status)
         {
             default:
