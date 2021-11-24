@@ -194,12 +194,14 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     private bool SignalCore(long signalCount)
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         if (manager.IsEmpty)
             throw new InvalidOperationException();
 
         if (manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers(DetachWaitQueue());
+            ResumeSuspendedCallers();
             return true;
         }
 
@@ -212,7 +214,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         if (manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers(DetachWaitQueue());
+            ResumeSuspendedCallers();
             manager.Current = manager.Initial;
             return true;
         }

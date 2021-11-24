@@ -326,6 +326,7 @@ public class QueuedSynchronizer : Disposable
     /// <param name="token">The canceled token.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void CancelSuspendedCallers(CancellationToken token)
     {
         ThrowIfDisposed();
@@ -333,46 +334,57 @@ public class QueuedSynchronizer : Disposable
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        for (LinkedValueTaskCompletionSource<bool>? current = DetachWaitQueue(), next; current is not null; current = next)
+        unsafe
         {
-            next = current.CleanupAndGotoNext();
-            current.TrySetCanceled(token);
+            DrainWaitQueue(&TrySetCanceled, token);
         }
+
+        static bool TrySetCanceled(LinkedValueTaskCompletionSource<bool> source, CancellationToken token)
+            => source.TrySetCanceled(token);
     }
 
-    private protected static long ResumeSuspendedCallers(LinkedValueTaskCompletionSource<bool>? queueHead)
+    private protected long ResumeSuspendedCallers()
     {
-        var count = 0L;
-
-        for (LinkedValueTaskCompletionSource<bool>? next; queueHead is not null; queueHead = next)
+        unsafe
         {
-            next = queueHead.CleanupAndGotoNext();
-
-            if (queueHead.TrySetResult(true))
-                count += 1L;
+            return DrainWaitQueue(&TrySetResult, true);
         }
 
-        return count;
+        static bool TrySetResult(LinkedValueTaskCompletionSource<bool> source, bool result)
+            => source.TrySetResult(result);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
-    {
-        var queueHead = first;
-        first = last = null;
-
-        return queueHead;
-    }
-
     private void NotifyObjectDisposed()
     {
         var e = new ObjectDisposedException(GetType().Name);
 
-        for (LinkedValueTaskCompletionSource<bool>? current = DetachWaitQueue(), next; current is not null; current = next)
+        unsafe
         {
-            next = current.CleanupAndGotoNext();
-            current.TrySetException(e);
+            DrainWaitQueue(&TrySetException, e);
         }
+
+        static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, ObjectDisposedException e)
+            => source.TrySetException(e);
+    }
+
+    private protected unsafe long DrainWaitQueue<T>(delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(callback != null);
+
+        var count = 0L;
+
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        {
+            next = current.Next;
+
+            if (callback(current, arg))
+                count++;
+        }
+
+        first = last = null;
+        return count;
     }
 
     /// <summary>
