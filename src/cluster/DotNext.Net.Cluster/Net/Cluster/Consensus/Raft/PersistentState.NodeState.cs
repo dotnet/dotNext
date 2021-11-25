@@ -58,7 +58,7 @@ public partial class PersistentState
             buffer = allocator.Invoke(Capacity, true);
             if (File.Exists(fileName))
             {
-                handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.None);
+                handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.None);
                 RandomAccess.Read(handle, buffer.Span, 0L);
             }
             else
