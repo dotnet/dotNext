@@ -44,9 +44,9 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-15-2021
+Release Date: 11-25-2021
 
-.NEXT 4.0 Release Candidate is out! Its primary focus is .NET 6 support as well as some other key features:
+.NEXT 4.0.0 major release is out! Its primary focus is .NET 6 support as well as some other key features:
 * Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
 * All asynchronous locks do not allocate [tasks](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task) anymore in case of lock contention. Instead, they are moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) pooling
 * `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes are stabilized and used as a core of [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) pooling
@@ -87,7 +87,7 @@ Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migra
 * Polished `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. Also these types become a foundation for all synchronization primitives within the library
 * Return types of all methods of asynchronous locks now moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) and [ValueTask&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1) types
 * Together with previous change, all asynchronous locks are written on top of `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. It means that these asynchronous locks use task pooling that leads to zero allocation on the heap and low GC latency
-* Added `AsyncEventHub` synchronization primitve for asynchronous code
+* Added `AsyncEventHub` synchronization primitive for asynchronous code
 * Introduced diagnostics and debugging tools for all synchronization primitives: lock contentions, information about suspended callers, et. al.
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.0.0">DotNext.IO 4.0.0</a>
