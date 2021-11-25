@@ -150,7 +150,6 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 <li><code>TrackSuspendedCallers</code> method allows to enable tracking information about suspended caller. This method has effect only when building project using <code>Debug</code> configuration</li>
 <li><code>SetCallerInformation</code> method allows to associate information with the caller if it will be suspended during the call of <code>WaitAsync</code>. This method has effect only when building project using <code>Debug</code> configuration</li>
 <li><code>GetSuspendedCallers</code> method allows to capture a list of all suspended callers. The method is working only if tracking is enabled via <code>TrackSuspendedCallers</code> method. Typically, this method should be used in debugger's <em>Watch</em> window when all threads are paused</li>
-<li><code>SuspendedCallersCount</code> property allows to get a number of suspended callers in the queue. This is the only property that works in all build configurations. Therefore, you can use this property in production code to implement various optimization techniques such as yielding or throttling</li>
 </ul>
 </article>
           </div>

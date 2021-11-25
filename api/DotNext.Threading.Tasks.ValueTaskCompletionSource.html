@@ -92,7 +92,13 @@
       <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Reset">ManualResetCompletionSource.Reset()</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_TryReset_System_Int16__">ManualResetCompletionSource.TryReset(Int16)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed">ManualResetCompletionSource.AfterConsumed()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Status">ManualResetCompletionSource.Status</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted">ManualResetCompletionSource.IsCompleted</a>
@@ -115,7 +121,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource__ctor_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.%23ctor(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L43">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource__ctor_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.#ctor*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource__ctor_System_Boolean_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.#ctor(System.Boolean)">ValueTaskCompletionSource(Boolean)</h4>
@@ -148,10 +154,73 @@ about behavior of the completion source.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateLinkedTaskCompletionSource_System_Object_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateLinkedTaskCompletionSource(System.Object%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L286">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateLinkedTaskCompletionSource_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateLinkedTaskCompletionSource*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateLinkedTaskCompletionSource_System_Object_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateLinkedTaskCompletionSource(System.Object,TimeSpan,CancellationToken)">CreateLinkedTaskCompletionSource(Object, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Creates a linked <see cref="!:TaskCompletionSource"></see> that can be used cooperatively to
+complete the task.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TaskCompletionSource CreateLinkedTaskCompletionSource(object userData, TimeSpan timeout, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>The custom data to be associated with the current version of the task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TimeSpan</span></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The timeout associated with the task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The cancellation token that can be used to cancel the task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TaskCompletionSource</span></td>
+        <td><p>A linked <see cref="!:TaskCompletionSource"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateTask_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateTask(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L206">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L232">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateTask_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateTask*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateTask_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateTask(TimeSpan,CancellationToken)">CreateTask(TimeSpan, CancellationToken)</h4>
@@ -210,7 +279,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_OnCanceled_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.OnCanceled(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L139">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_OnCanceled_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.OnCanceled*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_OnCanceled_CancellationToken_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.OnCanceled(CancellationToken)">OnCanceled(CancellationToken)</h4>
@@ -263,7 +332,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_OnTimeout.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.OnTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L81">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L129">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_OnTimeout_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.OnTimeout*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_OnTimeout" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.OnTimeout">OnTimeout()</h4>
@@ -298,7 +367,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L152">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_CancellationToken_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(CancellationToken)">TrySetCanceled(CancellationToken)</h4>
@@ -350,7 +419,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_System_Int16_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Int16%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L161">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L187">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_System_Int16_CancellationToken_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Int16,CancellationToken)">TrySetCanceled(Int16, CancellationToken)</h4>
@@ -406,7 +475,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(Exception)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L169">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L195">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_Exception_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(Exception)">TrySetException(Exception)</h4>
@@ -458,7 +527,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_System_Int16_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(System.Int16%2CException)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L178">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L204">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_System_Int16_Exception_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(System.Int16,Exception)">TrySetException(Int16, Exception)</h4>
@@ -514,7 +583,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L185">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult">TrySetResult()</h4>
@@ -546,7 +615,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_System_Int16_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Int16)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L193">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_System_Int16_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Int16)">TrySetResult(Int16)</h4>
@@ -598,7 +667,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_DotNext_ISupplier_TimeSpan_CancellationToken_ValueTask__Invoke_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.DotNext%23ISupplier%7BTimeSpan%2CCancellationToken%2CValueTask%7D%23Invoke(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L213">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L239">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_DotNext_ISupplier_TimeSpan_CancellationToken_ValueTask__Invoke_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.DotNext#ISupplier{TimeSpan,CancellationToken,ValueTask}#Invoke*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_DotNext_ISupplier_TimeSpan_CancellationToken_ValueTask__Invoke_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.DotNext#ISupplier{TimeSpan,CancellationToken,ValueTask}#Invoke(TimeSpan,CancellationToken)">ISupplier&lt;TimeSpan, CancellationToken, ValueTask&gt;.Invoke(TimeSpan, CancellationToken)</h4>
@@ -650,7 +719,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_System_Threading_Tasks_Sources_IValueTaskSource_GetResult_System_Int16_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.System%23Threading%23Tasks%23Sources%23IValueTaskSource%23GetResult(System.Int16)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L217">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L243">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_System_Threading_Tasks_Sources_IValueTaskSource_GetResult_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.System#Threading#Tasks#Sources#IValueTaskSource#GetResult*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_System_Threading_Tasks_Sources_IValueTaskSource_GetResult_System_Int16_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.System#Threading#Tasks#Sources#IValueTaskSource#GetResult(System.Int16)">IValueTaskSource.GetResult(Int16)</h4>
@@ -682,7 +751,7 @@ about behavior of the completion source.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource_System_Threading_Tasks_Sources_IValueTaskSource_GetStatus_System_Int16_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource.System%23Threading%23Tasks%23Sources%23IValueTaskSource%23GetStatus(System.Int16)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L234">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L261">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskCompletionSource_System_Threading_Tasks_Sources_IValueTaskSource_GetStatus_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.System#Threading#Tasks#Sources#IValueTaskSource#GetStatus*"></a>
   <h4 id="DotNext_Threading_Tasks_ValueTaskCompletionSource_System_Threading_Tasks_Sources_IValueTaskSource_GetStatus_System_Int16_" data-uid="DotNext.Threading.Tasks.ValueTaskCompletionSource.System#Threading#Tasks#Sources#IValueTaskSource#GetStatus(System.Int16)">IValueTaskSource.GetStatus(Int16)</h4>
@@ -798,7 +867,7 @@ about behavior of the completion source.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskCompletionSource.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskCompletionSource%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskCompletionSource.cs/#L19" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
