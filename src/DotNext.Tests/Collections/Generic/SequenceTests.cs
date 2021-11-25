@@ -1,8 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Collections.Generic
 {
+    using Buffers;
+
     [ExcludeFromCodeCoverage]
     public sealed class SequenceTests : Test
     {
@@ -423,6 +426,88 @@ namespace DotNext.Collections.Generic
             var collection = Sequence.Singleton(42);
             NotEmpty(collection);
             Equal(42, collection.First());
+        }
+
+        [Fact]
+        public static void EmptyMemoryEnumerator()
+        {
+            using var enumerator = Sequence.ToEnumerator(ReadOnlyMemory<int>.Empty);
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void ArrayMemoryEnumerator()
+        {
+            using var enumerator = Sequence.ToEnumerator(new ReadOnlyMemory<int>(new int[] { 1, 2, 3 }));
+
+            True(enumerator.MoveNext());
+            Equal(1, enumerator.Current);
+
+            True(enumerator.MoveNext());
+            Equal(2, enumerator.Current);
+
+            True(enumerator.MoveNext());
+            Equal(3, enumerator.Current);
+
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void NativeMemoryEnumerator()
+        {
+            using var owner = UnmanagedMemoryAllocator.Allocate<int>(3);
+            owner[0] = 10;
+            owner[1] = 20;
+            owner[2] = 30;
+
+            using var enumerator = Sequence.ToEnumerator<int>(owner.Memory);
+
+            True(enumerator.MoveNext());
+            Equal(10, enumerator.Current);
+
+            True(enumerator.MoveNext());
+            Equal(20, enumerator.Current);
+
+            True(enumerator.MoveNext());
+            Equal(30, enumerator.Current);
+
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void EmptySequenceEnumerator()
+        {
+            using var enumerator = Sequence.ToEnumerator(ReadOnlySequence<int>.Empty);
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void ArraySequenceEnumerator()
+        {
+            using var enumerator = Sequence.ToEnumerator(new ReadOnlySequence<int>(new ReadOnlyMemory<int>(new int[] { 1, 2, 3 })));
+            True(enumerator.MoveNext());
+            Equal(1, enumerator.Current);
+
+            True(enumerator.MoveNext());
+            Equal(2, enumerator.Current);
+
+            True(enumerator.MoveNext());
+            Equal(3, enumerator.Current);
+
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void SequenceEnumerator()
+        {
+            var bytes = RandomBytes(64);
+            using var enumerator = Sequence.ToEnumerator(ToReadOnlySequence<byte>(bytes, 32));
+
+            var i = 0;
+            while (enumerator.MoveNext())
+            {
+                Equal(bytes[i++], enumerator.Current);
+            }
         }
     }
 }
