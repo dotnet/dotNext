@@ -4,9 +4,9 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Collections.Concurrent;
+namespace DotNext.Buffers;
 
-using Sequence = Generic.Sequence;
+using Sequence = Collections.Generic.Sequence;
 
 internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 {

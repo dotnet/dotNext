@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Collections.Concurrent;
+namespace DotNext.Buffers;
 
 [ExcludeFromCodeCoverage]
 public class ReadOnlySequencePartitionerTests : Test
