@@ -115,10 +115,7 @@ public static partial class BufferHelpers
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
     public static int WriteString(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] ref BufferWriterSlimInterpolatedStringHandler handler)
-    {
-        handler.InstallWriter(out writer);
-        return handler.WrittenCount;
-    }
+        => handler.WrittenCount;
 
     /// <summary>
     /// Writes interpolated string to the buffer.

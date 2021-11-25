@@ -6,7 +6,7 @@ namespace DotNext.Threading;
 
 using Diagnostics;
 using static Tasks.Conversion;
-using BoxedIndex = Runtime.CompilerServices.Box<int>;
+using BoxedIndex = Runtime.CompilerServices.Shared<int>;
 
 /// <summary>
 /// Represents a collection of asynchronous events.

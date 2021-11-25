@@ -27,7 +27,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     public override bool TryWrite(T item) => false;
 
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? new(Task.FromCanceled<bool>(token)) : new(true);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : ValueTask.FromResult(true);
 
     private PartitionStream Partition => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
 
@@ -38,7 +38,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
             var partition = Partition;
             await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);
-            cursor.Advance(partition.Position);
+            await cursor.AdvanceAsync(partition.Position, token).ConfigureAwait(false);
         }
 
         writer.MessageReady();

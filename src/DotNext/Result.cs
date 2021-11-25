@@ -169,6 +169,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Indicates that the result is successful.
     /// </summary>
     /// <value><see langword="true"/> if this result is successful; <see langword="false"/> if this result represents exception.</value>
+    [MemberNotNullWhen(false, nameof(Error))]
     public bool IsSuccessful => exception is null;
 
     /// <inheritdoc />

@@ -93,6 +93,9 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Memory<T> GetMemory(int sizeHint = 0)
     {
+        if (sizeHint < 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
         CheckAndResizeBuffer(sizeHint);
         return buffer.Memory.Slice(position);
     }

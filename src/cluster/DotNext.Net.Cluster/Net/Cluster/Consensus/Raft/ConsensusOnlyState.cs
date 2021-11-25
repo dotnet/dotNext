@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Threading;
 using static Replication.CommitEvent;
-using BoxedClusterMemberId = Runtime.CompilerServices.Box<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
 
 /// <summary>
 /// Represents lightweight Raft node state that is suitable for distributed consensus only.

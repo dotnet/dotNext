@@ -264,7 +264,7 @@ public readonly ref struct UserDataStorage
     }
 
     /*
-     * ConditionalWeakTable is synchronized to we use a bucket of tables
+     * ConditionalWeakTable is synchronized so we use a bucket of tables
      * to reduce the risk of lock contention. The specific table for the object
      * is based on object's identity hash code.
      */
@@ -275,9 +275,7 @@ public readonly ref struct UserDataStorage
         var size = Environment.ProcessorCount;
         size += size / 2;
 
-        Buckets = new ConditionalWeakTable<object, BackingStorage>[size];
-        for (var i = 0; i < size; i++)
-            Buckets[i] = new();
+        Span.Initialize<ConditionalWeakTable<object, BackingStorage>>(Buckets = new ConditionalWeakTable<object, BackingStorage>[size]);
     }
 
     private readonly object source;

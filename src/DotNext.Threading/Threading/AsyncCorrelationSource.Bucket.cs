@@ -13,19 +13,28 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     private sealed class WaitNode : LinkedValueTaskCompletionSource<TValue>, IPooledManualResetCompletionSource<WaitNode>
     {
         private Action<WaitNode>? consumedCallback;
+        private object? userData;
         private volatile IConsumer<WaitNode>? owner;
-        internal TKey? Id;
+        private TKey? id;
 
-        internal IConsumer<WaitNode>? Owner
+        internal void Initialize(TKey id, IConsumer<WaitNode> owner, object? userData)
         {
-            set => owner = value;
+            this.id = id;
+            this.owner = owner;
+            this.userData = userData;
         }
+
+        internal object? UserData => userData;
+
+        internal bool Match(TKey other, IEqualityComparer<TKey> comparer)
+            => comparer.Equals(id, other);
 
         private protected override void ResetCore()
         {
             owner = null;
             consumedCallback = null;
-            Id = default;
+            id = default;
+            userData = null;
             base.ResetCore();
         }
 
@@ -41,16 +50,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             consumedCallback?.Invoke(this);
         }
 
-        internal override WaitNode? CleanupAndGotoNext()
-        {
-            owner = null;
-            return Unsafe.As<WaitNode>(base.CleanupAndGotoNext());
-        }
-
-        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
-        {
-            set => consumedCallback = value;
-        }
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
     }
 
     private sealed class Bucket : IConsumer<WaitNode>
@@ -71,9 +71,10 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void Remove(WaitNode node)
+        private void Remove(WaitNode node)
         {
+            Debug.Assert(Monitor.IsEntered(this));
+
             if (ReferenceEquals(first, node))
                 first = node.Next;
 
@@ -83,31 +84,33 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             node.Detach();
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         void IConsumer<WaitNode>.Invoke(WaitNode node) => Remove(node);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal bool Remove(TKey expected, TValue value, IEqualityComparer<TKey> comparer)
+        internal bool Remove(TKey expected, in Result<TValue> value, IEqualityComparer<TKey> comparer, out object? userData)
         {
             for (WaitNode? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (comparer.Equals(expected, current.Id))
+                if (current.Match(expected, comparer))
                 {
                     Remove(current);
-                    current.Owner = null;
-                    return current.TrySetResult(value);
+                    userData = current.UserData;
+                    return value.IsSuccessful ? current.TrySetResult(value.OrDefault()!) : current.TrySetException(value.Error);
                 }
             }
 
+            userData = null;
             return false;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal unsafe void Drain<T>(delegate*<WaitNode, T, void> action, T arg)
+        internal unsafe void Drain<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
         {
             Debug.Assert(action != null);
 
-            for (WaitNode? current = first, next; current is not null; current = next)
+            for (LinkedValueTaskCompletionSource<TValue>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 action(current, arg);

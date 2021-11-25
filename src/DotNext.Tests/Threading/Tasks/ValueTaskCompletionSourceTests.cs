@@ -100,5 +100,15 @@ namespace DotNext.Threading.Tasks
             True(source.TrySetResult());
             await result;
         }
+
+        [Fact]
+        public static async Task InteropWithTaskCompletionSourceTimeout()
+        {
+            var source = new ValueTaskCompletionSource();
+            var task = source.CreateLinkedTaskCompletionSource("Hello, world!", TimeSpan.FromMilliseconds(20), default).Task;
+
+            Equal("Hello, world!", task.AsyncState);
+            await ThrowsAsync<TimeoutException>(Func.Constant(task));
+        }
     }
 }

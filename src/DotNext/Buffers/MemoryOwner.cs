@@ -267,26 +267,6 @@ namespace DotNext.Buffers
             }
         }
 
-        /// <summary>
-        /// Tries to get an array segment from the underlying memory buffer.
-        /// </summary>
-        /// <param name="segment">The array segment retrieved from the underlying memory buffer.</param>
-        /// <returns><see langword="true"/> if the method call succeeds; <see langword="false"/> otherwise.</returns>
-        public readonly bool TryGetArray(out ArraySegment<T> segment)
-        {
-            if (array is not null)
-            {
-                segment = new(array, 0, length);
-                return true;
-            }
-
-            if (owner is not null)
-                return MemoryMarshal.TryGetArray(Unsafe.As<IMemoryOwner<T>>(owner).Memory, out segment);
-
-            segment = default;
-            return false;
-        }
-
         /// <inheritdoc/>
         readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
@@ -339,12 +319,14 @@ namespace DotNext.Buffers
             switch (owner)
             {
                 case null:
+                    if (array is not null && clearBuffer)
+                        Array.Clear(array);
+
                     break;
                 case IDisposable disposable:
                     disposable.Dispose();
                     break;
-                case ArrayPool<T> pool:
-                    Debug.Assert(array is not null);
+                case ArrayPool<T> pool when array is not null:
                     pool.Return(array, clearBuffer);
                     break;
             }

@@ -1,3 +1,5 @@
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
+
 namespace DotNext.IO;
 
 public partial class FileBufferingWriter
@@ -42,10 +44,18 @@ public partial class FileBufferingWriter
             => source.Read(output);
 
         public override int Read(byte[] buffer, int offset, int count)
-            => source.Read(buffer, offset, count);
+        {
+            ValidateBufferArguments(buffer, offset, count);
+
+            return source.Read(buffer, offset, count);
+        }
 
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => source.BeginRead(buffer, offset, count, callback, state);
+        {
+            ValidateBufferArguments(buffer, offset, count);
+
+            return source.BeginRead(buffer, offset, count, callback, state);
+        }
 
         public override int EndRead(IAsyncResult asyncResult)
             => source.EndRead(asyncResult);
@@ -61,7 +71,11 @@ public partial class FileBufferingWriter
         public override Task FlushAsync(CancellationToken token) => source.FlushAsync(token);
 
         public override void CopyTo(Stream destination, int bufferSize)
-            => source.CopyTo(destination, bufferSize);
+        {
+            ValidateCopyToArguments(destination, bufferSize);
+
+            source.CopyTo(destination, bufferSize);
+        }
 
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
             => source.CopyToAsync(destination, bufferSize, token);
@@ -107,9 +121,9 @@ public partial class FileBufferingWriter
         const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
-        return fileBackend is null
+        return fileName is null
             ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
-            : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
+            : new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
     /// <summary>
@@ -123,10 +137,7 @@ public partial class FileBufferingWriter
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
         if (fileBackend is not null)
-        {
             PersistBuffer();
-            fileBackend.Flush(true);
-        }
 
         return new ReaderStream(this, false);
     }
@@ -144,10 +155,7 @@ public partial class FileBufferingWriter
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
         if (fileBackend is not null)
-        {
             await PersistBufferAsync(token).ConfigureAwait(false);
-            await fileBackend.FlushAsync(token).ConfigureAwait(false);
-        }
 
         return new ReaderStream(this, true);
     }

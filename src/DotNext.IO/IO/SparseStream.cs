@@ -59,7 +59,11 @@ internal sealed class SparseStream : Stream, IFlushable
 
     /// <inheritdoc />
     public override int Read(byte[] buffer, int offset, int count)
-        => Read(buffer.AsSpan(offset, count));
+    {
+        ValidateBufferArguments(buffer, offset, count);
+
+        return Read(buffer.AsSpan(offset, count));
+    }
 
     /// <inheritdoc />
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -84,6 +88,8 @@ internal sealed class SparseStream : Stream, IFlushable
     /// <inheritdoc />
     public override void CopyTo(Stream destination, int bufferSize)
     {
+        ValidateCopyToArguments(destination, bufferSize);
+
         for (; streamAvailable; MoveToNextStream())
             enumerator.Current.CopyTo(destination, bufferSize);
     }
@@ -91,6 +97,8 @@ internal sealed class SparseStream : Stream, IFlushable
     /// <inheritdoc />
     public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token = default)
     {
+        ValidateCopyToArguments(destination, bufferSize);
+
         for (; streamAvailable; MoveToNextStream())
             await enumerator.Current.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
     }

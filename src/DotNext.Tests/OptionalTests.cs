@@ -236,5 +236,20 @@ namespace DotNext
             NotEqual(Optional.Null<string>().GetHashCode(), Optional.None<string>().GetHashCode());
             Equal(Optional.Some("Hello, world!"), Optional.Some("Hello, world!"));
         }
+
+        [Fact]
+        public static void ValueCheck()
+        {
+            True(Optional<string>.IsValueDefined("Hello, world"));
+            False(Optional<string>.IsValueDefined(null));
+
+            True(Optional<int>.IsValueDefined(default));
+
+            True(Optional<int?>.IsValueDefined(42));
+            False(Optional<int?>.IsValueDefined(null));
+
+            True(Optional<Optional<int>>.IsValueDefined(42));
+            False(Optional<Optional<int>>.IsValueDefined(Optional.None<int>()));
+        }
     }
 }

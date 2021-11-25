@@ -1,6 +1,7 @@
 using System.Diagnostics.Tracing;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
@@ -43,18 +44,10 @@ public partial class FileBufferingWriter
 
         internal bool IsAsynchronous => HasFlag(options, FileOptions.Asynchronous);
 
-        internal FileStream CreateBackingFileStream(int preallocationSize)
+        internal SafeFileHandle CreateBackingFileStream(int preallocationSize, out string fileName)
         {
-            var path = temporary ? Path.Combine(this.path, Path.GetRandomFileName()) : this.path;
-            return new(path, new FileStreamOptions
-            {
-                Mode = FileMode.CreateNew,
-                Access = FileAccess.ReadWrite,
-                Share = FileShare.Read,
-                BufferSize = BufferSize,
-                Options = options,
-                PreallocationSize = preallocationSize,
-            });
+            fileName = temporary ? Path.Combine(path, Path.GetRandomFileName()) : path;
+            return File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, preallocationSize);
         }
     }
 

@@ -8,7 +8,7 @@ namespace DotNext.Runtime.CompilerServices;
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public sealed class Box<T>
+public sealed class Shared<T>
     where T : struct
 {
     /// <summary>
@@ -22,7 +22,7 @@ public sealed class Box<T>
     /// <param name="value">The value to be placed to the container.</param>
     /// <returns>The boxed representation of the value; or <see langword="null"/> if <paramref name="value"/> is <see langword="null"/>.</returns>
     [return: NotNullIfNotNull("value")]
-    public static implicit operator Box<T>?(in T? value)
+    public static implicit operator Shared<T>?(in T? value)
         => value.HasValue ? new() { Value = value.GetValueOrDefault() } : null;
 
     /// <summary>
@@ -30,7 +30,7 @@ public sealed class Box<T>
     /// </summary>
     /// <param name="value">The value to be placed to the container.</param>
     /// <returns>The boxed representation of the value.</returns>
-    public static implicit operator Box<T>(T value) => new() { Value = value };
+    public static implicit operator Shared<T>(T value) => new() { Value = value };
 
     /// <summary>
     /// Converts the value in this container to string.

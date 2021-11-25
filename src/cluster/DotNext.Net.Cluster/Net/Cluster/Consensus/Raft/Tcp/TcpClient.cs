@@ -8,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 using Buffers;
 using Threading;
 using TransportServices;
-using Intrinsics = Runtime.Intrinsics;
 
 /*
     This implementation doesn't support multiplexing over single TCP
@@ -63,9 +62,6 @@ internal sealed class TcpClient : TcpTransport, IClient
     internal SslClientAuthenticationOptions? SslOptions { get; set; }
 
     internal TimeSpan ConnectTimeout { get; set; }
-
-    private static void CancelConnectAsync(object? args)
-        => Socket.CancelConnectAsync(Intrinsics.Cast<SocketAsyncEventArgs>(args));
 
     private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, SslClientAuthenticationOptions? sslOptions, TimeSpan timeout, CancellationToken token)
     {

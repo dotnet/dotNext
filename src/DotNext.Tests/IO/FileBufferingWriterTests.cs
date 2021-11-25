@@ -558,7 +558,7 @@ namespace DotNext.IO
             await writer.WriteAsync(bytes, 0, 450);
             await writer.WriteAsync(bytes.AsMemory(450));
             Equal(bytes.Length, writer.Length);
-            using var source = await writer.GetWrittenContentAsync(10);
+            using var source = writer.GetWrittenContent(10);
             Equal(bytes, source.Sequence.ToArray());
         }
     }

@@ -57,9 +57,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private bool SignalCore()
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         for (LinkedValueTaskCompletionSource? current = first, next; current is not null; current = next)
         {
             next = current.Next;
@@ -89,10 +90,11 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Signal(bool resumeAll = false)
     {
         ThrowIfDisposed();
-        return resumeAll ? ResumeSuspendedCallers(DetachWaitQueue()) > 0L : SignalCore();
+        return resumeAll ? ResumeSuspendedCallers() > 0L : SignalCore();
     }
 
     /// <inheritdoc/>
@@ -221,12 +223,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
 
-        protected override void AfterConsumed()
-        {
-            ReportLockDuration();
-            consumedCallback?.Invoke(this);
-            CallerInfo = null;
-        }
+        protected override void AfterConsumed() => AfterConsumed(this);
 
         private protected override void ResetCore()
         {
@@ -235,10 +232,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             base.ResetCore();
         }
 
-        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
-        {
-            set => consumedCallback = value;
-        }
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
     }
 
     [StructLayout(LayoutKind.Auto)]

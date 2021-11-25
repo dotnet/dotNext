@@ -3,6 +3,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -18,7 +19,7 @@ using Tasks.Pooling;
 /// is a response. These two messages can be correlated with the key.
 /// The consumer and producer of the event must be protected by happens-before semantics.
 /// It means that the call to <see cref="WaitAsync(TKey, TimeSpan, CancellationToken)"/> by the consumer must happen
-/// before the call to <see cref="Pulse(TKey, TValue)"/> by the producer for the same key.
+/// before the call to <see cref="Pulse(TKey, in Result{TValue})"/> by the producer for the same key.
 /// </remarks>
 /// <typeparam name="TKey">The type of the event identifier.</typeparam>
 /// <typeparam name="TValue">The type of the event payload.</typeparam>
@@ -57,10 +58,23 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <param name="eventId">The unique identifier of the event.</param>
     /// <param name="value">The value to be passed to the listener.</param>
     /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
-    public bool Pulse(TKey eventId, TValue value)
-        => GetBucket(eventId).Remove(eventId, value, comparer);
+    public bool Pulse(TKey eventId, in Result<TValue> value)
+        => Pulse(eventId, in value, out _);
 
-    private unsafe void PulseAll<T>(delegate*<WaitNode, T, void> action, T arg)
+    /// <summary>
+    /// Informs that the event is occurred.
+    /// </summary>
+    /// <remarks>
+    /// If no listener present for <paramref name="eventId"/> then the signal will be dropped.
+    /// </remarks>
+    /// <param name="eventId">The unique identifier of the event.</param>
+    /// <param name="value">The value to be passed to the listener.</param>
+    /// <param name="userData">Custom data associated with an event.</param>
+    /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
+    public bool Pulse(TKey eventId, in Result<TValue> value, out object? userData)
+        => GetBucket(eventId).Remove(eventId, in value, comparer, out userData);
+
+    private unsafe void PulseAll<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
     {
         Debug.Assert(action != null);
 
@@ -76,7 +90,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetResult, value);
 
-        static void SetResult(WaitNode slot, TValue value) => slot.TrySetResult(value);
+        static void SetResult(LinkedValueTaskCompletionSource<TValue> slot, TValue value) => slot.TrySetResult(value);
     }
 
     /// <summary>
@@ -87,7 +101,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetException, e);
 
-        static void SetException(WaitNode slot, Exception e) => slot.TrySetException(e);
+        static void SetException(LinkedValueTaskCompletionSource<TValue> slot, Exception e) => slot.TrySetException(e);
     }
 
     /// <summary>
@@ -98,19 +112,20 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetCanceled, token);
 
-        static void SetCanceled(WaitNode slot, CancellationToken token) => slot.TrySetCanceled(token);
+        static void SetCanceled(LinkedValueTaskCompletionSource<TValue> slot, CancellationToken token) => slot.TrySetCanceled(token);
     }
 
     /// <summary>
     /// Returns the task linked with the specified event identifier.
     /// </summary>
     /// <param name="eventId">The unique identifier of the event.</param>
-    /// <param name="timeout">The time to wait for <see cref="Pulse(TKey, TValue)"/>.</param>
+    /// <param name="userData">Custom data associated with the event.</param>
+    /// <param name="timeout">The time to wait for <see cref="Pulse(TKey, in Result{TValue}, out object)"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing the event arrival.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask<TValue> WaitAsync(TKey eventId, TimeSpan timeout, CancellationToken token = default)
+    public ValueTask<TValue> WaitAsync(TKey eventId, object? userData, TimeSpan timeout, CancellationToken token = default)
     {
         if (timeout != InfiniteTimeSpan && timeout < TimeSpan.Zero)
             return ValueTask.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)));
@@ -121,8 +136,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         var node = pool.Get();
 
         // initialize node
-        node.Owner = bucket;
-        node.Id = eventId;
+        node.Initialize(eventId, bucket, userData);
 
         // we need to add the node to the list before the task construction
         // to ensure that completed node will not be added to the list due to cancellation
@@ -130,6 +144,18 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
         return node.CreateTask(timeout, token);
     }
+
+    /// <summary>
+    /// Returns the task linked with the specified event identifier.
+    /// </summary>
+    /// <param name="eventId">The unique identifier of the event.</param>
+    /// <param name="timeout">The time to wait for <see cref="Pulse(TKey, in Result{TValue})"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing the event arrival.</returns>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask<TValue> WaitAsync(TKey eventId, TimeSpan timeout, CancellationToken token = default)
+        => WaitAsync(eventId, null, timeout, token);
 
     /// <summary>
     /// Returns the task linked with the specified event identifier.

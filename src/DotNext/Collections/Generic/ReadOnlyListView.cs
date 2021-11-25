@@ -63,7 +63,7 @@ public readonly struct ReadOnlyListView<TInput, TOutput> : IReadOnlyList<TOutput
     /// </summary>
     /// <returns>The enumerator over converted items.</returns>
     public IEnumerator<TOutput> GetEnumerator()
-        => (source is null || mapper is null ? Enumerable.Empty<TOutput>() : source.Select(mapper)).GetEnumerator();
+        => source is null || mapper is null || source.Count == 0 ? Sequence.GetEmptyEnumerator<TOutput>() : source.Select(mapper).GetEnumerator();
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

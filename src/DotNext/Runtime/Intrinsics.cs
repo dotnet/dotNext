@@ -16,27 +16,27 @@ namespace DotNext.Runtime;
 public static class Intrinsics
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct FNV1a32 : IConsumer<int>, ISupplier<int>
+    private struct FNV1a32 : IConsumer<int>
     {
         private const int Offset = unchecked((int)2166136261);
         private const int Prime = 16777619;
 
         private int result = Offset;
 
-        public readonly int Invoke() => result;
+        internal readonly int Result => result;
 
         public void Invoke(int data) => result = (result ^ data) * Prime;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct FNV1a64 : IConsumer<long>, ISupplier<long>
+    private struct FNV1a64 : IConsumer<long>
     {
         private const long Offset = unchecked((long)14695981039346656037);
         private const long Prime = 1099511628211;
 
         private long result = Offset;
 
-        public readonly long Invoke() => result;
+        internal readonly long Result => result;
 
         public void Invoke(long data) => result = (result ^ data) * Prime;
     }
@@ -566,7 +566,7 @@ public static class Intrinsics
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Invoke();
+        return hash.Result;
     }
 
     private static THashFunction GetHashCode<T, TInput, THashFunction>(Func<T, int, TInput> getter, int count, T arg)
@@ -598,7 +598,7 @@ public static class Intrinsics
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Invoke();
+        return hash.Result;
     }
 
     /// <summary>
@@ -619,7 +619,7 @@ public static class Intrinsics
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Invoke();
+        return hash.Result;
     }
 
     /// <summary>
@@ -743,7 +743,7 @@ public static class Intrinsics
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
 
-        return hash.Invoke();
+        return hash.Result;
     }
 
     /// <summary>
@@ -814,7 +814,7 @@ public static class Intrinsics
     /// <param name="obj">The object to be thrown.</param>
     /// <exception cref="RuntimeWrappedException">The exception containing wrapped <paramref name="obj"/>.</exception>
     [DoesNotReturn]
-    [DebuggerHidden]
+    [StackTraceHidden]
     public static void Throw(object obj)
     {
         Push(obj);
@@ -834,7 +834,7 @@ public static class Intrinsics
     /// <exception cref="RuntimeWrappedException">The exception containing wrapped <paramref name="obj"/>.</exception>
     /// <seealso cref="Throw(object)"/>
     [DoesNotReturn]
-    [DebuggerHidden]
+    [StackTraceHidden]
     public static Exception Error(object obj)
     {
         Push(obj);
@@ -858,8 +858,11 @@ public static class Intrinsics
     }
 
     /// <summary>
-    /// Gets length of the zero-base one-dimensional array.
+    /// Gets length of the array.
     /// </summary>
+    /// <remarks>
+    /// This method supports one-dimensional as well as multi-dimensional arrays.
+    /// </remarks>
     /// <param name="array">The array object.</param>
     /// <returns>The length of the array as native unsigned integer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

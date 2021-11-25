@@ -5,5 +5,5 @@ namespace DotNext.Threading.Tasks.Pooling;
 internal interface IPooledManualResetCompletionSource<TNode> : IValueTaskSource
     where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>
 {
-    Action<TNode>? OnConsumed { set; }
+    ref Action<TNode>? OnConsumed { get; }
 }

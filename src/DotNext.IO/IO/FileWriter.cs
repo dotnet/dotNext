@@ -34,13 +34,13 @@ public partial class FileWriter : Disposable
     /// or <paramref name="bufferSize"/> is less than 16 bytes.
     /// </exception>
     /// <exception cref="ArgumentNullException"><paramref name="handle"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="handle"/> is not opened in asynchronous mode.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="fileOffset"/> is less than zero;
+    /// or <paramref name="bufferSize"/> to small.
+    /// </exception>
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
-
-        if (!handle.IsAsync)
-            throw new ArgumentException(ExceptionMessages.AsyncFileExpected, nameof(handle));
 
         if (fileOffset < 0L)
             throw new ArgumentOutOfRangeException(nameof(fileOffset));
@@ -77,7 +77,7 @@ public partial class FileWriter : Disposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
     public void Produce(int bytes)
     {
-        if (bytes > FreeCapacity)
+        if ((uint)bytes > (uint)FreeCapacity)
             throw new ArgumentOutOfRangeException(nameof(bytes));
 
         bufferOffset += bytes;
@@ -129,6 +129,13 @@ public partial class FileWriter : Disposable
         bufferOffset = 0;
     }
 
+    private void FlushCore()
+    {
+        RandomAccess.Write(handle, WrittenMemory.Span, fileOffset);
+        fileOffset += bufferOffset;
+        bufferOffset = 0;
+    }
+
     /// <summary>
     /// Flushes buffered data to the file.
     /// </summary>
@@ -147,6 +154,18 @@ public partial class FileWriter : Disposable
         return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Flushes buffered data to the file.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
+    public void Write()
+    {
+        ThrowIfDisposed();
+
+        if (HasBufferedData)
+            FlushCore();
+    }
+
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
@@ -161,6 +180,23 @@ public partial class FileWriter : Disposable
         else
         {
             input.CopyTo(buffer.Memory);
+            bufferOffset += input.Length;
+        }
+    }
+
+    private void WriteSlow(ReadOnlySpan<byte> input)
+    {
+        if (bufferOffset > 0)
+            FlushCore();
+
+        if (input.Length > buffer.Length)
+        {
+            RandomAccess.Write(handle, input, fileOffset);
+            fileOffset += input.Length;
+        }
+        else
+        {
+            input.CopyTo(buffer.Span);
             bufferOffset += input.Length;
         }
     }
@@ -186,6 +222,26 @@ public partial class FileWriter : Disposable
         }
 
         return WriteSlowAsync(input, token);
+    }
+
+    /// <summary>
+    /// Writes the data to the file through the buffer.
+    /// </summary>
+    /// <param name="input">The input data to write.</param>
+    /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+    public void Write(ReadOnlySpan<byte> input)
+    {
+        ThrowIfDisposed();
+
+        if (input.Length <= FreeCapacity)
+        {
+            input.CopyTo(Buffer.Span);
+            bufferOffset += input.Length;
+        }
+        else
+        {
+            WriteSlow(input);
+        }
     }
 
     /// <inheritdoc />

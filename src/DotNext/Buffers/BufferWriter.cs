@@ -116,6 +116,9 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
         Advance(1);
     }
 
+    /// <inheritdoc />
+    void IGrowableBuffer<T>.Write(T value) => Add(value);
+
     /// <summary>
     /// Writes multiple elements.
     /// </summary>

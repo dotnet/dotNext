@@ -50,6 +50,8 @@ internal sealed class SparseMemoryStream : ReadOnlyStream
 
     public override void CopyTo(Stream destination, int bufferSize)
     {
+        ValidateCopyToArguments(destination, bufferSize);
+
         for (ReadOnlySpan<byte> currentBlock; current is not null; offset = 0, current = current.Next, position += currentBlock.Length)
         {
             destination.Write(currentBlock = current.WrittenMemory.Span.Slice(offset));
@@ -58,6 +60,8 @@ internal sealed class SparseMemoryStream : ReadOnlyStream
 
     public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
     {
+        ValidateCopyToArguments(destination, bufferSize);
+
         for (ReadOnlyMemory<byte> currentBlock; current is not null; offset = 0, current = current.Next, position += currentBlock.Length)
         {
             await destination.WriteAsync(currentBlock = current.WrittenMemory.Slice(offset), token).ConfigureAwait(false);

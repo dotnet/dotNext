@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -41,10 +42,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             return false;
         }
 
-        Action<ExchangePoint>? IPooledManualResetCompletionSource<ExchangePoint>.OnConsumed
-        {
-            set => consumedCallback = value;
-        }
+        ref Action<ExchangePoint>? IPooledManualResetCompletionSource<ExchangePoint>.OnConsumed => ref consumedCallback;
     }
 
     private readonly TaskCompletionSource disposeTask;
@@ -64,6 +62,8 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private ExchangePoint RentExchangePoint(T value)
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         var result = pool.Get();
         result.Value = value;
         return result;

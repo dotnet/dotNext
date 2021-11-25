@@ -1,7 +1,7 @@
 ﻿using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -259,19 +259,32 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         this.value = value;
         kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value) : NotEmptyValue;
-
-        static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
-        {
-            Debug.Assert(IsOptional);
-            if (optionalValue.Equals(null))
-                return NullValue;
-
-            if (optionalValue.Equals(Missing.Value))
-                return UndefinedValue;
-
-            return NotEmptyValue;
-        }
     }
+
+    private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
+    {
+        Debug.Assert(IsOptional);
+
+        return optionalValue.Equals(null)
+            ? NullValue
+            : optionalValue.Equals(Sentinel.Instance)
+            ? UndefinedValue
+            : NotEmptyValue;
+    }
+
+    /// <summary>
+    /// Determines whether the object represents meaningful value.
+    /// </summary>
+    /// <param name="value">The value to check.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="value"/> is not null,
+    /// or <see cref="Nullable{T}.HasValue"/> property is <see langword="true"/>,
+    /// or <see cref="Optional{T}.HasValue"/> property is <see langword="true"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public static bool IsValueDefined([NotNullWhen(true)] T? value)
+        => value is not null && (!IsOptional || GetKindUnsafe(ref value) == NotEmptyValue);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref readonly T? GetReference(in Optional<T> optional)
@@ -585,7 +598,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         null => IsNull,
         Optional<T> optional => Equals(in optional),
         T value => Equals(value),
-        _ => ReferenceEquals(other, Missing.Value) && IsUndefined,
+        _ => ReferenceEquals(other, Sentinel.Instance) && IsUndefined,
     };
 
     /// <summary>

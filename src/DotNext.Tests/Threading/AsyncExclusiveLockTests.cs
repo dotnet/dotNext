@@ -109,23 +109,19 @@ namespace DotNext.Threading
         public static async Task CaptureCallerInfo()
         {
             using var l = new AsyncExclusiveLock();
-            True(UIntPtr.Zero == l.SuspendedCallersCount);
             Empty(l.GetSuspendedCallers());
 
             l.TrackSuspendedCallers();
             await l.AcquireAsync();
-            True(UIntPtr.Zero == l.SuspendedCallersCount);
             Empty(l.GetSuspendedCallers());
 
             using var activity = new Activity("MyOperation").Start();
             var suspendedTask = l.AcquireAsync();
             False(suspendedTask.IsCompleted);
-            True(new UIntPtr(1) == l.SuspendedCallersCount);
             NotEmpty(l.GetSuspendedCallers());
             Equal("MyOperation", l.GetSuspendedCallers()[0] is Activity a ? a.OperationName : string.Empty);
 
             l.Release();
-            True(UIntPtr.Zero == l.SuspendedCallersCount);
             await suspendedTask;
         }
     }

@@ -1,8 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO.MemoryMappedFiles;
 
@@ -19,65 +18,35 @@ using IReadOnlySequenceSource = Buffers.IReadOnlySequenceSource<byte>;
 /// The class uses lazy initialization of memory-mapped file segment
 /// every time when <see cref="ReadOnlySequence{T}"/> switching between segments.
 /// </remarks>
-public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource
+public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource, IMemorySegmentProvider
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct Segment : IEquatable<Segment>
-    {
-        internal readonly int Length;
-        internal readonly long Offset;
-
-        internal Segment(long offset, int length)
-        {
-            Length = length;
-            Offset = offset;
-        }
-
-        internal Segment Next(int length) => new(Length + Offset, length);
-
-        private bool Equals(in Segment other)
-            => Length == other.Length && Offset == other.Offset;
-
-        public bool Equals(Segment other)
-            => Equals(in other);
-
-        public override bool Equals([NotNullWhen(true)] object? other) => other is Segment window && Equals(in window);
-
-        public override int GetHashCode()
-            => HashCode.Combine(Offset, Length);
-
-        public static bool operator ==(in Segment x, in Segment y)
-            => x.Equals(in y);
-
-        public static bool operator !=(in Segment x, in Segment y)
-            => !x.Equals(in y);
-    }
-
     private sealed class MemoryManager : MemoryManager<byte>
     {
-        internal readonly ReadOnlySequenceAccessor Cursor;
+        internal readonly IMemorySegmentProvider Cursor;
         internal readonly Segment Segment;
 
-        internal MemoryManager(ReadOnlySequenceAccessor cursor, Segment segment)
+        internal MemoryManager(IMemorySegmentProvider cursor, in Segment segment)
         {
             Cursor = cursor;
             Segment = segment;
         }
 
         public override unsafe Span<byte> GetSpan()
-            => new(Cursor.GetMemory(Segment), Segment.Length);
+            => Cursor.GetSpan(in Segment);
 
         public override Memory<byte> Memory => CreateMemory(Segment.Length);
 
         public override unsafe MemoryHandle Pin(int index)
-            => new(Cursor.GetMemory(Segment) + index);
+            => Cursor.Pin(in Segment, index);
 
         public override void Unpin()
         {
+            // nothing to do here
         }
 
         protected override void Dispose(bool disposing)
         {
+            // nothing to do here
         }
     }
 
@@ -85,9 +54,9 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
     {
         private readonly MemoryManager manager;
 
-        private MappedSegment(ReadOnlySequenceAccessor cursor, Segment segment)
+        private MappedSegment(IMemorySegmentProvider cursor, in Segment segment)
         {
-            manager = new MemoryManager(cursor, segment);
+            manager = new(cursor, segment);
             Memory = manager.Memory;
         }
 
@@ -110,7 +79,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         internal static void AddSegment(ReadOnlySequenceAccessor cursor, int length, ref MappedSegment? first, ref MappedSegment? last)
         {
             if (first is null || last is null)
-                first = last = new MappedSegment(cursor, length) { RunningIndex = 0L };
+                first = last = new(cursor, length) { RunningIndex = 0L };
             else
                 last = last.Next(length);
         }
@@ -189,7 +158,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
     {
     }
 
-    internal (ReadOnlySequenceSegment<byte> Head, ReadOnlySequenceSegment<byte> Tail) BuildSegments()
+    private (ReadOnlySequenceSegment<byte> Head, ReadOnlySequenceSegment<byte> Tail) BuildSegments()
     {
         MappedSegment? first = null, last = null;
         for (var remainingLength = totalLength; remainingLength > 0;)
@@ -225,9 +194,10 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         }
     }
 
-    private unsafe byte* GetMemory(in Segment window)
+    private unsafe Span<byte> GetSpan(in Segment window)
     {
         ThrowIfDisposed();
+
         if (current != window)
         {
             segment?.ReleasePointerAndDispose();
@@ -238,8 +208,15 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         }
 
         Debug.Assert(segment is not null);
-        return ptr + segment.PointerOffset;
+        return new(ptr + segment.PointerOffset, window.Length);
     }
+
+    /// <inheritdoc />
+    unsafe Span<byte> IMemorySegmentProvider.GetSpan(in Segment window) => GetSpan(in window);
+
+    /// <inheritdoc />
+    unsafe MemoryHandle IMemorySegmentProvider.Pin(in Segment window, int elementIndex)
+        => new(Unsafe.AsPointer(ref GetSpan(in window)[elementIndex]));
 
     /// <inheritdoc/>
     protected override unsafe void Dispose(bool disposing)

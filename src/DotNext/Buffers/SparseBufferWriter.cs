@@ -7,6 +7,8 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers;
 
+using Sequence = Collections.Generic.Sequence;
+
 /// <summary>
 /// Represents builder of the sparse memory buffer.
 /// </summary>
@@ -191,6 +193,16 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
     }
 
     /// <summary>
+    /// Adds a single item to the buffer.
+    /// </summary>
+    /// <param name="item">The item to add.</param>
+    /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
+    public void Add(T item) => Write(CreateReadOnlySpan(ref item, 1));
+
+    /// <inheritdoc />
+    void IGrowableBuffer<T>.Write(T value) => Add(value);
+
+    /// <summary>
     /// Writes a sequence of memory blocks to this builder.
     /// </summary>
     /// <param name="sequence">A sequence of memory blocks.</param>
@@ -287,7 +299,7 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
 
     /// <inheritdoc />
     IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => GetEnumerator();
+        => first is null ? Sequence.GetEmptyEnumerator<ReadOnlyMemory<T>>() : GetEnumerator();
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

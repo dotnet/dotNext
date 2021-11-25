@@ -105,7 +105,11 @@ public sealed class StreamSegment : Stream, IFlushable
 
     /// <inheritdoc/>
     public override int Read(byte[] buffer, int offset, int count)
-        => BaseStream.Read(buffer, offset, (int)Math.Min(count, RemainingBytes));
+    {
+        ValidateBufferArguments(buffer, offset, count);
+
+        return BaseStream.Read(buffer, offset, (int)Math.Min(count, RemainingBytes));
+    }
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)

@@ -35,6 +35,8 @@ internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
 
     public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
     {
+        ValidateCopyToArguments(destination, bufferSize);
+
         foreach (var segment in RemainingSequence)
             await destination.WriteAsync(segment, token).ConfigureAwait(false);
 
@@ -43,6 +45,8 @@ internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
 
     public override void CopyTo(Stream destination, int bufferSize)
     {
+        ValidateCopyToArguments(destination, bufferSize);
+
         foreach (var segment in RemainingSequence)
             destination.Write(segment.Span);
 

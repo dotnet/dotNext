@@ -31,7 +31,7 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         next = previous = null;
     }
 
-    internal virtual LinkedValueTaskCompletionSource<T>? CleanupAndGotoNext()
+    internal LinkedValueTaskCompletionSource<T>? CleanupAndGotoNext()
     {
         var next = this.next;
         this.next = previous = null;

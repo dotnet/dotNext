@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
 
@@ -99,8 +100,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
 
     internal static int? GetBufferSize(int sizeHint, int capacity, int writtenCount)
     {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+        Debug.Assert(sizeHint >= 0);
 
         if (sizeHint == 0)
             sizeHint = 1;

@@ -23,12 +23,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         private Action<WaitNode>? consumedCallback;
         internal bool IsStrongLock;
 
-        protected override void AfterConsumed()
-        {
-            ReportLockDuration();
-            consumedCallback?.Invoke(this);
-            CallerInfo = null;
-        }
+        protected override void AfterConsumed() => AfterConsumed(this);
 
         private protected override void ResetCore()
         {
@@ -36,10 +31,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             base.ResetCore();
         }
 
-        Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed
-        {
-            set => consumedCallback = value;
-        }
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
     }
 
     private sealed class State

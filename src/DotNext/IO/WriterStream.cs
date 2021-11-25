@@ -36,7 +36,12 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
 
     public abstract override void Write(ReadOnlySpan<byte> buffer);
 
-    public sealed override void Write(byte[] buffer, int offset, int count) => Write(new ReadOnlySpan<byte>(buffer, offset, count));
+    public sealed override void Write(byte[] buffer, int offset, int count)
+    {
+        ValidateBufferArguments(buffer, offset, count);
+
+        Write(new ReadOnlySpan<byte>(buffer, offset, count));
+    }
 
     public sealed override void WriteByte(byte value) => Write(CreateReadOnlySpan(ref value, 1));
 
@@ -81,7 +86,9 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
     private static void EndWrite(Task task)
     {
         using (task)
-            task.ConfigureAwait(false).GetAwaiter().GetResult();
+        {
+            task.Wait();
+        }
     }
 
     public override void EndWrite(IAsyncResult ar) => EndWrite((Task)ar);
