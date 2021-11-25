@@ -3,12 +3,12 @@ using System.Diagnostics.CodeAnalysis;
 namespace DotNext.Runtime.CompilerServices
 {
     [ExcludeFromCodeCoverage]
-    public sealed class BoxTests : Test
+    public sealed class SharedContainerTests : Test
     {
         [Fact]
         public static void BoxValue()
         {
-            Box<int> box = 10;
+            Shared<int> box = 10;
             Equal(10, box.Value);
         }
 
@@ -16,7 +16,7 @@ namespace DotNext.Runtime.CompilerServices
         public static void BoxNullableValue()
         {
             int? i = null;
-            Box<int> box = i;
+            Shared<int> box = i;
             Null(box);
 
             i = 10;

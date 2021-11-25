@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using Threading;
-using BoxedClusterMemberId = Runtime.CompilerServices.Box<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
 
 public partial class PersistentState
 {
