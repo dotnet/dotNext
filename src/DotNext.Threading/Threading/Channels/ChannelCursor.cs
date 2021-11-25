@@ -28,20 +28,18 @@ internal struct ChannelCursor
         {
             stateFile = File.OpenHandle(stateFileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.None);
             RandomAccess.Read(stateFile, stateBuffer, 0L);
-            position = BinaryPrimitives.ReadInt64LittleEndian(stateBuffer.AsSpan(PositionOffset));
-            offset = BinaryPrimitives.ReadInt64LittleEndian(stateBuffer.AsSpan(OffsetOffset));
         }
         else
         {
             // open handle in synchronous mode to allocate space on the disk
             stateFile = File.OpenHandle(stateFileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, FileOptions.None, StateFileSize);
             RandomAccess.Write(stateFile, stateBuffer, 0L);
-            position = 0L;
-            offset = 0L;
         }
 
         stateFile.Dispose();
         stateFile = File.OpenHandle(stateFileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
+        position = BinaryPrimitives.ReadInt64LittleEndian(stateBuffer.AsSpan(PositionOffset));
+        offset = BinaryPrimitives.ReadInt64LittleEndian(stateBuffer.AsSpan(OffsetOffset));
     }
 
     internal readonly long Position => position;
