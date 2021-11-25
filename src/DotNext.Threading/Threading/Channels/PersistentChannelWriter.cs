@@ -38,7 +38,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
             var partition = Partition;
             await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);
-            cursor.Advance(partition.Position);
+            await cursor.AdvanceAsync(partition.Position, token).ConfigureAwait(false);
         }
 
         writer.MessageReady();

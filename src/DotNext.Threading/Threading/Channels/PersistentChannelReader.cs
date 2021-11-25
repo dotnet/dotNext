@@ -110,7 +110,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             // reset file cache
             await lookup.FlushAsync(token).ConfigureAwait(false);
             result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
-            cursor.Advance(lookup.Position);
+            await cursor.AdvanceAsync(lookup.Position, token).ConfigureAwait(false);
         }
 
         readRate?.Increment();
@@ -126,7 +126,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         {
             var lookup = Partition;
             buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
-            cursor.Advance(lookup.Position);
+            await cursor.AdvanceAsync(lookup.Position, token).ConfigureAwait(false);
         }
 
         return true;
