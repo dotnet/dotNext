@@ -5,7 +5,7 @@ using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTask
 
 namespace DotNext.Threading.Tasks;
 
-using BoxedVersion = Runtime.CompilerServices.Box<short>;
+using BoxedVersion = Runtime.CompilerServices.Shared<short>;
 
 /// <summary>
 /// Represents base class for producer of value task.
