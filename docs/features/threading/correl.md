@@ -6,7 +6,7 @@ The correlation contains of two steps:
 * Start waiting for the signal (event) with the specified identifier
 * Signal that the suspended caller from the first step can be resumed
 
-Each event must be represented by some unique identifier used as a key. This is necessary to correlate invocation of `WaitAsync` and `TryPulse` methods.
+Each event must be represented by some unique identifier used as a key. This is necessary to correlate invocation of `WaitAsync` and `Pulse` methods.
 
 ```csharp
 using DotNext.Threading;
@@ -25,7 +25,7 @@ var response = await task;
 
 // remote party must handle request message and construct reply message with the same identifier.
 // When reply message received, just inform the source about that
-source.TryPulse(eventId, "Hello, world!");
+source.Pulse(eventId, "Hello, world!");
 ```
 
 To achieve the best performance, the following design decisions are applied to the implementation:
