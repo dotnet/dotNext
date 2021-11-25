@@ -117,6 +117,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <param name="token">The token that can be used to cancel the waiting operation.</param>
     /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="BarrierPostPhaseException"><see cref="PostPhase(long)"/> fails.</exception>
     public async ValueTask<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
         ThrowIfDisposed();
@@ -147,6 +148,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <param name="token">The token that can be used to cancel the waiting operation.</param>
     /// <returns>The task representing waiting operation.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="BarrierPostPhaseException"><see cref="PostPhase(long)"/> fails.</exception>
     public async ValueTask SignalAndWaitAsync(CancellationToken token = default)
     {
         ThrowIfDisposed();
