@@ -138,7 +138,7 @@ public static class OneDimensionalArray
         if (index < 0L || index >= length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        if (length == 1L)
+        if (length == 1)
             return Array.Empty<T>();
 
         var newStore = new T[length - 1];
