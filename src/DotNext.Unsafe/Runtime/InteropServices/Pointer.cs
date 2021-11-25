@@ -48,7 +48,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         /// <summary>
         /// Pointer to the currently enumerating element.
         /// </summary>
-        public Pointer<T> Pointer
+        public readonly Pointer<T> Pointer
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => new(ptr + index);
@@ -57,7 +57,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         /// <summary>
         /// Current element.
         /// </summary>
-        public T Current
+        public readonly T Current
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ptr[index];

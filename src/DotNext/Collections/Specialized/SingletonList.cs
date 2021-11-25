@@ -32,7 +32,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
         /// <summary>
         /// Gets the current element.
         /// </summary>
-        public T Current { get; }
+        public readonly T Current { get; }
 
         /// <inheritdoc />
         readonly object? IEnumerator.Current => Current;
