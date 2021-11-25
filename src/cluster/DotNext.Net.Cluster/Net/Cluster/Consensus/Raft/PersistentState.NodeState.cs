@@ -56,27 +56,21 @@ public partial class PersistentState
             Debug.Assert(Capacity >= LastVoteOffset + sizeof(long));
 
             buffer = allocator.Invoke(Capacity, true);
-
-            FileMode fileMode;
-            long initialSize;
             if (File.Exists(fileName))
             {
-                fileMode = FileMode.OpenOrCreate;
-                initialSize = 0L;
+                handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.None);
+                RandomAccess.Read(handle, buffer.Span, 0L);
             }
             else
             {
-                fileMode = FileMode.CreateNew;
-                initialSize = Capacity;
-            }
-
-            // open file in synchronous mode to restore the state
-            handle = File.OpenHandle(fileName, fileMode, FileAccess.ReadWrite, FileShare.Read, FileOptions.None, initialSize);
-            if (RandomAccess.Read(handle, buffer.Span, 0L) < Capacity)
-            {
+                handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, FileOptions.None, Capacity);
                 buffer.Span.Clear();
                 RandomAccess.Write(handle, buffer.Span, 0L);
             }
+
+            // reopen handle in asynchronous mode
+            handle.Dispose();
+            handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
 
             // restore state
             ReadOnlySpan<byte> bufferSpan = buffer.Span;
@@ -87,10 +81,6 @@ public partial class PersistentState
             snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
             if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
                 votedFor = new() { Value = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)) };
-
-            // reopen handle in asynchronous mode
-            handle.Dispose();
-            handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
         }
 
         internal NodeState(DirectoryInfo location, MemoryAllocator<byte> allocator)
