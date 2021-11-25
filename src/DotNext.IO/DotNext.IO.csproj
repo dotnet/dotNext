@@ -10,13 +10,13 @@
     <Company />
     <Product>.NEXT Family of Libraries</Product>
     <VersionPrefix>4.0.0</VersionPrefix>
-    <VersionSuffix>rc.2</VersionSuffix>
+    <VersionSuffix></VersionSuffix>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>.netstandard;io;pipe;encoding;decoding;buffer;pipelines;stream;readstring;writestring</PackageTags>
+    <PackageTags>io;pipe;encoding;decoding;buffer;pipelines;stream;readstring;writestring</PackageTags>
     <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe</Description>
