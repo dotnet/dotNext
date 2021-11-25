@@ -79,19 +79,19 @@ public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput> : IReadOnly
     /// <returns><see langword="true"/> if the key exists in the wrapped dictionary; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey(TKey key) => source?.ContainsKey(key) ?? false;
 
+    private static IEnumerator<KeyValuePair<TKey, TOutput>> GetEnumerator(IReadOnlyDictionary<TKey, TInput> source, Func<TInput, TOutput> mapper)
+    {
+        foreach (var (key, value) in source)
+            yield return new KeyValuePair<TKey, TOutput>(key, mapper.Invoke(value));
+    }
+
     /// <summary>
     /// Returns enumerator over key/value pairs in the wrapped dictionary
     /// and performs conversion for each value in the pair.
     /// </summary>
     /// <returns>The enumerator over key/value pairs.</returns>
     public IEnumerator<KeyValuePair<TKey, TOutput>> GetEnumerator()
-    {
-        if (source is null)
-            yield break;
-
-        foreach (var (key, value) in source)
-            yield return new KeyValuePair<TKey, TOutput>(key, mapper.Invoke(value));
-    }
+        => source is null || mapper is null || source.Count == 0 ? Sequence.GetEmptyEnumerator<KeyValuePair<TKey, TOutput>>() : GetEnumerator(source, mapper);
 
     /// <summary>
     /// Returns the converted value associated with the specified key.

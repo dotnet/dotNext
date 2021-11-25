@@ -39,7 +39,8 @@ internal struct Enumerable<T, TList> : IEnumerable<T>
 
     public readonly Enumerator GetEnumerator() => new(list);
 
-    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        => list.Count == 0 ? Sequence.GetEmptyEnumerator<T>() : GetEnumerator();
 
     readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
