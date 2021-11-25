@@ -139,9 +139,9 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
         else
         {
             var array = Unsafe.As<TDelegate[]>(list);
-            var index = Array.IndexOf(array, d);
+            long index = Array.IndexOf(array, d);
 
-            if (index >= 0)
+            if (index >= 0L)
                 array = OneDimensionalArray.RemoveAt(array, index);
 
             result = new(array);
