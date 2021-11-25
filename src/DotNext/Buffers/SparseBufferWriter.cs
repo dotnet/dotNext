@@ -191,6 +191,16 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
     }
 
     /// <summary>
+    /// Adds a single item to the buffer.
+    /// </summary>
+    /// <param name="item">The item to add.</param>
+    /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
+    public void Add(T item) => Write(CreateReadOnlySpan(ref item, 1));
+
+    /// <inheritdoc />
+    void IGrowableBuffer<T>.Write(T value) => Add(value);
+
+    /// <summary>
     /// Writes a sequence of memory blocks to this builder.
     /// </summary>
     /// <param name="sequence">A sequence of memory blocks.</param>
