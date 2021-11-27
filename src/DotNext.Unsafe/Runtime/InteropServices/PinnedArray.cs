@@ -163,7 +163,7 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// <inheritdoc />
     int IReadOnlyCollection<T>.Count => Length;
 
-    private unsafe long Size => checked(Length * sizeof(T));
+    private unsafe long Size => Math.BigMul(Length, sizeof(T));
 
     /// <inheritdoc />
     long IUnmanagedMemory.Size => Size;

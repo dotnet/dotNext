@@ -75,9 +75,10 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        var newPosition = checked(position + count);
-        if (newPosition > span.Length)
+        var newPosition = position + count;
+        if ((uint)newPosition > (uint)span.Length)
             throw new ArgumentOutOfRangeException(nameof(count));
+
         position = newPosition;
     }
 
@@ -88,7 +89,7 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
     public void Rewind(int count)
     {
-        if (count < 0 || count > position)
+        if ((uint)count > (uint)position)
             throw new ArgumentOutOfRangeException(nameof(count));
 
         position -= count;
@@ -149,8 +150,8 @@ public ref struct SpanWriter<T>
     /// </returns>
     public bool TryAdd(T item)
     {
-        var newLength = checked(position + 1);
-        if (newLength > span.Length)
+        var newLength = position + 1;
+        if ((uint)newLength > (uint)span.Length)
             return false;
 
         Unsafe.Add(ref MemoryMarshal.GetReference(span), position) = item;
@@ -184,8 +185,8 @@ public ref struct SpanWriter<T>
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        var newLength = checked(position + count);
-        if (newLength <= span.Length)
+        var newLength = position + count;
+        if ((uint)newLength <= (uint)span.Length)
         {
             segment = span.Slice(position, count);
             position = newLength;
