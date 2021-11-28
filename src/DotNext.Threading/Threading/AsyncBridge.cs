@@ -2,6 +2,8 @@
 
 namespace DotNext.Threading;
 
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
 /// </summary>
@@ -60,8 +62,8 @@ public static partial class AsyncBridge
         else if (!HandlePool.TryTake(out result))
             result = new(WaitHandleTaskCompletionCallback);
 
-        var token = result.Reset();
-        var registration = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, true);
+        Shared<short> token = result.Reset();
+        var registration = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, executeOnlyOnce: true);
 
         if (result.IsCompleted)
         {

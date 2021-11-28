@@ -1,7 +1,10 @@
 using System.Collections.Concurrent;
+using Debug = System.Diagnostics.Debug;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
+using Runtime.CompilerServices;
 using Tasks;
 
 public static partial class AsyncBridge
@@ -29,11 +32,12 @@ public static partial class AsyncBridge
             backToPool(this);
         }
 
-        private void Complete(short token, bool timedOut)
-            => TrySetResult(token, !timedOut);
-
         internal void Complete(object? token, bool timedOut)
-            => Complete((short)token!, timedOut);
+        {
+            Debug.Assert(token is Shared<short>);
+
+            TrySetResult(Unsafe.As<Shared<short>>(token).Value, !timedOut);
+        }
     }
 
     private sealed class WaitHandleValueTaskPool : ConcurrentBag<WaitHandleValueTask>
