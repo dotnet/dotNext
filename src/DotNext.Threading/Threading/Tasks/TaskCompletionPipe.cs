@@ -12,7 +12,9 @@ namespace DotNext.Threading.Tasks;
 public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     where T : Task
 {
-    private uint countOfAddedTasks;
+    // Represents a number of scheduled tasks which can be greater than the number of enqueued tasks
+    // because only completed task can be enqueued
+    private uint scheduledTasksCount;
     private bool completionRequested;
 
     /// <summary>
@@ -48,7 +50,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (completionRequested)
             throw new InvalidOperationException();
 
-        if (countOfAddedTasks == 0 && (signal?.TrySetResult(false) ?? false))
+        if (scheduledTasksCount == 0 && (signal?.TrySetResult(false) ?? false))
             signal = null;
 
         completionRequested = true;
@@ -68,7 +70,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (completionRequested)
             throw new InvalidOperationException();
 
-        countOfAddedTasks++;
+        scheduledTasksCount++;
 
         if (task.IsCompleted)
         {
@@ -111,10 +113,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (completedTasks.TryDequeue(out task))
         {
-            countOfAddedTasks--;
+            scheduledTasksCount--;
             result = new(true);
         }
-        else if (countOfAddedTasks == 0 && completionRequested)
+        else if (scheduledTasksCount == 0 && completionRequested)
         {
             result = new(false);
         }
@@ -138,7 +140,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         if (completedTasks.TryDequeue(out task))
         {
-            countOfAddedTasks--;
+            scheduledTasksCount--;
             return true;
         }
 
@@ -158,7 +160,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         {
             result = new(true);
         }
-        else if (countOfAddedTasks == 0 && completionRequested)
+        else if (scheduledTasksCount == 0 && completionRequested)
         {
             result = new(false);
         }
