@@ -29,8 +29,9 @@ public static class OneDimensionalArray
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is less than 0 or greater than length of <paramref name="left"/> array.</exception>
     public static T[] Concat<T>(this T[] left, T[] right, long startIndex)
     {
-        if (startIndex < 0 || startIndex > Intrinsics.GetLength(left))
+        if ((ulong)startIndex > (ulong)left.LongLength)
             throw new ArgumentOutOfRangeException(nameof(startIndex));
+
         var result = new T[startIndex + right.LongLength];
         Array.Copy(left, result, startIndex);
         Array.Copy(right, 0L, result, startIndex, right.Length);
@@ -94,7 +95,8 @@ public static class OneDimensionalArray
     /// <returns>A modified array with inserted element.</returns>
     public static T[] Insert<T>(this T[] array, T element, long index)
     {
-        if (index < 0 || index > array.LongLength)
+        var length = array.LongLength;
+        if ((ulong)index > (ulong)length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
         T[] result;
@@ -104,9 +106,9 @@ public static class OneDimensionalArray
         }
         else
         {
-            result = new T[array.LongLength + 1];
-            Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
-            Array.Copy(array, index, result, index + 1, array.LongLength - index);
+            result = new T[length + 1];
+            Array.Copy(array, 0, result, 0, Math.Min(index + 1, length));
+            Array.Copy(array, index, result, index + 1, length - index);
             result[index] = element;
         }
 
@@ -135,7 +137,7 @@ public static class OneDimensionalArray
     public static T[] RemoveAt<T>(this T[] array, long index)
     {
         var length = Intrinsics.GetLength(array);
-        if (index < 0L || index >= length)
+        if ((ulong)index >= (ulong)length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
         if (length == 1)

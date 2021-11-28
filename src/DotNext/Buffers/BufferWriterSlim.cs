@@ -192,7 +192,7 @@ public ref partial struct BufferWriterSlim<T>
     {
         get
         {
-            if (index < 0 || index >= position)
+            if ((uint)index >= (uint)position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             ref var first = ref NoOverflow

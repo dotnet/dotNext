@@ -219,7 +219,7 @@ public static class Reference
     {
         ArgumentNullException.ThrowIfNull(array);
 
-        if (index < 0 || index >= Intrinsics.GetLength(array))
+        if ((nuint)index >= (nuint)Intrinsics.GetLength(array))
             throw new ArgumentOutOfRangeException(nameof(index));
 
         return new(array, index);
