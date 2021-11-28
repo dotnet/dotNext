@@ -31,7 +31,7 @@ public static partial class AsyncBridge
         if (instantiatedTasks > maxPoolSize)
             result = new(static t => t.Reset());
         else if (!TokenPool.TryTake(out result))
-            result = new(TokenPool.Return);
+            result = new(CancellationTokenValueTaskCompletionCallback);
 
         result.CompleteAsCanceled = completeAsCanceled;
         result.Reset();
@@ -58,7 +58,7 @@ public static partial class AsyncBridge
         if (instantiatedTasks > maxPoolSize)
             result = new(static t => t.Reset());
         else if (!HandlePool.TryTake(out result))
-            result = new(HandlePool.Return);
+            result = new(WaitHandleTaskCompletionCallback);
 
         var token = result.Reset();
         var registration = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, true);

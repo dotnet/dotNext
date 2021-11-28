@@ -32,7 +32,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         }
     }
 
-    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<DefaultWaitNode> pool;
     private LockManager manager;
 
     /// <summary>
@@ -45,7 +45,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -53,7 +53,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public AsyncExclusiveLock()
     {
-        pool = new(RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void OnCompleted(DefaultWaitNode node)
+    {
+        RemoveAndDrainWaitQueue(node);
+        pool.Return(node);
     }
 
     /// <summary>
@@ -84,7 +91,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -98,7 +105,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.

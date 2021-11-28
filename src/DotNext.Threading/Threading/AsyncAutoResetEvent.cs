@@ -39,7 +39,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         }
     }
 
-    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<DefaultWaitNode> pool;
     private StateManager manager;
 
     /// <summary>
@@ -54,7 +54,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         manager = new(initialState);
-        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -64,7 +64,14 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncAutoResetEvent(bool initialState)
     {
         manager = new(initialState);
-        pool = new(RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void OnCompleted(DefaultWaitNode node)
+    {
+        RemoveAndDrainWaitQueue(node);
+        pool.Return(node);
     }
 
     /// <summary>
@@ -139,7 +146,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -150,5 +157,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
 }

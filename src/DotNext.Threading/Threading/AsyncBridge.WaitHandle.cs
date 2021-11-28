@@ -40,10 +40,11 @@ public static partial class AsyncBridge
     {
         internal void Return(WaitHandleValueTask vt)
         {
-            vt.Reset();
-            Add(vt);
+            if (vt.TryReset(out _))
+                Add(vt);
         }
     }
 
     private static readonly WaitHandleValueTaskPool HandlePool = new();
+    private static readonly Action<WaitHandleValueTask> WaitHandleTaskCompletionCallback = HandlePool.Return;
 }

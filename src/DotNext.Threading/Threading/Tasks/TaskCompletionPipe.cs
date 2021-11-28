@@ -25,15 +25,17 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        pool = new(RemoveSignal);
+        pool = new(OnCompleted);
         completedTasks = new(capacity);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private void RemoveSignal(Signal signal)
+    private void OnCompleted(Signal signal)
     {
         if (ReferenceEquals(this.signal, signal))
             this.signal = null;
+
+        pool.Return(signal);
     }
 
     /// <summary>

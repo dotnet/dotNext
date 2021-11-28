@@ -48,7 +48,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<DefaultWaitNode> pool;
     private StateManager manager;
 
     /// <summary>
@@ -66,7 +66,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         manager = new(initialValue);
-        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -80,7 +80,14 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(initialValue));
 
         manager = new(initialValue);
-        pool = new(RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void OnCompleted(DefaultWaitNode node)
+    {
+        RemoveAndDrainWaitQueue(node);
+        pool.Return(node);
     }
 
     /// <inheritdoc/>
@@ -140,7 +147,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -152,7 +159,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

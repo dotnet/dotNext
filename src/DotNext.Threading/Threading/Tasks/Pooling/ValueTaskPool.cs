@@ -1,51 +1,98 @@
-using Microsoft.Extensions.ObjectPool;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks.Pooling;
 
-internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>
+[StructLayout(LayoutKind.Auto)]
+internal struct ValueTaskPool<TNode>
     where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>, new()
 {
-    private sealed class PooledNodePolicy : IPooledObjectPolicy<TNode>
+    private const int GrowFactor = 2;
+    private const int MinimumGrow = 4;
+
+    private readonly bool limited;
+    private readonly Action<TNode> backToPool;
+    private TNode?[] array;
+    private int cursor;
+
+    internal ValueTaskPool(Action<TNode> backToPool)
     {
-        private readonly Action<TNode> consumedCallback;
+        Debug.Assert(backToPool is not null);
+        Debug.Assert((backToPool.Method.MethodImplementationFlags & MethodImplAttributes.Synchronized) != 0);
 
-        internal PooledNodePolicy(Action<TNode> consumedCallback)
-            => this.consumedCallback = consumedCallback;
-
-        TNode IPooledObjectPolicy<TNode>.Create()
-        {
-            var result = new TNode();
-            result.OnConsumed = consumedCallback;
-            return result;
-        }
-
-        bool IPooledObjectPolicy<TNode>.Return(TNode obj) => obj.TryReset(out _);
+        limited = false;
+        array = new TNode?[MinimumGrow];
+        cursor = 0;
+        this.backToPool = backToPool;
     }
 
-    private sealed class ValueTaskPoolWeakReference : WeakReference
+    internal ValueTaskPool(Action<TNode> backToPool, int maximumRetained)
     {
-        internal ValueTaskPoolWeakReference()
-            : base(null, false)
-        {
-        }
+        Debug.Assert(maximumRetained > 0);
 
-        internal new ValueTaskPool<TNode>? Target
-        {
-            get => base.Target as ValueTaskPool<TNode>;
-            set => base.Target = value;
-        }
-
-        internal void Return(TNode node) => Target?.Return(node);
+        limited = true;
+        array = new TNode?[maximumRetained];
+        cursor = 0;
+        this.backToPool = backToPool;
     }
 
-    internal ValueTaskPool(int maximumRetained, Action<TNode>? completionCallback = null)
-        : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)), maximumRetained)
-        => weakRef.Target = this;
+    private void Grow()
+    {
+        if (array.Length == Array.MaxLength)
+            throw new InsufficientMemoryException();
 
-    internal ValueTaskPool(Action<TNode>? completionCallback = null)
-        : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)))
-        => weakRef.Target = this;
+        var newLength = array.Length * GrowFactor;
 
-    private static Action<TNode> CreateBackToPoolCallback(out ValueTaskPoolWeakReference weakRef)
-        => (weakRef = new()).Return;
+        if ((uint)newLength > Array.MaxLength)
+            newLength = Array.MaxLength;
+
+        Array.Resize(ref array, Math.Max(newLength, MinimumGrow));
+    }
+
+    internal void Return(TNode node)
+    {
+        Debug.Assert(backToPool.Target is not null);
+        Debug.Assert(Monitor.IsEntered(backToPool.Target));
+
+        if (node.TryReset(out _))
+        {
+            node.OnConsumed = null;
+
+            if ((uint)cursor >= (uint)array.Length)
+            {
+                if (limited)
+                    return;
+
+                Grow();
+            }
+
+            // avoid covariance check
+            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), cursor++) = node;
+        }
+    }
+
+    internal TNode Get()
+    {
+        Debug.Assert(backToPool.Target is not null);
+        Debug.Assert(Monitor.IsEntered(backToPool.Target));
+
+        TNode result;
+        if (cursor == 0)
+        {
+            result = new();
+        }
+        else
+        {
+            ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), --cursor);
+            Debug.Assert(holder is not null);
+
+            result = holder;
+            holder = null;
+        }
+
+        result.OnConsumed = backToPool;
+        return result;
+    }
 }

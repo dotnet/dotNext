@@ -99,7 +99,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetResult(short completionToken, T value)
-        => TrySetResult(completionToken, &Result.FromValue, value);
+        => TrySetResult(&Result.FromValue, value, completionToken);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -116,7 +116,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetException(short completionToken, Exception e)
-        => TrySetResult(completionToken, &Result.FromException<T>, e);
+        => TrySetResult(&Result.FromException<T>, e, completionToken);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -133,7 +133,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetCanceled(short completionToken, CancellationToken token)
-        => TrySetResult(completionToken, &FromCanceled, token);
+        => TrySetResult(&FromCanceled, token, completionToken);
 
     private protected sealed override void CompleteAsTimedOut()
         => SetResult(OnTimeout());
@@ -141,33 +141,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     private protected sealed override void CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
-    private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg)
+    private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg, short? completionToken = null)
     {
         Debug.Assert(func != null);
 
         bool result;
-        if (result = Status == ManualResetCompletionSourceStatus.Activated)
+        if (result = CanBeCompleted)
         {
             lock (SyncRoot)
             {
-                if (result = Status == ManualResetCompletionSourceStatus.Activated)
-                    SetResult(func(arg));
-            }
-        }
-
-        return result;
-    }
-
-    private unsafe bool TrySetResult<TArg>(short completionToken, delegate*<TArg, Result<T>> func, TArg arg)
-    {
-        Debug.Assert(func != null);
-
-        bool result;
-        if (result = Status == ManualResetCompletionSourceStatus.Activated)
-        {
-            lock (SyncRoot)
-            {
-                if (result = Status == ManualResetCompletionSourceStatus.Activated && completionToken == version)
+                if (result = CanBeCompleted && completionToken.GetValueOrDefault(version) == version)
                     SetResult(func(arg));
             }
         }

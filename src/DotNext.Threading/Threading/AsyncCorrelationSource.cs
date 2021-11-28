@@ -46,7 +46,6 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             buckets[i] = new();
 
         this.comparer = comparer ?? EqualityComparer<TKey>.Default;
-        pool = new ValueTaskPool<WaitNode>(concurrencyLevel);
     }
 
     /// <summary>
@@ -132,17 +131,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled<TValue>(token);
 
-        var bucket = GetBucket(eventId);
-        var node = pool.Get();
-
-        // initialize node
-        node.Initialize(eventId, bucket, userData);
-
-        // we need to add the node to the list before the task construction
-        // to ensure that completed node will not be added to the list due to cancellation
-        bucket.Add(node);
-
-        return node.CreateTask(timeout, token);
+        return GetBucket(eventId).CreateNode(eventId, userData).CreateTask(timeout, token);
     }
 
     /// <summary>

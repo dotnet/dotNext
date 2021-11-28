@@ -10,15 +10,9 @@ public partial class TaskCompletionPipe<T>
 
         protected override void AfterConsumed() => completionCallback?.Invoke(this);
 
-        private protected override void ResetCore()
-        {
-            completionCallback = null;
-            base.ResetCore();
-        }
-
         ref Action<Signal>? IPooledManualResetCompletionSource<Signal>.OnConsumed => ref completionCallback;
     }
 
-    private readonly ValueTaskPool<Signal> pool;
+    private ValueTaskPool<Signal> pool;
     private Signal? signal;
 }

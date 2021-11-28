@@ -27,7 +27,6 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         private protected override void ResetCore()
         {
             Value = default;
-            consumedCallback = null;
             base.ResetCore();
         }
 
@@ -46,7 +45,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     }
 
     private readonly TaskCompletionSource disposeTask;
-    private readonly ValueTaskPool<ExchangePoint> pool;
+    private ValueTaskPool<ExchangePoint> pool;
     private ExchangePoint? point;
     private bool disposeRequested;
     private volatile ExchangeTerminatedException? termination;
@@ -74,6 +73,8 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         if (ReferenceEquals(this.point, point))
             this.point = null;
+
+        pool.Return(point);
     }
 
     /// <summary>
