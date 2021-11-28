@@ -67,7 +67,8 @@ public partial class TaskCompletionPipe<T>
             if ((uint)tail >= (uint)array.Length)
                 Grow();
 
-            array[tail++] = task;
+            // avoid covariance check
+            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), tail++) = task;
         }
     }
 
