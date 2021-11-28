@@ -105,18 +105,25 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
     {
+        ValueTask<bool> result;
+
         if (completedTasks.TryDequeue(out task))
         {
             countOfAddedTasks--;
-            return new(true);
+            result = new(true);
+        }
+        else if (countOfAddedTasks == 0 && completionRequested)
+        {
+            result = new(false);
+        }
+        else
+        {
+            var source = pool.Get();
+            signal = source;
+            result = source.CreateTask(InfiniteTimeSpan, token);
         }
 
-        if (countOfAddedTasks == 0 && completionRequested)
-            return new(false);
-
-        var source = pool.Get();
-        signal = source;
-        return source.CreateTask(InfiniteTimeSpan, token);
+        return result;
     }
 
     /// <summary>
@@ -144,15 +151,23 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
     {
+        ValueTask<bool> result;
         if (!completedTasks.IsEmpty)
-            return new(true);
+        {
+            result = new(true);
+        }
+        else if (countOfAddedTasks == 0 && completionRequested)
+        {
+            result = new(false);
+        }
+        else
+        {
+            var source = pool.Get();
+            signal = source;
+            result = source.CreateTask(InfiniteTimeSpan, token);
+        }
 
-        if (countOfAddedTasks == 0 && completionRequested)
-            return new(false);
-
-        var source = pool.Get();
-        signal = source;
-        return source.CreateTask(InfiniteTimeSpan, token);
+        return result;
     }
 
     /// <summary>
