@@ -18,7 +18,7 @@ public partial class TaskCompletionPipe<T>
 
         internal Queue(int capacity)
         {
-            array = new T[capacity];
+            array = capacity == 0 ? Array.Empty<T>() : new T[capacity];
             head = tail = 0;
         }
 
