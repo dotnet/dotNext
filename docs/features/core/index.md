@@ -197,7 +197,7 @@ using System;
 
 var timestamp = Timestamp.Current;
 //long-running operation
-Console.WriteLine(current.Elapsed);
+Console.WriteLine(timestamp.Elapsed);
 ```
 
 `Elapsed` property returning value of [TimeSpan](https://docs.microsoft.com/en-us/dotnet/api/system.timespan) type which indicates the difference between `timestamp` and the current point in time.
