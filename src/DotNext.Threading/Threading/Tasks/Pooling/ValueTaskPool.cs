@@ -53,6 +53,7 @@ internal struct ValueTaskPool<TNode>
 
     internal void Return(TNode node)
     {
+        Debug.Assert(node is not null);
         Debug.Assert(backToPool.Target is not null);
         Debug.Assert(Monitor.IsEntered(backToPool.Target));
 
