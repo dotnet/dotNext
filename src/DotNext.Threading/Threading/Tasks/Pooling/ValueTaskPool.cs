@@ -1,54 +1,34 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks.Pooling;
 
+/*
+ * Represents a pool without any allocations. Assuming that wait queues are organized using
+ * linked nodes where each node is a completion source. If so, the node pointers (next/previous)
+ * can be used to keep completion sources in the pool. Moreover, access to the pool is synchronized
+ * by the caller (see QueuedSynchronizer). Thus, it doesn't require explicit synchronization such as
+ * Monitor lock.
+ */
 [StructLayout(LayoutKind.Auto)]
-internal struct ValueTaskPool<TNode>
-    where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>, new()
+internal struct ValueTaskPool<T, TNode>
+    where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TNode>, new()
 {
-    private const int GrowFactor = 2;
-    private const int MinimumGrow = 4;
-
-    private readonly bool limited;
+    private readonly long maximumRetained; // zero when no limitations
     private readonly Action<TNode> backToPool;
-    private TNode?[] array;
-    private int cursor;
+    private TNode? first;
+    private long count;
 
-    internal ValueTaskPool(Action<TNode> backToPool)
+    internal ValueTaskPool(Action<TNode> backToPool, long? maximumRetained = null)
     {
         Debug.Assert(backToPool is not null);
         Debug.Assert((backToPool.Method.MethodImplementationFlags & MethodImplAttributes.Synchronized) != 0);
 
-        limited = false;
-        array = new TNode?[MinimumGrow];
-        cursor = 0;
         this.backToPool = backToPool;
-    }
-
-    internal ValueTaskPool(Action<TNode> backToPool, int maximumRetained)
-    {
-        Debug.Assert(maximumRetained > 0);
-
-        limited = true;
-        array = new TNode?[maximumRetained];
-        cursor = 0;
-        this.backToPool = backToPool;
-    }
-
-    private void Grow()
-    {
-        if (array.Length == Array.MaxLength)
-            throw new InsufficientMemoryException();
-
-        var newLength = array.Length * GrowFactor;
-
-        if ((uint)newLength > Array.MaxLength)
-            newLength = Array.MaxLength;
-
-        Array.Resize(ref array, Math.Max(newLength, MinimumGrow));
+        first = null;
+        count = 0;
+        this.maximumRetained = maximumRetained.GetValueOrDefault(0L);
     }
 
     internal void Return(TNode node)
@@ -57,21 +37,23 @@ internal struct ValueTaskPool<TNode>
         Debug.Assert(backToPool.Target is not null);
         Debug.Assert(Monitor.IsEntered(backToPool.Target));
 
-        if (node.TryReset(out _))
-        {
-            node.OnConsumed = null;
+        if (!node.TryReset(out _))
+            goto exit;
 
-            if ((uint)cursor >= (uint)array.Length)
-            {
-                if (limited)
-                    return;
+        node.OnConsumed = null;
 
-                Grow();
-            }
+        if (maximumRetained > 0L && count >= maximumRetained)
+            goto exit;
 
-            // avoid covariance check
-            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), cursor++) = node;
-        }
+        Debug.Assert(count == 0L || first is not null);
+
+        first?.Prepend(node);
+        first = node;
+        count++;
+        Debug.Assert(count > 0L);
+
+    exit:
+        return;
     }
 
     internal TNode Get()
@@ -80,17 +62,21 @@ internal struct ValueTaskPool<TNode>
         Debug.Assert(Monitor.IsEntered(backToPool.Target));
 
         TNode result;
-        if (cursor == 0)
+        if (first is null)
         {
+            Debug.Assert(count == 0L);
+
             result = new();
         }
         else
         {
-            ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), --cursor);
-            Debug.Assert(holder is not null);
+            result = first;
+            first = result.Next as TNode;
+            result.Detach();
+            count--;
 
-            result = holder;
-            holder = null;
+            Debug.Assert(count >= 0L);
+            Debug.Assert(count == 0L || first is not null);
         }
 
         result.OnConsumed = backToPool;

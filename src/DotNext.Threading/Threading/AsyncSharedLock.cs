@@ -99,7 +99,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private readonly State state;
-    private ValueTaskPool<WaitNode> pool;
+    private ValueTaskPool<bool, WaitNode> pool;
 
     /// <summary>
     /// Initializes a new shared lock.
@@ -117,9 +117,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         state = new(concurrencyLevel);
         Action<WaitNode> removeFromList = OnCompleted;
-        pool = limitedConcurrency && concurrencyLevel <= int.MaxValue
-            ? new(removeFromList, (int)concurrencyLevel)
-            : new(removeFromList);
+        pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]

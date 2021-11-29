@@ -4,7 +4,7 @@ using Pooling;
 
 public partial class TaskCompletionPipe<T>
 {
-    private sealed class Signal : ValueTaskCompletionSource<bool>, IPooledManualResetCompletionSource<Signal>
+    private sealed class Signal : LinkedValueTaskCompletionSource<bool>, IPooledManualResetCompletionSource<Signal>
     {
         private Action<Signal>? completionCallback;
 
@@ -13,6 +13,6 @@ public partial class TaskCompletionPipe<T>
         ref Action<Signal>? IPooledManualResetCompletionSource<Signal>.OnConsumed => ref completionCallback;
     }
 
-    private ValueTaskPool<Signal> pool;
+    private ValueTaskPool<bool, Signal> pool;
     private Signal? signal;
 }

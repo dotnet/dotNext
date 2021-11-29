@@ -30,7 +30,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode> pool;
     private LockManager manager;
 
     /// <summary>
@@ -261,7 +261,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             => node.Transition = transition;
     }
 
-    private ValueTaskPool<WaitNode> pool;
+    private ValueTaskPool<bool, WaitNode> pool;
 
     /// <summary>
     /// Initializes a new trigger.

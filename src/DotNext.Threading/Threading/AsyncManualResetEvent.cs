@@ -38,7 +38,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         }
     }
 
-    private ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode> pool;
     private StateManager manager;
 
     /// <summary>

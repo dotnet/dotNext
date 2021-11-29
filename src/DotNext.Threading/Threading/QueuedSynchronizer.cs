@@ -195,7 +195,7 @@ public class QueuedSynchronizer : Disposable
 
     private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
 
-    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<TNode> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
+    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
         where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -265,7 +265,7 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
+    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode> pool, TimeSpan timeout, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -291,7 +291,7 @@ public class QueuedSynchronizer : Disposable
         return EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(timeout, token);
     }
 
-    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<TNode> pool, TimeSpan timeout, CancellationToken token)
+    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode> pool, TimeSpan timeout, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
         where TManager : struct, ILockManager<TNode>
     {

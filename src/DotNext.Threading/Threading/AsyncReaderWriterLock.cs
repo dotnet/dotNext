@@ -209,7 +209,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private readonly State state;
-    private ValueTaskPool<WaitNode> pool;
+    private ValueTaskPool<bool, WaitNode> pool;
 
     /// <summary>
     /// Initializes a new reader/writer lock.

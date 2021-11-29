@@ -35,8 +35,6 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             base.ResetCore();
         }
 
-        internal void Append(WaitNode node) => base.Append(node);
-
         internal new WaitNode? Next => Unsafe.As<WaitNode>(base.Next);
 
         internal new WaitNode? Previous => Unsafe.As<WaitNode>(base.Previous);

@@ -60,7 +60,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode> pool;
     private StateManager manager;
 
     /// <summary>
