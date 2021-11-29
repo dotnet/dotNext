@@ -44,81 +44,36 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-25-2021
+Release Date: 11-29-2021
 
-.NEXT 4.0.0 major release is out! Its primary focus is .NET 6 support as well as some other key features:
-* Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
-* All asynchronous locks do not allocate [tasks](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task) anymore in case of lock contention. Instead, they are moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) pooling
-* `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes are stabilized and used as a core of [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) pooling
-* Introduced Raft-native cluster membership management as proposed in Diego's original paper instead of external discovery mechanism
-* Introduced Gossip-based messaging framework
+<a href="https://www.nuget.org/packages/dotnext/4.1.0">DotNext 4.1.0</a>
+* Optimized bounds check in growable buffers
+* Changed behavior of exceptions capturing by `DotNext.Threading.Tasks.Synchronization.GetResult` overloaded methods
+* Added `DotNext.Threading.Tasks.Synchronization.TryGetResult` method
 
-Use [this](https://dotnet.github.io/dotNext/migration/index.html) guide to migrate from 3.x.
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.0">DotNext.Metaprogramming 4.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext/4.0.0">DotNext 4.0.0</a>
-* Added `DotNext.Span.Shuffle` and `DotNext.Collections.Generic.List.Shuffle` extension methods that allow to randomize position of elements within span/collection
-* Added `DotNext.Collections.Generic.Sequence.Copy` extension method for making copy of the original enumerable collection. The memory for the copy is always rented from the pool
-* Added `DotNext.Collections.Generic.Collection.PeekRandom` extension method that allows to select random element from the collection
-* Improved performance of `DotNext.Span.TrimLength` and `StringExtensions.TrimLength` extension methods
-* Introduced `DotNext.Buffers.BufferHelpers.TrimLength` extension methods for [ReadOnlyMemory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1) and [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) data types
-* Improved performance of `DotNext.Buffers.BufferWriter<T>.AddAll` method
-* Reduced memory allocations by `ElementAt`, `FirstOrEmpty`, `FirstOrNull`, `ForEach` extension methods in `DotNext.Collections.Generic.Sequence` class
-* Added `DotNext.Numerics.BitVector` that allows to convert **bool** vectors into integral types
-* Added ability to write interpolated strings to `IBufferWriter<char>` without temporary allocations
-* Added ability to write interpolated strings to `BufferWriterSlim<char>`. This makes `BufferWriterSlim<char>` type as allocation-free alternative to [StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder)
-* Introduced a concept of binary-formattable types. See `DotNext.Buffers.IBinaryFormattable<TSelf>` interface for more information
-* Introduced `Reference<T>` type as a way to pass the reference to the memory location in asynchronous scenarios
-* `Box<T>` is replaced with `Reference<T>` value type
-* `ITypeMap<T>` interface and implementing classes allow to associate an arbitrary value with the type
-* Added overloaded `Result<T, TError>` value type for C-style error handling
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.1.0">DotNext.Reflection 4.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.0.0">DotNext.Metaprogramming 4.0.0</a>
-* Added support of interpolated string expression as described in [this article](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) using `InterpolationExpression.Create` static method
-* Added support of task pooling to async lambda expressions
-* Migration to C# 10 and .NET 6
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.0">DotNext.Unsafe 4.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.0.0">DotNext.Reflection 4.0.0</a>
-* Migration to C# 10 and .NET 6
+<a href="https://www.nuget.org/packages/dotnext.threading/4.1.0">DotNext.Threading 4.1.0</a>
+* Reduced memory allocation by async locks
+* Added support of cancellation to `AsyncLazy<T>` class
+* Introduced `TaskCompletionPipe<T>` class that allows to consume tasks as they complete
+* Removed _Microsoft.Extensions.ObjectPool_ dependency
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.0.0">DotNext.Unsafe 4.0.0</a>
-* Unmanaged memory pool has moved to [NativeMemory](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativememory) class instead of [Marshal.AllocHGlobal](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.allochglobal) method
+<a href="https://www.nuget.org/packages/dotnext.io/4.1.0">DotNext.IO 4.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.0.0">DotNext.Threading 4.0.0</a>
-* Polished `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. Also these types become a foundation for all synchronization primitives within the library
-* Return types of all methods of asynchronous locks now moved to [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) and [ValueTask&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask-1) types
-* Together with previous change, all asynchronous locks are written on top of `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` data types. It means that these asynchronous locks use task pooling that leads to zero allocation on the heap and low GC latency
-* Added `AsyncEventHub` synchronization primitive for asynchronous code
-* Introduced diagnostics and debugging tools for all synchronization primitives: lock contentions, information about suspended callers, et. al.
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.0">DotNext.Net.Cluster 4.1.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.0.0">DotNext.IO 4.0.0</a>
-* Added `DotNext.IO.SequenceBinaryReader.Position` property that allows to obtain the current position of the reader in the underlying sequence
-* Added `DotNext.IO.SequenceBinaryReader.Read(Span<byte>)` method
-* Optimized performance of some `ReadXXX` methods of `DotNext.IO.SequenceReader` type
-* All `WriteXXXAsync` methods of `IAsyncBinaryWriter` are replaced with a single `WriteFormattableAsync` method supporting [ISpanFormattable](https://docs.microsoft.com/en-us/dotnet/api/system.ispanformattable) interface. Now you can encode efficiently any type that implements this interface
-* Added `FileWriter` and `FileReader` classes that are tuned for fast file I/O with the ability to access the buffer explicitly
-* Introduced a concept of a serializable Data Transfer Objects represented by `ISerializable<TSelf>` interface. The interface allows to control the serialization/deserialization behavior on top of `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces. Thanks to static abstract interface methods, the value of the type can be easily reconstructed from its serialized state
-* Added support of binary-formattable types to `IAsyncBinaryWriter` and `IAsyncBinaryReader` interfaces
-* Improved performance of `FileBufferingWriter` I/O operations with preallocated file size feature introduced in .NET 6
-* `StreamExtensions.Combine` allows to represent multiple streams as a single stream
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.0.0">DotNext.Net.Cluster 4.0.0</a>
-* Optimized memory allocation for each hearbeat message emitted by Raft node in leader state
-* Fixed compatibility of WAL Interpreter Framework with TCP/UDP transports
-* Added support of Raft-native cluster configuration management that allows to use Raft features for managing cluster members instead of external discovery protocol
-* Persistent WAL has moved to new implementation of asynchronous locks to reduce the memory allocation
-* Added various snapshot building strategies: incremental and inline
-* Optimized file I/O performance of persistent WAL
-* Reduced the number of opened file descriptors required by persistent WAL
-* Improved performance of partitions allocation in persistent WAL with preallocated file size feature introduced in .NET 6
-* Fixed packet loss for TCP/UDP transports
-* Added read barrier for linearizable reads on Raft follower nodes
-* Added transport-agnostic implementation of [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) membership protocol suitable for Gossip-based messaging
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.0.0">DotNext.AspNetCore.Cluster 4.0.0</a>
-* Added configurable HTTP protocol version selection policy
-* Added support of leader lease in Raft implementation for optimized read operations
-* Added `IRaftCluster.LeadershipToken` property that allows to track leadership transfer
-* Introduced `IRaftCluster.Readiness` property that represents the readiness probe. The probe indicates whether the cluster member is ready to serve client requests
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.0">DotNext.AspNetCore.Cluster 4.1.0</a>
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
