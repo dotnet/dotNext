@@ -24,7 +24,7 @@ namespace DotNext.Threading.Tasks
             result = task.GetResult(TimeSpan.Zero);
             NotNull(result.Error);
             False(result.IsSuccessful);
-            Throws<AggregateException>(() => result.Value);
+            Throws<TaskCanceledException>(() => result.Value);
         }
 
         [Fact]
@@ -42,10 +42,10 @@ namespace DotNext.Threading.Tasks
             Equal(Missing.Value, result);
             task = Task.FromCanceled(new CancellationToken(true));
             result = task.GetResult(CancellationToken.None);
-            IsType<AggregateException>(result.Error);
+            IsType<TaskCanceledException>(result.Error);
             task = Task.FromException(new InvalidOperationException());
             result = task.GetResult(TimeSpan.Zero);
-            IsType<AggregateException>(result.Error);
+            IsType<InvalidOperationException>(result.Error);
         }
 
         [Fact]

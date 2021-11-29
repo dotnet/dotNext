@@ -20,6 +20,10 @@ public static partial class Synchronization
         {
             result = task.Wait(timeout) ? new(task.Result) : new(new TimeoutException());
         }
+        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        {
+            result = new(e.InnerExceptions[0]);
+        }
         catch (Exception e)
         {
             result = new(e);
@@ -43,6 +47,10 @@ public static partial class Synchronization
             task.Wait(token);
             result = task.Result;
         }
+        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        {
+            result = new(e.InnerExceptions[0]);
+        }
         catch (Exception e)
         {
             result = new(e);
@@ -50,6 +58,15 @@ public static partial class Synchronization
 
         return result;
     }
+
+    /// <summary>
+    /// Attempts to get the result of the task if it is completed.
+    /// </summary>
+    /// <typeparam name="TResult">Type of task result.</typeparam>
+    /// <param name="task">The task to synchronize.</param>
+    /// <returns>Task result; or <see langword="null"/> if <paramref name="task"/> is not completed.</returns>
+    public static Result<TResult>? TryGetResult<TResult>(this Task<TResult>? task)
+        => task is { IsCompleted: true } ? GetResult(task, CancellationToken.None) : null;
 
     /// <summary>
     /// Gets task result synchronously.
@@ -65,6 +82,10 @@ public static partial class Synchronization
             task.Wait(token);
             var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
             result = new(awaiter.GetRawResult());
+        }
+        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        {
+            result = new(e.InnerExceptions[0]);
         }
         catch (Exception e)
         {
@@ -86,15 +107,15 @@ public static partial class Synchronization
         Result<dynamic?> result;
         try
         {
-            if (task.Wait(timeout))
-            {
-                var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
-                result = new(awaiter.GetRawResult());
-            }
-            else
-            {
-                result = new(new TimeoutException());
-            }
+            if (!task.Wait(timeout))
+                throw new TimeoutException();
+
+            var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
+            result = new(awaiter.GetRawResult());
+        }
+        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        {
+            result = new(e.InnerExceptions[0]);
         }
         catch (Exception e)
         {

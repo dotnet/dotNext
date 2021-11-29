@@ -266,8 +266,7 @@ namespace DotNext.Metaprogramming
             Equal(5L, fn(5L).GetResult(TimeSpan.FromMinutes(1)));
             Equal(-42L, fn(80L).GetResult(TimeSpan.FromMinutes(1)));
             var exception = fn(-10L).GetResult(TimeSpan.FromMinutes(1)).Error;
-            IsType<AggregateException>(exception);
-            IsType<InvalidOperationException>(exception.InnerException);
+            IsType<InvalidOperationException>(exception);
         }
 
         [Fact]
