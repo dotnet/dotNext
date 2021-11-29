@@ -70,7 +70,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     private Task<T> GetAsync(CancellationToken token)
     {
         var t = task;
-        return t is null or { IsCanceled: true } ? task = InvokeFactory(token) : t;
+        return t is null or { IsCanceled: true } ? task = InitializeAsync(token) : t;
     }
 
     /// <summary>
@@ -87,8 +87,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         return t is null or { IsCanceled: true } ? GetAsync(token) : t;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Task<T> InvokeFactory(CancellationToken token)
+    private Task<T> InitializeAsync(CancellationToken token)
     {
         Debug.Assert(factory is Func<Task<T>> or Func<CancellationToken, Task<T>>);
 
