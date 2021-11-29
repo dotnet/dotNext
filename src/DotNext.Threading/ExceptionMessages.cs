@@ -19,8 +19,6 @@ internal static class ExceptionMessages
 
     internal static string UnsupportedLockAcquisition => (string)Resources.Get();
 
-    internal static string EmptyValueDelegate => (string)Resources.Get();
-
     internal static string TerminatedExchange => (string)Resources.Get();
 
     internal static string EmptyWaitQueue => (string)Resources.Get();
