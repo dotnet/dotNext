@@ -55,7 +55,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <summary>
     /// Gets a value that indicates whether a value has been computed.
     /// </summary>
-    public bool IsValueCreated => task?.IsCompleted ?? false;
+    public bool IsValueCreated => task is { IsCompleted: true, IsCanceled: false };
 
     /// <summary>
     /// Gets value if it is already computed.
@@ -67,10 +67,52 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         => WithCancellation(token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private Task<T> GetAsync(CancellationToken token)
+    private Task<T> GetOrStartAsync(CancellationToken token)
     {
         var t = task;
-        return t is null or { IsCanceled: true } ? task = InitializeAsync(token) : t;
+
+        if (t is { IsCanceled: false })
+        {
+            t = t.WaitAsync(token);
+        }
+        else if (factory is Func<CancellationToken, Task<T>> cancelableFactory)
+        {
+            task = t = System.Threading.Tasks.Task.Run(() => cancelableFactory(token));
+        }
+        else
+        {
+            Debug.Assert(factory is Func<Task<T>>);
+
+            task = t = resettable
+                ? System.Threading.Tasks.Task.Run(Unsafe.As<Func<Task<T>>>(factory))
+                : System.Threading.Tasks.Task.Run(InvokeAndEraseFactoryAsync);
+
+            t = t.WaitAsync(token);
+        }
+
+        return t;
+    }
+
+    private async Task<T> InvokeAndEraseFactoryAsync()
+    {
+        Debug.Assert(factory is Func<Task<T>>);
+
+        var canceled = false;
+
+        try
+        {
+            return await Unsafe.As<Func<Task<T>>>(factory).Invoke().ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            canceled = true;
+            throw;
+        }
+        finally
+        {
+            if (!canceled)
+                factory = null;
+        }
     }
 
     /// <summary>
@@ -84,42 +126,14 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     public Task<T> WithCancellation(CancellationToken token = default)
     {
         var t = task;
-        return t is null or { IsCanceled: true } ? GetAsync(token) : t;
-    }
-
-    private Task<T> InitializeAsync(CancellationToken token)
-    {
-        Debug.Assert(factory is Func<Task<T>> or Func<CancellationToken, Task<T>>);
-
-        var result = factory is Func<Task<T>> ? Unsafe.As<Func<Task<T>>>(factory).Invoke() : Unsafe.As<Func<CancellationToken, Task<T>>>(factory).Invoke(token);
-        return resettable ? result : GetResultAndRemoveFactoryAsync(result);
-    }
-
-    private async Task<T> GetResultAndRemoveFactoryAsync(Task<T> task)
-    {
-        Debug.Assert(factory is not null);
-
-        var canceled = false;
-        try
-        {
-            return await task.ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            canceled = e is OperationCanceledException;
-            throw;
-        }
-        finally
-        {
-            if (!canceled)
-                factory = null;
-        }
+        return t is { IsCanceled: false } ? t.WaitAsync(token) : GetOrStartAsync(token);
     }
 
     /// <summary>
     /// Gets task representing asynchronous computation of lazy value.
     /// </summary>
     /// <seealso cref="WithCancellation"/>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public Task<T> Task => WithCancellation(CancellationToken.None);
 
     /// <summary>
