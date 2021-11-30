@@ -54,6 +54,7 @@ public partial class CommandInterpreter : Disposable
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(CommandHandler<>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,>))]
     [RuntimeFeatures(RuntimeGenericInstantiation = true)]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     protected CommandInterpreter()
     {
         // explore command types

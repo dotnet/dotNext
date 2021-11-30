@@ -6,6 +6,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsTrimmable>true</IsTrimmable>
     <VersionPrefix>4.1.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>

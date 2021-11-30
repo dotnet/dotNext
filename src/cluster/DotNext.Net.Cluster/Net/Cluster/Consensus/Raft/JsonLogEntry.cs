@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -13,12 +14,14 @@ internal static class JsonLogEntry
     private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
     private static readonly JsonReaderOptions DefaultReaderOptions = new JsonSerializerOptions(JsonSerializerDefaults.General).GetReaderOptions();
 
+    [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
     private static Type LoadType(string typeId, Func<string, Type>? typeLoader)
         => typeLoader is null ? Type.GetType(typeId, true)! : typeLoader(typeId);
 
     private static Encoding DefaultEncoding => Encoding.UTF8;
 
-    internal static ValueTask SerializeAsync<T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
+    internal static ValueTask SerializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)]T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
         where TWriter : notnull, IAsyncBinaryWriter
     {
         // try to get synchronous writer
@@ -66,6 +69,7 @@ internal static class JsonLogEntry
         MaxDepth = options.MaxDepth,
     };
 
+    [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
     internal static object? Deserialize(SequenceReader input, Func<string, Type>? typeLoader, JsonSerializerOptions? options)
     {
         var typeId = input.ReadString(LengthEncoding, DefaultEncoding);
@@ -79,7 +83,7 @@ internal static class JsonLogEntry
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct JsonLogEntry<T> : IRaftLogEntry
+public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)]T> : IRaftLogEntry
 {
     private readonly JsonSerializerOptions? options;
     private readonly string? typeId;

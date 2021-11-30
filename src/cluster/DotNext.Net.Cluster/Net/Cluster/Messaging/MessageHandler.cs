@@ -43,6 +43,7 @@ public partial class MessageHandler : IInputChannel
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,,>))]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     protected MessageHandler()
     {
         // inspect message types

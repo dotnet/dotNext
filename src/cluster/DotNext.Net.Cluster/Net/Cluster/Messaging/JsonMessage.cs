@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Mime;
 using System.Text.Json;
 
@@ -11,7 +12,7 @@ using IO;
 /// Represents JSON-serializable message.
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
-public sealed class JsonMessage<T> : IMessage
+public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)]T> : IMessage
 {
     private JsonSerializerOptions? options;
 
@@ -70,6 +71,7 @@ public sealed class JsonMessage<T> : IMessage
     /// <inheritdoc />
     long? IDataTransferObject.Length => null;
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
     private void SerializeToJson(IBufferWriter<byte> buffer)
     {
         using var jsonWriter = new Utf8JsonWriter(buffer, WriterOptions);
@@ -114,6 +116,7 @@ public sealed class JsonMessage<T> : IMessage
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Deserialized object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
     public static ValueTask<T?> FromJsonAsync(IDataTransferObject message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
         ValueTask<T?> result;
