@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -147,6 +148,8 @@ public static partial class ServiceProviderFactory
             new Func<object?[], IServiceProvider>(CreateResolver(types).Create) :
             new Func<object?[], IServiceProvider>(types.Create);
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(IServiceProvider))]
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "IServiceProvider.GetService() is known to be used")]
     private static Func<Type, object?[], IServiceProvider, object?> CreateDelegatingResolver(IReadOnlyList<Type> types)
     {
         var requestedType = Expression.Parameter(typeof(Type));

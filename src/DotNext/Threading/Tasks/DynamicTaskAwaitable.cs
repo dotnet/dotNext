@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -65,6 +66,7 @@ public readonly struct DynamicTaskAwaitable
         /// Gets dynamically typed task result.
         /// </summary>
         /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
+        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         public dynamic? GetResult()
         {
             if (IsTaskWithResult(task.GetType()))

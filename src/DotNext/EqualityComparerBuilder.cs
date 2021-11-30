@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -62,6 +63,7 @@ public readonly struct EqualityComparerBuilder<T>
         int IEqualityComparer<T>.GetHashCode(T obj) => hashCode(obj);
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
     {
         var method = typeof(BitwiseComparer<>)
@@ -73,6 +75,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Call(method, first, second);
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression HashCodeMethodForValueType(Expression expr, ConstantExpression salted)
     {
         var method = typeof(BitwiseComparer<>)
@@ -83,6 +86,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Call(method, expr, salted);
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
     {
         var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
@@ -93,6 +97,7 @@ public readonly struct EqualityComparerBuilder<T>
             : new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Seq.SequenceEqual).Method;
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
     {
         Debug.Assert(fieldX.Type.IsSZArray);
@@ -100,6 +105,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Call(method, fieldX, fieldY);
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
     {
         var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
@@ -114,6 +120,7 @@ public readonly struct EqualityComparerBuilder<T>
         return result;
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression HashCodeMethodForArrayElementType(Expression expr, ConstantExpression salted)
     {
         Debug.Assert(expr.Type.IsSZArray);
@@ -130,6 +137,7 @@ public readonly struct EqualityComparerBuilder<T>
         }
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private Func<T?, T?, bool> BuildEquals()
     {
         if (!RuntimeFeature.IsDynamicCodeSupported)
@@ -176,6 +184,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Lambda<Func<T?, T?, bool>>(expr, false, x, y).Compile();
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private Func<T, int> BuildGetHashCode()
     {
         if (!RuntimeFeature.IsDynamicCodeSupported)
@@ -240,6 +249,7 @@ public readonly struct EqualityComparerBuilder<T>
     /// <param name="equals">The implementation of equality check.</param>
     /// <param name="hashCode">The implementation of hash code.</param>
     /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public void Build(out Func<T?, T?, bool> equals, out Func<T, int> hashCode)
     {
         equals = BuildEquals();
@@ -251,6 +261,7 @@ public readonly struct EqualityComparerBuilder<T>
     /// </summary>
     /// <returns>The generated equality comparer.</returns>
     /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public IEqualityComparer<T> Build()
         => typeof(T).IsPrimitive ? EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
 }

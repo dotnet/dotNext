@@ -17,6 +17,7 @@ public sealed class OptionalConverterFactory : JsonConverterFactory
     /// <inheritdoc />
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(OptionalConverter<>))]
     [RuntimeFeaturesAttribute(RuntimeGenericInstantiation = true)]
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "No way to annotate entire class")]
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var underlyingType = Optional.GetUnderlyingType(typeToConvert);
