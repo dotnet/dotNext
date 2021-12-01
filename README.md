@@ -50,30 +50,32 @@ Release Date: 11-29-2021
 * Optimized bounds check in growable buffers
 * Changed behavior of exceptions capturing by `DotNext.Threading.Tasks.Synchronization.GetResult` overloaded methods
 * Added `DotNext.Threading.Tasks.Synchronization.TryGetResult` method
+* Enabled support of IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.0">DotNext.Metaprogramming 4.1.0</a>
-* Updated dependencies
+* IL trimming is explicitly disabled because the library highly relied on Reflection API
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/4.1.0">DotNext.Reflection 4.1.0</a>
-* Updated dependencies
+ IL trimming is explicitly disabled because the library highly relied on Reflection API
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.0">DotNext.Unsafe 4.1.0</a>
-* Updated dependencies
+* Enabled support of IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.1.0">DotNext.Threading 4.1.0</a>
 * Reduced memory allocation by async locks
 * Added support of cancellation to `AsyncLazy<T>` class
 * Introduced `TaskCompletionPipe<T>` class that allows to consume tasks as they complete
 * Removed _Microsoft.Extensions.ObjectPool_ dependency
+* Enabled support of IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.1.0">DotNext.IO 4.1.0</a>
-* Updated dependencies
+* Enabled support of IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.0">DotNext.Net.Cluster 4.1.0</a>
-* Updated dependencies
+* Enabled support of IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.0">DotNext.AspNetCore.Cluster 4.1.0</a>
-* Updated dependencies
+* Enabled support of IL trimming
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
