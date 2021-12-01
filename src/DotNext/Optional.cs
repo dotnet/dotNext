@@ -568,16 +568,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public bool Equals(T? other) => !IsUndefined && EqualityComparer<T?>.Default.Equals(value, other);
 
     private bool Equals(in Optional<T> other)
-    {
-        if (kind != other.kind)
-            return false;
-
-        return kind switch
-        {
-            UndefinedValue or NullValue => true,
-            _ => EqualityComparer<T?>.Default.Equals(value, other.value),
-        };
-    }
+        => kind == other.kind && (kind is UndefinedValue or NullValue || EqualityComparer<T?>.Default.Equals(value, other.value));
 
     /// <summary>
     /// Determines whether this container stores
