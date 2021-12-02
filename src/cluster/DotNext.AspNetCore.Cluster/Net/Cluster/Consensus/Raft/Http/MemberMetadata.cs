@@ -11,7 +11,7 @@ internal sealed class MemberMetadata : Dictionary<string, string>
     {
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = false, WriteIndented = false };
 
-        var info = new JsonCollectionInfoValues<MemberMetadata>()
+        var info = new JsonCollectionInfoValues<MemberMetadata>
         {
             ObjectCreator = Activator.CreateInstance<MemberMetadata>,
             KeyInfo = JsonMetadataServices.CreateValueInfo<string>(options, JsonMetadataServices.StringConverter),
