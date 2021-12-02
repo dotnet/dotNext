@@ -65,6 +65,8 @@
       href: threading/exchanger.md
     - name: Event Hub
       href: threading/hub.md
+    - name: Task Completion Pipe
+      href: threading/taskpipe.md
     - name: Interop with Other Asynchronous Patterns
       href: threading/interop.md
     - name: Async Lazy
