@@ -25,12 +25,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
-        private protected override void ResetCore()
-        {
-            consumedCallback = null;
-            base.ResetCore();
-        }
-
         ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
     }
 
@@ -104,8 +98,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             => node.IsStrongLock = true;
     }
 
-    private readonly ValueTaskPool<WaitNode> pool;
     private readonly State state;
+    private ValueTaskPool<bool, WaitNode> pool;
 
     /// <summary>
     /// Initializes a new shared lock.
@@ -122,10 +116,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         state = new(concurrencyLevel);
-        Action<WaitNode> removeFromList = RemoveAndDrainWaitQueue;
-        pool = limitedConcurrency
-            ? new(concurrencyLevel.Truncate(), removeFromList)
-            : new(removeFromList);
+        Action<WaitNode> removeFromList = OnCompleted;
+        pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void OnCompleted(WaitNode node)
+    {
+        RemoveAndDrainWaitQueue(node);
+        pool.Return(node);
     }
 
     /// <summary>
@@ -186,12 +185,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         if (strongLock)
         {
             var manager = new StrongLockManager(state);
-            return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
         }
         else
         {
             var manager = new WeakLockManager(state);
-            return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
         }
     }
 
@@ -212,12 +211,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         if (strongLock)
         {
             var manager = new StrongLockManager(state);
-            return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
         }
         else
         {
             var manager = new WeakLockManager(state);
-            return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
         }
     }
 

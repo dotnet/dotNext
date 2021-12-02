@@ -15,6 +15,7 @@ internal sealed class TaskResultBinder : CallSiteBinder
     private const string ResultPropertyName = nameof(Task<Missing>.Result);
     private const BindingFlags ResultPropertyFlags = BindingFlags.Public | BindingFlags.Instance;
 
+    [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
     private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
     {
         Debug.Assert(resultProperty.DeclaringType is not null);
@@ -28,6 +29,7 @@ internal sealed class TaskResultBinder : CallSiteBinder
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(Task<>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(ValueTask<>))]
+    [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
     private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
     {
         PropertyInfo? property = targetValue.GetType().GetProperty(ResultPropertyName, ResultPropertyFlags);
@@ -39,5 +41,7 @@ internal sealed class TaskResultBinder : CallSiteBinder
         return target;
     }
 
+    [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2046", Justification = "No other way to express compatibility with timming")]
     public override Expression Bind(object[] args, ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel) => Bind(args[0], parameters[0], returnLabel);
 }

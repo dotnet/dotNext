@@ -337,6 +337,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// </summary>
     public ManualResetCompletionSourceStatus Status => status;
 
+    private protected bool CanBeCompleted => status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
+
     /// <summary>
     /// Gets a value indicating that this source is in signaled (completed) state.
     /// </summary>

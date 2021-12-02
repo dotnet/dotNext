@@ -1,51 +1,85 @@
-using Microsoft.Extensions.ObjectPool;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks.Pooling;
 
-internal sealed class ValueTaskPool<TNode> : DefaultObjectPool<TNode>
-    where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>, new()
+/*
+ * Represents a pool without any allocations. Assuming that wait queues are organized using
+ * linked nodes where each node is a completion source. If so, the node pointers (next/previous)
+ * can be used to keep completion sources in the pool. Moreover, access to the pool is synchronized
+ * by the caller (see QueuedSynchronizer). Thus, it doesn't require explicit synchronization such as
+ * Monitor lock.
+ */
+[StructLayout(LayoutKind.Auto)]
+internal struct ValueTaskPool<T, TNode>
+    where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TNode>, new()
 {
-    private sealed class PooledNodePolicy : IPooledObjectPolicy<TNode>
+    private readonly long maximumRetained; // zero when no limitations
+    private readonly Action<TNode> backToPool;
+    private TNode? first;
+    private long count;
+
+    internal ValueTaskPool(Action<TNode> backToPool, long? maximumRetained = null)
     {
-        private readonly Action<TNode> consumedCallback;
+        Debug.Assert(backToPool is not null);
+        Debug.Assert((backToPool.Method.MethodImplementationFlags & MethodImplAttributes.Synchronized) != 0);
 
-        internal PooledNodePolicy(Action<TNode> consumedCallback)
-            => this.consumedCallback = consumedCallback;
-
-        TNode IPooledObjectPolicy<TNode>.Create()
-        {
-            var result = new TNode();
-            result.OnConsumed = consumedCallback;
-            return result;
-        }
-
-        bool IPooledObjectPolicy<TNode>.Return(TNode obj) => obj.TryReset(out _);
+        this.backToPool = backToPool;
+        first = null;
+        count = 0;
+        this.maximumRetained = maximumRetained.GetValueOrDefault(0L);
     }
 
-    private sealed class ValueTaskPoolWeakReference : WeakReference
+    internal void Return(TNode node)
     {
-        internal ValueTaskPoolWeakReference()
-            : base(null, false)
-        {
-        }
+        Debug.Assert(node is not null);
+        Debug.Assert(backToPool.Target is not null);
+        Debug.Assert(Monitor.IsEntered(backToPool.Target));
 
-        internal new ValueTaskPool<TNode>? Target
-        {
-            get => base.Target as ValueTaskPool<TNode>;
-            set => base.Target = value;
-        }
+        if (!node.TryReset(out _))
+            goto exit;
 
-        internal void Return(TNode node) => Target?.Return(node);
+        node.OnConsumed = null;
+
+        if (maximumRetained > 0L && count >= maximumRetained)
+            goto exit;
+
+        Debug.Assert(count == 0L || first is not null);
+
+        first?.Prepend(node);
+        first = node;
+        count++;
+        Debug.Assert(count > 0L);
+
+    exit:
+        return;
     }
 
-    internal ValueTaskPool(int maximumRetained, Action<TNode>? completionCallback = null)
-        : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)), maximumRetained)
-        => weakRef.Target = this;
+    internal TNode Get()
+    {
+        Debug.Assert(backToPool.Target is not null);
+        Debug.Assert(Monitor.IsEntered(backToPool.Target));
 
-    internal ValueTaskPool(Action<TNode>? completionCallback = null)
-        : base(new PooledNodePolicy(completionCallback + CreateBackToPoolCallback(out var weakRef)))
-        => weakRef.Target = this;
+        TNode result;
+        if (first is null)
+        {
+            Debug.Assert(count == 0L);
 
-    private static Action<TNode> CreateBackToPoolCallback(out ValueTaskPoolWeakReference weakRef)
-        => (weakRef = new()).Return;
+            result = new();
+        }
+        else
+        {
+            result = first;
+            first = result.Next as TNode;
+            result.Detach();
+            count--;
+
+            Debug.Assert(count >= 0L);
+            Debug.Assert(count == 0L || first is not null);
+        }
+
+        result.OnConsumed = backToPool;
+        return result;
+    }
 }

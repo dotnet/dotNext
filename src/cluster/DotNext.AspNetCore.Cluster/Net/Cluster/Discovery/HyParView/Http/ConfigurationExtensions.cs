@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,8 @@ public static class ConfigurationExtensions
     /// <param name="services">The collection of services.</param>
     /// <param name="configuration">The configuration of local peer.</param>
     /// <returns>The modified collection of services.</returns>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "All public members preserved")]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(HttpPeerConfiguration))]
     public static IServiceCollection ConfigureLocalPeer(this IServiceCollection services, IConfiguration configuration)
     {
         Func<IServiceProvider, IOptions<PeerConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpPeerConfiguration>>;

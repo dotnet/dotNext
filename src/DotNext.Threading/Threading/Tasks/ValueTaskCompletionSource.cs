@@ -138,31 +138,15 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <returns>The exception representing task result; or <see langword="null"/> to complete successfully.</returns>
     protected virtual Exception? OnCanceled(CancellationToken token) => new OperationCanceledException(token);
 
-    private bool TrySetResult<TFactory>(TFactory factory)
+    private bool TrySetResult<TFactory>(TFactory factory, short? completionToken = null)
         where TFactory : notnull, ISupplier<Exception?>
     {
         bool result;
-        if (result = Status == ManualResetCompletionSourceStatus.Activated)
+        if (result = CanBeCompleted)
         {
             lock (SyncRoot)
             {
-                if (result = Status == ManualResetCompletionSourceStatus.Activated)
-                    SetResult(factory.Invoke());
-            }
-        }
-
-        return result;
-    }
-
-    private bool TrySetResult<TFactory>(short completionToken, TFactory factory)
-        where TFactory : notnull, ISupplier<Exception?>
-    {
-        bool result;
-        if (result = Status == ManualResetCompletionSourceStatus.Activated)
-        {
-            lock (SyncRoot)
-            {
-                if (result = Status == ManualResetCompletionSourceStatus.Activated && completionToken == version)
+                if (result = CanBeCompleted && completionToken.GetValueOrDefault(version) == version)
                     SetResult(factory.Invoke());
             }
         }
@@ -185,7 +169,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetCanceled(short completionToken, CancellationToken token)
-        => TrySetResult<OperationCanceledExceptionFactory>(completionToken, token);
+        => TrySetResult<OperationCanceledExceptionFactory>(token, completionToken);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -202,7 +186,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetException(short completionToken, Exception e)
-        => TrySetResult<ValueSupplier<Exception>>(completionToken, e);
+        => TrySetResult<ValueSupplier<Exception>>(e, completionToken);
 
     /// <summary>
     /// Attempts to complete the task sucessfully.
@@ -217,7 +201,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(short completionToken)
-        => TrySetResult(completionToken, NullSupplier);
+        => TrySetResult(NullSupplier, completionToken);
 
     /// <summary>
     /// Creates a fresh task linked with this source.

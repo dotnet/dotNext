@@ -298,7 +298,7 @@ namespace DotNext.Buffers
         {
             get
             {
-                if (index < 0 || index >= length)
+                if ((nuint)index >= (nuint)length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
                 Debug.Assert(owner is not null || array is not null);

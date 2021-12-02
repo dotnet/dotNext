@@ -1,11 +1,9 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
 using Tasks.Pooling;
-using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
@@ -40,7 +38,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         }
     }
 
-    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode> pool;
     private StateManager manager;
 
     /// <summary>
@@ -55,7 +53,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         manager = new(initialState);
-        pool = new ValueTaskPool<DefaultWaitNode>(concurrencyLevel, RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -65,7 +63,14 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncManualResetEvent(bool initialState)
     {
         manager = new(initialState);
-        pool = new(RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void OnCompleted(DefaultWaitNode node)
+    {
+        RemoveAndDrainWaitQueue(node);
+        pool.Return(node);
     }
 
     /// <inheritdoc/>
@@ -129,7 +134,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -140,7 +145,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -159,7 +164,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
-        => manager.Value || condition(arg) ? new(true) : WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => manager.Value || condition(arg) ? new(true) : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -176,7 +181,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
-        => manager.Value || condition(arg) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        => manager.Value || condition(arg) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -197,7 +202,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
-        => manager.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => manager.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -216,5 +221,5 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
-        => manager.Value || condition(arg1, arg2) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        => manager.Value || condition(arg1, arg2) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
 }

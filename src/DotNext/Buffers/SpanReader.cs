@@ -47,7 +47,7 @@ public ref struct SpanReader<T>
     {
         get
         {
-            if (position >= span.Length)
+            if ((uint)position >= (uint)span.Length)
                 throw new InvalidOperationException();
 
             return ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
@@ -86,9 +86,10 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        var newPosition = checked(position + count);
-        if (newPosition > span.Length)
+        var newPosition = position + count;
+        if ((uint)newPosition > (uint)span.Length)
             throw new ArgumentOutOfRangeException(nameof(count));
+
         position = newPosition;
     }
 
@@ -99,7 +100,7 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="ConsumedCount"/>.</exception>
     public void Rewind(int count)
     {
-        if (count < 0 || count > position)
+        if ((uint)count > (uint)position)
             throw new ArgumentOutOfRangeException(nameof(count));
 
         position -= count;
@@ -130,9 +131,9 @@ public ref struct SpanReader<T>
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        var newLength = checked(position + count);
+        var newLength = position + count;
 
-        if (newLength <= span.Length)
+        if ((uint)newLength <= (uint)span.Length)
         {
             result = span.Slice(position, count);
             position = newLength;
@@ -150,9 +151,9 @@ public ref struct SpanReader<T>
     /// <returns><see langword="true"/> if element is obtained successfully; otherwise, <see langword="false"/>.</returns>
     public bool TryRead([MaybeNullWhen(false)] out T result)
     {
-        var newLength = checked(position + 1);
+        var newLength = position + 1;
 
-        if (newLength <= span.Length)
+        if ((uint)newLength <= (uint)span.Length)
         {
             result = Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
             position = newLength;

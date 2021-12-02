@@ -228,6 +228,7 @@ public partial class PersistentState
         /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <seealso cref="CreateJsonLogEntry"/>
+        [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
         public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
         {
             if (PrepareContent())
@@ -236,6 +237,7 @@ public partial class PersistentState
             return new(buffer.IsEmpty ? default(object) : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, options));
         }
 
+        [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
         private async ValueTask<object?> DeserializeSlowAsync(Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
         {
             Debug.Assert(content is not null);

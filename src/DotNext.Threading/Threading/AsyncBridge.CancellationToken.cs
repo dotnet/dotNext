@@ -32,10 +32,11 @@ public static partial class AsyncBridge
     {
         internal void Return(CancellationTokenValueTask vt)
         {
-            vt.Reset();
-            Add(vt);
+            if (vt.TryReset(out _))
+                Add(vt);
         }
     }
 
     private static readonly CancellationTokenValueTaskPool TokenPool = new();
+    private static readonly Action<CancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback = TokenPool.Return;
 }
