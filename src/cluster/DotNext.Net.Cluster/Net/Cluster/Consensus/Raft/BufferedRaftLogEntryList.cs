@@ -113,7 +113,7 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
 
     /// <inheritdoc />
     IEnumerator<BufferedRaftLogEntry> IEnumerable<BufferedRaftLogEntry>.GetEnumerator()
-        => Entries.As<IEnumerable<BufferedRaftLogEntry>>().GetEnumerator();
+        => Entries.AsEnumerable().GetEnumerator();
 
     /// <summary>
     /// Releases all buffered log entries.

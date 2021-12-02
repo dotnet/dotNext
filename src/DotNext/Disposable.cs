@@ -146,7 +146,7 @@ public abstract class Disposable : IDisposable
     /// <param name="objects">An array of objects to dispose.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
-        => DisposeAsync(objects.As<IEnumerable<IAsyncDisposable?>>());
+        => DisposeAsync(objects.AsEnumerable());
 
     /// <summary>
     /// Finalizes this object.
