@@ -16,17 +16,17 @@ class DataRepository
 	public DataRepository(IDbConnection connection)
 	{
 		this.connection = connection;
-		cache = new AsyncLazy<DataCache>(() => InitCache(connection));
+		cache = new AsyncLazy<DataCache>(token => InitCache(connection, token));
 	}
 
-	private static async Task<DataCache> InitCache(IDbConnection connection)
+	private static async Task<DataCache> InitCache(IDbConnection connection, CancellationToken token)
 	{
 		//initialize cache asynchronously
 	}
 
-	public async Task<User> GetUserById(long id)
+	public async Task<User> GetUserByIdAsync(long id, CancellationToken token)
 	{
-		var cache = await cache;
+		var cache = await cache.WithCancellation(token);
 		if(cache.ContainsUser(id))
 			return cache.GetUser(id);
 		else
