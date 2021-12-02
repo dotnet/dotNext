@@ -10,7 +10,6 @@ Task Completion Pipe
     * [IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface implementation allows to use **await foreach** statement in C# programming language to consume tasks asynchronously as they complete
     * `TryRead` method attempts to obtain the completed task synchronously
     * `WaitToReadAsync` allows to wait to the completed task submitted to the pipe. It should be used in combination with `TryRead` to optimize memory allocations by consumer
-    * `Completion` property returns a task that completes when no more tasks will ever be submitted to the pipe
 
 > [!NOTE]
 > Performance tip: `TryRead` and `WaitToReadAsync` methods are preferred way if consumer processes completed tasks slower than producer submits new tasks. Otherwise, **await foreach** is preferred.
