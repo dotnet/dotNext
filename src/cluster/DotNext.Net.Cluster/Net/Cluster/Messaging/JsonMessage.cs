@@ -12,7 +12,7 @@ using IO;
 /// Represents JSON-serializable message.
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
-public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)]T> : IMessage
+public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces)]T> : IMessage
 {
     private JsonSerializerOptions? options;
 

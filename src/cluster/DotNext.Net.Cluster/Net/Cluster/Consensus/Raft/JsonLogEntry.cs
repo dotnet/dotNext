@@ -21,7 +21,7 @@ internal static class JsonLogEntry
     private static Encoding DefaultEncoding => Encoding.UTF8;
 
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
-    internal static ValueTask SerializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)]T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
+    internal static ValueTask SerializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces)]T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
         where TWriter : notnull, IAsyncBinaryWriter
     {
         // try to get synchronous writer
@@ -83,7 +83,7 @@ internal static class JsonLogEntry
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields)]T> : IRaftLogEntry
+public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces)]T> : IRaftLogEntry
 {
     private readonly JsonSerializerOptions? options;
     private readonly string? typeId;
