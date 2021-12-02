@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
 
@@ -54,6 +54,17 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             signal = null;
 
         completionRequested = true;
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private bool IsCompleted
+    {
+        get
+        {
+            Debug.Assert(Monitor.IsEntered(this));
+
+            return scheduledTasksCount == 0 && completionRequested;
+        }
     }
 
     private void Notify()
@@ -116,7 +127,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             scheduledTasksCount--;
             result = new(true);
         }
-        else if (scheduledTasksCount == 0 && completionRequested)
+        else if (IsCompleted)
         {
             result = new(false);
         }
@@ -160,7 +171,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         {
             result = new(true);
         }
-        else if (scheduledTasksCount == 0 && completionRequested)
+        else if (IsCompleted)
         {
             result = new(false);
         }
