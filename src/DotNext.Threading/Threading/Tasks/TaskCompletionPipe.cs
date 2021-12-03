@@ -114,15 +114,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => AddSynchronized(task));
     }
 
-    private ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        var source = pool.Get();
-        signal = source;
-        return source.CreateTask(InfiniteTimeSpan, token);
-    }
-
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
     {
@@ -132,7 +123,9 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             return ValueTask.FromResult(true);
         }
 
-        return IsCompleted ? ValueTask.FromResult(false) : WaitAsync(InfiniteTimeSpan, token);
+        return IsCompleted
+            ? ValueTask.FromResult(false)
+            : (signal = pool.Get()).CreateTask(InfiniteTimeSpan, token);
     }
 
     /// <summary>
@@ -165,7 +158,9 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (!completedTasks.IsEmpty)
             return ValueTask.FromResult(true);
 
-        return IsCompleted ? ValueTask.FromResult(false) : WaitAsync(timeout, token);
+        return IsCompleted
+            ? ValueTask.FromResult(false)
+            : (signal = pool.Get()).CreateTask(timeout, token);
     }
 
     /// <summary>
