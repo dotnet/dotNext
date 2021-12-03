@@ -4,7 +4,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents pub/sub synchronization primitive
