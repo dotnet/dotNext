@@ -26,7 +26,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     where TKey : notnull
 {
     private readonly Bucket[] buckets;
-    private readonly IEqualityComparer<TKey> comparer;
+    private readonly IEqualityComparer<TKey>? comparer; // if null then use Default comparer
 
     /// <summary>
     /// Initializes a new event correlation source.
@@ -44,7 +44,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         for (var i = 0L; i < concurrencyLevel; i++)
             buckets[i] = new();
 
-        this.comparer = comparer ?? EqualityComparer<TKey>.Default;
+        this.comparer = comparer;
     }
 
     /// <summary>

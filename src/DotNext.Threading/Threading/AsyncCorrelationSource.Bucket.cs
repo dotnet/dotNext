@@ -25,8 +25,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
         internal object? UserData => userData;
 
-        internal bool Match(TKey other, IEqualityComparer<TKey> comparer)
-            => comparer.Equals(id, other);
+        internal bool Match(TKey other, IEqualityComparer<TKey>? comparer)
+            => comparer?.Equals(id, other) ?? EqualityComparer<TKey>.Default.Equals(id, other);
 
         private protected override void ResetCore()
         {
@@ -88,7 +88,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal bool Remove(TKey expected, in Result<TValue> value, IEqualityComparer<TKey> comparer, out object? userData)
+        internal bool Remove(TKey expected, in Result<TValue> value, IEqualityComparer<TKey>? comparer, out object? userData)
         {
             for (WaitNode? current = first, next; current is not null; current = next)
             {
@@ -144,7 +144,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
     private Bucket GetBucket(TKey eventId)
     {
-        var bucketIndex = unchecked((uint)comparer.GetHashCode(eventId)) % buckets.LongLength;
+        var bucketIndex = unchecked((uint)(comparer?.GetHashCode(eventId) ?? EqualityComparer<TKey>.Default.GetHashCode(eventId))) % buckets.LongLength;
         Debug.Assert(bucketIndex >= 0 && bucketIndex < buckets.LongLength);
 
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), (nint)bucketIndex);
