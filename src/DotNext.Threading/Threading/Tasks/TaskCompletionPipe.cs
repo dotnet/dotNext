@@ -114,31 +114,25 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => AddSynchronized(task));
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TryDequeue([MaybeNullWhen(false)]out T task) => completedTasks.TryDequeue(out task);
+    private ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        var source = pool.Get();
+        signal = source;
+        return source.CreateTask(InfiniteTimeSpan, token);
+    }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
     {
-        ValueTask<bool> result;
-
         if (completedTasks.TryDequeue(out task))
         {
             scheduledTasksCount--;
-            result = new(true);
-        }
-        else if (IsCompleted)
-        {
-            result = new(false);
-        }
-        else
-        {
-            var source = pool.Get();
-            signal = source;
-            result = source.CreateTask(InfiniteTimeSpan, token);
+            return ValueTask.FromResult(true);
         }
 
-        return result;
+        return IsCompleted ? ValueTask.FromResult(false) : WaitAsync(InfiniteTimeSpan, token);
     }
 
     /// <summary>
@@ -161,29 +155,26 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <summary>
     /// Waits for the first completed task.
     /// </summary>
+    /// <param name="timeout">The time to wait for the task completion.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
+    public ValueTask<bool> WaitToReadAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTask<bool> result;
         if (!completedTasks.IsEmpty)
-        {
-            result = new(true);
-        }
-        else if (IsCompleted)
-        {
-            result = new(false);
-        }
-        else
-        {
-            var source = pool.Get();
-            signal = source;
-            result = source.CreateTask(InfiniteTimeSpan, token);
-        }
+            return ValueTask.FromResult(true);
 
-        return result;
+        return IsCompleted ? ValueTask.FromResult(false) : WaitAsync(timeout, token);
     }
+
+    /// <summary>
+    /// Waits for the first completed task.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
+    public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
+        => WaitToReadAsync(InfiniteTimeSpan, token);
 
     /// <summary>
     /// Gets the enumerator to get the completed tasks.
