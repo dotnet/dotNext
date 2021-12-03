@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 namespace DotNext;
 
 using Reflection;
-using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 using Seq = Collections.Generic.Sequence;
 
@@ -19,7 +18,6 @@ using Seq = Collections.Generic.Sequence;
 /// Automatically generated hash code and equality check functions can be used
 /// instead of manually written implementation of overridden <see cref="object.GetHashCode"/> and <see cref="object.Equals(object)"/> methods.
 /// </remarks>
-[RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true, PrivateReflection = true)]
 public readonly struct EqualityComparerBuilder<T>
 {
     private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;

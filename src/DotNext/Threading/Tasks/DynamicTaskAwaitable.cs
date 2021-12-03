@@ -7,7 +7,6 @@ namespace DotNext.Threading.Tasks;
 
 using Dynamic;
 using static Reflection.TaskType;
-using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
 /// <summary>
 /// Represents dynamically-typed task.
@@ -26,7 +25,6 @@ public readonly struct DynamicTaskAwaitable
     /// Provides an object that waits for the completion of an asynchronous task.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    [RuntimeFeatures(DynamicCodeCompilation = true)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
         private readonly Task task;
