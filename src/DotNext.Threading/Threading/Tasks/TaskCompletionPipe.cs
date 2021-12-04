@@ -140,6 +140,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         if (completedTasks.TryDequeue(out task))
         {
+            Debug.Assert(scheduledTasksCount > 0U);
+
             scheduledTasksCount--;
             return true;
         }
