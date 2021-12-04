@@ -31,12 +31,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         completedTasks = new(capacity);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(Signal signal)
     {
-        if (ReferenceEquals(this.signal, signal))
-            this.signal = null;
-
+        RemoveNode(signal);
         pool.Return(signal);
     }
 
@@ -50,8 +48,16 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (completionRequested)
             throw new InvalidOperationException();
 
-        if (scheduledTasksCount == 0U && (signal?.TrySetResult(false) ?? false))
-            signal = null;
+        if (scheduledTasksCount == 0U)
+        {
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+            {
+                next = current.CleanupAndGotoNext();
+                current?.TrySetResult(false);
+            }
+
+            first = last = null;
+        }
 
         completionRequested = true;
     }
@@ -67,14 +73,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         }
     }
 
-    private void Notify()
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        if (signal?.TrySetResult(true) ?? false)
-            signal = null;
-    }
-
     [MethodImpl(MethodImplOptions.Synchronized)]
     private bool TryAdd(T task)
     {
@@ -85,17 +83,17 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (task.IsCompleted)
         {
-            completedTasks.Enqueue(task);
-            Notify();
+            Enqueue(task);
             return true;
         }
 
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private void AddSynchronized(T task)
+    private void Enqueue(T task)
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         completedTasks.Enqueue(task);
         Notify();
     }
@@ -111,7 +109,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         ArgumentNullException.ThrowIfNull(task);
 
         if (!TryAdd(task))
-            task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => AddSynchronized(task));
+            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new Continuation(this, task).Invoke);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -127,7 +125,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         return IsCompleted
             ? ValueTask.FromResult(false)
-            : (signal = pool.Get()).CreateTask(InfiniteTimeSpan, token);
+            : EnqueueNode().CreateTask(InfiniteTimeSpan, token);
     }
 
     /// <summary>
@@ -164,7 +162,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         return IsCompleted
             ? ValueTask.FromResult(false)
-            : (signal = pool.Get()).CreateTask(timeout, token);
+            : EnqueueNode().CreateTask(timeout, token);
     }
 
     /// <summary>
@@ -189,6 +187,23 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
                 Debug.Assert(task.IsCompleted);
 
                 yield return task;
+            }
+        }
+    }
+
+    private sealed class Continuation : Tuple<TaskCompletionPipe<T>, T>
+    {
+        internal Continuation(TaskCompletionPipe<T> pipe, T task)
+            : base(pipe, task)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal void Invoke()
+        {
+            lock (Item1)
+            {
+                Item1.Enqueue(Item2);
             }
         }
     }
