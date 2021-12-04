@@ -50,7 +50,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (completionRequested)
             throw new InvalidOperationException();
 
-        if (scheduledTasksCount == 0 && (signal?.TrySetResult(false) ?? false))
+        if (scheduledTasksCount == 0U && (signal?.TrySetResult(false) ?? false))
             signal = null;
 
         completionRequested = true;
@@ -63,7 +63,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         {
             Debug.Assert(Monitor.IsEntered(this));
 
-            return scheduledTasksCount == 0 && completionRequested;
+            return scheduledTasksCount == 0U && completionRequested;
         }
     }
 
@@ -119,6 +119,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         if (completedTasks.TryDequeue(out task))
         {
+            Debug.Assert(scheduledTasksCount > 0U);
+
             scheduledTasksCount--;
             return ValueTask.FromResult(true);
         }
