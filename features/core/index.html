@@ -216,7 +216,7 @@ using System;
 
 var timestamp = Timestamp.Current;
 //long-running operation
-Console.WriteLine(current.Elapsed);
+Console.WriteLine(timestamp.Elapsed);
 </code></pre>
 <p><code>Elapsed</code> property returning value of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.timespan">TimeSpan</a> type which indicates the difference between <code>timestamp</code> and the current point in time.</p>
 <p>This type should not be used as unique identifier of some point in time. The created time stamp may identify the time since the start of the process, OS, user session or whatever else.</p>

@@ -80,6 +80,10 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">AsyncLazy&lt;T&gt;</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.ISupplier-2.html">ISupplier</a>&lt;<span class="xref">CancellationToken</span>, <span class="xref">Task</span>&lt;T&gt;&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -105,7 +109,7 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncLazy_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncLazy&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncLazy&lt;T&gt; : ISupplier&lt;CancellationToken, Task&lt;T&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -130,7 +134,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L21">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1__ctor_" data-uid="DotNext.Threading.AsyncLazy`1.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1__ctor__0_" data-uid="DotNext.Threading.AsyncLazy`1.#ctor(`0)">AsyncLazy(T)</h4>
@@ -161,10 +165,50 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1__ctor_DotNext_Func_CancellationToken_Task__0___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.%23ctor(DotNext.Func%7BCancellationToken%2CTask%7B%600%7D%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L49">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLazy_1__ctor_" data-uid="DotNext.Threading.AsyncLazy`1.#ctor*"></a>
+  <h4 id="DotNext_Threading_AsyncLazy_1__ctor_DotNext_Func_CancellationToken_Task__0___System_Boolean_" data-uid="DotNext.Threading.AsyncLazy`1.#ctor(DotNext.Func{CancellationToken,Task{`0}},System.Boolean)">AsyncLazy(Func&lt;CancellationToken, Task&lt;T&gt;&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of lazy value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncLazy(Func&lt;CancellationToken, Task&lt;T&gt;&gt; valueFactory, bool resettable = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">CancellationToken</span>, <span class="xref">Task</span>&lt;T&gt;&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The function used to compute actual value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">resettable</span></td>
+        <td><p><span class="xref">true</span> if previously computed value can be removed and computation executed again when it will be requested; <span class="xref">false</span> if value can be computed exactly once.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1__ctor_DotNext_Func_Task__0___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.%23ctor(DotNext.Func%7BTask%7B%600%7D%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L33">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L37">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1__ctor_" data-uid="DotNext.Threading.AsyncLazy`1.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1__ctor_DotNext_Func_Task__0___System_Boolean_" data-uid="DotNext.Threading.AsyncLazy`1.#ctor(DotNext.Func{Task{`0}},System.Boolean)">AsyncLazy(Func&lt;Task&lt;T&gt;&gt;, Boolean)</h4>
@@ -206,7 +250,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_IsValueCreated.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.IsValueCreated%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L44">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_IsValueCreated_" data-uid="DotNext.Threading.AsyncLazy`1.IsValueCreated*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_IsValueCreated" data-uid="DotNext.Threading.AsyncLazy`1.IsValueCreated">IsValueCreated</h4>
@@ -237,7 +281,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_Task.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.Task%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L76">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_Task_" data-uid="DotNext.Threading.AsyncLazy`1.Task*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_Task" data-uid="DotNext.Threading.AsyncLazy`1.Task">Task</h4>
@@ -263,12 +307,16 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Threading_AsyncLazy_1_Task_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1_WithCancellation_CancellationToken_">WithCancellation(CancellationToken)</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L49">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L63">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_Value_" data-uid="DotNext.Threading.AsyncLazy`1.Value*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_Value" data-uid="DotNext.Threading.AsyncLazy`1.Value">Value</h4>
@@ -301,7 +349,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_ConfigureAwait_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.ConfigureAwait(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L121">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L166">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_ConfigureAwait_" data-uid="DotNext.Threading.AsyncLazy`1.ConfigureAwait*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_ConfigureAwait_System_Boolean_" data-uid="DotNext.Threading.AsyncLazy`1.ConfigureAwait(System.Boolean)">ConfigureAwait(Boolean)</h4>
@@ -351,7 +399,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_GetAwaiter.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.GetAwaiter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L159">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_GetAwaiter_" data-uid="DotNext.Threading.AsyncLazy`1.GetAwaiter*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_GetAwaiter" data-uid="DotNext.Threading.AsyncLazy`1.GetAwaiter">GetAwaiter()</h4>
@@ -383,7 +431,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_Reset.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L98">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L143">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_Reset_" data-uid="DotNext.Threading.AsyncLazy`1.Reset*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_Reset" data-uid="DotNext.Threading.AsyncLazy`1.Reset">Reset()</h4>
@@ -415,7 +463,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L127">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLazy_1_ToString_" data-uid="DotNext.Threading.AsyncLazy`1.ToString*"></a>
   <h4 id="DotNext_Threading_AsyncLazy_1_ToString" data-uid="DotNext.Threading.AsyncLazy`1.ToString">ToString()</h4>
@@ -444,6 +492,109 @@
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_WithCancellation_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.WithCancellation(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L126">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLazy_1_WithCancellation_" data-uid="DotNext.Threading.AsyncLazy`1.WithCancellation*"></a>
+  <h4 id="DotNext_Threading_AsyncLazy_1_WithCancellation_CancellationToken_" data-uid="DotNext.Threading.AsyncLazy`1.WithCancellation(CancellationToken)">WithCancellation(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Gets already completed task or invokes the factory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;T&gt; WithCancellation(CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><p>Lazy representation of the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1_DotNext_ISupplier_CancellationToken_Task_T___Invoke_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601.DotNext%23ISupplier%7BCancellationToken%2CTask%7BT%7D%7D%23Invoke(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L66">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLazy_1_DotNext_ISupplier_CancellationToken_Task_T___Invoke_" data-uid="DotNext.Threading.AsyncLazy`1.DotNext#ISupplier{CancellationToken,Task{T}}#Invoke*"></a>
+  <h4 id="DotNext_Threading_AsyncLazy_1_DotNext_ISupplier_CancellationToken_Task_T___Invoke_CancellationToken_" data-uid="DotNext.Threading.AsyncLazy`1.DotNext#ISupplier{CancellationToken,Task{T}}#Invoke(CancellationToken)">ISupplier&lt;CancellationToken, Task&lt;T&gt;&gt;.Invoke(CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;T&gt; ISupplier&lt;CancellationToken, Task&lt;T&gt;&gt;.Invoke(CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
@@ -507,7 +658,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLazy_1.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLazy%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLazy.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
