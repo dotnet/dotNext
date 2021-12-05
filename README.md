@@ -50,6 +50,7 @@ Release Date: 12-05-2021
 * Optimized bounds check in growable buffers
 * Changed behavior of exceptions capturing by `DotNext.Threading.Tasks.Synchronization.GetResult` overloaded methods
 * Added `DotNext.Threading.Tasks.Synchronization.TryGetResult` method
+* Added `DotNext.Buffers.ReadOnlySequencePartitioner` static class with methods for [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) partitioning in [parallel](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.parallel) processing scenarios
 * Enabled support of IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.0">DotNext.Metaprogramming 4.1.0</a>
