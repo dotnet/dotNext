@@ -13,7 +13,7 @@ public partial class TaskCompletionPipe<T>
         protected override void AfterConsumed() => completionCallback?.Invoke(this);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal bool NeedsRemoval => !ReferenceEquals(Sentinel.Instance, CompletionData);
+        internal bool NeedsRemoval => CompletionData is null;
 
         ref Action<Signal>? IPooledManualResetCompletionSource<Action<Signal>>.OnConsumed => ref completionCallback;
     }

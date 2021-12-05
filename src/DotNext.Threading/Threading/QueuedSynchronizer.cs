@@ -64,7 +64,7 @@ public class QueuedSynchronizer : Disposable
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal bool NeedsRemoval => !ReferenceEquals(CompletionData, Sentinel.Instance);
+        internal bool NeedsRemoval => CompletionData is null;
 
         internal void Initialize(bool throwOnTimeout, Action<double>? lockDurationCounter, object? callerInfo)
         {
