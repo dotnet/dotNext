@@ -344,13 +344,11 @@ public static class Intrinsics
     /// <param name="value">The managed pointer to check.</param>
     /// <typeparam name="T">The type of the managed pointer.</typeparam>
     /// <exception cref="NullReferenceException"><paramref name="value"/> pointer is <see langword="null"/>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [StackTraceHidden]
     public static void ThrowIfNull<T>(in T value)
     {
-        PushInRef(value);
-        Ldobj<T>();
-        Pop();
-        Ret();
+        if (Unsafe.IsNullRef(ref Unsafe.AsRef(in value)))
+            throw new NullReferenceException();
     }
 
     /// <summary>

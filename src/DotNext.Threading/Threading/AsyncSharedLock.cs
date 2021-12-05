@@ -18,20 +18,14 @@ using Tasks.Pooling;
 /// </remarks>
 public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
     {
         private Action<WaitNode>? consumedCallback;
         internal bool IsStrongLock;
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
-        private protected override void ResetCore()
-        {
-            consumedCallback = null;
-            base.ResetCore();
-        }
-
-        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
     }
 
     private sealed class State
@@ -104,8 +98,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             => node.IsStrongLock = true;
     }
 
-    private readonly ValueTaskPool<WaitNode> pool;
     private readonly State state;
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
     /// Initializes a new shared lock.
@@ -122,10 +116,16 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         state = new(concurrencyLevel);
-        Action<WaitNode> removeFromList = RemoveAndDrainWaitQueue;
-        pool = limitedConcurrency
-            ? new(concurrencyLevel.Truncate(), removeFromList)
-            : new(removeFromList);
+        pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
+    private void OnCompleted(WaitNode node)
+    {
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
+        pool.Return(node);
     }
 
     /// <summary>
@@ -186,12 +186,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         if (strongLock)
         {
             var manager = new StrongLockManager(state);
-            return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
         }
         else
         {
             var manager = new WeakLockManager(state);
-            return WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
         }
     }
 
@@ -212,12 +212,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         if (strongLock)
         {
             var manager = new StrongLockManager(state);
-            return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
         }
         else
         {
             var manager = new WeakLockManager(state);
-            return WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+            return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
         }
     }
 
@@ -232,26 +232,22 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
         => AcquireAsync(strongLock, InfiniteTimeSpan, token);
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(first is null or WaitNode);
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            Debug.Assert(current.Next is null or WaitNode);
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
+            next = Unsafe.As<WaitNode>(current.Next);
 
             switch ((current.IsStrongLock, state.IsStrongLockAllowed))
             {
                 case (true, true):
-                    if (current.TrySetResult(true))
+                    if (RemoveAndSignal(current))
                     {
-                        RemoveNode(current);
                         state.AcquireStrongLock();
                         return;
                     }
@@ -264,11 +260,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsWeakLockAllowed)
                         return;
 
-                    if (current.TrySetResult(true))
-                    {
-                        RemoveNode(current);
+                    if (RemoveAndSignal(current))
                         state.AcquireWeakLock();
-                    }
 
                     continue;
             }

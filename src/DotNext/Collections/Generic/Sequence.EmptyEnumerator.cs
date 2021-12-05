@@ -4,7 +4,7 @@ namespace DotNext.Collections.Generic;
 
 public static partial class Sequence
 {
-    private sealed class EmptyEnumerator<T> : IEnumerator<T>
+    private sealed class EmptyEnumerator<T> : IEnumerator<T>, IAsyncEnumerator<T>
     {
         internal static readonly EmptyEnumerator<T> Instance = new();
 
@@ -18,6 +18,8 @@ public static partial class Sequence
 
         bool IEnumerator.MoveNext() => false;
 
+        ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync() => new(false);
+
         void IEnumerator.Reset()
         {
         }
@@ -25,6 +27,8 @@ public static partial class Sequence
         void IDisposable.Dispose()
         {
         }
+
+        ValueTask IAsyncDisposable.DisposeAsync() => ValueTask.CompletedTask;
     }
 
     /// <summary>

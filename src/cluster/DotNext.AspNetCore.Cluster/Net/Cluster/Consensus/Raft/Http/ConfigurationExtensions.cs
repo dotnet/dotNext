@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -45,6 +46,8 @@ public static partial class ConfigurationExtensions
     /// <param name="services">The collection of services.</param>
     /// <param name="memberConfig">The configuration of local cluster node.</param>
     /// <returns>The modified collection of services.</returns>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(HttpClusterMemberConfiguration))]
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "All public members preserved")]
     public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
     {
         Func<IServiceProvider, IOptions<ClusterMemberConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpClusterMemberConfiguration>>;

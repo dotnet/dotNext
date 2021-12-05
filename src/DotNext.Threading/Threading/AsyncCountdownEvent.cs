@@ -60,7 +60,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -80,7 +80,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         manager = new(initialCount);
-        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -94,7 +94,16 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(initialCount));
 
         manager = new(initialCount);
-        pool = new(RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
+    private void OnCompleted(DefaultWaitNode node)
+    {
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
+        pool.Return(node);
     }
 
     /// <summary>
@@ -231,7 +240,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             return new(GetDisposedTask<bool>());
         }
 
-        return (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        return (completedSynchronously = SignalAndResetCore(1L)) ? new(true) : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -243,7 +252,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             return new(DisposedTask);
         }
 
-        return (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        return (completedSynchronously = SignalAndResetCore(1L)) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
     }
 
     /// <summary>
@@ -279,7 +288,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -290,5 +299,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, pool, InfiniteTimeSpan, token);
+        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
 }

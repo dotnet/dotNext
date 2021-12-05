@@ -17,7 +17,7 @@ using Tasks.Pooling;
 /// <typeparam name="T">The type of objects that may be exchanged.</typeparam>
 public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
-    private sealed class ExchangePoint : ValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<ExchangePoint>
+    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<Action<ExchangePoint>>
     {
         private Action<ExchangePoint>? consumedCallback;
         internal T? Value;
@@ -26,8 +26,9 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         private protected override void ResetCore()
         {
-            Value = default;
-            consumedCallback = null;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                Value = default;
+
             base.ResetCore();
         }
 
@@ -42,11 +43,11 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             return false;
         }
 
-        ref Action<ExchangePoint>? IPooledManualResetCompletionSource<ExchangePoint>.OnConsumed => ref consumedCallback;
+        ref Action<ExchangePoint>? IPooledManualResetCompletionSource<Action<ExchangePoint>>.OnConsumed => ref consumedCallback;
     }
 
     private readonly TaskCompletionSource disposeTask;
-    private readonly ValueTaskPool<ExchangePoint> pool;
+    private ValueTaskPool<T, ExchangePoint, Action<ExchangePoint>> pool;
     private ExchangePoint? point;
     private bool disposeRequested;
     private volatile ExchangeTerminatedException? termination;
@@ -74,6 +75,8 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         if (ReferenceEquals(this.point, point))
             this.point = null;
+
+        pool.Return(point);
     }
 
     /// <summary>
@@ -203,6 +206,13 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         }
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void NotifyObjectDisposed()
+    {
+        point?.TrySetException(new ObjectDisposedException(GetType().Name));
+        point = null;
+    }
+
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
@@ -210,7 +220,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         if (disposing)
         {
-            Interlocked.Exchange(ref point, null)?.TrySetException(new ObjectDisposedException(GetType().Name));
+            NotifyObjectDisposed();
             termination = null;
             disposeTask.TrySetResult();
         }

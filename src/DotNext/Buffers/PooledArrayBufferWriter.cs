@@ -93,7 +93,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         get
         {
             ThrowIfDisposed();
-            if (index < 0 || index >= position)
+            if ((ulong)index >= (ulong)position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buffer), (nint)index);
@@ -130,7 +130,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     void IList<T>.RemoveAt(int index)
     {
         ThrowIfDisposed();
-        if (index < 0 || index >= position)
+        if ((uint)index >= (uint)position)
             throw new ArgumentOutOfRangeException(nameof(index));
         RemoveAt(index);
     }
@@ -161,7 +161,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     public void Insert(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
-        if (index < 0 || index > position)
+        if ((uint)index > (uint)position)
             throw new ArgumentOutOfRangeException(nameof(index));
 
         if (items.IsEmpty)
@@ -201,7 +201,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     public void Overwrite(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
-        if (index < 0 || index > position)
+        if ((uint)index > (uint)position)
             throw new ArgumentOutOfRangeException(nameof(index));
 
         if (GetLength(buffer) == 0)

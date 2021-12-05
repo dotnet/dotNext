@@ -2,8 +2,8 @@ using System.Threading.Tasks.Sources;
 
 namespace DotNext.Threading.Tasks.Pooling;
 
-internal interface IPooledManualResetCompletionSource<TNode> : IValueTaskSource
-    where TNode : ManualResetCompletionSource, IPooledManualResetCompletionSource<TNode>
+internal interface IPooledManualResetCompletionSource<TCallback> : IValueTaskSource
+    where TCallback : MulticastDelegate
 {
-    ref Action<TNode>? OnConsumed { get; }
+    ref TCallback? OnConsumed { get; }
 }

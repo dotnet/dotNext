@@ -6,7 +6,6 @@ using System.Runtime.Versioning;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using IO.Log;
-using Runtime.CompilerServices;
 using Runtime.Serialization;
 using static Reflection.MethodExtensions;
 using static Runtime.Intrinsics;
@@ -53,7 +52,7 @@ public partial class CommandInterpreter : Disposable
     /// </summary>
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(CommandHandler<>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,>))]
-    [RuntimeFeatures(RuntimeGenericInstantiation = true)]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     protected CommandInterpreter()
     {
         // explore command types

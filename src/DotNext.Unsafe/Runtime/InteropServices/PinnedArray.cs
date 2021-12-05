@@ -163,7 +163,7 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// <inheritdoc />
     int IReadOnlyCollection<T>.Count => Length;
 
-    private unsafe long Size => checked(Length * sizeof(T));
+    private unsafe long Size => Math.BigMul(Length, sizeof(T));
 
     /// <inheritdoc />
     long IUnmanagedMemory.Size => Size;
@@ -204,7 +204,7 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// Gets enumerator over array elements.
     /// </summary>
     /// <returns>The enumerator over array elements.</returns>
-    public IEnumerator<T> GetEnumerator() => Array.As<IEnumerable<T>>().GetEnumerator();
+    public IEnumerator<T> GetEnumerator() => Array.AsEnumerable().GetEnumerator();
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

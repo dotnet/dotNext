@@ -110,10 +110,7 @@ public readonly unsafe struct Reference<TValue>
         get
         {
             ref TValue result = ref RawValue;
-
-            if (Unsafe.IsNullRef(ref result))
-                throw new NullReferenceException();
-
+            Intrinsics.ThrowIfNull(in result);
             return ref result;
         }
     }
@@ -219,7 +216,7 @@ public static class Reference
     {
         ArgumentNullException.ThrowIfNull(array);
 
-        if (index < 0 || index >= Intrinsics.GetLength(array))
+        if ((nuint)index >= (nuint)Intrinsics.GetLength(array))
             throw new ArgumentOutOfRangeException(nameof(index));
 
         return new(array, index);

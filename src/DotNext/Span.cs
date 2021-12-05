@@ -495,11 +495,10 @@ public static class Span
         {
             var table = CharToNimbleLookupTable;
 
-            byte result = (uint)ch < (uint)table.Length
-                ? table[ch]
-                : byte.MaxValue;
-
-            return result <= NimbleMaxValue ? result : throw new FormatException(ExceptionMessages.InvalidHexInput((char)ch));
+            byte result;
+            return (uint)ch < (uint)table.Length && ((result = table[ch]) <= NimbleMaxValue)
+                ? result
+                : throw new FormatException(ExceptionMessages.InvalidHexInput((char)ch));
         }
     }
 

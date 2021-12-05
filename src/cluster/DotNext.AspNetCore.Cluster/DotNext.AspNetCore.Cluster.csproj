@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
-    <VersionPrefix>4.0.0</VersionPrefix>
+    <IsTrimmable>true</IsTrimmable>
+    <VersionPrefix>4.1.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>

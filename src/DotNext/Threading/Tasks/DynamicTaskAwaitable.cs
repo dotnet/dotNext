@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,7 +7,6 @@ namespace DotNext.Threading.Tasks;
 
 using Dynamic;
 using static Reflection.TaskType;
-using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
 /// <summary>
 /// Represents dynamically-typed task.
@@ -25,7 +25,6 @@ public readonly struct DynamicTaskAwaitable
     /// Provides an object that waits for the completion of an asynchronous task.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    [RuntimeFeatures(DynamicCodeCompilation = true)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
         private readonly Task task;
@@ -65,6 +64,7 @@ public readonly struct DynamicTaskAwaitable
         /// Gets dynamically typed task result.
         /// </summary>
         /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
+        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         public dynamic? GetResult()
         {
             if (IsTaskWithResult(task.GetType()))

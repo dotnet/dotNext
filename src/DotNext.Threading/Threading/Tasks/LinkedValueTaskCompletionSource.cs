@@ -1,3 +1,5 @@
+using Debug = System.Diagnostics.Debug;
+
 namespace DotNext.Threading.Tasks;
 
 internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletionSource<T>
@@ -13,21 +15,30 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
     internal LinkedValueTaskCompletionSource<T>? Previous => previous;
 
-    internal bool IsNotRoot => next is not null || previous is not null;
-
     internal void Append(LinkedValueTaskCompletionSource<T> node)
     {
-        node.next = next;
+        Debug.Assert(next is null);
+
         node.previous = this;
         next = node;
+    }
+
+    internal void Prepend(LinkedValueTaskCompletionSource<T> node)
+    {
+        Debug.Assert(previous is null);
+
+        node.next = this;
+        previous = node;
     }
 
     internal void Detach()
     {
         if (previous is not null)
             previous.next = next;
+
         if (next is not null)
             next.previous = previous;
+
         next = previous = null;
     }
 

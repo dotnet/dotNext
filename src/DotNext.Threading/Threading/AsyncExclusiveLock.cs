@@ -32,7 +32,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         }
     }
 
-    private readonly ValueTaskPool<DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
 
     /// <summary>
@@ -45,7 +45,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        pool = new(concurrencyLevel, RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -53,7 +53,16 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public AsyncExclusiveLock()
     {
-        pool = new(RemoveAndDrainWaitQueue);
+        pool = new(OnCompleted);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
+    private void OnCompleted(DefaultWaitNode node)
+    {
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
+        pool.Return(node);
     }
 
     /// <summary>
@@ -84,7 +93,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -98,7 +107,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, pool, timeout, token);
+        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -111,7 +120,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask AcquireAsync(CancellationToken token = default)
         => AcquireAsync(InfiniteTimeSpan, token);
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
@@ -119,19 +128,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         {
             next = current.Next;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
             if (!manager.IsLockAllowed)
                 break;
 
             // skip dead node
-            if (current.TrySetResult(true))
+            if (RemoveAndSignal(current))
             {
-                RemoveNode(current);
                 manager.AcquireLock();
                 break;
             }

@@ -509,5 +509,16 @@ namespace DotNext.Collections.Generic
                 Equal(bytes[i++], enumerator.Current);
             }
         }
+
+        [Fact]
+        public static async Task EmptyAsyncEnumerable()
+        {
+            var count = 0;
+
+            await foreach (var item in Sequence.GetEmptyAsyncEnumerable<int>())
+                count++;
+
+            Equal(0, count);
+        }
     }
 }
