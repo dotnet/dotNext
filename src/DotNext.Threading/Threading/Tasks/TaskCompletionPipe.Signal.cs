@@ -41,7 +41,7 @@ public partial class TaskCompletionPipe<T>
             next = current.Next;
 
             RemoveNode(current);
-            if (current.TrySetResult(Sentinel.Instance, true))
+            if (current.TrySetResult(Sentinel.Instance, value: true))
                 break;
         }
     }
