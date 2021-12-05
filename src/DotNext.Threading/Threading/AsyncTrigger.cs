@@ -30,7 +30,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
 
     /// <summary>
@@ -218,7 +218,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         void Transit(TState state);
     }
 
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
     {
         private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
@@ -231,7 +231,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             base.ResetCore();
         }
 
-        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -254,7 +254,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             => node.Transition = transition;
     }
 
-    private ValueTaskPool<bool, WaitNode> pool;
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
     /// Initializes a new trigger.

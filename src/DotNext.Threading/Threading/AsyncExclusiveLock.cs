@@ -32,7 +32,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
 
     /// <summary>

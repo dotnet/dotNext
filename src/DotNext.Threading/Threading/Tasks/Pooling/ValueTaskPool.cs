@@ -12,15 +12,16 @@ namespace DotNext.Threading.Tasks.Pooling;
  * Monitor lock.
  */
 [StructLayout(LayoutKind.Auto)]
-internal struct ValueTaskPool<T, TNode>
-    where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TNode>, new()
+internal struct ValueTaskPool<T, TNode, TCallback>
+    where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TCallback>, new()
+    where TCallback : MulticastDelegate
 {
     private readonly long maximumRetained; // zero when no limitations
-    private readonly Action<TNode> backToPool;
+    private readonly TCallback backToPool;
     private TNode? first;
     private long count;
 
-    internal ValueTaskPool(Action<TNode> backToPool, long? maximumRetained = null)
+    internal ValueTaskPool(TCallback backToPool, long? maximumRetained = null)
     {
         Debug.Assert(backToPool is not null);
         Debug.Assert((backToPool.Method.MethodImplementationFlags & MethodImplAttributes.Synchronized) != 0);

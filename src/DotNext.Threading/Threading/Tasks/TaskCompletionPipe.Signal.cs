@@ -6,7 +6,7 @@ using Pooling;
 
 public partial class TaskCompletionPipe<T>
 {
-    private sealed class Signal : LinkedValueTaskCompletionSource<bool>, IPooledManualResetCompletionSource<Signal>
+    private sealed class Signal : LinkedValueTaskCompletionSource<bool>, IPooledManualResetCompletionSource<Action<Signal>>
     {
         private Action<Signal>? completionCallback;
 
@@ -15,10 +15,10 @@ public partial class TaskCompletionPipe<T>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => !ReferenceEquals(Sentinel.Instance, CompletionData);
 
-        ref Action<Signal>? IPooledManualResetCompletionSource<Signal>.OnConsumed => ref completionCallback;
+        ref Action<Signal>? IPooledManualResetCompletionSource<Action<Signal>>.OnConsumed => ref completionCallback;
     }
 
-    private ValueTaskPool<bool, Signal> pool;
+    private ValueTaskPool<bool, Signal, Action<Signal>> pool;
     private LinkedValueTaskCompletionSource<bool>? first, last;
 
     private void RemoveNode(LinkedValueTaskCompletionSource<bool> signal)

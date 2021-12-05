@@ -80,20 +80,20 @@ public class QueuedSynchronizer : Disposable
             => lockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
 
         private protected static void AfterConsumed<T>(T node)
-            where T : WaitNode, IPooledManualResetCompletionSource<T>
+            where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
         {
             node.ReportLockDuration();
-            node.As<IPooledManualResetCompletionSource<T>>().OnConsumed?.Invoke(node);
+            node.As<IPooledManualResetCompletionSource<Action<T>>>().OnConsumed?.Invoke(node);
         }
     }
 
-    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
+    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
     {
         private Action<DefaultWaitNode>? consumedCallback;
 
         protected sealed override void AfterConsumed() => AfterConsumed(this);
 
-        ref Action<DefaultWaitNode>? IPooledManualResetCompletionSource<DefaultWaitNode>.OnConsumed => ref consumedCallback;
+        ref Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed => ref consumedCallback;
     }
 
     private protected interface ILockManager
@@ -223,8 +223,8 @@ public class QueuedSynchronizer : Disposable
         return isFirst;
     }
 
-    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
@@ -278,8 +278,8 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode> pool, TimeSpan timeout, CancellationToken token)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
@@ -304,8 +304,8 @@ public class QueuedSynchronizer : Disposable
         return EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(timeout, token);
     }
 
-    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode> pool, TimeSpan timeout, CancellationToken token)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
