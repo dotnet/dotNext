@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BufferHelpers
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -312,7 +312,6 @@ represents by memory block.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -828,7 +827,6 @@ represents by memory block.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void ReleaseAll&lt;T&gt;(this ref MemoryOwner&lt;T&gt; owner)
-
     where T : IDisposable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1166,7 +1164,6 @@ represents by memory block.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool TryRead&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader, out T result)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1241,7 +1238,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool TryWrite&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, in T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1436,7 +1432,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, in T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1494,7 +1489,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this ref SpanWriter&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
-
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1936,7 +1930,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value)
-
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1994,7 +1987,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, ReadOnlySpan&lt;T&gt; values)
-
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2052,7 +2044,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int WriteFormattable&lt;T&gt;(this ref BufferWriterSlim&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
-
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2138,7 +2129,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value)
-
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2196,7 +2186,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteFormattable&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, ReadOnlySpan&lt;T&gt; values)
-
     where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2254,7 +2243,6 @@ otherwise, <span class="xref">false</span>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int WriteFormattable&lt;T&gt;(this IBufferWriter&lt;char&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
-
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

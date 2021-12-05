@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class StreamSource
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -127,7 +127,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Stream AsAsynchronousStream&lt;TOutput&gt;(TOutput output)
-
     where TOutput : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFlushable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -407,7 +406,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Stream AsStream&lt;TWriter&gt;(this TWriter writer, Action&lt;TWriter&gt;? flush = null, Func&lt;TWriter, CancellationToken, Task&gt;? flushAsync = null)
-
     where TWriter : class, IBufferWriter&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -655,7 +653,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Stream AsSynchronousStream&lt;TOutput&gt;(TOutput output)
-
     where TOutput : IFlushable, IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

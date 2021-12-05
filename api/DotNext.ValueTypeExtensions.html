@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ValueTypeExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -128,7 +128,6 @@ of the specified values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, params T[] values)
-
     where T : struct, IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -207,7 +206,6 @@ of the specified values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, IEnumerable&lt;T&gt; values)
-
     where T : struct, IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -485,7 +483,6 @@ to check equality between two values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static double NormalizeToDouble&lt;T&gt;(this T value, T min, T max)
-
     where T : struct, IConvertible, IComparable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -565,7 +562,6 @@ to check equality between two values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static float NormalizeToSingle&lt;T&gt;(this T value, T min, T max)
-
     where T : struct, IConvertible, IComparable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -845,7 +841,6 @@ to check equality between two values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool TryGetValue&lt;T&gt;(this T? nullable, out T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BinaryTransferObject&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -176,7 +176,8 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_IsReusable_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#IsReusable*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_IsReusable" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#IsReusable">IDataTransferObject.IsReusable</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Indicates that the content of this object can be copied to the output stream or pipe multiple times.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -206,7 +207,8 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_Length_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#Length*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_Length" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#Length">IDataTransferObject.Length</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets length of the object payload, in bytes.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -227,6 +229,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_Length_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If value is <span class="xref">null</span> then length of the payload cannot be determined.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TransformAsync__2___1_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.BinaryTransferObject%601.DotNext%23IO%23IDataTransferObject%23TransformAsync%60%602(%60%601%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -236,12 +241,12 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TransformAsync_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#TransformAsync*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TransformAsync__2___1_CancellationToken_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#TransformAsync``2(``1,CancellationToken)">IDataTransferObject.TransformAsync&lt;TResult, TTransformation&gt;(TTransformation, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Converts data transfer object to another type.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IDataTransferObject.TransformAsync&lt;TResult, TTransformation&gt;(TTransformation transformation, CancellationToken token)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -257,12 +262,14 @@
       <tr>
         <td><span class="xref">TTransformation</span></td>
         <td><span class="parametername">transformation</span></td>
-        <td></td>
+        <td><p>The parser instance.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -277,7 +284,8 @@
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span>&lt;TResult&gt;</td>
-        <td></td>
+        <td><p>The converted DTO content.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -292,14 +300,20 @@
     <tbody>
       <tr>
         <td><span class="parametername">TResult</span></td>
-        <td></td>
+        <td><p>The type of result.</p>
+</td>
       </tr>
       <tr>
         <td><span class="parametername">TTransformation</span></td>
-        <td></td>
+        <td><p>The type of parser.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TransformAsync__2___1_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The default implementation copies the content into memory
+before parsing.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TryGetMemory_ReadOnlyMemory_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.BinaryTransferObject%601.DotNext%23IO%23IDataTransferObject%23TryGetMemory(ReadOnlyMemory%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -309,7 +323,8 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TryGetMemory_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#TryGetMemory*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_TryGetMemory_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#TryGetMemory(ReadOnlyMemory{System.Byte}@)">IDataTransferObject.TryGetMemory(out ReadOnlyMemory&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Attempts to retrieve contents of this object as a memory block synchronously.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -328,7 +343,8 @@
       <tr>
         <td><span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">memory</span></td>
-        <td></td>
+        <td><p>The memory block containing contents of this object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -343,7 +359,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if this object is representable as a memory block; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -356,12 +373,12 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_WriteToAsync_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#WriteToAsync*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_WriteToAsync__1___0_CancellationToken_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#WriteToAsync``1(``0,CancellationToken)">IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Transforms this object to serialized form.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
-
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -377,12 +394,14 @@
       <tr>
         <td><span class="xref">TWriter</span></td>
         <td><span class="parametername">writer</span></td>
-        <td></td>
+        <td><p>The binary writer.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The toke that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -397,7 +416,8 @@
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -412,7 +432,8 @@
     <tbody>
       <tr>
         <td><span class="parametername">TWriter</span></td>
-        <td></td>
+        <td><p>The type of writer.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -425,7 +446,8 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_ISupplier_T__Invoke_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#ISupplier{T}#Invoke*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_ISupplier_T__Invoke" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#ISupplier{T}#Invoke">ISupplier&lt;T&gt;.Invoke()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Invokes the supplier.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -442,7 +464,8 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td></td>
+        <td><p>The value returned by this supplier.</p>
+</td>
       </tr>
     </tbody>
   </table>

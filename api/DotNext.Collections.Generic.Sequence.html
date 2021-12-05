@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Sequence
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -728,7 +728,6 @@ if sequence is empty.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T? FirstOrNull&lt;T&gt;(this IEnumerable&lt;T&gt; seq)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -797,7 +796,6 @@ if sequence is empty.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;T?&gt; FirstOrNullAsync&lt;T&gt;(this IAsyncEnumerable&lt;T&gt; seq, CancellationToken token = null)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1739,7 +1737,6 @@ if sequence is empty.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool Skip&lt;TEnumerator, T&gt;(this ref TEnumerator enumerator, int count)
-
     where TEnumerator : struct, IEnumerator&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1890,7 +1887,6 @@ if sequence is empty.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IAsyncEnumerable&lt;T&gt; SkipNulls&lt;T&gt;(this IAsyncEnumerable&lt;T&gt; collection)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1958,7 +1954,6 @@ if sequence is empty.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IEnumerable&lt;T&gt; SkipNulls&lt;T&gt;(this IEnumerable&lt;T&gt; collection)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BitwiseComparer&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -161,7 +161,6 @@ or <see cref="!:IComparer&lt;T>"></see> interface. Otherwise, use static methods
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int Compare&lt;TOther&gt;(in T first, in TOther second)
-
     where TOther : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -235,7 +234,6 @@ or <see cref="!:IComparer&lt;T>"></see> interface. Otherwise, use static methods
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool Equals&lt;TOther&gt;(in T first, in TOther second)
-
     where TOther : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -441,7 +439,6 @@ even if it is overridden by value type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int GetHashCode&lt;THashFunction&gt;(in T value, bool salted = true)
-
     where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

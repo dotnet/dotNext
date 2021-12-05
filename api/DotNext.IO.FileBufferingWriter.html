@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class FileBufferingWriter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -686,7 +686,6 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer, int bufferSize, CancellationToken token)
-
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -998,7 +997,6 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public async Task CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, int bufferSize, CancellationToken token)
-
     where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1267,12 +1265,29 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Flush_" data-uid="DotNext.IO.FileBufferingWriter.Flush*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Flush" data-uid="DotNext.IO.FileBufferingWriter.Flush">Flush()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Flushes this stream by writing any buffered output to the underlying stream.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public override void Flush()</code></pre>
   </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
+        <td><p>I/O error occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_FlushAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.FlushAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -2420,12 +2435,12 @@ This method is useful only if the file was not created as temporary file.</p>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_DotNext_Buffers_IGrowableBuffer_System_Byte__CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.DotNext#Buffers#IGrowableBuffer{System#Byte}#CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_DotNext_Buffers_IGrowableBuffer_System_Byte__CopyTo__1___0_" data-uid="DotNext.IO.FileBufferingWriter.DotNext#Buffers#IGrowableBuffer{System#Byte}#CopyTo``1(``0)">IGrowableBuffer&lt;Byte&gt;.CopyTo&lt;TConsumer&gt;(TConsumer)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Passes the contents of this writer to the callback.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">void IGrowableBuffer&lt;byte&gt;.CopyTo&lt;TConsumer&gt;(TConsumer consumer)
-
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2441,7 +2456,8 @@ This method is useful only if the file was not created as temporary file.</p>
       <tr>
         <td><span class="xref">TConsumer</span></td>
         <td><span class="parametername">consumer</span></td>
-        <td></td>
+        <td><p>The callback used to accept the memory representing the contents of this builder.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2456,10 +2472,14 @@ This method is useful only if the file was not created as temporary file.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TConsumer</span></td>
-        <td></td>
+        <td><p>The type of the object that represents the consumer.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_FileBufferingWriter_DotNext_Buffers_IGrowableBuffer_System_Byte__CopyTo__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The callback may be called multiple times.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_DotNext_Buffers_IGrowableBuffer_System_Byte__WrittenCount.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.DotNext%23Buffers%23IGrowableBuffer%7BSystem%23Byte%7D%23WrittenCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -2469,7 +2489,8 @@ This method is useful only if the file was not created as temporary file.</p>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_DotNext_Buffers_IGrowableBuffer_System_Byte__WrittenCount_" data-uid="DotNext.IO.FileBufferingWriter.DotNext#Buffers#IGrowableBuffer{System#Byte}#WrittenCount*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_DotNext_Buffers_IGrowableBuffer_System_Byte__WrittenCount" data-uid="DotNext.IO.FileBufferingWriter.DotNext#Buffers#IGrowableBuffer{System#Byte}#WrittenCount">IGrowableBuffer&lt;Byte&gt;.WrittenCount</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the number of written elements.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">

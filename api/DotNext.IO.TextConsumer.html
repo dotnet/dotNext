@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct TextConsumer
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -516,7 +516,8 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
   </span>
   <a id="DotNext_IO_TextConsumer_DotNext_Buffers_IReadOnlySpanConsumer_System_Char__Invoke_" data-uid="DotNext.IO.TextConsumer.DotNext#Buffers#IReadOnlySpanConsumer{System#Char}#Invoke*"></a>
   <h4 id="DotNext_IO_TextConsumer_DotNext_Buffers_IReadOnlySpanConsumer_System_Char__Invoke_ReadOnlySpan_System_Char__" data-uid="DotNext.IO.TextConsumer.DotNext#Buffers#IReadOnlySpanConsumer{System#Char}#Invoke(ReadOnlySpan{System.Char})">IReadOnlySpanConsumer&lt;Char&gt;.Invoke(ReadOnlySpan&lt;Char&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Invokes the consumer.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -548,12 +549,29 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
   </span>
   <a id="DotNext_IO_TextConsumer_DotNext_IO_IFlushable_Flush_" data-uid="DotNext.IO.TextConsumer.DotNext#IO#IFlushable#Flush*"></a>
   <h4 id="DotNext_IO_TextConsumer_DotNext_IO_IFlushable_Flush" data-uid="DotNext.IO.TextConsumer.DotNext#IO#IFlushable#Flush">IFlushable.Flush()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Flushes this stream by writing any buffered output to the underlying stream.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">readonly void IFlushable.Flush()</code></pre>
   </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
+        <td><p>I/O error occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_TextConsumer_DotNext_IO_IFlushable_FlushAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.TextConsumer.DotNext%23IO%23IFlushable%23FlushAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -563,7 +581,8 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
   </span>
   <a id="DotNext_IO_TextConsumer_DotNext_IO_IFlushable_FlushAsync_" data-uid="DotNext.IO.TextConsumer.DotNext#IO#IFlushable#FlushAsync*"></a>
   <h4 id="DotNext_IO_TextConsumer_DotNext_IO_IFlushable_FlushAsync_CancellationToken_" data-uid="DotNext.IO.TextConsumer.DotNext#IO#IFlushable#FlushAsync(CancellationToken)">IFlushable.FlushAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Flushes this stream asynchronously by writing any buffered output to the underlying stream.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -582,7 +601,8 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -597,7 +617,8 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
     <tbody>
       <tr>
         <td><span class="xref">Task</span></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -610,7 +631,8 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
   </span>
   <a id="DotNext_IO_TextConsumer_DotNext_ISupplier_ReadOnlyMemory_System_Char__CancellationToken_ValueTask__Invoke_" data-uid="DotNext.IO.TextConsumer.DotNext#ISupplier{ReadOnlyMemory{System#Char},CancellationToken,ValueTask}#Invoke*"></a>
   <h4 id="DotNext_IO_TextConsumer_DotNext_ISupplier_ReadOnlyMemory_System_Char__CancellationToken_ValueTask__Invoke_ReadOnlyMemory_System_Char__CancellationToken_" data-uid="DotNext.IO.TextConsumer.DotNext#ISupplier{ReadOnlyMemory{System#Char},CancellationToken,ValueTask}#Invoke(ReadOnlyMemory{System.Char},CancellationToken)">ISupplier&lt;ReadOnlyMemory&lt;Char&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;Char&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Invokes the supplier.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -649,7 +671,8 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The value returned by this supplier.</p>
+</td>
       </tr>
     </tbody>
   </table>

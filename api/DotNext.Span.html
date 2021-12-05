@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Span
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -128,7 +128,6 @@ into <see cref="!:Span&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsBytes&lt;T&gt;(T*pointer)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -197,7 +196,6 @@ into <see cref="!:Span&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsBytes&lt;T&gt;(ref T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -266,7 +264,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ReadOnlySpan&lt;byte&gt; AsReadOnlyBytes&lt;T&gt;(in T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -334,7 +331,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this Span&lt;T&gt; first, Span&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -408,7 +404,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -482,7 +477,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this Span&lt;T&gt; first, Span&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -559,7 +553,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -636,7 +629,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -710,7 +702,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -796,7 +787,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -870,7 +860,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -956,7 +945,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T, THashFunction&gt;(this Span&lt;T&gt; span, bool salted = true)
-
     where T : struct where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1035,7 +1023,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T, THashFunction&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
-
     where T : struct where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1114,7 +1101,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1188,7 +1174,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1274,7 +1259,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1348,7 +1332,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1434,7 +1417,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T, THashFunction&gt;(this Span&lt;T&gt; span, bool salted = true)
-
     where T : struct where THashFunction : struct, IConsumer&lt;long&gt;, ISupplier&lt;long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1513,7 +1495,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T, THashFunction&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
-
     where T : struct where THashFunction : struct, IConsumer&lt;long&gt;, ISupplier&lt;long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2413,7 +2394,6 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Initialize&lt;T&gt;(this Span&lt;T&gt; span)
-
     where T : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Dictionary
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -271,7 +271,6 @@ and <see cref="!:IDictionary&lt;TKey, TValue>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TValue GetOrAdd&lt;TKey, TValue&gt;(this Dictionary&lt;TKey, TValue&gt; dictionary, TKey key)
-
     where TValue : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -521,7 +520,6 @@ exist.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TValue GetOrAdd&lt;TKey, TValue, TFactory&gt;(this Dictionary&lt;TKey, TValue&gt; dictionary, TKey key, Func&lt;TKey, TValue&gt; valueFactory)
-
     where TFactory : struct, ISupplier&lt;TKey, TValue&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -699,7 +697,6 @@ return its result as a default value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TValue GetOrInvoke&lt;TKey, TValue, TSupplier&gt;(this IDictionary&lt;TKey, TValue&gt; dictionary, TKey key, TSupplier defaultValue)
-
     where TSupplier : struct, ISupplier&lt;TValue&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

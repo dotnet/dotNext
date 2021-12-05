@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct MemoryTemplate&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -101,7 +101,6 @@
   <h5 id="DotNext_Buffers_MemoryTemplate_1_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly struct MemoryTemplate&lt;T&gt;
-
     where T : IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
@@ -222,7 +221,6 @@ formatting procedures.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly void Render&lt;TConsumer&gt;(TConsumer consumer)
-
     where TConsumer : IReadOnlySpanConsumer&lt;T&gt;, IConsumer&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -274,7 +272,6 @@ formatting procedures.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly void Render&lt;TWriter&gt;(TWriter output, Action&lt;int, TWriter&gt; rewriter)
-
     where TWriter : class, IBufferWriter&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

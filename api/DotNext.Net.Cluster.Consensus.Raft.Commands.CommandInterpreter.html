@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CommandInterpreter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -177,7 +177,6 @@ with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandIn
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public LogEntry&lt;TCommand&gt; CreateLogEntry&lt;TCommand&gt;(TCommand command, long term)
-
     where TCommand : ISerializable&lt;TCommand&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -267,7 +266,6 @@ with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandIn
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; InterpretAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token = null)
-
     where TEntry : struct, IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

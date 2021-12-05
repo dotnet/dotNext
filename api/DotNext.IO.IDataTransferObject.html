@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IDataTransferObject
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -196,7 +196,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(TTransformation transformation, CancellationToken token = null)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -279,7 +278,6 @@ before parsing.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -370,7 +368,6 @@ before parsing.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static async ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator&lt;byte&gt; allocator, CancellationToken token)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -467,7 +464,6 @@ before parsing.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static async ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(Stream input, TTransformation transformation, bool resetStream, Memory&lt;byte&gt; buffer, CancellationToken token)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -564,7 +560,6 @@ before parsing.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(PipeReader input, TTransformation transformation, CancellationToken token)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -699,7 +694,6 @@ before parsing.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
-
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

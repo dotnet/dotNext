@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Serializable
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -128,7 +128,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TObject&gt; ReadFromAsync&lt;TObject&gt;(this Stream input, Memory&lt;byte&gt; buffer, CancellationToken token = null)
-
     where TObject : ISerializable&lt;TObject&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -208,7 +207,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async ValueTask&lt;TObject&gt; ReadFromAsync&lt;TObject&gt;(this Stream input, int bufferSize = 128, CancellationToken token = null)
-
     where TObject : ISerializable&lt;TObject&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -288,7 +286,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TObject&gt; ReadFromAsync&lt;TObject&gt;(this PipeReader reader, CancellationToken token = null)
-
     where TObject : ISerializable&lt;TObject&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -362,7 +359,6 @@ from various sources.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TOutput&gt; TransformAsync&lt;TInput, TOutput&gt;(this TInput input, CancellationToken token = null)
-
     where TInput : IDataTransferObject where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

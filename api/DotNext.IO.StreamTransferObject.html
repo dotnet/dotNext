@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class StreamTransferObject
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.4.0">
+    <meta name="generator" content="docfx 2.58.9.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -283,7 +283,8 @@
   </span>
   <a id="DotNext_IO_StreamTransferObject_DisposeAsyncCore_" data-uid="DotNext.IO.StreamTransferObject.DisposeAsyncCore*"></a>
   <h4 id="DotNext_IO_StreamTransferObject_DisposeAsyncCore" data-uid="DotNext.IO.StreamTransferObject.DisposeAsyncCore">DisposeAsyncCore()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -300,12 +301,16 @@
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a></div>
+  <h5 id="DotNext_IO_StreamTransferObject_DisposeAsyncCore_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <see cref="!:IAsyncDisposable"></see> interface.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamTransferObject_LoadFromAsync_DotNext_IO_IDataTransferObject_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamTransferObject.LoadFromAsync(DotNext.IO.IDataTransferObject%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -377,7 +382,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(TTransformation transformation, CancellationToken token = null)
-
     where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -452,7 +456,8 @@
   </span>
   <a id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_Length_" data-uid="DotNext.IO.StreamTransferObject.DotNext#IO#IDataTransferObject#Length*"></a>
   <h4 id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_Length" data-uid="DotNext.IO.StreamTransferObject.DotNext#IO#IDataTransferObject#Length">IDataTransferObject.Length</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets length of the object payload, in bytes.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -473,6 +478,9 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_Length_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If value is <span class="xref">null</span> then length of the payload cannot be determined.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_TryGetMemory_ReadOnlyMemory_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamTransferObject.DotNext%23IO%23IDataTransferObject%23TryGetMemory(ReadOnlyMemory%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -482,7 +490,8 @@
   </span>
   <a id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_TryGetMemory_" data-uid="DotNext.IO.StreamTransferObject.DotNext#IO#IDataTransferObject#TryGetMemory*"></a>
   <h4 id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_TryGetMemory_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.StreamTransferObject.DotNext#IO#IDataTransferObject#TryGetMemory(ReadOnlyMemory{System.Byte}@)">IDataTransferObject.TryGetMemory(out ReadOnlyMemory&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Attempts to retrieve contents of this object as a memory block synchronously.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -501,7 +510,8 @@
       <tr>
         <td><span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">memory</span></td>
-        <td></td>
+        <td><p>The memory block containing contents of this object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -516,7 +526,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if this object is representable as a memory block; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -529,12 +540,12 @@
   </span>
   <a id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_WriteToAsync_" data-uid="DotNext.IO.StreamTransferObject.DotNext#IO#IDataTransferObject#WriteToAsync*"></a>
   <h4 id="DotNext_IO_StreamTransferObject_DotNext_IO_IDataTransferObject_WriteToAsync__1___0_CancellationToken_" data-uid="DotNext.IO.StreamTransferObject.DotNext#IO#IDataTransferObject#WriteToAsync``1(``0,CancellationToken)">IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Transforms this object to serialized form.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">async ValueTask IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
-
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -550,12 +561,14 @@
       <tr>
         <td><span class="xref">TWriter</span></td>
         <td><span class="parametername">writer</span></td>
-        <td></td>
+        <td><p>The binary writer.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The toke that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -570,7 +583,8 @@
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -585,7 +599,8 @@
     <tbody>
       <tr>
         <td><span class="parametername">TWriter</span></td>
-        <td></td>
+        <td><p>The type of writer.</p>
+</td>
       </tr>
     </tbody>
   </table>
