@@ -95,11 +95,11 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSource.IsCompleted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L280">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L347">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.IsCompleted*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.IsCompleted">IsCompleted</h4>
-  <div class="markdown level1 summary"><p>Gets a value indicating that the source is in signaled state.</p>
+  <div class="markdown level1 summary"><p>Gets a value indicating that this source is in signaled (completed) state.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -121,6 +121,41 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Threading_Tasks_ManualResetCompletionSource_IsCompleted_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This property returns <span class="xref">true</span> if <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Status">Status</a> is <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStatus.html#DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_WaitForConsumption">WaitForConsumption</a>
+or <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStatus.html#DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_Consumed">Consumed</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSource_Status.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSource.Status%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L338">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_Status_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Status*"></a>
+  <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_Status" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Status">Status</h4>
+  <div class="markdown level1 summary"><p>Gets the status of this source.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ManualResetCompletionSourceStatus Status { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSourceStatus.html">ManualResetCompletionSourceStatus</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
@@ -128,7 +163,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSource.AfterConsumed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L210">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L239">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.AfterConsumed*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_AfterConsumed" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.AfterConsumed">AfterConsumed()</h4>
@@ -148,7 +183,7 @@
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_Reset_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Reset*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_Reset" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.Reset">Reset()</h4>
-  <div class="markdown level1 summary"><p>Attempts to reset state of this object for reuse.</p>
+  <div class="markdown level1 summary"><p>Resets the state of the source.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -178,10 +213,60 @@ cannot be completed by previously linked timeout or cancellation token.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSource_TryReset_System_Int16__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSource.TryReset(System.Int16%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L212">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TryReset_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TryReset*"></a>
+  <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TryReset_System_Int16__" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TryReset(System.Int16@)">TryReset(out Int16)</h4>
+  <div class="markdown level1 summary"><p>Attempts to reset the state of this source.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryReset(out short token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The version of the incompleted task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the state was reset successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L275">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L333">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetCanceled_CancellationToken_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetCanceled(CancellationToken)">TrySetCanceled(CancellationToken)</h4>
@@ -231,7 +316,7 @@ cannot be completed by previously linked timeout or cancellation token.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException(Exception)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L268">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSource.cs/#L326">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException*"></a>
   <h4 id="DotNext_Threading_Tasks_ManualResetCompletionSource_TrySetException_Exception_" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSource.TrySetException(Exception)">TrySetException(Exception)</h4>

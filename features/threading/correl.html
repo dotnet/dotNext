@@ -74,7 +74,7 @@
 <li>Start waiting for the signal (event) with the specified identifier</li>
 <li>Signal that the suspended caller from the first step can be resumed</li>
 </ul>
-<p>Each event must be represented by some unique identifier used as a key. This is necessary to correlate invocation of <code>WaitAsync</code> and <code>TryPulse</code> methods.</p>
+<p>Each event must be represented by some unique identifier used as a key. This is necessary to correlate invocation of <code>WaitAsync</code> and <code>Pulse</code> methods.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 
 var source = new AsyncCorrelationSource&lt;Guid, string&gt;(512);
@@ -91,7 +91,7 @@ var response = await task;
 
 // remote party must handle request message and construct reply message with the same identifier.
 // When reply message received, just inform the source about that
-source.TryPulse(eventId, &quot;Hello, world!&quot;);
+source.Pulse(eventId, &quot;Hello, world!&quot;);
 </code></pre>
 <p>To achieve the best performance, the following design decisions are applied to the implementation:</p>
 <ul>
