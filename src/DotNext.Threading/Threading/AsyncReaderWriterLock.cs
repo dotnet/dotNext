@@ -473,10 +473,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(first is null or WaitNode);
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            Debug.Assert(current.Next is null or WaitNode);
+
+            next = Unsafe.As<WaitNode>(current.Next);
 
             switch (current.Type)
             {
