@@ -260,15 +260,13 @@ public class QueuedSynchronizer : Disposable
             {
                 next = current.Next;
 
-                if (current.IsCompleted)
-                {
-                    RemoveNode(current);
-                }
-                else
+                if (!current.IsCompleted)
                 {
                     result = false;
                     goto exit;
                 }
+
+                RemoveNode(current);
             }
 
             manager.AcquireLock();

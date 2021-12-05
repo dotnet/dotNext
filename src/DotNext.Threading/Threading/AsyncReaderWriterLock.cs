@@ -48,9 +48,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private long readLocks; // volatile
         private volatile bool writeLock;
 
-        internal State(long version)
+        internal State()
         {
-            this.version = version;
+            version = long.MinValue;
             writeLock = false;
             readLocks = 0L;
         }
@@ -221,7 +221,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         if (concurrencyLevel <= 0)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        state = new(long.MinValue);
+        state = new();
         pool = new(OnCompleted, concurrencyLevel);
     }
 
@@ -230,7 +230,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public AsyncReaderWriterLock()
     {
-        state = new(long.MinValue);
+        state = new();
         pool = new(OnCompleted);
     }
 
