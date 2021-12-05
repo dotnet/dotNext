@@ -67,10 +67,12 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
         pool.Return(node);
     }
 
@@ -104,10 +106,9 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
             }
 
             next = current.Next;
-            RemoveNode(current);
 
             // skip dead node
-            if (current.TrySetResult(true))
+            if (RemoveAndSignal(current))
                 break;
         }
     }

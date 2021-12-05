@@ -34,7 +34,9 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(Signal signal)
     {
-        RemoveNode(signal);
+        if (signal.NeedsRemoval)
+            RemoveNode(signal);
+
         pool.Return(signal);
     }
 
@@ -53,7 +55,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
-                current?.TrySetResult(false);
+                current?.TrySetResult(Sentinel.Instance, false);
             }
 
             first = last = null;

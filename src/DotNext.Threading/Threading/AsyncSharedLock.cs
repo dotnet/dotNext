@@ -116,14 +116,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         state = new(concurrencyLevel);
-        Action<WaitNode> removeFromList = OnCompleted;
         pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
         pool.Return(node);
     }
 
@@ -231,7 +232,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
         => AcquireAsync(strongLock, InfiniteTimeSpan, token);
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
@@ -239,18 +240,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         {
             next = current.Next as WaitNode;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
             switch ((current.IsStrongLock, state.IsStrongLockAllowed))
             {
                 case (true, true):
-                    if (current.TrySetResult(true))
+                    if (RemoveAndSignal(current))
                     {
-                        RemoveNode(current);
                         state.AcquireStrongLock();
                         return;
                     }
@@ -263,11 +257,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsWeakLockAllowed)
                         return;
 
-                    if (current.TrySetResult(true))
-                    {
-                        RemoveNode(current);
+                    if (RemoveAndSignal(current))
                         state.AcquireWeakLock();
-                    }
 
                     continue;
             }

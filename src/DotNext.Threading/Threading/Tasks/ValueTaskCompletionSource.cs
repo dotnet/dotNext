@@ -233,7 +233,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(object? completionData, short completionToken)
-        => TrySetResult<NullExceptionConstant>(NullSupplier, completionToken);
+        => TrySetResult<NullExceptionConstant>(NullSupplier, completionData, completionToken);
 
     /// <summary>
     /// Creates a fresh task linked with this source.

@@ -234,10 +234,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
         pool.Return(node);
     }
 
@@ -468,7 +470,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
     }
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
@@ -476,21 +478,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         {
             next = current.Next as WaitNode;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
             switch (current.Type)
             {
                 case LockType.Upgrade:
                     if (!state.IsUpgradeToWriteLockAllowed)
                         return;
 
-                    if (current.TrySetResult(true))
+                    if (RemoveAndSignal(current))
                     {
-                        RemoveNode(current);
                         state.AcquireWriteLock();
                         return;
                     }
@@ -501,23 +496,19 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                         return;
 
                     // skip dead node
-                    if (current.TrySetResult(true))
+                    if (RemoveAndSignal(current))
                     {
-                        RemoveNode(current);
                         state.AcquireWriteLock();
                         return;
                     }
 
-                    break;
+                    continue;
                 default:
                     if (!state.IsReadLockAllowed)
                         return;
 
-                    if (current.TrySetResult(true))
-                    {
-                        RemoveNode(current);
+                    if (RemoveAndSignal(current))
                         state.AcquireReadLock();
-                    }
 
                     continue;
             }

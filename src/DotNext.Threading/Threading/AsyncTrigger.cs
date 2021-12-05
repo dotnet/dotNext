@@ -54,10 +54,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted, concurrencyLevel);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
         pool.Return(node);
     }
 
@@ -72,17 +74,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         {
             next = current.Next;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (RemoveAndSignal(current))
                 return true;
-            }
         }
 
         return false;
@@ -288,10 +281,12 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         pool = new(OnCompleted, concurrencyLevel);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
         pool.Return(node);
     }
 
@@ -300,7 +295,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// </summary>
     public TState State { get; }
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
@@ -319,11 +314,8 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             if (!transition.Test(State))
                 break;
 
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (RemoveAndSignal(current))
                 transition.Transit(State);
-            }
         }
     }
 

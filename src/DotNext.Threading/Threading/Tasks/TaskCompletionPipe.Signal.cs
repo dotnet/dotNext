@@ -1,4 +1,4 @@
-using Debug = System.Diagnostics.Debug;
+using System.Diagnostics;
 
 namespace DotNext.Threading.Tasks;
 
@@ -11,6 +11,9 @@ public partial class TaskCompletionPipe<T>
         private Action<Signal>? completionCallback;
 
         protected override void AfterConsumed() => completionCallback?.Invoke(this);
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal bool NeedsRemoval => !ReferenceEquals(Sentinel.Instance, CompletionData);
 
         ref Action<Signal>? IPooledManualResetCompletionSource<Signal>.OnConsumed => ref completionCallback;
     }
@@ -37,10 +40,8 @@ public partial class TaskCompletionPipe<T>
         {
             next = current.Next;
 
-            var signaled = current.TrySetResult(true);
             RemoveNode(current);
-
-            if (signaled)
+            if (current.TrySetResult(Sentinel.Instance, true))
                 break;
         }
     }
