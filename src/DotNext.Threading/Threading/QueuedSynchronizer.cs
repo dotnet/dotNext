@@ -355,7 +355,7 @@ public class QueuedSynchronizer : Disposable
     {
         unsafe
         {
-            return DrainWaitQueue(&TrySetResult, true);
+            return DrainWaitQueue(&TrySetResult, arg: true);
         }
 
         static bool TrySetResult(LinkedValueTaskCompletionSource<bool> source, bool result)

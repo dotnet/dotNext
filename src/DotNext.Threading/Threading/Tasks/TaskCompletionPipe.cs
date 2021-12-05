@@ -55,7 +55,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
-                current?.TrySetResult(Sentinel.Instance, false);
+                current?.TrySetResult(Sentinel.Instance, value: false);
             }
 
             first = last = null;
