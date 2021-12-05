@@ -40,7 +40,6 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         buckets = new Bucket[concurrencyLevel];
-
         this.comparer = comparer;
     }
 
