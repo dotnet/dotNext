@@ -4,7 +4,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents pub/sub synchronization primitive
@@ -26,8 +25,8 @@ using Tasks.Pooling;
 public partial class AsyncCorrelationSource<TKey, TValue>
     where TKey : notnull
 {
-    private readonly Bucket[] buckets;
-    private readonly IEqualityComparer<TKey> comparer;
+    private readonly Bucket?[] buckets;
+    private readonly IEqualityComparer<TKey>? comparer; // if null then use Default comparer
 
     /// <summary>
     /// Initializes a new event correlation source.
@@ -41,11 +40,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
         buckets = new Bucket[concurrencyLevel];
-
-        for (var i = 0L; i < concurrencyLevel; i++)
-            buckets[i] = new();
-
-        this.comparer = comparer ?? EqualityComparer<TKey>.Default;
+        this.comparer = comparer;
     }
 
     /// <summary>
@@ -71,14 +66,24 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <param name="userData">Custom data associated with an event.</param>
     /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
     public bool Pulse(TKey eventId, in Result<TValue> value, out object? userData)
-        => GetBucket(eventId).Remove(eventId, in value, comparer, out userData);
+    {
+        var bucket = Volatile.Read(ref GetBucket(eventId));
+
+        if (bucket is null)
+        {
+            userData = null;
+            return false;
+        }
+
+        return bucket.Remove(eventId, in value, comparer, out userData);
+    }
 
     private unsafe void PulseAll<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
     {
         Debug.Assert(action != null);
 
-        foreach (var bucket in buckets)
-            bucket.Drain(action, arg);
+        foreach (ref var bucket in buckets.AsSpan())
+            Volatile.Read(ref bucket)?.Drain(action, arg);
     }
 
     /// <summary>
@@ -131,7 +136,14 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled<TValue>(token);
 
-        return GetBucket(eventId).CreateNode(eventId, userData).CreateTask(timeout, token);
+        return EnsureInitialized(ref GetBucket(eventId)).CreateNode(eventId, userData).CreateTask(timeout, token);
+
+        // we are not using LazyInitializer to avoid try-catch block
+        static Bucket EnsureInitialized(ref Bucket? bucket)
+        {
+            Bucket newBucket;
+            return Volatile.Read(ref bucket) ?? Interlocked.CompareExchange(ref bucket, newBucket = new(), null) ?? newBucket;
+        }
     }
 
     /// <summary>

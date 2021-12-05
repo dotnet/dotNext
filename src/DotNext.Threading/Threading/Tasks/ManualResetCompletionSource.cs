@@ -21,7 +21,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     // task management
     private Action<object?>? continuation;
-    private object? continuationState, capturedContext;
+    private object? continuationState, capturedContext, completionData;
     private ExecutionContext? context;
     private protected short version;
     private volatile ManualResetCompletionSourceStatus status;
@@ -178,7 +178,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         status = ManualResetCompletionSourceStatus.WaitForActivation;
         context = null;
         continuation = null;
-        continuationState = capturedContext = null;
+        continuationState = capturedContext = completionData = null;
     }
 
     /// <summary>
@@ -236,9 +236,15 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// <summary>
     /// Invokes when this source is ready to reuse.
     /// </summary>
+    /// <seealso cref="CompletionData"/>
     protected virtual void AfterConsumed()
     {
     }
+
+    /// <summary>
+    /// Gets a value passed to the manual completion method.
+    /// </summary>
+    protected object? CompletionData => completionData;
 
     /// <inheritdoc />
     void IThreadPoolWorkItem.Execute() => AfterConsumed();
@@ -252,7 +258,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
     }
 
-    private protected void OnCompleted() => status = ManualResetCompletionSourceStatus.WaitForConsumption;
+    private protected void OnCompleted(object? completionData)
+    {
+        this.completionData = completionData;
+        status = ManualResetCompletionSourceStatus.WaitForConsumption;
+    }
 
     private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
     {
@@ -323,14 +333,32 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// </summary>
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public abstract bool TrySetException(Exception e);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TrySetException(Exception e) => TrySetException(null, e);
+
+    /// <summary>
+    /// Attempts to complete the task unsuccessfully.
+    /// </summary>
+    /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
+    /// <param name="e">The exception to be returned to the consumer.</param>
+    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+    public abstract bool TrySetException(object? completionData, Exception e);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
     /// </summary>
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public abstract bool TrySetCanceled(CancellationToken token);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TrySetCanceled(CancellationToken token) => TrySetCanceled(null, token);
+
+    /// <summary>
+    /// Attempts to complete the task unsuccessfully.
+    /// </summary>
+    /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
+    /// <param name="token">The canceled token.</param>
+    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
+    public abstract bool TrySetCanceled(object? completionData, CancellationToken token);
 
     /// <summary>
     /// Gets the status of this source.

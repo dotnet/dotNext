@@ -15,8 +15,6 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
     internal LinkedValueTaskCompletionSource<T>? Previous => previous;
 
-    internal bool IsNotRoot => next is not null || previous is not null;
-
     internal void Append(LinkedValueTaskCompletionSource<T> node)
     {
         Debug.Assert(next is null);
@@ -37,8 +35,10 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
     {
         if (previous is not null)
             previous.next = next;
+
         if (next is not null)
             next.previous = previous;
+
         next = previous = null;
     }
 

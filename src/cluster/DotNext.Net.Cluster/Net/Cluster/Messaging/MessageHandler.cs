@@ -5,8 +5,6 @@ using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
-using Runtime.CompilerServices;
-
 /// <summary>
 /// Represents base class for declaring typed message handlers.
 /// </summary>
@@ -37,7 +35,6 @@ public partial class MessageHandler : IInputChannel
     /// <summary>
     /// Initializes a new typed message handler and discover all methods suitable for handling messages.
     /// </summary>
-    [RuntimeFeatures(RuntimeGenericInstantiation = true)]
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RpcHandler<,>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SignalHandler<>))]
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,>))]

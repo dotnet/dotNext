@@ -7,9 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Dynamic;
 
-using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
-
-[RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
 internal sealed class TaskResultBinder : CallSiteBinder
 {
     private const string ResultPropertyName = nameof(Task<Missing>.Result);

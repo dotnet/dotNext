@@ -50,7 +50,6 @@ public static class TaskType
     /// <returns>Returns <see cref="Task"/> if <paramref name="taskResult"/> is <see cref="Void"/>; or <see cref="Task{TResult}"/> with actual generic argument equals to <paramref name="taskResult"/>.</returns>
     /// <seealso cref="Task"/>
     /// <seealso cref="Task{TResult}"/>
-    [RuntimeFeatures(RuntimeGenericInstantiation = true)]
     [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
     public static Type MakeTaskType(this Type taskResult)
         => MakeTaskType(taskResult, valueTask: false);
@@ -65,7 +64,6 @@ public static class TaskType
     /// <seealso cref="Task{TResult}"/>
     /// <seealso cref="ValueTask"/>
     /// <seealso cref="ValueTask{TResult}"/>
-    [RuntimeFeatures(RuntimeGenericInstantiation = true)]
     [RequiresUnreferencedCode("Runtime generic instantiation may be incompatible with IL trimming")]
     public static Type MakeTaskType(this Type taskResult, bool valueTask)
     {

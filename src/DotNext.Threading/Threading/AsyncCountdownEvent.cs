@@ -60,7 +60,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -97,10 +97,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
         pool.Return(node);
     }
 

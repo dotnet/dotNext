@@ -110,10 +110,7 @@ public readonly unsafe struct Reference<TValue>
         get
         {
             ref TValue result = ref RawValue;
-
-            if (Unsafe.IsNullRef(ref result))
-                throw new NullReferenceException();
-
+            Intrinsics.ThrowIfNull(in result);
             return ref result;
         }
     }

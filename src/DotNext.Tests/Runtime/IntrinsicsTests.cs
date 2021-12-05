@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Runtime
 {
@@ -323,6 +324,22 @@ namespace DotNext.Runtime
             }
 
             True(thrown);
+        }
+
+        [Fact]
+        public static void ReverseUInt32()
+        {
+            uint i = uint.MaxValue >> 1, tmp = i;
+            Intrinsics.Reverse(ref i);
+
+            if (BitConverter.IsLittleEndian)
+            {
+                Equal(BinaryPrimitives.ReadUInt32BigEndian(Span.AsReadOnlyBytes(in tmp)), i);
+            }
+            else
+            {
+                Equal(BinaryPrimitives.ReadUInt32LittleEndian(Span.AsReadOnlyBytes(in tmp)), i);
+            }
         }
     }
 }

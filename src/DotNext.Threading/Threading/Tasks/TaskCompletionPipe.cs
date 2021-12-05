@@ -31,11 +31,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         completedTasks = new(capacity);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(Signal signal)
     {
-        if (ReferenceEquals(this.signal, signal))
-            this.signal = null;
+        if (signal.NeedsRemoval)
+            RemoveNode(signal);
 
         pool.Return(signal);
     }
@@ -50,8 +50,16 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         if (completionRequested)
             throw new InvalidOperationException();
 
-        if (scheduledTasksCount == 0 && (signal?.TrySetResult(false) ?? false))
-            signal = null;
+        if (scheduledTasksCount == 0U)
+        {
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+            {
+                next = current.CleanupAndGotoNext();
+                current?.TrySetResult(Sentinel.Instance, value: false);
+            }
+
+            first = last = null;
+        }
 
         completionRequested = true;
     }
@@ -63,16 +71,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         {
             Debug.Assert(Monitor.IsEntered(this));
 
-            return scheduledTasksCount == 0 && completionRequested;
+            return scheduledTasksCount == 0U && completionRequested;
         }
-    }
-
-    private void Notify()
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        if (signal?.TrySetResult(true) ?? false)
-            signal = null;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -85,17 +85,17 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (task.IsCompleted)
         {
-            completedTasks.Enqueue(task);
-            Notify();
+            Enqueue(task);
             return true;
         }
 
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private void AddSynchronized(T task)
+    private void Enqueue(T task)
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         completedTasks.Enqueue(task);
         Notify();
     }
@@ -111,34 +111,23 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         ArgumentNullException.ThrowIfNull(task);
 
         if (!TryAdd(task))
-            task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => AddSynchronized(task));
+            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new Continuation(this, task).Invoke);
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TryDequeue([MaybeNullWhen(false)]out T task) => completedTasks.TryDequeue(out task);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
     {
-        ValueTask<bool> result;
-
         if (completedTasks.TryDequeue(out task))
         {
+            Debug.Assert(scheduledTasksCount > 0U);
+
             scheduledTasksCount--;
-            result = new(true);
-        }
-        else if (IsCompleted)
-        {
-            result = new(false);
-        }
-        else
-        {
-            var source = pool.Get();
-            signal = source;
-            result = source.CreateTask(InfiniteTimeSpan, token);
+            return ValueTask.FromResult(true);
         }
 
-        return result;
+        return IsCompleted
+            ? ValueTask.FromResult(false)
+            : EnqueueNode().CreateTask(InfiniteTimeSpan, token);
     }
 
     /// <summary>
@@ -151,6 +140,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         if (completedTasks.TryDequeue(out task))
         {
+            Debug.Assert(scheduledTasksCount > 0U);
+
             scheduledTasksCount--;
             return true;
         }
@@ -161,29 +152,28 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <summary>
     /// Waits for the first completed task.
     /// </summary>
+    /// <param name="timeout">The time to wait for the task completion.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
+    public ValueTask<bool> WaitToReadAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTask<bool> result;
         if (!completedTasks.IsEmpty)
-        {
-            result = new(true);
-        }
-        else if (IsCompleted)
-        {
-            result = new(false);
-        }
-        else
-        {
-            var source = pool.Get();
-            signal = source;
-            result = source.CreateTask(InfiniteTimeSpan, token);
-        }
+            return ValueTask.FromResult(true);
 
-        return result;
+        return IsCompleted
+            ? ValueTask.FromResult(false)
+            : EnqueueNode().CreateTask(timeout, token);
     }
+
+    /// <summary>
+    /// Waits for the first completed task.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
+    public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
+        => WaitToReadAsync(InfiniteTimeSpan, token);
 
     /// <summary>
     /// Gets the enumerator to get the completed tasks.
@@ -199,6 +189,23 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
                 Debug.Assert(task.IsCompleted);
 
                 yield return task;
+            }
+        }
+    }
+
+    private sealed class Continuation : Tuple<TaskCompletionPipe<T>, T>
+    {
+        internal Continuation(TaskCompletionPipe<T> pipe, T task)
+            : base(pipe, task)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal void Invoke()
+        {
+            lock (Item1)
+            {
+                Item1.Enqueue(Item2);
             }
         }
     }

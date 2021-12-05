@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-29-2021
+Release Date: 12-05-2021
 
 <a href="https://www.nuget.org/packages/dotnext/4.1.0">DotNext 4.1.0</a>
 * Optimized bounds check in growable buffers
@@ -63,7 +63,7 @@ Release Date: 11-29-2021
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.1.0">DotNext.Threading 4.1.0</a>
 * Reduced memory allocation by async locks
-* Added support of cancellation to `AsyncLazy<T>` class
+* Added cancellation support to `AsyncLazy<T>` class
 * Introduced `TaskCompletionPipe<T>` class that allows to consume tasks as they complete
 * Removed _Microsoft.Extensions.ObjectPool_ dependency
 * Enabled support of IL trimming

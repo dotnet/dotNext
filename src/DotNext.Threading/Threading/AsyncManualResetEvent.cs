@@ -38,7 +38,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -69,7 +69,9 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
         pool.Return(node);
     }
 

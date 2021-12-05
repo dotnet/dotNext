@@ -30,7 +30,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
 
     /// <summary>
@@ -54,10 +54,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted, concurrencyLevel);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
         pool.Return(node);
     }
 
@@ -72,17 +74,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         {
             next = current.Next;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (RemoveAndSignal(current))
                 return true;
-            }
         }
 
         return false;
@@ -225,7 +218,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         void Transit(TState state);
     }
 
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
     {
         private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
@@ -238,7 +231,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             base.ResetCore();
         }
 
-        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -261,7 +254,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             => node.Transition = transition;
     }
 
-    private ValueTaskPool<bool, WaitNode> pool;
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
     /// Initializes a new trigger.
@@ -288,10 +281,12 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         pool = new(OnCompleted, concurrencyLevel);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
         pool.Return(node);
     }
 
@@ -300,13 +295,16 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// </summary>
     public TState State { get; }
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(first is null or WaitNode);
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            Debug.Assert(current.Next is null or WaitNode);
+
+            next = Unsafe.As<WaitNode>(current.Next);
 
             var transition = current.Transition;
 
@@ -319,11 +317,8 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             if (!transition.Test(State))
                 break;
 
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (RemoveAndSignal(current))
                 transition.Transit(State);
-            }
         }
     }
 

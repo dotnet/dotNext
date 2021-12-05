@@ -48,17 +48,17 @@ public partial class TaskCompletionPipe<T>
                 head = 0;
                 tail = newTail;
             }
-            else if (array.Length == Array.MaxLength)
-            {
-                throw new InsufficientMemoryException();
-            }
-            else
+            else if (array.Length < Array.MaxLength)
             {
                 var newCapacity = GrowFactor * array.Length;
                 if ((uint)newCapacity > Array.MaxLength)
                     newCapacity = Array.MaxLength;
 
                 Array.Resize(ref array, Math.Max(newCapacity, array.Length + MinimumGrow));
+            }
+            else
+            {
+                throw new InsufficientMemoryException();
             }
         }
 

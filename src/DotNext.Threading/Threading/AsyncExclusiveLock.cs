@@ -32,7 +32,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
 
     /// <summary>
@@ -56,10 +56,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
         pool.Return(node);
     }
 
@@ -118,7 +120,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask AcquireAsync(CancellationToken token = default)
         => AcquireAsync(InfiniteTimeSpan, token);
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
@@ -126,19 +128,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         {
             next = current.Next;
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
-
             if (!manager.IsLockAllowed)
                 break;
 
             // skip dead node
-            if (current.TrySetResult(true))
+            if (RemoveAndSignal(current))
             {
-                RemoveNode(current);
                 manager.AcquireLock();
                 break;
             }

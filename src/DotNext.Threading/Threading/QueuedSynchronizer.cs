@@ -15,6 +15,34 @@ using Timestamp = Diagnostics.Timestamp;
 /// </summary>
 public class QueuedSynchronizer : Disposable
 {
+    private sealed class CallerInformationStorage : ThreadLocal<object?>
+    {
+        internal CallerInformationStorage()
+            : base(trackAllValues: false)
+        {
+        }
+
+        internal CallerInformationStorage(Func<object> callerInfoProvider)
+            : base(callerInfoProvider, trackAllValues: false)
+        {
+        }
+
+        internal object? Capture()
+        {
+            var result = Value;
+            if (result is null)
+            {
+                result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
+            }
+            else
+            {
+                Value = null;
+            }
+
+            return result;
+        }
+    }
+
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
         private Timestamp createdAt;
@@ -35,6 +63,9 @@ public class QueuedSynchronizer : Disposable
             base.ResetCore();
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal bool NeedsRemoval => CompletionData is null;
+
         internal void Initialize(bool throwOnTimeout, Action<double>? lockDurationCounter, object? callerInfo)
         {
             this.throwOnTimeout = throwOnTimeout;
@@ -49,20 +80,20 @@ public class QueuedSynchronizer : Disposable
             => lockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
 
         private protected static void AfterConsumed<T>(T node)
-            where T : WaitNode, IPooledManualResetCompletionSource<T>
+            where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
         {
             node.ReportLockDuration();
-            node.As<IPooledManualResetCompletionSource<T>>().OnConsumed?.Invoke(node);
+            node.As<IPooledManualResetCompletionSource<Action<T>>>().OnConsumed?.Invoke(node);
         }
     }
 
-    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<DefaultWaitNode>
+    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
     {
         private Action<DefaultWaitNode>? consumedCallback;
 
         protected sealed override void AfterConsumed() => AfterConsumed(this);
 
-        ref Action<DefaultWaitNode>? IPooledManualResetCompletionSource<DefaultWaitNode>.OnConsumed => ref consumedCallback;
+        ref Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed => ref consumedCallback;
     }
 
     private protected interface ILockManager
@@ -80,25 +111,19 @@ public class QueuedSynchronizer : Disposable
 
     private readonly Action<double>? contentionCounter, lockDurationCounter;
     private readonly TaskCompletionSource disposeTask;
-    private readonly ThreadLocal<object?> callerInfo;
-    private bool trackSuspendedCallers;
+    private CallerInformationStorage? callerInfo;
     private protected LinkedValueTaskCompletionSource<bool>? first;
     private LinkedValueTaskCompletionSource<bool>? last;
 
     private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        callerInfo = new(false);
     }
 
-    // aggressive inlining allows to devirt DrainWaitQueue call
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void RemoveAndDrainWaitQueue(LinkedValueTaskCompletionSource<bool> node)
+    private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node)
     {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        if (RemoveNodeCore(node))
-            DrainWaitQueue();
+        RemoveNode(node);
+        return node.TrySetResult(Sentinel.Instance, value: true);
     }
 
     private protected bool IsDisposeRequested
@@ -110,9 +135,14 @@ public class QueuedSynchronizer : Disposable
     /// <summary>
     /// Enables capturing information about suspended callers in DEBUG configuration.
     /// </summary>
+    /// <remarks>
+    /// If <paramref name="callerInfoProvider"/> is provided then no need to use <see cref="SetCallerInformation(object)"/>.
+    /// </remarks>
+    /// <param name="callerInfoProvider">The optional factory of the information about the caller.</param>
     [Conditional("DEBUG")]
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public void TrackSuspendedCallers() => trackSuspendedCallers = true;
+    public void TrackSuspendedCallers(Func<object>? callerInfoProvider = null)
+        => callerInfo = callerInfoProvider is null ? new() : new(callerInfoProvider);
 
     /// <summary>
     /// Sets caller information in DEBUG configuration.
@@ -127,7 +157,8 @@ public class QueuedSynchronizer : Disposable
     {
         ArgumentNullException.ThrowIfNull(information);
 
-        callerInfo.Value = information;
+        if (callerInfo is not null)
+            callerInfo.Value = information;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -158,7 +189,7 @@ public class QueuedSynchronizer : Disposable
     [CLSCompliant(false)]
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyList<object?> GetSuspendedCallers()
-        => trackSuspendedCallers ? GetSuspendedCallersCore() : Array.Empty<object?>();
+        => callerInfo is null ? Array.Empty<object?>() : GetSuspendedCallersCore();
 
     /// <summary>
     /// Sets counter for lock contention.
@@ -176,8 +207,10 @@ public class QueuedSynchronizer : Disposable
         init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
     }
 
-    private bool RemoveNodeCore(LinkedValueTaskCompletionSource<bool> node)
+    private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         bool isFirst;
 
         if (isFirst = ReferenceEquals(first, node))
@@ -190,13 +223,8 @@ public class QueuedSynchronizer : Disposable
         return isFirst;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node) => RemoveNodeCore(node);
-
-    private protected virtual void DrainWaitQueue() => Debug.Assert(Monitor.IsEntered(this));
-
-    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
@@ -232,15 +260,13 @@ public class QueuedSynchronizer : Disposable
             {
                 next = current.Next;
 
-                if (current.IsCompleted)
-                {
-                    RemoveNodeCore(current);
-                }
-                else
+                if (!current.IsCompleted)
                 {
                     result = false;
                     goto exit;
                 }
+
+                RemoveNode(current);
             }
 
             manager.AcquireLock();
@@ -250,28 +276,13 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private object? CaptureCallerInfo()
-    {
-        var result = callerInfo.Value;
-        if (result is null)
-        {
-            result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
-        }
-        else
-        {
-            callerInfo.Value = null;
-        }
-
-        return result;
-    }
-
-    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode> pool, TimeSpan timeout, CancellationToken token)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+    private protected ValueTask WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        var callerInfo = trackSuspendedCallers ? CaptureCallerInfo() : null;
+        var callerInfo = this.callerInfo?.Capture();
 
         if (IsDisposed || IsDisposeRequested)
             return new(DisposedTask);
@@ -291,13 +302,13 @@ public class QueuedSynchronizer : Disposable
         return EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(timeout, token);
     }
 
-    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode> pool, TimeSpan timeout, CancellationToken token)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<TNode>, new()
+    private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        var callerInfo = trackSuspendedCallers ? CaptureCallerInfo() : null;
+        var callerInfo = this.callerInfo?.Capture();
 
         if (IsDisposed || IsDisposeRequested)
             return new(GetDisposedTask<bool>());
@@ -337,18 +348,18 @@ public class QueuedSynchronizer : Disposable
         }
 
         static bool TrySetCanceled(LinkedValueTaskCompletionSource<bool> source, CancellationToken token)
-            => source.TrySetCanceled(token);
+            => source.TrySetCanceled(Sentinel.Instance, token);
     }
 
     private protected long ResumeSuspendedCallers()
     {
         unsafe
         {
-            return DrainWaitQueue(&TrySetResult, true);
+            return DrainWaitQueue(&TrySetResult, arg: true);
         }
 
         static bool TrySetResult(LinkedValueTaskCompletionSource<bool> source, bool result)
-            => source.TrySetResult(result);
+            => source.TrySetResult(Sentinel.Instance, result);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -362,7 +373,7 @@ public class QueuedSynchronizer : Disposable
         }
 
         static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, ObjectDisposedException e)
-            => source.TrySetException(e);
+            => source.TrySetException(Sentinel.Instance, e);
     }
 
     private unsafe long DrainWaitQueue<T>(delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
@@ -374,7 +385,7 @@ public class QueuedSynchronizer : Disposable
 
         for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
         {
-            next = current.Next;
+            next = current.CleanupAndGotoNext();
 
             if (callback(current, arg))
                 count++;

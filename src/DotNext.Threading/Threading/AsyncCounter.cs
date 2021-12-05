@@ -48,7 +48,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode> pool;
+    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -83,10 +83,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval)
+            RemoveNode(node);
+
         pool.Return(node);
     }
 
@@ -121,11 +123,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         {
             next = current.Next;
 
-            if (current.TrySetResult(true))
-            {
-                RemoveNode(current);
+            if (RemoveAndSignal(current))
                 manager.Decrement();
-            }
         }
     }
 

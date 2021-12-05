@@ -17,7 +17,7 @@ using Tasks.Pooling;
 /// <typeparam name="T">The type of objects that may be exchanged.</typeparam>
 public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
-    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<ExchangePoint>
+    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<Action<ExchangePoint>>
     {
         private Action<ExchangePoint>? consumedCallback;
         internal T? Value;
@@ -43,11 +43,11 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             return false;
         }
 
-        ref Action<ExchangePoint>? IPooledManualResetCompletionSource<ExchangePoint>.OnConsumed => ref consumedCallback;
+        ref Action<ExchangePoint>? IPooledManualResetCompletionSource<Action<ExchangePoint>>.OnConsumed => ref consumedCallback;
     }
 
     private readonly TaskCompletionSource disposeTask;
-    private ValueTaskPool<T, ExchangePoint> pool;
+    private ValueTaskPool<T, ExchangePoint, Action<ExchangePoint>> pool;
     private ExchangePoint? point;
     private bool disposeRequested;
     private volatile ExchangeTerminatedException? termination;

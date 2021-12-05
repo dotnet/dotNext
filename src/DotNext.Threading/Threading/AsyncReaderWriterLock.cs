@@ -23,14 +23,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         Exclusive,
     }
 
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<WaitNode>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
     {
         private Action<WaitNode>? consumedCallback;
         internal LockType Type;
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
-        ref Action<WaitNode>? IPooledManualResetCompletionSource<WaitNode>.OnConsumed => ref consumedCallback;
+        ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
 
         internal bool IsReadLock => Type != LockType.Exclusive;
 
@@ -48,9 +48,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private long readLocks; // volatile
         private volatile bool writeLock;
 
-        internal State(long version)
+        internal State()
         {
-            this.version = version;
+            version = long.MinValue;
             writeLock = false;
             readLocks = 0L;
         }
@@ -209,7 +209,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private readonly State state;
-    private ValueTaskPool<bool, WaitNode> pool;
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
     /// Initializes a new reader/writer lock.
@@ -221,7 +221,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         if (concurrencyLevel <= 0)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        state = new(long.MinValue);
+        state = new();
         pool = new(OnCompleted, concurrencyLevel);
     }
 
@@ -230,14 +230,16 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public AsyncReaderWriterLock()
     {
-        state = new(long.MinValue);
+        state = new();
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        RemoveAndDrainWaitQueue(node);
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
         pool.Return(node);
     }
 
@@ -468,19 +470,16 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
     }
 
-    private protected sealed override void DrainWaitQueue()
+    private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(first is null or WaitNode);
 
-        for (WaitNode? current = first as WaitNode, next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
-            next = current.Next as WaitNode;
+            Debug.Assert(current.Next is null or WaitNode);
 
-            if (current.IsCompleted)
-            {
-                RemoveNode(current);
-                continue;
-            }
+            next = Unsafe.As<WaitNode>(current.Next);
 
             switch (current.Type)
             {
@@ -488,9 +487,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsUpgradeToWriteLockAllowed)
                         return;
 
-                    if (current.TrySetResult(true))
+                    if (RemoveAndSignal(current))
                     {
-                        RemoveNode(current);
                         state.AcquireWriteLock();
                         return;
                     }
@@ -501,23 +499,19 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                         return;
 
                     // skip dead node
-                    if (current.TrySetResult(true))
+                    if (RemoveAndSignal(current))
                     {
-                        RemoveNode(current);
                         state.AcquireWriteLock();
                         return;
                     }
 
-                    break;
+                    continue;
                 default:
                     if (!state.IsReadLockAllowed)
                         return;
 
-                    if (current.TrySetResult(true))
-                    {
-                        RemoveNode(current);
+                    if (RemoveAndSignal(current))
                         state.AcquireReadLock();
-                    }
 
                     continue;
             }
