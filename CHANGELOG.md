@@ -1,6 +1,39 @@
 Release Notes
 ====
 
+# 12-05-2021
+<a href="https://www.nuget.org/packages/dotnext/4.1.0">DotNext 4.1.0</a>
+* Optimized bounds check in growable buffers
+* Changed behavior of exceptions capturing by `DotNext.Threading.Tasks.Synchronization.GetResult` overloaded methods
+* Added `DotNext.Threading.Tasks.Synchronization.TryGetResult` method
+* Added `DotNext.Buffers.ReadOnlySequencePartitioner` static class with methods for [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) partitioning in [parallel](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.parallel) processing scenarios
+* Enabled support of IL trimming
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.0">DotNext.Metaprogramming 4.1.0</a>
+* IL trimming is explicitly disabled because the library highly relied on Reflection API
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.1.0">DotNext.Reflection 4.1.0</a>
+ IL trimming is explicitly disabled because the library highly relied on Reflection API
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.0">DotNext.Unsafe 4.1.0</a>
+* Enabled support of IL trimming
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.1.0">DotNext.Threading 4.1.0</a>
+* Reduced memory allocation by async locks
+* Added cancellation support to `AsyncLazy<T>` class
+* Introduced `TaskCompletionPipe<T>` class that allows to consume tasks as they complete
+* Removed _Microsoft.Extensions.ObjectPool_ dependency
+* Enabled support of IL trimming
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.1.0">DotNext.IO 4.1.0</a>
+* Enabled support of IL trimming
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.0">DotNext.Net.Cluster 4.1.0</a>
+* Enabled support of IL trimming
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.0">DotNext.AspNetCore.Cluster 4.1.0</a>
+* Enabled support of IL trimming
+
 # 11-25-2021
 .NEXT 4.0.0 major release is out! Its primary focus is .NET 6 support as well as some other key features:
 * Native support of [C# 10 Interpolated Strings](https://devblogs.microsoft.com/dotnet/string-interpolation-in-c-10-and-net-6/) across various buffer types, streams and other I/O enhancements. String building and string encoding/decoding with zero allocation overhead is now a reality
