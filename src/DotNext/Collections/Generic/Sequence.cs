@@ -281,7 +281,6 @@ public static partial class Sequence
             return false;
         }
 
-
         static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
             if (index >= 0 && index < list.Count)
