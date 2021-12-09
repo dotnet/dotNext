@@ -64,7 +64,7 @@ public static partial class PipeExtensions
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
             readResult.ThrowIfCancellationRequested(reader, token);
-            parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
+            consumed = parser.Append<TResult, TParser>(readResult.Buffer);
             completed = readResult.IsCompleted;
         }
 
@@ -103,7 +103,7 @@ public static partial class PipeExtensions
         {
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
             readResult.ThrowIfCancellationRequested(reader, token);
-            bufferReader.Append<string, StringReader<ArrayBuffer<char>>>(readResult.Buffer, out consumed);
+            consumed = bufferReader.Append<string, StringReader<ArrayBuffer<char>>>(readResult.Buffer);
             completed = readResult.IsCompleted;
         }
 
