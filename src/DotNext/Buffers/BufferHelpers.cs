@@ -97,6 +97,7 @@ public static partial class BufferHelpers
             WriteSlow(writer, in value);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
         {
             foreach (var segment in value)
@@ -125,6 +126,7 @@ public static partial class BufferHelpers
             writtenCount = CopyToSlow(in source, destination);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination)
         {
             int result = 0, subcount;

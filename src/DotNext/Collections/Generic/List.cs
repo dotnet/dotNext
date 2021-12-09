@@ -358,6 +358,7 @@ public static class List
                 break;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static void ShuffleSlow(IList<T> list, Random random)
         {
             for (var i = list.Count - 1; i > 0; i--)

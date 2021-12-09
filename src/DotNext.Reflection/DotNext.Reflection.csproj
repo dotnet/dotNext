@@ -8,7 +8,7 @@
   <ImplicitUsings>true</ImplicitUsings>
   <IsTrimmable>false</IsTrimmable>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<VersionPrefix>4.1.0</VersionPrefix>
+	<VersionPrefix>4.1.1</VersionPrefix>
   <VersionSuffix></VersionSuffix>
 	<Authors>.NET Foundation and Contributors</Authors>
 	<Product>.NEXT Family of Libraries</Product>
@@ -47,7 +47,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="6.6.0" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.7.1" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />

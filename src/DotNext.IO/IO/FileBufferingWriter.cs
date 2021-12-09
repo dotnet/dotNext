@@ -322,11 +322,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (buffer.Length - position < size)
         {
-            var newBuffer = allocator.Invoke(newSize, false);
-            buffer.Memory.CopyTo(newBuffer.Memory);
-            buffer.Dispose();
-            buffer = newBuffer;
-            allocationCounter?.WriteMetric(newBuffer.Length);
+            buffer.Resize(newSize, exactSize: false, allocator: allocator);
+            allocationCounter?.WriteMetric(buffer.Length);
         }
 
         output = buffer.Memory.Slice(position, size);

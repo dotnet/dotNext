@@ -1,5 +1,5 @@
 using System.Buffers;
-using static System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO;
 
@@ -17,12 +17,7 @@ public static partial class StreamSource
     /// <param name="writable">Determines whether the stream supports writing.</param>
     /// <returns>The stream representing the array segment.</returns>
     public static Stream AsStream(this ArraySegment<byte> segment, bool writable = false)
-    {
-        if (segment.Array.IsNullOrEmpty())
-            return Stream.Null;
-
-        return new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
-    }
+        => segment.Array.IsNullOrEmpty() ? Stream.Null : new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
 
     /// <summary>
     /// Converts read-only sequence of bytes to a read-only stream.
@@ -34,7 +29,7 @@ public static partial class StreamSource
         if (sequence.IsEmpty)
             return Stream.Null;
 
-        if (sequence.IsSingleSegment && TryGetArray(sequence.First, out var segment))
+        if (SequenceMarshal.TryGetArray(sequence, out var segment))
             return AsStream(segment);
 
         return new ReadOnlyMemoryStream(sequence);

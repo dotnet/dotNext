@@ -1,8 +1,8 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO;
 
@@ -253,6 +253,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         return result;
 
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<T> ParseSlowAsync(CancellationToken token)
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);

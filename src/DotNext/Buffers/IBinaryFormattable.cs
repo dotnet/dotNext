@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace DotNext.Buffers;
@@ -112,6 +113,7 @@ public interface IBinaryFormattable<TSelf>
             ? Parse(input.FirstSpan.Slice(0, TSelf.Size))
             : ParseSlow(in input);
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static TSelf ParseSlow(in ReadOnlySequence<byte> input)
         {
             using var buffer = (uint)TSelf.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[TSelf.Size] : new MemoryRental<byte>(TSelf.Size);

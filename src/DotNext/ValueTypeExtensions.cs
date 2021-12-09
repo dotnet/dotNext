@@ -5,8 +5,6 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
-    using Intrinsics = Runtime.Intrinsics;
-
     /// <summary>
     /// Various extensions for value types.
     /// </summary>
