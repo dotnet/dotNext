@@ -139,6 +139,7 @@ public static partial class PipeExtensions
 
         return result;
 
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<T> ParseSlowAsync(PipeReader reader, CancellationToken token)
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
@@ -356,6 +357,7 @@ public static partial class PipeExtensions
 
         return result;
 
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<T> ReadSlowAsync(PipeReader reader, CancellationToken token)
         {
             var result = await reader.ReadAtLeastAsync(Unsafe.SizeOf<T>(), token).ConfigureAwait(false);
@@ -549,6 +551,7 @@ public static partial class PipeExtensions
 
         return ReadBlockSlowAsync(reader, output, token);
 
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
         async ValueTask ReadBlockSlowAsync(PipeReader reader, Memory<byte> output, CancellationToken token)
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
     }

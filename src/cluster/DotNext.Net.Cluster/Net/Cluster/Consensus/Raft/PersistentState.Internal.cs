@@ -99,6 +99,7 @@ public partial class PersistentState
         internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
             => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void FormatSlow(Span<byte> output)
         {
             var writer = new SpanWriter<byte>(output);
@@ -154,6 +155,7 @@ public partial class PersistentState
 
             return GetEndOfLogEntrySlow(input);
 
+            [MethodImpl(MethodImplOptions.NoInlining)]
             static long GetEndOfLogEntrySlow(ReadOnlySpan<byte> input)
             {
                 var reader = new SpanReader<byte>(input);

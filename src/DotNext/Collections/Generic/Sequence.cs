@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Generic;
 
@@ -64,12 +64,14 @@ public static partial class Sequence
                 break;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static void ForEachSlow(IEnumerable<T> collection, Action<T> action)
         {
             foreach (var item in collection)
                 action(item);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static void ForEachNode(LinkedList<T> list, Action<T> action)
         {
             for (var node = list.First; node is not null; node = node.Next)
@@ -122,6 +124,7 @@ public static partial class Sequence
             _ => FirstOrEmptySlow(seq),
         };
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq)
         {
             using var enumerator = seq.GetEnumerator();
@@ -153,6 +156,7 @@ public static partial class Sequence
                 return FirstOrEmptySlow(seq, filter);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static Optional<T> FindInLinkedList(LinkedList<T> list, Predicate<T> filter)
         {
             for (var node = list.First; node is not null; node = node.Next)
@@ -165,6 +169,7 @@ public static partial class Sequence
             return Optional<T>.None;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq, Predicate<T> filter)
         {
             foreach (var item in seq)
@@ -243,6 +248,7 @@ public static partial class Sequence
             _ => ElementAtSlow(collection, index, out element),
         };
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static bool NodeValueAt(LinkedList<T> list, int matchIndex, [MaybeNullWhen(false)] out T element)
         {
             // slow but no memory allocation
@@ -260,6 +266,7 @@ public static partial class Sequence
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static bool ElementAtSlow(IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
         {
             using var enumerator = collection.GetEnumerator();
@@ -274,6 +281,7 @@ public static partial class Sequence
             return false;
         }
 
+
         static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
             if (index >= 0 && index < list.Count)
@@ -281,11 +289,9 @@ public static partial class Sequence
                 element = list[index];
                 return true;
             }
-            else
-            {
-                element = default!;
-                return false;
-            }
+
+            element = default!;
+            return false;
         }
 
         static bool ReadOnlyListElementAt(IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
@@ -295,11 +301,9 @@ public static partial class Sequence
                 element = list[index];
                 return true;
             }
-            else
-            {
-                element = default!;
-                return false;
-            }
+
+            element = default!;
+            return false;
         }
     }
 

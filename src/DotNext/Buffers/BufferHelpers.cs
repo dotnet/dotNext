@@ -126,6 +126,7 @@ public static partial class BufferHelpers
             writtenCount = CopyToSlow(in source, destination);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination)
         {
             int result = 0, subcount;

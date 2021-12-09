@@ -1,6 +1,6 @@
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Generic;
 
@@ -34,6 +34,7 @@ public static partial class Sequence
             _ => CopySlow(enumerable, GetSize(enumerable, sizeHint), allocator),
         };
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static MemoryOwner<T> CopyCollection(ICollection<T> collection)
         {
             var array = ArrayPool<T>.Shared.Rent(collection.Count);
@@ -41,6 +42,7 @@ public static partial class Sequence
             return new(ArrayPool<T>.Shared, array, collection.Count);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static MemoryOwner<T> CopySlow(IEnumerable<T> enumerable, int sizeHint, MemoryAllocator<T>? allocator)
         {
             using var writer = new BufferWriterSlim<T>(sizeHint, allocator);
