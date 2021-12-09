@@ -97,6 +97,7 @@ public static partial class BufferHelpers
             WriteSlow(writer, in value);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
         {
             foreach (var segment in value)

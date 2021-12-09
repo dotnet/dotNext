@@ -6,17 +6,21 @@ namespace DotNext.Buffers;
 
 internal static partial class BufferReader
 {
-    internal static SequencePosition Append<TResult, TParser>(this ref TParser parser, ReadOnlySequence<byte> input)
+    internal static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, ref SequencePosition position)
         where TParser : struct, IBufferReader<TResult>
     {
-        var position = input.Start;
-
         for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty; position = input.GetPosition(bytesToConsume, position))
         {
             bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
             parser.Append(block.Span.Slice(0, bytesToConsume), ref bytesToConsume);
         }
+    }
 
+    internal static SequencePosition Append<TResult, TParser>(this ref TParser parser, ReadOnlySequence<byte> input)
+        where TParser : struct, IBufferReader<TResult>
+    {
+        var position = input.Start;
+        Append<TResult, TParser>(ref parser, in input, ref position);
         return position;
     }
 
