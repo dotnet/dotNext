@@ -10,7 +10,7 @@
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <VersionPrefix>4.1.0</VersionPrefix>
+    <VersionPrefix>4.1.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
