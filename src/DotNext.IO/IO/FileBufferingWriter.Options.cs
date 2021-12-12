@@ -6,7 +6,6 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.IO;
 
 using Buffers;
-using static Runtime.Intrinsics;
 
 public partial class FileBufferingWriter
 {
@@ -42,7 +41,7 @@ public partial class FileBufferingWriter
         {
         }
 
-        internal bool IsAsynchronous => HasFlag(options, FileOptions.Asynchronous);
+        internal bool IsAsynchronous => (options & FileOptions.Asynchronous) != 0;
 
         internal SafeFileHandle CreateBackingFileHandle(int preallocationSize, out string fileName)
         {
