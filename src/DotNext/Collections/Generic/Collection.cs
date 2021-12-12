@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
@@ -83,6 +84,7 @@ public static class Collection
             _ => PeekRandomSlow(collection, random),
         };
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         static Optional<T> PeekRandomSlow(IReadOnlyCollection<T> collection, Random random)
         {
             var index = random.Next(collection.Count);

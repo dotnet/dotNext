@@ -50,7 +50,7 @@ public struct SequenceReader : IAsyncBinaryReader
     private TResult Read<TResult, TParser>(TParser parser)
         where TParser : struct, IBufferReader<TResult>
     {
-        parser.Append<TResult, TParser>(RemainingSequence, out position);
+        parser.Append<TResult, TParser>(in sequence, ref position);
         return parser.RemainingBytes == 0 ? parser.Complete() : throw new EndOfStreamException();
     }
 
@@ -59,7 +59,7 @@ public struct SequenceReader : IAsyncBinaryReader
         where TBuffer : struct, IBuffer<char>
     {
         var reader = new StringReader<TBuffer>(in context, buffer);
-        reader.Append<string, StringReader<TBuffer>>(RemainingSequence, out position);
+        reader.Append<string, StringReader<TBuffer>>(in sequence, ref position);
         return reader.RemainingBytes == 0 ? parser(reader.Complete(), provider) : throw new EndOfStreamException();
     }
 

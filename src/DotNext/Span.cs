@@ -640,8 +640,7 @@ public static class Span
     {
         if (source.Length > destination.Length)
         {
-            source = source.Slice(0, destination.Length);
-            writtenCount = destination.Length;
+            source = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(source), writtenCount = destination.Length);
         }
         else
         {

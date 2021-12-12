@@ -210,23 +210,19 @@ namespace DotNext.Buffers
             if (newLength < 0)
                 throw new ArgumentOutOfRangeException(nameof(newLength));
 
-            var result = true;
+            if (newLength > RawLength)
+                return false;
 
-            var rawLength = RawLength;
             if (newLength == 0)
             {
                 Dispose();
             }
-            else if(rawLength == 0 || newLength > rawLength)
-            {
-                result = false;
-            }
-            else if (newLength < rawLength)
+            else
             {
                 length = newLength;
             }
 
-            return result;
+            return true;
         }
 
         /// <summary>
