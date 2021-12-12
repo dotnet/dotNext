@@ -503,7 +503,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     }
 
     private ValueTask FlushCoreAsync(CancellationToken token)
-        => fileBackend is null || !HasBufferedData ? ValueTask.CompletedTask : PersistBufferAsync(token);
+        => fileBackend is not null && HasBufferedData ? PersistBufferAsync(token) : ValueTask.CompletedTask;
 
     /// <inheritdoc/>
     public override Task FlushAsync(CancellationToken token)
