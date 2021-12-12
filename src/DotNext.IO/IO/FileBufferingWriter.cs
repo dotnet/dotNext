@@ -334,13 +334,13 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         return MemoryEvaluationResult.Success;
     }
 
-    private bool HasBufferedData => !buffer.IsEmpty && position > 0;
+    private bool HasBufferedData => position > 0;
 
     [MemberNotNull(nameof(fileBackend))]
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask PersistBufferAsync(CancellationToken token)
     {
-        Debug.Assert(position > 0);
+        Debug.Assert(HasBufferedData);
         EnsureBackingStore();
         await RandomAccess.WriteAsync(fileBackend, buffer.Memory.Slice(0, position), filePosition, token).ConfigureAwait(false);
         buffer.Dispose();
@@ -351,7 +351,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     [MemberNotNull(nameof(fileBackend))]
     private void PersistBuffer()
     {
-        Debug.Assert(position > 0);
+        Debug.Assert(HasBufferedData);
         EnsureBackingStore();
         RandomAccess.Write(fileBackend, buffer.Span.Slice(0, position), filePosition);
         buffer.Dispose();
