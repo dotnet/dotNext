@@ -629,6 +629,7 @@ attached to the list instance.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int InsertOrdered&lt;T, TComparer&gt;(this List&lt;T&gt; list, T item, TComparer comparer)
+
     where TComparer : IComparer&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -719,6 +720,7 @@ is for generic list of unknown type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int InsertOrdered&lt;T, TComparer&gt;(this IList&lt;T&gt; list, T item, TComparer comparer)
+
     where TComparer : IComparer&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

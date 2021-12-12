@@ -271,6 +271,7 @@ and <see cref="!:IDictionary&lt;TKey, TValue>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TValue GetOrAdd&lt;TKey, TValue&gt;(this Dictionary&lt;TKey, TValue&gt; dictionary, TKey key)
+
     where TValue : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -520,6 +521,7 @@ exist.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TValue GetOrAdd&lt;TKey, TValue, TFactory&gt;(this Dictionary&lt;TKey, TValue&gt; dictionary, TKey key, Func&lt;TKey, TValue&gt; valueFactory)
+
     where TFactory : struct, ISupplier&lt;TKey, TValue&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -697,6 +699,7 @@ return its result as a default value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TValue GetOrInvoke&lt;TKey, TValue, TSupplier&gt;(this IDictionary&lt;TKey, TValue&gt; dictionary, TKey key, TSupplier defaultValue)
+
     where TSupplier : struct, ISupplier&lt;TValue&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -183,6 +183,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;TOutput&gt; Convert&lt;TInput, TOutput&gt;(this Task&lt;TInput&gt; task)
+
     where TInput : TOutput</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -409,6 +410,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T?&gt; ToNullable&lt;T&gt;(this Task&lt;T&gt; task)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

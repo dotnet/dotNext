@@ -127,6 +127,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, in T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -236,6 +237,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long WriteFormattable&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, LengthFormat? lengthFormat, in EncodingContext context, ReadOnlySpan&lt;char&gt; format = null, IFormatProvider? provider = null)
+
     where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

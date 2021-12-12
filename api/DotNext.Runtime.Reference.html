@@ -331,6 +331,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Reference&lt;TValue&gt; Create&lt;TOwner, TValue&gt;(TOwner owner, delegate*&lt;TOwner, ref TValue&gt; getter)
+
     where TOwner : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -475,6 +476,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Reference&lt;TValue&gt; FromPointer&lt;TValue&gt;(TValue*ptr)
+
     where TValue : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -542,6 +544,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Reference&lt;TValue&gt; Unbox&lt;TValue&gt;(object boxed)
+
     where TValue : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -212,6 +212,7 @@ It's not recommended to use the type in the application code.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async Task&lt;BufferedRaftLogEntryList&gt; CopyAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; producer, RaftLogEntriesBufferingOptions options, CancellationToken token = null)
+
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -291,6 +292,7 @@ It's not recommended to use the type in the application code.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static async Task&lt;BufferedRaftLogEntryList&gt; CopyAsync&lt;TEntry, TList&gt;(TList list, RaftLogEntriesBufferingOptions options, CancellationToken token = null)
+
     where TEntry : IRaftLogEntry where TList : IReadOnlyList&lt;TEntry&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

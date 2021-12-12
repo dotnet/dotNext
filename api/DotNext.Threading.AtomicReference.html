@@ -128,6 +128,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T AccumulateAndGet&lt;T&gt;(ref T value, T x, delegate*&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -211,6 +212,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T AccumulateAndGet&lt;T&gt;(ref T value, T x, Func&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -294,6 +296,7 @@ replaces the stored value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool CompareAndSet&lt;T&gt;(ref T value, T expected, T update)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -374,6 +377,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndAccumulate&lt;T&gt;(ref T value, T x, delegate*&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -457,6 +461,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndAccumulate&lt;T&gt;(ref T value, T x, Func&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -540,6 +545,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndUpdate&lt;T&gt;(ref T value, delegate*&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -614,6 +620,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndUpdate&lt;T&gt;(ref T value, Func&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -688,6 +695,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T UpdateAndGet&lt;T&gt;(ref T value, delegate*&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -762,6 +770,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T UpdateAndGet&lt;T&gt;(ref T value, Func&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

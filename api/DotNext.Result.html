@@ -397,6 +397,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T, TError&gt;(in Result&lt;T, TError&gt; result)
+
     where TError : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -585,6 +586,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T? OrNull&lt;T&gt;(this in Result&lt;T&gt; result)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -652,6 +654,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T? OrNull&lt;T, TError&gt;(this in Result&lt;T, TError&gt; result)
+
     where T : struct where TError : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
