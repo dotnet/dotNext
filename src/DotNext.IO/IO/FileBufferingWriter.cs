@@ -149,9 +149,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         Continuation = OnCompleted;
 
         static void OnCompleted(Task task, object? state)
-        {
-            task.ConfigureAwait(false).GetAwaiter().GetResult();
-        }
+            => task.ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     private readonly BackingFileProvider fileProvider;
