@@ -44,30 +44,30 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-09-2021
+Release Date: 12-12-2021
 
-<a href="https://www.nuget.org/packages/dotnext/4.1.1">DotNext 4.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext/4.1.2">DotNext 4.1.2</a>
 * Minor performance improvements
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.1">DotNext.Metaprogramming 4.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.2">DotNext.Metaprogramming 4.1.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.1.1">DotNext.Reflection 4.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.1.2">DotNext.Reflection 4.1.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.1">DotNext.Unsafe 4.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.2">DotNext.Unsafe 4.1.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.1.1">DotNext.Threading 4.1.1</a>
-* Minor performance improvements
-
-<a href="https://www.nuget.org/packages/dotnext.io/4.1.1">DotNext.IO 4.1.1</a>
-* Minor performance improvements
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.1">DotNext.Net.Cluster 4.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/4.1.2">DotNext.Threading 4.1.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.1">DotNext.AspNetCore.Cluster 4.1.1</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.1.2">DotNext.IO 4.1.2</a>
+* Minor performance improvements of `FileBufferingWriter` class
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.2">DotNext.Net.Cluster 4.1.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.2">DotNext.AspNetCore.Cluster 4.1.2</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

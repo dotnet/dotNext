@@ -156,10 +156,10 @@ public static class Intrinsics
         where T : struct, Enum => Unsafe.SizeOf<T>() switch
         {
             0 => true,
-            sizeof(byte) => (InToRef<T, byte>(value) & InToRef<T, byte>(flag)) != 0,
-            sizeof(ushort) => (InToRef<T, ushort>(value) & InToRef<T, ushort>(flag)) != 0,
-            sizeof(uint) => (InToRef<T, uint>(value) & InToRef<T, uint>(flag)) != 0,
-            sizeof(long) => (InToRef<T, ulong>(value) & InToRef<T, ulong>(flag)) != 0UL,
+            sizeof(byte) => (ReinterpretCast<T, byte>(value) & ReinterpretCast<T, byte>(flag)) != 0,
+            sizeof(ushort) => (ReinterpretCast<T, ushort>(value) & ReinterpretCast<T, ushort>(flag)) != 0,
+            sizeof(uint) => (ReinterpretCast<T, uint>(value) & ReinterpretCast<T, uint>(flag)) != 0,
+            sizeof(long) => (ReinterpretCast<T, ulong>(value) & ReinterpretCast<T, ulong>(flag)) != 0UL,
             _ => value.HasFlag(flag),
         };
 

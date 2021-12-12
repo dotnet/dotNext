@@ -1,5 +1,3 @@
-using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
-
 namespace DotNext.IO;
 
 public partial class FileBufferingWriter
@@ -136,9 +134,7 @@ public partial class FileBufferingWriter
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-        if (fileBackend is not null)
-            PersistBuffer();
-
+        Flush();
         return new ReaderStream(this, false);
     }
 
@@ -154,9 +150,7 @@ public partial class FileBufferingWriter
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-        if (fileBackend is not null)
-            await PersistBufferAsync(token).ConfigureAwait(false);
-
+        await FlushCoreAsync(token).ConfigureAwait(false);
         return new ReaderStream(this, true);
     }
 }
