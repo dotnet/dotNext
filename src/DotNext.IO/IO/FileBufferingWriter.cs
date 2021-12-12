@@ -244,7 +244,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         WeakReference refHolder;
         if (reader is null)
         {
-            refHolder = reader = new WeakReference(obj, false);
+            refHolder = reader = new(obj, trackResurrection: false);
         }
         else
         {
