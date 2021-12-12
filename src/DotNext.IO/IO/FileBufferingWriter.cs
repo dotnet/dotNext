@@ -336,7 +336,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         return MemoryEvaluationResult.Success;
     }
 
-    private bool HasBufferedData => buffer.Length > 0 && position > 0;
+    private bool HasBufferedData => !buffer.IsEmpty && position > 0;
 
     [MemberNotNull(nameof(fileBackend))]
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
@@ -362,34 +362,46 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     }
 
     /// <inheritdoc/>
-    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
+    public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
     {
         if (IsReading)
-            throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+            return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.WriterInReadMode));
 
         switch (PrepareMemory(buffer.Length, out var output))
         {
+            default:
+                return ValueTask.CompletedTask;
             case MemoryEvaluationResult.Success:
                 buffer.CopyTo(output);
                 position += buffer.Length;
-                break;
+                goto default;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                await PersistBufferAsync(token).ConfigureAwait(false);
-                this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
-                allocationCounter?.WriteMetric(this.buffer.Length);
-                buffer.CopyTo(this.buffer.Memory);
-                position = buffer.Length;
-                break;
+                return PersistExistingBufferAsync();
             case MemoryEvaluationResult.PersistAll:
-                if (HasBufferedData)
-                    await PersistBufferAsync(token).ConfigureAwait(false);
-                else
-                    EnsureBackingStore();
+                return PersistAllAsync();
+        }
 
-                await RandomAccess.WriteAsync(fileBackend, buffer, filePosition, token).ConfigureAwait(false);
-                filePosition += buffer.Length;
-                break;
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        async ValueTask PersistExistingBufferAsync()
+        {
+            await PersistBufferAsync(token).ConfigureAwait(false);
+            this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
+            allocationCounter?.WriteMetric(this.buffer.Length);
+            buffer.CopyTo(this.buffer.Memory);
+            position = buffer.Length;
+        }
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        async ValueTask PersistAllAsync()
+        {
+            if (HasBufferedData)
+                await PersistBufferAsync(token).ConfigureAwait(false);
+            else
+                EnsureBackingStore();
+
+            await RandomAccess.WriteAsync(fileBackend, buffer, filePosition, token).ConfigureAwait(false);
+            filePosition += buffer.Length;
         }
     }
 
