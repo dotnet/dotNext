@@ -566,7 +566,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 await consumer.Invoke(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
         }
 
-        if (buffer.Length > 0 && position > 0)
+        if (HasBufferedData)
             await consumer.Invoke(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
     }
 
@@ -593,7 +593,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 consumer.Invoke(buffer.Span.Slice(0, count));
         }
 
-        if (buffer.Length > 0 && position > 0)
+        if (HasBufferedData)
             consumer.Invoke(buffer.Span.Slice(0, position));
     }
 
@@ -673,18 +673,23 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     public int CopyTo(Span<byte> output)
     {
         var totalBytes = 0;
+
+        if (output.IsEmpty)
+            goto exit;
+
         if (fileBackend is not null)
         {
             totalBytes = RandomAccess.Read(fileBackend, output, 0L);
             output = output.Slice(totalBytes);
         }
 
-        if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
+        if (HasBufferedData)
         {
             buffer.Span.Slice(0, position).CopyTo(output, out var subCount);
             totalBytes += subCount;
         }
 
+    exit:
         return totalBytes;
     }
 
@@ -694,21 +699,26 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <param name="output">The memory block used as a destination for copy operation.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The actual number of copied elements.</returns>
-    public async Task<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
+    public async ValueTask<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
     {
         var totalBytes = 0;
+
+        if (output.IsEmpty)
+            goto exit;
+
         if (fileBackend is not null)
         {
             totalBytes = await RandomAccess.ReadAsync(fileBackend, output, 0L).ConfigureAwait(false);
             output = output.Slice(totalBytes);
         }
 
-        if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
+        if (HasBufferedData)
         {
             buffer.Span.Slice(0, position).CopyTo(output.Span, out var subCount);
             totalBytes += subCount;
         }
 
+    exit:
         return totalBytes;
     }
 
