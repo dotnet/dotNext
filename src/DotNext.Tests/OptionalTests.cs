@@ -223,9 +223,11 @@ namespace DotNext
         {
             var optional = Optional<int>.None;
             Throws<InvalidOperationException>(() => Optional.GetReference<int, InvalidOperationException>(optional));
+            Throws<InvalidOperationException>(() => Optional.GetReference(in optional));
             optional = 23;
             Equal(23, Optional.GetReference<int, InvalidOperationException>(optional));
             Equal(23, Optional.GetReference(optional, static () => new InvalidOperationException()));
+            Equal(23, Optional.GetReference(in optional));
         }
 
         [Fact]
