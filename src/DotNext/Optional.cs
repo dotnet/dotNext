@@ -218,7 +218,7 @@ public static class Optional
     /// <param name="optional">The optional container.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
-    public static unsafe ref readonly T GetReference<T>(in Optional<T> optional)
+    public static ref readonly T GetReference<T>(in Optional<T> optional)
         where T : struct
     {
         ref readonly T result = ref Optional<T>.GetReference(in optional);
