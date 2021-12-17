@@ -101,10 +101,7 @@ public static class TaskType
         if (result is not null)
             return result.GetGenericArguments()[0];
 
-        if (typeof(Task).IsAssignableFrom(taskType))
-            return typeof(void);
-
-        return null;
+        return typeof(Task).IsAssignableFrom(taskType) ? typeof(void) : null;
     }
 
     /// <summary>
