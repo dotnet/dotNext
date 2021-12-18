@@ -39,7 +39,7 @@ public partial struct Base64Decoder
     private void CopyAndDecode(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
     {
         var newSize = reservedBufferSize + chars.Length;
-        using var tempBuffer = (uint)newSize <= MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
+        using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         DecodeCore(tempBuffer.Span, output);
@@ -122,7 +122,7 @@ public partial struct Base64Decoder
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         var newSize = reservedBufferSize + chars.Length;
-        using var tempBuffer = (uint)newSize <= MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
+        using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         DecodeCore(tempBuffer.Span, output);

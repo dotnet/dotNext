@@ -462,7 +462,7 @@ public static class Span
         if (count == 0)
             return string.Empty;
 
-        using MemoryRental<char> buffer = (uint)count <= MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
+        using MemoryRental<char> buffer = (uint)count <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
         count = ToHex(bytes, buffer.Span, lowercased);
         return new string(buffer.Span.Slice(0, count));
     }
