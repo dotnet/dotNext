@@ -326,36 +326,19 @@ public static class Span
     /// <returns>Trimmed span.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
     public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
-    {
-        switch (maxLength)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(maxLength));
-            case 0:
-                span = default;
-                break;
-            default:
-                if (span.Length > maxLength)
-                    span = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(span), maxLength);
-                break;
-        }
-
-        return span;
-    }
+        => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
 
     private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
         where TComparer : struct, ISupplier<T, T, bool>
     {
-        if (span.IsEmpty)
-            goto not_found;
-
-        for (var i = startIndex; i < span.Length; i++)
+        while ((uint)startIndex < (uint)span.Length)
         {
-            if (comparer.Invoke(span[i], value))
-                return i;
+            if (comparer.Invoke(span[startIndex], value))
+                return startIndex;
+
+            startIndex++;
         }
 
-    not_found:
         return -1;
     }
 
@@ -568,6 +551,7 @@ public static class Span
     {
         MemoryOwner<T> result;
         var length = first.Length + second.Length;
+
         if (length == 0)
         {
             result = default;
@@ -575,7 +559,7 @@ public static class Span
         else
         {
             result = allocator is null ?
-                new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
+                new(ArrayPool<T>.Shared, length) :
                 allocator(length);
 
             var output = result.Span;

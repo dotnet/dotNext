@@ -266,7 +266,7 @@ public static class Intrinsics
     internal static unsafe bool EqualsAligned(ref byte first, ref byte second, nint length)
     {
         var result = false;
-        if (Vector.IsHardwareAccelerated)
+        if (Vector.IsHardwareAccelerated && Vector<byte>.Count > sizeof(nuint))
         {
             for (; length >= sizeof(Vector<byte>); first = ref first.Advance<Vector<byte>>(), second = ref second.Advance<Vector<byte>>())
             {
@@ -480,7 +480,7 @@ public static class Intrinsics
     private static unsafe bool IsZero([In] ref byte address, nint length)
     {
         var result = false;
-        if (Vector.IsHardwareAccelerated)
+        if (Vector.IsHardwareAccelerated && Vector<byte>.Count > sizeof(nuint))
         {
             while (length >= Vector<byte>.Count)
             {
