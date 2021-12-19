@@ -37,6 +37,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected object SyncRoot => cancellationCallback;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private void CancellationRequested(object? expectedVersion, CancellationToken token)
     {
         Debug.Assert(expectedVersion is BoxedVersion);
@@ -44,11 +45,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
-        if (status == ManualResetCompletionSourceStatus.Activated)
+        if (status is ManualResetCompletionSourceStatus.Activated)
         {
             lock (SyncRoot)
             {
-                if (status == ManualResetCompletionSourceStatus.Activated && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
+                if (status is ManualResetCompletionSourceStatus.Activated && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
                 {
                     if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
@@ -111,6 +112,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously, bool flowExecutionContext)
     {
         switch (capturedContext)
@@ -151,6 +153,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously, flowExecutionContext);
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private static void InvokeContinuation(object? source)
     {
         Debug.Assert(source is ManualResetCompletionSource);
@@ -248,6 +251,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// <inheritdoc />
     void IThreadPoolWorkItem.Execute() => AfterConsumed();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void OnConsumed<T>()
         where T : ManualResetCompletionSource
     {
@@ -257,12 +261,14 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void OnCompleted(object? completionData)
     {
         this.completionData = completionData;
         status = ManualResetCompletionSourceStatus.WaitForConsumption;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
     {
         string errorMessage;
@@ -375,6 +381,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// </remarks>
     public bool IsCompleted => status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -382,44 +389,45 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout == TimeSpan.Zero)
         {
             CompleteAsTimedOut();
-            goto exit;
         }
-
-        if (token.IsCancellationRequested)
+        else if (token.IsCancellationRequested)
         {
             CompleteAsCanceled(token);
-            goto exit;
+        }
+        else
+        {
+            status = ManualResetCompletionSourceStatus.Activated;
+            StartTrackingCancellation(timeout, token);
         }
 
-        status = ManualResetCompletionSourceStatus.Activated;
-        StartTrackingCancellation(timeout, token);
-
-    exit:
         return;
     }
 
-    private protected void PrepareTask(TimeSpan timeout, CancellationToken token)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
     {
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        if (status is ManualResetCompletionSourceStatus.WaitForActivation)
+        var result = false;
+
+        // The task can be created for the completed source. This workaround is needed for AsyncBridge methods
+        if (status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.WaitForConsumption)
         {
             lock (SyncRoot)
             {
-                if (status is ManualResetCompletionSourceStatus.WaitForActivation)
+                switch (status)
                 {
-                    PrepareTaskCore(timeout, token);
-                }
-                else
-                {
-                    throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+                    case ManualResetCompletionSourceStatus.WaitForActivation:
+                        PrepareTaskCore(timeout, token);
+                        goto case ManualResetCompletionSourceStatus.WaitForConsumption;
+                    case ManualResetCompletionSourceStatus.WaitForConsumption:
+                        result = true;
+                        break;
                 }
             }
         }
-        else
-        {
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
-        }
+
+        return result;
     }
 }
