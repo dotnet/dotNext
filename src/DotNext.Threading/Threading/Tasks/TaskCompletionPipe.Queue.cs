@@ -48,7 +48,7 @@ public partial class TaskCompletionPipe<T>
                 head = 0;
                 tail = newTail;
             }
-            else if (array.Length < (uint)Array.MaxLength)
+            else if ((uint)array.Length < (uint)Array.MaxLength)
             {
                 var newCapacity = GrowFactor * array.Length;
                 if ((uint)newCapacity > (uint)Array.MaxLength)
