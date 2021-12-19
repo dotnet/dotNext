@@ -66,8 +66,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
-            tokenHolder = version;
-            timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder);
+            timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = version);
             timeoutSource.CancelAfter(timeout);
         }
 
@@ -404,11 +403,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        if (status == ManualResetCompletionSourceStatus.WaitForActivation)
+        if (status is ManualResetCompletionSourceStatus.WaitForActivation)
         {
             lock (SyncRoot)
             {
-                if (status == ManualResetCompletionSourceStatus.WaitForActivation)
+                if (status is ManualResetCompletionSourceStatus.WaitForActivation)
                 {
                     PrepareTaskCore(timeout, token);
                 }
