@@ -566,17 +566,22 @@ public static class Span
     /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
     public static MemoryOwner<T> Concat<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
     {
-        if (first.IsEmpty && second.IsEmpty)
-            return default;
+        MemoryOwner<T> result;
+        var length = first.Length + second.Length;
+        if (length == 0)
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator is null ?
+                new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
+                allocator(length);
 
-        var length = checked(first.Length + second.Length);
-        var result = allocator is null ?
-            new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
-            allocator(length);
-
-        var output = result.Span;
-        first.CopyTo(output);
-        second.CopyTo(output.Slice(first.Length));
+            var output = result.Span;
+            first.CopyTo(output);
+            second.CopyTo(output.Slice(first.Length));
+        }
 
         return result;
     }
