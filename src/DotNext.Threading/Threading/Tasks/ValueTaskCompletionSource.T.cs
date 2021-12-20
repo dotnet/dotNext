@@ -240,21 +240,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="token">The cancellation token that can be used to cancel the task.</param>
     /// <returns>A fresh incompleted task.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
+    /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
-    {
-        PrepareTask(timeout, token);
-        return new(this, version);
-    }
+        => PrepareTask(timeout, token) ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     /// <inheritdoc />
     ValueTask<T> ISupplier<TimeSpan, CancellationToken, ValueTask<T>>.Invoke(TimeSpan timeout, CancellationToken token)
         => CreateTask(timeout, token);
 
     internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token)
-    {
-        PrepareTask(timeout, token);
-        return new(this, version);
-    }
+        => PrepareTask(timeout, token) ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     /// <inheritdoc />
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
@@ -318,10 +313,13 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="timeout">The timeout associated with the task.</param>
     /// <param name="token">The cancellation token that can be used to cancel the task.</param>
     /// <returns>A linked <see cref="TaskCompletionSource{TResult}"/>.</returns>
+    /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public TaskCompletionSource<T> CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
+        if (!PrepareTask(timeout, token))
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+
         var source = new LinkedTaskCompletionSource(userData);
-        PrepareTask(timeout, token);
         source.LinkTo(this, version);
         return source;
     }

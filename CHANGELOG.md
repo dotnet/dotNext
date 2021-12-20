@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 12-20-2021
+<a href="https://www.nuget.org/packages/dotnext/4.1.3">DotNext 4.1.3</a>
+* Smallish performance improvements
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.3">DotNext.Metaprogramming 4.1.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.1.3">DotNext.Reflection 4.1.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.3">DotNext.Unsafe 4.1.3</a>
+* Performance improvements of `Pointer<T>` public methods
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.1.3">DotNext.Threading 4.1.3</a>
+* Fixed potential concurrency issue than can be caused by `AsyncBridge` public methods when cancellation token or wait handle is about to be canceled or signaled
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.1.3">DotNext.IO 4.1.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.3">DotNext.Net.Cluster 4.1.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.3">DotNext.AspNetCore.Cluster 4.1.3</a>
+* Updated dependencies
+
 # 12-12-2021
 <a href="https://www.nuget.org/packages/dotnext/4.1.2">DotNext 4.1.2</a>
 * Minor performance improvements

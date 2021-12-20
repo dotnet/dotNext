@@ -111,10 +111,10 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
             if (capacity == 0)
                 growBy = Math.Max(growBy, DefaultInitialBufferSize);
             var newSize = capacity + growBy;
-            if ((uint)newSize > Array.MaxLength)
+            if ((uint)newSize > (uint)Array.MaxLength)
             {
                 newSize = capacity + sizeHint;
-                if ((uint)newSize > Array.MaxLength)
+                if ((uint)newSize > (uint)Array.MaxLength)
                     throw new InsufficientMemoryException();
             }
 

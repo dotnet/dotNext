@@ -212,6 +212,23 @@ public static class Optional
         => ref GetReference<T, Supplier<Exception>>(in optional, exceptionFactory);
 
     /// <summary>
+    /// Obtains immutable reference to the value in the container.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="optional">The optional container.</param>
+    /// <returns>The immutable reference to the value in the container.</returns>
+    /// <exception cref="InvalidOperationException">No value is present.</exception>
+    public static ref readonly T GetReference<T>(in Optional<T> optional)
+        where T : struct
+    {
+        ref readonly T result = ref Optional<T>.GetReference(in optional);
+        if (!optional.HasValue)
+            throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
+
+        return ref result;
+    }
+
+    /// <summary>
     /// Converts the monad to <see cref="Optional{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the underlying value.</typeparam>

@@ -107,7 +107,7 @@ public partial struct Base64Decoder
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         var newSize = reservedBufferSize + utf8Chars.Length;
-        using var tempBuffer = (uint)newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
+        using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
         ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         DecodeCore(tempBuffer.Span, output);
