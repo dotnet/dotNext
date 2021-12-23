@@ -353,7 +353,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
     public bool TryGet([MaybeNullWhen(false)] out T value)
     {
-        value = this.value!;
+        value = this.value;
         return HasValue;
     }
 
@@ -403,7 +403,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [return: NotNull]
     private T OrThrow<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
-        => HasValue ? value! : throw exceptionFactory.Invoke();
+        => HasValue ? value : throw exceptionFactory.Invoke();
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -427,7 +427,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrInvoke<TSupplier>(TSupplier defaultFunc)
         where TSupplier : struct, ISupplier<T>
-        => HasValue ? value! : defaultFunc.Invoke();
+        => HasValue ? value : defaultFunc.Invoke();
 
     /// <summary>
     /// Returns the value if present; otherwise invoke delegate.
@@ -479,7 +479,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value!) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -505,7 +505,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> ConvertOptional<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, Optional<TResult>>
-        => HasValue ? converter.Invoke(value!) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -531,7 +531,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)
         where TPredicate : struct, ISupplier<T, bool>
-        => HasValue && condition.Invoke(value!) ? this : None;
+        => HasValue && condition.Invoke(value) ? this : None;
 
     /// <summary>
     /// If a value is present, and the value matches the given predicate,
