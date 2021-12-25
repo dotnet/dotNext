@@ -399,8 +399,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             status = ManualResetCompletionSourceStatus.Activated;
             StartTrackingCancellation(timeout, token);
         }
-
-        return;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
