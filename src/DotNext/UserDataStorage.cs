@@ -505,8 +505,15 @@ public readonly ref struct UserDataStorage
     /// <param name="obj">The object which user data has to be replaced with the copy of the current one.</param>
     public void CopyTo(object obj)
     {
-        if (obj is IContainer support)
-            obj = support.Source;
+        switch (obj)
+        {
+            case null:
+                throw new ArgumentNullException(nameof(obj));
+            case IContainer container:
+                obj = container.Source;
+                break;
+        }
+
         var source = GetStorage();
         if (source is not null)
         {
