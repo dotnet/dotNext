@@ -1,6 +1,32 @@
 Release Notes
 ====
 
+# 12-27-2021
+<a href="https://www.nuget.org/packages/dotnext/4.1.4">DotNext 4.1.4</a>
+* Improved scalability of mechanism that allows to attach custom data to arbitrary objects using `UserDataStorage` and `UserDataSlot<T>` types. The improvement works better in high workloads without the risk of lock contention but requires a bit more CPU cycles to obtain the data attached to the object
+* Added ability to enumerate values stored in `TypeMap<T>` or `ConcurrentTypeMap<T>`
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.1.4">DotNext.Metaprogramming 4.1.4</a>
+* Improved overall performance of some scenarios where `UserDataStorage` is used
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.1.4">DotNext.Reflection 4.1.4</a>
+* Improved overall performance of some scenarios where `UserDataStorage` is used
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.1.4">DotNext.Unsafe 4.1.4</a>
+* Performance improvements of `Pointer<T>` public methods
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.1.4">DotNext.Threading 4.1.4</a>
+* Reduced execution time of `CreateTask` overloads declared in `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.1.4">DotNext.IO 4.1.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.1.4">DotNext.Net.Cluster 4.1.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.1.4">DotNext.AspNetCore.Cluster 4.1.4</a>
+* Updated dependencies
+
 # 12-20-2021
 <a href="https://www.nuget.org/packages/dotnext/4.1.3">DotNext 4.1.3</a>
 * Smallish performance improvements
