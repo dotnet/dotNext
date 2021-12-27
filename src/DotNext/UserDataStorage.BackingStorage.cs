@@ -5,12 +5,28 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
-public ref partial struct UserDataStorage
+public partial struct UserDataStorage
 {
     // provides a storage of typed user data slots
     private sealed class BackingStorageEntry
     {
         private Array? array; // of type Optional<T>[]
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal void CopyTo(int typeIndex, Dictionary<string, object> output)
+        {
+            if (array is not null)
+            {
+                output.EnsureCapacity(array.Length);
+
+                for (var i = 0; i < array.Length; i++)
+                {
+                    var value = (array.GetValue(i) as ISupplier<object?>)?.Invoke();
+                    if (value is not null)
+                        output[UserDataSlot.ToString(typeIndex, i + 1)] = value;
+                }
+            }
+        }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void CopyFrom(Array? source)
@@ -159,7 +175,7 @@ public ref partial struct UserDataStorage
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public BackingStorage Copy()
+        internal BackingStorage Copy()
         {
             var copy = new BackingStorage(isEmpty: true);
             copy.CopyFrom(tables);
@@ -167,6 +183,17 @@ public ref partial struct UserDataStorage
         }
 
         object ICloneable.Clone() => Copy();
+
+        internal IReadOnlyDictionary<string, object> Dump()
+        {
+            var tables = this.tables;
+            var result = new Dictionary<string, object>(tables.Length);
+
+            for (var i = 0; i < tables.Length; i++)
+                tables[i].CopyTo(i, result);
+
+            return result;
+        }
 
         private void CopyFrom(BackingStorageEntry[] source)
         {

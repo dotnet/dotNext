@@ -8,6 +8,12 @@ internal static class UserDataSlot
     private static volatile int typeIndex = -1;
 
     internal static int Allocate() => Interlocked.Increment(ref typeIndex);
+
+    internal static string ToString(int typeIndex, int valueIndex)
+    {
+        ulong result = (uint)valueIndex | ((ulong)typeIndex << 32);
+        return result.ToString("X", provider: null);
+    }
 }
 
 /// <summary>
@@ -67,11 +73,7 @@ public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
     /// useful for debugging.
     /// </summary>
     /// <returns>Textual representation of this data slot.</returns>
-    public override string ToString()
-    {
-        ulong result = (uint)valueIndex | ((ulong)TypeIndex << 32);
-        return result.ToString(provider: null);
-    }
+    public override string ToString() => UserDataSlot.ToString(TypeIndex, valueIndex);
 
     /// <summary>
     /// Checks whether the two data slots are the same.

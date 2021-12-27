@@ -148,5 +148,30 @@ namespace DotNext
             Equal(45U, data.Get(slot4));
             Equal(46, data.Get(slot5));
         }
+
+        [Fact]
+        public static void CaptureData()
+        {
+            var slot1 = new UserDataSlot<ulong>();
+            var slot2 = new UserDataSlot<ushort>();
+            var slot3 = new UserDataSlot<short>();
+            var slot4 = new UserDataSlot<uint>();
+            var slot5 = new UserDataSlot<sbyte>();
+
+            var data = new object().GetUserData();
+            data.Set(slot1, 42UL);
+            data.Set(slot2, (ushort)43);
+            data.Set(slot3, (short)44);
+            data.Set(slot4, 45U);
+            data.Set(slot5, (sbyte)46);
+
+            var capturedData = data.Capture();
+
+            Equal(42UL, capturedData[slot1.ToString()]);
+            Equal((ushort)43, capturedData[slot2.ToString()]);
+            Equal((short)44, capturedData[slot3.ToString()]);
+            Equal(45U, capturedData[slot4.ToString()]);
+            Equal((sbyte)46, capturedData[slot5.ToString()]);
+        }
     }
 }

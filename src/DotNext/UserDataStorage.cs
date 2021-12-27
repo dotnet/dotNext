@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
@@ -119,9 +118,16 @@ public readonly ref partial struct UserDataStorage
         _ => source,
     };
 
-    private BackingStorage? GetStorage()
-        => source is BackingStorage storage || GetStorage(source).TryGetValue(source, out storage!) ? storage : null;
+    /// <summary>
+    /// Gets a value indicating that this storage is valid.
+    /// </summary>
+    public bool IsValid => source is not null;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private BackingStorage? GetStorage()
+        => source is not null && (source is BackingStorage storage || GetStorage(source).TryGetValue(source, out storage!)) ? storage : null;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage GetOrCreateStorage()
     {
         if (source is not BackingStorage storage)
