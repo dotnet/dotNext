@@ -6,7 +6,7 @@ namespace DotNext;
 
 using Dictionary = Collections.Generic.Dictionary;
 
-[DebuggerDisplay("Source = {" + nameof(source) + "}")]
+[DebuggerDisplay($"Source = {{{nameof(source)}}}")]
 [DebuggerTypeProxy(typeof(DebugView))]
 public partial struct UserDataStorage
 {

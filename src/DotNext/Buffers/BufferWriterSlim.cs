@@ -19,7 +19,7 @@ namespace DotNext.Buffers;
 /// <seealso cref="PooledBufferWriter{T}"/>
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
-[DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
 public ref partial struct BufferWriterSlim<T>
 {
     private readonly Span<T> initialBuffer;

@@ -13,7 +13,7 @@ using Seq = Collections.Generic.Sequence;
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
 /// </summary>
 /// <typeparam name="T">The data type that can be written.</typeparam>
-[DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}")]
 public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
 {
     private readonly object? diagObj;
