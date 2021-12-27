@@ -18,7 +18,7 @@ internal static class UserDataSlot
 [StructLayout(LayoutKind.Auto)]
 public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
 {
-    private static volatile int valueIndexCounter = 0;
+    private static volatile int valueIndexCounter;
     internal static readonly int TypeIndex = UserDataSlot.Allocate();
 
     private readonly int valueIndex;

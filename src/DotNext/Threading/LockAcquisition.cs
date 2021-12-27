@@ -7,7 +7,7 @@ namespace DotNext.Threading;
 /// </summary>
 public static class LockAcquisition
 {
-    private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = UserDataSlot<ReaderWriterLockSlim>.Allocate();
+    private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = new();
 
     private sealed class ReaderWriterLockSlimWithRecursion : ReaderWriterLockSlim
     {
