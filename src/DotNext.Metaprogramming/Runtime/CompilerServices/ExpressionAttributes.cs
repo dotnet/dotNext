@@ -7,7 +7,7 @@ namespace DotNext.Runtime.CompilerServices;
 /// </summary>
 internal class ExpressionAttributes
 {
-    private static readonly UserDataSlot<ExpressionAttributes?> AttributesSlot = UserDataSlot<ExpressionAttributes?>.Allocate();
+    private static readonly UserDataSlot<ExpressionAttributes?> AttributesSlot = new();
 
     /// <summary>
     /// A set of labels owner by expression.

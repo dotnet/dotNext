@@ -88,7 +88,7 @@ internal abstract class MemberCache<TMember, TDescriptor> : Cache<MemberKey, TDe
     where TMember : MemberInfo
     where TDescriptor : class, IMember<TMember>
 {
-    private static readonly UserDataSlot<MemberCache<TMember, TDescriptor>> Slot = UserDataSlot<MemberCache<TMember, TDescriptor>>.Allocate();
+    private static readonly UserDataSlot<MemberCache<TMember, TDescriptor>> Slot = new();
 
     internal TDescriptor? GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
 

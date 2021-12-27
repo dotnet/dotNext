@@ -6,7 +6,7 @@ using AwaitExpression = Linq.Expressions.AwaitExpression;
 
 internal sealed class VisitorContext : Disposable
 {
-    private static readonly UserDataSlot<StatePlaceholderExpression> StateIdPlaceholder = UserDataSlot<StatePlaceholderExpression>.Allocate();
+    private static readonly UserDataSlot<StatePlaceholderExpression> StateIdPlaceholder = new();
     private readonly Stack<ExpressionAttributes> attributes;
     private readonly Stack<Statement> statements;
     private uint stateId;

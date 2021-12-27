@@ -7,8 +7,8 @@ namespace DotNext.Threading;
 /// </summary>
 public static class AsyncLockAcquisition
 {
-    private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = UserDataSlot<AsyncReaderWriterLock>.Allocate();
-    private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = UserDataSlot<AsyncExclusiveLock>.Allocate();
+    private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = new();
+    private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)

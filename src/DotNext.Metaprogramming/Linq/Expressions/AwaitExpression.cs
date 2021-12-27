@@ -14,7 +14,7 @@ using Runtime.CompilerServices;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
 public sealed class AwaitExpression : CustomExpression
 {
-    private static readonly UserDataSlot<bool> IsAwaiterVarSlot = UserDataSlot<bool>.Allocate();
+    private static readonly UserDataSlot<bool> IsAwaiterVarSlot = new();
 
     /// <summary>
     /// Constructs <see langword="await"/> expression.

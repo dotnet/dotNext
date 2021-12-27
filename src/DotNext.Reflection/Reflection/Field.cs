@@ -249,7 +249,7 @@ public sealed class Field<T, TValue> : FieldBase<TValue>, IField<T, TValue>
 
     private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public;
     private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-    private static readonly UserDataSlot<Field<T, TValue>> CacheSlot = UserDataSlot<Field<T, TValue>>.Allocate();
+    private static readonly UserDataSlot<Field<T, TValue>> CacheSlot = new();
 
     private readonly MemberGetter<T, TValue> getter;
     private readonly MemberSetter<T, TValue>? setter;
@@ -425,7 +425,7 @@ public sealed class Field<TValue> : FieldBase<TValue>, IField<TValue>
 
     private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
     private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-    private static readonly UserDataSlot<Field<TValue>> CacheSlot = UserDataSlot<Field<TValue>>.Allocate();
+    private static readonly UserDataSlot<Field<TValue>> CacheSlot = new();
 
     private readonly MemberGetter<TValue> getter;
     private readonly MemberSetter<TValue>? setter;

@@ -17,7 +17,7 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
 {
     private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
     private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
-    private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = UserDataSlot<Constructor<TSignature>?>.Allocate();
+    private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = new();
 
     private readonly TSignature invoker;
     private readonly object ctorInfo;

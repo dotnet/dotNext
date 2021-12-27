@@ -12,8 +12,8 @@ using Seq = Collections.Generic.Sequence;
 /// </summary>
 public sealed class ExtensionRegistry : ConcurrentBag<MethodInfo>
 {
-    private static readonly UserDataSlot<ExtensionRegistry> InstanceMethods = UserDataSlot<ExtensionRegistry>.Allocate();
-    private static readonly UserDataSlot<ExtensionRegistry> StaticMethods = UserDataSlot<ExtensionRegistry>.Allocate();
+    private static readonly UserDataSlot<ExtensionRegistry> InstanceMethods = new();
+    private static readonly UserDataSlot<ExtensionRegistry> StaticMethods = new();
 
     private ExtensionRegistry()
     {
