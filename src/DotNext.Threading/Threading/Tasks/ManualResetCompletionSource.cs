@@ -381,7 +381,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// </remarks>
     public bool IsCompleted => status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));

@@ -120,7 +120,6 @@ public static class AtomicSingle
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (float OldValue, float NewValue) Update<TUpdater>(ref float value, TUpdater updater)
         where TUpdater : struct, ISupplier<float, float>
     {
@@ -133,7 +132,6 @@ public static class AtomicSingle
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (float OldValue, float NewValue) Accumulate<TAccumulator>(ref float value, float x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<float, float, float>
     {

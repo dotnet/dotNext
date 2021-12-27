@@ -140,7 +140,6 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private (TEnum OldValue, TEnum NewValue) Update<TUpdater>(TUpdater updater)
         where TUpdater : struct, ISupplier<TEnum, TEnum>
     {
@@ -154,7 +153,6 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private (TEnum OldValue, TEnum NewValue) Accumulate<TAccumulator>(TEnum x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<TEnum, TEnum, TEnum>
     {

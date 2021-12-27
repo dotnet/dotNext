@@ -183,7 +183,6 @@ public static class AtomicUInt64
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (ulong OldValue, ulong NewValue) Update<TUpdater>(ref ulong value, TUpdater updater)
         where TUpdater : struct, ISupplier<ulong, ulong>
     {
@@ -196,7 +195,6 @@ public static class AtomicUInt64
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (ulong OldValue, ulong NewValue) Accumulate<TAccumulator>(ref ulong value, ulong x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<ulong, ulong, ulong>
     {

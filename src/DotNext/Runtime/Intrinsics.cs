@@ -262,7 +262,6 @@ public static class Intrinsics
     public static unsafe int Compare([In] void* first, [In] void* second, nint length)
         => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe bool EqualsAligned(ref byte first, ref byte second, nint length)
     {
         var result = false;
@@ -476,7 +475,6 @@ public static class Intrinsics
         return ref address.Advance<T>();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static unsafe bool IsZero([In] ref byte address, nint length)
     {
         var result = false;
@@ -530,7 +528,6 @@ public static class Intrinsics
 
     #region Bitwise Hash Code
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
         where THashFunction : struct, IConsumer<long>
     {
@@ -710,7 +707,6 @@ public static class Intrinsics
         return fn.Invoke();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
         where THashFunction : struct, IConsumer<int>
     {

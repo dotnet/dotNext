@@ -120,7 +120,6 @@ public static class AtomicDouble
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (double OldValue, double NewValue) Update<TUpdater>(ref double value, TUpdater updater)
         where TUpdater : struct, ISupplier<double, double>
     {
@@ -133,7 +132,6 @@ public static class AtomicDouble
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (double OldValue, double NewValue) Accumulate<TAccumulator>(ref double value, double x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<double, double, double>
     {
