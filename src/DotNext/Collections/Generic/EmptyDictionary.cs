@@ -1,8 +1,10 @@
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Collections.Generic;
 
+[DebuggerDisplay("Count = 0")]
 internal sealed class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
 {
     internal static readonly EmptyDictionary<TKey, TValue> Instance = new();
@@ -11,6 +13,7 @@ internal sealed class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, 
     {
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => 0;
 
     TValue IReadOnlyDictionary<TKey, TValue>.this[TKey key] => throw new KeyNotFoundException();
@@ -23,8 +26,10 @@ internal sealed class EmptyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, 
         return false;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Array.Empty<TKey>();
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Array.Empty<TValue>();
 
     IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
