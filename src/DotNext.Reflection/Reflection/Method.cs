@@ -26,6 +26,8 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
     private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
     private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public;
     private const BindingFlags InstanceNonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<Method<TSignature>?> CacheSlot = new();
 
     private readonly MethodInfo method;

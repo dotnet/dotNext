@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Reflection;
@@ -12,7 +13,10 @@ using Seq = Collections.Generic.Sequence;
 /// </summary>
 public sealed class ExtensionRegistry : ConcurrentBag<MethodInfo>
 {
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<ExtensionRegistry> InstanceMethods = new();
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<ExtensionRegistry> StaticMethods = new();
 
     private ExtensionRegistry()

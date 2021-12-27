@@ -249,6 +249,8 @@ public sealed class Field<T, TValue> : FieldBase<TValue>, IField<T, TValue>
 
     private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public;
     private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<Field<T, TValue>> CacheSlot = new();
 
     private readonly MemberGetter<T, TValue> getter;
@@ -425,6 +427,8 @@ public sealed class Field<TValue> : FieldBase<TValue>, IField<TValue>
 
     private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
     private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<Field<TValue>> CacheSlot = new();
 
     private readonly MemberGetter<TValue> getter;

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
@@ -7,6 +8,7 @@ namespace DotNext.Threading;
 /// </summary>
 public static class LockAcquisition
 {
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = new();
 
     private sealed class ReaderWriterLockSlimWithRecursion : ReaderWriterLockSlim
