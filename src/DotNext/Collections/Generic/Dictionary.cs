@@ -352,4 +352,13 @@ public static class Dictionary
     /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
     public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Converter<TValue, TResult> mapper)
         => new(dictionary, mapper);
+
+    /// <summary>
+    /// Gets empty read-only dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key,</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <returns>The empty dictionary.</returns>
+    public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>()
+        => EmptyDictionary<TKey, TValue>.Instance;
 }
