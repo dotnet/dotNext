@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -63,6 +64,8 @@ public ref partial struct BufferWriterSlim<T>
         position = 0;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     private readonly int Overflow => Math.Max(0, position - initialBuffer.Length);
 
     /// <summary>

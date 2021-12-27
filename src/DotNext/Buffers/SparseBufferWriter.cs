@@ -122,6 +122,8 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
         return false;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     private long FragmentedBytes
     {
         get
