@@ -356,7 +356,7 @@ public static class Dictionary
     /// <summary>
     /// Gets empty read-only dictionary.
     /// </summary>
-    /// <typeparam name="TKey">The type of the key,</typeparam>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <returns>The empty dictionary.</returns>
     public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>()
