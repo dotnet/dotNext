@@ -5,9 +5,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
-using static Collections.Generic.Collection;
-using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
-
 /// <summary>
 /// Provides access to user data associated with the object.
 /// </summary>
@@ -15,7 +12,7 @@ using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
 /// This is by-ref struct because user data should have
 /// the same lifetime as its owner.
 /// </remarks>
-public readonly ref struct UserDataStorage
+public readonly ref partial struct UserDataStorage
 {
     /// <summary>
     /// Implementation of this interface allows to customize behavior of
@@ -113,171 +110,6 @@ public readonly ref struct UserDataStorage
         TResult ISupplier<TResult>.Invoke() => factory(arg1, arg2);
     }
 
-    private sealed class BackingStorage : Dictionary<long, object?>
-    {
-        // ReaderWriterLockSlim is not used because it is heavyweight
-        // spin-based lock is used instead because it is very low probability of concurrent
-        // updates of the same backing storage.
-        private ReaderWriterSpinLock lockState;
-
-        // should be public because called through Activator by ConditionalWeakTable
-        public BackingStorage()
-            : base(3)
-        {
-        }
-
-        private BackingStorage(IDictionary<long, object?> source)
-            : base(source)
-        {
-        }
-
-        internal BackingStorage Copy()
-        {
-            BackingStorage copy;
-            lockState.EnterReadLock();
-
-            try
-            {
-                copy = new BackingStorage(this);
-            }
-            finally
-            {
-                lockState.ExitReadLock();
-            }
-
-            return copy;
-        }
-
-        internal void CopyTo(BackingStorage dest)
-        {
-            lockState.EnterReadLock();
-            dest.lockState.EnterWriteLock();
-            try
-            {
-                dest.Clear();
-                dest.AddAll(this);
-            }
-            finally
-            {
-                dest.lockState.ExitWriteLock();
-                lockState.ExitReadLock();
-            }
-        }
-
-        [return: NotNullIfNotNull("defaultValue")]
-        internal TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
-        {
-            TValue? result;
-            lockState.EnterReadLock();
-            try
-            {
-                result = slot.GetUserData(this, defaultValue);
-            }
-            finally
-            {
-                lockState.ExitReadLock();
-            }
-
-            return result;
-        }
-
-        internal TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, TSupplier valueFactory)
-            where TSupplier : struct, ISupplier<TValue>
-        {
-            // fast path - read lock is required
-            lockState.EnterReadLock();
-            var exists = slot.GetUserData(this, out var userData);
-            lockState.ExitReadLock();
-            if (exists)
-                goto exit;
-
-            // non-fast path: factory should be called
-            lockState.EnterWriteLock();
-            if (slot.GetUserData(this, out userData))
-            {
-                lockState.ExitWriteLock();
-            }
-            else
-            {
-                try
-                {
-                    userData = valueFactory.Invoke();
-                    if (userData is not null)
-                        slot.SetUserData(this, userData);
-                }
-                finally
-                {
-                    lockState.ExitWriteLock();
-                }
-            }
-
-        exit:
-            return userData;
-        }
-
-        internal bool Get<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
-        {
-            lockState.EnterReadLock();
-            try
-            {
-                return slot.GetUserData(this, out userData);
-            }
-            finally
-            {
-                lockState.ExitReadLock();
-            }
-        }
-
-        internal void Set<TValue>(UserDataSlot<TValue> slot, TValue userData)
-        {
-            lockState.EnterWriteLock();
-            try
-            {
-                slot.SetUserData(this, userData);
-            }
-            finally
-            {
-                lockState.ExitWriteLock();
-            }
-        }
-
-        internal bool Remove<TValue>(UserDataSlot<TValue> slot)
-        {
-            lockState.EnterWriteLock();
-            var result = slot.RemoveUserData(this);
-            lockState.ExitWriteLock();
-            return result;
-        }
-
-        internal bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
-        {
-            lockState.EnterWriteLock();
-            try
-            {
-                return slot.RemoveUserData(this, out userData);
-            }
-            finally
-            {
-                lockState.ExitWriteLock();
-            }
-        }
-    }
-
-    /*
-     * ConditionalWeakTable is synchronized so we use a bucket of tables
-     * to reduce the risk of lock contention. The specific table for the object
-     * is based on object's identity hash code.
-     */
-    private static readonly ConditionalWeakTable<object, BackingStorage>[] Buckets;
-
-    static UserDataStorage()
-    {
-        var size = Environment.ProcessorCount;
-        size += size / 2;
-
-        Span.Initialize<ConditionalWeakTable<object, BackingStorage>>(Buckets = new ConditionalWeakTable<object, BackingStorage>[size]);
-    }
-
     private readonly object source;
 
     internal UserDataStorage(object source) => this.source = source switch
@@ -286,14 +118,6 @@ public readonly ref struct UserDataStorage
         IContainer support => support.Source,
         _ => source,
     };
-
-    private static ConditionalWeakTable<object, BackingStorage> GetStorage(object source)
-    {
-        var bucket = (RuntimeHelpers.GetHashCode(source) % Buckets.Length) & int.MaxValue;
-        Debug.Assert(bucket >= 0 && bucket < Buckets.Length);
-
-        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Buckets), bucket);
-    }
 
     private BackingStorage? GetStorage()
         => source is BackingStorage storage || GetStorage(source).TryGetValue(source, out storage!) ? storage : null;
@@ -313,11 +137,15 @@ public readonly ref struct UserDataStorage
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
     /// <returns>User data.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     [return: NotNullIfNotNull("defaultValue")]
     public TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
     {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
         var storage = GetStorage();
-        return storage is null ? defaultValue : storage.Get(slot!, defaultValue);
+        return storage is null ? defaultValue : storage.Get(slot).Or(defaultValue);
     }
 
     /// <summary>
@@ -326,10 +154,14 @@ public readonly ref struct UserDataStorage
     /// <typeparam name="TValue">Type of data.</typeparam>
     /// <param name="slot">The slot identifying user data.</param>
     /// <returns>User data; or <c>default(V)</c> if there is no user data associated with <paramref name="slot"/>.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue? Get<TValue>(UserDataSlot<TValue> slot)
     {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
         var storage = GetStorage();
-        return storage is null ? default : storage.Get(slot!, default);
+        return storage is null ? default : storage.Get(slot).OrDefault();
     }
 
     /// <summary>
@@ -338,6 +170,7 @@ public readonly ref struct UserDataStorage
     /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
     /// <param name="slot">The slot identifying user data.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot)
         where TValue : notnull, new()
         => GetOrSet(slot, new Activator<TValue>());
@@ -349,6 +182,7 @@ public readonly ref struct UserDataStorage
     /// <typeparam name="T">The derived type with public parameterless constructor.</typeparam>
     /// <param name="slot">The slot identifying user data.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TBase GetOrSet<TBase, T>(UserDataSlot<TBase> slot)
         where T : class, TBase, new()
         => GetOrSet(slot, new Activator<T>());
@@ -360,6 +194,7 @@ public readonly ref struct UserDataStorage
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory)
         => GetOrSet(slot, new DelegatingSupplier<TValue>(valueFactory));
 
@@ -370,6 +205,7 @@ public readonly ref struct UserDataStorage
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     [CLSCompliant(false)]
     public unsafe TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, delegate*<TValue> valueFactory)
         => GetOrSet(slot, new Supplier<TValue>(valueFactory));
@@ -383,6 +219,7 @@ public readonly ref struct UserDataStorage
     /// <param name="arg">The argument to be passed into factory.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, Func<T, TValue> valueFactory)
         => GetOrSet(slot, new DelegatingValueFactory<T, TValue>(arg, valueFactory));
 
@@ -395,6 +232,7 @@ public readonly ref struct UserDataStorage
     /// <param name="arg">The argument to be passed into factory.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     [CLSCompliant(false)]
     public unsafe TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, delegate*<T, TValue> valueFactory)
         => GetOrSet(slot, new ValueFactory<T, TValue>(arg, valueFactory));
@@ -410,6 +248,7 @@ public readonly ref struct UserDataStorage
     /// <param name="arg2">The second argument to be passed into factory.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, Func<T1, T2, TValue> valueFactory)
         => GetOrSet(slot, new DelegatingValueFactory<T1, T2, TValue>(arg1, arg2, valueFactory));
 
@@ -424,6 +263,7 @@ public readonly ref struct UserDataStorage
     /// <param name="arg2">The second argument to be passed into factory.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     [CLSCompliant(false)]
     public unsafe TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, delegate*<T1, T2, TValue> valueFactory)
         => GetOrSet(slot, new ValueFactory<T1, T2, TValue>(arg1, arg2, valueFactory));
@@ -436,9 +276,15 @@ public readonly ref struct UserDataStorage
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
     /// <returns>The data associated with the slot.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<TValue, TFactory>(UserDataSlot<TValue> slot, TFactory valueFactory)
         where TFactory : struct, ISupplier<TValue>
-        => GetOrCreateStorage().GetOrSet(slot, valueFactory)!;
+    {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
+        return GetOrCreateStorage().GetOrSet(slot, valueFactory)!;
+    }
 
     /// <summary>
     /// Tries to get user data.
@@ -447,8 +293,12 @@ public readonly ref struct UserDataStorage
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="userData">User data.</param>
     /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public bool TryGet<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
     {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
         var storage = GetStorage();
         if (storage is null)
         {
@@ -456,7 +306,7 @@ public readonly ref struct UserDataStorage
             return false;
         }
 
-        return storage.Get(slot, out userData);
+        return storage.Get(slot).TryGet(out userData);
     }
 
     /// <summary>
@@ -465,8 +315,14 @@ public readonly ref struct UserDataStorage
     /// <typeparam name="TValue">Type of data.</typeparam>
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="userData">User data to be saved in this collection.</param>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public void Set<TValue>(UserDataSlot<TValue> slot, [DisallowNull] TValue userData)
-        => GetOrCreateStorage().Set(slot, userData);
+    {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
+        GetOrCreateStorage().Set(slot, userData);
+    }
 
     /// <summary>
     /// Removes user data slot.
@@ -474,10 +330,14 @@ public readonly ref struct UserDataStorage
     /// <typeparam name="TValue">The type of user data.</typeparam>
     /// <param name="slot">The slot identifying user data.</param>
     /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public bool Remove<TValue>(UserDataSlot<TValue> slot)
     {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
         var storage = GetStorage();
-        return storage?.Remove(slot) ?? false;
+        return storage is not null && storage.Remove(slot).HasValue;
     }
 
     /// <summary>
@@ -487,8 +347,12 @@ public readonly ref struct UserDataStorage
     /// <param name="slot">The slot identifying user data.</param>
     /// <param name="userData">Remove user data.</param>
     /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
+    /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)] out TValue userData)
     {
+        if (!slot.IsAllocated)
+            throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
+
         var storage = GetStorage();
         if (storage is null)
         {
@@ -496,7 +360,7 @@ public readonly ref struct UserDataStorage
             return false;
         }
 
-        return storage.Remove(slot, out userData);
+        return storage.Remove(slot).TryGet(out userData);
     }
 
     /// <summary>
@@ -520,7 +384,7 @@ public readonly ref struct UserDataStorage
             if (obj is BackingStorage destination)
                 source.CopyTo(destination);
             else
-                GetStorage(obj).Add(obj, source.Copy());
+                GetStorage(obj).AddOrUpdate(obj, source.Copy());
         }
     }
 
