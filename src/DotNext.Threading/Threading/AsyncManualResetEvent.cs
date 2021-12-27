@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
 
@@ -8,6 +9,7 @@ using Tasks.Pooling;
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
 /// </summary>
+[DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     private struct StateManager : ILockManager<DefaultWaitNode>

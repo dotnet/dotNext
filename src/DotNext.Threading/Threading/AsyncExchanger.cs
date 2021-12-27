@@ -1,6 +1,7 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -15,6 +16,7 @@ using Tasks.Pooling;
 /// This type is useful to organize pipeline between consumer and producer.
 /// </remarks>
 /// <typeparam name="T">The type of objects that may be exchanged.</typeparam>
+[DebuggerDisplay($"CanBeCompletedSynchronously = {{{nameof(CanBeCompletedSynchronously)}}}, Terminated = {{{nameof(IsTerminated)}}}")]
 public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
     private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<Action<ExchangePoint>>
@@ -60,6 +62,10 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         pool = new(RemoveExchangePoint);
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    private bool CanBeCompletedSynchronously => point is { IsCompleted: false };
 
     private ExchangePoint RentExchangePoint(T value)
     {

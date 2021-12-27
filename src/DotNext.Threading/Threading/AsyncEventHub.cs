@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -11,7 +11,8 @@ using BoxedIndex = Runtime.CompilerServices.Shared<int>;
 /// <summary>
 /// Represents a collection of asynchronous events.
 /// </summary>
-public class AsyncEventHub
+[DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
+public partial class AsyncEventHub
 {
     [StructLayout(LayoutKind.Auto)]
     private struct EventSource

@@ -76,5 +76,20 @@ namespace DotNext.Threading
             await hub.WaitAllAsync(new int[] { 0, 1 });
             await hub.WaitAllAsync();
         }
+
+        [Fact]
+        public static void CaptureState()
+        {
+            var hub = new AsyncEventHub(3);
+            Span<bool> state = stackalloc bool[hub.Count];
+            state.Clear();
+
+            hub.CaptureState(state);
+            True(state.IndexOf(true) < 0);
+
+            True(hub.Pulse(1));
+            hub.CaptureState(state);
+            Equal(1, state.IndexOf(true));
+        }
     }
 }

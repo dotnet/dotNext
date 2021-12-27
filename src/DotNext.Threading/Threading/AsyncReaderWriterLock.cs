@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -14,6 +14,7 @@ using Tasks.Pooling;
 /// <remarks>
 /// This lock doesn't support recursion.
 /// </remarks>
+[DebuggerDisplay($"Readers = {{{nameof(CurrentReadCount)}}}, WriteLockHeld = {{{nameof(IsWriteLockHeld)}}}")]
 public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 {
     private enum LockType : byte
