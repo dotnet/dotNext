@@ -6,12 +6,18 @@ namespace DotNext;
 /// Represents common interface for all option monads.
 /// </summary>
 /// <typeparam name="T">The type of the value in the container.</typeparam>
-public interface IOptionMonad<T>
+public interface IOptionMonad<T> : ISupplier<object?>
 {
     /// <summary>
     /// Attempts to get the value in this container.
     /// </summary>
     T Value { get; }
+
+    /// <summary>
+    /// Gets the value stored in this container.
+    /// </summary>
+    /// <returns>The value stored in this container; or <see langword="null"/> if the value is unavaible.</returns>
+    object? ISupplier<object?>.Invoke() => Value;
 
     /// <summary>
     /// Indicates that this monad contains a value.

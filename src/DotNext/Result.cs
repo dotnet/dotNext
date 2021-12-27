@@ -188,6 +188,9 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         }
     }
 
+    /// <inheritdoc />
+    object? ISupplier<object?>.Invoke() => Value;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Result<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
@@ -439,6 +442,9 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// </summary>
     /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
     public unsafe T Value => OrThrow(&CreateException);
+
+    /// <inheritdoc />
+    object? ISupplier<object?>.Invoke() => IsSuccessful ? value : errorCode;
 
     /// <summary>
     /// Gets the error code.

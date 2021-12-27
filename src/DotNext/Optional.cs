@@ -476,6 +476,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         }
     }
 
+    /// <inheritdoc />
+    object? ISupplier<object?>.Invoke() => HasValue ? value : null;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
