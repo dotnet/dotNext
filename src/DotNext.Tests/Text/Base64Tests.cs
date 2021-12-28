@@ -27,6 +27,21 @@ namespace DotNext.Text
         }
 
         [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        public static void DecodeBase64BytesToMemoryBlock(int size)
+        {
+            var expected = RandomBytes(size);
+            ReadOnlySpan<byte> base64 = Encoding.UTF8.GetBytes(Convert.ToBase64String(expected));
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(base64);
+            False(decoder.NeedMoreData);
+
+            Equal(expected, actual.Span.ToArray());
+        }
+
+        [Theory]
         [InlineData(17, 256)]
         [InlineData(12, 256)]
         [InlineData(32, 256)]
@@ -73,6 +88,21 @@ namespace DotNext.Text
         }
 
         [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        public static void DecodeBase64CharsToMemoryBlock(int size)
+        {
+            var expected = RandomBytes(size);
+            ReadOnlySpan<char> base64 = Convert.ToBase64String(expected);
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(base64);
+            False(decoder.NeedMoreData);
+
+            Equal(expected, actual.Span.ToArray());
+        }
+
+        [Theory]
         [InlineData(25, 25)]
         [InlineData(17, 256)]
         [InlineData(12, 256)]
@@ -89,46 +119,6 @@ namespace DotNext.Text
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
-        }
-
-        [Theory]
-        [InlineData(25)]
-        [InlineData(256)]
-        public static void DecodeBase64FromUtf8(int size)
-        {
-            var expected = RandomBytes(size);
-            var utf8Chars = Encoding.UTF8.GetBytes(Convert.ToBase64String(expected));
-
-            using var actual = Base64Decoder.Decode(utf8Chars);
-            Equal(expected, actual.Span.ToArray());
-        }
-
-        [Fact]
-        public static void DecodeBase64FromInvalidUtf8()
-        {
-            var utf8Chars = Encoding.UTF8.GetBytes("==");
-
-            using var actual = Base64Decoder.Decode(utf8Chars);
-            True(actual.IsEmpty);
-        }
-
-        [Theory]
-        [InlineData(25)]
-        [InlineData(256)]
-        public static void DecodeBase64FromUnicode(int size)
-        {
-            var expected = RandomBytes(size);
-            ReadOnlySpan<char> utf8Chars = Convert.ToBase64String(expected);
-
-            using var actual = Base64Decoder.Decode(utf8Chars);
-            Equal(expected, actual.Span.ToArray());
-        }
-
-        [Fact]
-        public static void DecodeBase64FromInvalidUnicode()
-        {
-            True(Base64Decoder.Decode(ReadOnlySpan<char>.Empty).IsEmpty);
-            Throws<FormatException>(static () => Base64Decoder.Decode("=="));
         }
     }
 }

@@ -12,16 +12,17 @@ public partial struct Base64Decoder
 {
     private Span<byte> ReservedBytes => Span.AsBytes(ref reservedBuffer);
 
-    private void DecodeCore(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
+    private bool DecodeCore<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
+        where TWriter : notnull, IBufferWriter<byte>
     {
         var produced = Base64.GetMaxDecodedFromUtf8Length(utf8Chars.Length);
-        var buffer = output.GetSpan(produced);
+        var buffer = writer.GetSpan(produced);
 
         // x & 3 is the same as x % 4
         switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out produced, (utf8Chars.Length & 3) == 0))
         {
             default:
-                throw new FormatException(ExceptionMessages.MalformedBase64);
+                return false;
             case OperationStatus.DestinationTooSmall or OperationStatus.Done:
                 reservedBufferSize = 0;
                 break;
@@ -32,31 +33,39 @@ public partial struct Base64Decoder
                 break;
         }
 
-        output.Advance(produced);
+        writer.Advance(produced);
+        return true;
     }
 
     [SkipLocalsInit]
-    private void CopyAndDecode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
+    private bool CopyAndDecode<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
+        where TWriter : notnull, IBufferWriter<byte>
     {
         var newSize = reservedBufferSize + utf8Chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
         ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-        DecodeCore(tempBuffer.Span, output);
+        return DecodeCore(tempBuffer.Span, ref writer);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool Decode<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
+        where TWriter : notnull, IBufferWriter<byte>
+        => reservedBufferSize > 0 ? CopyAndDecode(utf8Chars, ref writer) : DecodeCore(utf8Chars, ref writer);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
     /// </summary>
     /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
     {
-        if (reservedBufferSize > 0)
-            CopyAndDecode(utf8Chars, output);
-        else
-            DecodeCore(utf8Chars, output);
+        ArgumentNullException.ThrowIfNull(output);
+
+        if (!Decode(utf8Chars, ref output))
+            throw new FormatException(ExceptionMessages.MalformedBase64);
     }
 
     /// <summary>
@@ -64,11 +73,34 @@ public partial struct Base64Decoder
     /// </summary>
     /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(in ReadOnlySequence<byte> utf8Chars, IBufferWriter<byte> output)
     {
+        ArgumentNullException.ThrowIfNull(output);
+
         foreach (var chunk in utf8Chars)
-            Decode(chunk.Span, output);
+        {
+            if (!Decode(chunk.Span, ref output))
+                throw new FormatException(ExceptionMessages.MalformedBase64);
+        }
+    }
+
+    /// <summary>
+    /// Decoes UTF-8 encoded base64 string.
+    /// </summary>
+    /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
+    /// <param name="allocator">The alllocator of the result buffer.</param>
+    /// <returns>A buffer containing decoded bytes.</returns>
+    public MemoryOwner<byte> Decode(ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
+    {
+        var result = new MemoryOwnerWrapper<byte>(allocator);
+
+        if (utf8Chars.IsEmpty || Decode(utf8Chars, ref result))
+            return result.Buffer;
+
+        result.Buffer.Dispose();
+        throw new FormatException(ExceptionMessages.MalformedBase64);
     }
 
     [SkipLocalsInit]
@@ -160,45 +192,4 @@ public partial struct Base64Decoder
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public unsafe void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
         => Decode<StreamConsumer>(utf8Chars, output);
-
-    /// <summary>
-    /// Decodes a block of base64 encoded data back to the memory block of bytes.
-    /// </summary>
-    /// <remarks>
-    /// This method expects that <paramref name="utf8Chars"/> represents a complete block of base64 data,
-    /// not the fragment.
-    /// </remarks>
-    /// <param name="utf8Chars">A block of bytes representing base64-encoded data in UTF-8 encoding.</param>
-    /// <param name="allocator">The allocator that is used to allocate the result buffer.</param>
-    /// <returns>The rented buffer containing decoded bytes.</returns>
-    /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public static MemoryOwner<byte> Decode(ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
-    {
-        MemoryOwner<byte> result;
-        int size;
-
-        if (utf8Chars.IsEmpty || (size = Base64.GetMaxDecodedFromUtf8Length(utf8Chars.Length)) is 0)
-        {
-            result = default;
-        }
-        else
-        {
-            result = allocator is null
-                ? new(ArrayPool<byte>.Shared, size)
-                : allocator(size);
-
-            if (Base64.DecodeFromUtf8(utf8Chars, result.Span, out _, out size, isFinalBlock: true) is OperationStatus.Done)
-            {
-                Debug.Assert(size <= result.Length);
-                result.Truncate(size);
-            }
-            else
-            {
-                result.Dispose();
-                throw new FormatException(ExceptionMessages.MalformedBase64);
-            }
-        }
-
-        return result;
-    }
 }

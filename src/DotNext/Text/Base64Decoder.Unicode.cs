@@ -11,7 +11,8 @@ public partial struct Base64Decoder
 {
     private Span<char> ReservedChars => MemoryMarshal.CreateSpan(ref Unsafe.As<ulong, char>(ref reservedBuffer), sizeof(ulong) / sizeof(char));
 
-    private void DecodeCore(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
+    private bool DecodeCore<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+        where TWriter : notnull, IBufferWriter<byte>
     {
         var size = chars.Length & 3;
         if (size > 0)
@@ -29,34 +30,43 @@ public partial struct Base64Decoder
         }
 
         // 4 characters => 3 bytes
-        var buffer = output.GetSpan(chars.Length);
+        var buffer = writer.GetSpan(chars.Length);
         if (!Convert.TryFromBase64Chars(chars, buffer, out size))
-            throw new FormatException(ExceptionMessages.MalformedBase64);
-        output.Advance(size);
+            return false;
+
+        writer.Advance(size);
+        return true;
     }
 
     [SkipLocalsInit]
-    private void CopyAndDecode(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
+    private bool CopyAndDecode<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+        where TWriter : notnull, IBufferWriter<byte>
     {
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-        DecodeCore(tempBuffer.Span, output);
+        return DecodeCore(tempBuffer.Span, ref writer);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool Decode<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+        where TWriter : notnull, IBufferWriter<byte>
+        => reservedBufferSize > 0 ? CopyAndDecode(chars, ref writer) : DecodeCore(chars, ref writer);
 
     /// <summary>
     /// Decodes base64 characters.
     /// </summary>
     /// <param name="chars">The span containing base64-encoded bytes.</param>
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
     {
-        if (reservedBufferSize > 0)
-            CopyAndDecode(chars, output);
-        else
-            DecodeCore(chars, output);
+        ArgumentNullException.ThrowIfNull(output);
+
+        if (!Decode(chars, ref output))
+            throw new FormatException(ExceptionMessages.MalformedBase64);
     }
 
     /// <summary>
@@ -64,11 +74,35 @@ public partial struct Base64Decoder
     /// </summary>
     /// <param name="chars">The span containing base64-encoded bytes.</param>
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(in ReadOnlySequence<char> chars, IBufferWriter<byte> output)
     {
+        ArgumentNullException.ThrowIfNull(output);
+
         foreach (var chunk in chars)
-            Decode(chunk.Span, output);
+        {
+            if (!Decode(chunk.Span, ref output))
+                throw new FormatException(ExceptionMessages.MalformedBase64);
+        }
+    }
+
+    /// <summary>
+    /// Decodes base64 characters.
+    /// </summary>
+    /// <param name="chars">The span containing base64-encoded bytes.</param>
+    /// <param name="allocator">The alllocator of the result buffer.</param>
+    /// <exception cref="FormatException">The input base64 string is malformed.</exception>
+    /// <returns>A buffer containing decoded bytes.</returns>
+    public MemoryOwner<byte> Decode(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
+    {
+        var result = new MemoryOwnerWrapper<byte>(allocator);
+
+        if (chars.IsEmpty || Decode(chars, ref result))
+            return result.Buffer;
+
+        result.Buffer.Dispose();
+        throw new FormatException(ExceptionMessages.MalformedBase64);
     }
 
     [SkipLocalsInit]
@@ -166,43 +200,4 @@ public partial struct Base64Decoder
     [CLSCompliant(false)]
     public unsafe void Decode<TArg>(ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
         => Decode(chars, new ReadOnlySpanConsumer<byte, TArg>(callback, arg));
-
-    /// <summary>
-    /// Decodes a block of base64 encoded data back to the memory block of bytes.
-    /// </summary>
-    /// <remarks>
-    /// This method expects that <paramref name="chars"/> represents a complete block of base64 data,
-    /// not the fragment.
-    /// </remarks>
-    /// <param name="chars">A characters representing base64-encoded data.</param>
-    /// <param name="allocator">The allocator that is used to allocate the result buffer.</param>
-    /// <returns>The rented buffer containing decoded bytes.</returns>
-    /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public static MemoryOwner<byte> Decode(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
-    {
-        MemoryOwner<byte> result;
-
-        if (chars.IsEmpty)
-        {
-            result = default;
-        }
-        else
-        {
-            result = allocator is null
-                ? new(ArrayPool<byte>.Shared, chars.Length)
-                : allocator(chars.Length);
-
-            if (Convert.TryFromBase64Chars(chars, result.Span, out var bytesWritten))
-            {
-                result.Truncate(bytesWritten);
-            }
-            else
-            {
-                result.Dispose();
-                throw new FormatException(ExceptionMessages.MalformedBase64);
-            }
-        }
-
-        return result;
-    }
 }
