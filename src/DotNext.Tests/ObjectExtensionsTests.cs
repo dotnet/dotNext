@@ -159,6 +159,7 @@ namespace DotNext
             var slot5 = new UserDataSlot<sbyte>();
 
             var data = new object().GetUserData();
+            True(data.IsValid);
             data.Set(slot1, 42UL);
             data.Set(slot2, (ushort)43);
             data.Set(slot3, (short)44);
