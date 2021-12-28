@@ -160,4 +160,45 @@ public partial struct Base64Decoder
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public unsafe void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
         => Decode<StreamConsumer>(utf8Chars, output);
+
+    /// <summary>
+    /// Decodes a block of base64 encoded data back to the memory block of bytes.
+    /// </summary>
+    /// <remarks>
+    /// This method expects that <paramref name="utf8Chars"/> represents a complete block of base64 data,
+    /// not the fragment.
+    /// </remarks>
+    /// <param name="utf8Chars">A block of bytes representing base64-encoded data in UTF-8 encoding.</param>
+    /// <param name="allocator">The allocator that is used to allocate the result buffer.</param>
+    /// <returns>The rented buffer containing decoded bytes.</returns>
+    /// <exception cref="FormatException">The input base64 string is malformed.</exception>
+    public static MemoryOwner<byte> Decode(ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
+    {
+        MemoryOwner<byte> result;
+        int size;
+
+        if (utf8Chars.IsEmpty || (size = Base64.GetMaxDecodedFromUtf8Length(utf8Chars.Length)) is 0)
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator is null
+                ? new(ArrayPool<byte>.Shared, size)
+                : allocator(size);
+
+            if (Base64.DecodeFromUtf8(utf8Chars, result.Span, out _, out size, isFinalBlock: true) is OperationStatus.Done)
+            {
+                Debug.Assert(size <= result.Length);
+                result.Truncate(size);
+            }
+            else
+            {
+                result.Dispose();
+                throw new FormatException(ExceptionMessages.MalformedBase64);
+            }
+        }
+
+        return result;
+    }
 }

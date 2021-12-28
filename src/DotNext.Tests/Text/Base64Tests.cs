@@ -90,5 +90,45 @@ namespace DotNext.Text
 
             Equal(expected, actual.WrittenSpan.ToArray());
         }
+
+        [Theory]
+        [InlineData(25)]
+        [InlineData(256)]
+        public static void DecodeBase64FromUtf8(int size)
+        {
+            var expected = RandomBytes(size);
+            var utf8Chars = Encoding.UTF8.GetBytes(Convert.ToBase64String(expected));
+
+            using var actual = Base64Decoder.Decode(utf8Chars);
+            Equal(expected, actual.Span.ToArray());
+        }
+
+        [Fact]
+        public static void DecodeBase64FromInvalidUtf8()
+        {
+            var utf8Chars = Encoding.UTF8.GetBytes("==");
+
+            using var actual = Base64Decoder.Decode(utf8Chars);
+            True(actual.IsEmpty);
+        }
+
+        [Theory]
+        [InlineData(25)]
+        [InlineData(256)]
+        public static void DecodeBase64FromUnicode(int size)
+        {
+            var expected = RandomBytes(size);
+            ReadOnlySpan<char> utf8Chars = Convert.ToBase64String(expected);
+
+            using var actual = Base64Decoder.Decode(utf8Chars);
+            Equal(expected, actual.Span.ToArray());
+        }
+
+        [Fact]
+        public static void DecodeBase64FromInvalidUnicode()
+        {
+            True(Base64Decoder.Decode(ReadOnlySpan<char>.Empty).IsEmpty);
+            Throws<FormatException>(static () => Base64Decoder.Decode("=="));
+        }
     }
 }

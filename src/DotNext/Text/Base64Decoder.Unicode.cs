@@ -166,4 +166,43 @@ public partial struct Base64Decoder
     [CLSCompliant(false)]
     public unsafe void Decode<TArg>(ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
         => Decode(chars, new ReadOnlySpanConsumer<byte, TArg>(callback, arg));
+
+    /// <summary>
+    /// Decodes a block of base64 encoded data back to the memory block of bytes.
+    /// </summary>
+    /// <remarks>
+    /// This method expects that <paramref name="chars"/> represents a complete block of base64 data,
+    /// not the fragment.
+    /// </remarks>
+    /// <param name="chars">A characters representing base64-encoded data.</param>
+    /// <param name="allocator">The allocator that is used to allocate the result buffer.</param>
+    /// <returns>The rented buffer containing decoded bytes.</returns>
+    /// <exception cref="FormatException">The input base64 string is malformed.</exception>
+    public static MemoryOwner<byte> Decode(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
+    {
+        MemoryOwner<byte> result;
+
+        if (chars.IsEmpty)
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator is null
+                ? new(ArrayPool<byte>.Shared, chars.Length)
+                : allocator(chars.Length);
+
+            if (Convert.TryFromBase64Chars(chars, result.Span, out var bytesWritten))
+            {
+                result.Truncate(bytesWritten);
+            }
+            else
+            {
+                result.Dispose();
+                throw new FormatException(ExceptionMessages.MalformedBase64);
+            }
+        }
+
+        return result;
+    }
 }
