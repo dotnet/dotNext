@@ -51,6 +51,8 @@ Release Date: 12-27-2021
 * Added ability to enumerate values stored in `TypeMap<T>` or `ConcurrentTypeMap<T>`
 * Improved debugging experience of `UserDataStorage` type
 * Added `Dictionary.Empty` static method that allows to obtain a singleton of empty [IReadOnlyDictionary&lt;TKey, TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2)
+* Fixed decoding buffer oveflow in `Base64Decoder` type
+* Added `Base64Encoder` type for fast encoding of large binary data
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
