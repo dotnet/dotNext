@@ -30,8 +30,7 @@ public partial struct Base64Decoder
         }
 
         // 4 characters => 3 bytes
-        var buffer = writer.GetSpan(chars.Length);
-        if (!Convert.TryFromBase64Chars(chars, buffer, out size))
+        if (!Convert.TryFromBase64Chars(chars, writer.GetSpan(chars.Length), out size))
             return false;
 
         writer.Advance(size);
@@ -52,7 +51,7 @@ public partial struct Base64Decoder
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool Decode<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
-        => reservedBufferSize > 0 ? CopyAndDecode(chars, ref writer) : DecodeCore(chars, ref writer);
+        => NeedMoreData ? CopyAndDecode(chars, ref writer) : DecodeCore(chars, ref writer);
 
     /// <summary>
     /// Decodes base64 characters.
@@ -91,7 +90,7 @@ public partial struct Base64Decoder
     /// Decodes base64 characters.
     /// </summary>
     /// <param name="chars">The span containing base64-encoded bytes.</param>
-    /// <param name="allocator">The alllocator of the result buffer.</param>
+    /// <param name="allocator">The allocator of the result buffer.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <returns>A buffer containing decoded bytes.</returns>
     public MemoryOwner<byte> Decode(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
@@ -109,19 +108,20 @@ public partial struct Base64Decoder
     private void DecodeCore<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
-        const int maxInputBlockSize = 340; // 340 chars can be decoded as 255 bytes which is <= DecodingBufferSize
+        const int maxInputBlockSize = (DecodingBufferSize / 3) * 4;
         Span<byte> buffer = stackalloc byte[DecodingBufferSize];
 
     consume_next_chunk:
-        if (Decode(chars.TrimLength(maxInputBlockSize), buffer, out var consumed, out var produced))
+        var chunk = chars.TrimLength(maxInputBlockSize);
+        if (Decode(chunk, buffer, out var consumed, out var produced))
         {
             reservedBufferSize = 0;
         }
         else
         {
-            reservedBufferSize = chars.Length - consumed;
+            reservedBufferSize = chunk.Length - consumed;
             Debug.Assert(reservedBufferSize <= 4);
-            chars.Slice(consumed).CopyTo(ReservedChars);
+            chunk.Slice(consumed).CopyTo(ReservedChars);
         }
 
         if (consumed > 0 && produced > 0)
@@ -131,7 +131,7 @@ public partial struct Base64Decoder
             goto consume_next_chunk;
         }
 
-        // true - decoding completed, false - need more data
+        // true - encoding completed, false - need more data
         static bool Decode(ReadOnlySpan<char> input, Span<byte> output, out int consumedChars, out int producedBytes)
         {
             Debug.Assert(output.Length == DecodingBufferSize);
@@ -140,7 +140,7 @@ public partial struct Base64Decoder
             int rest;
 
             // x & 3 is the same as x % 4
-            if (result = (rest = input.Length & 3) == 0)
+            if (result = (rest = input.Length & 3) is 0)
                 consumedChars = input.Length;
             else
                 input = input.Slice(0, consumedChars = input.Length - rest);
@@ -172,7 +172,7 @@ public partial struct Base64Decoder
     public void Decode<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
-        if (reservedBufferSize > 0)
+        if (NeedMoreData)
             CopyAndDecode(chars, output);
         else
             DecodeCore(chars, output);

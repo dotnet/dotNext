@@ -28,7 +28,7 @@ public partial struct Base64Decoder
                 break;
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = utf8Chars.Length - consumed;
-                Debug.Assert(reservedBufferSize <= 4);
+                Debug.Assert(reservedBufferSize <= sizeof(ulong));
                 utf8Chars.Slice(consumed).CopyTo(ReservedBytes);
                 break;
         }
@@ -51,7 +51,7 @@ public partial struct Base64Decoder
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool Decode<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
-        => reservedBufferSize > 0 ? CopyAndDecode(utf8Chars, ref writer) : DecodeCore(utf8Chars, ref writer);
+        => NeedMoreData ? CopyAndDecode(utf8Chars, ref writer) : DecodeCore(utf8Chars, ref writer);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
@@ -90,7 +90,7 @@ public partial struct Base64Decoder
     /// Decoes UTF-8 encoded base64 string.
     /// </summary>
     /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
-    /// <param name="allocator">The alllocator of the result buffer.</param>
+    /// <param name="allocator">The allocator of the result buffer.</param>
     /// <returns>A buffer containing decoded bytes.</returns>
     public MemoryOwner<byte> Decode(ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
     {
@@ -112,7 +112,7 @@ public partial struct Base64Decoder
     consume_next_chunk:
 
         // x & 3 is the same as x % 4
-        switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out var produced, (utf8Chars.Length & 3) == 0))
+        switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out var produced, (utf8Chars.Length & 3) is 0))
         {
             default:
                 throw new FormatException(ExceptionMessages.MalformedBase64);
@@ -155,7 +155,7 @@ public partial struct Base64Decoder
     public void Decode<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
-        if (reservedBufferSize > 0)
+        if (NeedMoreData)
             CopyAndDecode(utf8Chars, output);
         else
             DecodeCore(utf8Chars, output);
@@ -190,6 +190,6 @@ public partial struct Base64Decoder
     /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="output">The stream used as destination for decoded bytes.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public unsafe void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
+    public void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
         => Decode<StreamConsumer>(utf8Chars, output);
 }

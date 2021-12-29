@@ -15,7 +15,7 @@ namespace DotNext.Text;
 [StructLayout(LayoutKind.Auto)]
 public partial struct Base64Decoder
 {
-    private const int DecodingBufferSize = 256;
+    private const int DecodingBufferSize = 258;
 
     // 8 bytes buffer for decoding base64
     // for utf8 encoding we need just 4 bytes
