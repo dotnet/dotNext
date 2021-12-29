@@ -3,7 +3,8 @@ using System.Runtime.InteropServices;
 namespace DotNext.Text;
 
 /// <summary>
-/// Represents base64 encoder suitable for streaming.
+/// Represents base64 encoder suitable for encoding large binary
+/// data using streaming approach.
 /// </summary>
 /// <remarks>
 /// This type maintains internal state for correct encoding of streaming data.
