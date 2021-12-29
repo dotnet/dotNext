@@ -72,10 +72,10 @@ Release Date: 12-27-2021
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
-* Updated dependencies
+* Improved compatibility with IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
-* Updated dependencies
+* Improved compatibility with IL trimming
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

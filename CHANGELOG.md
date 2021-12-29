@@ -28,10 +28,10 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
-* Updated dependencies
+* Improved compatibility with IL trimming
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
-* Updated dependencies
+* Improved compatibility with IL trimming
 
 # 12-20-2021
 <a href="https://www.nuget.org/packages/dotnext/4.1.3">DotNext 4.1.3</a>
