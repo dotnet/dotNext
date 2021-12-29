@@ -16,7 +16,7 @@ public partial struct Base64Encoder
         var produced = Base64.GetMaxEncodedToUtf8Length(bytes.Length);
         var buffer = writer.GetSpan(produced);
 
-        switch (Base64.EncodeToUtf8(bytes, buffer, out var consumed, out produced, (bytes.Length % 3) == 0 || flush))
+        switch (Base64.EncodeToUtf8(bytes, buffer, out var consumed, out produced, (bytes.Length % 3) is 0 || flush))
         {
             case OperationStatus.DestinationTooSmall or OperationStatus.Done:
                 reservedBufferSize = 0;

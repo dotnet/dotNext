@@ -19,7 +19,7 @@ public partial struct Base64Decoder
         var buffer = writer.GetSpan(produced);
 
         // x & 3 is the same as x % 4
-        switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out produced, (utf8Chars.Length & 3) == 0))
+        switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out produced, (utf8Chars.Length & 3) is 0))
         {
             default:
                 return false;
