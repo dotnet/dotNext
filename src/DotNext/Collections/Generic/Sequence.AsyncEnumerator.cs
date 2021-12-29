@@ -18,12 +18,7 @@ public static partial class Sequence
             public T Current => enumerator.Current;
 
             public ValueTask<bool> MoveNextAsync()
-            {
-                if (token.IsCancellationRequested)
-                    return new ValueTask<bool>(Task.FromCanceled<bool>(token));
-
-                return new ValueTask<bool>(enumerator.MoveNext());
-            }
+                => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : new(enumerator.MoveNext());
 
             protected override void Dispose(bool disposing)
             {
