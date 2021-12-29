@@ -138,23 +138,18 @@ public static partial class Sequence
     /// <typeparam name="T">The type of the elements of source.</typeparam>
     /// <param name="seq">A collection to return an element from.</param>
     /// <param name="filter">A function to test each element for a condition.</param>
-    /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+    /// <returns>The first element in the sequence that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
     public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
         where T : notnull
     {
-        switch (seq)
+        return seq switch
         {
-            case List<T> list:
-                var index = list.FindIndex(filter);
-                return index >= 0 ? list[0] : Optional<T>.None;
-            case T[] array:
-                index = Array.FindIndex(array, filter);
-                return index >= 0 ? array[0] : Optional<T>.None;
-            case LinkedList<T> list:
-                return FindInLinkedList(list, filter);
-            default:
-                return FirstOrEmptySlow(seq, filter);
-        }
+            List<T> list => Span.FirstOrEmpty(CollectionsMarshal.AsSpan(list), filter),
+            T[] array => Span.FirstOrEmpty(array, filter),
+            string str => ReinterpretCast<Optional<char>, Optional<T>>(str.AsSpan().FirstOrEmpty(Unsafe.As<Predicate<char>>(filter))),
+            LinkedList<T> list => FindInLinkedList(list, filter),
+            _ => FirstOrEmptySlow(seq, filter)
+        };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         static Optional<T> FindInLinkedList(LinkedList<T> list, Predicate<T> filter)
