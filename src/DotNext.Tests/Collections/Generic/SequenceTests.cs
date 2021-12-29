@@ -416,6 +416,23 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
+        public static async Task CopyEmptCollectionAsync()
+        {
+            using var copy = await Enumerable.Empty<int>().ToAsyncEnumerable().CopyAsync();
+            True(copy.IsEmpty);
+        }
+
+        [Fact]
+        public static async Task CopyListAsync()
+        {
+            using var copy = await new List<int> { 10, 20, 30 }.ToAsyncEnumerable().CopyAsync(sizeHint: 4);
+            Equal(3, copy.Length);
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
+        }
+
+        [Fact]
         public static void CopyString()
         {
             using var copy = "abcd".Copy();
