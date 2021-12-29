@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Text;
@@ -14,6 +15,7 @@ namespace DotNext.Text;
 /// Decoding methods should not be intermixed by the caller code.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"NeedMoreData = {{{nameof(NeedMoreData)}}}")]
 public partial struct Base64Decoder
 {
     private const int DecodingBufferSize = 258;

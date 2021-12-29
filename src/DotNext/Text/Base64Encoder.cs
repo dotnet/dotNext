@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Text;
@@ -14,6 +16,7 @@ namespace DotNext.Text;
 /// Encoding methods should not be intermixed by the caller code.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"BufferedDataSize = {{{nameof(BufferedDataSize)}}}, BufferedData = {{{nameof(BufferedData)}}}")]
 public partial struct Base64Encoder
 {
     /// <summary>
@@ -63,4 +66,15 @@ public partial struct Base64Encoder
     }
 
     private Span<byte> ReservedBytes => Span.AsBytes(ref reservedBuffer);
+
+    [ExcludeFromCodeCoverage]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private readonly string BufferedData
+    {
+        get
+        {
+            var bufferedData = Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize);
+            return bufferedData.IsEmpty ? string.Empty : Convert.ToBase64String(bufferedData);
+        }
+    }
 }
