@@ -53,6 +53,8 @@ Release Date: 12-27-2021
 * Added `Dictionary.Empty` static method that allows to obtain a singleton of empty [IReadOnlyDictionary&lt;TKey, TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2)
 * Fixed decoding buffer oveflow in `Base64Decoder` type
 * Added `Base64Encoder` type for fast encoding of large binary data
+* Deprecation of `Sequence.FirstOrEmpty` extension methods in favor of `Sequence.FirstOrNone`
+* Fixed [#90](https://github.com/dotnet/dotNext/pull/90)
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
