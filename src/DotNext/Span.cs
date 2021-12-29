@@ -674,6 +674,28 @@ public static class Span
         => span.Length > 0 ? span[0] : Optional<T>.None;
 
     /// <summary>
+    /// Returns the first element in a span that satisfies a specified condition.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <param name="span">The source span.</param>
+    /// <param name="filter">A function to test each element for a condition.</param>
+    /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="filter"/> is <see langword="null"/>.</exception>
+    public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span, Predicate<T> filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        for (var i = 0; i < span.Length; i++)
+        {
+            var item = span[i];
+            if (filter(item))
+                return item;
+        }
+
+        return Optional<T>.None;
+    }
+
+    /// <summary>
     /// Gets random element from the span.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
