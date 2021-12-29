@@ -19,7 +19,7 @@ public partial struct Base64Encoder
         switch (Base64.EncodeToUtf8(bytes, buffer, out var consumed, out produced, (bytes.Length % 3) is 0 || flush))
         {
             case OperationStatus.DestinationTooSmall or OperationStatus.Done:
-                reservedBufferSize = 0;
+                Reset();
                 break;
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - consumed;
@@ -106,7 +106,7 @@ public partial struct Base64Encoder
         switch (Base64.EncodeToUtf8(bytes, buffer, out var consumed, out var produced, (bytes.Length % 3) is 0))
         {
             case OperationStatus.DestinationTooSmall or OperationStatus.Done:
-                reservedBufferSize = 0;
+                Reset();
                 break;
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - consumed;
@@ -126,7 +126,7 @@ public partial struct Base64Encoder
         if (HasBufferedData && flush)
         {
             Base64.EncodeToUtf8(Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize), buffer, out consumed, out produced);
-            reservedBufferSize = 0;
+            Reset();
             output.Invoke(buffer.Slice(0, produced));
         }
     }

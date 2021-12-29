@@ -19,7 +19,7 @@ public partial struct Base64Encoder
 
         if (size is 0 || flush)
         {
-            reservedBufferSize = 0;
+            Reset();
         }
         else
         {
@@ -110,7 +110,7 @@ public partial struct Base64Encoder
         var chunk = bytes.TrimLength(DecodingBufferSize);
         if (Encode(chunk, buffer, out var consumed, out var produced))
         {
-            reservedBufferSize = 0;
+            Reset();
         }
         else
         {
@@ -130,7 +130,7 @@ public partial struct Base64Encoder
         if (HasBufferedData && flush)
         {
             Convert.TryToBase64Chars(Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize), buffer, out produced);
-            reservedBufferSize = 0;
+            Reset();
             output.Invoke(buffer.Slice(0, produced));
         }
 

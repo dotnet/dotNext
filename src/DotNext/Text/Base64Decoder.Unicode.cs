@@ -26,7 +26,7 @@ public partial struct Base64Decoder
         }
         else
         {
-            reservedBufferSize = 0;
+            Reset();
         }
 
         // 4 characters => 3 bytes
@@ -115,7 +115,7 @@ public partial struct Base64Decoder
         var chunk = chars.TrimLength(maxInputBlockSize);
         if (Decode(chunk, buffer, out var consumed, out var produced))
         {
-            reservedBufferSize = 0;
+            Reset();
         }
         else
         {

@@ -30,4 +30,9 @@ public partial struct Base64Decoder
     /// Indicates that decoders expected additional data to decode.
     /// </summary>
     public readonly bool NeedMoreData => reservedBufferSize > 0;
+
+    /// <summary>
+    /// Resets the internal state of the decoder.
+    /// </summary>
+    public void Reset() => reservedBufferSize = 0;
 }

@@ -24,7 +24,7 @@ public partial struct Base64Decoder
             default:
                 return false;
             case OperationStatus.DestinationTooSmall or OperationStatus.Done:
-                reservedBufferSize = 0;
+                Reset();
                 break;
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = utf8Chars.Length - consumed;
@@ -117,7 +117,7 @@ public partial struct Base64Decoder
             default:
                 throw new FormatException(ExceptionMessages.MalformedBase64);
             case OperationStatus.DestinationTooSmall or OperationStatus.Done:
-                reservedBufferSize = 0;
+                Reset();
                 break;
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = utf8Chars.Length - consumed;

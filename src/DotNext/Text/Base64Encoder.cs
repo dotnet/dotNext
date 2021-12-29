@@ -77,4 +77,9 @@ public partial struct Base64Encoder
             return bufferedData.IsEmpty ? string.Empty : Convert.ToBase64String(bufferedData);
         }
     }
+
+    /// <summary>
+    /// Resets the internal state of the encoder.
+    /// </summary>
+    public void Reset() => reservedBufferSize = 0;
 }
