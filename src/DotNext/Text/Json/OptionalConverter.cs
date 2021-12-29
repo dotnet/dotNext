@@ -8,7 +8,7 @@ namespace DotNext.Text.Json;
 /// Represents JSON converter for <see cref="Optional{T}"/> data type.
 /// </summary>
 /// <typeparam name="T">The type of the value in <see cref="Optional{T}"/> container.</typeparam>
-public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces)]T> : JsonConverter<Optional<T>>
+public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T> : JsonConverter<Optional<T>>
 {
     /// <inheritdoc />
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
