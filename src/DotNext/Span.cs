@@ -670,7 +670,17 @@ public static class Span
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
     /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    [Obsolete("Use FirstOrNone() extension method instead")]
     public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span)
+        => FirstOrNone(span);
+
+    /// <summary>
+    /// Gets first element in the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="span">The span of elements.</param>
+    /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span)
         => span.Length > 0 ? span[0] : Optional<T>.None;
 
     /// <summary>
@@ -681,7 +691,7 @@ public static class Span
     /// <param name="filter">A function to test each element for a condition.</param>
     /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="filter"/> is <see langword="null"/>.</exception>
-    public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span, Predicate<T> filter)
+    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span, Predicate<T> filter)
     {
         ArgumentNullException.ThrowIfNull(filter);
 
