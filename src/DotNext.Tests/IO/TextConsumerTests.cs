@@ -19,7 +19,7 @@ namespace DotNext.IO
             False(new TextConsumer() != consumer);
             Equal(0, consumer.GetHashCode());
 
-            consumer = new TextConsumer(TextWriter.Null);
+            consumer = TextWriter.Null;
             NotNull(consumer.ToString());
             False(consumer.IsEmpty);
             NotEqual(0, consumer.GetHashCode());

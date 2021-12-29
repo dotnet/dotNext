@@ -165,6 +165,27 @@ namespace DotNext.Text
         }
 
         [Theory]
+        [InlineData(25, 25)]
+        [InlineData(17, 256)]
+        [InlineData(12, 256)]
+        [InlineData(32, 256)]
+        [InlineData(512, 1024)]
+        public static void DecodeBase64BytesToStream(int chunkSize, int size)
+        {
+            var expected = RandomBytes(size);
+            var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
+            var actual = new ArrayBufferWriter<byte>();
+            var decoder = new Base64Decoder();
+
+            using var ms = new MemoryStream(size);
+            foreach (var segment in base64)
+                decoder.Decode(segment.Span, ms);
+
+            ms.Flush();
+            Equal(expected, ms.ToArray());
+        }
+
+        [Theory]
         [InlineData(17)]
         [InlineData(32)]
         [InlineData(63)]
@@ -299,6 +320,136 @@ namespace DotNext.Text
             using var actual = decoder.Decode(writer.ToString());
 
             Equal(expected, actual.Span.ToArray());
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static void EncodeToTextWriter(int size)
+        {
+            var expected = RandomBytes(size);
+
+            var encoder = new Base64Encoder();
+            using var writer = new StringWriter();
+
+            encoder.EncodeToChars(expected.AsSpan(0, size / 2), writer, flush: false);
+            encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
+
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(writer.ToString());
+
+            Equal(expected, actual.Span.ToArray());
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static void EncodeToCallbackUtf8(int size)
+        {
+            var expected = RandomBytes(size);
+
+            var encoder = new Base64Encoder();
+            False(encoder.HasBufferedData);
+            var writer = new ArrayBufferWriter<byte>();
+
+            encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), Write, writer, flush: false);
+            encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), Write, writer, flush: true);
+            Equal(0, encoder.BufferedDataSize);
+
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(writer.WrittenSpan);
+
+            Equal(expected, actual.Span.ToArray());
+
+            static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
+                => output.Write(input);
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static void EncodeToCallbackChars(int size)
+        {
+            var expected = RandomBytes(size);
+
+            var encoder = new Base64Encoder();
+            False(encoder.HasBufferedData);
+            var writer = new ArrayBufferWriter<char>();
+
+            encoder.EncodeToChars(expected.AsSpan(0, size / 2), Write, writer, flush: false);
+            encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), Write, writer, flush: true);
+            Equal(0, encoder.BufferedDataSize);
+
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(writer.WrittenSpan);
+
+            Equal(expected, actual.Span.ToArray());
+
+            static void Write(ReadOnlySpan<char> input, ArrayBufferWriter<char> output)
+                => output.Write(input);
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static unsafe void EncodeToFunctionPointerUtf8(int size)
+        {
+            var expected = RandomBytes(size);
+
+            var encoder = new Base64Encoder();
+            False(encoder.HasBufferedData);
+            var writer = new ArrayBufferWriter<byte>();
+
+            encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), &Write, writer, flush: false);
+            encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), &Write, writer, flush: true);
+            Equal(0, encoder.BufferedDataSize);
+
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(writer.WrittenSpan);
+
+            Equal(expected, actual.Span.ToArray());
+
+            static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
+                => output.Write(input);
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static unsafe void EncodeToFunctionPointerChars(int size)
+        {
+            var expected = RandomBytes(size);
+
+            var encoder = new Base64Encoder();
+            False(encoder.HasBufferedData);
+            var writer = new ArrayBufferWriter<char>();
+
+            encoder.EncodeToChars(expected.AsSpan(0, size / 2), &Write, writer, flush: false);
+            encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), &Write, writer, flush: true);
+            Equal(0, encoder.BufferedDataSize);
+
+            var decoder = new Base64Decoder();
+            using var actual = decoder.Decode(writer.WrittenSpan);
+
+            Equal(expected, actual.Span.ToArray());
+
+            static void Write(ReadOnlySpan<char> input, ArrayBufferWriter<char> output)
+                => output.Write(input);
         }
     }
 }
