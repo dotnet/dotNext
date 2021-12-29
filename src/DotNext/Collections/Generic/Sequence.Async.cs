@@ -179,7 +179,7 @@ public static partial class Sequence
     {
         using var buffer = new PooledBufferWriter<T>(allocator, initialCapacity);
 
-        await foreach (var item in collection.WithCancellation(token))
+        await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
         {
             buffer.Add(item);
         }
