@@ -126,7 +126,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 0 or greater than the length of <paramref name="array"/>.</exception>
         public MemoryOwner(T[] array, int length)
         {
-            if ((uint)length >= (uint)array.Length)
+            if ((uint)length > (uint)array.Length)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
             this.array = array;
