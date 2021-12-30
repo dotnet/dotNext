@@ -23,8 +23,9 @@ namespace DotNext.Buffers
 
         private MemoryOwner(IMemoryOwner<T> owner, int? length)
         {
-            this.owner = owner;
-            this.length = length ?? owner.Memory.Length;
+            Debug.Assert(length.GetValueOrDefault() >= 0);
+
+            this.owner = (this.length = length ?? owner.Memory.Length) > 0 ? owner : null;
             array = null;
         }
 
@@ -40,7 +41,7 @@ namespace DotNext.Buffers
 
         internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
         {
-            if (length == 0)
+            if (length is 0)
             {
                 this = default;
             }
@@ -69,7 +70,7 @@ namespace DotNext.Buffers
         /// <param name="length">The number of elements to rent; or <c>-1</c> to rent default amount of memory.</param>
         public MemoryOwner(MemoryPool<T> pool, int length = -1)
         {
-            if (length == 0)
+            if (length is 0)
             {
                 this = default;
             }
@@ -89,16 +90,19 @@ namespace DotNext.Buffers
         /// <param name="length">The number of elements to rent.</param>
         public MemoryOwner(Func<int, IMemoryOwner<T>> provider, int length)
         {
-            if (length == 0)
+            switch (length)
             {
-                this = default;
-            }
-            else
-            {
-                array = null;
-                IMemoryOwner<T> owner;
-                this.owner = owner = provider(length);
-                this.length = Math.Min(owner.Memory.Length, length);
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(length));
+                case 0:
+                    this = default;
+                    break;
+                default:
+                    array = null;
+                    IMemoryOwner<T> owner;
+                    this.owner = owner = provider(length);
+                    this.length = Math.Min(owner.Memory.Length, length);
+                    break;
             }
         }
 
@@ -122,7 +126,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 0 or greater than the length of <paramref name="array"/>.</exception>
         public MemoryOwner(T[] array, int length)
         {
-            if (length > array.Length || length < 0)
+            if ((uint)length >= (uint)array.Length)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
             this.array = array;
@@ -188,19 +192,12 @@ namespace DotNext.Buffers
 
         private readonly int RawLength
         {
-            get
-            {
-                int result;
-
-                if (array is not null)
-                    result = array.Length;
-                else if (owner is not null)
-                    result = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
-                else
-                    result = 0;
-
-                return result;
-            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => array is not null
+                ? array.Length
+                : owner is not null
+                ? Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length
+                : 0;
         }
 
         /// <summary>
@@ -215,19 +212,19 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="newLength"/> is less than zero.</exception>
         public bool TryResize(int newLength)
         {
-            if (newLength < 0)
-                throw new ArgumentOutOfRangeException(nameof(newLength));
-
-            if (newLength > RawLength)
-                return false;
-
-            if (newLength == 0)
+            switch (newLength)
             {
-                Dispose();
-            }
-            else
-            {
-                length = newLength;
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(newLength));
+                case 0:
+                    Dispose();
+                    break;
+                default:
+                    if (newLength > RawLength)
+                        return false;
+
+                    length = newLength;
+                    break;
             }
 
             AssertValid();
@@ -237,7 +234,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
-        public readonly bool IsEmpty => length == 0;
+        public readonly bool IsEmpty => length is 0;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
@@ -279,8 +276,10 @@ namespace DotNext.Buffers
         [Conditional("DEBUG")]
         private readonly void AssertValid()
         {
-            Debug.Assert(length is 0 ^ (array is not null || owner is not null));
+            Debug.Assert(IsEmpty ^ (array is not null || owner is not null));
             Debug.Assert(owner is null or ArrayPool<T> or IMemoryOwner<T>);
+            Debug.Assert(array is null or { Length: > 0 });
+            Debug.Assert(array is null ? owner is null or IMemoryOwner<T> : owner is null or ArrayPool<T>);
         }
 
         /// <inheritdoc/>
