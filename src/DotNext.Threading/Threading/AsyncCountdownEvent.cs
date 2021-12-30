@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -13,6 +13,7 @@ using Tasks.Pooling;
 /// <remarks>
 /// This is asynchronous version of <see cref="System.Threading.CountdownEvent"/>.
 /// </remarks>
+[DebuggerDisplay($"Counter = {{{nameof(CurrentCount)}}}")]
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]

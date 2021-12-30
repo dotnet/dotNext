@@ -13,7 +13,7 @@ using Seq = Collections.Generic.Sequence;
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
 /// </summary>
 /// <typeparam name="T">The data type that can be written.</typeparam>
-[DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}")]
 public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
 {
     private readonly object? diagObj;
@@ -180,10 +180,11 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     T IReadOnlyList<T>.this[int index] => this[index];
 
     /// <summary>
-    /// Gets the total amount of space within the underlying memory.
+    /// Gets or sets the total amount of space within the underlying memory.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than zero.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public abstract int Capacity { get; }
+    public abstract int Capacity { get; init; }
 
     /// <summary>
     /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.

@@ -146,20 +146,26 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         if (IsNull)
             throw new NullPointerException();
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (count == 0)
-            return;
-        var pointer = this.value;
-        do
+
+        switch (count)
         {
-            var actualCount = count.Truncate();
-            var span = new Span<T>(pointer, actualCount);
-            span.Fill(value);
-            count -= actualCount;
-            pointer += actualCount;
+            case < 0:
+                throw new ArgumentOutOfRangeException(nameof(count));
+            case 0:
+                break;
+            default:
+                var pointer = this.value;
+                do
+                {
+                    var actualCount = count.Truncate();
+                    var span = new Span<T>(pointer, actualCount);
+                    span.Fill(value);
+                    count -= actualCount;
+                    pointer += actualCount;
+                }
+                while (count > 0);
+                break;
         }
-        while (count > 0);
     }
 
     /// <summary>
@@ -167,7 +173,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// </summary>
     /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
     /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
-    public unsafe Span<T> ToSpan(int length) => IsNull ? Span<T>.Empty : new Span<T>(value, length);
+    public unsafe Span<T> ToSpan(int length) => IsNull ? Span<T>.Empty : new(value, length);
 
     /// <summary>
     /// Converts this pointer into span of bytes.
@@ -305,7 +311,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0)
             throw new ArgumentOutOfRangeException(nameof(offset));
-        if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
+        if (count == 0L || (offset + count) > destination.LongLength)
             return 0L;
         Intrinsics.Copy(in value[0], out destination[offset], count);
         return count;
@@ -372,9 +378,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!destination.CanWrite)
             throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-        if (count == 0)
-            return new ValueTask();
-        return WriteToSteamAsync(Address, checked(count * sizeof(T)), destination, token);
+
+        return count == 0 ? ValueTask.CompletedTask : WriteToSteamAsync(Address, checked(count * sizeof(T)), destination, token);
     }
 
     /// <summary>
@@ -395,7 +400,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0L)
             throw new ArgumentOutOfRangeException(nameof(offset));
-        if (source.LongLength == 0L || (count + offset) > source.LongLength)
+        if (count == 0L || (count + offset) > source.LongLength)
             return 0L;
         Intrinsics.Copy(in source[offset], out value[0], count);
         return count;
@@ -418,9 +423,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!source.CanRead)
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-        if (count == 0L)
-            return 0L;
-        return ReadFrom(source, (byte*)value, checked(sizeof(T) * count));
+
+        return count == 0L ? 0L : ReadFrom(source, (byte*)value, checked(sizeof(T) * count));
 
         static long ReadFrom(Stream source, byte* destination, long length)
         {
@@ -474,9 +478,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!source.CanRead)
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-        if (count == 0L)
-            return new ValueTask<long>(0L);
-        return ReadFromStreamAsync(source, Address, checked(sizeof(T) * count), token);
+
+        return count == 0L ? new(0L) : ReadFromStreamAsync(source, Address, checked(sizeof(T) * count), token);
     }
 
     /// <summary>
@@ -505,26 +508,38 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A copy of memory block in the form of byte array.</returns>
     public unsafe byte[] ToByteArray(long length)
     {
+        byte[] result;
         if (IsNull || length == 0L)
-            return Array.Empty<byte>();
-        var result = new byte[checked(sizeof(T) * length)];
-        Intrinsics.Copy(in ((byte*)value)[0], out result[0], result.LongLength);
+        {
+            result = Array.Empty<byte>();
+        }
+        else
+        {
+            result = new byte[checked(sizeof(T) * length)];
+            Intrinsics.Copy(in ((byte*)value)[0], out result[0], result.LongLength);
+        }
+
         return result;
     }
 
     /// <summary>
     /// Copies the block of memory referenced by this pointer
-    /// into managed heap as array.
+    /// into managed heap as a pinned array.
     /// </summary>
     /// <param name="length">The length of the memory block to be copied.</param>
     /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
     public unsafe T[] ToArray(long length)
     {
+        T[] result;
         if (IsNull || length == 0L)
-            return Array.Empty<T>();
-
-        var result = length <= int.MaxValue ? GC.AllocateUninitializedArray<T>((int)length, true) : new T[length];
-        Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
+        {
+            result = Array.Empty<T>();
+        }
+        else
+        {
+            result = length <= Array.MaxLength ? GC.AllocateUninitializedArray<T>((int)length, pinned: true) : new T[length];
+            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
+        }
 
         return result;
     }

@@ -108,5 +108,74 @@ namespace DotNext.Collections.Specialized
             True(map.TryGetValue<double>(out result));
             Equal(45, result);
         }
+
+        [Fact]
+        public static void DefaultEnumerator()
+        {
+            var enumerator = default(TypeMap<int>.Enumerator);
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void DefaultConcurrentEnumerator()
+        {
+            var enumerator = default(ConcurrentTypeMap<int>.Enumerator);
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void EmptyEnumerator()
+        {
+            var count = 0;
+            foreach (ref var item in new TypeMap<int>())
+                count++;
+
+            Equal(0, count);
+        }
+
+        [Fact]
+        public static void EmptyConcurrentEnumerator()
+        {
+            var count = 0;
+            foreach (var item in new ConcurrentTypeMap<int>())
+                count++;
+
+            Equal(0, count);
+        }
+
+        [Fact]
+        public static void NotEmptyEnumerator()
+        {
+            var map = new TypeMap<int>();
+            map.Set<double>(42);
+
+            var count = 0;
+            foreach (ref var item in map)
+            {
+                Equal(42, item);
+                item = 52;
+                count++;
+            }
+
+            Equal(1, count);
+            True(map.TryGetValue<double>(out var value));
+            Equal(52, value);
+        }
+
+        [Fact]
+        public static void NotEmptyConcurrentEnumerator()
+        {
+            var map = new ConcurrentTypeMap<int>();
+            map.Set<double>(42);
+
+            var count = 0;
+            foreach (var item in map)
+            {
+                Equal(42, item);
+                count++;
+            }
+
+            Equal(1, count);
+        }
     }
 }

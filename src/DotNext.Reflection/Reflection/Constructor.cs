@@ -17,7 +17,9 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
 {
     private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
     private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
-    private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = UserDataSlot<Constructor<TSignature>?>.Allocate();
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+    private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = new();
 
     private readonly TSignature invoker;
     private readonly object ctorInfo;

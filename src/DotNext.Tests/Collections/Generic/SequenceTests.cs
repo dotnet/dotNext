@@ -208,16 +208,18 @@ namespace DotNext.Collections.Generic
         {
             IEnumerable<int> collection = Array.Empty<int>();
             Null(collection.FirstOrNull());
-            Equal(Optional<int>.None, collection.FirstOrEmpty());
-            Equal(Optional<int>.None, collection.FirstOrEmpty(Predicate.True<int>()));
+            Equal(Optional<int>.None, collection.FirstOrNone());
+            Equal(Optional<int>.None, collection.FirstOrNone(Predicate.True<int>()));
 
             collection = new int[] { 42 };
             Equal(42, collection.FirstOrNull());
-            Equal(42, collection.FirstOrEmpty());
-            Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
+            Equal(42, collection.FirstOrNone());
+            Equal(42, collection.FirstOrNone(Predicate.True<int>()));
 
-            Equal('a', "ab".FirstOrEmpty());
-            False(string.Empty.FirstOrEmpty().HasValue);
+            Equal('a', "ab".FirstOrNone());
+            False(string.Empty.FirstOrNone().HasValue);
+            Equal('a', "ab".FirstOrNone(Predicate.True<char>()));
+            False(string.Empty.FirstOrNone(Predicate.True<char>()).HasValue);
         }
 
         [Fact]
@@ -225,12 +227,12 @@ namespace DotNext.Collections.Generic
         {
             var collection = Array.Empty<int>().ToAsyncEnumerable();
             Null(await collection.FirstOrNullAsync());
-            Equal(Optional<int>.None, await collection.FirstOrEmptyAsync());
-            Equal(Optional<int>.None, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
+            Equal(Optional<int>.None, await collection.FirstOrNoneAsync());
+            Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate.True<int>()));
             collection = new int[] { 42 }.ToAsyncEnumerable();
             Equal(42, await collection.FirstOrNullAsync());
-            Equal(42, await collection.FirstOrEmptyAsync());
-            Equal(42, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
+            Equal(42, await collection.FirstOrNoneAsync());
+            Equal(42, await collection.FirstOrNoneAsync(Predicate.True<int>()));
         }
 
         [Fact]
@@ -411,6 +413,23 @@ namespace DotNext.Collections.Generic
         {
             using var copy = Enumerable.Empty<int>().Copy();
             True(copy.IsEmpty);
+        }
+
+        [Fact]
+        public static async Task CopyEmptCollectionAsync()
+        {
+            using var copy = await Enumerable.Empty<int>().ToAsyncEnumerable().CopyAsync();
+            True(copy.IsEmpty);
+        }
+
+        [Fact]
+        public static async Task CopyListAsync()
+        {
+            using var copy = await new List<int> { 10, 20, 30 }.ToAsyncEnumerable().CopyAsync(sizeHint: 4);
+            Equal(3, copy.Length);
+            Equal(10, copy[0]);
+            Equal(20, copy[1]);
+            Equal(30, copy[2]);
         }
 
         [Fact]

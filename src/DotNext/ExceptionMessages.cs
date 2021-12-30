@@ -21,13 +21,9 @@ internal static class ExceptionMessages
 
     internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition")!;
 
-    internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected")!;
-
     internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected")!;
 
     internal static string InvalidExpressionTree => Resources.GetString("InvalidExpressionTree")!;
-
-    internal static string UnknownHashAlgorithm => Resources.GetString("UnknownHashAlgorithm")!;
 
     internal static string NotEnoughMemory => Resources.GetString("NotEnoughMemory")!;
 
@@ -38,13 +34,13 @@ internal static class ExceptionMessages
     internal static string ResourceEntryIsNull(string name)
         => string.Format(Resources.GetString("ResourceEntryIsNull")!, name);
 
-    internal static string EmptyBuffer => Resources.GetString("EmptyBuffer")!;
+    internal static string SmallBuffer => Resources.GetString("SmallBuffer")!;
+
+    internal static string LargeBuffer => Resources.GetString("LargeBuffer")!;
 
     internal static string MalformedBase64 => Resources.GetString("MalformedBase64")!;
 
     internal static string UndefinedValueDetected => Resources.GetString("UndefinedValueDetected")!;
-
-    internal static string UndefinedEqualsNullSwitchEnabled => Resources.GetString("UndefinedEqualsNullSwitchEnabled")!;
 
     internal static string InvalidHexInput(char ch)
         => string.Format(Resources.GetString("InvalidHexInput")!, ch);

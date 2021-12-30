@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Text;
 
 /// <summary>
-/// Represents base64 decoder suitable for streaming.
+/// Represents base64 decoder suitable for decoding large base64-encoded binary
+/// data using streaming approach.
 /// </summary>
 /// <remarks>
 /// This type maintains internal state for correct decoding of streaming data.
@@ -13,9 +15,10 @@ namespace DotNext.Text;
 /// Decoding methods should not be intermixed by the caller code.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"NeedMoreData = {{{nameof(NeedMoreData)}}}")]
 public partial struct Base64Decoder
 {
-    private const int DecodingBufferSize = 256;
+    private const int DecodingBufferSize = 258;
 
     // 8 bytes buffer for decoding base64
     // for utf8 encoding we need just 4 bytes
@@ -27,4 +30,9 @@ public partial struct Base64Decoder
     /// Indicates that decoders expected additional data to decode.
     /// </summary>
     public readonly bool NeedMoreData => reservedBufferSize > 0;
+
+    /// <summary>
+    /// Resets the internal state of the decoder.
+    /// </summary>
+    public void Reset() => reservedBufferSize = 0;
 }

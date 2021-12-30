@@ -326,36 +326,19 @@ public static class Span
     /// <returns>Trimmed span.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
     public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
-    {
-        switch (maxLength)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(maxLength));
-            case 0:
-                span = default;
-                break;
-            default:
-                if (span.Length > maxLength)
-                    span = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(span), maxLength);
-                break;
-        }
-
-        return span;
-    }
+        => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
 
     private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
         where TComparer : struct, ISupplier<T, T, bool>
     {
-        if (span.IsEmpty)
-            goto not_found;
-
-        for (var i = startIndex; i < span.Length; i++)
+        while ((uint)startIndex < (uint)span.Length)
         {
-            if (comparer.Invoke(span[i], value))
-                return i;
+            if (comparer.Invoke(span[startIndex], value))
+                return startIndex;
+
+            startIndex++;
         }
 
-    not_found:
         return -1;
     }
 
@@ -462,7 +445,7 @@ public static class Span
         if (count == 0)
             return string.Empty;
 
-        using MemoryRental<char> buffer = (uint)count <= MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
+        using MemoryRental<char> buffer = (uint)count <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
         count = ToHex(bytes, buffer.Span, lowercased);
         return new string(buffer.Span.Slice(0, count));
     }
@@ -566,17 +549,23 @@ public static class Span
     /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
     public static MemoryOwner<T> Concat<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
     {
-        if (first.IsEmpty && second.IsEmpty)
-            return default;
+        MemoryOwner<T> result;
+        var length = first.Length + second.Length;
 
-        var length = checked(first.Length + second.Length);
-        var result = allocator is null ?
-            new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
-            allocator(length);
+        if (length == 0)
+        {
+            result = default;
+        }
+        else
+        {
+            result = allocator is null ?
+                new(ArrayPool<T>.Shared, length) :
+                allocator(length);
 
-        var output = result.Span;
-        first.CopyTo(output);
-        second.CopyTo(output.Slice(first.Length));
+            var output = result.Span;
+            first.CopyTo(output);
+            second.CopyTo(output.Slice(first.Length));
+        }
 
         return result;
     }
@@ -681,8 +670,40 @@ public static class Span
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
     /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    [Obsolete("Use FirstOrNone() extension method instead")]
     public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span)
+        => FirstOrNone(span);
+
+    /// <summary>
+    /// Gets first element in the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="span">The span of elements.</param>
+    /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span)
         => span.Length > 0 ? span[0] : Optional<T>.None;
+
+    /// <summary>
+    /// Returns the first element in a span that satisfies a specified condition.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <param name="span">The source span.</param>
+    /// <param name="filter">A function to test each element for a condition.</param>
+    /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="filter"/> is <see langword="null"/>.</exception>
+    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span, Predicate<T> filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+
+        for (var i = 0; i < span.Length; i++)
+        {
+            var item = span[i];
+            if (filter(item))
+                return item;
+        }
+
+        return Optional<T>.None;
+    }
 
     /// <summary>
     /// Gets random element from the span.

@@ -282,7 +282,7 @@ public static class MemoryTemplate
     /// <returns>The rendered template.</returns>
     public static string Render(this in MemoryTemplate<char> template, params string[] replacement)
     {
-        using var writer = new PooledArrayBufferWriter<char>(template.Value.Length);
+        using var writer = new PooledArrayBufferWriter<char> { Capacity = template.Value.Length };
         template.Render(new CharBufferRenderer(writer, replacement));
         return new string(writer.WrittenArray);
     }

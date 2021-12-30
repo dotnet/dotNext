@@ -1,7 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -11,6 +11,7 @@ using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bo
 /// <summary>
 /// Represents asynchronous mutually exclusive lock.
 /// </summary>
+[DebuggerDisplay($"IsLockHeld = {{{nameof(IsLockHeld)}}}")]
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]

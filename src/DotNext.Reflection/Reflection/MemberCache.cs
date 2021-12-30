@@ -88,7 +88,8 @@ internal abstract class MemberCache<TMember, TDescriptor> : Cache<MemberKey, TDe
     where TMember : MemberInfo
     where TDescriptor : class, IMember<TMember>
 {
-    private static readonly UserDataSlot<MemberCache<TMember, TDescriptor>> Slot = UserDataSlot<MemberCache<TMember, TDescriptor>>.Allocate();
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+    private static readonly UserDataSlot<MemberCache<TMember, TDescriptor>> Slot = new();
 
     internal TDescriptor? GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
 

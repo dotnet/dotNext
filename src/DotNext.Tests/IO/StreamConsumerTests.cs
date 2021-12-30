@@ -19,7 +19,7 @@ namespace DotNext.IO
             False(new StreamConsumer() != consumer);
             Equal(0, consumer.GetHashCode());
 
-            consumer = new StreamConsumer(Stream.Null);
+            consumer = Stream.Null;
             NotNull(consumer.ToString());
             False(consumer.IsEmpty);
             NotEqual(0, consumer.GetHashCode());

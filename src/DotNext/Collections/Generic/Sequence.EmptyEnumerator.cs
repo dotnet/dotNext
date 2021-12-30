@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 
 namespace DotNext.Collections.Generic;
 
@@ -12,8 +13,10 @@ public static partial class Sequence
         {
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Current => throw new InvalidOperationException();
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         object? IEnumerator.Current => Current;
 
         bool IEnumerator.MoveNext() => false;

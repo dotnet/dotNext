@@ -48,10 +48,10 @@ public partial class TaskCompletionPipe<T>
                 head = 0;
                 tail = newTail;
             }
-            else if (array.Length < Array.MaxLength)
+            else if ((uint)array.Length < (uint)Array.MaxLength)
             {
                 var newCapacity = GrowFactor * array.Length;
-                if ((uint)newCapacity > Array.MaxLength)
+                if ((uint)newCapacity > (uint)Array.MaxLength)
                     newCapacity = Array.MaxLength;
 
                 Array.Resize(ref array, Math.Max(newCapacity, array.Length + MinimumGrow));

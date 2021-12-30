@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -16,5 +17,6 @@ public partial class PersistentState
     [Conditional("BENCH")]
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
+    [ExcludeFromCodeCoverage]
     public void DbgChangeLastIndex(long index) => state.LastIndex = index;
 }

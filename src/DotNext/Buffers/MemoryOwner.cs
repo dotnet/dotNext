@@ -57,7 +57,7 @@ namespace DotNext.Buffers
         /// <param name="pool">The array pool.</param>
         /// <param name="length">The length of the array.</param>
         public MemoryOwner(ArrayPool<T> pool, int length)
-            : this(pool, length, true)
+            : this(pool, length, exactSize: true)
         {
         }
 

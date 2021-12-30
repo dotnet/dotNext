@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -19,7 +20,7 @@ namespace DotNext.Buffers;
 /// <seealso cref="PooledBufferWriter{T}"/>
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
-[DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
 public ref partial struct BufferWriterSlim<T>
 {
     private readonly Span<T> initialBuffer;
@@ -63,6 +64,8 @@ public ref partial struct BufferWriterSlim<T>
         position = 0;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     private readonly int Overflow => Math.Max(0, position - initialBuffer.Length);
 
     /// <summary>

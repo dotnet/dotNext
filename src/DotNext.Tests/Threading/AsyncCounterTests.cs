@@ -11,8 +11,8 @@ namespace DotNext.Threading
             using (var counter = new AsyncCounter())
             {
                 Equal(0, counter.Value);
-                counter.Increment();
-                counter.Increment();
+                counter.Increment(2L);
+                counter.Increment(0L);
                 Equal(2, counter.Value);
                 True(await counter.WaitAsync(TimeSpan.Zero));
                 True(await counter.WaitAsync(TimeSpan.Zero));
@@ -30,6 +30,22 @@ namespace DotNext.Threading
                 False(await counter.WaitAsync(TimeSpan.Zero));
                 False(counter.IsSet);
             }
+        }
+
+        [Fact]
+        public static void InvalidDeltaValue()
+        {
+            using var counter = new AsyncCounter();
+
+            Throws<ArgumentOutOfRangeException>(() => counter.Increment(-1L));
+        }
+
+        [Fact]
+        public static void CounterOverflow()
+        {
+            using var counter = new AsyncCounter(initialValue: long.MaxValue);
+
+            Throws<OverflowException>(counter.Increment);
         }
     }
 }

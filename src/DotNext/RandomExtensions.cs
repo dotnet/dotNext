@@ -28,13 +28,13 @@ public static class RandomExtensions
     private static void NextString(RandomNumberGenerator rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
     {
         var offset = buffer.Length * sizeof(int);
-        using ByteBuffer bytes = (uint)offset <= ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
+        using ByteBuffer bytes = (uint)offset <= (uint)ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
         rng.GetBytes(bytes.Span);
         offset = 0;
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
         foreach (ref var element in buffer)
         {
-            var randomNumber = (BitConverter.ToInt32(bytes.Span.Slice(offset)) & int.MaxValue) % allowedChars.Length;
+            var randomNumber = (uint)BitConverter.ToInt32(bytes.Span.Slice(offset)) % (uint)allowedChars.Length;
             element = Unsafe.Add(ref firstChar, randomNumber);
             offset += sizeof(int);
         }

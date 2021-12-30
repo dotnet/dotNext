@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
@@ -7,8 +8,11 @@ namespace DotNext.Threading;
 /// </summary>
 public static class AsyncLockAcquisition
 {
-    private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = UserDataSlot<AsyncReaderWriterLock>.Allocate();
-    private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = UserDataSlot<AsyncExclusiveLock>.Allocate();
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+    private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = new();
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+    private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)

@@ -110,7 +110,8 @@ public abstract class Operator<TSignature> : IOperator<TSignature>
     private protected abstract class Cache<TOperand> : Cache<Operator.Kind, TOperand>
         where TOperand : class, IOperator<TSignature>
     {
-        private static readonly UserDataSlot<Cache<TOperand>> Slot = UserDataSlot<Cache<TOperand>>.Allocate();
+        [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+        private static readonly UserDataSlot<Cache<TOperand>> Slot = new();
 
         internal static Cache<TOperand> Of<TCache>(Type cacheHolder)
             where TCache : Cache<TOperand>, new()

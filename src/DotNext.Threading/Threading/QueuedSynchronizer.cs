@@ -282,24 +282,35 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(this));
 
+        ValueTask result;
         var callerInfo = this.callerInfo?.Capture();
 
         if (IsDisposed || IsDisposeRequested)
-            return new(DisposedTask);
+        {
+            result = new(DisposedTask);
+        }
+        else if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+        {
+            result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+        }
+        else if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled(token);
+        }
+        else if (TryAcquire(ref manager))
+        {
+            result = ValueTask.CompletedTask;
+        }
+        else if (timeout == TimeSpan.Zero)
+        {
+            result = ValueTask.FromException(new TimeoutException());
+        }
+        else
+        {
+            result = EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(timeout, token);
+        }
 
-        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-
-        if (token.IsCancellationRequested)
-            return ValueTask.FromCanceled(token);
-
-        if (TryAcquire(ref manager))
-            return ValueTask.CompletedTask;
-
-        if (timeout == TimeSpan.Zero)
-            return ValueTask.FromException(new TimeoutException());
-
-        return EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo).CreateVoidTask(timeout, token);
+        return result;
     }
 
     private protected ValueTask<bool> WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
@@ -308,24 +319,35 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(this));
 
+        ValueTask<bool> result;
         var callerInfo = this.callerInfo?.Capture();
 
         if (IsDisposed || IsDisposeRequested)
-            return new(GetDisposedTask<bool>());
+        {
+            result = new(GetDisposedTask<bool>());
+        }
+        else if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+        {
+            result = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+        }
+        else if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<bool>(token);
+        }
+        else if (TryAcquire(ref manager))
+        {
+            result = new(true);
+        }
+        else if (timeout == TimeSpan.Zero)
+        {
+            result = new(false);    // if timeout is zero fail fast
+        }
+        else
+        {
+            result = EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo).CreateTask(timeout, token);
+        }
 
-        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-            return ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-
-        if (token.IsCancellationRequested)
-            return ValueTask.FromCanceled<bool>(token);
-
-        if (TryAcquire(ref manager))
-            return new(true);
-
-        if (timeout == TimeSpan.Zero)
-            return new(false);    // if timeout is zero fail fast
-
-        return EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo).CreateTask(timeout, token);
+        return result;
     }
 
     /// <summary>

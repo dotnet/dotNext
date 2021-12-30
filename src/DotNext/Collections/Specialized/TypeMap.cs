@@ -9,10 +9,10 @@ namespace DotNext.Collections.Specialized;
 /// that is not thread safe.
 /// </summary>
 /// <typeparam name="TValue">The type of the value.</typeparam>
-public class TypeMap<TValue> : ITypeMap<TValue>
+public partial class TypeMap<TValue> : ITypeMap<TValue>
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct Entry
+    internal struct Entry
     {
         internal bool HasValue;
         internal TValue? Value;

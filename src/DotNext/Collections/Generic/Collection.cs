@@ -78,7 +78,7 @@ public static class Collection
         return collection.Count switch
         {
             0 => Optional<T>.None,
-            1 => collection.FirstOrEmpty(),
+            1 => collection.FirstOrNone(),
             _ when collection is T[] array => Span.PeekRandom<T>(array, random),
             _ when collection is List<T> list => Span.PeekRandom<T>(CollectionsMarshal.AsSpan(list), random),
             _ => PeekRandomSlow(collection, random),

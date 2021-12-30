@@ -214,7 +214,6 @@ public static class AtomicIntPtr
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (IntPtr OldValue, IntPtr NewValue) Update<TUpdater>(ref IntPtr value, TUpdater updater)
         where TUpdater : struct, ISupplier<IntPtr, IntPtr>
     {
@@ -227,7 +226,6 @@ public static class AtomicIntPtr
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (IntPtr OldValue, IntPtr NewValue) Accumulate<TAccumulator>(ref IntPtr value, IntPtr x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<IntPtr, IntPtr, IntPtr>
     {

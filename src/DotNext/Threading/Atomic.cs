@@ -89,7 +89,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Performs atomic read.
     /// </summary>
     /// <param name="result">The result of atomic read.</param>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public readonly void Read(out T result)
     {
         lockState.Acquire();
@@ -126,7 +125,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Performs atomic write.
     /// </summary>
     /// <param name="newValue">The value to be stored into this container.</param>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void Write(in T newValue)
     {
         lockState.Acquire();
@@ -228,7 +226,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// </summary>
     /// <param name="update">The value that replaces the stored value.</param>
     /// <param name="previous">The original stored value before modification.</param>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void Exchange(in T update, out T previous)
     {
         lockState.Acquire();
