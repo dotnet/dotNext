@@ -13,7 +13,7 @@ With .NEXT, you have this flexibility.
 ```csharp
 using DotNext.Buffers;
 
-using var writer = new PooledBufferWriter<byte>(ArrayPool<byte>.Shared.ToAllocator());
+using var writer = new PooledBufferWriter<byte> { BufferAllocator = ArrayPool<byte>.Shared.ToAllocator() };
 Span<byte> span = writer.GetSpan(1024);
 new byte[512].AsSpan().CopyTo(span);
 span.Advance(512);
@@ -28,7 +28,7 @@ using DotNext.Buffers;
 using DotNext.IO;
 using System;
 
-using var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared);
+using var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
 ArraySegment<byte> array = writer.GetArray(1024);
 array[0] = 42;
 array[1] = 43;
@@ -102,7 +102,7 @@ This type has the following limitations:
 ```csharp
 using DotNext.Buffers;
 
-using var writer = new PooledArrayBufferWriter<char>(ArrayPool<char>.Shared);
+using var writer = new PooledArrayBufferWriter<char> { BufferPool = ArrayPool<char>.Shared };
 writer.Write("Hello,");
 writer.Write(' ');
 writer.Write("world!");
@@ -122,7 +122,7 @@ using DotNext.Buffers;
 using System.IO;
 using static DotNext.IO.TextWriterExtensions;
 
-using var buffer = new PooledArrayBufferWriter<char>(ArrayPool<char>.Shared);
+using var buffer = new PooledArrayBufferWriter<char> { BufferPool = ArrayPool<char>.Shared };
 using TextWriter writer = buffer.AsTextWriter();
 writer.Write("Hello,");
 writer.Write(' ');

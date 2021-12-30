@@ -63,7 +63,7 @@ Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/
 using DotNext.Buffers;
 using DotNext.IO;
 
-using var writer = new PooledBufferWriter<byte>(ArrayPool<byte>.Shared);
+using var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
 
 // write bytes using stream
 using Stream writeStream = StreamSource.AsStream(writer);
