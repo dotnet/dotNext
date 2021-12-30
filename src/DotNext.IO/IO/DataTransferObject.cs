@@ -40,7 +40,7 @@ public static class DataTransferObject
     private static BufferWriter<byte>? CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator) => new PooledBufferWriter<byte>
     {
         BufferAllocator = allocator,
-        Capacity = capacity is long value ? value <= Array.MaxLength ? (int)value : throw new InsufficientMemoryException() : 0
+        Capacity = capacity is long value ? value <= Array.MaxLength ? (int)value : throw new InsufficientMemoryException() : 0,
     };
 
     /// <summary>

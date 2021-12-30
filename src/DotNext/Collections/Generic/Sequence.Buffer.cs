@@ -71,7 +71,6 @@ public static partial class Sequence
     /// <param name="sizeHint">The approximate size of the collection, if known.</param>
     /// <param name="allocator">The allocator of the memory block used to place copied elements.</param>
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
-    /// <returns></returns>
     /// <returns>Rented memory block containing a copy of the elements from the collection.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="sizeHint"/> is less than zero.</exception>
