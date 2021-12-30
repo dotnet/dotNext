@@ -146,10 +146,10 @@ public static partial class Sequence
         {
             case List<T> list:
                 var index = list.FindIndex(filter);
-                return index >= 0 ? list[0] : Optional<T>.None;
+                return index >= 0 ? list[index] : Optional<T>.None;
             case T[] array:
                 index = Array.FindIndex(array, filter);
-                return index >= 0 ? array[0] : Optional<T>.None;
+                return index >= 0 ? array[index] : Optional<T>.None;
             case LinkedList<T> list:
                 return FindInLinkedList(list, filter);
             default:
