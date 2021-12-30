@@ -193,11 +193,7 @@ namespace DotNext.Buffers
         private readonly int RawLength
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => array is not null
-                ? array.Length
-                : owner is not null
-                ? Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length
-                : 0;
+            get => array?.Length ?? Unsafe.As<IMemoryOwner<T>>(owner)?.Memory.Length ?? 0;
         }
 
         /// <summary>
@@ -246,15 +242,9 @@ namespace DotNext.Buffers
             {
                 AssertValid();
 
-                Memory<T> result;
-                if (array is not null)
-                    result = new(array);
-                else if (owner is not null)
-                    result = Unsafe.As<IMemoryOwner<T>>(owner).Memory;
-                else
-                    result = Memory<T>.Empty;
-
-                return result.Slice(0, length);
+                return array?.AsMemory(0, length)
+                    ?? Unsafe.As<IMemoryOwner<T>>(owner)?.Memory.Slice(0, length)
+                    ?? Memory<T>.Empty;
             }
         }
 
