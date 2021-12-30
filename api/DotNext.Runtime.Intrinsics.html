@@ -332,6 +332,7 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(in T input, out TResult output)
+
     where T : struct where TResult : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -574,6 +575,7 @@ value passed to <code data-dev-comment-type="paramref" class="paramref">obj</cod
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(T*input, T*output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -631,6 +633,7 @@ value passed to <code data-dev-comment-type="paramref" class="paramref">obj</cod
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -688,6 +691,7 @@ value passed to <code data-dev-comment-type="paramref" class="paramref">obj</cod
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T source, out T destination, long count)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -751,6 +755,7 @@ value passed to <code data-dev-comment-type="paramref" class="paramref">obj</cod
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void CopyUnaligned&lt;T&gt;(T*input, T*output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1227,6 +1232,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int GetHashCode32&lt;THashFunction&gt;(void *source, nint length, bool salted = true)
+
     where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1541,6 +1547,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long GetHashCode64&lt;THashFunction&gt;(void *source, nint length, bool salted = true)
+
     where THashFunction : struct, IConsumer&lt;long&gt;, ISupplier&lt;long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1677,6 +1684,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ref readonly TBase GetReadonlyRef&lt;T, TBase&gt;(this T[] array, nint index)
+
     where T : class, TBase</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1755,6 +1763,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool HasFlag&lt;T&gt;(T value, T flag)
+
     where T : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2062,6 +2071,7 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Reverse&lt;T&gt;(ref T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2113,6 +2123,7 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T ShallowCopy&lt;T&gt;(T obj)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2180,6 +2191,7 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Swap&lt;T&gt;(T*first, T*second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -149,6 +149,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, CancellationToken, Task&gt; signalHandler)
+
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -222,6 +223,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, object, CancellationToken, Task&gt; signalHandler)
+
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -295,6 +297,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&gt; signalHandler)
+
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -368,6 +371,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, object, CancellationToken, Task&gt; signalHandler)
+
     where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -441,6 +445,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
+
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -531,6 +536,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, object, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
+
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -621,6 +627,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
+
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -711,6 +718,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, object, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string outputMessageType = null)
+
     where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -845,8 +853,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessageHandler_Builder_DotNext_ISupplier_DotNext_Net_Cluster_Messaging_MessageHandler__Invoke_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.Builder.DotNext#ISupplier{DotNext#Net#Cluster#Messaging#MessageHandler}#Invoke*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessageHandler_Builder_DotNext_ISupplier_DotNext_Net_Cluster_Messaging_MessageHandler__Invoke" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.Builder.DotNext#ISupplier{DotNext#Net#Cluster#Messaging#MessageHandler}#Invoke">ISupplier&lt;MessageHandler&gt;.Invoke()</h4>
-  <div class="markdown level1 summary"><p>Invokes the supplier.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -863,8 +870,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.MessageHandler.html">MessageHandler</a></td>
-        <td><p>The value returned by this supplier.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

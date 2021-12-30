@@ -128,6 +128,7 @@ into <see cref="!:Span&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsBytes&lt;T&gt;(T*pointer)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -196,6 +197,7 @@ into <see cref="!:Span&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsBytes&lt;T&gt;(ref T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -264,6 +266,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ReadOnlySpan&lt;byte&gt; AsReadOnlyBytes&lt;T&gt;(in T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -331,6 +334,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this Span&lt;T&gt; first, Span&lt;T&gt; second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -404,6 +408,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -477,6 +482,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this Span&lt;T&gt; first, Span&lt;T&gt; second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -553,6 +559,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -629,6 +636,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -702,6 +710,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -787,6 +796,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -860,6 +870,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -945,6 +956,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T, THashFunction&gt;(this Span&lt;T&gt; span, bool salted = true)
+
     where T : struct where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1023,6 +1035,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T, THashFunction&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
+
     where T : struct where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1101,6 +1114,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1174,6 +1188,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1259,6 +1274,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1332,6 +1348,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1417,6 +1434,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T, THashFunction&gt;(this Span&lt;T&gt; span, bool salted = true)
+
     where T : struct where THashFunction : struct, IConsumer&lt;long&gt;, ISupplier&lt;long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1495,6 +1513,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T, THashFunction&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
+
     where T : struct where THashFunction : struct, IConsumer&lt;long&gt;, ISupplier&lt;long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1797,7 +1816,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_CopyTo__1_DotNext_Span___0__DotNext_Span___0__System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Span.CopyTo%60%601(DotNext.Span%7B%60%600%7D%2CDotNext.Span%7B%60%600%7D%2CSystem.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L661">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L660">View Source</a>
   </span>
   <a id="DotNext_Span_CopyTo_" data-uid="DotNext.Span.CopyTo*"></a>
   <h4 id="DotNext_Span_CopyTo__1_DotNext_Span___0__DotNext_Span___0__System_Int32__" data-uid="DotNext.Span.CopyTo``1(DotNext.Span{``0},DotNext.Span{``0},System.Int32@)">CopyTo&lt;T&gt;(Span&lt;T&gt;, Span&lt;T&gt;, out Int32)</h4>
@@ -1921,7 +1940,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_FirstOrEmpty__1_ReadOnlySpan___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.FirstOrEmpty%60%601(ReadOnlySpan%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L685">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L684">View Source</a>
   </span>
   <a id="DotNext_Span_FirstOrEmpty_" data-uid="DotNext.Span.FirstOrEmpty*"></a>
   <h4 id="DotNext_Span_FirstOrEmpty__1_ReadOnlySpan___0__" data-uid="DotNext.Span.FirstOrEmpty``1(ReadOnlySpan{``0})">FirstOrEmpty&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</h4>
@@ -2384,7 +2403,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Initialize__1_DotNext_Span___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Initialize%60%601(DotNext.Span%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L722">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L721">View Source</a>
   </span>
   <a id="DotNext_Span_Initialize_" data-uid="DotNext.Span.Initialize*"></a>
   <h4 id="DotNext_Span_Initialize__1_DotNext_Span___0__" data-uid="DotNext.Span.Initialize``1(DotNext.Span{``0})">Initialize&lt;T&gt;(Span&lt;T&gt;)</h4>
@@ -2394,6 +2413,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Initialize&lt;T&gt;(this Span&lt;T&gt; span)
+
     where T : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2438,7 +2458,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_PeekRandom__1_ReadOnlySpan___0__Random_.md&amp;value=---%0Auid%3A%20DotNext.Span.PeekRandom%60%601(ReadOnlySpan%7B%60%600%7D%2CRandom)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L695">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L694">View Source</a>
   </span>
   <a id="DotNext_Span_PeekRandom_" data-uid="DotNext.Span.PeekRandom*"></a>
   <h4 id="DotNext_Span_PeekRandom__1_ReadOnlySpan___0__Random_" data-uid="DotNext.Span.PeekRandom``1(ReadOnlySpan{``0},Random)">PeekRandom&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Random)</h4>
@@ -2510,7 +2530,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Shuffle__1_DotNext_Span___0__Random_.md&amp;value=---%0Auid%3A%20DotNext.Span.Shuffle%60%601(DotNext.Span%7B%60%600%7D%2CRandom)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L670">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L669">View Source</a>
   </span>
   <a id="DotNext_Span_Shuffle_" data-uid="DotNext.Span.Shuffle*"></a>
   <h4 id="DotNext_Span_Shuffle__1_DotNext_Span___0__Random_" data-uid="DotNext.Span.Shuffle``1(DotNext.Span{``0},Random)">Shuffle&lt;T&gt;(Span&lt;T&gt;, Random)</h4>

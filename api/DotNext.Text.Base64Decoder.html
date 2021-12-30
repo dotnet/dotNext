@@ -421,6 +421,7 @@ Decoding methods should not be intermixed by the caller code.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Decode&lt;TConsumer&gt;(ReadOnlySpan&lt;byte&gt; utf8Chars, TConsumer output)
+
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -602,6 +603,7 @@ Decoding methods should not be intermixed by the caller code.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Decode&lt;TConsumer&gt;(ReadOnlySpan&lt;char&gt; chars, TConsumer output)
+
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

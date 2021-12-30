@@ -373,6 +373,7 @@ the given object.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot)
+
     where TValue : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -584,6 +585,7 @@ the given object.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly TBase GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt; slot)
+
     where T : class, TBase, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -656,6 +658,7 @@ the given object.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly TValue GetOrSet&lt;TValue, TFactory&gt;(UserDataSlot&lt;TValue&gt; slot, TFactory valueFactory)
+
     where TFactory : struct, ISupplier&lt;TValue&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

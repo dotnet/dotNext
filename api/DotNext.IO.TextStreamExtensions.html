@@ -245,6 +245,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TextWriter AsTextWriter&lt;TWriter&gt;(this TWriter writer, IFormatProvider? provider = null, Action&lt;TWriter&gt;? flush = null, Func&lt;TWriter, CancellationToken, Task&gt;? flushAsync = null)
+
     where TWriter : class, IBufferWriter&lt;char&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -330,6 +331,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TextWriter AsTextWriter&lt;TWriter&gt;(this TWriter writer, Encoding encoding, IFormatProvider? provider = null, Action&lt;TWriter&gt;? flush = null, Func&lt;TWriter, CancellationToken, Task&gt;? flushAsync = null)
+
     where TWriter : class, IBufferWriter&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

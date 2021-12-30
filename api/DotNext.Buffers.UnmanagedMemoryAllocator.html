@@ -128,6 +128,7 @@ that controls its lifetime.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IUnmanagedMemoryOwner&lt;T&gt; Allocate&lt;T&gt;(int length, bool zeroMem = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -201,6 +202,7 @@ that controls its lifetime.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; GetAllocator&lt;T&gt;(bool zeroMem)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -161,6 +161,7 @@ or <see cref="!:IComparer&lt;T>"></see> interface. Otherwise, use static methods
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int Compare&lt;TOther&gt;(in T first, in TOther second)
+
     where TOther : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -234,6 +235,7 @@ or <see cref="!:IComparer&lt;T>"></see> interface. Otherwise, use static methods
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool Equals&lt;TOther&gt;(in T first, in TOther second)
+
     where TOther : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -439,6 +441,7 @@ even if it is overridden by value type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int GetHashCode&lt;THashFunction&gt;(in T value, bool salted = true)
+
     where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

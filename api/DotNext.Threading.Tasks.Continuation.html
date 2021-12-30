@@ -127,6 +127,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnCanceled&lt;T, TConstant&gt;(this Task&lt;T&gt; task, TaskScheduler? scheduler = null)
+
     where TConstant : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -328,6 +329,7 @@ to the filter.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaulted&lt;T, TConstant&gt;(this Task&lt;T&gt; task, Predicate&lt;AggregateException&gt; filter, TaskScheduler? scheduler = null)
+
     where TConstant : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -416,6 +418,7 @@ continuation is cached for future reuse as well as constant value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaulted&lt;T, TConstant&gt;(this Task&lt;T&gt; task, TaskScheduler? scheduler = null)
+
     where TConstant : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -499,6 +502,7 @@ to the filter.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaultedOrCanceled&lt;T, TConstant&gt;(this Task&lt;T&gt; task, Predicate&lt;AggregateException&gt; filter, TaskScheduler? scheduler = null)
+
     where TConstant : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -587,6 +591,7 @@ continuation is cached for future reuse as well as constant value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaultedOrCanceled&lt;T, TConstant&gt;(this Task&lt;T&gt; task, TaskScheduler? scheduler = null)
+
     where TConstant : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
