@@ -41,6 +41,8 @@ namespace DotNext.Buffers
 
         internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
         {
+            Debug.Assert(pool is not null);
+
             if (length is 0)
             {
                 this = default;
@@ -77,9 +79,16 @@ namespace DotNext.Buffers
             else
             {
                 array = null;
-                IMemoryOwner<T> owner;
-                this.owner = owner = pool.Rent(length);
-                this.length = length < 0 ? owner.Memory.Length : length;
+                IMemoryOwner<T> owner = pool.Rent(length);
+                if ((this.length = length < 0 ? owner.Memory.Length : length) > 0)
+                {
+                    this.owner = owner;
+                }
+                else
+                {
+                    owner.Dispose();
+                    this.owner = null;
+                }
             }
         }
 
@@ -99,9 +108,17 @@ namespace DotNext.Buffers
                     break;
                 default:
                     array = null;
-                    IMemoryOwner<T> owner;
-                    this.owner = owner = provider(length);
-                    this.length = Math.Min(owner.Memory.Length, length);
+                    var owner = provider(length);
+                    if ((this.length = Math.Min(owner.Memory.Length, length)) > 0)
+                    {
+                        this.owner = owner;
+                    }
+                    else
+                    {
+                        owner.Dispose();
+                        this.owner = null;
+                    }
+
                     break;
             }
         }
@@ -113,9 +130,17 @@ namespace DotNext.Buffers
         public MemoryOwner(Func<IMemoryOwner<T>> provider)
         {
             array = null;
-            IMemoryOwner<T> owner;
-            this.owner = owner = provider();
-            length = owner.Memory.Length;
+            var owner = provider();
+
+            if ((length = owner.Memory.Length) > 0)
+            {
+                this.owner = owner;
+            }
+            else
+            {
+                owner.Dispose();
+                this.owner = null;
+            }
         }
 
         /// <summary>
@@ -129,7 +154,7 @@ namespace DotNext.Buffers
             if ((uint)length > (uint)array.Length)
                 throw new ArgumentOutOfRangeException(nameof(length));
 
-            this.array = array;
+            this.array = length > 0 ? array : null;
             this.length = length;
             owner = null;
         }
