@@ -273,15 +273,11 @@ namespace DotNext.Buffers
         internal readonly ref T First
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                if (array is not null)
-                    return ref MemoryMarshal.GetArrayDataReference(array);
-                if (owner is not null)
-                    return ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
-
-                return ref Unsafe.NullRef<T>();
-            }
+            get => ref array is not null
+                    ? ref MemoryMarshal.GetArrayDataReference(array)
+                    : ref owner is not null
+                    ? ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span)
+                    : ref Unsafe.NullRef<T>();
         }
 
         /// <summary>
