@@ -30,6 +30,7 @@ namespace DotNext.Buffers
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
+            Debug.Assert(length > 0);
             Debug.Assert(array.Length >= length);
 
             this.array = array;
@@ -167,7 +168,12 @@ namespace DotNext.Buffers
         /// </summary>
         public readonly int Length => length;
 
-        internal void Expand() => length = RawLength;
+        internal void Expand()
+        {
+            length = RawLength;
+
+            AssertValid();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Truncate(int newLength)
@@ -176,6 +182,8 @@ namespace DotNext.Buffers
             Debug.Assert(newLength <= RawLength);
 
             length = Math.Min(length, newLength);
+
+            AssertValid();
         }
 
         private readonly int RawLength
@@ -222,6 +230,7 @@ namespace DotNext.Buffers
                 length = newLength;
             }
 
+            AssertValid();
             return true;
         }
 
@@ -238,6 +247,8 @@ namespace DotNext.Buffers
         {
             get
             {
+                AssertValid();
+
                 Memory<T> result;
                 if (array is not null)
                     result = new(array);
@@ -258,9 +269,18 @@ namespace DotNext.Buffers
         {
             get
             {
+                AssertValid();
+
                 ref var first = ref First;
                 return Unsafe.IsNullRef(ref first) ? Span<T>.Empty : MemoryMarshal.CreateSpan(ref first, length);
             }
+        }
+
+        [Conditional("DEBUG")]
+        private readonly void AssertValid()
+        {
+            Debug.Assert(length is 0 ^ (array is not null || owner is not null));
+            Debug.Assert(owner is null or ArrayPool<T> or IMemoryOwner<T>);
         }
 
         /// <inheritdoc/>
@@ -290,10 +310,11 @@ namespace DotNext.Buffers
         {
             get
             {
+                AssertValid();
+
                 if ((nuint)index >= (nuint)length)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                Debug.Assert(owner is not null || array is not null);
                 return ref Unsafe.Add(ref First, index);
             }
         }

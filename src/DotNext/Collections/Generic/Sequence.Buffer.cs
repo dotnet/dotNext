@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Collections.Generic;
 
@@ -40,6 +41,8 @@ public static partial class Sequence
         [MethodImpl(MethodImplOptions.NoInlining)]
         static MemoryOwner<T> CopyCollection(ICollection<T> collection)
         {
+            Debug.Assert(collection is { Count: > 0 });
+
             var array = ArrayPool<T>.Shared.Rent(collection.Count);
             collection.CopyTo(array, 0);
             return new(ArrayPool<T>.Shared, array, collection.Count);
