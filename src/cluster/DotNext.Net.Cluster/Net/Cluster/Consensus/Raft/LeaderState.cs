@@ -146,7 +146,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         using var cancellationSource = token.LinkTo(LeadershipToken);
 
         // reuse this buffer to place responses from other nodes
-        using var taskBuffer = new AsyncResultSet(Members.Count);
+        using var taskBuffer = new AsyncResultSet { Capacity = Members.Count };
 
         for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
         {

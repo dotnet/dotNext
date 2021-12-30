@@ -24,6 +24,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <param name="pool">The array pool.</param>
     /// <param name="initialCapacity">The initial capacity of the writer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
+    [Obsolete("Use init-only properties to set the capacity and allocator")]
     public PooledArrayBufferWriter(ArrayPool<T> pool, int initialCapacity)
     {
         if (initialCapacity <= 0)
@@ -36,19 +37,11 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// Initializes a new writer with the default initial capacity.
     /// </summary>
     /// <param name="pool">The array pool.</param>
+    [Obsolete("Use init-only properties to set the capacity and pool")]
     public PooledArrayBufferWriter(ArrayPool<T> pool)
     {
         this.pool = pool;
         buffer = Array.Empty<T>();
-    }
-
-    /// <summary>
-    /// Initializes a new writer with the default initial capacity and <see cref="ArrayPool{T}.Shared"/>
-    /// as the array pooling mechanism.
-    /// </summary>
-    public PooledArrayBufferWriter()
-        : this(ArrayPool<T>.Shared)
-    {
     }
 
     /// <summary>
@@ -57,9 +50,48 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// </summary>
     /// <param name="initialCapacity">The initial capacity of the writer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
+    [Obsolete("Use init-only properties to set the capacity and pool")]
     public PooledArrayBufferWriter(int initialCapacity)
         : this(ArrayPool<T>.Shared, initialCapacity)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new writer with the default initial capacity and <see cref="ArrayPool{T}.Shared"/>
+    /// as the array pooling mechanism.
+    /// </summary>
+    /// <seealso cref="BufferPool"/>
+    /// <seealso cref="Capacity"/>
+    public PooledArrayBufferWriter()
+    {
+        pool = ArrayPool<T>.Shared;
+        buffer = Array.Empty<T>();
+    }
+
+    /// <summary>
+    /// Sets the array pool that will be used to rent the internal buffer.
+    /// </summary>
+    /// <remarks>
+    /// It is recommended to initialize this property before <see cref="Capacity"/>.
+    /// <see langword="null"/> value is the same as <see cref="ArrayPool{T}.Shared"/>.
+    /// </remarks>
+    public ArrayPool<T>? BufferPool
+    {
+        init
+        {
+            value ??= ArrayPool<T>.Shared;
+
+            var length = buffer.Length;
+
+            // cover situation when Capacity initializer called before this initializer
+            if (length > 0)
+            {
+                pool.Return(buffer); // no need to clear fresh array
+                buffer = value.Rent(length);
+            }
+
+            pool = value;
+        }
     }
 
     /// <inheritdoc/>
@@ -235,16 +267,25 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <inheritdoc/>
     void ICollection<T>.Clear() => Clear(false);
 
-    /// <summary>
-    /// Gets the total amount of space within the underlying memory.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+    /// <inheritdoc />
     public override int Capacity
     {
         get
         {
             ThrowIfDisposed();
             return buffer.Length;
+        }
+
+        init
+        {
+            switch (value)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                case > 0:
+                    buffer = pool.Rent(value);
+                    break;
+            }
         }
     }
 

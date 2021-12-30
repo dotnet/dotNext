@@ -49,7 +49,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void ReadWriteUsingPooledBufferWriter()
         {
-            using var writer = new PooledBufferWriter<byte>(null);
+            using var writer = new PooledBufferWriter<byte>();
             Null(writer.As<IGrowableBuffer<byte>>().Capacity);
             ReadWriteTest(writer);
         }

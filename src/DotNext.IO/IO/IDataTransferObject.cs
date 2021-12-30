@@ -154,7 +154,7 @@ public interface IDataTransferObject
     private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        using var writer = length <= int.MaxValue ? new PooledArrayBufferWriter<byte>((int)length) : throw new InsufficientMemoryException();
+        using var writer = length <= Array.MaxLength ? new PooledArrayBufferWriter<byte> { Capacity = (int)length } : throw new InsufficientMemoryException();
 
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
         return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);

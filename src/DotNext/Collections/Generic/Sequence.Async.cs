@@ -177,7 +177,7 @@ public static partial class Sequence
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async Task<T[]> ToArrayAsync<T>(this IAsyncEnumerable<T> collection, int initialCapacity = 10, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
     {
-        using var buffer = new PooledBufferWriter<T>(allocator, initialCapacity);
+        using var buffer = new PooledBufferWriter<T> { BufferAllocator = allocator, Capacity = initialCapacity };
 
         await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
         {

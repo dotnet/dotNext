@@ -83,9 +83,7 @@ public static partial class Sequence
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-        using var buffer = sizeHint > 0 
-            ? new PooledBufferWriter<T>(allocator, sizeHint)
-            : new PooledBufferWriter<T>(allocator);
+        using var buffer = new PooledBufferWriter<T> { BufferAllocator = allocator, Capacity = sizeHint };
 
         await foreach (var item in enumerable.WithCancellation(token).ConfigureAwait(false))
             buffer.Add(item);

@@ -28,7 +28,7 @@ public partial class PeerController
 
     private async Task ProcessJoinAsync(EndPoint joinedPeer)
     {
-        using var tasks = new PooledArrayBufferWriter<Task>(activeViewCapacity);
+        using var tasks = new PooledArrayBufferWriter<Task> { Capacity = activeViewCapacity };
         await AddPeerToActiveViewAsync(joinedPeer, true).ConfigureAwait(false);
 
         // forwards JOIN request to all neighbors excluding joined peer

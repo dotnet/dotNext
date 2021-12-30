@@ -352,7 +352,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         PooledArrayBufferWriter<Task>? responses = null;
         try
         {
-            responses = new(activeViewCapacity + 1);
+            responses = new() { Capacity = activeViewCapacity + 1 };
 
             // notify all neighbors from active view
             foreach (var peer in activeView)

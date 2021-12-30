@@ -140,7 +140,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        var writer = new PooledBufferWriter<byte>(allocator, length);
+        var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = length };
         try
         {
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);

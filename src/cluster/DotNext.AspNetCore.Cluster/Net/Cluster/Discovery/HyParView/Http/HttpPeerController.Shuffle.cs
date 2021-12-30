@@ -101,7 +101,12 @@ internal partial class HttpPeerController
         }
         else
         {
-            using var buffer = new PooledBufferWriter<byte>(allocator, payloadLength.Truncate());
+            using var buffer = new PooledBufferWriter<byte>
+            {
+                BufferAllocator = allocator,
+                Capacity = payloadLength.Truncate()
+            };
+
             await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
             (sender, origin, timeToLive, peers) = DeserializeShuffleRequest(buffer.WrittenMemory);
         }

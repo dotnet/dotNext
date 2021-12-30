@@ -442,7 +442,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
             EncodingContext encodingContext = DefaultHttpEncoding;
             using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
-            using (var builder = new PooledArrayBufferWriter<char>(maxChars))
+            using (var builder = new PooledArrayBufferWriter<char> { Capacity = maxChars })
             {
                 // encode configuration in raw format without boundaries
                 await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);

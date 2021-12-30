@@ -21,7 +21,7 @@ public partial class PeerController
     private async Task ProcessBroadcastAsync(Func<PeerController, IRumorSender> senderFactory)
     {
         var sender = senderFactory(this);
-        var failedPeers = new PooledArrayBufferWriter<EndPoint>(activeViewCapacity);
+        var failedPeers = new PooledArrayBufferWriter<EndPoint> { Capacity = activeViewCapacity };
         try
         {
             int activeViewCount;
