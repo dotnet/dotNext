@@ -8,7 +8,7 @@ using DotNext;
 using DotNext.Collections.Generic;
 
 IEnumerable<int> array = new int[] { 1, 2, 3 };
-Optional<int> i = array.FirstOrEmpty(); //extension method from Sequence class
+Optional<int> i = array.FirstOrNone(); //extension method from Sequence class
 var value = (int)i; //cast is supported
 if(i.TryGet(out value))
 {
@@ -58,18 +58,18 @@ Now it's possible to apply additional logic to the optional result:
 ```csharp
 Optional<string> first = FirstOrNull(array);
 
-if (first.HasValue)
+switch (first)
 {
-    // value is present
-    string result = first.Value;
-}
-else if (first.IsNull)
-{
-    // value is null
-}
-else
-{
-    // result is undefined
+    case { HasValue: true }:
+        // value is present
+        string result = first.Value;
+        break;
+    case { IsNull: true }:
+        // value is null
+        break;
+    default:
+        // value is undefined
+        break;
 }
 ```
 
