@@ -207,10 +207,7 @@ public ref struct SpanReader<T>
         if (reader == null)
             throw new ArgumentNullException(nameof(reader));
 
-        if (!TryRead(count, out var buffer))
-            throw new InternalBufferOverflowException();
-
-        return reader(buffer);
+        return TryRead(count, out var buffer) ? reader(buffer) : throw new InternalBufferOverflowException();
     }
 
     /// <summary>
