@@ -104,14 +104,15 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         long skip;
         if (startIndex is null)
             startIndex = index + 1L;
-        else if (startIndex > index + 1L)
+        else if (startIndex.GetValueOrDefault() > index + 1L)
             throw new ArgumentOutOfRangeException(nameof(startIndex));
+
         if (skipCommitted)
         {
-            skip = Math.Max(0, commitIndex.VolatileRead() - startIndex.Value + 1L);
+            skip = Math.Max(0, commitIndex.VolatileRead() - startIndex.GetValueOrDefault() + 1L);
             startIndex += skip;
         }
-        else if (startIndex <= commitIndex.VolatileRead())
+        else if (startIndex.GetValueOrDefault() <= commitIndex.VolatileRead())
         {
             throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
         }
@@ -137,10 +138,10 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             }
 
             // now concat existing array of terms
-            Append(newEntries, startIndex.Value);
+            Append(newEntries, startIndex.GetValueOrDefault());
         }
 
-        return startIndex.Value;
+        return startIndex.GetValueOrDefault();
     }
 
     /// <inheritdoc/>
