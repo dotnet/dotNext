@@ -272,7 +272,7 @@ public struct SequenceReader : IAsyncBinaryReader
     {
         BigInteger result;
 
-        if (length == 0)
+        if (length is 0)
         {
             result = BigInteger.Zero;
         }
@@ -312,7 +312,7 @@ public struct SequenceReader : IAsyncBinaryReader
     {
         string result;
 
-        if (length == 0)
+        if (length is 0)
         {
             result = string.Empty;
         }

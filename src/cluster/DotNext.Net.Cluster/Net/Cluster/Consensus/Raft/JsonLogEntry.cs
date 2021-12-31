@@ -118,17 +118,7 @@ public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAcces
     /// <inheritdoc />
     bool IDataTransferObject.IsReusable => true;
 
-    private string TypeId
-    {
-        get
-        {
-            var result = typeId;
-            if (string.IsNullOrEmpty(result))
-                result = typeof(T).AssemblyQualifiedName!;
-
-            return result;
-        }
-    }
+    private string TypeId => typeId is { Length: > 0 } result ? result : typeof(T).AssemblyQualifiedName!;
 
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)

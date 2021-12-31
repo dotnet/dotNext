@@ -144,7 +144,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 startIndex = snapshot.Index + 1L;
                 length = 1;
             }
-            else if (startIndex == 0L)
+            else if (startIndex is 0L)
             {
                 BufferHelpers.GetReference(in list) = LogEntry.Initial;
                 startIndex = length = 1;

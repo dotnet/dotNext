@@ -236,7 +236,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if ((uint)index > (uint)position)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        if (GetLength(buffer) == 0)
+        if (GetLength(buffer) is 0)
         {
             buffer = pool.Rent(items.Length);
         }

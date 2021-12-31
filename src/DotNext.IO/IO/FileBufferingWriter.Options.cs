@@ -138,7 +138,7 @@ public partial class FileBufferingWriter
         {
             init
             {
-                if (string.IsNullOrEmpty(value))
+                if (value is not { Length: > 0 })
                     throw new ArgumentNullException(nameof(value));
 
                 path = value;
@@ -175,7 +175,7 @@ public partial class FileBufferingWriter
         {
             get
             {
-                if (string.IsNullOrEmpty(path))
+                if (path is not { Length: > 0 })
                 {
                     if (keepFileAlive)
                     {

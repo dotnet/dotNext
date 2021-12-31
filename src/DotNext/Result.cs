@@ -152,18 +152,12 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// </summary>
     /// <param name="optional">The optional value.</param>
     /// <returns>The converted optional value.</returns>
-    public static Result<T> FromOptional(in Optional<T> optional)
+    public static Result<T> FromOptional(in Optional<T> optional) => optional switch
     {
-        Result<T> result;
-        if (optional.HasValue)
-            result = new(optional.OrDefault()!);
-        else if (optional.IsNull)
-            result = default;
-        else
-            result = new(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
-
-        return result;
-    }
+        { HasValue: true } => new(optional.OrDefault()!),
+        { IsNull: true } => default,
+        _ => new(new InvalidOperationException(ExceptionMessages.OptionalNoValue))
+    };
 
     /// <summary>
     /// Indicates that the result is successful.

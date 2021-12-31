@@ -72,11 +72,11 @@ internal sealed class ConfigurationExchange : ClientExchange<bool>, IAsyncDispos
     {
         ValueTask<bool> result;
 
-        if (transmission?.IsFaulted ?? false)
+        if (transmission is { IsFaulted: true })
         {
             result = ValueTask.FromException<bool>(transmission.Exception!);
         }
-        else if (headers.Type == MessageType.Continue)
+        else if (headers.Type is MessageType.Continue)
         {
             result = new(true);
         }

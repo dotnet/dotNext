@@ -167,7 +167,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
         }
-        else if (count == 0L || !IsBackgroundCompaction)
+        else if (count is 0L || !IsBackgroundCompaction)
         {
             result = new();
         }

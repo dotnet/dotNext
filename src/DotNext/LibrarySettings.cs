@@ -11,7 +11,7 @@ internal static class LibrarySettings
         {
             if (!int.TryParse(Environment.GetEnvironmentVariable(StackallocThresholdEnvar), out int result) || result < 16)
                 result = DefaultStackallocThreshold;
-            else if ((result & 1) == 0)
+            else if ((result & 1) is 0)
                 result = checked(result - 1);
 
             return result;

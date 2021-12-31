@@ -20,7 +20,7 @@ public class RaftLogEntryBufferingOptions
     /// </summary>
     public string TempPath
     {
-        get => string.IsNullOrEmpty(destinationPath) ? Path.GetTempPath() : destinationPath;
+        get => destinationPath is { Length: > 0 } ? destinationPath : Path.GetTempPath();
         set => destinationPath = value;
     }
 

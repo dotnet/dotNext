@@ -631,7 +631,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe Enumerator GetEnumerator(long length)
     {
         Enumerator result;
-        if (IsNull || length == 0L)
+        if (IsNull || length is 0L)
             result = default;
         else if (length < 0L)
             throw new ArgumentOutOfRangeException(nameof(length));

@@ -323,7 +323,7 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
                     candidate.ReturnType == returnType);
         }
 
-        return targetMethod is null ? null : new Method<TSignature>(targetMethod);
+        return targetMethod is null ? null : new(targetMethod);
     }
 
     private static Method<TSignature>? ReflectStatic(Type declaringType, Type argumentsType, Type returnType, string methodName, bool nonPublic)
@@ -347,7 +347,7 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
                     candidate.ReturnType == returnType);
         }
 
-        return targetMethod is null ? null : new Method<TSignature>(targetMethod, arglist, new[] { input });
+        return targetMethod is null ? null : new(targetMethod, arglist, new[] { input });
     }
 
     private static Method<TSignature>? ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
@@ -367,28 +367,25 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
         // this parameter can be passed as REF so handle this situation
         // first parameter should be passed by REF for structure types
         if (targetMethod is null)
-        {
             return null;
-        }
-        else if (thisParam.IsByRef ^ thisParam.NonRefType().IsValueType)
+
+        if (thisParam.IsByRef ^ thisParam.NonRefType().IsValueType)
         {
             ParameterExpression[] parametersDeclaration;
             if (targetMethod.IsStatic)
             {
                 parametersDeclaration = Array.ConvertAll(targetMethod.GetParameterTypes(), Expression.Parameter);
-                return new Method<TSignature>(targetMethod, parametersDeclaration, parametersDeclaration);
+                return new(targetMethod, parametersDeclaration, parametersDeclaration);
             }
             else
             {
                 var thisParamDeclaration = Expression.Parameter(thisParam);
                 parametersDeclaration = Array.ConvertAll(parameters, Expression.Parameter);
-                return new Method<TSignature>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
+                return new(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
             }
         }
-        else
-        {
-            return new Method<TSignature>(targetMethod);
-        }
+
+        return new(targetMethod);
     }
 
     private static Method<TSignature>? ReflectInstance(Type thisParam, Type argumentsType, Type returnType, string methodName, bool nonPublic)
@@ -418,7 +415,7 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
             }
         }
 
-        return targetMethod is null ? null : new Method<TSignature>(targetMethod, thisParamDeclaration, arglist, new[] { input });
+        return targetMethod is null ? null : new(targetMethod, thisParamDeclaration, arglist, new[] { input });
     }
 
     private static Method<TSignature>? Reflect(string methodName, bool nonPublic)
@@ -528,7 +525,7 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
         }
 
         body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First!.Value : Expression.Block(locals, prologue.Concat(epilogue));
-        return new Method<TSignature>(method, thisParam is null ? Expression.Lambda<TSignature>(body, input) : Expression.Lambda<TSignature>(body, thisParam, input));
+        return new(method, thisParam is null ? Expression.Lambda<TSignature>(body, input) : Expression.Lambda<TSignature>(body, thisParam, input));
     }
 
     private static Method<TSignature>? UnreflectStatic(MethodInfo method)
@@ -536,46 +533,38 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
         var delegateType = typeof(TSignature);
         if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
             return Unreflect(method, null, argumentsType, returnType);
-        else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
+
+        if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
             return Unreflect(method, null, delegateType.GetGenericArguments()[0], typeof(void));
-        else if (DelegateType.GetInvokeMethod<TSignature>().SignatureEquals(method))
-            return new Method<TSignature>(method);
-        else
-            return null;
+
+        return DelegateType.GetInvokeMethod<TSignature>().SignatureEquals(method) ? new(method) : null;
     }
 
     private static Method<TSignature>? UnreflectInstance(MethodInfo method)
     {
         var delegateType = typeof(TSignature);
         if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType))
-        {
             return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, returnType);
-        }
-        else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take<Type>(out thisParam, out argumentsType))
-        {
+
+        if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take<Type>(out thisParam, out argumentsType))
             return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
-        }
-        else
+
+        var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+        var parameters = invokeMethod.GetParameterTypes();
+        thisParam = parameters?.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
+        parameters = parameters.RemoveFirst(1);
+        if (method.SignatureEquals(parameters) && method.ReturnType == invokeMethod.ReturnType)
         {
-            var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
-            var parameters = invokeMethod.GetParameterTypes();
-            thisParam = parameters?.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
-            parameters = parameters.RemoveFirst(1);
-            if (method.SignatureEquals(parameters) && method.ReturnType == invokeMethod.ReturnType)
+            if (thisParam.IsByRef ^ method.DeclaringType is { IsValueType: true })
             {
-                if (thisParam.IsByRef ^ method.DeclaringType?.IsValueType ?? false)
-                {
-                    var arguments = Array.ConvertAll(parameters, Expression.Parameter);
-                    return new Method<TSignature>(method, Expression.Parameter(thisParam), arguments, arguments);
-                }
-                else
-                {
-                    return new Method<TSignature>(method);
-                }
+                var arguments = Array.ConvertAll(parameters, Expression.Parameter);
+                return new(method, Expression.Parameter(thisParam), arguments, arguments);
             }
 
-            return null;
+            return new(method);
         }
+
+        return null;
     }
 
     private static Method<TSignature>? Unreflect(MethodInfo method)
@@ -583,14 +572,14 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
         var delegateType = typeof(TSignature);
         if (delegateType.IsAbstract)
             throw new AbstractDelegateException<TSignature>();
-        else if (method is Method<TSignature> existing)
-            return existing;
-        else if (method.IsGenericMethodDefinition || method.IsConstructor)
-            return null;
-        else if (method.IsStatic)
-            return UnreflectStatic(method);
-        else
-            return UnreflectInstance(method);
+
+        return method switch
+        {
+            Method<TSignature> existing => existing,
+            { IsGenericMethodDefinition: true } or { IsConstructor: true } => null,
+            { IsStatic: true } => UnreflectStatic(method),
+            _ => UnreflectInstance(method)
+        };
     }
 
     internal static unsafe Method<TSignature>? GetOrCreate(MethodInfo method)

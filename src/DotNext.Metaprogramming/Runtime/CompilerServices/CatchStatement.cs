@@ -20,7 +20,7 @@ internal sealed class CatchStatement : GuardedStatement
     protected override Expression VisitChildren(ExpressionVisitor visitor)
     {
         var filter = visitor.Visit(this.filter);
-        if (ExpressionAttributes.Get(filter)?.ContainsAwait ?? false)
+        if (ExpressionAttributes.Get(filter) is { ContainsAwait: true })
             throw new NotSupportedException(ExceptionMessages.FilterHasAwait);
         var handler = visitor.Visit(Content);
         handler = handler.AddPrologue(false, prologue).AddEpilogue(false, epilogue).AddEpilogue(false, FaultLabel.Goto());

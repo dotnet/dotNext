@@ -1235,10 +1235,9 @@ public static partial class ExpressionBuilder
         if (test.Type != typeof(bool))
             throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
 
-        if (string.IsNullOrEmpty(message))
-            return CallStatic(typeof(Debug), nameof(Debug.Assert), test);
-
-        return CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message));
+        return message is { Length: > 0 }
+            ? CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message))
+            : CallStatic(typeof(Debug), nameof(Debug.Assert), test);
     }
 
     /// <summary>

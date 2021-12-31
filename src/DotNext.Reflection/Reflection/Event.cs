@@ -18,7 +18,7 @@ public class EventBase<THandler> : EventInfo, IEvent, IEquatable<EventInfo?>
 
     private static bool AddOrRemoveHandler(EventInfo @event, object? target, THandler handler, Action<object?, Delegate> modifier)
     {
-        if (@event.AddMethod?.IsStatic ?? false)
+        if (@event.AddMethod is { IsStatic: true })
         {
             if (target is null)
             {
@@ -338,7 +338,7 @@ public sealed class Event<THandler> : EventBase<THandler>, IEvent<THandler>
     private static Event<THandler>? Reflect(Type declaringType, string eventName, bool nonPublic)
     {
         EventInfo? @event = declaringType.GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
-        return @event is null ? null : new Event<THandler>(@event);
+        return @event is null ? null : new(@event);
     }
 
     internal static Event<THandler>? GetOrCreate<T>(string eventName, bool nonPublic)
@@ -495,7 +495,7 @@ public sealed class Event<T, THandler> : EventBase<THandler>, IEvent<T, THandler
     private static Event<T, THandler>? Reflect(string eventName, bool nonPublic)
     {
         EventInfo? @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
-        return @event is null ? null : new Event<T, THandler>(@event);
+        return @event is null ? null : new(@event);
     }
 
     internal static Event<T, THandler>? GetOrCreate(string eventName, bool nonPublic)

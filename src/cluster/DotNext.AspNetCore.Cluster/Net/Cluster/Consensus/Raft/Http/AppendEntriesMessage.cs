@@ -276,7 +276,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
     {
         string boundary;
 
-        if (count == 0L)
+        if (count is 0L)
         {
             // jump to empty set of log entries
         }
@@ -285,7 +285,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
             // log entries encoded as efficient binary stream
             return new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
-        else if (!string.IsNullOrEmpty(boundary = request.GetMultipartBoundary()))
+        else if ((boundary = request.GetMultipartBoundary()) is { Length: > 0 })
         {
             return new MultipartLogEntriesReader(boundary, request.Body, count);
         }

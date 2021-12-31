@@ -47,7 +47,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 {
                     result = new EmptyLogEntry(terms[index + offset], false);
                 }
-                else if (index == 0)
+                else if (index is 0)
                 {
                     result = new EmptyLogEntry(snapshotTerm, true);
                 }

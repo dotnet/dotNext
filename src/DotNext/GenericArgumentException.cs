@@ -13,10 +13,8 @@ public class GenericArgumentException : ArgumentException
     /// <param name="message">The error message that explains the reason for the exception.</param>
     /// <param name="paramName">The name of generic parameter.</param>
     public GenericArgumentException(Type genericParam, string message, string? paramName = null)
-        : base(message, string.IsNullOrEmpty(paramName) ? genericParam.FullName : paramName)
-    {
-        Argument = genericParam;
-    }
+        : base(message, paramName is { Length: > 0 } ? paramName : genericParam.FullName)
+        => Argument = genericParam;
 
     /// <summary>
     /// Generic argument.

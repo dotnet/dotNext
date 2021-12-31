@@ -204,7 +204,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         ValueTask<BufferedRaftLogEntry> result;
         if (!entry.Length.TryGetValue(out var length))
             result = CopyToMemoryOrFileAsync(entry, options, token);
-        else if (length == 0L)
+        else if (length is 0L)
             result = new(new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
         else if (length <= options.MemoryThreshold)
             result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);
