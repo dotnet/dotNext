@@ -235,6 +235,40 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        public static unsafe void WriteUsingFunctionPointer()
+        {
+            Span<byte> bytes = stackalloc byte[128];
+            var writer = new SpanWriter<byte>(bytes);
+            Guid value = Guid.NewGuid();
+            writer.Write(&WriteGuid, value, sizeof(Guid));
+            Equal(value, new Guid(bytes.Slice(0, writer.WrittenCount)));
+
+            static void WriteGuid(Guid value, Span<byte> destination)
+                => value.TryWriteBytes(destination);
+        }
+
+        [Fact]
+        public static unsafe void ReadUsingFunctionPointer()
+        {
+            Span<byte> bytes = stackalloc byte[128];
+            var writer = new SpanWriter<byte>(bytes);
+            Guid expected = Guid.NewGuid();
+            writer.Write(&WriteGuid, expected, sizeof(Guid));
+
+            var reader = new SpanReader<byte>(bytes);
+            Equal(expected, reader.Read(&ParseGuid, sizeof(Guid)));
+
+            reader.Rewind(sizeof(Guid));
+            True(reader.TryRead(&ParseGuid, sizeof(Guid), out var actual));
+            Equal(expected, actual);
+
+            static void WriteGuid(Guid value, Span<byte> destination)
+                => value.TryWriteBytes(destination);
+
+            static Guid ParseGuid(ReadOnlySpan<byte> input) => new(input);
+        }
+
+        [Fact]
         public static void AdvanceWriter()
         {
             var writer = new SpanWriter<byte>(stackalloc byte[4]);
