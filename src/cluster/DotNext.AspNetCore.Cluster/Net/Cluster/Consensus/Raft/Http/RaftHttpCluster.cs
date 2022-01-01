@@ -51,7 +51,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         protocolVersion = config.CurrentValue.ProtocolVersion;
         protocolVersionPolicy = config.CurrentValue.ProtocolVersionPolicy;
         localNode = config.CurrentValue.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
-        protocolPath = new Uri(config.CurrentValue.ProtocolPath.Value.IfNullOrEmpty(HttpClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative);
+        protocolPath = new Uri(config.CurrentValue.ProtocolPath.Value is { Length: > 0 } path ? path : HttpClusterMemberConfiguration.DefaultResourcePath, UriKind.Relative);
         coldStart = config.CurrentValue.ColdStart;
         warmupRounds = config.CurrentValue.WarmupRounds;
 

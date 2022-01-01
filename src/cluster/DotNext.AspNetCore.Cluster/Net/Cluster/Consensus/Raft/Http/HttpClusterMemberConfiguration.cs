@@ -70,7 +70,7 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration
     /// </summary>
     public string ClientHandlerName
     {
-        get => handlerName.IfNullOrEmpty(DefaultClientHandlerName);
+        get => handlerName is { Length: > 0 } ? handlerName : DefaultClientHandlerName;
         set => handlerName = value;
     }
 }

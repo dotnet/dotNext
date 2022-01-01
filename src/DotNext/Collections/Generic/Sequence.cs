@@ -341,7 +341,7 @@ public static partial class Sequence
     /// <param name="ifEmpty">A string to be returned if collection has no elements.</param>
     /// <returns>Converted collection into string.</returns>
     public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
-        => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
+        => string.Join(delimiter, collection) is { Length: > 0 } result ? result : ifEmpty;
 
     /// <summary>
     /// Constructs a sequence from the single element.

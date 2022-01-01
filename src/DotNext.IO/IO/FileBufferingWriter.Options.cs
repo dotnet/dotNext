@@ -169,7 +169,7 @@ public partial class FileBufferingWriter
         public bool UseTemporaryFile => !keepFileAlive;
 
         private static string DefaultTempPath
-            => Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(System.IO.Path.GetTempPath());
+            => Environment.GetEnvironmentVariable("ASPNETCORE_TEMP") is { Length: > 0 } tempPath ? tempPath : System.IO.Path.GetTempPath();
 
         internal string Path
         {

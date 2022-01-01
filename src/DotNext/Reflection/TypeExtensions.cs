@@ -24,6 +24,7 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type">The type to inspect.</param>
     /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     public static bool IsUnmanaged(this Type type)
     {
         switch (type)
@@ -115,6 +116,7 @@ public static class TypeExtensions
         return null;
     }
 
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
     {
         bool IsGenericInstanceOf(Type candidate)
