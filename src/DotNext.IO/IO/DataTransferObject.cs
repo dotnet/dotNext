@@ -78,7 +78,7 @@ public static class DataTransferObject
 
         static async ValueTask WriteToStreamAsync(TObject dto, Stream output, int bufferSize, CancellationToken token)
         {
-            using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, bufferSize);
+            using var buffer = MemoryAllocator.Allocate<byte>(bufferSize, exactSize: false);
             await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
     }
@@ -171,7 +171,7 @@ public static class DataTransferObject
             try
             {
                 await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
-                return buffer.WrittenCount == 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
+                return buffer.WrittenCount is 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
             }
             finally
             {
