@@ -145,7 +145,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     private ref Bucket? GetBucket(TKey eventId)
     {
         var bucketIndex = unchecked((uint)(comparer?.GetHashCode(eventId) ?? EqualityComparer<TKey>.Default.GetHashCode(eventId))) % buckets.LongLength;
-        Debug.Assert(bucketIndex >= 0 && bucketIndex < buckets.LongLength);
+        Debug.Assert((uint)bucketIndex < (uint)buckets.LongLength);
 
         return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), (nint)bucketIndex);
     }

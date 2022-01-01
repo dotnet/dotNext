@@ -71,7 +71,7 @@ internal sealed class MetadataExchange : PipeExchange, IClientExchange<IReadOnly
     public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
         var flushResult = await Writer.WriteAsync(payload, token).ConfigureAwait(false);
-        return !(flushResult.IsCanceled || flushResult.IsCompleted || headers.Control == FlowControl.StreamEnd);
+        return flushResult is { IsCanceled: false, IsCompleted: false } && headers.Control is not FlowControl.StreamEnd;
     }
 
     public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)

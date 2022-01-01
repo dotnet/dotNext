@@ -666,7 +666,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
         var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
         using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-        if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
+        if (lockHolder && state is FollowerState followerState and { IsExpired: true })
         {
             Logger.TransitionToCandidateStateStarted();
 

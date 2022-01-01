@@ -14,10 +14,10 @@ public static partial class DelegateHelpers
         => expression.Body switch
         {
             MethodCallExpression expr => expr.Method,
-            MemberExpression expr when expr.Member is PropertyInfo property && property.CanRead => property.GetMethod!,
-            BinaryExpression expr when expr.Method is not null => expr.Method,
-            IndexExpression expr when expr.Indexer is not null && expr.Indexer.CanRead => expr.Indexer.GetMethod!,
-            UnaryExpression expr when expr.Method is not null => expr.Method,
+            MemberExpression and { Member: PropertyInfo property and { CanRead: true } } => property.GetMethod!,
+            BinaryExpression expr and { Method: not null } => expr.Method,
+            IndexExpression expr and { Indexer: { CanRead: true } } => expr.Indexer.GetMethod!,
+            UnaryExpression expr and { Method: not null } => expr.Method,
             _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
         };
 
@@ -42,7 +42,7 @@ public static partial class DelegateHelpers
     /// <returns>The open delegate representing property setter.</returns>
     public static Action<T, TValue> CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>> properyExpr)
         where T : class
-        => properyExpr.Body is MemberExpression expr && expr.Member is PropertyInfo property && property.CanWrite ?
+        => properyExpr.Body is MemberExpression and { Member: PropertyInfo property and { CanWrite: true } } ?
             property.SetMethod!.CreateDelegate<Action<T, TValue>>() :
             throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(properyExpr));
 

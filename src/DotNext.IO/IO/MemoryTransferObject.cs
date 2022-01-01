@@ -27,7 +27,7 @@ public class MemoryTransferObject : Disposable, IDataTransferObject
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         where TWriter : IAsyncBinaryWriter
-        => IsDisposed ? new ValueTask(DisposedTask) : writer.WriteAsync(Content, null, token);
+        => IsDisposed ? new(DisposedTask) : writer.WriteAsync(Content, null, token);
 
     /// <summary>
     /// Converts data transfer object to another type.
@@ -40,7 +40,7 @@ public class MemoryTransferObject : Disposable, IDataTransferObject
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
         where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
-        => IsDisposed ? new ValueTask<TResult>(GetDisposedTask<TResult>()) : transformation.TransformAsync(new SequenceReader(Content), token);
+        => IsDisposed ? new(GetDisposedTask<TResult>()) : transformation.TransformAsync(new SequenceReader(Content), token);
 
     /// <summary>
     /// Gets the content of this object.

@@ -68,7 +68,7 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
     internal ForEachExpression(Expression collection, Expression cancellationToken, bool configureAwait, LabelTarget? continueLabel, LabelTarget? breakLabel)
     {
         collection.Type.GetItemType(out var enumerable);
-        if (enumerable is null || !enumerable.IsConstructedGenericType || enumerable.GetGenericTypeDefinition() != typeof(IAsyncEnumerable<>))
+        if (enumerable is null or { IsConstructedGenericType: false } || enumerable.GetGenericTypeDefinition() != typeof(IAsyncEnumerable<>))
             throw new ArgumentException(ExceptionMessages.AsyncEnumerableExpected, nameof(collection));
         if (cancellationToken.Type != typeof(CancellationToken))
             throw new ArgumentException(ExceptionMessages.TypeExpected<CancellationToken>(), nameof(cancellationToken));

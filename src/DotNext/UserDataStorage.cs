@@ -342,8 +342,7 @@ public readonly ref partial struct UserDataStorage
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        return storage is not null && storage.Remove(slot).HasValue;
+        return GetStorage()?.Remove(slot).HasValue ?? false;
     }
 
     /// <summary>

@@ -39,7 +39,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         {
             get
             {
-                if (index < 0L || index >= count)
+                if ((ulong)index >= (ulong)count)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
                 EmptyLogEntry result;

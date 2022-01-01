@@ -85,7 +85,7 @@ public static partial class ServiceProviderFactory
         object? IServiceProvider.GetService(Type serviceType)
         {
             var index = Array.IndexOf(serviceTypes, serviceType);
-            return index >= 0 && index < tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
+            return (uint)index < (uint)tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
         }
     }
 

@@ -299,7 +299,7 @@ public static partial class Sequence
 
         static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
-            if (index >= 0 && index < list.Count)
+            if ((uint)index < (uint)list.Count)
             {
                 element = list[index];
                 return true;
@@ -311,7 +311,7 @@ public static partial class Sequence
 
         static bool ReadOnlyListElementAt(IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
-            if (index >= 0 && index < list.Count)
+            if ((uint)index < (uint)list.Count)
             {
                 element = list[index];
                 return true;

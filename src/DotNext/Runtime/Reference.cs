@@ -187,7 +187,7 @@ public static class Reference
         if (getter == null)
             throw new ArgumentNullException(nameof(getter));
 
-        if (owner is Array array && array.Rank == 1)
+        if (owner is Array and { Rank: 1 })
             throw new ArgumentException(ExceptionMessages.ObjectMustNotBeArray, nameof(owner));
 
         return Reference<TValue>.Create(owner, getter);

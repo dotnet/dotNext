@@ -172,7 +172,7 @@ internal sealed class MetaExpression : DynamicMetaObject
     {
         var binding = PrepareExpression();
         BindingRestrictions restrictions;
-        binding = Expression is ConstantExpression expr && expr.Value is ConstantExpression constExpr && constExpr.Value is Type ?
+        binding = Expression is ConstantExpression and { Value: ConstantExpression constExpr and { Value: Type } } ?
             Expression.Call(NewMethod, constExpr, Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out restrictions))) :
             Expression.Call(ActivateMethod, binding, Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out restrictions)));
 

@@ -99,7 +99,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
                 do
                 {
-                    Debug.Assert(charPos >= 0 && charPos < buffer.Length);
+                    Debug.Assert((uint)charPos < (uint)buffer.Length);
                     var ch = Unsafe.Add(ref first, charPos);
 
                     if (ch == newLine[newLineBufferPosition])

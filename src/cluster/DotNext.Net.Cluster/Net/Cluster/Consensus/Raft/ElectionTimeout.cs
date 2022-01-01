@@ -38,7 +38,7 @@ public readonly struct ElectionTimeout
     public int UpperValue
     {
         get => upperValue;
-        init => upperValue = value > 0 && value < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(upperValue));
+        init => upperValue = value is > 0 and < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(upperValue));
     }
 
     /// <summary>

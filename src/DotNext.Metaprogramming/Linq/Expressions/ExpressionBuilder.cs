@@ -264,7 +264,9 @@ public static partial class ExpressionBuilder
             return operand.Property(nameof(Optional<int>.HasValue)).Not();
 
         // handle reference type or value type
-        return operand.Type.IsValueType || operand.Type.IsPointer ? Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+        return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
+            ? Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type)) :
+            Const<bool>(false);
     }
 
     /// <summary>
@@ -288,7 +290,9 @@ public static partial class ExpressionBuilder
             return operand.Property(nameof(Optional<int>.HasValue));
 
         // handle reference type or value type
-        return operand.Type.IsValueType || operand.Type.IsPointer ? Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
+        return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
+            ? Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type))
+            : Const<bool>(true);
     }
 
     /// <summary>
@@ -1369,7 +1373,7 @@ public static partial class ExpressionBuilder
     /// <param name="expression">The expression to be converted.</param>
     /// <returns>The nullable expression.</returns>
     public static Expression AsNullable(this Expression expression)
-        => Nullable.GetUnderlyingType(expression.Type) is null && !expression.Type.IsPointer && expression.Type.IsValueType ? Expression.Convert(expression, typeof(Nullable<>).MakeGenericType(expression.Type)) : expression;
+        => Nullable.GetUnderlyingType(expression.Type) is null && expression.Type is { IsPointer: false, IsValueType: true } ? Expression.Convert(expression, typeof(Nullable<>).MakeGenericType(expression.Type)) : expression;
 
     /// <summary>
     /// Creates the expression of <see cref="Optional{T}"/> type.

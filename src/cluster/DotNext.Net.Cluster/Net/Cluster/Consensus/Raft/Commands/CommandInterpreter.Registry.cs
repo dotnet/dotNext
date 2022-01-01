@@ -61,13 +61,13 @@ public partial class CommandInterpreter
         IEnumerable<CommandHandler> IReadOnlyDictionary<int, CommandHandler>.Values => interpreters;
 
         bool IReadOnlyDictionary<int, CommandHandler>.ContainsKey(int key)
-            => key >= 0 && key < interpreters.Length;
+            => (uint)key < (uint)interpreters.Length;
 
         public CommandHandler this[int index] => interpreters[index];
 
         bool IReadOnlyDictionary<int, CommandHandler>.TryGetValue(int key, [MaybeNullWhen(false)] out CommandHandler value)
         {
-            if (key >= 0 && key < interpreters.Length)
+            if ((uint)key < (uint)interpreters.Length)
             {
                 value = interpreters[key];
                 return true;

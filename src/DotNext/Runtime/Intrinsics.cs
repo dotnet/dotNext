@@ -237,7 +237,7 @@ public static class Intrinsics
     internal static int Compare(ref byte first, ref byte second, nint length)
     {
         var comparison = 0;
-        for (int count; length > 0L && comparison == 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
+        for (int count; length > 0L && comparison is 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
             count = length > int.MaxValue ? int.MaxValue : (int)length;
             comparison = MemoryMarshal.CreateSpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateSpan(ref second, count));

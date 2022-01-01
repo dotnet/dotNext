@@ -26,7 +26,7 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
 
     private Constructor(ConstructorInfo ctor, Expression<TSignature> invoker)
     {
-        if (ctor.IsStatic || ctor.DeclaringType is null)
+        if (ctor is { IsStatic: true } or { DeclaringType: null })
             throw new ArgumentException(ExceptionMessages.StaticCtorDetected, nameof(ctor));
         ctorInfo = ctor;
         this.invoker = invoker.Compile();

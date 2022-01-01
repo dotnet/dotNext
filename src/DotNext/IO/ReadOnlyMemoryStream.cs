@@ -26,7 +26,7 @@ internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
         get => sequence.GetOffset(position);
         set
         {
-            if (value < 0L || value > sequence.Length)
+            if ((ulong)value > (ulong)sequence.Length)
                 throw new ArgumentOutOfRangeException(nameof(value));
 
             position = sequence.GetPosition(value);

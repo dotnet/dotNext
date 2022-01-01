@@ -65,7 +65,7 @@ public sealed class ItemIndexExpression : CustomExpression
     public override Type Type => typeof(Index);
 
     internal static Expression GetOffset(Expression index, Expression count)
-        => index is ItemIndexExpression itemIndex && !itemIndex.IsFromEnd ? itemIndex.Value : Call(index, nameof(Index.GetOffset), null, count);
+        => index is ItemIndexExpression itemIndex and { IsFromEnd: false } ? itemIndex.Value : Call(index, nameof(Index.GetOffset), null, count);
 
     /// <summary>
     /// Translates this expression into predefined set of expressions

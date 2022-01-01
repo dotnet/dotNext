@@ -74,7 +74,7 @@ public sealed class NullCoalescingAssignmentExpression : CustomExpression
     /// <returns>Translated expression.</returns>
     public override Expression Reduce()
     {
-        if (Left.Type.IsValueType && Nullable.GetUnderlyingType(Left.Type) is null || Left.Type.IsPrimitive || Left.Type.IsPointer)
+        if (Left.Type.IsValueType && Nullable.GetUnderlyingType(Left.Type) is null || Left.Type is { IsPrimitive: true } or { IsPointer: true })
             return Left;
 
         if (Left is ParameterExpression localVar)

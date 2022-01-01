@@ -132,7 +132,7 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
             for (MemoryChunk? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (next is not null && next.WrittenMemory.Length > 0)
+                if (next is { WrittenMemory: { Length: > 0 } })
                     result += current.FreeCapacity;
             }
 

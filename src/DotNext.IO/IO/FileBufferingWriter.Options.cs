@@ -76,7 +76,7 @@ public partial class FileBufferingWriter
         public int InitialCapacity
         {
             get => initialCapacity;
-            init => initialCapacity = value >= 0 && value < MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            init => initialCapacity = (uint)value < (uint)MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>

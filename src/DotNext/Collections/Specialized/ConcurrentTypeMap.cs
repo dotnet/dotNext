@@ -202,7 +202,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         return ContainsKey(entries, ITypeMap<TValue>.GetIndex<TKey>());
 
         static bool ContainsKey(Entry[] entries, int index)
-            => index < entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
+            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
     }
 
     private TValue GetOrAdd(int index, TValue value, out bool added)

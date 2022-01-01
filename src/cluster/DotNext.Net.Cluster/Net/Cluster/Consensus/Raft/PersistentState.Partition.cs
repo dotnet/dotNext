@@ -185,7 +185,7 @@ public partial class PersistentState
 
             ref readonly var cachedContent = ref EmptyBuffer;
 
-            if (hint == LogEntryReadOptimizationHint.MetadataOnly)
+            if (hint is LogEntryReadOptimizationHint.MetadataOnly)
                 goto return_cached;
 
             if (!entryCache.IsEmpty)
@@ -201,7 +201,7 @@ public partial class PersistentState
         private void UpdateCache(in CachedLogEntry entry, int index, long offset)
         {
             Debug.Assert(entryCache.IsEmpty is false);
-            Debug.Assert(index >= 0 && index < entryCache.Length);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
 
             ref var cacheEntry = ref entryCache[index];
             cacheEntry.Dispose();
@@ -216,7 +216,7 @@ public partial class PersistentState
             Debug.Assert(entryCache.IsEmpty is false);
 
             var index = ToRelativeIndex(absoluteIndex);
-            Debug.Assert(index >= 0 && index < entryCache.Length);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
 
             ReadOnlyMemory<byte> content = entryCache[index].Memory;
 
@@ -461,7 +461,7 @@ public partial class PersistentState
     // during reads the index is growing monothonically
     private protected bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
     {
-        if (partition is not null && partition.Contains(recordIndex))
+        if (partition?.Contains(recordIndex) ?? false)
             goto success;
 
         if (LastPartition is null)
