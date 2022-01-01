@@ -37,10 +37,12 @@ public static class DataTransferObject
     }
 
     // can return null if capacity == 0
-    private static BufferWriter<byte>? CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator) => new PooledBufferWriter<byte>
+    private static BufferWriter<byte>? CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator) => capacity switch
     {
-        BufferAllocator = allocator,
-        Capacity = capacity is long value ? value <= Array.MaxLength ? (int)value : throw new InsufficientMemoryException() : 0,
+        null => new PooledBufferWriter<byte> { BufferAllocator = allocator },
+        0L => null,
+        long length when length <= Array.MaxLength => new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = (int)length },
+        _ => throw new InsufficientMemoryException(),
     };
 
     /// <summary>
