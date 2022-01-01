@@ -48,7 +48,7 @@ public partial class FileWriter : Disposable
         if (bufferSize <= 16)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-        buffer = allocator.Invoke(bufferSize, false);
+        buffer = allocator.Invoke(bufferSize, exactSize: false);
         this.handle = handle;
         this.fileOffset = fileOffset;
     }
