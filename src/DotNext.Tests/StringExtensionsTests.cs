@@ -8,6 +8,7 @@ namespace DotNext
     public sealed class StringExtensionsTests : Test
     {
         [Fact]
+        [Obsolete]
         public static void IfNullOrEmptyTest()
         {
             Equal("a", "".IfNullOrEmpty("a"));
@@ -52,6 +53,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete]
         public static void IsNullOrEmptyStringBuilder()
         {
             True(default(StringBuilder).IsNullOrEmpty());

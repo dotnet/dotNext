@@ -33,6 +33,7 @@ public static class StringExtensions
     /// <param name="str">A string to check.</param>
     /// <param name="alt">Alternative string to be returned if original string is <see langword="null"/> or empty.</param>
     /// <returns>Original or alternative string.</returns>
+    [Obsolete("This method is easily replaceable with pattern matching: expression is { Length: > 0 } str ? str : alt")]
     public static string IfNullOrEmpty(this string? str, string alt)
         => str is { Length: > 0 } ? str : alt;
 
@@ -115,6 +116,7 @@ public static class StringExtensions
     /// </summary>
     /// <param name="builder">The builder to check.</param>
     /// <returns><see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
+    [Obsolete("This method is easily replaceable with pattern matching: sb is not { Length: > 0 };")]
     public static bool IsNullOrEmpty([NotNullWhen(false)] this StringBuilder? builder)
         => builder is not { Length: > 0 };
 }
