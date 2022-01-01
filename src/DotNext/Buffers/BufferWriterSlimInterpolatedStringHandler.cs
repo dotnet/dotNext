@@ -2,12 +2,7 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 using Debug = System.Diagnostics.Debug;
-using FieldRef = InlineIL.FieldRef;
-using MethodRef = InlineIL.MethodRef;
-using TypeRef = InlineIL.TypeRef;
 
 namespace DotNext.Buffers;
 
