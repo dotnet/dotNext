@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace DotNext
 {
@@ -48,6 +49,14 @@ namespace DotNext
         public static void Substring()
         {
             Equal("abcd"[1..2], "abcd".Substring(1..2));
+        }
+
+        [Fact]
+        public static void IsNullOrEmptyStringBuilder()
+        {
+            True(default(StringBuilder).IsNullOrEmpty());
+            True(new StringBuilder().IsNullOrEmpty());
+            False(new StringBuilder("abc").IsNullOrEmpty());
         }
     }
 }

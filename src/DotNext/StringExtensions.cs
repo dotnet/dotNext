@@ -116,5 +116,5 @@ public static class StringExtensions
     /// <param name="builder">The builder to check.</param>
     /// <returns><see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
     public static bool IsNullOrEmpty([NotNullWhen(false)] this StringBuilder? builder)
-        => builder is { Length: 0 };
+        => builder is not { Length: > 0 };
 }
