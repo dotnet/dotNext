@@ -292,6 +292,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         return TryAcquire(ref manager);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory<bool> TryAcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
     /// </summary>
@@ -301,12 +305,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
-        return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        return TryAcquireAsync(ref manager, timeout, token).Create(timeout, token);
     }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory AcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token = default)
+        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -318,12 +325,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
-        return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
     }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory AcquireAsync(ref ReadLockManager manager, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, token);
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -334,7 +344,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
-        => EnterReadLockAsync(InfiniteTimeSpan, token);
+    {
+        var manager = new ReadLockManager(state);
+        return AcquireAsync(ref manager, token).Create(token);
+    }
 
     /// <summary>
     /// Attempts to acquire write lock without blocking.
@@ -369,6 +382,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         return TryAcquire(ref manager);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory<bool> TryAcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
     /// </summary>
@@ -378,12 +395,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        return TryAcquireAsync(ref manager, timeout, token).Create(timeout, token);
     }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory AcquireAsync(ref WriteLockManager manager, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, token);
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -394,7 +414,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
-        => EnterWriteLockAsync(InfiniteTimeSpan, token);
+    {
+        var manager = new WriteLockManager(state);
+        return AcquireAsync(ref manager, token).Create(token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory AcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
+        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -406,11 +433,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
     }
 
     /// <summary>
@@ -427,6 +453,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         return TryAcquire(ref manager);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory<bool> TryAcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Tries to upgrade the read lock to the write lock asynchronously.
     /// </summary>
@@ -436,12 +466,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
-        return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        return TryAcquireAsync(ref manager, timeout, token).Create(timeout, token);
     }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory AcquireAsync(ref UpgradeManager manager, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, token);
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -452,7 +485,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
-        => UpgradeToWriteLockAsync(InfiniteTimeSpan, token);
+    {
+        var manager = new UpgradeManager(state);
+        return AcquireAsync(ref manager, token).Create(token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory AcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
+        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -464,11 +504,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
-        return WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
     }
 
     private void DrainWaitQueue()

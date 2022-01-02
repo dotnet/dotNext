@@ -248,12 +248,9 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     ValueTask<T> ISupplier<TimeSpan, CancellationToken, ValueTask<T>>.Invoke(TimeSpan timeout, CancellationToken token)
         => CreateTask(timeout, token);
 
-    internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token)
-        => PrepareTask(timeout, token) ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
-
     /// <inheritdoc />
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
-        => CreateVoidTask(timeout, token);
+        => PrepareTask(timeout, token) ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     private T GetResult(short token)
     {
