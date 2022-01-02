@@ -2,12 +2,12 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Threading;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[MemoryDiagnoser]
 public class AsyncReaderWriterLockBenchmark
 {
     private ReaderWriterLockSlim rwLock;
@@ -30,7 +30,7 @@ public class AsyncReaderWriterLockBenchmark
         spinLock = default;
     }
 
-    [Benchmark(Description = "ReaderWriterLockSlim acquire/release")]
+    [Benchmark(Description = "ReaderWriterLockSlim acquire/release", Baseline = true)]
     public void AcquireReleaseRWLockSlim()
     {
         rwLock.EnterWriteLock();
@@ -45,9 +45,9 @@ public class AsyncReaderWriterLockBenchmark
     }
 
     [Benchmark(Description = "AsyncReaderWriterLock synchronous acquire/release")]
-    public async ValueTask AcquireReleaseAsyncRWLockAsynchronously()
+    public void AcquireReleaseAsyncRWLockAsynchronously()
     {
-        await asyncRwLock.EnterWriteLockAsync();
+        asyncRwLock.EnterWriteLockAsync().GetAwaiter().GetResult();
         asyncRwLock.Release();
     }
 
