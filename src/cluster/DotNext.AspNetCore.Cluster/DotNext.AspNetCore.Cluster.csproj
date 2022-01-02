@@ -7,6 +7,7 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
+    <Features>nullablePublicOnly</Features>
     <VersionPrefix>4.2.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>

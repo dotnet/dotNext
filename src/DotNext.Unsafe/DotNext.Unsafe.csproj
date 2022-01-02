@@ -8,6 +8,7 @@
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
     <VersionPrefix>4.2.0</VersionPrefix>
+    <Features>nullablePublicOnly</Features>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
