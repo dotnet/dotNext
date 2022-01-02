@@ -11,10 +11,10 @@ using Timestamp = Diagnostics.Timestamp;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct Timeout
 {
-    private readonly Timestamp created;
+    private readonly Timestamp created; // IsEmpty means infinite timeout
 
     // null means that this timeout is infinite
-    private readonly TimeSpan? timeout;
+    private readonly TimeSpan timeout;
 
     /// <summary>
     /// Gets infinite timeout.
@@ -28,30 +28,37 @@ public readonly struct Timeout
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     public Timeout(TimeSpan timeout)
     {
-        created = Timestamp.Current;
         if (timeout == InfiniteTimeSpan)
-            this.timeout = null;
+        {
+            this = default;
+        }
         else if (timeout < TimeSpan.Zero)
+        {
             throw new ArgumentOutOfRangeException(nameof(timeout));
+        }
         else
+        {
+            created = new();
             this.timeout = timeout;
+        }
     }
 
     /// <summary>
     /// Gets value of this timeout.
     /// </summary>
-    public TimeSpan Value => timeout ?? InfiniteTimeSpan;
+    public TimeSpan Value => IsInfinite ? InfiniteTimeSpan : timeout;
 
     /// <summary>
     /// Determines whether this timeout is infinite.
     /// </summary>
-    public bool IsInfinite => timeout is null;
+    public bool IsInfinite => created.IsEmpty;
+
+    private bool IsFinite => !created.IsEmpty;
 
     /// <summary>
     /// Indicates that timeout is occurred.
     /// </summary>
-    public bool IsExpired
-        => this.timeout.TryGetValue(out var timeout) && created.Elapsed > timeout;
+    public bool IsExpired => IsFinite && created.Elapsed > timeout;
 
     /// <summary>
     /// Throws <see cref="TimeoutException"/> if timeout occurs.
@@ -68,8 +75,14 @@ public readonly struct Timeout
     /// <param name="remaining">The remaining time before timeout.</param>
     public void ThrowIfExpired(out TimeSpan remaining)
     {
-        if (!RemainingTime.TryGetValue(out remaining))
+        if (IsInfinite)
+        {
+            remaining = InfiniteTimeSpan;
+        }
+        else if ((remaining = timeout - created.Elapsed) < TimeSpan.Zero)
+        {
             throw new TimeoutException();
+        }
     }
 
     /// <summary>
@@ -80,13 +93,13 @@ public readonly struct Timeout
     {
         get
         {
-            if (this.timeout.TryGetValue(out var timeout))
-            {
-                timeout -= created.Elapsed;
-                return timeout >= TimeSpan.Zero ? new TimeSpan?(timeout) : null;
-            }
+            TimeSpan result;
 
-            return InfiniteTimeSpan;
+            return IsInfinite
+                ? InfiniteTimeSpan
+                : (result = timeout - created.Elapsed) >= TimeSpan.Zero
+                ? result
+                : null;
         }
     }
 
