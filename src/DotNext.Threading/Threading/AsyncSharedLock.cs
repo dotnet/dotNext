@@ -171,11 +171,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> TryAcquireAsync(ref StrongLockManager manager, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory TryAcquireAsync(ref StrongLockManager manager, TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> TryAcquireAsync(ref WeakLockManager manager, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory TryAcquireAsync(ref WeakLockManager manager, TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
@@ -190,7 +190,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTaskFactory<bool> factory;
+        BooleanValueTaskFactory factory;
         if (strongLock)
         {
             var manager = new StrongLockManager(state);

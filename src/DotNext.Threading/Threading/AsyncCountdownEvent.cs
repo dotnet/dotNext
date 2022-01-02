@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Generic;
 using Tasks.Pooling;
 
 /// <summary>
@@ -233,16 +232,16 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
     {
         if (IsDisposed || IsDisposeRequested)
         {
             completedSynchronously = true;
-            return ValueTaskFactory<bool>.FromTask(GetDisposedTask<bool>());
+            return BooleanValueTaskFactory.FromTask(GetDisposedTask<bool>());
         }
 
         return (completedSynchronously = SignalAndResetCore(1L))
-            ? ValueTaskFactory<bool>.FromResult<BooleanConst.True>()
+            ? BooleanValueTaskFactory.True
             : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
     }
 
@@ -286,7 +285,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     bool IAsyncEvent.Signal() => Signal();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>

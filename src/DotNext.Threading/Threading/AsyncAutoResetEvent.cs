@@ -137,7 +137,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>

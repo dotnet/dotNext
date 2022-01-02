@@ -110,7 +110,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
@@ -147,11 +147,11 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         => WaitNoTimeoutAsync(token).Create(token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token)
     {
         ThrowIfDisposed();
         return !SignalCore(resumeAll) && throwOnEmptyQueue
-            ? ValueTaskFactory<bool>.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+            ? BooleanValueTaskFactory.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
             : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
     }
 
@@ -391,7 +391,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(ref LockManager manager, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(ref LockManager manager, TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>

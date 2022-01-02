@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using Generic;
 using Tasks.Pooling;
 
 /// <summary>
@@ -128,7 +127,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     bool IAsyncEvent.Signal() => Set();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
@@ -158,8 +157,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         => WaitNoTimeoutAsync(token).Create(token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token)
-        => manager.Value || condition(arg) ? ValueTaskFactory<bool>.FromResult<BooleanConst.True>() : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+    private BooleanValueTaskFactory WaitNoTimeoutAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token)
+        => manager.Value || condition(arg) ? BooleanValueTaskFactory.True : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -208,8 +207,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token)
-        => manager.Value || condition(arg1, arg2) ? ValueTaskFactory<bool>.FromResult<BooleanConst.True>() : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+    private BooleanValueTaskFactory WaitNoTimeoutAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token)
+        => manager.Value || condition(arg1, arg2) ? BooleanValueTaskFactory.True : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.

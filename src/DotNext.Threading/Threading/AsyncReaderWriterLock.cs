@@ -293,7 +293,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> TryAcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory TryAcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
@@ -383,7 +383,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> TryAcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory TryAcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
@@ -454,7 +454,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> TryAcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory TryAcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>

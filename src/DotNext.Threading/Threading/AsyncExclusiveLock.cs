@@ -83,7 +83,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory<bool> WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
         => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
