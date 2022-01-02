@@ -416,7 +416,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
         if (currentTerm <= senderTerm)
         {
-            Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
+            Timestamp.VolatileWrite(ref lastUpdated, new Timestamp());
             await StepDown(senderTerm).ConfigureAwait(false);
             var senderMember = TryGetMember(sender);
             Leader = senderMember;
@@ -493,7 +493,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             currentTerm = auditTrail.Term;
 
             // provide leader stickiness
-            result = Timestamp.Current - Timestamp.VolatileRead(ref lastUpdated).Value >= ElectionTimeout &&
+            result = Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout &&
                 currentTerm <= nextTerm &&
                 await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
         }

@@ -20,8 +20,32 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     private Timestamp(long ticks) => this.ticks = ticks;
 
     /// <summary>
+    /// Captures the current point in time.
+    /// </summary>
+    public Timestamp()
+        : this(GetTimestamp())
+    {
+    }
+
+    /// <summary>
+    /// Gets a value indicating that the timestamp is zero.
+    /// </summary>
+    public bool IsEmpty => ticks is 0L;
+
+    /// <summary>
+    /// Gets a value indcating that the current timestamp represents the future point in time.
+    /// </summary>
+    public bool IsFuture => ticks > GetTimestamp();
+
+    /// <summary>
+    /// Gets a value indcating that the current timestamp represents the past point in time.
+    /// </summary>
+    public bool IsPast => ticks < GetTimestamp();
+
+    /// <summary>
     /// Gets the current point in time.
     /// </summary>
+    [Obsolete("Use public parameterless constructor instead")]
     public static Timestamp Current => new(GetTimestamp());
 
     private static long ToTicks(double duration)

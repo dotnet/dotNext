@@ -71,7 +71,7 @@ public class QueuedSynchronizer : Disposable
             this.throwOnTimeout = throwOnTimeout;
             this.lockDurationCounter = lockDurationCounter;
             CallerInfo = callerInfo;
-            createdAt = Timestamp.Current;
+            createdAt = new();
         }
 
         protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
