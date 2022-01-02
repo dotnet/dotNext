@@ -17,7 +17,7 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
     private readonly long ticks;
 
-    private Timestamp(long ticks) => this.ticks = ticks;
+    private Timestamp(long ticks) => this.ticks = Math.Max(ticks, 1L); // ensure that timestamp is not empty
 
     /// <summary>
     /// Captures the current point in time.
