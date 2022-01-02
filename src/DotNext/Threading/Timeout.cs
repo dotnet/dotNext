@@ -12,8 +12,6 @@ using Timestamp = Diagnostics.Timestamp;
 public readonly struct Timeout
 {
     private readonly Timestamp created; // IsEmpty means infinite timeout
-
-    // null means that this timeout is infinite
     private readonly TimeSpan timeout;
 
     /// <summary>
@@ -53,12 +51,10 @@ public readonly struct Timeout
     /// </summary>
     public bool IsInfinite => created.IsEmpty;
 
-    private bool IsFinite => !created.IsEmpty;
-
     /// <summary>
     /// Indicates that timeout is occurred.
     /// </summary>
-    public bool IsExpired => IsFinite && created.Elapsed > timeout;
+    public bool IsExpired => !IsInfinite && created.Elapsed > timeout;
 
     /// <summary>
     /// Throws <see cref="TimeoutException"/> if timeout occurs.
