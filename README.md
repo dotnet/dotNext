@@ -56,29 +56,36 @@ Release Date: 12-27-2021
 * Deprecation of `Sequence.FirstOrEmpty` extension methods in favor of `Sequence.FirstOrNone`
 * Fixed [#91](https://github.com/dotnet/dotNext/pull/91)
 * Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of ini-only properties
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/4.2.0">DotNext.Reflection 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.2.0">DotNext.Unsafe 4.2.0</a>
 * Updated dependencies
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.2.0">DotNext.Threading 4.2.0</a>
 * Reduced execution time of `CreateTask` overloads declared in `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes
 * Added overflow check to `AsyncCounter` class
 * Improved debugging experience of all asynchronous locks
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
-* Updated dependencies
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
