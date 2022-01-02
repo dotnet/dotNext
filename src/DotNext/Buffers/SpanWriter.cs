@@ -218,7 +218,7 @@ public ref struct SpanWriter<T>
     [CLSCompliant(false)]
     public unsafe void Write<TArg>(delegate*<TArg, Span<T>, void> action, TArg arg, int count)
     {
-        if (action == null)
+        if (action is null)
             throw new ArgumentNullException(nameof(action));
 
         if (!TrySlide(count, out var buffer))
@@ -237,7 +237,7 @@ public ref struct SpanWriter<T>
     [CLSCompliant(false)]
     public unsafe bool TryWrite<TArg>(delegate*<TArg, Span<T>, out int, bool> action, TArg arg)
     {
-        if (action == null)
+        if (action is null)
             throw new ArgumentNullException(nameof(action));
 
         bool result;

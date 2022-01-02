@@ -44,12 +44,12 @@ public readonly unsafe struct Consumer<T> : IConsumer<T>
     /// <param name="ptr">The function pointer.</param>
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public Consumer(delegate*<T, void> ptr)
-        => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     void IConsumer<T>.Invoke(T arg) => ptr(arg);
@@ -103,14 +103,14 @@ public readonly unsafe struct ConsumerClosure<TContext, T> : IConsumer<T>
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public ConsumerClosure(delegate*<in TContext, T, void> ptr, TContext context)
     {
-        this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
         this.context = context;
     }
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     void IConsumer<T>.Invoke(T arg) => ptr(in context, arg);

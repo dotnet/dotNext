@@ -204,7 +204,7 @@ public ref struct SpanReader<T>
     [CLSCompliant(false)]
     public unsafe TResult Read<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count)
     {
-        if (reader == null)
+        if (reader is null)
             throw new ArgumentNullException(nameof(reader));
 
         return TryRead(count, out var buffer) ? reader(buffer) : throw new InternalBufferOverflowException();
@@ -222,7 +222,7 @@ public ref struct SpanReader<T>
     [CLSCompliant(false)]
     public unsafe bool TryRead<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count, [MaybeNullWhen(false)] out TResult result)
     {
-        if (reader == null)
+        if (reader is null)
             throw new ArgumentNullException(nameof(reader));
 
         if (TryRead(count, out var buffer))

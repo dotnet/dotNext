@@ -76,14 +76,14 @@ public readonly unsafe struct ReadOnlySpanConsumer<T, TArg> : IReadOnlySpanConsu
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public ReadOnlySpanConsumer(delegate*<ReadOnlySpan<T>, TArg, void> ptr, TArg arg)
     {
-        this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
         this.arg = arg;
     }
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => ptr(span, arg);

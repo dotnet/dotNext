@@ -559,7 +559,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe bool IsNull
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value == null;
+        get => value is null;
     }
 
     /// <summary>

@@ -43,12 +43,12 @@ public readonly unsafe struct Supplier<TResult> : ISupplier<TResult>
     /// <param name="ptr">The function pointer.</param>
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public Supplier(delegate*<TResult> ptr)
-        => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     TResult ISupplier<TResult>.Invoke() => ptr();
@@ -140,14 +140,14 @@ public readonly unsafe struct SupplierClosure<TContext, TResult> : ISupplier<TRe
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public SupplierClosure(delegate*<in TContext, TResult> ptr, TContext context)
     {
-        this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
         this.context = context;
     }
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     TResult ISupplier<TResult>.Invoke() => ptr(in context);

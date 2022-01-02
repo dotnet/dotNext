@@ -186,7 +186,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe MemoryOwner<T> Create<TArg>(delegate*<int, TArg, IMemoryOwner<T>> provider, int length, TArg arg, bool exactSize = true)
     {
-        if (provider == null)
+        if (provider is null)
             throw new ArgumentNullException(nameof(provider));
 
         return length == 0 ? default : new(provider(length, arg), exactSize ? length : null);
