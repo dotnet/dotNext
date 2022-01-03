@@ -116,7 +116,7 @@ public class QueuedSynchronizer : Disposable
     {
         // null - successfully completed task
         // Task - completed task
-        // ISupplier<TimeSpan, CancellationToken, ValueTask> - completion source
+        // ValueTaskCompletionSource<bool> - completion source
         private readonly object? result;
 
         private ValueTaskFactory(Task task)
@@ -126,7 +126,7 @@ public class QueuedSynchronizer : Disposable
             result = task;
         }
 
-        private ValueTaskFactory(ISupplier<TimeSpan, CancellationToken, ValueTask> source)
+        private ValueTaskFactory(ValueTaskCompletionSource<bool> source)
         {
             Debug.Assert(source is not null);
 
@@ -136,13 +136,13 @@ public class QueuedSynchronizer : Disposable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask Create(TimeSpan timeout, CancellationToken token)
         {
-            Debug.Assert(result is null or Task or ISupplier<TimeSpan, CancellationToken, ValueTask>);
+            Debug.Assert(result is null or Task or ValueTaskCompletionSource<bool>);
 
             return result switch
             {
                 null => ValueTask.CompletedTask,
                 Task t => new(t),
-                object source => Unsafe.As<ISupplier<TimeSpan, CancellationToken, ValueTask>>(source).Invoke(timeout, token)
+                object source => Unsafe.As<ValueTaskCompletionSource<bool>>(source).CreateVoidTask(timeout, token)
             };
         }
 
@@ -160,7 +160,7 @@ public class QueuedSynchronizer : Disposable
 
         internal static ValueTaskFactory Completed => default;
 
-        internal static ValueTaskFactory FromSource(ISupplier<TimeSpan, CancellationToken, ValueTask> source)
+        internal static ValueTaskFactory FromSource(ValueTaskCompletionSource<bool> source)
             => new(source);
     }
 
@@ -171,7 +171,7 @@ public class QueuedSynchronizer : Disposable
         // null - false
         // Sentinel.Instance - true
         // Task<bool> - completed task
-        // ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> - completion source
+        // ValueTaskCompletionSource<bool> - completion source
         private readonly object? result;
 
         public BooleanValueTaskFactory() => result = Sentinel.Instance;
@@ -183,7 +183,7 @@ public class QueuedSynchronizer : Disposable
             result = task;
         }
 
-        private BooleanValueTaskFactory(ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> source)
+        private BooleanValueTaskFactory(ValueTaskCompletionSource<bool> source)
         {
             Debug.Assert(source is not null);
 
@@ -193,14 +193,14 @@ public class QueuedSynchronizer : Disposable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask<bool> Create(TimeSpan timeout, CancellationToken token)
         {
-            Debug.Assert(result is null or Task<bool> or ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> || ReferenceEquals(result, Sentinel.Instance));
+            Debug.Assert(result is null or Task<bool> or ValueTaskCompletionSource<bool> || ReferenceEquals(result, Sentinel.Instance));
 
             return result switch
             {
                 null => new(false),
                 object sentinel when ReferenceEquals(sentinel, Sentinel.Instance) => new(true),
                 Task<bool> t => new(t),
-                object source => Unsafe.As<ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>>(source).Invoke(timeout, token)
+                object source => Unsafe.As<ValueTaskCompletionSource<bool>>(source).CreateTask(timeout, token)
             };
         }
 
@@ -213,7 +213,7 @@ public class QueuedSynchronizer : Disposable
         internal static BooleanValueTaskFactory FromException(Exception e)
             => new(Task.FromException<bool>(e));
 
-        internal static BooleanValueTaskFactory FromSource(ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> source)
+        internal static BooleanValueTaskFactory FromSource(ValueTaskCompletionSource<bool> source)
             => new(source);
 
         internal static BooleanValueTaskFactory True => new();
