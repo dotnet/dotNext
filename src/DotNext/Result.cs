@@ -441,11 +441,16 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Validate()
     {
         if (!IsSuccessful)
-            throw new UndefinedResultException<TError>(Error);
+            Throw();
     }
+
+    [StackTraceHidden]
+    [DoesNotReturn]
+    private void Throw() => throw new UndefinedResultException<TError>(Error);
 
     /// <inheritdoc />
     object? ISupplier<object?>.Invoke() => IsSuccessful ? value : errorCode;
