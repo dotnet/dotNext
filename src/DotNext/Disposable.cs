@@ -26,15 +26,14 @@ public abstract class Disposable : IDisposable
     /// Throws exception if this object is disposed.
     /// </summary>
     /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void ThrowIfDisposed()
     {
         if (IsDisposed)
-            Throw(ObjectName);
+            Throw();
 
         [DoesNotReturn]
         [StackTraceHidden]
-        static void Throw(string objectName) => throw new ObjectDisposedException(objectName);
+        void Throw() => throw new ObjectDisposedException(ObjectName);
     }
 
     /// <summary>

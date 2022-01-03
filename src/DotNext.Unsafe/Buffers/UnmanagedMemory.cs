@@ -33,11 +33,11 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     {
         get
         {
-            return address is not null ? new(address) : Throw(GetType().Name);
+            return address is not null ? new(address) : Throw();
 
             [DoesNotReturn]
             [StackTraceHidden]
-            static IntPtr Throw(string objectName) => throw new ObjectDisposedException(objectName);
+            IntPtr Throw() => throw new ObjectDisposedException(GetType().Name);
         }
     }
 

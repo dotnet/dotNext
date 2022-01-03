@@ -62,11 +62,11 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         private void ThrowIfDisposed()
         {
             if (ptr is null)
-                Throw(GetType().Name);
+                Throw();
 
             [DoesNotReturn]
             [StackTraceHidden]
-            static void Throw(string objectName) => throw new ObjectDisposedException(objectName);
+            void Throw() => throw new ObjectDisposedException(GetType().Name);
         }
 
         public override Span<byte> GetSpan()
