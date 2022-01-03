@@ -231,6 +231,15 @@ public static class Optional
     public static Optional<T> Create<T, TMonad>(TMonad value)
         where TMonad : struct, IOptionMonad<T>
         => value.HasValue ? new(value.OrDefault()) : None<T>();
+
+    /// <summary>
+    /// Flattens the nested optional value.
+    /// </summary>
+    /// <typeparam name="T">The type of the underlying value.</typeparam>
+    /// <param name="optional">The nested optional value.</param>
+    /// <returns>Flattened value.</returns>
+    public static Optional<T> Flatten<T>(this in Optional<Optional<T>> optional)
+        => new(in optional);
 }
 
 /// <summary>
@@ -269,6 +278,12 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         this.value = value;
         kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value) : NotEmptyValue;
+    }
+
+    internal Optional(in Optional<Optional<T>> value)
+    {
+        this.value = value.value.value;
+        kind = value.kind;
     }
 
     private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
