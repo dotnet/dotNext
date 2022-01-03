@@ -487,26 +487,24 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         }
     }
 
-    [StackTraceHidden]
     [MemberNotNull(nameof(value))]
     internal void Validate()
     {
-        string msg;
+        var kind = this.kind;
 
-        switch (kind)
+        if (kind is NotEmptyValue)
         {
-            default:
-                Debug.Assert(value is not null);
-                return;
-            case UndefinedValue:
-                msg = ExceptionMessages.OptionalNoValue;
-                break;
-            case NullValue:
-                msg = ExceptionMessages.OptionalNullValue;
-                break;
+            Debug.Assert(value is not null);
+        }
+        else
+        {
+            Throw(kind is UndefinedValue);
         }
 
-        throw new InvalidOperationException(msg);
+        [StackTraceHidden]
+        [DoesNotReturn]
+        static void Throw(bool isUndefined)
+            => throw new InvalidOperationException(isUndefined ? ExceptionMessages.OptionalNoValue : ExceptionMessages.OptionalNullValue);
     }
 
     /// <inheritdoc />
