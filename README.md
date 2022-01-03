@@ -57,6 +57,7 @@ Release Date: 12-27-2021
 * Fixed [#91](https://github.com/dotnet/dotNext/pull/91)
 * Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of ini-only properties
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Optimized performance of `Timeout`, `Optional<T>`, `Result<T>` and `Result<T, TError>` types
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
@@ -75,6 +76,7 @@ Release Date: 12-27-2021
 * Added overflow check to `AsyncCounter` class
 * Improved debugging experience of all asynchronous locks
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced lock contention that can be caused by asynchronous locks in concurrent scenarios
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
