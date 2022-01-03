@@ -1,0 +1,1 @@
+dotnet run -c Bench -- --envVars DOTNET_TieredPGO:1 DOTNET_TC_QuickJitForLoops:1 DOTNET_ReadyToRun:0
