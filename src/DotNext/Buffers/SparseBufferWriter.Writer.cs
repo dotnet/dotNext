@@ -46,7 +46,7 @@ public partial class SparseBufferWriter<T> : IBufferWriter<T>
             // there are two possible cases:
             // the last chunk has occupied elements - attach a new chunk (causes a hole in the memory)
             // the last chunk has no occupied elements - realloc the memory
-            if (last is PooledMemoryChunk pooledChunk and { IsUnused: true })
+            if (last is PooledMemoryChunk { IsUnused: true } pooledChunk)
                 pooledChunk.Realloc(allocator, sizeHint);
             else
                 last = new PooledMemoryChunk(allocator, sizeHint, last);

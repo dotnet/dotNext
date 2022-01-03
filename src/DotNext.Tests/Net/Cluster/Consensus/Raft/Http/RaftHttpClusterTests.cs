@@ -165,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
             await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
-            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint and { Port: 3263 });
+            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint { Port: 3263 });
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(messageBox);
 
@@ -230,7 +230,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
             await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
-            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint and { Port: 3263 });
+            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint { Port: 3263 });
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<TestMessageHandler>()).FirstOrDefault() as TestMessageHandler;
             NotNull(messageBox);
 
