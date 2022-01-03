@@ -137,7 +137,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref readonly T GetReference(in Result<T> result)
     {
-        result.exception?.Throw();
+        result.Validate();
         return ref result.value;
     }
 
@@ -178,10 +178,12 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     {
         get
         {
-            exception?.Throw();
+            Validate();
             return value;
         }
     }
+
+    private void Validate() => exception?.Throw();
 
     /// <inheritdoc />
     object? ISupplier<object?>.Invoke() => Value;
