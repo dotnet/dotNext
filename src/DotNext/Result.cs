@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
@@ -417,10 +418,8 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref readonly T GetReference(in Result<T, TError> result)
     {
-        if (result.IsSuccessful)
-            return ref result.value;
-
-        throw new UndefinedResultException<TError>(result.Error);
+        result.Validate();
+        return ref result.value;
     }
 
     /// <summary>
@@ -429,13 +428,24 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <returns>The boxed representation of the result.</returns>
     public Result<object?, TError> Box() => IsSuccessful ? new(value) : new(errorCode);
 
-    private static UndefinedResultException<TError> CreateException(TError errorCode) => new(errorCode);
-
     /// <summary>
     /// Extracts the actual result.
     /// </summary>
     /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
-    public unsafe T Value => OrThrow(&CreateException);
+    public unsafe T Value
+    {
+        get
+        {
+            Validate();
+            return value;
+        }
+    }
+
+    private void Validate()
+    {
+        if (!IsSuccessful)
+            throw new UndefinedResultException<TError>(Error);
+    }
 
     /// <inheritdoc />
     object? ISupplier<object?>.Invoke() => IsSuccessful ? value : errorCode;
@@ -554,10 +564,15 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public unsafe T OrInvoke(delegate*<TError, T> defaultFunc)
         => OrInvokeWithError<Supplier<TError, T>>(defaultFunc);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrThrow<TExceptionFactory>(TExceptionFactory factory)
         where TExceptionFactory : struct, ISupplier<TError, Exception>
-        => IsSuccessful ? value : throw factory.Invoke(Error);
+        => IsSuccessful ? value : Throw(factory);
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private T Throw<TExceptionFactory>(TExceptionFactory factory)
+        where TExceptionFactory : struct, ISupplier<TError, Exception>
+        => throw factory.Invoke(Error);
 
     /// <summary>
     /// Gets underlying value or throws an exception.

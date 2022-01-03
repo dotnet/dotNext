@@ -164,16 +164,12 @@ public static class Optional
         where T : class
         => new(null);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
         where T : struct
         where TException : struct, ISupplier<Exception>
     {
-        ref readonly T result = ref Optional<T>.GetReference(in optional);
-        if (!optional.HasValue)
-            throw exceptionFactory.Invoke();
-
-        return ref result;
+        optional.Validate(exceptionFactory);
+        return ref Optional<T>.GetReference(in optional);
     }
 
     /// <summary>
@@ -221,11 +217,8 @@ public static class Optional
     public static ref readonly T GetReference<T>(in Optional<T> optional)
         where T : struct
     {
-        ref readonly T result = ref Optional<T>.GetReference(in optional);
-        if (!optional.HasValue)
-            throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
-
-        return ref result;
+        optional.Validate();
+        return ref Optional<T>.GetReference(in optional);
     }
 
     /// <summary>
@@ -403,7 +396,22 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [return: NotNull]
     private T OrThrow<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
-        => HasValue ? value : throw exceptionFactory.Invoke();
+    {
+        Validate(exceptionFactory);
+        return value;
+    }
+
+    [MemberNotNull(nameof(value))]
+    internal void Validate<TFactory>(TFactory exceptionFactory)
+        where TFactory : struct, ISupplier<Exception>
+    {
+        if (!HasValue)
+            Throw(exceptionFactory);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void Throw(TFactory exceptionFactory) => throw exceptionFactory.Invoke();
+    }
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -459,21 +467,31 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         get
         {
-            string msg;
-            switch (kind)
-            {
-                default:
-                    return value!;
-                case UndefinedValue:
-                    msg = ExceptionMessages.OptionalNoValue;
-                    break;
-                case NullValue:
-                    msg = ExceptionMessages.OptionalNullValue;
-                    break;
-            }
-
-            throw new InvalidOperationException(msg);
+            Validate();
+            return value;
         }
+    }
+
+    [StackTraceHidden]
+    [MemberNotNull(nameof(value))]
+    internal void Validate()
+    {
+        string msg;
+
+        switch (kind)
+        {
+            default:
+                Debug.Assert(value is not null);
+                return;
+            case UndefinedValue:
+                msg = ExceptionMessages.OptionalNoValue;
+                break;
+            case NullValue:
+                msg = ExceptionMessages.OptionalNullValue;
+                break;
+        }
+
+        throw new InvalidOperationException(msg);
     }
 
     /// <inheritdoc />
