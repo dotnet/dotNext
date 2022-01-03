@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
@@ -25,6 +26,7 @@ public abstract class Disposable : IDisposable
     /// Throws exception if this object is disposed.
     /// </summary>
     /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void ThrowIfDisposed()
     {
         if (IsDisposed)
