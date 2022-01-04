@@ -12,7 +12,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple writers and use dedicated writer in each thread.
 /// </remarks>
-public partial class FileWriter : Disposable
+public partial class FileWriter : Disposable, IFlushable
 {
     /// <summary>
     /// Represents the file handle.
@@ -154,6 +154,9 @@ public partial class FileWriter : Disposable
         return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
+    /// <inheritdoc />
+    Task IFlushable.FlushAsync(CancellationToken token) => WriteAsync(token).AsTask();
+
     /// <summary>
     /// Flushes buffered data to the file.
     /// </summary>
@@ -165,6 +168,9 @@ public partial class FileWriter : Disposable
         if (HasBufferedData)
             FlushCore();
     }
+
+    /// <inheritdoc />
+    void IFlushable.Flush() => Write();
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
