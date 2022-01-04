@@ -45,7 +45,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-27-2021
+Release Date: 01-05-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.2.0">DotNext 4.2.0</a>
 * Improved scalability of mechanism that allows to attach custom data to arbitrary objects using `UserDataStorage` and `UserDataSlot<T>` types. The improvement works better in high workloads without the risk of lock contention but requires a bit more CPU cycles to obtain the data attached to the object
@@ -81,6 +81,7 @@ Release Date: 12-27-2021
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* `FileWriter` now implements [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
