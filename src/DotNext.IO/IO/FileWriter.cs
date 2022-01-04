@@ -65,6 +65,8 @@ public partial class FileWriter : Disposable, IFlushable
     /// </remarks>
     public Memory<byte> Buffer => buffer.Memory.Slice(bufferOffset);
 
+    private Span<byte> BufferSpan => buffer.Span.Slice(bufferOffset);
+
     /// <summary>
     /// Gets the maximum available buffer size.
     /// </summary>
@@ -241,7 +243,7 @@ public partial class FileWriter : Disposable, IFlushable
 
         if (input.Length <= FreeCapacity)
         {
-            input.CopyTo(Buffer.Span);
+            input.CopyTo(BufferSpan);
             bufferOffset += input.Length;
         }
         else
