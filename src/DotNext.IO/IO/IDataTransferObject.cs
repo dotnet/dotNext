@@ -169,8 +169,9 @@ public interface IDataTransferObject
     {
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
-        using (var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false))
         {
+            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, exactSize: false);
+
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
 
