@@ -89,6 +89,8 @@ public partial class FileReader : Disposable
     /// </summary>
     public ReadOnlyMemory<byte> Buffer => buffer.Memory.Slice(bufferStart, BufferLength);
 
+    private ReadOnlySpan<byte> BufferSpan => buffer.Span.Slice(bufferStart, BufferLength);
+
     /// <summary>
     /// Gets a value indicating that the read buffer is not empty.
     /// </summary>
@@ -232,7 +234,7 @@ public partial class FileReader : Disposable
                 if (!HasBufferedData && !await ReadAsync(token).ConfigureAwait(false))
                     break;
 
-                Buffer.Span.CopyTo(output.Span, out writtenCount);
+                BufferSpan.CopyTo(output.Span, out writtenCount);
                 result += writtenCount;
                 Consume(writtenCount);
             }
@@ -266,7 +268,7 @@ public partial class FileReader : Disposable
                 if (!HasBufferedData && !Read())
                     break;
 
-                Buffer.Span.CopyTo(output, out writtenCount);
+                BufferSpan.CopyTo(output, out writtenCount);
                 count += writtenCount;
                 Consume(writtenCount);
             }
