@@ -98,8 +98,6 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
             : new(target);
     }
 
-    private SoftReference(TrackerReference? trackerRef) => this.trackerRef = trackerRef;
-
     /// <summary>
     /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
     /// </summary>
@@ -172,13 +170,6 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     /// <param name="reference">The reference to the object.</param>
     /// <returns>The referenced object; or <see langword="null"/> if the object is not reachable.</returns>
     public static explicit operator T?(SoftReference<T> reference) => reference.Target;
-
-    /// <summary>
-    /// Casts typed reference to a reference of type <see cref="object"/>.
-    /// </summary>
-    /// <param name="reference">The reference to cast.</param>
-    public static implicit operator SoftReference<object>(SoftReference<T> reference)
-        => new(reference.trackerRef);
 }
 
 /// <summary>

@@ -68,5 +68,13 @@ namespace DotNext.Runtime
             NotEqual(target, ref1);
             NotEqual(ref1.GetHashCode(), ref2.GetHashCode());
         }
+
+        [Fact]
+        public static void ClearReference()
+        {
+            var reference = new SoftReference<object>(new object());
+            reference.Clear();
+            False(reference.TryGetTarget(out _));
+        }
     }
 }
