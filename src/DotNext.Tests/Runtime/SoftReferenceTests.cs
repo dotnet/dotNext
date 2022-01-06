@@ -16,7 +16,7 @@ namespace DotNext.Runtime
         {
             var reference = CreateReference();
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 30; i++)
             {
                 new object();
                 GC.Collect(generation: 0);
@@ -35,10 +35,11 @@ namespace DotNext.Runtime
         {
             var reference = CreateReference();
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 30; i++)
             {
                 new object();
                 GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
             Null((Target)reference);
@@ -46,6 +47,25 @@ namespace DotNext.Runtime
             [MethodImpl(MethodImplOptions.NoInlining)]
             static SoftReference<Target> CreateReference()
                 => new(new(), new SoftReferenceOptions { CollectionCount = int.MaxValue, MemoryLimit = 1 });
+        }
+
+        [Fact]
+        public static void TrackStrongReference()
+        {
+            var expected = new object();
+            var reference = new SoftReference<object>(expected);
+
+            for (var i = 0; i < 30; i++)
+            {
+                new object();
+                GC.Collect();
+            }
+
+            var (state, actual) = reference.StateAndTarget;
+            Same(expected, actual);
+            Equal(SoftReferenceState.Weak, state);
+
+            GC.KeepAlive(expected);
         }
 
         [Fact]
