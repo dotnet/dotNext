@@ -14,6 +14,7 @@ Release Notes
 * Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of ini-only properties
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 * Optimized performance of `Timeout`, `Optional<T>`, `Result<T>` and `Result<T, TError>` types
+* Introduced `DotNext.Runtime.SoftReference` data type in addition to [WeakReference](https://docs.microsoft.com/en-us/dotnet/api/system.weakreference) from .NET
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
