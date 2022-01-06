@@ -78,7 +78,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
         // do HTTP request and use token associated with custom timeout
         var response = default(HttpResponseMessage);
-        var timeStamp = Timestamp.Current;
+        var timeStamp = new Timestamp();
         try
         {
             response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, tokenWithTimeout)

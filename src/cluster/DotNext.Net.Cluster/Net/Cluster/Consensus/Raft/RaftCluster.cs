@@ -416,7 +416,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
         if (currentTerm <= senderTerm)
         {
-            Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
+            Timestamp.VolatileWrite(ref lastUpdated, new Timestamp());
             await StepDown(senderTerm).ConfigureAwait(false);
             var senderMember = TryGetMember(sender);
             Leader = senderMember;
@@ -453,18 +453,19 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
                 // process configuration
                 var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
-                if (config.Fingerprint == fingerprint)
+                switch ((config.Fingerprint == fingerprint, applyConfig))
                 {
-                    if (applyConfig)
+                    case (true, true):
                         await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
-                }
-                else if (applyConfig is false)
-                {
-                    await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
-                }
-                else
-                {
-                    result = false;
+                        break;
+                    case (true, false):
+                        break;
+                    case (false, false):
+                        await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
+                        break;
+                    case (false, true):
+                        result = false;
+                        break;
                 }
             }
         }
@@ -492,7 +493,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             currentTerm = auditTrail.Term;
 
             // provide leader stickiness
-            result = Timestamp.Current - Timestamp.VolatileRead(ref lastUpdated).Value >= ElectionTimeout &&
+            result = Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout &&
                 currentTerm <= nextTerm &&
                 await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
         }
@@ -665,7 +666,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
         var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
         using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-        if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
+        if (lockHolder && state is FollowerState { IsExpired: true } followerState)
         {
             Logger.TransitionToCandidateStateStarted();
 

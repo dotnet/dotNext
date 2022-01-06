@@ -400,14 +400,14 @@ public sealed class Field<T, TValue> : FieldBase<TValue>, IField<T, TValue>
     private static Field<T, TValue>? Reflect(string fieldName, bool nonPublic)
     {
         FieldInfo? field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
-        return field is null ? null : new Field<T, TValue>(field);
+        return field is null ? null : new(field);
     }
 
     internal static Field<T, TValue>? GetOrCreate(string fieldName, bool nonPublic)
         => Cache.Of<Cache>(typeof(T)).GetOrCreate(fieldName, nonPublic);
 
     private static Field<T, TValue> Unreflect(FieldInfo field)
-        => field.IsStatic ? throw new ArgumentException(ExceptionMessages.InstanceFieldExpected, nameof(field)) : new Field<T, TValue>(field);
+        => field.IsStatic ? throw new ArgumentException(ExceptionMessages.InstanceFieldExpected, nameof(field)) : new(field);
 
     internal static unsafe Field<T, TValue> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, &Unreflect);
 }
@@ -569,11 +569,11 @@ public sealed class Field<TValue> : FieldBase<TValue>, IField<TValue>
     private static Field<TValue>? Reflect(Type declaringType, string fieldName, bool nonPublic)
     {
         FieldInfo? field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
-        return field is null ? null : new Field<TValue>(field);
+        return field is null ? null : new(field);
     }
 
     private static Field<TValue> Unreflect(FieldInfo field)
-        => field.IsStatic ? new Field<TValue>(field) : throw new ArgumentException(ExceptionMessages.StaticFieldExpected, nameof(field));
+        => field.IsStatic ? new(field) : throw new ArgumentException(ExceptionMessages.StaticFieldExpected, nameof(field));
 
     internal static unsafe Field<TValue> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, &Unreflect);
 

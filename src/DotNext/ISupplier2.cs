@@ -50,12 +50,12 @@ public readonly unsafe struct Supplier<T1, T2, TResult> : ISupplier<T1, T2, TRes
     /// <param name="ptr">The function pointer.</param>
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public Supplier(delegate*<T1, T2, TResult> ptr)
-        => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     TResult ISupplier<T1, T2, TResult>.Invoke(T1 arg1, T2 arg2) => ptr(arg1, arg2);
@@ -113,14 +113,14 @@ public readonly unsafe struct SupplierClosure<TContext, T1, T2, TResult> : ISupp
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public SupplierClosure(TContext context, delegate*<in TContext, T1, T2, TResult> ptr)
     {
-        this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
         this.context = context;
     }
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
     /// </summary>
-    public bool IsEmpty => ptr == null;
+    public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
     TResult ISupplier<T1, T2, TResult>.Invoke(T1 arg1, T2 arg2) => ptr(in context, arg1, arg2);
@@ -225,7 +225,7 @@ internal readonly unsafe struct ComparerWrapper<T> : IComparer<T>, ISupplier<T?,
     private readonly delegate*<T?, T?, int> ptr;
 
     internal ComparerWrapper(delegate*<T?, T?, int> ptr)
-        => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     int ISupplier<T?, T?, int>.Invoke(T? x, T? y) => ptr(x, y);
 

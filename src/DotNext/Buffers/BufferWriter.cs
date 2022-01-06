@@ -264,9 +264,8 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <param name="sizeHint">The requested size of the buffer.</param>
     private protected void CheckAndResizeBuffer(int sizeHint)
     {
-        var newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position);
-        if (newSize.HasValue)
-            Resize(newSize.GetValueOrDefault());
+        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, out sizeHint))
+            Resize(sizeHint);
     }
 
     /// <summary>

@@ -15,8 +15,9 @@ public sealed class NullSafetyExpression : CustomExpression
 
     internal NullSafetyExpression(Expression target)
     {
-        if (target.Type.IsPointer || target.Type.IsByRefLike)
+        if (target.Type is { IsPointer: true } or { IsByRefLike: true })
             throw new NotSupportedException(ExceptionMessages.UnsupportedSafeNavigationType(target.Type));
+
         alwaysNotNull = target.Type.IsValueType && Nullable.GetUnderlyingType(target.Type) is null && Optional.GetUnderlyingType(target.Type) is null;
         if (target is ParameterExpression variable)
         {
@@ -64,7 +65,7 @@ public sealed class NullSafetyExpression : CustomExpression
     /// </summary>
     public override Type Type
     {
-        get => alwaysNotNull || Body.Type == typeof(void) || Body.Type.IsClass || Body.Type.IsInterface || Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null ?
+        get => alwaysNotNull || Body.Type == typeof(void) || Body.Type is { IsClass: true } or { IsInterface: true } || Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null ?
             Body.Type :
             typeof(Nullable<>).MakeGenericType(Body.Type);
     }

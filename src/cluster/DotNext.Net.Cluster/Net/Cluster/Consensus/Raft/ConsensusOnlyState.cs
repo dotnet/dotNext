@@ -39,7 +39,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         {
             get
             {
-                if (index < 0L || index >= count)
+                if ((ulong)index >= (ulong)count)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
                 EmptyLogEntry result;
@@ -47,7 +47,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 {
                     result = new EmptyLogEntry(terms[index + offset], false);
                 }
-                else if (index == 0)
+                else if (index is 0)
                 {
                     result = new EmptyLogEntry(snapshotTerm, true);
                 }
@@ -104,14 +104,15 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         long skip;
         if (startIndex is null)
             startIndex = index + 1L;
-        else if (startIndex > index + 1L)
+        else if (startIndex.GetValueOrDefault() > index + 1L)
             throw new ArgumentOutOfRangeException(nameof(startIndex));
+
         if (skipCommitted)
         {
-            skip = Math.Max(0, commitIndex.VolatileRead() - startIndex.Value + 1L);
+            skip = Math.Max(0, commitIndex.VolatileRead() - startIndex.GetValueOrDefault() + 1L);
             startIndex += skip;
         }
-        else if (startIndex <= commitIndex.VolatileRead())
+        else if (startIndex.GetValueOrDefault() <= commitIndex.VolatileRead())
         {
             throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
         }
@@ -137,10 +138,10 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             }
 
             // now concat existing array of terms
-            Append(newEntries, startIndex.Value);
+            Append(newEntries, startIndex.GetValueOrDefault());
         }
 
-        return startIndex.Value;
+        return startIndex.GetValueOrDefault();
     }
 
     /// <inheritdoc/>

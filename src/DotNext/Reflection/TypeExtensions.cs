@@ -17,39 +17,39 @@ public static class TypeExtensions
     /// <param name="type">The type to inspect.</param>
     /// <returns><see langword="true"/>, if the specified type is immutable value type; otherwise, <see langword="false"/>.</returns>
     public static bool IsImmutable(this Type type)
-        => type.IsPrimitive || type.IsPointer || type.IsEnum || type.IsByRef || type.IsValueType && type.IsDefined<IsReadOnlyAttribute>();
+        => (type is { IsPrimitive: true } or { IsPointer: true } or { IsEnum: true } or { IsByRef: true }) || type.IsValueType && type.IsDefined<IsReadOnlyAttribute>();
 
     /// <summary>
     /// Determines whether the type is unmanaged value type.
     /// </summary>
     /// <param name="type">The type to inspect.</param>
     /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     public static bool IsUnmanaged(this Type type)
     {
-        if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
+        switch (type)
         {
-            foreach (var attribute in type.GetCustomAttributesData())
-            {
-                if (attribute.AttributeType.FullName == IsUnmanagedAttributeName)
-                    return true;
-            }
+            case { IsGenericType: true } or { IsGenericTypeDefinition: true } or { IsGenericParameter: true }:
+                foreach (var attribute in type.GetCustomAttributesData())
+                {
+                    if (attribute.AttributeType.FullName == IsUnmanagedAttributeName)
+                        return true;
+                }
 
-            return false;
-        }
+                break;
 
-        if (type.IsPrimitive || type.IsPointer || type.IsEnum)
-            return true;
+            case { IsPrimitive: true } or { IsPointer: true } or { IsEnum: true }:
+                return true;
 
-        if (type.IsValueType)
-        {
-            // check all fields
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
-            {
-                if (!field.FieldType.IsUnmanaged())
-                    return false;
-            }
+            case { IsValueType: true }:
+                // check all fields
+                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
+                {
+                    if (!field.FieldType.IsUnmanaged())
+                        return false;
+                }
 
-            return true;
+                return true;
         }
 
         return false;
@@ -82,8 +82,9 @@ public static class TypeExtensions
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
     public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
     {
-        if (abstractMethod.IsFinal || !abstractMethod.IsVirtual || abstractMethod.DeclaringType is null)
+        if (abstractMethod is { IsFinal: true } or { IsVirtual: false } or { DeclaringType: null })
             return abstractMethod;
+
         if (type.IsInterface)
             goto exit;
         if (abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
@@ -115,6 +116,7 @@ public static class TypeExtensions
         return null;
     }
 
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
     {
         bool IsGenericInstanceOf(Type candidate)
@@ -126,24 +128,26 @@ public static class TypeExtensions
         if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == genericDefinition)
             return type;
 
-        if (genericDefinition.IsSealed)
-            return IsGenericInstanceOf(type) ? type : null;
+        switch (genericDefinition)
+        {
+            case { IsSealed: true }:
+                return IsGenericInstanceOf(type) ? type : null;
+            case { IsInterface: true }:
+                foreach (var iface in type.GetInterfaces())
+                {
+                    if (IsGenericInstanceOf(iface))
+                        return iface;
+                }
 
-        if (genericDefinition.IsInterface)
-        {
-            foreach (var iface in type.GetInterfaces())
-            {
-                if (IsGenericInstanceOf(iface))
-                    return iface;
-            }
-        }
-        else
-        {
-            for (Type? lookup = type; lookup is not null; lookup = lookup.BaseType)
-            {
-                if (IsGenericInstanceOf(lookup))
-                    return lookup;
-            }
+                break;
+            default:
+                for (Type? lookup = type; lookup is not null; lookup = lookup.BaseType)
+                {
+                    if (IsGenericInstanceOf(lookup))
+                        return lookup;
+                }
+
+                break;
         }
 
         return null;

@@ -19,6 +19,7 @@
 | [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://dotnet.github.io/dotNext/features/io/mmfile.html) |
 | [Memory-mapped file as ReadOnlySequence&lt;byte&gt;](https://github.com/dotnet/runtime/issues/24805) | [ReadOnlySequenceAccessor](https://dotnet.github.io/dotNext/api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html) |
 | [A dictionary where the keys are represented by generic arguments](https://github.com/dotnet/runtime/issues/59718) | [Documentation](https://dotnet.github.io/dotNext/features/core/typem.html) |
+| [Process asynchronous tasks as they complete](https://github.com/dotnet/runtime/issues/61959) | [Documentation](https://dotnet.github.io/dotNext/features/threading/taskpipe.html) |
 
 Quick overview of additional features:
 
@@ -44,7 +45,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-27-2021
+Release Date: 01-05-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.2.0">DotNext 4.2.0</a>
 * Improved scalability of mechanism that allows to attach custom data to arbitrary objects using `UserDataStorage` and `UserDataSlot<T>` types. The improvement works better in high workloads without the risk of lock contention but requires a bit more CPU cycles to obtain the data attached to the object
@@ -56,29 +57,40 @@ Release Date: 12-27-2021
 * Deprecation of `Sequence.FirstOrEmpty` extension methods in favor of `Sequence.FirstOrNone`
 * Fixed [#91](https://github.com/dotnet/dotNext/pull/91)
 * Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of ini-only properties
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Optimized performance of `Timeout`, `Optional<T>`, `Result<T>` and `Result<T, TError>` types
+* Introduced `DotNext.Runtime.SoftReference` data type in addition to [WeakReference](https://docs.microsoft.com/en-us/dotnet/api/system.weakreference) from .NET
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/4.2.0">DotNext.Reflection 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.2.0">DotNext.Unsafe 4.2.0</a>
 * Updated dependencies
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.2.0">DotNext.Threading 4.2.0</a>
 * Reduced execution time of `CreateTask` overloads declared in `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes
 * Added overflow check to `AsyncCounter` class
 * Improved debugging experience of all asynchronous locks
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced lock contention that can be caused by asynchronous locks in concurrent scenarios
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
-* Updated dependencies
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* `FileWriter` now implements [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
+* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

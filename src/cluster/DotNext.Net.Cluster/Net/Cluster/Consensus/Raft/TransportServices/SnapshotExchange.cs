@@ -75,11 +75,11 @@ internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDis
     public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
         ValueTask<bool> result;
-        if (transmission?.IsFaulted ?? false)
+        if (transmission is { IsFaulted: true })
         {
             result = ValueTask.FromException<bool>(transmission.Exception!);
         }
-        else if (headers.Type == MessageType.Continue)
+        else if (headers.Type is MessageType.Continue)
         {
             result = new(true);
         }

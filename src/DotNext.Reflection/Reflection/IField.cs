@@ -11,7 +11,7 @@ public interface IField : IMember<FieldInfo>
     /// <summary>
     /// Indicates that field is read-only.
     /// </summary>
-    bool IsReadOnly => Metadata.IsInitOnly || Metadata.IsLiteral;
+    bool IsReadOnly => Metadata is { IsInitOnly: true } or { IsLiteral: true };
 }
 
 /// <summary>

@@ -16,5 +16,5 @@ public static class ContentTypeExtensions
     /// <param name="contentType">The content type.</param>
     /// <returns>The encoding specified by <paramref name="contentType"/>.</returns>
     public static Encoding GetEncoding(this ContentType contentType)
-        => (string.IsNullOrEmpty(contentType.CharSet) ? Encoding.UTF8 : Encoding.GetEncoding(contentType.CharSet)).WithoutPreamble();
+        => (contentType.CharSet is { Length: > 0 } charSet ? Encoding.GetEncoding(charSet) : Encoding.UTF8).WithoutPreamble();
 }

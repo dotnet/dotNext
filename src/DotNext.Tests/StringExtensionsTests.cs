@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace DotNext
 {
@@ -7,6 +8,7 @@ namespace DotNext
     public sealed class StringExtensionsTests : Test
     {
         [Fact]
+        [Obsolete]
         public static void IfNullOrEmptyTest()
         {
             Equal("a", "".IfNullOrEmpty("a"));
@@ -48,6 +50,15 @@ namespace DotNext
         public static void Substring()
         {
             Equal("abcd"[1..2], "abcd".Substring(1..2));
+        }
+
+        [Fact]
+        [Obsolete]
+        public static void IsNullOrEmptyStringBuilder()
+        {
+            True(default(StringBuilder).IsNullOrEmpty());
+            True(new StringBuilder().IsNullOrEmpty());
+            False(new StringBuilder("abc").IsNullOrEmpty());
         }
     }
 }

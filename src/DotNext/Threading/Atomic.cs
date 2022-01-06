@@ -47,7 +47,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         private readonly delegate*<in T, in T, bool> ptr;
 
         internal EqualityComparer(delegate*<in T, in T, bool> ptr)
-            => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+            => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
         bool IEqualityComparer.Equals(in T x, in T y) => ptr(in x, in y);
     }

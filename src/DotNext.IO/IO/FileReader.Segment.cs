@@ -17,17 +17,16 @@ public partial class FileReader
 
         internal SegmentLength(long? value)
         {
-            if (value is null)
+            switch (value)
             {
-                this = Infinite;
-            }
-            else if (value.GetValueOrDefault() < 0L)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value));
-            }
-            else
-            {
-                this.value = value.GetValueOrDefault();
+                case null:
+                    this = Infinite;
+                    break;
+                case < 0L:
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                default:
+                    this.value = value.GetValueOrDefault();
+                    break;
             }
         }
 

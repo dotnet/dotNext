@@ -397,7 +397,7 @@ public static class Span
     [CLSCompliant(false)]
     public static unsafe void ForEach<T, TArg>(this Span<T> span, delegate*<ref T, TArg, void> action, TArg arg)
     {
-        if (action == null)
+        if (action is null)
             throw new ArgumentNullException(nameof(action));
 
         foreach (ref var item in span)

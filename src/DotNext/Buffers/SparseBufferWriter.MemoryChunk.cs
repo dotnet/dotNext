@@ -56,14 +56,12 @@ public partial class SparseBufferWriter<T>
 
         internal PooledMemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null)
             : base(previous)
-        {
-            owner = allocator.Invoke(length, false);
-        }
+            => owner = allocator.Invoke(length, exactSize: false);
 
         /// <summary>
         /// Indicates that the chunk has no occupied elements in the memory.
         /// </summary>
-        internal bool IsUnused => writtenCount == 0;
+        internal bool IsUnused => writtenCount is 0;
 
         internal override Memory<T> FreeMemory => owner.Memory.Slice(writtenCount);
 
@@ -90,7 +88,7 @@ public partial class SparseBufferWriter<T>
         internal void Realloc(MemoryAllocator<T>? allocator, int length)
         {
             owner.Dispose();
-            owner = allocator.Invoke(length, false);
+            owner = allocator.Invoke(length, exactSize: false);
         }
 
         protected override void Dispose(bool disposing)

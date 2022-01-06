@@ -216,14 +216,14 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
     [CLSCompliant(false)]
-    public unsafe void Write<TArg>(delegate*<Span<T>, TArg, void> action, TArg arg, int count)
+    public unsafe void Write<TArg>(delegate*<TArg, Span<T>, void> action, TArg arg, int count)
     {
-        if (action == null)
+        if (action is null)
             throw new ArgumentNullException(nameof(action));
 
         if (!TrySlide(count, out var buffer))
             throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
-        action(buffer, arg);
+        action(arg, buffer);
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public ref struct SpanWriter<T>
     [CLSCompliant(false)]
     public unsafe bool TryWrite<TArg>(delegate*<TArg, Span<T>, out int, bool> action, TArg arg)
     {
-        if (action == null)
+        if (action is null)
             throw new ArgumentNullException(nameof(action));
 
         bool result;

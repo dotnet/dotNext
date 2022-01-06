@@ -37,22 +37,24 @@ public sealed class ExtensionRegistry : ConcurrentBag<MethodInfo>
     private static IEnumerable<MethodInfo> GetStaticMethods(Type target)
         => GetMethods(Seq.Singleton(target.NonRefType()), StaticMethods);
 
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private static IEnumerable<MethodInfo> GetInstanceMethods(Type target)
     {
         IEnumerable<Type> types;
-        if (target.IsValueType)
+
+        switch (target)
         {
-            types = Seq.Singleton(target);
-        }
-        else if (target.IsByRef)
-        {
-            var underlyingType = target.GetElementType();
-            Debug.Assert(underlyingType is not null);
-            types = Seq.Singleton(underlyingType);
-        }
-        else
-        {
-            types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
+            case { IsValueType: true }:
+                types = Seq.Singleton(target);
+                break;
+            case { IsByRef: true }:
+                var underlyingType = target.GetElementType();
+                Debug.Assert(underlyingType is not null);
+                types = Seq.Singleton(underlyingType);
+                break;
+            default:
+                types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
+                break;
         }
 
         return GetMethods(types, InstanceMethods);

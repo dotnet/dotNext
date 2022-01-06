@@ -185,7 +185,7 @@ public partial class PersistentState
 
         internal ValueTask AcquireAsync(LockType type, CancellationToken token = default)
         {
-            Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
+            Debug.Assert(type is >= LockType.WeakReadLock and <= LockType.ExclusiveLock);
 
             var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(acquisitions), (int)type);
             return WaitAsync(acquisition, token);
@@ -193,7 +193,7 @@ public partial class PersistentState
 
         internal ValueTask<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
         {
-            Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
+            Debug.Assert(type is >= LockType.WeakReadLock and <= LockType.ExclusiveLock);
 
             var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(acquisitions), (int)type);
             return WaitAsync(acquisition, timeout, token);
@@ -201,7 +201,7 @@ public partial class PersistentState
 
         internal void Release(LockType type)
         {
-            Debug.Assert(type >= LockType.WeakReadLock && type <= LockType.ExclusiveLock);
+            Debug.Assert(type is >= LockType.WeakReadLock and <= LockType.ExclusiveLock);
 
             var exit = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(exits), (int)type);
             Signal(exit);

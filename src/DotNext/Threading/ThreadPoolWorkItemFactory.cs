@@ -47,12 +47,7 @@ public static unsafe class ThreadPoolWorkItemFactory
     /// <typeparam name="T">The type of the work item argument.</typeparam>
     /// <returns>The work item.</returns>
     public static IThreadPoolWorkItem Create<T>(delegate*<T, void> workItem, T arg)
-    {
-        if (workItem == null)
-            throw new ArgumentNullException(nameof(workItem));
-
-        return new ThreadPoolWorkItem<T>(workItem, arg);
-    }
+        => workItem is not null ? new ThreadPoolWorkItem<T>(workItem, arg) : throw new ArgumentNullException(nameof(workItem));
 
     /// <summary>
     /// Creates thread pool work item.
@@ -64,12 +59,7 @@ public static unsafe class ThreadPoolWorkItemFactory
     /// <typeparam name="T2">The type of the work item second argument.</typeparam>
     /// <returns>The work item.</returns>
     public static IThreadPoolWorkItem Create<T1, T2>(delegate*<T1, T2, void> workItem, T1 arg1, T2 arg2)
-    {
-        if (workItem == null)
-            throw new ArgumentNullException(nameof(workItem));
-
-        return new ThreadPoolWorkItem<T1, T2>(workItem, arg1, arg2);
-    }
+        => workItem is not null ? new ThreadPoolWorkItem<T1, T2>(workItem, arg1, arg2) : throw new ArgumentNullException(nameof(workItem));
 
     /// <summary>
     /// Creates thread pool work item.
@@ -83,10 +73,5 @@ public static unsafe class ThreadPoolWorkItemFactory
     /// <typeparam name="T3">The type of the work item third argument.</typeparam>
     /// <returns>The work item.</returns>
     public static IThreadPoolWorkItem Create<T1, T2, T3>(delegate*<T1, T2, T3, void> workItem, T1 arg1, T2 arg2, T3 arg3)
-    {
-        if (workItem == null)
-            throw new ArgumentNullException(nameof(workItem));
-
-        return new ThreadPoolWorkItem<T1, T2, T3>(workItem, arg1, arg2, arg3);
-    }
+        => workItem is not null ? new ThreadPoolWorkItem<T1, T2, T3>(workItem, arg1, arg2, arg3) : throw new ArgumentNullException(nameof(workItem));
 }

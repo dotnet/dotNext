@@ -84,7 +84,7 @@ public partial class AsyncEventHub
         Task result;
 
         var lockTaken = false;
-        var start = Timestamp.Current;
+        var start = new Timestamp();
         try
         {
             lockTaken = Monitor.TryEnter(accessLock, timeout);
@@ -409,7 +409,7 @@ public partial class AsyncEventHub
         Task<Task> result;
 
         var lockTaken = false;
-        var start = Timestamp.Current;
+        var start = new Timestamp();
         try
         {
             lockTaken = Monitor.TryEnter(accessLock, timeout);
@@ -501,7 +501,7 @@ public partial class AsyncEventHub
             Task<Task> result;
 
             var lockTaken = false;
-            var start = Timestamp.Current;
+            var start = new Timestamp();
             try
             {
                 lockTaken = Monitor.TryEnter(accessLock, timeout);
@@ -580,7 +580,7 @@ public partial class AsyncEventHub
         Task result;
 
         var lockTaken = false;
-        var start = Timestamp.Current;
+        var start = new Timestamp();
         try
         {
             lockTaken = Monitor.TryEnter(accessLock, timeout);
@@ -645,7 +645,7 @@ public partial class AsyncEventHub
             Task result;
 
             var lockTaken = false;
-            var start = Timestamp.Current;
+            var start = new Timestamp();
             try
             {
                 lockTaken = Monitor.TryEnter(accessLock, timeout);

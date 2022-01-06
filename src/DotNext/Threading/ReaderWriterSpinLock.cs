@@ -150,7 +150,7 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void ExitReadLock() => Interlocked.Decrement(ref state);
 
-    private bool TryEnterReadLock(Timeout timeout, CancellationToken token)
+    private bool TryEnterReadLock(in Timeout timeout, CancellationToken token)
     {
         for (var spinner = new SpinWait(); !timeout.IsExpired; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
@@ -197,11 +197,11 @@ public struct ReaderWriterSpinLock
         return false;
     }
 
-    private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
+    private bool TryEnterWriteLock(in Timeout timeout, CancellationToken token)
     {
         for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
-            if (timeout.IsExpired)
+            if (timeout)
                 return false;
         }
 
@@ -252,11 +252,11 @@ public struct ReaderWriterSpinLock
         return false;
     }
 
-    private bool TryUpgradeToWriteLock(Timeout timeout, CancellationToken token)
+    private bool TryUpgradeToWriteLock(in Timeout timeout, CancellationToken token)
     {
         for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) != SingleReaderState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
-            if (timeout.IsExpired)
+            if (timeout)
                 return false;
         }
 

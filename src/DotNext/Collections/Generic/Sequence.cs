@@ -132,11 +132,11 @@ public static partial class Sequence
             string str => ReinterpretCast<Optional<char>, Optional<T>>(str.AsSpan().FirstOrNone()), // Workaround for https://github.com/dotnet/runtime/issues/57484
             IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
             IReadOnlyList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
-            _ => FirstOrEmptySlow(seq),
+            _ => FirstOrNoneSlow(seq),
         };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq)
+        static Optional<T> FirstOrNoneSlow(IEnumerable<T> seq)
         {
             using var enumerator = seq.GetEnumerator();
             return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
@@ -169,7 +169,7 @@ public static partial class Sequence
             T[] array => Span.FirstOrNone(array, filter),
             string str => ReinterpretCast<Optional<char>, Optional<T>>(str.AsSpan().FirstOrNone(Unsafe.As<Predicate<char>>(filter))),
             LinkedList<T> list => FindInLinkedList(list, filter),
-            _ => FirstOrEmptySlow(seq, filter)
+            _ => FirstOrNoneSlow(seq, filter)
         };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -186,7 +186,7 @@ public static partial class Sequence
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq, Predicate<T> filter)
+        static Optional<T> FirstOrNoneSlow(IEnumerable<T> seq, Predicate<T> filter)
         {
             foreach (var item in seq)
             {
@@ -299,7 +299,7 @@ public static partial class Sequence
 
         static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
-            if (index >= 0 && index < list.Count)
+            if ((uint)index < (uint)list.Count)
             {
                 element = list[index];
                 return true;
@@ -311,7 +311,7 @@ public static partial class Sequence
 
         static bool ReadOnlyListElementAt(IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
-            if (index >= 0 && index < list.Count)
+            if ((uint)index < (uint)list.Count)
             {
                 element = list[index];
                 return true;
@@ -341,7 +341,7 @@ public static partial class Sequence
     /// <param name="ifEmpty">A string to be returned if collection has no elements.</param>
     /// <returns>Converted collection into string.</returns>
     public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
-        => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
+        => string.Join(delimiter, collection) is { Length: > 0 } result ? result : ifEmpty;
 
     /// <summary>
     /// Constructs a sequence from the single element.

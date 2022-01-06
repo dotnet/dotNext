@@ -29,7 +29,7 @@ public class StreamTransferObject : Disposable, IDataTransferObject, IAsyncDispo
     /// <exception cref="NotSupportedException">The underlying stream does not support seeking.</exception>
     public async ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token = default)
     {
-        if (content.CanSeek && content.CanWrite)
+        if (content is { CanWrite: true, CanSeek: true })
         {
             try
             {
@@ -107,7 +107,7 @@ public class StreamTransferObject : Disposable, IDataTransferObject, IAsyncDispo
 
     /// <inheritdoc />
     protected override ValueTask DisposeAsyncCore()
-        => leaveOpen ? new ValueTask() : content.DisposeAsync();
+        => leaveOpen ? ValueTask.CompletedTask : content.DisposeAsync();
 
     /// <summary>
     /// Asynchronously releases the resources associated with this object.

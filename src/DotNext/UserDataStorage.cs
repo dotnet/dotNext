@@ -68,7 +68,7 @@ public readonly ref partial struct UserDataStorage
 
         internal ValueFactory(T arg, delegate*<T, TResult> factory)
         {
-            this.factory = factory == null ? throw new ArgumentNullException(nameof(factory)) : factory;
+            this.factory = factory is not null ? factory : throw new ArgumentNullException(nameof(factory));
             this.arg = arg;
         }
 
@@ -84,7 +84,7 @@ public readonly ref partial struct UserDataStorage
 
         internal ValueFactory(T1 arg1, T2 arg2, delegate*<T1, T2, TResult> factory)
         {
-            this.factory = factory == null ? throw new ArgumentNullException(nameof(factory)) : factory;
+            this.factory = factory is not null ? factory : throw new ArgumentNullException(nameof(factory));
             this.arg1 = arg1;
             this.arg2 = arg2;
         }
@@ -342,8 +342,7 @@ public readonly ref partial struct UserDataStorage
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        return storage is not null && storage.Remove(slot).HasValue;
+        return GetStorage()?.Remove(slot).HasValue ?? false;
     }
 
     /// <summary>

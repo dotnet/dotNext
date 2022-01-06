@@ -33,8 +33,9 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     {
         get
         {
-            if (index < 0 || index >= Length)
+            if ((uint)index >= (uint)Length)
                 throw new IndexOutOfRangeException();
+
             return ref Pointer[index];
         }
     }

@@ -43,9 +43,9 @@ public sealed class StreamSegment : Stream, IFlushable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the reamining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
     public void Adjust(long offset, long length)
     {
-        if (offset < 0L || offset > BaseStream.Length)
+        if ((ulong)offset > (ulong)BaseStream.Length)
             throw new ArgumentOutOfRangeException(nameof(offset));
-        if (length < 0L || length > BaseStream.Length - offset)
+        if ((ulong)length > (ulong)(BaseStream.Length - offset))
             throw new ArgumentOutOfRangeException(nameof(length));
         this.length = length;
         this.offset = offset;
@@ -79,8 +79,9 @@ public sealed class StreamSegment : Stream, IFlushable
         get => BaseStream.Position - offset;
         set
         {
-            if (value < 0L || value > length)
+            if ((ulong)value > (ulong)length)
                 throw new ArgumentOutOfRangeException(nameof(value));
+
             BaseStream.Position = offset + value;
         }
     }
@@ -144,7 +145,7 @@ public sealed class StreamSegment : Stream, IFlushable
             _ => throw new ArgumentOutOfRangeException(nameof(origin))
         };
 
-        if (newPosition < 0)
+        if (newPosition < 0L)
             throw new IOException();
 
         if (newPosition > length)
@@ -157,8 +158,9 @@ public sealed class StreamSegment : Stream, IFlushable
     /// <inheritdoc/>
     public override void SetLength(long value)
     {
-        if (value > BaseStream.Length - BaseStream.Position)
+        if ((ulong)value > (ulong)(BaseStream.Length - BaseStream.Position))
             throw new ArgumentOutOfRangeException(nameof(value));
+
         length = value;
     }
 

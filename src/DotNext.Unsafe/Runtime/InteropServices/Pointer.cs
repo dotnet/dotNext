@@ -311,7 +311,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0)
             throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count == 0L || (offset + count) > destination.LongLength)
+        if (count is 0L || (ulong)(offset + count) > (ulong)destination.LongLength)
             return 0L;
         Intrinsics.Copy(in value[0], out destination[offset], count);
         return count;
@@ -400,7 +400,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0L)
             throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count == 0L || (count + offset) > source.LongLength)
+        if (count is 0L || (ulong)(count + offset) > (ulong)source.LongLength)
             return 0L;
         Intrinsics.Copy(in source[offset], out value[0], count);
         return count;
@@ -509,7 +509,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe byte[] ToByteArray(long length)
     {
         byte[] result;
-        if (IsNull || length == 0L)
+        if (IsNull || length is 0L)
         {
             result = Array.Empty<byte>();
         }
@@ -531,7 +531,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe T[] ToArray(long length)
     {
         T[] result;
-        if (IsNull || length == 0L)
+        if (IsNull || length is 0L)
         {
             result = Array.Empty<T>();
         }
@@ -559,7 +559,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe bool IsNull
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => value == null;
+        get => value is null;
     }
 
     /// <summary>
@@ -631,7 +631,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe Enumerator GetEnumerator(long length)
     {
         Enumerator result;
-        if (IsNull || length == 0L)
+        if (IsNull || length is 0L)
             result = default;
         else if (length < 0L)
             throw new ArgumentOutOfRangeException(nameof(length));

@@ -23,7 +23,7 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// <param name="zeroMem"><see langword="true"/> to allocate the array with zeroed content; otherwise, <see langword="false"/>.</param>
     public PinnedArray(int length, bool zeroMem = false)
     {
-        if (length == 0)
+        if (length is 0)
             array = System.Array.Empty<T>();
         else if (zeroMem)
             array = GC.AllocateArray<T>(length, true);

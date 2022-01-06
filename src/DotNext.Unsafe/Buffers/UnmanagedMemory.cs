@@ -1,4 +1,6 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -27,7 +29,17 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         owner = true;
     }
 
-    private protected IntPtr Address => address == null ? throw new ObjectDisposedException(GetType().Name) : new IntPtr(address);
+    private protected IntPtr Address
+    {
+        get
+        {
+            return address is not null ? new(address) : Throw();
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            IntPtr Throw() => throw new ObjectDisposedException(GetType().Name);
+        }
+    }
 
     public long Size => SizeOf(Length);
 
@@ -38,7 +50,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         if (length <= 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
-        if (address == null)
+        if (address is null)
             throw new ObjectDisposedException(GetType().Name);
 
         Length = length;
@@ -47,11 +59,11 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     }
 
     public sealed override Span<T> GetSpan()
-        => address == null ? Span<T>.Empty : new(address, Length);
+        => address is not null ? new(address, Length) : Span<T>.Empty;
 
     public sealed override MemoryHandle Pin(int elementIndex = 0)
     {
-        if (address == null)
+        if (address is null)
             throw new ObjectDisposedException(GetType().Name);
 
         return new(Unsafe.Add<T>(address, elementIndex));

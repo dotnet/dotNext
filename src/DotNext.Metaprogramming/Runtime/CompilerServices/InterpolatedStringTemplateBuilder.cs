@@ -79,13 +79,13 @@ public struct InterpolatedStringTemplateBuilder
             output.Add('{');
             output.WriteFormattable(position++, provider: InvariantCulture);
 
-            if (alignment != 0)
+            if (alignment is not 0)
             {
                 output.Add(',');
                 output.WriteFormattable(alignment, provider: InvariantCulture);
             }
 
-            if (!string.IsNullOrEmpty(literalOrFormat))
+            if (literalOrFormat is { Length: > 0 })
             {
                 output.Add(':');
                 output.Write(literalOrFormat);

@@ -322,7 +322,7 @@ public partial struct UserDataStorage
         Debug.Assert(BitOperations.IsPow2(Partitions.Length));
 
         var bucketIndex = RuntimeHelpers.GetHashCode(source) & (Partitions.Length - 1);
-        Debug.Assert(bucketIndex >= 0 && bucketIndex < Partitions.Length);
+        Debug.Assert((uint)bucketIndex < (uint)Partitions.Length);
 
         ref var partition = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Partitions), bucketIndex);
 

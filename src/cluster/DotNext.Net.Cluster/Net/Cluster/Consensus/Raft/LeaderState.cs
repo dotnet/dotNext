@@ -40,7 +40,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
 
     private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
-        var start = Timestamp.Current;
+        var start = new Timestamp();
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastUncommittedEntryIndex,
             term = currentTerm,
@@ -177,7 +177,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     }
 
     bool ILeaderLease.IsExpired
-        => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt) < Timestamp.Current;
+        => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt).IsPast;
 
     internal override Task StopAsync()
     {

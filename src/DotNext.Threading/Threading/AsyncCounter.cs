@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -187,6 +186,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
     /// or just decrements it.
@@ -196,9 +199,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if counter is decremented successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeoutAsync(timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeoutAsync(CancellationToken token)
+        => WaitNoTimeoutAsync(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -208,9 +214,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+        => WaitNoTimeoutAsync(token).Create(token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

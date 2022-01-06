@@ -35,7 +35,7 @@ internal sealed class ExchangePeer : RaftClusterMember
         exchange.Sender = localMember.Id;
         var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeoutSource.CancelAfter(requestTimeout);
-        var timeStamp = Timestamp.Current;
+        var timeStamp = new Timestamp();
         try
         {
             client.Enqueue(exchange, timeoutSource.Token);

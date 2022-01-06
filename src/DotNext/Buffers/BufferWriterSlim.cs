@@ -110,20 +110,14 @@ public ref partial struct BufferWriterSlim<T>
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
         Span<T> result;
-        int? newSize;
+        int newSize;
         if (extraBuffer.IsEmpty)
         {
-            newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position);
-
             // need to copy initial buffer
-            if (newSize.HasValue)
+            if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out newSize))
             {
-                extraBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
-                result = extraBuffer.Span;
-                initialBuffer.CopyTo(result);
-
-                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                    initialBuffer.Clear();
+                extraBuffer = allocator.Invoke(newSize, exactSize: false);
+                initialBuffer.CopyTo(result = extraBuffer.Span);
             }
             else
             {
@@ -132,13 +126,9 @@ public ref partial struct BufferWriterSlim<T>
         }
         else
         {
-            newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position);
-
             // no need to copy initial buffer
-            if (newSize.HasValue)
-            {
-                extraBuffer.Resize(newSize.GetValueOrDefault(), false, allocator);
-            }
+            if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out newSize))
+                extraBuffer.Resize(newSize, exactSize: false, allocator);
 
             result = extraBuffer.Span;
         }

@@ -1,4 +1,5 @@
-﻿using System.IO.Pipelines;
+﻿using System.Diagnostics;
+using System.IO.Pipelines;
 
 namespace DotNext.IO;
 
@@ -154,8 +155,9 @@ public interface IDataTransferObject
     private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        using var writer = length <= Array.MaxLength ? new PooledArrayBufferWriter<byte> { Capacity = (int)length } : throw new InsufficientMemoryException();
+        Debug.Assert(length < Array.MaxLength);
 
+        using var writer = new PooledArrayBufferWriter<byte> { Capacity = (int)length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
         return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);
     }
@@ -167,8 +169,9 @@ public interface IDataTransferObject
     {
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
-        using (var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false))
         {
+            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, exactSize: false);
+
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
 

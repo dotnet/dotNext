@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -9,18 +10,18 @@ using static Runtime.CompilerServices.ReflectionUtils;
 
 public static partial class Reflector
 {
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private static unsafe DynamicInvoker Unreflect<TMethod>(TMethod method, delegate*<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
         where TMethod : MethodBase
     {
         var target = Expression.Parameter(typeof(object));
         var arguments = Expression.Parameter(typeof(Span<object?>));
-        Expression? thisArg;
-        if (method.IsStatic || method.MemberType == MemberTypes.Constructor || method.DeclaringType is null)
-            thisArg = null;
-        else if (method.DeclaringType.IsValueType)
-            thisArg = Expression.Unbox(target, method.DeclaringType);
-        else
-            thisArg = Expression.Convert(target, method.DeclaringType);
+        Expression? thisArg = method switch
+        {
+            { IsStatic: true } or { MemberType: MemberTypes.Constructor } or { DeclaringType: null } => null,
+            { DeclaringType: { IsValueType: true } } => Expression.Unbox(target, method.DeclaringType),
+            _ => Expression.Convert(target, method.DeclaringType)
+        };
 
         ICollection<Expression> arglist = new LinkedList<Expression>(), prologue = new LinkedList<Expression>(), epilogue = new LinkedList<Expression>();
         ICollection<ParameterExpression> tempVars = new LinkedList<ParameterExpression>();
@@ -33,39 +34,38 @@ public static partial class Reflector
             MethodCallExpression SetArgument(Expression value) => Set(arguments, position, value);
             Expression argument;
 
-            if (parameter.ParameterType.IsByRefLike)
+            switch (parameter.ParameterType)
             {
-                throw new NotSupportedException();
-            }
-            else if (parameter.ParameterType.IsByRef)
-            {
-                var parameterType = parameter.ParameterType.GetElementType();
-                Debug.Assert(parameterType is not null);
+                case { IsByRefLike: true }:
+                    throw new NotSupportedException();
+                case { IsByRef: true }:
+                    var parameterType = parameter.ParameterType.GetElementType();
+                    Debug.Assert(parameterType is not null);
 
-                // value type parameter can be passed as unboxed reference
-                if (parameterType.IsValueType)
-                {
-                    argument = Expression.Unbox(getter, parameterType);
-                }
-                else
-                {
-                    var tempVar = Expression.Variable(parameterType);
-                    tempVars.Add(tempVar);
-                    prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(getter, parameterType) : Expression.Convert(getter, parameterType)));
-                    if (parameterType.IsPointer)
-                        epilogue.Add(SetArgument(Wrap(tempVar)));
+                    // value type parameter can be passed as unboxed reference
+                    if (parameterType.IsValueType)
+                    {
+                        argument = Expression.Unbox(getter, parameterType);
+                    }
                     else
-                        epilogue.Add(SetArgument(tempVar));
-                    argument = tempVar;
-                }
-            }
-            else if (parameter.ParameterType.IsPointer)
-            {
-                argument = Unwrap(getter, parameter.ParameterType);
-            }
-            else
-            {
-                argument = Expression.Convert(getter, parameter.ParameterType);
+                    {
+                        var tempVar = Expression.Variable(parameterType);
+                        tempVars.Add(tempVar);
+                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(getter, parameterType) : Expression.Convert(getter, parameterType)));
+                        if (parameterType.IsPointer)
+                            epilogue.Add(SetArgument(Wrap(tempVar)));
+                        else
+                            epilogue.Add(SetArgument(tempVar));
+                        argument = tempVar;
+                    }
+
+                    break;
+                case { IsPointer: true }:
+                    argument = Unwrap(getter, parameter.ParameterType);
+                    break;
+                default:
+                    argument = Expression.Convert(getter, parameter.ParameterType);
+                    break;
             }
 
             arglist.Add(argument);
@@ -84,7 +84,7 @@ public static partial class Reflector
 
         // construct lambda expression
         bool useTailCall;
-        if (epilogue.Count == 0)
+        if (epilogue.Count is 0)
         {
             useTailCall = true;
         }

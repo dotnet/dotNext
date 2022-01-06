@@ -181,7 +181,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         using var buffer = new PooledBufferWriter<byte>
         {
             BufferAllocator = allocator,
-            Capacity = active.IsEmpty ? bufferSize : active.Length.Truncate()
+            Capacity = active.IsEmpty ? bufferSize : active.Length.Truncate(),
         };
 
         // restore active configuration

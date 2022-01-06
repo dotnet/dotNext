@@ -42,7 +42,7 @@ public static partial class Sequence
             /// Consumes the item from the underlying collection.
             /// </summary>
             /// <returns><see langword="true"/> if the item has been consumed successfully; <see langword="false"/> if underlying collection is empty.</returns>
-            public bool MoveNext() => collection is not null && collection.TryTake(out current);
+            public bool MoveNext() => collection?.TryTake(out current) ?? false;
 
             /// <inheritdoc />
             readonly void IEnumerator.Reset() => throw new NotSupportedException();

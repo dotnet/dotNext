@@ -78,7 +78,7 @@ public static class OneDimensionalArray
     [CLSCompliant(false)]
     public static unsafe void ForEach<T, TArg>(this T[] array, delegate*<ref T, TArg, void> action, TArg arg)
     {
-        if (action == null)
+        if (action is null)
             throw new ArgumentNullException(nameof(action));
 
         for (nint i = 0; i < Intrinsics.GetLength(array); i++)

@@ -144,7 +144,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 startIndex = snapshot.Index + 1L;
                 length = 1;
             }
-            else if (startIndex == 0L)
+            else if (startIndex is 0L)
             {
                 BufferHelpers.GetReference(in list) = LogEntry.Initial;
                 startIndex = length = 1;
@@ -228,7 +228,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
         else if (startIndex > endIndex)
             result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
-        else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+        else if (bufferingConsumer is null || reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, endIndex, token);
         else
             result = ReadBufferedAsync(reader, startIndex, endIndex, token);
@@ -321,7 +321,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (startIndex > state.LastIndex)
             result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
-        else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+        else if (bufferingConsumer is null || reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, null, token);
         else
             result = ReadBufferedAsync(reader, startIndex, null, token);

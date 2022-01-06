@@ -48,7 +48,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         protocolVersionPolicy = configuration.Value.ProtocolVersionPolicy;
         contactNode = configuration.Value.ContactNode;
         localNode = configuration.Value.LocalNode ?? throw new HyParViewProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
-        resourcePath = new(configuration.Value.ResourcePath.Value.IfNullOrEmpty(HttpPeerConfiguration.DefaultResourcePath), UriKind.Relative);
+        resourcePath = new(configuration.Value.ResourcePath.Value is { Length: > 0 } path ? path : HttpPeerConfiguration.DefaultResourcePath, UriKind.Relative);
 
         // resolve dependencies
         this.handlerFactory = handlerFactory;

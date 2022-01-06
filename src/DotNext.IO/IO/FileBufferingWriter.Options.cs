@@ -76,7 +76,7 @@ public partial class FileBufferingWriter
         public int InitialCapacity
         {
             get => initialCapacity;
-            init => initialCapacity = value >= 0 && value < MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            init => initialCapacity = (uint)value < (uint)MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ public partial class FileBufferingWriter
         {
             init
             {
-                if (string.IsNullOrEmpty(value))
+                if (value is not { Length: > 0 })
                     throw new ArgumentNullException(nameof(value));
 
                 path = value;
@@ -169,13 +169,13 @@ public partial class FileBufferingWriter
         public bool UseTemporaryFile => !keepFileAlive;
 
         private static string DefaultTempPath
-            => Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(System.IO.Path.GetTempPath());
+            => Environment.GetEnvironmentVariable("ASPNETCORE_TEMP") is { Length: > 0 } tempPath ? tempPath : System.IO.Path.GetTempPath();
 
         internal string Path
         {
             get
             {
-                if (string.IsNullOrEmpty(path))
+                if (path is not { Length: > 0 })
                 {
                     if (keepFileAlive)
                     {

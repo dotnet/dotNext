@@ -7,6 +7,7 @@
   <Nullable>enable</Nullable>
   <ImplicitUsings>true</ImplicitUsings>
   <IsTrimmable>false</IsTrimmable>
+  <Features>nullablePublicOnly</Features>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<VersionPrefix>4.2.0</VersionPrefix>
   <VersionSuffix></VersionSuffix>

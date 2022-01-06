@@ -111,11 +111,11 @@ public partial class PeerController
 
     private async Task ProcessShuffleAsync(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> announcement, int ttl)
     {
-        if (announcement.Count == 0)
+        if (announcement.Count is 0)
             return;
 
         // add announced peers to the local passive view
-        if (ttl == 0)
+        if (ttl is 0)
         {
             using var randomizedPassiveView = new PooledArrayBufferWriter<EndPoint>();
 

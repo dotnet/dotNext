@@ -104,7 +104,7 @@ internal partial class HttpPeerController
             using var buffer = new PooledBufferWriter<byte>
             {
                 BufferAllocator = allocator,
-                Capacity = payloadLength.Truncate()
+                Capacity = payloadLength.Truncate(),
             };
 
             await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);

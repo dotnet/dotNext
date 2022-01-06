@@ -240,7 +240,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         disposeRequested = true;
 
-        if (point?.IsCompleted ?? true)
+        if (point is null or { IsCompleted: true })
         {
             Dispose(true);
             return ValueTask.CompletedTask;

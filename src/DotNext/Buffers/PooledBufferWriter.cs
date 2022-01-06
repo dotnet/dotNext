@@ -52,7 +52,7 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     /// </remarks>
     public MemoryAllocator<T>? BufferAllocator
     {
-        init => this.allocator = value;
+        init => allocator = value;
     }
 
     /// <inheritdoc />

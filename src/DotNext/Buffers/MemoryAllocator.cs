@@ -92,7 +92,7 @@ public static class MemoryAllocator
         return AllocateArray;
 
         static MemoryOwner<T> AllocateArray(int length)
-            => new(GC.AllocateUninitializedArray<T>(length, false));
+            => new(GC.AllocateUninitializedArray<T>(length, pinned: false));
     }
 
     /// <summary>

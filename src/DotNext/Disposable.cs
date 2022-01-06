@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
 
@@ -24,11 +25,14 @@ public abstract class Disposable : IDisposable
     /// Throws exception if this object is disposed.
     /// </summary>
     /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected void ThrowIfDisposed()
     {
         if (IsDisposed)
-            throw new ObjectDisposedException(ObjectName);
+            Throw();
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        void Throw() => throw new ObjectDisposedException(ObjectName);
     }
 
     /// <summary>
@@ -77,7 +81,7 @@ public abstract class Disposable : IDisposable
     protected virtual ValueTask DisposeAsyncCore()
     {
         Dispose(true);
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 
     private async ValueTask DisposeAsyncImpl()
@@ -95,7 +99,7 @@ public abstract class Disposable : IDisposable
     /// can be trivially implemented through delegation of the call to this method.
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
-    protected ValueTask DisposeAsync() => disposed ? new ValueTask() : DisposeAsyncImpl();
+    protected ValueTask DisposeAsync() => disposed ? ValueTask.CompletedTask : DisposeAsyncImpl();
 
     /// <summary>
     /// Releases all resources associated with this object.
