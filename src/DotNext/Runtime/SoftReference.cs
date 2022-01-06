@@ -129,6 +129,7 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
         get
         {
             var trackerRef = this.trackerRef;
+            Debug.Assert(trackerRef is null or { Target: null or Tracker or T });
 
             return trackerRef is null
                 ? (SoftReferenceState.NotAllocated, null)
