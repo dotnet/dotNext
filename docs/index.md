@@ -6,7 +6,7 @@
 > [!NOTE]
 > The documentation for previous major versions is no longer available on this website. However, API docs are still available on [FuGet](https://www.fuget.org/) website for any specific library version. Migration guides are [here](./migration/index.md).
 
-This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
+This chapter gives quick overview of these libraries. Read [articles](features/core/index.md) for closer look at all available features.
 
 Prerequisites:
 * Runtime: .NET 6
@@ -27,6 +27,7 @@ This library is the core of .NEXT which extends .NET standard library with
   * Fast HEX conversion
   * Fast Base64 encoding/decoding in streaming scenarios
   * _Optional_ and _Result_ monads
+  * [Soft Reference](features/core/softref.md)
 
 # DotNext.Reflection
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
@@ -62,7 +63,7 @@ The following code describes these alternative implementations of synchronizatio
 | [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](xref:DotNext.Threading.AsyncBarrier)
 | [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) | [AsyncCountdownEvent](xref:DotNext.Threading.AsyncCountdownEvent)
 
-But this is not all features of this library. Read more [here](./features/threading/index.md).
+But this is not all features of this library. Read more [here](features/threading/index.md).
 
 # DotNext.IO
 <a href="https://www.nuget.org/packages/dotnext.io/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.io.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.io.svg)<br/>
