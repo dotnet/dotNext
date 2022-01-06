@@ -12,7 +12,7 @@ namespace DotNext.Runtime
         }
 
         [Fact]
-        public static void EscapeGen0()
+        public static void SurviveGen0GC()
         {
             var reference = CreateReference();
 
@@ -70,11 +70,16 @@ namespace DotNext.Runtime
         }
 
         [Fact]
-        public static void ClearReference()
+        public static void ReferenceState()
         {
             var reference = new SoftReference<object>(new object());
+            Equal(SoftReferenceState.Strong, reference.StateAndTarget.State);
+
             reference.Clear();
-            False(reference.TryGetTarget(out _));
+            Equal(SoftReferenceState.Empty, reference.StateAndTarget.State);
+
+            reference = default;
+            Equal(SoftReferenceState.NotAllocated, reference.StateAndTarget.State);
         }
     }
 }

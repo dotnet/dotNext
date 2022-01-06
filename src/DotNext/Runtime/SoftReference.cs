@@ -17,6 +17,7 @@ namespace DotNext.Runtime;
 /// </remarks>
 /// <typeparam name="T">The type of the object referenced.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"State = {{{nameof(State)}}}")]
 public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplier<T?>
     where T : class
 {
@@ -114,6 +115,35 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     /// <returns><see langword="true"/> if the target was retrieved; otherwise, <see langword="false"/>.</returns>
     public bool TryGetTarget([NotNullWhen(true)] out T? target)
         => (target = Target) is not null;
+
+    /// <summary>
+    /// Gets state of the referenced object and referenced object itself.
+    /// </summary>
+    /// <remarks>
+    /// The returned target object is not <see langword="null"/> when the state is <see cref="SoftReferenceState.Strong"/>
+    /// or <see cref="SoftReferenceState.Weak"/>.
+    /// </remarks>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public (SoftReferenceState State, T? Target) StateAndTarget
+    {
+        get
+        {
+            var trackerRef = this.trackerRef;
+
+            return trackerRef is null
+                ? (SoftReferenceState.NotAllocated, null)
+                : trackerRef.Target switch
+                {
+                    null => (SoftReferenceState.Empty, null),
+                    Tracker tracker => (SoftReferenceState.Strong, tracker.Target),
+                    object target => (SoftReferenceState.Weak, Unsafe.As<T>(target))
+                };
+        }
+    }
+
+    [ExcludeFromCodeCoverage]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private SoftReferenceState State => StateAndTarget.State;
 
     private T? Target
     {
@@ -223,4 +253,30 @@ public class SoftReferenceOptions
             || (generations = info.GenerationInfo).Length <= generation
             || generations[generation].SizeAfterBytes < memoryLimit;
     }
+}
+
+/// <summary>
+/// Represents state of the referenced object.
+/// </summary>
+public enum SoftReferenceState
+{
+    /// <summary>
+    /// Soft reference is not allocated.
+    /// </summary>
+    NotAllocated = 0,
+
+    /// <summary>
+    /// The referenced object is not reachable via soft reference.
+    /// </summary>
+    Empty,
+
+    /// <summary>
+    /// Soft reference acting as a weak reference so the referenced object is available for GC.
+    /// </summary>
+    Weak,
+
+    /// <summary>
+    /// Soft reference acting as a strong reference so the referenced object is not available for GC.
+    /// </summary>
+    Strong,
 }
