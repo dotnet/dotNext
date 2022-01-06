@@ -101,5 +101,15 @@ namespace DotNext.Runtime
             reference = default;
             Equal(SoftReferenceState.NotAllocated, reference.StateAndTarget.State);
         }
+
+        [Fact]
+        public static void VolatileAccess()
+        {
+            var reference = new SoftReference<object>(new object());
+            Equal(SoftReferenceState.Strong, SoftReference<object>.VolatileRead(ref reference).StateAndTarget.State);
+
+            SoftReference<object>.VolatileWrite(ref reference, default);
+            Equal(SoftReferenceState.NotAllocated, reference.StateAndTarget.State);
+        }
     }
 }

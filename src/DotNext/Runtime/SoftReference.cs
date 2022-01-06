@@ -99,6 +99,8 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
             : new(target);
     }
 
+    private SoftReference(TrackerReference? trackerRef) => this.trackerRef = trackerRef;
+
     /// <summary>
     /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
     /// </summary>
@@ -201,6 +203,22 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     /// <param name="reference">The reference to the object.</param>
     /// <returns>The referenced object; or <see langword="null"/> if the object is not reachable.</returns>
     public static explicit operator T?(SoftReference<T> reference) => reference.Target;
+
+    /// <summary>
+    /// Reads soft reference and prevents the processor from reordering memory operations.
+    /// </summary>
+    /// <param name="location">The managed pointer to soft reference.</param>
+    /// <returns>The value at the specified location.</returns>
+    public static SoftReference<T> VolatileRead(ref SoftReference<T> location)
+        => new(Volatile.Read(ref Unsafe.AsRef(in location.trackerRef)));
+
+    /// <summary>
+    /// Writes soft reference and prevents the proces from reordering memory operations.
+    /// </summary>
+    /// <param name="location">The managed pointer to soft reference.</param>
+    /// <param name="value">The value to write.</param>
+    public static void VolatileWrite(ref SoftReference<T> location, SoftReference<T> value)
+        => Volatile.Write(ref Unsafe.AsRef(location.trackerRef), value.trackerRef);
 }
 
 /// <summary>
