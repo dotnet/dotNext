@@ -17,7 +17,7 @@ namespace DotNext.Runtime;
 /// </remarks>
 /// <typeparam name="T">The type of the object referenced.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>
+public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplier<T?>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
@@ -127,6 +127,9 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>
             return target is Tracker tracker ? tracker.Target : Unsafe.As<T>(target);
         }
     }
+
+    /// <inheritdoc />
+    T? ISupplier<T?>.Invoke() => Target;
 
     /// <summary>
     /// Determines whether this object points to the same target as the speicifed object.
