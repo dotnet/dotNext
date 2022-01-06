@@ -871,4 +871,32 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TTo ReinterpretCast<TFrom, TTo>(TFrom input)
         => Unsafe.As<TFrom, TTo>(ref input);
+
+    /// <summary>
+    /// Explicitly invokes object finalizer.
+    /// </summary>
+    /// <param name="obj">The object.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Finalize(object obj)
+    {
+        Push(obj);
+        Callvirt(Method(Type<object>(), nameof(Finalize)));
+        Ret();
+    }
+
+    /// <summary>
+    /// Determines whether the object overrides <see cref="object.Finalize()"/> method.
+    /// </summary>
+    /// <param name="obj">The object to check.</param>
+    /// <returns><see langword="true"/> if <see cref="object.Finalize()"/> is overridden; otherwise, <see langword="false"/>.</returns>
+    public static bool HasFinalizer(object obj)
+    {
+        Push(obj);
+        Ldvirtftn(Method(Type<object>(), nameof(Finalize)));
+        Ldftn(Method(Type<object>(), nameof(Finalize)));
+        Ceq();
+        Ldc_I4_0();
+        Ceq();
+        return Return<bool>();
+    }
 }
