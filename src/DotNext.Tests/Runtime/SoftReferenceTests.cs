@@ -59,9 +59,10 @@ namespace DotNext.Runtime
             {
                 new object();
                 GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
-            var (state, actual) = reference.StateAndTarget;
+            var (actual, state) = reference.TargetAndState;
             Same(expected, actual);
             Equal(SoftReferenceState.Weak, state);
 
@@ -93,23 +94,23 @@ namespace DotNext.Runtime
         public static void ReferenceState()
         {
             var reference = new SoftReference<object>(new object());
-            Equal(SoftReferenceState.Strong, reference.StateAndTarget.State);
+            Equal(SoftReferenceState.Strong, reference.TargetAndState.State);
 
             reference.Clear();
-            Equal(SoftReferenceState.Empty, reference.StateAndTarget.State);
+            Equal(SoftReferenceState.Empty, reference.TargetAndState.State);
 
             reference = default;
-            Equal(SoftReferenceState.NotAllocated, reference.StateAndTarget.State);
+            Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
         }
 
         [Fact]
         public static void VolatileAccess()
         {
             var reference = new SoftReference<object>(new object());
-            Equal(SoftReferenceState.Strong, SoftReference<object>.VolatileRead(ref reference).StateAndTarget.State);
+            Equal(SoftReferenceState.Strong, SoftReference<object>.VolatileRead(ref reference).TargetAndState.State);
 
             SoftReference<object>.VolatileWrite(ref reference, default);
-            Equal(SoftReferenceState.NotAllocated, reference.StateAndTarget.State);
+            Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
         }
     }
 }

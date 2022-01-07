@@ -126,7 +126,7 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     /// or <see cref="SoftReferenceState.Weak"/>.
     /// </remarks>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public (SoftReferenceState State, T? Target) StateAndTarget
+    public (T? Target, SoftReferenceState State) TargetAndState
     {
         get
         {
@@ -134,19 +134,19 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
             Debug.Assert(trackerRef is null or { Target: null or Tracker or T });
 
             return trackerRef is null
-                ? (SoftReferenceState.NotAllocated, null)
+                ? (null, SoftReferenceState.NotAllocated)
                 : trackerRef.Target switch
                 {
-                    null => (SoftReferenceState.Empty, null),
-                    Tracker tracker => (SoftReferenceState.Strong, tracker.Target),
-                    object target => (SoftReferenceState.Weak, Unsafe.As<T>(target))
+                    null => (null, SoftReferenceState.Empty),
+                    Tracker tracker => (tracker.Target, SoftReferenceState.Strong),
+                    object target => (Unsafe.As<T>(target), SoftReferenceState.Weak)
                 };
         }
     }
 
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private SoftReferenceState State => StateAndTarget.State;
+    private SoftReferenceState State => TargetAndState.State;
 
     private T? Target
     {
