@@ -76,6 +76,12 @@ public partial class TaskCompletionPipe<T>
             head = tail = 0;
             Array.Clear(array);
         }
+
+        internal void EnsureCapacity(int capacity)
+        {
+            if (array.Length < capacity)
+                array = new T[capacity];
+        }
     }
 
     private Queue completedTasks;

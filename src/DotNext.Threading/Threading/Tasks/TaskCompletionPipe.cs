@@ -112,17 +112,19 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <summary>
     /// Reuses the pipe.
     /// </summary>
+    /// <param name="capacity">A new capacity of internal queue.</param>
     /// <remarks>
     /// The pipe can be reused only if there are no active consumers and producers.
     /// Otherwise, the behavior of the pipe is unspecified.
     /// </remarks>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public void Reset()
+    public void Reset(int capacity = 0)
     {
         Interlocked.Increment(ref version);
         scheduledTasksCount = 0;
         completionRequested = false;
         completedTasks.Clear();
+        completedTasks.EnsureCapacity(capacity);
         DrainWaitQueue();
     }
 

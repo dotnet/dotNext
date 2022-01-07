@@ -93,7 +93,7 @@ namespace DotNext.Threading.Tasks
             var source = new TaskCompletionSource();
             pipe.Add(source.Task);
 
-            pipe.Reset();
+            pipe.Reset(capacity: 10);
             pipe.Complete();
             source.SetResult();
             False(await pipe.WaitToReadAsync());
