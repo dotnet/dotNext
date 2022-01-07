@@ -72,21 +72,18 @@ namespace DotNext.Runtime
         [Fact]
         public static void Operators()
         {
-            var target = new object();
-            var ref1 = new SoftReference<object>(target);
+            var ref1 = new SoftReference<object>(new());
             var ref2 = ref1;
 
             Equal(ref1, ref2);
             True(ref1 == ref2);
             False(ref1 != ref2);
-            Equal(ref1, target);
             Equal(ref1.GetHashCode(), ref2.GetHashCode());
 
             ref2 = default;
             NotEqual(ref1, ref2);
             False(ref1 == ref2);
             True(ref1 != ref2);
-            NotEqual(target, ref1);
             NotEqual(ref1.GetHashCode(), ref2.GetHashCode());
         }
 

@@ -163,18 +163,18 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     T? ISupplier<T?>.Invoke() => Target;
 
     /// <summary>
-    /// Determines whether this object points to the same target as the speicifed object.
+    /// Determines whether this reference is the same as the specified reference.
     /// </summary>
     /// <param name="other">Soft reference to compare.</param>
-    /// <returns><see langword="true"/> if this object points to the same target as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(SoftReference<T> other) => ReferenceEquals(Target, other.Target);
+    /// <returns><see langword="true"/> if this reference is the same as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+    public bool Equals(SoftReference<T> other) => ReferenceEquals(trackerRef, other.trackerRef);
 
     /// <inheritdoc />
     public override bool Equals([NotNullWhen(true)] object? other)
-        => other is SoftReference<T> reference ? Equals(reference) : ReferenceEquals(Target, other);
+        => other is SoftReference<T> reference && Equals(reference);
 
     /// <inheritdoc />
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(Target);
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(trackerRef);
 
     /// <inheritdoc />
     public override string? ToString() => Target?.ToString();
@@ -186,7 +186,7 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     /// <param name="y">The second reference to compare.</param>
     /// <returns><see langword="true"/> if both objects point to the same target; otherwise, <see langword="false"/>.</returns>
     public static bool operator ==(SoftReference<T> x, SoftReference<T> y)
-        => x.Target == y.Target;
+        => x.trackerRef == y.trackerRef;
 
     /// <summary>
     /// Determines whether the two objects point to different targets.
@@ -195,7 +195,7 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     /// <param name="y">The second reference to compare.</param>
     /// <returns><see langword="true"/> if both objects point to different targets; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(SoftReference<T> x, SoftReference<T> y)
-        => x.Target != y.Target;
+        => x.trackerRef != y.trackerRef;
 
     /// <summary>
     /// Gets the referenced object.
