@@ -119,6 +119,20 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
         => (target = Target) is not null;
 
     /// <summary>
+    /// Tries to retrieve the target object.
+    /// </summary>
+    /// <returns>
+    /// The referenced object;
+    /// or <see cref="Optional{T}.None"/> if reference is not allocated;
+    /// or <see cref="Optional{T}.IsNull"/> is <see langword="true"/>.
+    /// </returns>
+    public Optional<T> TryGetTarget()
+    {
+        var (target, state) = TargetAndState;
+        return state is SoftReferenceState.NotAllocated ? Optional<T>.None : new(target);
+    }
+
+    /// <summary>
     /// Gets state of the referenced object and referenced object itself.
     /// </summary>
     /// <remarks>
@@ -220,6 +234,18 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
     /// <param name="reference">The reference to the object.</param>
     /// <returns>The referenced object; or <see langword="null"/> if the object is not reachable.</returns>
     public static explicit operator T?(SoftReference<T> reference) => reference.Target;
+
+    /// <summary>
+    /// Tries to retrieve the target object.
+    /// </summary>
+    /// <param name="reference">Soft reference.</param>
+    /// <returns>
+    /// The referenced object;
+    /// or <see cref="Optional{T}.None"/> if reference is not allocated;
+    /// or <see cref="Optional{T}.IsNull"/> is <see langword="true"/>.
+    /// </returns>
+    public static explicit operator Optional<T>(SoftReference<T> reference)
+        => reference.TryGetTarget();
 
     /// <summary>
     /// Reads soft reference and prevents the processor from reordering memory operations.
