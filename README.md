@@ -80,6 +80,7 @@ Release Date: 01-05-2022
 * Improved debugging experience of all asynchronous locks
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 * Reduced lock contention that can be caused by asynchronous locks in concurrent scenarios
+* Added `Reset()` method to `TaskCompletionPipe<T>` that allows to reuse the pipe
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes

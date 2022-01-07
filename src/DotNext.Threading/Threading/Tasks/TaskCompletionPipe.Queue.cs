@@ -70,6 +70,12 @@ public partial class TaskCompletionPipe<T>
             // avoid covariance check
             Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), tail++) = task;
         }
+
+        internal void Clear()
+        {
+            head = tail = 0;
+            Array.Clear(array);
+        }
     }
 
     private Queue completedTasks;

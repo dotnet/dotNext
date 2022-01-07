@@ -166,7 +166,7 @@ public class QueuedSynchronizer : Disposable
 
     // This type allows to create the task out of the lock to reduce lock contention
     [StructLayout(LayoutKind.Auto)]
-    private protected readonly ref struct BooleanValueTaskFactory
+    internal readonly ref struct BooleanValueTaskFactory
     {
         // null - false
         // Sentinel.Instance - true
