@@ -268,7 +268,7 @@ public class SoftReferenceOptions
         var info = GC.GetGCMemoryInfo();
         ReadOnlySpan<GCGenerationInfo> generations;
 
-        return info.Index is 0
+        return info.Index is 0L
             || (generations = info.GenerationInfo).Length <= generation
             || generations[generation].SizeAfterBytes < memoryLimit;
     }
