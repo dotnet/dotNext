@@ -18,7 +18,7 @@ namespace DotNext.Runtime;
 /// <typeparam name="T">The type of the object referenced.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"State = {{{nameof(State)}}}")]
-public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionMonad<T>
+public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
@@ -49,11 +49,9 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
         }
     }
 
-    private sealed class TrackerReference : WeakReference
+    private sealed class IntermediateReference : WeakReference
     {
-        private bool cleared;
-
-        internal TrackerReference(T target, SoftReferenceOptions options)
+        internal IntermediateReference(T target, SoftReferenceOptions options)
             : base(null, trackResurrection: true)
         {
             var tracker = new Tracker(target, this, options);
@@ -61,27 +59,32 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
             GC.KeepAlive(tracker);
         }
 
-        internal TrackerReference(T target)
+        internal IntermediateReference(T target)
             : base(target, trackResurrection: false)
         {
         }
 
         internal void Clear()
         {
-            (Target as Tracker)?.StopTracking();
-            Target = null;
-            cleared = true;
-        }
-
-        ~TrackerReference()
-        {
-            if (!cleared)
-                Clear();
+            switch (Target)
+            {
+                case null:
+                    break;
+                case Tracker tracker:
+                    tracker.StopTracking();
+                    goto default;
+                default:
+                    // Change target only if it is alive (not null).
+                    // Otherwise, CLR GC thread may crash with InvalidOperationException
+                    // because underlying GC handle is no longer valid
+                    Target = null;
+                    break;
+            }
         }
     }
 
     // Target can be null, of type Tracker, or of type T
-    private readonly TrackerReference? trackerRef;
+    private volatile IntermediateReference? trackerRef;
 
     /// <summary>
     /// Initializes a new soft reference.
@@ -99,7 +102,7 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
             : new(target);
     }
 
-    private SoftReference(TrackerReference? trackerRef) => this.trackerRef = trackerRef;
+    private void ClearCore() => Interlocked.Exchange(ref trackerRef, null)?.Clear();
 
     /// <summary>
     /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
@@ -108,7 +111,11 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
     /// This method stops tracking the referenced object. Thus, the object
     /// will be reclaimable by GC even if it is not reached Generation 2.
     /// </remarks>
-    public void Clear() => trackerRef?.Clear();
+    public void Clear()
+    {
+        ClearCore();
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Tries to retrieve the target object.
@@ -193,47 +200,15 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
     /// <inheritdoc />
     object? ISupplier<object?>.Invoke() => Target;
 
-    /// <summary>
-    /// Determines whether this reference is the same as the specified reference.
-    /// </summary>
-    /// <param name="other">Soft reference to compare.</param>
-    /// <returns><see langword="true"/> if this reference is the same as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(SoftReference<T> other) => ReferenceEquals(trackerRef, other.trackerRef);
-
-    /// <inheritdoc />
-    public override bool Equals([NotNullWhen(true)] object? other)
-        => other is SoftReference<T> reference && Equals(reference);
-
-    /// <inheritdoc />
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(trackerRef);
-
     /// <inheritdoc />
     public override string? ToString() => Target?.ToString();
-
-    /// <summary>
-    /// Determines whether the two objects point to the same target.
-    /// </summary>
-    /// <param name="x">The first reference to compare.</param>
-    /// <param name="y">The second reference to compare.</param>
-    /// <returns><see langword="true"/> if both objects point to the same target; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(SoftReference<T> x, SoftReference<T> y)
-        => x.trackerRef == y.trackerRef;
-
-    /// <summary>
-    /// Determines whether the two objects point to different targets.
-    /// </summary>
-    /// <param name="x">The first reference to compare.</param>
-    /// <param name="y">The second reference to compare.</param>
-    /// <returns><see langword="true"/> if both objects point to different targets; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(SoftReference<T> x, SoftReference<T> y)
-        => x.trackerRef != y.trackerRef;
 
     /// <summary>
     /// Gets the referenced object.
     /// </summary>
     /// <param name="reference">The reference to the object.</param>
     /// <returns>The referenced object; or <see langword="null"/> if the object is not reachable.</returns>
-    public static explicit operator T?(SoftReference<T> reference) => reference.Target;
+    public static explicit operator T?(SoftReference<T>? reference) => reference?.Target;
 
     /// <summary>
     /// Tries to retrieve the target object.
@@ -244,45 +219,11 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
     /// or <see cref="Optional{T}.None"/> if reference is not allocated;
     /// or <see cref="Optional{T}.IsNull"/> is <see langword="true"/>.
     /// </returns>
-    public static explicit operator Optional<T>(SoftReference<T> reference)
-        => reference.TryGetTarget();
+    public static explicit operator Optional<T>(SoftReference<T>? reference)
+        => reference?.TryGetTarget() ?? Optional<T>.None;
 
-    /// <summary>
-    /// Reads soft reference and prevents the processor from reordering memory operations.
-    /// </summary>
-    /// <param name="location">The managed pointer to soft reference.</param>
-    /// <returns>The value at the specified location.</returns>
-    public static SoftReference<T> VolatileRead(ref SoftReference<T> location)
-        => new(Volatile.Read(ref Unsafe.AsRef(in location.trackerRef)));
-
-    /// <summary>
-    /// Writes soft reference and prevents the proces from reordering memory operations.
-    /// </summary>
-    /// <param name="location">The managed pointer to soft reference.</param>
-    /// <param name="value">The value to write.</param>
-    public static void VolatileWrite(ref SoftReference<T> location, SoftReference<T> value)
-        => Volatile.Write(ref Unsafe.AsRef(location.trackerRef), value.trackerRef);
-
-    /// <summary>
-    /// Sets soft reference to a specified value and
-    /// returns the original value, as an atomic operation.
-    /// </summary>
-    /// <param name="location">The location of the soft reference to modify.</param>
-    /// <param name="value">The value to which the <paramref name="location"/> parameter is set.</param>
-    /// <returns>The original value at <paramref name="location"/>.</returns>
-    public static SoftReference<T> Exchange(ref SoftReference<T> location, SoftReference<T> value)
-        => new(Interlocked.Exchange(ref Unsafe.AsRef(in location.trackerRef), value.trackerRef));
-
-    /// <summary>
-    /// Compares two soft references for equality and,
-    /// if they are equal, replaces the first one.
-    /// </summary>
-    /// <param name="location">The location of the soft reference to modify.</param>
-    /// <param name="value">The value to which the <paramref name="location"/> parameter is set.</param>
-    /// <param name="comparand">The reference that is compared by reference to the value at <paramref name="location"/>.</param>
-    /// <returns>The original reference at <paramref name="location"/>.</returns>
-    public static SoftReference<T> CompareExchange(ref SoftReference<T> location, SoftReference<T> value, SoftReference<T> comparand)
-        => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.trackerRef), value.trackerRef, comparand.trackerRef));
+    /// <inheritdoc />
+    ~SoftReference() => ClearCore(); // if SoftRef itself is not reachable then prevent prolongation of the referenced object lifetime
 }
 
 /// <summary>

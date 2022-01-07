@@ -72,21 +72,13 @@ namespace DotNext.Runtime
         [Fact]
         public static void Operators()
         {
-            var ref1 = new SoftReference<string>(string.Empty);
-            var ref2 = ref1;
+            var reference = new SoftReference<string>(string.Empty);
+            Same(reference.TargetAndState.Target, ((Optional<string>)reference).Value);
+            Same(reference.TargetAndState.Target, (string)reference);
 
-            Equal(ref1, ref2);
-            True(ref1 == ref2);
-            False(ref1 != ref2);
-            Equal(ref1.GetHashCode(), ref2.GetHashCode());
-            Same(ref1.TargetAndState.Target, ((Optional<string>)ref1).Value);
-
-            ref2 = default;
-            NotEqual(ref1, ref2);
-            False(ref1 == ref2);
-            True(ref1 != ref2);
-            NotEqual(ref1.GetHashCode(), ref2.GetHashCode());
-            True(((Optional<string>)ref2).IsUndefined);
+            reference.Clear();
+            True(((Optional<string>)reference).IsUndefined);
+            Null((string)reference);
         }
 
         [Fact]
@@ -96,32 +88,13 @@ namespace DotNext.Runtime
             Equal(SoftReferenceState.Strong, reference.TargetAndState.State);
 
             reference.Clear();
-            Equal(SoftReferenceState.Empty, reference.TargetAndState.State);
-
-            reference = default;
             Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
-        }
-
-        [Fact]
-        public static void VolatileAccess()
-        {
-            var reference = new SoftReference<object>(new());
-            Equal(SoftReferenceState.Strong, SoftReference<object>.VolatileRead(ref reference).TargetAndState.State);
-
-            SoftReference<object>.VolatileWrite(ref reference, default);
-            Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
-
-            Equal(SoftReferenceState.NotAllocated, SoftReference<object>.Exchange(ref reference, new SoftReference<object>(new())).TargetAndState.State);
-            reference = default;
-
-            Equal(SoftReferenceState.NotAllocated, SoftReference<object>.CompareExchange(ref reference, new SoftReference<object>(new()), default).TargetAndState.State);
-            NotNull(reference.TargetAndState.Target);
         }
 
         [Fact]
         public static void OptionMonadInterfaceInterop()
         {
-            IOptionMonad<object> monad = new SoftReference<object>();
+            IOptionMonad<object> monad = new SoftReference<object>(null);
             False(monad.HasValue);
             False(monad.TryGet(out _));
             Equal(string.Empty, monad.OrInvoke(Func.Constant(string.Empty)));
