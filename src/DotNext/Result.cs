@@ -186,7 +186,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     private void Validate() => exception?.Throw();
 
     /// <inheritdoc />
-    object? ISupplier<object?>.Invoke() => Value;
+    object? ISupplier<object?>.Invoke() => IsSuccessful ? value : null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Result<TResult> Convert<TResult, TConverter>(TConverter converter)
@@ -455,7 +455,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     private void Throw() => throw new UndefinedResultException<TError>(Error);
 
     /// <inheritdoc />
-    object? ISupplier<object?>.Invoke() => IsSuccessful ? value : errorCode;
+    object? ISupplier<object?>.Invoke() => IsSuccessful ? value : null;
 
     /// <summary>
     /// Gets the error code.
