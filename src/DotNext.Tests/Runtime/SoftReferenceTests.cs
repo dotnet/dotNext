@@ -105,11 +105,17 @@ namespace DotNext.Runtime
         [Fact]
         public static void VolatileAccess()
         {
-            var reference = new SoftReference<object>(new object());
+            var reference = new SoftReference<object>(new());
             Equal(SoftReferenceState.Strong, SoftReference<object>.VolatileRead(ref reference).TargetAndState.State);
 
             SoftReference<object>.VolatileWrite(ref reference, default);
             Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
+
+            Equal(SoftReferenceState.NotAllocated, SoftReference<object>.Exchange(ref reference, new SoftReference<object>(new())).TargetAndState.State);
+            reference = default;
+
+            Equal(SoftReferenceState.NotAllocated, SoftReference<object>.CompareExchange(ref reference, new SoftReference<object>(new()), default).TargetAndState.State);
+            NotNull(reference.TargetAndState.Target);
         }
 
         [Fact]

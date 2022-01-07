@@ -262,6 +262,27 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionM
     /// <param name="value">The value to write.</param>
     public static void VolatileWrite(ref SoftReference<T> location, SoftReference<T> value)
         => Volatile.Write(ref Unsafe.AsRef(location.trackerRef), value.trackerRef);
+
+    /// <summary>
+    /// Sets soft reference to a specified value and
+    /// returns the original value, as an atomic operation.
+    /// </summary>
+    /// <param name="location">The location of the soft reference to modify.</param>
+    /// <param name="value">The value to which the <paramref name="location"/> parameter is set.</param>
+    /// <returns>The original value at <paramref name="location"/>.</returns>
+    public static SoftReference<T> Exchange(ref SoftReference<T> location, SoftReference<T> value)
+        => new(Interlocked.Exchange(ref Unsafe.AsRef(in location.trackerRef), value.trackerRef));
+
+    /// <summary>
+    /// Compares two soft references for equality and,
+    /// if they are equal, replaces the first one.
+    /// </summary>
+    /// <param name="location">The location of the soft reference to modify.</param>
+    /// <param name="value">The value to which the <paramref name="location"/> parameter is set.</param>
+    /// <param name="comparand">The reference that is compared by reference to the value at <paramref name="location"/>.</param>
+    /// <returns>The original reference at <paramref name="location"/>.</returns>
+    public static SoftReference<T> CompareExchange(ref SoftReference<T> location, SoftReference<T> value, SoftReference<T> comparand)
+        => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.trackerRef), value.trackerRef, comparand.trackerRef));
 }
 
 /// <summary>
