@@ -192,4 +192,11 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <param name="newValue">The value to write.</param>
     public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
         => Unsafe.AsRef(in location.ticks).VolatileWrite(newValue.ticks);
+
+    /// <summary>
+    /// Updates the timestamp to the current point in time and prevents the proces from reordering memory operations.
+    /// </summary>
+    /// <param name="location">The location of the timestampt to update.</param>
+    public static void Refresh(ref Timestamp location)
+        => Unsafe.AsRef(in location.ticks).VolatileWrite(Math.Max(1L, GetTimestamp()));
 }
