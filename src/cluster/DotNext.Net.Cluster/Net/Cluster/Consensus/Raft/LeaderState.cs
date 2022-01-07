@@ -5,9 +5,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
+using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
-using static Threading.Tasks.Continuation;
-using AsyncResultSet = Buffers.PooledArrayBufferWriter<Task<Result<bool>>>;
 using Timestamp = Diagnostics.Timestamp;
 
 internal sealed partial class LeaderState : RaftState, ILeaderLease
@@ -38,7 +37,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         this.maxLease = maxLease;
     }
 
-    private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    private async Task<bool> DoHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         var start = new Timestamp();
         long commitIndex = auditTrail.LastCommittedEntryIndex,
@@ -65,9 +64,11 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
                 if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                taskBuffer.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync());
+                responsePipe.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync());
             }
         }
+
+        responsePipe.Complete();
 
         // clear cache
         if (precedingTermCache.Count > MaxTermCacheSize)
@@ -78,17 +79,19 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
 
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
-        foreach (var task in taskBuffer)
+        await foreach (var task in responsePipe.ConfigureAwait(false))
         {
+            Debug.Assert(task.IsCompleted);
+
             try
             {
-                var result = await task.ConfigureAwait(false);
+                var result = task.GetAwaiter().GetResult();
                 term = Math.Max(term, result.Term);
                 quorum++;
 
                 if (result.Value)
                 {
-                    if (--leaseRenewalThreshold == 0)
+                    if (--leaseRenewalThreshold is 0)
                         Timestamp.VolatileWrite(ref replicatedAt, start + maxLease); // renew lease
 
                     commitQuorum++;
@@ -145,15 +148,23 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
 
-        // reuse this buffer to place responses from other nodes
-        using var taskBuffer = new AsyncResultSet { Capacity = Members.Count };
+        // reserve extra space in the pipe to avoid reallocations
+        var responsePipe = CreatePipe(Members.Count);
 
-        for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+        for (var forced = false; await DoHeartbeats(responsePipe, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
         {
             if (forced)
                 DrainReplicationQueue();
 
-            taskBuffer.Clear(true);
+            responsePipe.Reset();
+        }
+
+        static TaskCompletionPipe<Task<Result<bool>>> CreatePipe(int capacity)
+        {
+            if (capacity < int.MaxValue / 2)
+                capacity *= 2;
+
+            return new(capacity);
         }
     }
 

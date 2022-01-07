@@ -12,6 +12,7 @@ using Collections.Specialized;
 using IO.Log;
 using Membership;
 using Threading;
+using Threading.Tasks;
 using IReplicationCluster = Replication.IReplicationCluster;
 using Timestamp = Diagnostics.Timestamp;
 
@@ -381,13 +382,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
         if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.LastCommittedEntryIndex)
         {
+            Timestamp.Refresh(ref lastUpdated);
             await StepDown(senderTerm).ConfigureAwait(false);
             Leader = TryGetMember(sender);
             await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
-            return new Result<bool>(currentTerm, true);
+            return new(currentTerm, true);
         }
 
-        return new Result<bool>(currentTerm, false);
+        return new(currentTerm, false);
     }
 
     /// <summary>
@@ -416,13 +418,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
         if (currentTerm <= senderTerm)
         {
-            Timestamp.VolatileWrite(ref lastUpdated, new Timestamp());
+            Timestamp.Refresh(ref lastUpdated);
             await StepDown(senderTerm).ConfigureAwait(false);
             var senderMember = TryGetMember(sender);
             Leader = senderMember;
             if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
             {
-                var emptySet = entries.RemainingCount == 0L;
+                var emptySet = entries.RemainingCount is 0L;
 
                 /*
                 * AppendAsync is called with skipCommitted=true because HTTP response from the previous
@@ -470,7 +472,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             }
         }
 
-        return new Result<bool>(currentTerm, result);
+        return new(currentTerm, result);
     }
 
     /// <summary>
@@ -502,7 +504,51 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             tokenSource?.Dispose();
         }
 
-        return new Result<bool>(currentTerm, result);
+        return new(currentTerm, result);
+    }
+
+    // pre-vote logic that allow to decide about transition to candidate state
+    private async Task<bool> PreVoteAsync(long currentTerm)
+    {
+        var lastIndex = auditTrail.LastUncommittedEntryIndex;
+        var lastTerm = await auditTrail.GetTermAsync(lastIndex, LifecycleToken).ConfigureAwait(false);
+        var votes = 0;
+
+        // analyze responses
+        await foreach (var response in SendRequestsAsync(currentTerm, lastIndex, lastTerm).ConfigureAwait(false))
+        {
+            Debug.Assert(response.IsCompleted);
+
+            try
+            {
+                votes += response.GetAwaiter().GetResult().Value ? +1 : -1;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            catch (MemberUnavailableException)
+            {
+                votes -= 1;
+            }
+            finally
+            {
+                response.Dispose();
+            }
+        }
+
+        return votes > 0;
+
+        IAsyncEnumerable<Task<Result<bool>>> SendRequestsAsync(long currentTerm, long lastIndex, long lastTerm)
+        {
+            var members = this.members;
+            var responses = new TaskCompletionPipe<Task<Result<bool>>>(members.Count);
+            foreach (var member in members.Values)
+                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, LifecycleToken));
+
+            responses.Complete();
+            return responses;
+        }
     }
 
     /// <summary>
@@ -518,7 +564,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     {
         var currentTerm = auditTrail.Term;
 
-        if (currentTerm > senderTerm)
+        // provide leader stickiness
+        if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout)
             return new(currentTerm, false);
 
         using var tokenSource = token.LinkTo(LifecycleToken);
@@ -671,13 +718,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             Logger.TransitionToCandidateStateStarted();
 
             // if term changed after lock then assumes that leader will be updated soon
-            if (currentTerm == auditTrail.Term)
-                Leader = null;
-            else
-                readyForTransition = false;
-
-            if (readyForTransition)
+            if (currentTerm == auditTrail.Term && readyForTransition)
             {
+                Leader = null;
                 followerState.Dispose();
                 await auditTrail.UpdateVotedForAsync(LocalMemberId).ConfigureAwait(false);     // vote for self
                 state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
@@ -690,43 +733,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 followerState.StartServing(ElectionTimeout, LifecycleToken);
                 Logger.DowngradedToFollowerState();
             }
-        }
-
-        // pre-vote logic that allow to decide about transition to candidate state
-        async Task<bool> PreVoteAsync(long currentTerm)
-        {
-            var lastIndex = auditTrail.LastUncommittedEntryIndex;
-            var lastTerm = await auditTrail.GetTermAsync(lastIndex, LifecycleToken).ConfigureAwait(false);
-
-            ICollection<Task<Result<bool>>> responses = new LinkedList<Task<Result<bool>>>();
-            foreach (var member in Members)
-                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, LifecycleToken));
-
-            var votes = 0;
-
-            // analyze responses
-            foreach (var response in responses)
-            {
-                try
-                {
-                    var result = await response.ConfigureAwait(false);
-                    votes += result.Value ? +1 : -1;
-                }
-                catch (OperationCanceledException)
-                {
-                    return false;
-                }
-                catch (MemberUnavailableException)
-                {
-                    votes -= 1;
-                }
-                finally
-                {
-                    response.Dispose();
-                }
-            }
-
-            return votes > 0;
         }
     }
 
