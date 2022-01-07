@@ -18,9 +18,9 @@ internal sealed class FollowerState : RaftState
         trackerCancellation = new CancellationTokenSource();
     }
 
-    private async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, params CancellationToken[] tokens)
+    private async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, CancellationToken token1, CancellationToken token2)
     {
-        using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(tokens);
+        using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token1, token2);
 
         // spin loop to wait for the timeout
         while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false));
