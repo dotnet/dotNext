@@ -109,5 +109,23 @@ namespace DotNext.Runtime
             SoftReference<object>.VolatileWrite(ref reference, default);
             Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
         }
+
+        [Fact]
+        public static void OptionMonadInterfaceInterop()
+        {
+            IOptionMonad<object> monad = new SoftReference<object>();
+            False(monad.HasValue);
+            False(monad.TryGet(out _));
+            Equal(string.Empty, monad.OrInvoke(Func.Constant(string.Empty)));
+            Null(monad.OrDefault());
+            Equal(string.Empty, monad.Or(string.Empty));
+
+            monad = new SoftReference<object>(new());
+            True(monad.HasValue);
+            True(monad.TryGet(out var target));
+            Same(monad.OrDefault(), target);
+            Same(target, monad.Or(string.Empty));
+            Same(target, monad.OrInvoke(Func.Constant(string.Empty)));
+        }
     }
 }

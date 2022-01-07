@@ -18,7 +18,7 @@ namespace DotNext.Runtime;
 /// <typeparam name="T">The type of the object referenced.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"State = {{{nameof(State)}}}")]
-public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplier<T?>
+public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, IOptionMonad<T>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
@@ -160,7 +160,24 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>, ISupplie
     }
 
     /// <inheritdoc />
-    T? ISupplier<T?>.Invoke() => Target;
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    bool IOptionMonad<T>.HasValue => Target is not null;
+
+    /// <inheritdoc />
+    [return: NotNullIfNotNull("defaultValue")]
+    T? IOptionMonad<T>.Or(T? defaultValue) => Target ?? defaultValue;
+
+    /// <inheritdoc />
+    T? IOptionMonad<T>.OrDefault() => Target;
+
+    /// <inheritdoc />
+    T IOptionMonad<T>.OrInvoke(Func<T> defaultFunc) => Target ?? defaultFunc();
+
+    /// <inheritdoc />
+    bool IOptionMonad<T>.TryGet([NotNullWhen(true)] out T? target) => TryGetTarget(out target);
+
+    /// <inheritdoc />
+    object? ISupplier<object?>.Invoke() => Target;
 
     /// <summary>
     /// Determines whether this reference is the same as the specified reference.
