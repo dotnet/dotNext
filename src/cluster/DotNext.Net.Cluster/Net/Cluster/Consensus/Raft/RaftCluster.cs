@@ -750,6 +750,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
                 .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
             await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+            Timestamp.Refresh(ref lastUpdated);
             Metrics?.MovedToLeaderState();
             Logger.TransitionToLeaderStateCompleted();
         }
