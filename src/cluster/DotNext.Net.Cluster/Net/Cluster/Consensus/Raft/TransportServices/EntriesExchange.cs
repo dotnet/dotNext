@@ -12,7 +12,7 @@ internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDi
     /*
         Message flow:
         1.REQ(None) Announce number of entries, prevLogIndex, prevLogTerm etc.
-        1.RES(Ack) Wait for command: NextEntry to start sending content, None to abort transmission
+        1.REP(Ack) Wait for command: NextEntry to start sending content, None to abort transmission
 
         2.REQ(StreamStart) with information about content-type and length of the record
         2.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to finalize transmission
