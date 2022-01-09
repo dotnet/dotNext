@@ -8,20 +8,21 @@ using static IO.Pipelines.PipeExtensions;
 using static IO.Pipelines.ResultExtensions;
 using LengthFormat = IO.LengthFormat;
 
-internal sealed class MetadataExchange : PipeExchange, IClientExchange<IReadOnlyDictionary<string, string>>
+internal sealed class MetadataExchange : PipeExchange, IClientExchange<Task<IReadOnlyDictionary<string, string>>>
 {
     private const LengthFormat LengthEncoding = LengthFormat.Compressed;
 
-    private readonly CancellationToken readToken;
     private bool state;
 
-    internal MetadataExchange(CancellationToken token, PipeOptions? options = null)
-        : base(options) => readToken = token;
+    internal MetadataExchange(PipeOptions? options = null)
+        : base(options)
+    {
+    }
 
     private static Encoding Encoding => Encoding.UTF8;
 
     // id announcement is not used for this request
-    ClusterMemberId IClientExchange.Sender
+    ClusterMemberId IClientExchange<Task<IReadOnlyDictionary<string, string>>>.Sender
     {
         set { }
     }
@@ -66,7 +67,8 @@ internal sealed class MetadataExchange : PipeExchange, IClientExchange<IReadOnly
         return output;
     }
 
-    public Task<IReadOnlyDictionary<string, string>> Task => ReadAsync(Reader, readToken);
+    Task<IReadOnlyDictionary<string, string>> ISupplier<CancellationToken, Task<IReadOnlyDictionary<string, string>>>.Invoke(CancellationToken token)
+        => ReadAsync(Reader, token);
 
     public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {

@@ -2,21 +2,13 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
-internal interface IClientExchange : IExchange
+internal interface IClientExchange<out T> : ISupplier<CancellationToken, T>, IExchange
+    where T : Task
 {
-    Task Task { get; }
-
     ClusterMemberId Sender { set; }
 }
 
-internal interface IClientExchange<T> : IClientExchange
-{
-    new Task<T> Task { get; }
-
-    Task IClientExchange.Task => Task;
-}
-
-internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExchange<T>
+internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExchange<Task<T>>
 {
     private protected ClusterMemberId sender;
 
@@ -25,7 +17,9 @@ internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExch
     {
     }
 
-    ClusterMemberId IClientExchange.Sender
+    Task<T> ISupplier<CancellationToken, Task<T>>.Invoke(CancellationToken token) => Task;
+
+    ClusterMemberId IClientExchange<Task<T>>.Sender
     {
         set => sender = value;
     }

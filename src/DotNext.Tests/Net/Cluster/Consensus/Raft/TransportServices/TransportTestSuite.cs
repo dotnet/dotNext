@@ -263,9 +263,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start();
             //prepare client
             using var client = clientFactory(serverAddr);
-            var exchange = new MetadataExchange(CancellationToken.None);
+            var exchange = new MetadataExchange();
             client.Enqueue(exchange, default);
-            Equal(member.Metadata, await exchange.Task);
+            Equal(member.Metadata, await exchange.As<ISupplier<CancellationToken, Task<IReadOnlyDictionary<string, string>>>>().Invoke(CancellationToken.None));
         }
 
         private static void Equal(in BufferedEntry x, in BufferedEntry y)

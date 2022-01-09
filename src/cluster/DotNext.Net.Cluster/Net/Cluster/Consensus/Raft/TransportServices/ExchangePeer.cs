@@ -29,7 +29,7 @@ internal sealed class ExchangePeer : RaftClusterMember
     public override ValueTask CancelPendingRequestsAsync() => client.CancelPendingRequestsAsync();
 
     private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, CancellationToken token)
-        where TExchange : class, IClientExchange<TResult>
+        where TExchange : class, IClientExchange<Task<TResult>>
     {
         ThrowIfDisposed();
         exchange.Sender = localMember.Id;
@@ -39,7 +39,7 @@ internal sealed class ExchangePeer : RaftClusterMember
         try
         {
             client.Enqueue(exchange, timeoutSource.Token);
-            return await exchange.Task.ConfigureAwait(false);
+            return await exchange.Invoke(timeoutSource.Token).ConfigureAwait(false);
         }
         catch (Exception e) when (e is not OperationCanceledException || !token.IsCancellationRequested)
         {
@@ -88,7 +88,7 @@ internal sealed class ExchangePeer : RaftClusterMember
         => SendAsync<bool, ResignExchange>(new ResignExchange(), token);
 
     private protected override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-        => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), token);
+        => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(pipeConfig), token);
 
     private protected override Task<long?> SynchronizeAsync(CancellationToken token)
         => SendAsync<long?, SynchronizeExchange>(new SynchronizeExchange(), token);
