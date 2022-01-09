@@ -629,5 +629,23 @@ namespace DotNext.IO
             Throws<NotSupportedException>(() => combined.Write(ReadOnlySpan<byte>.Empty));
             await ThrowsAsync<NotSupportedException>(async () => await combined.WriteAsync(ReadOnlyMemory<byte>.Empty));
         }
+
+        [Fact]
+        public static void ReadAtLeastBytes()
+        {
+            using var ms = new MemoryStream(new byte[] { 1, 2, 3, 4 });
+            Span<byte> buffer = stackalloc byte[4];
+            Equal(4, ms.ReadAtLeast(3, buffer));
+            Equal(ms.ToArray(), buffer.ToArray());
+        }
+
+        [Fact]
+        public static async Task ReadAtLeastBytesAsync()
+        {
+            using var ms = new MemoryStream(new byte[] { 1, 2, 3, 4 });
+            var buffer = new byte[4];
+            Equal(4, await ms.ReadAtLeastAsync(3, buffer));
+            Equal(ms.ToArray(), buffer.ToArray());
+        }
     }
 }
