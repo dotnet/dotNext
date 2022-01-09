@@ -562,37 +562,39 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
     protected async Task<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
+        var result = false;
         var currentTerm = auditTrail.Term;
 
         // provide leader stickiness
         if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout)
-            return new(currentTerm, false);
-
-        using var tokenSource = token.LinkTo(LifecycleToken);
-        using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-        var result = false;
-        if (currentTerm != senderTerm)
-        {
-            Leader = null;
-            await StepDown(senderTerm).ConfigureAwait(false);
-        }
-        else if (state is FollowerState follower)
-        {
-            follower.Refresh();
-        }
-        else if (state is StandbyState)
-        {
-            Metrics?.ReportHeartbeat();
-        }
-        else
-        {
             goto exit;
-        }
 
-        if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+        using (var tokenSource = token.LinkTo(LifecycleToken))
+        using (var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false))
         {
-            await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
-            result = true;
+            if (currentTerm != senderTerm)
+            {
+                Leader = null;
+                await StepDown(senderTerm).ConfigureAwait(false);
+            }
+            else if (state is FollowerState follower)
+            {
+                follower.Refresh();
+            }
+            else if (state is StandbyState)
+            {
+                Metrics?.ReportHeartbeat();
+            }
+            else
+            {
+                goto exit;
+            }
+
+            if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+            {
+                await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
+                result = true;
+            }
         }
 
     exit:
