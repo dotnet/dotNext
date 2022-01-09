@@ -222,7 +222,9 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     public static explicit operator Optional<T>(SoftReference<T>? reference)
         => reference?.TryGetTarget() ?? Optional<T>.None;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
+    /// </summary>
     ~SoftReference() => ClearCore(); // if SoftRef itself is not reachable then prevent prolongation of the referenced object lifetime
 }
 
