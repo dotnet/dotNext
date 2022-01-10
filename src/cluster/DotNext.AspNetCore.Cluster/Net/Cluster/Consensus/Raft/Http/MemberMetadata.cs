@@ -10,12 +10,13 @@ internal sealed class MemberMetadata : Dictionary<string, string>
     static MemberMetadata()
     {
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = false, WriteIndented = false };
+        var stringTypeInfo = JsonMetadataServices.CreateValueInfo<string>(options, JsonMetadataServices.StringConverter);
 
         var info = new JsonCollectionInfoValues<MemberMetadata>
         {
             ObjectCreator = Activator.CreateInstance<MemberMetadata>,
-            KeyInfo = JsonMetadataServices.CreateValueInfo<string>(options, JsonMetadataServices.StringConverter),
-            ElementInfo = JsonMetadataServices.CreateValueInfo<KeyValuePair<string, string>>(options, JsonMetadataServices.ObjectConverter),
+            KeyInfo = stringTypeInfo,
+            ElementInfo = stringTypeInfo,
             NumberHandling = default,
             SerializeHandler = null,
         };
