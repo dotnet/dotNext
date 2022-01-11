@@ -8,6 +8,8 @@ internal interface IRaftStateMachine
 
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
+    void UpdateLeaderStickiness();
+
     void MoveToFollowerState(bool randomizeTimeout, long? newTerm);
 
     void MoveToCandidateState();
