@@ -8,6 +8,7 @@ using Buffers;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct EmptyClusterConfiguration
 {
+    internal const int Size = sizeof(long) + sizeof(byte);
     private const byte NoConfigurationState = 0;
     private const byte ProposeConfigurationState = 1;
     private const byte ApplyConfigurationState = 2;

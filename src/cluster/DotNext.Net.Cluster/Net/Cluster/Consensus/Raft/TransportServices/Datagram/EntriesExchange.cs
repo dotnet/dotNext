@@ -181,7 +181,7 @@ internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange<TEntry>
 
     private void FinalizeTransmission(ReadOnlySpan<byte> input)
     {
-        TrySetResult(IExchange.ReadResult(input));
+        TrySetResult(Result.Read(input));
         writeSession = null;
     }
 

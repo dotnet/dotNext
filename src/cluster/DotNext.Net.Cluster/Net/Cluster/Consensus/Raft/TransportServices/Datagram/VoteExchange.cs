@@ -18,9 +18,7 @@ internal sealed class VoteExchange : ClientExchange
         var reader = new SpanReader<byte>(payload);
 
         sender = new(ref reader);
-        term = reader.ReadInt64(true);
-        lastLogIndex = reader.ReadInt64(true);
-        lastLogTerm = reader.ReadInt64(true);
+        (term, lastLogIndex, lastLogTerm) = VoteMessage.Read(ref reader);
     }
 
     private int CreateOutboundMessage(Span<byte> payload)
@@ -28,9 +26,7 @@ internal sealed class VoteExchange : ClientExchange
         var writer = new SpanWriter<byte>(payload);
 
         sender.Format(ref writer);
-        writer.WriteInt64(currentTerm, true);
-        writer.WriteInt64(lastLogIndex, true);
-        writer.WriteInt64(lastLogTerm, true);
+        VoteMessage.Write(ref writer, currentTerm, lastLogIndex, lastLogTerm);
 
         return writer.WrittenCount;
     }

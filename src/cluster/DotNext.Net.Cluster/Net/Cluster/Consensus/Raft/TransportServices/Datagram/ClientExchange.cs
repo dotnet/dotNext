@@ -58,7 +58,7 @@ internal abstract class ClientExchange : ClientExchange<Result<bool>>
     public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
         Debug.Assert(headers.Control == FlowControl.Ack, "Unexpected response", $"Message type {headers.Type} control {headers.Control}");
-        TrySetResult(IExchange.ReadResult(payload.Span));
+        TrySetResult(Result.Read(payload.Span));
         return new(false);
     }
 }

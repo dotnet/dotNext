@@ -193,7 +193,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             task = null;
             state = State.ReceivingEntriesFinished;
             remainingCount = 0;
-            count = IExchange.WriteResult(resultTask.Result, output.Span);
+            count = Result.Write(output.Span, resultTask.Result);
             isContinueReceiving = false;
             responseType = MessageType.None;
         }
@@ -203,7 +203,8 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             switch (state)
             {
                 case State.ReceivingEntriesFinished:
-                    count = IExchange.WriteResult(await resultTask.ConfigureAwait(false), output.Span);
+                    var result = await resultTask.ConfigureAwait(false);
+                    count = Result.Write(output.Span, in result);
                     isContinueReceiving = false;
                     responseType = MessageType.None;
                     break;

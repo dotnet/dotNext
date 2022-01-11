@@ -22,20 +22,14 @@ internal sealed class ConfigurationExchange : ClientExchange<bool>, IAsyncDispos
     private int WriteAnnouncement(Span<byte> output)
     {
         var writer = new SpanWriter<byte>(output);
-
-        writer.WriteInt64(configuration.Fingerprint, true);
-        writer.WriteInt64(configuration.Length, true);
-
+        ConfigurationMessage.Write(ref writer, configuration.Fingerprint, configuration.Length);
         return writer.WrittenCount;
     }
 
     internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out long fingerprint, out long configurationLength)
     {
         var reader = new SpanReader<byte>(input);
-
-        fingerprint = reader.ReadInt64(true);
-        configurationLength = reader.ReadInt64(true);
-
+        (fingerprint, configurationLength) = ConfigurationMessage.Read(ref reader);
         return reader.ConsumedCount;
     }
 

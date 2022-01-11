@@ -21,11 +21,7 @@ internal sealed class HeartbeatExchange : ClientExchange
         var reader = new SpanReader<byte>(payload);
 
         sender = new(ref reader);
-        term = reader.ReadInt64(true);
-        prevLogIndex = reader.ReadInt64(true);
-        prevLogTerm = reader.ReadInt64(true);
-        commitIndex = reader.ReadInt64(true);
-        configuration = EmptyClusterConfiguration.ReadFrom(ref reader);
+        (term, prevLogIndex, prevLogTerm, commitIndex, configuration) = HeartbeatMessage.Read(ref reader);
     }
 
     private int CreateOutboundMessage(Span<byte> payload)
@@ -33,11 +29,7 @@ internal sealed class HeartbeatExchange : ClientExchange
         var writer = new SpanWriter<byte>(payload);
 
         sender.Format(ref writer);
-        writer.WriteInt64(currentTerm, true);
-        writer.WriteInt64(prevLogIndex, true);
-        writer.WriteInt64(prevLogTerm, true);
-        writer.WriteInt64(commitIndex, true);
-        EmptyClusterConfiguration.WriteTo(in configuration, ref writer);
+        HeartbeatMessage.Write(ref writer, currentTerm, prevLogIndex, prevLogTerm, commitIndex, in configuration);
 
         return writer.WrittenCount;
     }

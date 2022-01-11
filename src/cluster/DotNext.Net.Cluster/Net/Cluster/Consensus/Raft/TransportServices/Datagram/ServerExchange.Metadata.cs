@@ -1,12 +1,13 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using static IO.Pipelines.PipeExtensions;
+using DataTransferObject = IO.DataTransferObject;
 
 internal partial class ServerExchange
 {
     private void BeginSendMetadata(CancellationToken token)
     {
-        task = MetadataExchange.WriteAsync(Writer, server.Metadata, token);
+        task = DataTransferObject.WriteToAsync(new MetadataTransferObject(server.Metadata), Writer, token).AsTask();
     }
 
     private async ValueTask<(PacketHeaders, int, bool)> SendMetadataPortionAsync(bool startStream, Memory<byte> output, CancellationToken token)

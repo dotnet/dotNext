@@ -26,9 +26,7 @@ internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDis
         var reader = new SpanReader<byte>(input);
 
         sender = new(ref reader);
-        term = reader.ReadInt64(true);
-        snapshotIndex = reader.ReadInt64(true);
-        metadata = new LogEntryMetadata(ref reader);
+        (term, snapshotIndex, metadata) = SnapshotMessage.Read(ref reader);
         return reader.ConsumedCount;
     }
 
@@ -37,9 +35,7 @@ internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDis
         var writer = new SpanWriter<byte>(output);
 
         sender.Format(ref writer);
-        writer.WriteInt64(term, true);
-        writer.WriteInt64(snapshotIndex, true);
-        LogEntryMetadata.Create(snapshot).Format(ref writer);
+        SnapshotMessage.Write(ref writer, term, snapshotIndex, snapshot);
 
         return writer.WrittenCount;
     }
@@ -85,7 +81,7 @@ internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDis
         }
         else
         {
-            TrySetResult(IExchange.ReadResult(payload.Span));
+            TrySetResult(Result.Read(payload.Span));
             result = new(false);
         }
 

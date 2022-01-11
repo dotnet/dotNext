@@ -13,6 +13,6 @@ internal partial class ServerExchange
     private async ValueTask<(PacketHeaders, int, bool)> EndPreVote(Memory<byte> payload)
     {
         var result = await Cast<Task<Result<bool>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
-        return (new PacketHeaders(MessageType.PreVote, FlowControl.Ack), IExchange.WriteResult(result, payload.Span), false);
+        return (new PacketHeaders(MessageType.PreVote, FlowControl.Ack), Result.Write(payload.Span, result), false);
     }
 }

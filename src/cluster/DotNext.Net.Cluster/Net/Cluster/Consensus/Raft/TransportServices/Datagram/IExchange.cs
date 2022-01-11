@@ -1,7 +1,5 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
-using Buffers;
-
 /// <summary>
 /// Represents network exchange between local and remote peer.
 /// </summary>
@@ -35,20 +33,4 @@ internal interface IExchange
     /// </summary>
     /// <param name="token">The token representing cancellation.</param>
     void OnCanceled(CancellationToken token);
-
-    internal static int WriteResult(in Result<bool> result, Span<byte> output)
-    {
-        var writer = new SpanWriter<byte>(output);
-
-        writer.WriteInt64(result.Term, true);
-        writer.Add(result.Value.ToByte());
-
-        return writer.WrittenCount;
-    }
-
-    internal static Result<bool> ReadResult(ReadOnlySpan<byte> input)
-    {
-        var reader = new SpanReader<byte>(input);
-        return new(reader.ReadInt64(true), ValueTypeExtensions.ToBoolean(reader.Read()));
-    }
 }
