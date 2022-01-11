@@ -40,12 +40,24 @@ public sealed class SoftReference<T> : IOptionMonad<T>
 
         internal void StopTracking() => GC.SuppressFinalize(this);
 
+        private void Downgrade()
+        {
+            try
+            {
+                parent.Target = Target; // downgrade reference from soft to weak
+            }
+            catch (InvalidOperationException)
+            {
+                // suspend exception, the weak reference is already finalized
+            }
+        }
+
         ~Tracker()
         {
             if (IsValid && options.KeepTracking(Target))
                 GC.ReRegisterForFinalize(this);
             else
-                parent.Target = Target; // downgrade reference from soft to weak
+                Downgrade();
         }
     }
 
@@ -77,7 +89,15 @@ public sealed class SoftReference<T> : IOptionMonad<T>
                     // Change target only if it is alive (not null).
                     // Otherwise, CLR GC thread may crash with InvalidOperationException
                     // because underlying GC handle is no longer valid
-                    Target = null;
+                    try
+                    {
+                        Target = null;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // suspend exception, the weak reference is already finalized
+                    }
+
                     break;
             }
         }
