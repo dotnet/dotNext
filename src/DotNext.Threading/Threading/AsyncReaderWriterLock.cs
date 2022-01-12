@@ -294,7 +294,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory TryAcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -333,7 +333,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref ReadLockManager manager, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, token);
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -384,7 +384,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory TryAcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -403,7 +403,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref WriteLockManager manager, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, token);
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -455,7 +455,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory TryAcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock asynchronously.
@@ -474,7 +474,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref UpgradeManager manager, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, token);
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.

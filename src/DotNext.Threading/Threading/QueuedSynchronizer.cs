@@ -149,6 +149,34 @@ public class QueuedSynchronizer : Disposable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask Create(CancellationToken token) => Create(InfiniteTimeSpan, token);
 
+        internal ValueTask Create(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+        {
+            Debug.Assert(this.result is null or Task or ValueTaskCompletionSource<bool>);
+
+            ValueTask result;
+            switch (this.result)
+            {
+                case null:
+                    completedSynchronously = true;
+                    result = new();
+                    break;
+                case Task t:
+                    result = new(t);
+                    completedSynchronously = t.IsCompleted;
+                    break;
+                case object source:
+                    result = Unsafe.As<ValueTaskCompletionSource<bool>>(source).CreateVoidTask(timeout, token);
+                    completedSynchronously = false;
+                    break;
+            }
+
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ValueTask Create(out bool completedSynchronously, CancellationToken token)
+            => Create(out completedSynchronously, InfiniteTimeSpan, token);
+
         internal static ValueTaskFactory FromCanceled(CancellationToken token)
             => new(Task.FromCanceled(token));
 
@@ -206,6 +234,34 @@ public class QueuedSynchronizer : Disposable
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask<bool> Create(CancellationToken token) => Create(InfiniteTimeSpan, token);
+
+        internal ValueTask<bool> Create(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+        {
+            Debug.Assert(this.result is null or Task<bool> or ValueTaskCompletionSource<bool> || ReferenceEquals(this.result, Sentinel.Instance));
+
+            ValueTask<bool> result;
+            switch (this.result)
+            {
+                case null:
+                    result = new(false);
+                    completedSynchronously = true;
+                    break;
+                case object sentinel when ReferenceEquals(sentinel, Sentinel.Instance):
+                    result = new(true);
+                    completedSynchronously = true;
+                    break;
+                case Task<bool> t:
+                    result = new(t);
+                    completedSynchronously = t.IsCompleted;
+                    break;
+                case object source:
+                    result = Unsafe.As<ValueTaskCompletionSource<bool>>(source).CreateTask(timeout, token);
+                    completedSynchronously = false;
+                    break;
+            }
+
+            return result;
+        }
 
         internal static BooleanValueTaskFactory FromCanceled(CancellationToken token)
             => new(Task.FromCanceled<bool>(token));
@@ -429,7 +485,7 @@ public class QueuedSynchronizer : Disposable
     }
 
     // optimized version without timeout support
-    private protected ValueTaskFactory WaitNoTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, CancellationToken token)
+    private protected ValueTaskFactory WaitNoTimeout<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -458,7 +514,7 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected BooleanValueTaskFactory WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+    private protected BooleanValueTaskFactory WaitNoTimeout<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TManager : struct, ILockManager<TNode>
     {

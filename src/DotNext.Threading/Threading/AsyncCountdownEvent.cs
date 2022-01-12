@@ -232,7 +232,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory WaitNoTimeoutAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+    private BooleanValueTaskFactory WaitNoTimeout(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
     {
         if (IsDisposed || IsDisposeRequested)
         {
@@ -242,14 +242,14 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         return (completedSynchronously = SignalAndResetCore(1L))
             ? BooleanValueTaskFactory.True
-            : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+            : WaitNoTimeout(ref manager, ref pool, timeout, token);
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeoutAsync(out completedSynchronously, timeout, token).Create(timeout, token);
+        => WaitNoTimeout(out completedSynchronously, timeout, token).Create(timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitNoTimeoutAsync(out bool completedSynchronously, CancellationToken token)
+    private ValueTaskFactory WaitNoTimeout(out bool completedSynchronously, CancellationToken token)
     {
         if (IsDisposed || IsDisposeRequested)
         {
@@ -257,11 +257,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             return ValueTaskFactory.FromTask(DisposedTask);
         }
 
-        return (completedSynchronously = SignalAndResetCore(1L)) ? ValueTaskFactory.Completed : WaitNoTimeoutAsync(ref manager, ref pool, token);
+        return (completedSynchronously = SignalAndResetCore(1L)) ? ValueTaskFactory.Completed : WaitNoTimeout(ref manager, ref pool, token);
     }
 
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
-        => WaitNoTimeoutAsync(out completedSynchronously, token).Create(token);
+        => WaitNoTimeout(out completedSynchronously, token).Create(token);
 
     /// <summary>
     /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.
@@ -285,8 +285,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     bool IAsyncEvent.Signal() => Signal();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -298,11 +298,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(timeout, token).Create(timeout, token);
+        => WaitNoTimeout(timeout, token).Create(timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitNoTimeoutAsync(CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, token);
+    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -312,5 +312,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitNoTimeoutAsync(token).Create(token);
+        => WaitNoTimeout(token).Create(token);
 }
