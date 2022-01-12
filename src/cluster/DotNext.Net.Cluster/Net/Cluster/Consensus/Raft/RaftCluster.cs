@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using static System.Linq.Enumerable;
@@ -333,14 +334,19 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         }
     }
 
-    private async Task StepDown(long newTerm)
+    private ValueTask StepDown(long newTerm)
     {
-        if (newTerm > auditTrail.Term)
+        return newTerm > auditTrail.Term ? UpdateTermAndStepDownAsync(newTerm) : StepDown();
+
+        async ValueTask UpdateTermAndStepDownAsync(long newTerm)
+        {
             await auditTrail.UpdateTermAsync(newTerm, true).ConfigureAwait(false);
-        await StepDown().ConfigureAwait(false);
+            await StepDown().ConfigureAwait(false);
+        }
     }
 
-    private async Task StepDown()
+    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask StepDown()
     {
         Logger.DowngradingToFollowerState();
         switch (state)
@@ -429,48 +435,52 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             {
                 var emptySet = entries.RemainingCount is 0L;
 
-                /*
-                * AppendAsync is called with skipCommitted=true because HTTP response from the previous
-                * replication might fail but the log entry was committed by the local node.
-                * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
-                * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
-                * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
-                */
-                await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
-
-                if (commitIndex <= auditTrail.LastCommittedEntryIndex)
+                // prevent Follower state transition during processing of received log entries
+                using (new FollowerState.TransitionSuppressionScope(state as FollowerState))
                 {
-                    // This node is in sync with the leader and no entries arrived
-                    if (emptySet)
-                    {
-                        if (senderMember is not null && !replicationHandlers.IsEmpty)
-                            replicationHandlers.Invoke(this, senderMember);
+                    /*
+                    * AppendAsync is called with skipCommitted=true because HTTP response from the previous
+                    * replication might fail but the log entry was committed by the local node.
+                    * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
+                    * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
+                    * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
+                    */
+                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
 
-                        await UnfreezeAsync().ConfigureAwait(false);
+                    if (commitIndex <= auditTrail.LastCommittedEntryIndex)
+                    {
+                        // This node is in sync with the leader and no entries arrived
+                        if (emptySet)
+                        {
+                            if (senderMember is not null && !replicationHandlers.IsEmpty)
+                                replicationHandlers.Invoke(this, senderMember);
+
+                            await UnfreezeAsync().ConfigureAwait(false);
+                        }
+
+                        result = true;
+                    }
+                    else
+                    {
+                        result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
                     }
 
-                    result = true;
-                }
-                else
-                {
-                    result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
-                }
-
-                // process configuration
-                var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
-                switch ((config.Fingerprint == fingerprint, applyConfig))
-                {
-                    case (true, true):
-                        await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
-                        break;
-                    case (true, false):
-                        break;
-                    case (false, false):
-                        await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
-                        break;
-                    case (false, true):
-                        result = false;
-                        break;
+                    // process configuration
+                    var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
+                    switch ((config.Fingerprint == fingerprint, applyConfig))
+                    {
+                        case (true, true):
+                            await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                            break;
+                        case (true, false):
+                            break;
+                        case (false, false):
+                            await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
+                            break;
+                        case (false, true):
+                            result = false;
+                            break;
+                    }
                 }
             }
         }
