@@ -44,7 +44,7 @@ internal sealed class FollowerState : RaftState
             // Transition can be suppressed. If so, resume the loop and reset the timer.
             // If the event is in signaled state then the returned task is completed synchronously.
             // It means that the transition is allowed and no need to resume the timer.
-            await suppressionEvent.WaitAsync(out transitionAllowed, tokenSource.Token);
+            await suppressionEvent.WaitAsync(out transitionAllowed, tokenSource.Token).ConfigureAwait(false);
         }
         while (!transitionAllowed);
 
