@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
@@ -16,7 +15,6 @@ namespace DotNext.Runtime;
 /// All public instance members of this type are thread-safe.
 /// </remarks>
 /// <typeparam name="T">The type of the object referenced.</typeparam>
-[StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"State = {{{nameof(State)}}}")]
 public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
