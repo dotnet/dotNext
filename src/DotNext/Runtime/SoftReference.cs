@@ -28,15 +28,19 @@ public sealed class SoftReference<T> : IOptionMonad<T>
 
         internal Tracker(T target, WeakReference parent, SoftReferenceOptions options)
         {
-            Target = target;
             this.options = options;
             this.parent = parent;
+            GC.SuppressFinalize(Target = target);
         }
 
         // true if SoftReference<T>.Clear() was not called
         private bool IsValid => ReferenceEquals(this, parent.Target);
 
-        internal void StopTracking() => GC.SuppressFinalize(this);
+        internal void StopTracking()
+        {
+            GC.SuppressFinalize(this);
+            GC.ReRegisterForFinalize(Target);
+        }
 
         private void Downgrade()
         {
@@ -47,6 +51,10 @@ public sealed class SoftReference<T> : IOptionMonad<T>
             catch (InvalidOperationException)
             {
                 // suspend exception, the weak reference is already finalized
+            }
+            finally
+            {
+                GC.ReRegisterForFinalize(Target);
             }
         }
 

@@ -23,6 +23,8 @@ namespace DotNext.Runtime
                 True(IsAlive(reference));
             }
 
+            True(reference.TargetAndState.Target.IsAlive);
+
             [MethodImpl(MethodImplOptions.NoInlining)]
             static SoftReference<Target> CreateReference() => new(new());
 
