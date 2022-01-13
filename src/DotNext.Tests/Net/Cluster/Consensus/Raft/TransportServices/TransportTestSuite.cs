@@ -278,7 +278,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             True(x.Content.FirstSpan.SequenceEqual(y.Content.FirstSpan));
         }
 
-        private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
+        private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
         {
             var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
@@ -291,8 +291,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare client
             using var client = clientFactory(serverAddr);
-            var buffer = new byte[533];
-            Random.Shared.NextBytes(buffer);
+            byte[] buffer;
+            if (useEmptyEntry)
+            {
+                buffer = Array.Empty<byte>();
+            }
+            else
+            {
+                Random.Shared.NextBytes(buffer = new byte[533]);
+            }
+
             var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
             buffer = new byte[payloadSize];
             Random.Shared.NextBytes(buffer);
