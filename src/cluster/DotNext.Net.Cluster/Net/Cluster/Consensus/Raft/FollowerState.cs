@@ -34,20 +34,13 @@ internal sealed class FollowerState : RaftState
     {
         using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token1, token2);
 
-        var transitionAllowed = false;
-        do
+        // spin loop to wait for the timeout
+        while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false))
         {
-            // spin loop to wait for the timeout
-            if (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false))
-                continue;
-
             // Transition can be suppressed. If so, resume the loop and reset the timer.
             // If the event is in signaled state then the returned task is completed synchronously.
-            // It means that the transition is allowed and no need to resume the timer.
-            await suppressionEvent.WaitAsync(out transitionAllowed, tokenSource.Token).ConfigureAwait(false);
-            refreshEvent.Reset(); // fix situation when SuspendTracking turns the event to signaled state after WaitAsync
+            await suppressionEvent.WaitAsync(tokenSource.Token).ConfigureAwait(false);
         }
-        while (!transitionAllowed);
 
         timedOut = true;
 
