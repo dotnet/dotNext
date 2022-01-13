@@ -45,6 +45,7 @@ internal sealed class FollowerState : RaftState
             // If the event is in signaled state then the returned task is completed synchronously.
             // It means that the transition is allowed and no need to resume the timer.
             await suppressionEvent.WaitAsync(out transitionAllowed, tokenSource.Token).ConfigureAwait(false);
+            refreshEvent.Reset(); // fix situation when SuspendTracking turns the event to signaled state after WaitAsync
         }
         while (!transitionAllowed);
 
