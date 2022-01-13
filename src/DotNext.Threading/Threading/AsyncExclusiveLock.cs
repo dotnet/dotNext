@@ -83,8 +83,8 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory WaitNoTimeoutAsync(TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -96,10 +96,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(timeout, token).Create(timeout, token);
+        => WaitNoTimeout(timeout, token).Create(timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitWithTimeoutAsync(TimeSpan timeout, CancellationToken token)
+    private ValueTaskFactory WaitWithTimeout(TimeSpan timeout, CancellationToken token)
         => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
@@ -113,11 +113,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeoutAsync(timeout, token).Create(timeout, token);
+        => WaitWithTimeout(timeout, token).Create(timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitNoTimeoutAsync(CancellationToken token)
-        => WaitNoTimeoutAsync(ref manager, ref pool, token);
+    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -128,7 +128,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => WaitNoTimeoutAsync(token).Create(token);
+        => WaitNoTimeout(token).Create(token);
 
     private void DrainWaitQueue()
     {

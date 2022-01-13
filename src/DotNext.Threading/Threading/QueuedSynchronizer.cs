@@ -429,7 +429,7 @@ public class QueuedSynchronizer : Disposable
     }
 
     // optimized version without timeout support
-    private protected ValueTaskFactory WaitNoTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, CancellationToken token)
+    private protected ValueTaskFactory WaitNoTimeout<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -458,7 +458,7 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected BooleanValueTaskFactory WaitNoTimeoutAsync<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+    private protected BooleanValueTaskFactory WaitNoTimeout<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TManager : struct, ILockManager<TNode>
     {

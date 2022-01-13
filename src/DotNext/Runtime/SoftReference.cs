@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
@@ -16,7 +14,6 @@ namespace DotNext.Runtime;
 /// All public instance members of this type are thread-safe.
 /// </remarks>
 /// <typeparam name="T">The type of the object referenced.</typeparam>
-[StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"State = {{{nameof(State)}}}")]
 public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
@@ -24,51 +21,54 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     // tracks generation of Target in each GC collection using Finalizer as a callback
     private sealed class Tracker
     {
-        internal readonly T Target;
         private readonly SoftReferenceOptions options;
-        private readonly WeakReference parent;
+        private readonly SoftReference<T> parent;
 
-        internal Tracker(T target, WeakReference parent, SoftReferenceOptions options)
+        internal Tracker(SoftReference<T> parent, SoftReferenceOptions options)
         {
-            Target = target;
             this.options = options;
             this.parent = parent;
         }
 
-        // true if SoftReference<T>.Clear() was not called
-        private bool IsValid => ReferenceEquals(this, parent.Target);
-
         internal void StopTracking() => GC.SuppressFinalize(this);
-
-        private void Downgrade()
-        {
-            try
-            {
-                parent.Target = Target; // downgrade reference from soft to weak
-            }
-            catch (InvalidOperationException)
-            {
-                // suspend exception, the weak reference is already finalized
-            }
-        }
 
         ~Tracker()
         {
-            if (IsValid && options.KeepTracking(Target))
+            // Thread safety: preserve order of fields
+            var target = parent.strongRef;
+            var thisRef = parent.trackerRef;
+
+            if (target is null || thisRef is null)
+            {
+                // do nothing
+            }
+            else if (ReferenceEquals(this, thisRef.Target) && options.KeepTracking(target))
+            {
                 GC.ReRegisterForFinalize(this);
+            }
             else
-                Downgrade();
+            {
+                try
+                {
+                    thisRef.Target = target; // downgrade to weak reference
+                }
+                catch (InvalidOperationException)
+                {
+                    // suspend exception, the weak reference is already finalized
+                }
+                finally
+                {
+                    parent.strongRef = null;
+                }
+            }
         }
     }
 
     private sealed class IntermediateReference : WeakReference
     {
-        internal IntermediateReference(T target, SoftReferenceOptions options)
-            : base(null, trackResurrection: true)
+        internal IntermediateReference(Tracker tracker)
+            : base(tracker, trackResurrection: true)
         {
-            var tracker = new Tracker(target, this, options);
-            Target = tracker;
-            GC.KeepAlive(tracker);
         }
 
         internal IntermediateReference(T target)
@@ -103,7 +103,13 @@ public sealed class SoftReference<T> : IOptionMonad<T>
         }
     }
 
-    // Target can be null, of type Tracker, or of type T
+    // Thread safety: this field must be requested first. If it is null then try to get the reference
+    // from trackerRef
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private volatile T? strongRef;
+
+    // Target can be of type Tracker, or of type T
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private volatile IntermediateReference? trackerRef;
 
     /// <summary>
@@ -113,16 +119,29 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     /// <param name="options">The behavior of soft reference.</param>
     public SoftReference(T? target, SoftReferenceOptions? options = null)
     {
-        options ??= SoftReferenceOptions.Default;
+        if (target is not null)
+        {
+            options ??= SoftReferenceOptions.Default;
 
-        trackerRef = target is null
-            ? null
-            : options.KeepTracking(target)
-            ? new(target, options)
-            : new(target);
+            if (options.KeepTracking(target))
+            {
+                strongRef = target;
+                var tracker = new Tracker(this, options);
+                trackerRef = new(tracker);
+                GC.KeepAlive(tracker);
+            }
+            else
+            {
+                trackerRef = new(target);
+            }
+        }
     }
 
-    private void ClearCore() => Interlocked.Exchange(ref trackerRef, null)?.Clear();
+    private void ClearCore()
+    {
+        Interlocked.Exchange(ref trackerRef, null)?.Clear();
+        strongRef = null;
+    }
 
     /// <summary>
     /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
@@ -148,16 +167,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     /// <summary>
     /// Tries to retrieve the target object.
     /// </summary>
-    /// <returns>
-    /// The referenced object;
-    /// or <see cref="Optional{T}.None"/> if reference is not allocated;
-    /// or <see cref="Optional{T}.IsNull"/> is <see langword="true"/>.
-    /// </returns>
-    public Optional<T> TryGetTarget()
-    {
-        var (target, state) = TargetAndState;
-        return state is SoftReferenceState.NotAllocated ? Optional<T>.None : new(target);
-    }
+    public Optional<T> TryGetTarget() => new(Target);
 
     /// <summary>
     /// Gets state of the referenced object and referenced object itself.
@@ -171,17 +181,20 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     {
         get
         {
-            var trackerRef = this.trackerRef;
-            Debug.Assert(trackerRef is null or { Target: null or Tracker or T });
+            SoftReferenceState state;
+            var target = strongRef;
 
-            return trackerRef is null
-                ? (null, SoftReferenceState.NotAllocated)
-                : trackerRef.Target switch
-                {
-                    null => (null, SoftReferenceState.Empty),
-                    Tracker tracker => (tracker.Target, SoftReferenceState.Strong),
-                    object target => (Unsafe.As<T>(target), SoftReferenceState.Weak)
-                };
+            if (target is not null)
+            {
+                state = SoftReferenceState.Strong;
+            }
+            else
+            {
+                target = trackerRef?.Target as T;
+                state = target is null ? SoftReferenceState.Empty : SoftReferenceState.Weak;
+            }
+
+            return (target, state);
         }
     }
 
@@ -189,16 +202,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private SoftReferenceState State => TargetAndState.State;
 
-    private T? Target
-    {
-        get
-        {
-            var target = trackerRef?.Target;
-            Debug.Assert(target is null or Tracker or T);
-
-            return target is Tracker tracker ? tracker.Target : Unsafe.As<T>(target);
-        }
-    }
+    private T? Target => strongRef ?? trackerRef?.Target as T;
 
     /// <inheritdoc />
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -307,14 +311,9 @@ public class SoftReferenceOptions
 public enum SoftReferenceState
 {
     /// <summary>
-    /// Soft reference is not allocated.
-    /// </summary>
-    NotAllocated = 0,
-
-    /// <summary>
     /// The referenced object is not reachable via soft reference.
     /// </summary>
-    Empty,
+    Empty = 0,
 
     /// <summary>
     /// Soft reference acting as a weak reference so the referenced object is available for GC.
