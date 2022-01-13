@@ -21,7 +21,7 @@ internal partial class ProtocolStream
 
     private ValueTask BufferizeAsync(int count, CancellationToken token)
     {
-        if (AvailableBytes >= count)
+        if (bufferEnd - bufferStart >= count)
             return ValueTask.CompletedTask;
 
         var freeCapacity = buffer.Length - bufferEnd;
@@ -74,11 +74,11 @@ internal partial class ProtocolStream
         static MessageType Read(ref SpanReader<byte> reader) => reader.Read<MessageType>();
     }
 
-    internal unsafe ValueTask<(long Term, long LastLogIndex, long LastLogTerm)> ReadVoteRequestAsync(CancellationToken token)
-        => ReadAsync<(long, long, long)>(VoteMessage.Size, &VoteMessage.Read, token);
+    internal unsafe ValueTask<(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm)> ReadVoteRequestAsync(CancellationToken token)
+        => ReadAsync<(ClusterMemberId, long, long, long)>(VoteMessage.Size, &VoteMessage.Read, token);
 
-    internal unsafe ValueTask<(long Term, long LastLogIndex, long LastLogTerm)> ReadPreVoteRequestAsync(CancellationToken token)
-        => ReadAsync<(long, long, long)>(PreVoteMessage.Size, &PreVoteMessage.Read, token);
+    internal unsafe ValueTask<(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm)> ReadPreVoteRequestAsync(CancellationToken token)
+        => ReadAsync<(ClusterMemberId, long, long, long)>(PreVoteMessage.Size, &PreVoteMessage.Read, token);
 
     internal unsafe ValueTask<Result<bool>> ReadResultAsync(CancellationToken token)
         => ReadAsync<Result<bool>>(Result.Size, &Result.Read, token);
@@ -108,10 +108,20 @@ internal partial class ProtocolStream
         => (await Serializable.ReadFromAsync<MetadataTransferObject>(this, buffer, token).ConfigureAwait(false)).Metadata;
 #pragma warning restore CA2252
 
-    internal unsafe ValueTask<(long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata)> ReadInstallSnapshotRequest(CancellationToken token)
-        => ReadAsync<(long, long, LogEntryMetadata)>(SnapshotMessage.Size, &SnapshotMessage.Read, token);
+    internal unsafe ValueTask<(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata)> ReadInstallSnapshotRequest(CancellationToken token)
+        => ReadAsync<(ClusterMemberId, long, long, LogEntryMetadata)>(SnapshotMessage.Size, &SnapshotMessage.Read, token);
 
     internal IRaftLogEntry CreateSnapshot(in LogEntryMetadata metadata) => new Snapshot(this, in metadata);
+
+    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex)> ReadAppendEntriesRequestAsync(CancellationToken token)
+    {
+        var result = await ReadCoreAsync().ConfigureAwait(false);
+        entriesCount = result.EntriesCount;
+        return new() { Id = result.Id, Term = result.Term, PrevLogIndex = result.PrevLogIndex, PrevLogTerm = result.PrevLogTerm };
+
+        unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount)> ReadCoreAsync()
+            => ReadAsync<(ClusterMemberId, long, long, long, long, int)>(AppendEntriesMessage.Size, &AppendEntriesMessage.Read, token);
+    }
 
     private void BeginReadFrame()
     {

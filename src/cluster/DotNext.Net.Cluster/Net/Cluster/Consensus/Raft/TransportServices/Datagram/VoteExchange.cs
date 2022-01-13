@@ -16,18 +16,13 @@ internal sealed class VoteExchange : ClientExchange
     internal static void Parse(ReadOnlySpan<byte> payload, out ClusterMemberId sender, out long term, out long lastLogIndex, out long lastLogTerm)
     {
         var reader = new SpanReader<byte>(payload);
-
-        sender = new(ref reader);
-        (term, lastLogIndex, lastLogTerm) = VoteMessage.Read(ref reader);
+        (sender, term, lastLogIndex, lastLogTerm) = VoteMessage.Read(ref reader);
     }
 
     private int CreateOutboundMessage(Span<byte> payload)
     {
         var writer = new SpanWriter<byte>(payload);
-
-        sender.Format(ref writer);
-        VoteMessage.Write(ref writer, currentTerm, lastLogIndex, lastLogTerm);
-
+        VoteMessage.Write(ref writer, in sender, currentTerm, lastLogIndex, lastLogTerm);
         return writer.WrittenCount;
     }
 

@@ -16,22 +16,13 @@ internal sealed class PreVoteExchange : ClientExchange
     internal static void Parse(ReadOnlySpan<byte> payload, out ClusterMemberId sender, out long term, out long lastLogIndex, out long lastLogTerm)
     {
         var reader = new SpanReader<byte>(payload);
-
-        sender = new(ref reader);
-        term = reader.ReadInt64(true);
-        lastLogIndex = reader.ReadInt64(true);
-        lastLogTerm = reader.ReadInt64(true);
+        (sender, term, lastLogIndex, lastLogTerm) = PreVoteMessage.Read(ref reader);
     }
 
     private int CreateOutboundMessage(Span<byte> payload)
     {
         var writer = new SpanWriter<byte>(payload);
-
-        sender.Format(ref writer);
-        writer.WriteInt64(currentTerm, true);
-        writer.WriteInt64(lastLogIndex, true);
-        writer.WriteInt64(lastLogTerm, true);
-
+        PreVoteMessage.Write(ref writer, in sender, currentTerm, lastLogIndex, lastLogTerm);
         return writer.WrittenCount;
     }
 

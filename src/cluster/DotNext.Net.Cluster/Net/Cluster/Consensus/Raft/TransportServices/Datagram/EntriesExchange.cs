@@ -54,12 +54,7 @@ internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDi
     {
         var reader = new SpanReader<byte>(input);
 
-        sender = new(ref reader);
-        term = reader.ReadInt64(true);
-        prevLogIndex = reader.ReadInt64(true);
-        prevLogTerm = reader.ReadInt64(true);
-        commitIndex = reader.ReadInt64(true);
-        entriesCount = reader.ReadInt32(true);
+        (sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount) = AppendEntriesMessage.Read(ref reader);
         configuration = EmptyClusterConfiguration.ReadFrom(ref reader);
     }
 
@@ -67,12 +62,7 @@ internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDi
     {
         var writer = new SpanWriter<byte>(output);
 
-        sender.Format(ref writer);
-        writer.WriteInt64(term, true);
-        writer.WriteInt64(prevLogIndex, true);
-        writer.WriteInt64(prevLogTerm, true);
-        writer.WriteInt64(commitIndex, true);
-        writer.WriteInt32(entriesCount, true);
+        AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
         EmptyClusterConfiguration.WriteTo(in configuration, ref writer);
 
         return writer.WrittenCount;

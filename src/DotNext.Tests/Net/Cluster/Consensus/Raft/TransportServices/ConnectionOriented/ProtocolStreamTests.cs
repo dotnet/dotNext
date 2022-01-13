@@ -33,7 +33,7 @@ public sealed class ProtocolStreamTests : Test
         using var protocol = new ProtocolStream(source, new byte[17]);
         protocol.PrepareForWrite();
         await protocol.WriteAsync(expected);
-        protocol.Flush();
+        await protocol.FlushAsync();
 
         using var destination = new MemoryStream(512);
         protocol.Position = 0L;

@@ -24,19 +24,14 @@ internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDis
     internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ClusterMemberId sender, out long term, out long snapshotIndex, out LogEntryMetadata metadata)
     {
         var reader = new SpanReader<byte>(input);
-
-        sender = new(ref reader);
-        (term, snapshotIndex, metadata) = SnapshotMessage.Read(ref reader);
+        (sender, term, snapshotIndex, metadata) = SnapshotMessage.Read(ref reader);
         return reader.ConsumedCount;
     }
 
     private int WriteAnnouncement(Span<byte> output)
     {
         var writer = new SpanWriter<byte>(output);
-
-        sender.Format(ref writer);
-        SnapshotMessage.Write(ref writer, term, snapshotIndex, snapshot);
-
+        SnapshotMessage.Write(ref writer, in sender, term, snapshotIndex, snapshot);
         return writer.WrittenCount;
     }
 

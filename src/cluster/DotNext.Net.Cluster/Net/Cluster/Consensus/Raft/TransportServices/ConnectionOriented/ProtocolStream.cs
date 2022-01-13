@@ -11,6 +11,9 @@ internal sealed partial class ProtocolStream : Stream
     private const int FrameHeadersSize = sizeof(int) + sizeof(byte);
     private readonly Stream transport;
     private readonly Memory<byte> buffer;
+
+    // for reader, both fields are in use
+    // for writer, bufferStart is a beginning of the frame
     private int bufferStart, bufferEnd;
 
     internal ProtocolStream(Stream transport, Memory<byte> buffer)
@@ -40,8 +43,6 @@ internal sealed partial class ProtocolStream : Stream
     public override long Seek(long offset, SeekOrigin origin) => transport.Seek(offset, origin);
 
     public override long Length => transport.Length;
-
-    private int AvailableBytes => bufferEnd - bufferStart;
 
     internal void Reset()
     {
