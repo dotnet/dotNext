@@ -79,7 +79,7 @@ namespace DotNext.Runtime
             Same(reference.TargetAndState.Target, (string)reference);
 
             reference.Clear();
-            True(((Optional<string>)reference).IsUndefined);
+            True(((Optional<string>)reference).IsNull);
             Null((string)reference);
         }
 
@@ -90,7 +90,7 @@ namespace DotNext.Runtime
             Equal(SoftReferenceState.Strong, reference.TargetAndState.State);
 
             reference.Clear();
-            Equal(SoftReferenceState.NotAllocated, reference.TargetAndState.State);
+            Equal(SoftReferenceState.Empty, reference.TargetAndState.State);
         }
 
         [Fact]
