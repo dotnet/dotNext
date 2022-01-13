@@ -43,8 +43,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
 
-    static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ref SpanReader<byte> input)
-        => new(ref input);
+    public static LogEntryMetadata Parse(ref SpanReader<byte> input) => new(ref input);
 
     internal long Term { get; }
 

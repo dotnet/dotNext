@@ -117,6 +117,7 @@ internal partial class ProtocolStream
     {
         var result = await ReadCoreAsync().ConfigureAwait(false);
         entriesCount = result.EntriesCount;
+        consumed = true;
         return new() { Id = result.Id, Term = result.Term, PrevLogIndex = result.PrevLogIndex, PrevLogTerm = result.PrevLogTerm };
 
         unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount)> ReadCoreAsync()
@@ -178,6 +179,13 @@ internal partial class ProtocolStream
         return count;
     }
 
+    private void SkipFrame()
+    {
+        var count = Math.Min(frameSize, bufferEnd - bufferStart);
+        bufferStart += count;
+        frameSize -= count;
+    }
+
     public override int Read(Span<byte> output)
     {
     check_state:
@@ -236,7 +244,7 @@ internal partial class ProtocolStream
                 if (bufferStart == bufferEnd)
                 {
                     bufferStart = 0;
-                    bufferEnd = transport.Read(buffer.Span);
+                    bufferEnd = await transport.ReadAsync(buffer, token).ConfigureAwait(false);
                 }
 
                 // we can copy no more than remaining frame
@@ -246,4 +254,30 @@ internal partial class ProtocolStream
 
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
+
+    private async ValueTask SkipAsync()
+    {
+        while (true)
+        {
+            switch ((readState, frameSize is 0))
+            {
+                case (ReadState.FrameStarted, true):
+                case (ReadState.FrameNotStarted, _):
+                    await StartFrameAsync(CancellationToken.None).ConfigureAwait(false);
+                    continue; // skip empty frames
+                case (ReadState.EndOfStreamReached, true):
+                    return;
+                default:
+                    if (bufferStart == bufferEnd)
+                    {
+                        bufferStart = 0;
+                        bufferEnd = await transport.ReadAsync(buffer, CancellationToken.None);
+                    }
+
+                    // we can copy no more than remaining frame
+                    SkipFrame();
+                    continue;
+            }
+        }
+    }
 }

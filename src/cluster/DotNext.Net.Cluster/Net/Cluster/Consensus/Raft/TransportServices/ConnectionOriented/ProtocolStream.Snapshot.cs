@@ -23,6 +23,6 @@ internal partial class ProtocolStream
 
         public override bool IsReusable => false;
 
-        bool ILogEntry.IsSnapshot => true;
+        bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
     }
 }
