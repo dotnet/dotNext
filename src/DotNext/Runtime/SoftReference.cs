@@ -66,12 +66,9 @@ public sealed class SoftReference<T> : IOptionMonad<T>
 
     private sealed class IntermediateReference : WeakReference
     {
-        internal IntermediateReference(SoftReference<T> parent, SoftReferenceOptions options)
-            : base(null, trackResurrection: true)
+        internal IntermediateReference(Tracker tracker)
+            : base(tracker, trackResurrection: true)
         {
-            var tracker = new Tracker(parent, options);
-            Target = tracker;
-            GC.KeepAlive(tracker);
         }
 
         internal IntermediateReference(T target)
@@ -129,7 +126,9 @@ public sealed class SoftReference<T> : IOptionMonad<T>
             if (options.KeepTracking(target))
             {
                 strongRef = target;
-                trackerRef = new(this, options);
+                var tracker = new Tracker(this, options);
+                trackerRef = new(tracker);
+                GC.KeepAlive(tracker);
             }
             else
             {
