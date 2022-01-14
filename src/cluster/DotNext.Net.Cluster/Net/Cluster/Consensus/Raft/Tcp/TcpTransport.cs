@@ -12,20 +12,6 @@ using static IO.StreamExtensions;
 
 internal abstract class TcpTransport : Disposable, INetworkTransport
 {
-    private const int PacketPrologueSize = PacketHeaders.Size + sizeof(int);
-
-    private sealed class TcpStream : NetworkStream
-    {
-        internal TcpStream(Socket socket, bool owns)
-            : base(socket, owns)
-        {
-        }
-
-        internal bool Connected => Socket.Connected;
-
-        internal EndPoint? RemoteEndPoint => Socket.RemoteEndPoint;
-    }
-
     private protected class PacketStream : Disposable
     {
         private readonly TcpStream transport;
@@ -53,38 +39,6 @@ internal abstract class TcpTransport : Disposable, INetworkTransport
         internal bool Connected => transport.Connected;
 
         private protected EndPoint? RemoteEndPoint => transport.RemoteEndPoint;
-
-        private protected ValueTask WritePacket(PacketHeaders headers, Memory<byte> buffer, int count, CancellationToken token)
-        {
-            var writer = new SpanWriter<byte>(buffer.Span);
-
-            // write headers
-            headers.Format(ref writer);
-            writer.WriteInt32(count, true);
-            Debug.Assert(writer.WrittenCount == PacketPrologueSize);
-
-            // transmit packet to the remote endpoint
-            return networkStream.WriteAsync(buffer.Slice(0, writer.WrittenCount + count), token);
-        }
-
-        private static void ReadPrologue(ReadOnlyMemory<byte> prologue, out PacketHeaders headers, out int count)
-        {
-            var reader = new SpanReader<byte>(prologue.Span);
-
-            headers = new PacketHeaders(ref reader);
-            count = reader.ReadInt32(true);
-            Debug.Assert(reader.ConsumedCount == PacketPrologueSize);
-        }
-
-        private protected async ValueTask<(PacketHeaders Headers, ReadOnlyMemory<byte> Payload)> ReadPacket(Memory<byte> buffer, CancellationToken token)
-        {
-            // read headers and number of bytes
-            await networkStream.ReadBlockAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
-            ReadPrologue(buffer, out var headers, out var count);
-            buffer = buffer.Slice(0, count);
-            await networkStream.ReadBlockAsync(buffer, token).ConfigureAwait(false);
-            return (headers, buffer);
-        }
 
         internal void Close(int timeout) => transport.Close(timeout);
 
@@ -146,10 +100,4 @@ internal abstract class TcpTransport : Disposable, INetworkTransport
     }
 
     IPEndPoint INetworkTransport.Address => Address;
-
-    private protected MemoryOwner<byte> AllocTransmissionBlock()
-        => allocator(transmissionBlockSize);
-
-    private protected static Memory<byte> AdjustToPayload(Memory<byte> packet)
-        => packet.Slice(PacketPrologueSize);
 }

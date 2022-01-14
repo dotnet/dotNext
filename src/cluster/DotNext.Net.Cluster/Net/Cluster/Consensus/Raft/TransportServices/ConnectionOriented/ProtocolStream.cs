@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
+
+using Buffers;
 
 /// <summary>
 /// Provides encoding/decoding routines for transmitting Raft-specific
@@ -9,44 +12,58 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 internal sealed partial class ProtocolStream : Stream
 {
     private const int FrameHeadersSize = sizeof(int) + sizeof(byte);
-    private readonly Stream transport;
-    private readonly Memory<byte> buffer;
+
+    private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long);
+
+    [SuppressMessage("Usage", "CA2213", Justification = "The objec doesn't own the stream")]
+    internal readonly Stream BaseStream;
+    private MemoryOwner<byte> buffer;
 
     // for reader, both fields are in use
     // for writer, bufferStart is a beginning of the frame
     private int bufferStart, bufferEnd;
 
-    internal ProtocolStream(Stream transport, Memory<byte> buffer)
+    internal ProtocolStream(Stream transport, MemoryAllocator<byte> allocator, int transmissionBlockSize)
     {
         Debug.Assert(transport is not null);
 
-        this.buffer = buffer;
-        this.transport = transport;
+        buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
+        BaseStream = transport;
     }
 
-    public override bool CanRead => transport.CanRead;
+    public override bool CanRead => BaseStream.CanRead;
 
-    public override bool CanWrite => transport.CanWrite;
+    public override bool CanWrite => BaseStream.CanWrite;
 
-    public override bool CanSeek => transport.CanSeek;
+    public override bool CanSeek => BaseStream.CanSeek;
 
-    public override bool CanTimeout => transport.CanTimeout;
+    public override bool CanTimeout => BaseStream.CanTimeout;
 
     public override long Position
     {
-        get => transport.Position;
-        set => transport.Position = value;
+        get => BaseStream.Position;
+        set => BaseStream.Position = value;
     }
 
-    public override void SetLength(long value) => transport.SetLength(value);
+    public override void SetLength(long value) => BaseStream.SetLength(value);
 
-    public override long Seek(long offset, SeekOrigin origin) => transport.Seek(offset, origin);
+    public override long Seek(long offset, SeekOrigin origin) => BaseStream.Seek(offset, origin);
 
-    public override long Length => transport.Length;
+    public override long Length => BaseStream.Length;
 
     internal void Reset()
     {
         bufferStart = bufferEnd = frameSize = 0;
         readState = ReadState.FrameNotStarted;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            buffer.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }

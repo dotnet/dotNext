@@ -14,21 +14,34 @@ using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 /// </summary>
 public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
-    private long nextIndex, fingerprint;
-    private protected readonly IClientMetricsCollector? metrics;
+    private readonly IClientMetricsCollector? metrics;
     private protected readonly ILocalMember localMember;
+    private readonly TimeSpan requestTimeout;
     internal readonly ClusterMemberId Id;
     private volatile IReadOnlyDictionary<string, string>? metadataCache;
     private AtomicEnum<ClusterMemberStatus> status;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
+    private long nextIndex, fingerprint;
 
-    private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+    private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id)
     {
         this.localMember = localMember;
-        this.metrics = metrics;
         EndPoint = endPoint;
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
         Id = id;
+        requestTimeout = TimeSpan.FromSeconds(30);
+    }
+
+    internal IClientMetricsCollector? Metrics
+    {
+        get => metrics;
+        init => metrics = value;
+    }
+
+    internal TimeSpan RequestTimeout
+    {
+        get => requestTimeout;
+        init => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <inheritdoc />

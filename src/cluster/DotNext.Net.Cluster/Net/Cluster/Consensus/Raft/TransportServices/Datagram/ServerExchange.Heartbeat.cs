@@ -1,4 +1,4 @@
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using IO.Log;
 using static Runtime.Intrinsics;

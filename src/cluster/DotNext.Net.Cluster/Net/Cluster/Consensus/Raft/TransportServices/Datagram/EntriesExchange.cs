@@ -1,7 +1,7 @@
 using System.IO.Pipelines;
 using static System.Buffers.Binary.BinaryPrimitives;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Buffers;
 using static IO.DataTransferObject;

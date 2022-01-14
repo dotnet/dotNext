@@ -2,7 +2,7 @@ using System.IO.Pipelines;
 using System.Net;
 using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 using IClusterConfiguration = Membership.IClusterConfiguration;
@@ -16,14 +16,18 @@ internal sealed class ExchangePeer : RaftClusterMember
 {
     private readonly IClient client;
     private readonly PipeOptions pipeConfig;
-    private readonly TimeSpan requestTimeout;
 
-    internal ExchangePeer(ILocalMember localMember, IPEndPoint address, ClusterMemberId id, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
-        : base(localMember, address, id, metrics)
+    internal ExchangePeer(ILocalMember localMember, IPEndPoint address, ClusterMemberId id, Func<IPEndPoint, IClient> clientFactory)
+        : base(localMember, address, id)
     {
         client = clientFactory(address);
-        this.requestTimeout = requestTimeout;
-        this.pipeConfig = pipeConfig;
+        pipeConfig = PipeOptions.Default;
+    }
+
+    internal PipeOptions PipeConfig
+    {
+        get => pipeConfig;
+        init => pipeConfig = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     public override ValueTask CancelPendingRequestsAsync() => client.CancelPendingRequestsAsync();
@@ -34,7 +38,7 @@ internal sealed class ExchangePeer : RaftClusterMember
         ThrowIfDisposed();
         exchange.Sender = localMember.Id;
         var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-        timeoutSource.CancelAfter(requestTimeout);
+        timeoutSource.CancelAfter(RequestTimeout);
         var timeStamp = new Timestamp();
         try
         {
@@ -49,7 +53,7 @@ internal sealed class ExchangePeer : RaftClusterMember
         }
         finally
         {
-            metrics?.ReportResponseTime(timeStamp.Elapsed);
+            Metrics?.ReportResponseTime(timeStamp.Elapsed);
             timeoutSource.Dispose();
             if (exchange is IAsyncDisposable disposable)
                 await disposable.DisposeAsync().ConfigureAwait(false);
@@ -65,7 +69,7 @@ internal sealed class ExchangePeer : RaftClusterMember
     private protected override async Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
     {
         EmptyClusterConfiguration? configState;
-        if (config.Length == 0L)
+        if (config.Length is 0L)
         {
             configState = new() { Fingerprint = config.Fingerprint, ApplyConfig = applyConfig };
         }

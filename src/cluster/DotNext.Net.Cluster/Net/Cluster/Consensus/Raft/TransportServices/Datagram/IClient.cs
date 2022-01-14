@@ -1,4 +1,4 @@
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 /// <summary>
 /// Represents client-side of the network transport.

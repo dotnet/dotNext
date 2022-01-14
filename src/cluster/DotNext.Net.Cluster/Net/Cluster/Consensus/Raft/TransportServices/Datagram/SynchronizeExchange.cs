@@ -1,6 +1,6 @@
 using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Buffers;
 

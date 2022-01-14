@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using Buffers;
 using IO;
+using IO.Log;
 using Serializable = Runtime.Serialization.Serializable;
 
 internal partial class ProtocolStream
@@ -31,7 +32,7 @@ internal partial class ProtocolStream
 
         if (freeCapacity < count)
         {
-            buffer[bufferStart..bufferEnd].CopyTo(buffer);
+            buffer.Span[bufferStart..bufferEnd].CopyTo(buffer.Span);
             bufferEnd -= bufferStart;
             bufferStart = 0;
         }
@@ -43,8 +44,8 @@ internal partial class ProtocolStream
         {
             Debug.Assert(bufferEnd < this.buffer.Length);
 
-            var buffer = this.buffer.Slice(bufferEnd);
-            bufferEnd += await transport.ReadAtLeastAsync(count, buffer, token).ConfigureAwait(false);
+            var buffer = this.buffer.Memory.Slice(bufferEnd);
+            bufferEnd += await BaseStream.ReadAtLeastAsync(count, buffer, token).ConfigureAwait(false);
         }
     }
 
@@ -108,20 +109,49 @@ internal partial class ProtocolStream
         => (await Serializable.ReadFromAsync<MetadataTransferObject>(this, buffer, token).ConfigureAwait(false)).Metadata;
 #pragma warning restore CA2252
 
-    internal unsafe ValueTask<(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata)> ReadInstallSnapshotRequest(CancellationToken token)
+    internal unsafe ValueTask<(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata)> ReadInstallSnapshotRequestAsync(CancellationToken token)
         => ReadAsync<(ClusterMemberId, long, long, LogEntryMetadata)>(SnapshotMessage.Size, &SnapshotMessage.Read, token);
 
     internal IRaftLogEntry CreateSnapshot(in LogEntryMetadata metadata) => new Snapshot(this, in metadata);
 
-    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex)> ReadAppendEntriesRequestAsync(CancellationToken token)
+    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, ILogEntryProducer<IRaftLogEntry> Entries, InMemoryClusterConfiguration Configuration, bool ApplyConfig)> ReadAppendEntriesRequestAsync(MemoryAllocator<byte>? allocator, CancellationToken token)
     {
-        var result = await ReadCoreAsync().ConfigureAwait(false);
-        entriesCount = result.EntriesCount;
-        consumed = true;
-        return new() { Id = result.Id, Term = result.Term, PrevLogIndex = result.PrevLogIndex, PrevLogTerm = result.PrevLogTerm };
+        // read headers
+        var result = await ReadHeadersAsync().ConfigureAwait(false);
+        InMemoryClusterConfiguration config;
 
-        unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount)> ReadCoreAsync()
-            => ReadAsync<(ClusterMemberId, long, long, long, long, int)>(AppendEntriesMessage.Size, &AppendEntriesMessage.Read, token);
+        // load configuration
+        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = 1024 })
+        {
+            await this.CopyToAsync(writer, token: token).ConfigureAwait(false);
+            config = new(writer.DetachBuffer(), result.Fingerprint);
+        }
+
+        readState = ReadState.FrameNotStarted;
+
+        return new()
+        {
+            Id = result.Id,
+            Term = result.Term,
+            PrevLogIndex = result.PrevLogIndex,
+            PrevLogTerm = result.PrevLogTerm,
+            CommitIndex = result.CommitIndex,
+            ApplyConfig = result.ApplyConfig,
+            Configuration = config,
+            Entries = new LogEntryProducer(this, result.EntriesCount, token),
+        };
+
+        unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint)> ReadHeadersAsync()
+            => ReadAsync<(ClusterMemberId, long Term, long PrevLogIndex, long, long, int, bool, long)>(AppendEntriesMessage.Size, &ReadHeaders, token);
+
+        static unsafe (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint) ReadHeaders(ref SpanReader<byte> reader)
+        {
+            (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint) result;
+            (result.Id, result.Term, result.PrevLogIndex, result.PrevLogTerm, result.CommitIndex, result.EntriesCount) = AppendEntriesMessage.Read(ref reader);
+            result.ApplyConfig = ValueTypeExtensions.ToBoolean(reader.Read());
+            result.Fingerprint = reader.ReadInt64(true);
+            return result;
+        }
     }
 
     private void BeginReadFrame()
@@ -133,7 +163,7 @@ internal partial class ProtocolStream
         else
         {
             // shift written buffer to the left
-            buffer[bufferStart..bufferEnd].CopyTo(buffer);
+            buffer.Span[bufferStart..bufferEnd].CopyTo(buffer.Span);
             bufferEnd -= bufferStart;
             bufferStart = 0;
         }
@@ -161,7 +191,7 @@ internal partial class ProtocolStream
 
         // frame header is not yet in the buffer
         if (frameHeaderRemainingBytes > 0)
-            bufferEnd = transport.ReadAtLeast(frameHeaderRemainingBytes, buffer.Span.Slice(bufferEnd));
+            bufferEnd = BaseStream.ReadAtLeast(frameHeaderRemainingBytes, buffer.Span.Slice(bufferEnd));
 
         EndReadFrame();
     }
@@ -201,7 +231,7 @@ internal partial class ProtocolStream
                 if (bufferStart == bufferEnd)
                 {
                     bufferStart = 0;
-                    bufferEnd = transport.Read(buffer.Span);
+                    bufferEnd = BaseStream.Read(buffer.Span);
                 }
 
                 // we can copy no more than remaining frame
@@ -224,7 +254,7 @@ internal partial class ProtocolStream
 
         // frame header is not yet in the buffer
         if (frameHeaderRemainingBytes > 0)
-            bufferEnd = await transport.ReadAtLeastAsync(frameHeaderRemainingBytes, buffer.Slice(bufferEnd), token).ConfigureAwait(false);
+            bufferEnd = await BaseStream.ReadAtLeastAsync(frameHeaderRemainingBytes, buffer.Memory.Slice(bufferEnd), token).ConfigureAwait(false);
 
         EndReadFrame();
     }
@@ -244,7 +274,7 @@ internal partial class ProtocolStream
                 if (bufferStart == bufferEnd)
                 {
                     bufferStart = 0;
-                    bufferEnd = await transport.ReadAsync(buffer, token).ConfigureAwait(false);
+                    bufferEnd = await BaseStream.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
                 }
 
                 // we can copy no more than remaining frame
@@ -255,7 +285,7 @@ internal partial class ProtocolStream
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
 
-    private async ValueTask SkipAsync()
+    internal async ValueTask SkipAsync(CancellationToken token)
     {
         while (true)
         {
@@ -263,7 +293,7 @@ internal partial class ProtocolStream
             {
                 case (ReadState.FrameStarted, true):
                 case (ReadState.FrameNotStarted, _):
-                    await StartFrameAsync(CancellationToken.None).ConfigureAwait(false);
+                    await StartFrameAsync(token).ConfigureAwait(false);
                     continue; // skip empty frames
                 case (ReadState.EndOfStreamReached, true):
                     return;
@@ -271,7 +301,7 @@ internal partial class ProtocolStream
                     if (bufferStart == bufferEnd)
                     {
                         bufferStart = 0;
-                        bufferEnd = await transport.ReadAsync(buffer, CancellationToken.None);
+                        bufferEnd = await BaseStream.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
                     }
 
                     // we can copy no more than remaining frame

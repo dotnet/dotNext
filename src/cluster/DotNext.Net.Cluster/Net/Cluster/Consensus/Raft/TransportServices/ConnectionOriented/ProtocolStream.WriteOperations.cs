@@ -1,3 +1,5 @@
+using Debug = System.Diagnostics.Debug;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
@@ -12,58 +14,65 @@ internal partial class ProtocolStream
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Write((byte)MessageType.Vote);
         VoteMessage.Write(ref writer, in sender, term, lastLogIndex, lastLogTerm);
-        return transport.WriteAsync(buffer.Slice(0, writer.WrittenCount), token);
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WritePreVoteRequestAsync(in ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
+        Reset();
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Write((byte)MessageType.PreVote);
         PreVoteMessage.Write(ref writer, in sender, term, lastLogIndex, lastLogTerm);
-        return transport.WriteAsync(buffer.Slice(0, writer.WrittenCount), token);
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteResponseAsync(in Result<bool> result, CancellationToken token)
     {
+        Reset();
         var writer = new SpanWriter<byte>(buffer.Span);
         Result.Write(ref writer, in result);
-        return transport.WriteAsync(buffer.Slice(0, writer.WrittenCount), token);
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteResponseAsync(bool value, CancellationToken token)
     {
-        var buffer = this.buffer.Slice(0, 1);
+        Reset();
+        var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = value.ToByte();
-        return transport.WriteAsync(buffer, token);
+        return BaseStream.WriteAsync(buffer, token);
     }
 
-    internal ValueTask WriteResponseAsync(long? value, CancellationToken token)
+    internal ValueTask WriteResponseAsync(in long? value, CancellationToken token)
     {
+        Reset();
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Add(value.HasValue.ToByte());
         writer.WriteInt64(value.GetValueOrDefault(), true);
-        return transport.WriteAsync(buffer.Slice(0, writer.WrittenCount), token);
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteResignRequestAsync(CancellationToken token)
     {
-        var buffer = this.buffer.Slice(0, 1);
+        Reset();
+        var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = (byte)MessageType.Resign;
-        return transport.WriteAsync(buffer, token);
+        return BaseStream.WriteAsync(buffer, token);
     }
 
     internal ValueTask WriteSynchronizeRequestAsync(CancellationToken token)
     {
-        var buffer = this.buffer.Slice(0, 1);
+        Reset();
+        var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = (byte)MessageType.Synchronize;
-        return transport.WriteAsync(buffer, token);
+        return BaseStream.WriteAsync(buffer, token);
     }
 
     internal ValueTask WriteMetadataRequestAsync(CancellationToken token)
     {
-        var buffer = this.buffer.Slice(0, 1);
+        Reset();
+        var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = (byte)MessageType.Metadata;
-        return transport.WriteAsync(buffer, token);
+        return BaseStream.WriteAsync(buffer, token);
     }
 
     internal async ValueTask WriteMetadataResponseAsync(IReadOnlyDictionary<string, string> metadata, Memory<byte> buffer, CancellationToken token)
@@ -96,7 +105,7 @@ internal partial class ProtocolStream
         where TList : IReadOnlyList<TEntry>
     {
         Reset();
-        PrepareForWrite(WriteHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig));
+        PrepareForWrite(WriteHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig, config.Fingerprint));
 
         // write configuration
         await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
@@ -115,12 +124,13 @@ internal partial class ProtocolStream
 
         await FlushAsync(token).ConfigureAwait(false);
 
-        static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig)
+        static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig, long fingerprint)
         {
             var writer = new SpanWriter<byte>(buffer);
             writer.Add((byte)MessageType.AppendEntries);
             AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
             writer.Add(applyConfig.ToByte());
+            writer.Write(fingerprint);
             return writer.WrittenCount;
         }
 
@@ -160,7 +170,7 @@ internal partial class ProtocolStream
             {
                 // write frame size
                 WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: false);
-                await transport.WriteAsync(buffer, token).ConfigureAwait(false);
+                await BaseStream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
                 bufferStart = 0;
                 bufferEnd = FrameHeadersSize;
             }
@@ -181,7 +191,7 @@ internal partial class ProtocolStream
             {
                 // write frame size
                 WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: false);
-                transport.Write(buffer.Span);
+                BaseStream.Write(buffer.Span);
                 bufferStart = 0;
                 bufferEnd = FrameHeadersSize;
             }
@@ -200,7 +210,7 @@ internal partial class ProtocolStream
 
         async Task FlushCoreAsync()
         {
-            await transport.WriteAsync(buffer.Slice(0, bufferEnd), token).ConfigureAwait(false);
+            await BaseStream.WriteAsync(buffer.Memory.Slice(0, bufferEnd), token).ConfigureAwait(false);
             bufferStart = bufferEnd = 0;
         }
     }
@@ -213,7 +223,7 @@ internal partial class ProtocolStream
 
     public override void Flush()
     {
-        transport.Write(buffer.Span.Slice(0, bufferEnd));
+        BaseStream.Write(buffer.Span.Slice(0, bufferEnd));
         bufferStart = bufferEnd = 0;
     }
 }

@@ -1,6 +1,6 @@
 using System.IO.Pipelines;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
 {

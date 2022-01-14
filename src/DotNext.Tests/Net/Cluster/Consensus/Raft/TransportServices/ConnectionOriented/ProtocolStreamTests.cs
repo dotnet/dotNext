@@ -1,5 +1,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Buffers;
+
 public sealed class ProtocolStreamTests : Test
 {
     [Theory]
@@ -10,7 +12,7 @@ public sealed class ProtocolStreamTests : Test
     {
         using var source = new MemoryStream(512);
         var expected = RandomBytes(512);
-        using var protocol = new ProtocolStream(source, new byte[17]);
+        using var protocol = new ProtocolStream(source, MemoryAllocator.CreateArrayAllocator<byte>(), 17);
         protocol.PrepareForWrite();
         protocol.Write(expected);
         protocol.Flush();
@@ -30,7 +32,7 @@ public sealed class ProtocolStreamTests : Test
     {
         using var source = new MemoryStream(512);
         var expected = RandomBytes(512);
-        using var protocol = new ProtocolStream(source, new byte[17]);
+        using var protocol = new ProtocolStream(source, MemoryAllocator.CreateArrayAllocator<byte>(), 17);
         protocol.PrepareForWrite();
         await protocol.WriteAsync(expected);
         await protocol.FlushAsync();

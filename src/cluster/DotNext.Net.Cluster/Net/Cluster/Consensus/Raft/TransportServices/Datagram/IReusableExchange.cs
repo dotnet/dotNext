@@ -1,4 +1,4 @@
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 internal interface IReusableExchange : IExchange
 {

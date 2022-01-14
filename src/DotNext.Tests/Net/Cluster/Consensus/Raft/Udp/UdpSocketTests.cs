@@ -1,10 +1,12 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Pipelines;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     using TransportServices;
+    using TransportServices.Datagram;
 
     [ExcludeFromCodeCoverage]
     [Collection(TestCollections.Raft)]
@@ -22,11 +24,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 2, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 2, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
+
             return RequestResponseTest(CreateServer, CreateClient);
         }
 
@@ -39,11 +46,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
+
             return StressTestTest(CreateServer, CreateClient);
         }
 
@@ -58,11 +70,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
+
             return MetadataRequestResponseTest(CreateServer, CreateClient, smallAmountOfMetadata);
         }
 
@@ -87,11 +104,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
+
             return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior);
         }
 
@@ -106,11 +128,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
         }
@@ -126,11 +152,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
         }
@@ -144,11 +174,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+
+            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
+
+            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingSynchronizationRequestTest(CreateServer, CreateClient);
         }

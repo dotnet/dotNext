@@ -1,7 +1,7 @@
 using System.IO.Pipelines;
 using IOException = System.IO.IOException;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 internal abstract class PipeExchange : IExchange
 {

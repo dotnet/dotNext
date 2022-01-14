@@ -1,6 +1,6 @@
 using System.IO.Pipelines;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Serializable = Runtime.Serialization.Serializable;
 

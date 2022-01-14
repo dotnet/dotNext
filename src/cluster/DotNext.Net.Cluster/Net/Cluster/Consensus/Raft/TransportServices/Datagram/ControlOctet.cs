@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Buffers;
 
