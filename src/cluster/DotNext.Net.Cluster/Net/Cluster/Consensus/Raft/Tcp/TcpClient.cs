@@ -181,7 +181,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
-            await protocol.WriteVoteRequestAsync(in Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
+            await protocol.WriteVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
@@ -194,7 +194,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
-            await protocol.WritePreVoteRequestAsync(in Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
+            await protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
@@ -248,7 +248,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
             using var buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
-            await protocol.WriteInstallSnapshotRequestAsync(Id, term, snapshotIndex, snapshot, buffer.Memory, token).ConfigureAwait(false);
+            await protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer.Memory, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
@@ -262,7 +262,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
             using var buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
-            await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer.Memory, token).ConfigureAwait(false);
+            await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer.Memory, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
