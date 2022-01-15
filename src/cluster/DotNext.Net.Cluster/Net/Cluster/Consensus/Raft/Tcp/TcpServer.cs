@@ -141,9 +141,11 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
         {
             logger.ConnectionWasResetByClient(clientAddress);
         }
-        catch (OperationCanceledException e) when (e.CancellationToken != lifecycleToken)
+        catch (OperationCanceledException e)
         {
-            logger.RequestTimedOut(clientAddress, e);
+            // if lifecycleToken is canceled then shutdown socket gracefully without logging
+            if (e.CancellationToken != lifecycleToken)
+                logger.RequestTimedOut(clientAddress, e);
         }
         catch (Exception e)
         {
