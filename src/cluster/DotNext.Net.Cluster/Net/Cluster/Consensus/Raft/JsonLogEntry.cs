@@ -118,6 +118,9 @@ public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAcces
     /// <inheritdoc />
     bool IDataTransferObject.IsReusable => true;
 
+    /// <inheritdoc />
+    int? IRaftLogEntry.CommandId => null;
+
     private string TypeId => typeId is { Length: > 0 } result ? result : typeof(T).AssemblyQualifiedName!;
 
     /// <inheritdoc />
