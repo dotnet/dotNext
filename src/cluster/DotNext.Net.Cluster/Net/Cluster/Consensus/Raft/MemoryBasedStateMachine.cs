@@ -527,6 +527,26 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     }
 
     /// <inheritdoc />
+    protected sealed override async Task ClearAsync(CancellationToken token = default)
+    {
+        ThrowIfDisposed();
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        try
+        {
+            await base.ClearAsync(token).ConfigureAwait(false);
+
+            // delete snapshot
+            snapshot.Dispose();
+            File.Delete(snapshot.FileName);
+            snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough);
+        }
+        finally
+        {
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
+    }
+
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

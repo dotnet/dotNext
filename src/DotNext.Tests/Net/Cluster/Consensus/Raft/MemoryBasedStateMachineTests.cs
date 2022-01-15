@@ -89,6 +89,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
+            internal new Task ClearAsync(CancellationToken token = default) => base.ClearAsync(token);
+
             protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ToTypeAsync<long, LogEntry>();
 
             protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context) => new SimpleSnapshotBuilder(context);
@@ -507,6 +509,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+            }
+        }
+
+        [Fact]
+        public static async Task ClearPersistentLog()
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching: false))
+            {
+                await state.AppendAsync(new LogEntryList(entries));
+                Equal(3, await state.CommitAsync(3, CancellationToken.None));
+                //install snapshot and erase all existing entries up to 7th (inclusive)
+                await state.AppendAsync(new Int64LogEntry(100500L, true), 7);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+
+                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.ClearAsync();
+
+                Equal(0L, state.LastCommittedEntryIndex);
+                Equal(0L, state.LastUncommittedEntryIndex);
             }
         }
 

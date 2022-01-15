@@ -95,6 +95,15 @@ public partial class PersistentState
             return RandomAccess.WriteAsync(handle, memory.Slice(offset, length), offset, token);
         }
 
+        internal ValueTask ClearAsync(CancellationToken token = default)
+        {
+            votedFor = null;
+            snapshot = default;
+            term = commitIndex = lastIndex = lastApplied = 0L;
+            buffer.Span.Clear();
+            return RandomAccess.WriteAsync(handle, buffer.Memory, 0L, token);
+        }
+
         internal long CommitIndex
         {
             get => commitIndex.VolatileRead();

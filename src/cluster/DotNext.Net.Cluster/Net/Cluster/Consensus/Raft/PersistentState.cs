@@ -739,6 +739,22 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     public abstract Task InitializeAsync(CancellationToken token = default);
 
+    /// <summary>
+    /// Removes all log entries from the log.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result of the method.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+    protected virtual async Task ClearAsync(CancellationToken token = default)
+    {
+        // invalidate state
+        await state.ClearAsync(token).ConfigureAwait(false);
+
+        // invalidate partitions
+        DeletePartitions(FirstPartition);
+        FirstPartition = LastPartition = null;
+    }
+
     private protected void OnCommit(long count)
     {
         commitEvent.Set(true);
