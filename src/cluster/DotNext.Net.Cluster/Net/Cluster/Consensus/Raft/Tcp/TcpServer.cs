@@ -133,8 +133,12 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
                 await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
                 protocol.Reset();
 
-                timeoutSource.Dispose();
-                timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
+                // reuse CTS if possible to avoid allocations
+                if (!timeoutSource.TryReset())
+                {
+                    timeoutSource.Dispose();
+                    timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
+                }
             }
         }
         catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } || e.InnerException is SocketException { SocketErrorCode: SocketError.ConnectionReset })
