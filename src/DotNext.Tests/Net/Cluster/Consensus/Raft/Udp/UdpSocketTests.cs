@@ -83,19 +83,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [Theory]
-        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll)]
-        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst)]
-        [InlineData(0, ReceiveEntriesBehavior.DropAll)]
-        [InlineData(0, ReceiveEntriesBehavior.DropFirst)]
-        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll)]
-        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst)]
-        [InlineData(512, ReceiveEntriesBehavior.DropAll)]
-        [InlineData(512, ReceiveEntriesBehavior.DropFirst)]
-        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll)]
-        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst)]
-        [InlineData(50, ReceiveEntriesBehavior.DropAll)]
-        [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
-        public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll, false)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst, false)]
+        [InlineData(0, ReceiveEntriesBehavior.DropAll, false)]
+        [InlineData(0, ReceiveEntriesBehavior.DropFirst, false)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll, false)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst, false)]
+        [InlineData(512, ReceiveEntriesBehavior.DropAll, false)]
+        [InlineData(512, ReceiveEntriesBehavior.DropFirst, false)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll, false)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst, false)]
+        [InlineData(50, ReceiveEntriesBehavior.DropAll, false)]
+        [InlineData(50, ReceiveEntriesBehavior.DropFirst, false)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll, true)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst, true)]
+        [InlineData(0, ReceiveEntriesBehavior.DropAll, true)]
+        [InlineData(0, ReceiveEntriesBehavior.DropFirst, true)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll, true)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst, true)]
+        [InlineData(512, ReceiveEntriesBehavior.DropAll, true)]
+        [InlineData(512, ReceiveEntriesBehavior.DropFirst, true)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll, true)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst, true)]
+        [InlineData(50, ReceiveEntriesBehavior.DropAll, true)]
+        [InlineData(50, ReceiveEntriesBehavior.DropFirst, true)]
+        public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
         {
             static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
@@ -113,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
-            return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior);
+            return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior, useEmptyEntry);
         }
 
         [Theory]

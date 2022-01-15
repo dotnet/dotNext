@@ -167,6 +167,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     /// <summary>
     /// Tries to retrieve the target object.
     /// </summary>
+    /// <returns>The referenced object.</returns>
     public Optional<T> TryGetTarget() => new(Target);
 
     /// <summary>
