@@ -1,3 +1,4 @@
+using System.Buffers;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -35,6 +36,7 @@ internal partial class ProtocolStream
             metadata = await stream.ReadLogEntryMetadataAsync(token).ConfigureAwait(false);
             consumed = false;
             stream.readState = ReadState.FrameNotStarted;
+            stream.frameSize = 0;
             entriesCount -= 1;
             return true;
         }
@@ -55,12 +57,12 @@ internal partial class ProtocolStream
 
         bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
 
-        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             Debug.Assert(!consumed);
 
-            await writer.CopyFromAsync(stream, token).ConfigureAwait(false);
             consumed = true;
+            return new(writer.CopyFromAsync(stream, token));
         }
 
         ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();

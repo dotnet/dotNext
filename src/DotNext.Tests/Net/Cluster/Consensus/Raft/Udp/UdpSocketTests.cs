@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipelines;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp

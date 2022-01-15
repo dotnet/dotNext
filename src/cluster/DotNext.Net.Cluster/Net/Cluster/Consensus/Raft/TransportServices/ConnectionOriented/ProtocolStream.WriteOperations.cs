@@ -86,7 +86,7 @@ internal partial class ProtocolStream
     internal async ValueTask WriteInstallSnapshotRequestAsync(ClusterMemberId sender, long term, long snapshotIndex, IRaftLogEntry snapshot, Memory<byte> buffer, CancellationToken token)
     {
         Reset();
-        PrepareForWrite(WriteHeaders(this.buffer.Span, in sender, term, snapshotIndex, snapshot));
+        PrepareForWrite(bufferEnd = WriteHeaders(this.buffer.Span, in sender, term, snapshotIndex, snapshot));
         await snapshot.WriteToAsync(this, buffer, token).ConfigureAwait(false);
         WriteFinalFrame();
         await FlushAsync(token).ConfigureAwait(false);
@@ -105,11 +105,15 @@ internal partial class ProtocolStream
         where TList : IReadOnlyList<TEntry>
     {
         Reset();
-        PrepareForWrite(WriteHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig, config.Fingerprint));
+        bufferEnd = WriteHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig, config.Fingerprint, config.Length);
 
         // write configuration
-        await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
-        WriteFinalFrame();
+        if (config.Length > 0L)
+        {
+            PrepareForWrite(bufferEnd);
+            await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
+            WriteFinalFrame();
+        }
 
         // write log entries
         foreach (var entry in entries)
@@ -117,26 +121,27 @@ internal partial class ProtocolStream
             if (this.buffer.Length - bufferEnd < LogEntryMetadata.Size + FrameHeadersSize + 1)
                 await FlushAsync(token).ConfigureAwait(false);
 
-            PrepareForWrite(bufferEnd + WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
+            PrepareForWrite(bufferEnd += WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
             await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
             WriteFinalFrame();
         }
 
         await FlushAsync(token).ConfigureAwait(false);
 
-        static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig, long fingerprint)
+        static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig, long fingerprint, long configLength)
         {
             var writer = new SpanWriter<byte>(buffer);
             writer.Add((byte)MessageType.AppendEntries);
             AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
             writer.Add(applyConfig.ToByte());
-            writer.Write(fingerprint);
+            writer.WriteInt64(fingerprint, true);
+            writer.WriteInt64(configLength, true);
             return writer.WrittenCount;
         }
 
         static int WriteLogEntryMetadata(Span<byte> buffer, TEntry entry)
         {
-            var writer = new SpanWriter<byte>();
+            var writer = new SpanWriter<byte>(buffer);
             LogEntryMetadata.Create(entry).Format(ref writer);
             return writer.WrittenCount;
         }

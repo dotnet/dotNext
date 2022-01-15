@@ -38,6 +38,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
         this.address = address;
         gracefulShutdownTimeout = 1000;
         this.localMember = localMember;
+        ttl = ITcpTransport.DefaultTtl;
         logger = loggerFactory.CreateLogger(GetType());
     }
 
@@ -83,6 +84,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
 
     private async void HandleConnection(Socket remoteClient)
     {
+        var clientAddress = remoteClient.RemoteEndPoint;
         var transport = new TcpStream(remoteClient, owns: true);
         ProtocolStream protocol;
         CancellationTokenSource timeoutSource;
@@ -105,7 +107,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
             {
                 ssl.Dispose();
                 transport.Dispose();
-                logger.TlsHandshakeFailed(remoteClient.RemoteEndPoint, e);
+                logger.TlsHandshakeFailed(clientAddress, e);
                 return;
             }
             finally
@@ -124,8 +126,10 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
             while (transport.Connected && !IsDisposed && !lifecycleToken.IsCancellationRequested)
             {
                 var messageType = await protocol.ReadMessageTypeAsync(lifecycleToken).ConfigureAwait(false);
-                timeoutSource.CancelAfter(receiveTimeout);
+                if (messageType is MessageType.None)
+                    break;
 
+                timeoutSource.CancelAfter(receiveTimeout);
                 await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
                 protocol.Reset();
 
@@ -135,19 +139,20 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
         }
         catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } || e.InnerException is SocketException { SocketErrorCode: SocketError.ConnectionReset })
         {
-            logger.ConnectionWasResetByClient(socket.RemoteEndPoint);
+            logger.ConnectionWasResetByClient(clientAddress);
         }
         catch (OperationCanceledException e) when (e.CancellationToken != lifecycleToken)
         {
-            logger.RequestTimedOut(remoteClient.RemoteEndPoint, e);
+            logger.RequestTimedOut(clientAddress, e);
         }
         catch (Exception e)
         {
-            logger.FailedToProcessRequest(socket.RemoteEndPoint, e);
+            logger.FailedToProcessRequest(clientAddress, e);
         }
         finally
         {
             protocol.Dispose();
+            (protocol.BaseStream as SslStream)?.Dispose();
             timeoutSource.Dispose();
             transport.Close(GracefulShutdownTimeout);
             Interlocked.Decrement(ref connections);
@@ -251,7 +256,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
                 ITcpTransport.ConfigureSocket(remoteClient, linger, ttl);
                 ThreadPool.QueueUserWorkItem(HandleConnection, remoteClient, preferLocal: false);
             }
-            catch (ObjectDisposedException)
+            catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
             {
                 pending = false;
             }

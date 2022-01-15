@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -68,11 +69,27 @@ internal partial class ProtocolStream
     private unsafe ValueTask<T> ReadAsync<T>(int count, delegate*<ref SpanReader<byte>, T> decoder, CancellationToken token)
         => ReadAsync<T>(count, (IntPtr)decoder, token);
 
-    internal unsafe ValueTask<MessageType> ReadMessageTypeAsync(CancellationToken token)
+    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    internal async ValueTask<MessageType> ReadMessageTypeAsync(CancellationToken token)
     {
-        return ReadAsync<MessageType>(sizeof(MessageType), &Read, token);
+        Debug.Assert(bufferStart is 0);
+        Debug.Assert(bufferEnd is 0);
 
-        static MessageType Read(ref SpanReader<byte> reader) => reader.Read<MessageType>();
+        // in case of SslStream, ReadAsync will return 0 bytes and we don't want to throw an error
+        var buffer = this.buffer.Memory;
+        MessageType result;
+
+        if ((bufferEnd = await BaseStream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0)
+        {
+            bufferStart = 1;
+            result = (MessageType)MemoryMarshal.GetReference(buffer.Span);
+        }
+        else
+        {
+            result = MessageType.None;
+        }
+
+        return result;
     }
 
     internal unsafe ValueTask<(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm)> ReadVoteRequestAsync(CancellationToken token)
@@ -118,16 +135,21 @@ internal partial class ProtocolStream
     {
         // read headers
         var result = await ReadHeadersAsync().ConfigureAwait(false);
-        InMemoryClusterConfiguration config;
 
         // load configuration
-        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = 1024 })
+        MemoryOwner<byte> config;
+        if (result.ConfigLength > 0)
         {
-            await this.CopyToAsync(writer, token: token).ConfigureAwait(false);
-            config = new(writer.DetachBuffer(), result.Fingerprint);
+            config = allocator.Invoke(checked((int)result.ConfigLength), exactSize: true);
+            await this.ReadAtLeastAsync(config.Length, config.Memory, token).ConfigureAwait(false);
+        }
+        else
+        {
+            config = default;
         }
 
         readState = ReadState.FrameNotStarted;
+        frameSize = 0;
 
         return new()
         {
@@ -137,19 +159,20 @@ internal partial class ProtocolStream
             PrevLogTerm = result.PrevLogTerm,
             CommitIndex = result.CommitIndex,
             ApplyConfig = result.ApplyConfig,
-            Configuration = config,
+            Configuration = new(config, result.Fingerprint),
             Entries = new LogEntryProducer(this, result.EntriesCount, token),
         };
 
-        unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint)> ReadHeadersAsync()
-            => ReadAsync<(ClusterMemberId, long Term, long PrevLogIndex, long, long, int, bool, long)>(AppendEntriesMessage.Size, &ReadHeaders, token);
+        unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint, long ConfigLength)> ReadHeadersAsync()
+            => ReadAsync<(ClusterMemberId, long Term, long PrevLogIndex, long, long, int, bool, long, long)>(AppendEntriesHeadersSize, &ReadHeaders, token);
 
-        static unsafe (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint) ReadHeaders(ref SpanReader<byte> reader)
+        static unsafe (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint, long ConfigLength) ReadHeaders(ref SpanReader<byte> reader)
         {
-            (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint) result;
+            (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint, long ConfigLength) result;
             (result.Id, result.Term, result.PrevLogIndex, result.PrevLogTerm, result.CommitIndex, result.EntriesCount) = AppendEntriesMessage.Read(ref reader);
             result.ApplyConfig = ValueTypeExtensions.ToBoolean(reader.Read());
             result.Fingerprint = reader.ReadInt64(true);
+            result.ConfigLength = reader.ReadInt64(true);
             return result;
         }
     }

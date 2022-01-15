@@ -16,6 +16,11 @@ internal partial class ProtocolStream
             Fingerprint = fingerprint;
         }
 
+        internal InMemoryClusterConfiguration(long fingerprint)
+            : this(default, fingerprint)
+        {
+        }
+
         public long Fingerprint { get; }
 
         long IClusterConfiguration.Length => buffer.Length;
@@ -24,6 +29,12 @@ internal partial class ProtocolStream
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(buffer.Memory, lengthFormat: null, token);
+
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = buffer.Memory;
+            return true;
+        }
 
         protected override void Dispose(bool disposing)
         {

@@ -205,7 +205,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        static async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
             await protocol.WriteSynchronizeRequestAsync(token).ConfigureAwait(false);
             protocol.Reset();
@@ -232,7 +232,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        static async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
             await protocol.WriteResignRequestAsync(token).ConfigureAwait(false);
             protocol.Reset();

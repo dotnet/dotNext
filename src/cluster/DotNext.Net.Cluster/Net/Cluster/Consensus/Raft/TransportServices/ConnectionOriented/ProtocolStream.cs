@@ -13,7 +13,7 @@ internal sealed partial class ProtocolStream : Stream
 {
     private const int FrameHeadersSize = sizeof(int) + sizeof(byte);
 
-    private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long);
+    private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long) + sizeof(long);
 
     [SuppressMessage("Usage", "CA2213", Justification = "The objec doesn't own the stream")]
     internal readonly Stream BaseStream;

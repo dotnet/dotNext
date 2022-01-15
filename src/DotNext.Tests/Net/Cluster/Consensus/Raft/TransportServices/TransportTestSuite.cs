@@ -97,14 +97,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(10, commitIndex);
 
                 if (fingerprint.HasValue)
-                {
                     Equal(42L, fingerprint.GetValueOrDefault());
-                    True(applyConfig);
-                }
+
+                if (applyConfig)
+                    Empty(ReceivedConfiguration);
                 else
-                {
-                    False(applyConfig);
-                }
+                    NotEmpty(ReceivedConfiguration);
 
                 byte[] buffer;
                 switch (Behavior)
@@ -364,7 +362,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             using var client = clientFactory(serverAddr, member, timeout);
 
             var config = new BufferedClusterConfiguration(RandomBytes(payloadSize)) { Fingerprint = 42L };
-            var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, false, CancellationToken.None);
+            var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, payloadSize is 0, CancellationToken.None);
 
             True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.FirstSpan));
         }
