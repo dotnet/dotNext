@@ -370,7 +370,7 @@ public partial class RaftCluster
     /// </summary>
     public sealed class TcpConfiguration : NodeConfiguration
     {
-        private int transmissionBlockSize, connectTimeout;
+        private int transmissionBlockSize;
         private TimeSpan? gracefulShutdown;
 
         /// <summary>
@@ -381,7 +381,6 @@ public partial class RaftCluster
             : base(localNodeHostAddress)
         {
             transmissionBlockSize = ushort.MaxValue;
-            connectTimeout = int.MinValue;
             LingerOption = ITcpTransport.CreateDefaultLingerOption();
         }
 
@@ -436,8 +435,8 @@ public partial class RaftCluster
         [Obsolete("ConnectTimeout is no longer in use. RequestTimeout is used for connection instead")]
         public int ConnectTimeout
         {
-            get => connectTimeout > 0 ? connectTimeout : (LowerElectionTimeout / 2);
-            set => connectTimeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            get => (int)RequestTimeout.TotalMilliseconds;
+            set => RequestTimeout = TimeSpan.FromMilliseconds(value);
         }
 
         internal override TcpClient CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
