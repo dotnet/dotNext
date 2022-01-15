@@ -85,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal PersistentStateWithSnapshot(string path, bool useCaching, MemoryBasedStateMachine.CompactionMode compactionMode = default)
-                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode })
+                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode, IntegrityCheck = true })
             {
             }
 

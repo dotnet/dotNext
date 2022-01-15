@@ -518,12 +518,14 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     }
 
     /// <inheritdoc />
-    public override Task InitializeAsync(CancellationToken token = default)
+    public override async Task InitializeAsync(CancellationToken token = default)
     {
-        if (token.IsCancellationRequested)
-            return Task.FromCanceled(token);
+        ThrowIfDisposed();
 
-        return replayOnInitialize ? ReplayAsync(token) : Task.CompletedTask;
+        await base.InitializeAsync().ConfigureAwait(false);
+
+        if (replayOnInitialize)
+            await ReplayAsync(token).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

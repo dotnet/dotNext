@@ -48,4 +48,6 @@ internal static class ExceptionMessages
     internal static string UnknownRaftMessageType<T>(T messageType)
         where T : struct, Enum
         => Resources.Get().Format(messageType.ToString());
+
+    internal static string PersistentStateBroken => (string)Resources.Get();
 }

@@ -1,4 +1,6 @@
-﻿using static System.Buffers.Binary.BinaryPrimitives;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using static System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -7,6 +9,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using Threading;
 using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using IntegrityException = IO.Log.IntegrityException;
+using Intrinsics = Runtime.Intrinsics;
 
 public partial class PersistentState
 {
@@ -35,6 +39,7 @@ public partial class PersistentState
         private const int TermOffset = SnapshotMetadataOffset + SnapshotMetadata.Size;
         private const int LastVotePresenceOffset = TermOffset + sizeof(long);
         private const int LastVoteOffset = LastVotePresenceOffset + sizeof(byte);
+        private const int ChecksumOffset = Capacity - sizeof(long);
 
         internal static readonly Range IndexesRange = CommitIndexOffset..SnapshotMetadataOffset,
                                         TermRange = TermOffset..LastVotePresenceOffset,
@@ -44,6 +49,7 @@ public partial class PersistentState
                                         SnapshotRange = SnapshotMetadataOffset..TermOffset;
 
         private readonly SafeFileHandle handle;
+        private readonly bool integrityCheck;
         private MemoryOwner<byte> buffer;
 
         // boxed ClusterMemberId or null if there is not last vote stored
@@ -51,7 +57,7 @@ public partial class PersistentState
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
         private SnapshotMetadata snapshot; // cached snapshot metadata to avoid backward writes
 
-        private NodeState(string fileName, MemoryAllocator<byte> allocator)
+        private NodeState(string fileName, MemoryAllocator<byte> allocator, bool integrityCheck)
         {
             Debug.Assert(Capacity >= LastVoteOffset + sizeof(long));
 
@@ -65,6 +71,9 @@ public partial class PersistentState
             {
                 handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, FileOptions.None, Capacity);
                 buffer.Span.Clear();
+                if (integrityCheck)
+                    WriteInt64LittleEndian(Checksum, Hash(Data));
+
                 RandomAccess.Write(handle, buffer.Span, 0L);
             }
 
@@ -81,19 +90,91 @@ public partial class PersistentState
             snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
             if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
                 votedFor = new() { Value = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)) };
+            this.integrityCheck = integrityCheck;
         }
 
-        internal NodeState(DirectoryInfo location, MemoryAllocator<byte> allocator)
-            : this(Path.Combine(location.FullName, FileName), allocator)
+        internal NodeState(DirectoryInfo location, MemoryAllocator<byte> allocator, bool integrityCheck)
+            : this(Path.Combine(location.FullName, FileName), allocator, integrityCheck)
         {
         }
 
-        internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
+        private ReadOnlySpan<byte> Data => buffer.Span[CommitIndexOffset..ChecksumOffset];
+
+        private Span<byte> Checksum => buffer.Span.Slice(ChecksumOffset);
+
+        internal bool VerifyIntegrity()
+            => !integrityCheck || Hash(Data) == ReadInt64LittleEndian(Checksum);
+
+        private static long Hash(ReadOnlySpan<byte> input)
+        {
+            // we're using FNV1a 64-bit version
+            const long prime = 1099511628211;
+            const long offset = unchecked((long)14695981039346656037);
+
+            var hash = offset;
+            var length = input.Length;
+            ref byte ptr = ref MemoryMarshal.GetReference(input);
+
+            // Perf: x % 2^n == x & (2^n - 1)
+            const nint moduloOperand = sizeof(long) - 1;
+            if ((Intrinsics.AddressOf(in ptr) & moduloOperand) is 0)
+            {
+                // pointer is aligned
+                for (; length >= sizeof(long); length -= sizeof(long))
+                {
+                    hash = HashRound(hash, Unsafe.As<byte, long>(ref ptr));
+                    ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+                }
+
+                if (length >= sizeof(int))
+                {
+                    hash = HashRound(hash, Unsafe.As<byte, int>(ref ptr));
+                    ptr = ref Unsafe.Add(ref ptr, sizeof(int));
+                }
+            }
+            else
+            {
+                // pointer is unaligned
+                for (; length >= sizeof(long); length -= sizeof(long))
+                {
+                    hash = HashRound(hash, Unsafe.ReadUnaligned<long>(ref ptr));
+                    ptr = ref Unsafe.Add(ref ptr, sizeof(long));
+                }
+
+                if (length >= sizeof(int))
+                {
+                    hash = HashRound(hash, Unsafe.ReadUnaligned<int>(ref ptr));
+                    ptr = ref Unsafe.Add(ref ptr, sizeof(int));
+                }
+            }
+
+            // hash rest of the data
+            for (; length > 0; length -= sizeof(byte))
+            {
+                hash = HashRound(hash, ptr);
+                ptr = ref Unsafe.Add(ref ptr, 1);
+            }
+
+            return hash;
+
+            static long HashRound(long hash, long data) => unchecked((hash ^ data) * prime);
+        }
+
+        private ValueTask FlushWithoutChecksumAsync(in Range range, CancellationToken token)
         {
             var memory = buffer.Memory;
             var (offset, length) = range.GetOffsetAndLength(memory.Length);
             return RandomAccess.WriteAsync(handle, memory.Slice(offset, length), offset, token);
         }
+
+        private ValueTask FlushWithChecksumAsync(CancellationToken token)
+        {
+            WriteInt64LittleEndian(Checksum, Hash(Data));
+            return RandomAccess.WriteAsync(handle, buffer.Memory, 0L, token);
+        }
+
+        internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
+            => integrityCheck ? FlushWithChecksumAsync(token) : FlushWithoutChecksumAsync(in range, token);
 
         internal ValueTask ClearAsync(CancellationToken token = default)
         {
@@ -197,6 +278,18 @@ public partial class PersistentState
             }
 
             base.Dispose(disposing);
+        }
+    }
+
+    /// <summary>
+    /// Indicates that <see cref="Options.IntegrityCheck"/> enabled and
+    /// the internal state of the WAL didn't pass the integrity check.
+    /// </summary>
+    public sealed class InternalStateBrokenException : IntegrityException
+    {
+        internal InternalStateBrokenException()
+            : base(ExceptionMessages.PersistentStateBroken)
+        {
         }
     }
 

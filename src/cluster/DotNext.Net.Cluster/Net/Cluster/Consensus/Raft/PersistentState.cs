@@ -90,7 +90,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path, bufferManager.BufferAllocator);
+        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck);
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -737,7 +737,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result of the method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    public abstract Task InitializeAsync(CancellationToken token = default);
+    public virtual Task InitializeAsync(CancellationToken token = default)
+        => state.VerifyIntegrity() ? Task.CompletedTask : Task.FromException(new InternalStateBrokenException());
 
     /// <summary>
     /// Removes all log entries from the log.
