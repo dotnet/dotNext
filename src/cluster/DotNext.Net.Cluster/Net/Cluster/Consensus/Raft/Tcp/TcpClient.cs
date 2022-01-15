@@ -143,7 +143,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             Debug.Assert(protocol is not null);
             return await request(protocol, token).ConfigureAwait(false);
         }
-        catch (OperationCanceledException e) when (e.CancellationToken != token)
+        catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
             throw;
         }
