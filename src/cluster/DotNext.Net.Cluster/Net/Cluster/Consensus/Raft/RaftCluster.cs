@@ -585,7 +585,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         using (var tokenSource = token.LinkTo(LifecycleToken))
         using (var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false))
         {
-            if (currentTerm != senderTerm)
+            currentTerm = auditTrail.Term;
+
+            if (currentTerm > senderTerm)
+            {
+                goto exit;
+            }
+            else if (currentTerm != senderTerm)
             {
                 Leader = null;
                 await StepDown(senderTerm).ConfigureAwait(false);
