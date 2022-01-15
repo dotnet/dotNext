@@ -518,7 +518,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     }
 
     /// <inheritdoc />
-    public sealed override Task InitializeAsync(CancellationToken token = default)
+    public override Task InitializeAsync(CancellationToken token = default)
     {
         if (token.IsCancellationRequested)
             return Task.FromCanceled(token);
