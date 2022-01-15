@@ -89,6 +89,8 @@ Release Date: 01-05-2022
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Completely rewritten implementation of TCP transport: better buffering and less network overhead. This version of protocol is not binary compatible with any version prior to 4.2.0
+* Increased overall stability of the cluster
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming

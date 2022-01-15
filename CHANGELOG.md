@@ -34,6 +34,7 @@ Release Notes
 * Improved debugging experience of all asynchronous locks
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 * Reduced lock contention that can be caused by asynchronous locks in concurrent scenarios
+* Added `Reset()` method to `TaskCompletionPipe<T>` that allows to reuse the pipe
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
@@ -42,6 +43,8 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Completely rewritten implementation of TCP transport: better buffering and less network overhead. This version of protocol is not binary compatible with any version prior to 4.2.0
+* Increased overall stability of the cluster
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
