@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using IO;
 using static Threading.AtomicInt64;
+using Intrinsics = Runtime.Intrinsics;
 
 public partial class PersistentState
 {
@@ -40,7 +41,8 @@ public partial class PersistentState
             identifier = id.GetValueOrDefault();
         }
 
-        // slow version if target architecture has BE byte order
+        // slow version if target architecture has BE byte order or pointer is not aligned
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private LogEntryMetadata(ReadOnlySpan<byte> input, bool dummy)
         {
             Debug.Assert(dummy);
@@ -59,10 +61,11 @@ public partial class PersistentState
             Debug.Assert(input.Length >= Size);
 
             // fast path without any overhead for LE byte order
-            if (BitConverter.IsLittleEndian)
-            {
-                ref var ptr = ref MemoryMarshal.GetReference(input);
+            ref var ptr = ref MemoryMarshal.GetReference(input);
+            const nint moduloOperand = sizeof(long) - 1; // x % 8 is the same as x & 7
 
+            if (BitConverter.IsLittleEndian && (Intrinsics.AddressOf(in ptr) & moduloOperand) is 0)
+            {
                 Term = Unsafe.As<byte, long>(ref ptr);
                 ptr = ref Unsafe.Add(ref ptr, sizeof(long));
 
@@ -116,9 +119,11 @@ public partial class PersistentState
             Debug.Assert(output.Length >= Size);
 
             // fast path without any overhead for LE byte order
-            if (BitConverter.IsLittleEndian)
+            ref var ptr = ref MemoryMarshal.GetReference(output);
+            const nint moduloOperand = sizeof(long) - 1; // x % 8 is the same as x & 7
+
+            if (BitConverter.IsLittleEndian && (Intrinsics.AddressOf(in ptr) & moduloOperand) is 0)
             {
-                ref var ptr = ref MemoryMarshal.GetReference(output);
                 Unsafe.As<byte, long>(ref ptr) = Term;
                 ptr = ref Unsafe.Add(ref ptr, sizeof(long));
 
@@ -147,13 +152,12 @@ public partial class PersistentState
 
         internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
         {
-            if (BitConverter.IsLittleEndian)
-            {
-                ref var ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), sizeof(long) + sizeof(long));
-                return Unsafe.As<byte, long>(ref ptr) + Unsafe.As<byte, long>(ref Unsafe.Add(ref ptr, sizeof(long)));
-            }
+            ref var ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), sizeof(long) + sizeof(long));
+            const nint moduloOperand = sizeof(long) - 1; // x % 8 is the same as x & 7
 
-            return GetEndOfLogEntrySlow(input);
+            return BitConverter.IsLittleEndian && (Intrinsics.AddressOf(in ptr) & moduloOperand) is 0
+                ? Unsafe.As<byte, long>(ref ptr) + Unsafe.As<byte, long>(ref Unsafe.Add(ref ptr, sizeof(long)))
+                : GetEndOfLogEntrySlow(input);
 
             [MethodImpl(MethodImplOptions.NoInlining)]
             static long GetEndOfLogEntrySlow(ReadOnlySpan<byte> input)
