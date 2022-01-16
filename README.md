@@ -91,6 +91,7 @@ Release Date: 01-05-2022
 * Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 * Completely rewritten implementation of TCP transport: better buffering and less network overhead. This version of protocol is not binary compatible with any version prior to 4.2.0
 * Increased overall stability of the cluster
+* Fixed bug with incorrect calculation of the offset within partition file when using persistent WAL. The bug could prevent the node to start correctly with non-empty WAL
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
