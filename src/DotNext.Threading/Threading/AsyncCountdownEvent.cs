@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -201,34 +202,32 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         return true;
     }
 
-    private bool SignalCore(long signalCount)
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool SignalCore(long signalCount, out LinkedValueTaskCompletionSource<bool>? head)
     {
-        Debug.Assert(Monitor.IsEntered(this));
-
         if (manager.IsEmpty)
             throw new InvalidOperationException();
 
-        if (manager.Decrement(signalCount))
-        {
-            ResumeSuspendedCallers();
-            return true;
-        }
+        bool result;
+        head = (result = manager.Decrement(signalCount))
+            ? DetachWaitQueue()
+            : null;
 
-        return false;
+        return result;
     }
 
     private bool SignalAndResetCore(long signalCount)
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        if (manager.Decrement(signalCount))
+        bool result;
+        if (result = manager.Decrement(signalCount))
         {
-            ResumeSuspendedCallers();
+            ResumeAll(DetachWaitQueue());
             manager.Current = manager.Initial;
-            return true;
         }
 
-        return false;
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -271,14 +270,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than 1.</exception>
     /// <exception cref="InvalidOperationException">The current instance is already set; or <paramref name="signalCount"/> is greater than <see cref="CurrentCount"/>.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Signal(long signalCount = 1L)
     {
         if (signalCount < 1L)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
         ThrowIfDisposed();
-        return SignalCore(signalCount);
+        bool result;
+        if (result = SignalCore(signalCount, out var head))
+            ResumeAll(head);
+
+        return result;
     }
 
     /// <inheritdoc />

@@ -511,41 +511,53 @@ public class QueuedSynchronizer : Disposable
 
         unsafe
         {
-            DrainWaitQueue(&TrySetCanceled, token);
+            DrainWaitQueue(first, &TrySetCanceled, token);
         }
+
+        first = last = null;
 
         static bool TrySetCanceled(LinkedValueTaskCompletionSource<bool> source, CancellationToken token)
             => source.TrySetCanceled(Sentinel.Instance, token);
     }
 
-    private protected long ResumeSuspendedCallers()
+    private protected static long ResumeAll(LinkedValueTaskCompletionSource<bool>? head)
     {
         unsafe
         {
-            return DrainWaitQueue(&TrySetResult, arg: true);
+            return DrainWaitQueue(head, &TrySetResult, arg: true);
         }
 
         static bool TrySetResult(LinkedValueTaskCompletionSource<bool> source, bool result)
             => source.TrySetResult(Sentinel.Instance, result);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private void NotifyObjectDisposed()
+    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
-        var e = new ObjectDisposedException(GetType().Name);
+        Monitor.IsEntered(this);
+
+        var result = first;
+        first = last = null;
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void NotifyObjectDisposed(Exception? reason = null)
+    {
+        reason ??= new ObjectDisposedException(GetType().Name);
 
         unsafe
         {
-            DrainWaitQueue(&TrySetException, e);
+            DrainWaitQueue(first, &TrySetException, reason);
         }
 
-        static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, ObjectDisposedException e)
-            => source.TrySetException(Sentinel.Instance, e);
+        first = last = null;
+
+        static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, Exception reason)
+            => source.TrySetException(Sentinel.Instance, reason);
     }
 
-    private unsafe long DrainWaitQueue<T>(delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
+    private static unsafe long DrainWaitQueue<T>(LinkedValueTaskCompletionSource<bool>? first, delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
     {
-        Debug.Assert(Monitor.IsEntered(this));
         Debug.Assert(callback != null);
 
         var count = 0L;
@@ -558,29 +570,41 @@ public class QueuedSynchronizer : Disposable
                 count++;
         }
 
-        first = last = null;
         return count;
     }
 
+    private void Dispose(bool disposing, Exception? reason)
+    {
+        IsDisposeRequested = true;
+
+        if (disposing)
+        {
+            NotifyObjectDisposed(reason);
+            disposeTask.TrySetResult();
+            callerInfo?.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
     /// <summary>
-    /// Releases all resources associated with exclusive lock.
+    /// Releases all resources associated with this object.
     /// </summary>
     /// <remarks>
     /// This method is not thread-safe and may not be used concurrently with other members of this instance.
     /// </remarks>
     /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
     protected override void Dispose(bool disposing)
+        => Dispose(disposing, reason: null);
+
+    /// <summary>
+    /// Releases all resources associated with this object.
+    /// </summary>
+    /// <param name="reason">The exeption to be passed to all suspended callers.</param>
+    public void Dispose(Exception? reason)
     {
-        IsDisposeRequested = true;
-
-        if (disposing)
-        {
-            NotifyObjectDisposed();
-            disposeTask.TrySetResult();
-            callerInfo?.Dispose();
-        }
-
-        base.Dispose(disposing);
+        Dispose(disposing: true, reason);
+        GC.SuppressFinalize(this);
     }
 
     private protected virtual bool IsReadyToDispose => true;

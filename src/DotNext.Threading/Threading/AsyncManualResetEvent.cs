@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -89,7 +90,21 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    public bool Set() => Set(false);
+    public bool Set() => Set(autoReset: false);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool SetCore(bool autoReset, out LinkedValueTaskCompletionSource<bool>? head)
+    {
+        ThrowIfDisposed();
+
+        bool result;
+
+        result = !manager.Value;
+        head = DetachWaitQueue();
+        manager.Value = !autoReset;
+
+        return result;
+    }
 
     /// <summary>
     /// Sets the state of the event to signaled, allowing one or more awaiters to proceed;
@@ -98,15 +113,11 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="autoReset"><see langword="true"/> to reset this object to non-signaled state automatically; <see langword="false"/> to leave this object in signaled state.</param>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Set(bool autoReset)
     {
-        ThrowIfDisposed();
         bool result;
-
-        result = !manager.Value;
-        ResumeSuspendedCallers();
-        manager.Value = !autoReset;
+        if (result = SetCore(autoReset, out var head))
+            ResumeAll(head);
 
         return result;
     }

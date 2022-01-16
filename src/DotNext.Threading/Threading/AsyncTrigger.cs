@@ -4,6 +4,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
@@ -80,7 +81,11 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         return false;
     }
 
-    private bool SignalCore(bool resumeAll) => resumeAll ? ResumeSuspendedCallers() > 0L : SignalCore();
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool Signal() => SignalCore();
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private new LinkedValueTaskCompletionSource<bool>? DetachWaitQueue() => base.DetachWaitQueue();
 
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
@@ -91,19 +96,24 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Signal(bool resumeAll = false)
     {
         ThrowIfDisposed();
-        return SignalCore(resumeAll);
+        return resumeAll ? ResumeAll(DetachWaitQueue()) > 0L : Signal();
+    }
+
+    private bool SignalCore(bool resumeAll)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        return resumeAll ? ResumeAll(base.DetachWaitQueue()) > 0L : SignalCore();
     }
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => first is null;
 
     /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    bool IAsyncEvent.Signal() => SignalCore();
+    bool IAsyncEvent.Signal() => Signal();
 
     private static void AlwaysFalse(ref ValueTuple timeout, ref bool flag)
     {
@@ -124,7 +134,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <seealso cref="Signal"/>
+    /// <seealso cref="Signal(bool)"/>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
         => WaitNoTimeout(timeout, token).Create(timeout, token);
 
@@ -142,7 +152,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <seealso cref="Signal"/>
+    /// <seealso cref="Signal(bool)"/>
     public ValueTask WaitAsync(CancellationToken token = default)
         => WaitNoTimeout(token).Create(token);
 
