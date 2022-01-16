@@ -274,6 +274,7 @@ public partial class PersistentState
                 ? fileOffset
                 : ReadMetadata(relativeIndex - 1, &LogEntryMetadata.GetEndOfLogEntry);
 
+            Debug.Assert(offset > 0L);
             if (typeof(TEntry) == typeof(CachedLogEntry))
             {
                 // fast path - just add cached log entry to the cache table
