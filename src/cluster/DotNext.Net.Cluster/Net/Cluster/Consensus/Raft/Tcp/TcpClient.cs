@@ -141,6 +141,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
                 await ConnectAsync(timeoutSource.Token).ConfigureAwait(false);
 
             Debug.Assert(protocol is not null);
+            protocol.Reset();
             return await request(protocol, token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
