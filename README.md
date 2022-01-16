@@ -57,18 +57,18 @@ Release Date: 01-05-2022
 * Added `Base64Encoder` type for fast encoding of large binary data
 * Deprecation of `Sequence.FirstOrEmpty` extension methods in favor of `Sequence.FirstOrNone`
 * Fixed [#91](https://github.com/dotnet/dotNext/pull/91)
-* Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of ini-only properties
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of init-only properties
+* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
 * Optimized performance of `Timeout`, `Optional<T>`, `Result<T>` and `Result<T, TError>` types
 * Introduced `DotNext.Runtime.SoftReference` data type in addition to [WeakReference](https://docs.microsoft.com/en-us/dotnet/api/system.weakreference) from .NET
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/4.2.0">DotNext.Reflection 4.2.0</a>
 * Improved overall performance of some scenarios where `UserDataStorage` is used
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.2.0">DotNext.Unsafe 4.2.0</a>
 * Updated dependencies
@@ -78,12 +78,12 @@ Release Date: 01-05-2022
 * Reduced execution time of `CreateTask` overloads declared in `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes
 * Added overflow check to `AsyncCounter` class
 * Improved debugging experience of all asynchronous locks
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
 * Reduced lock contention that can be caused by asynchronous locks in concurrent scenarios
 * Added `Reset()` method to `TaskCompletionPipe<T>` that allows to reuse the pipe
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
 * `FileWriter` now implements [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
@@ -95,7 +95,7 @@ Release Date: 01-05-2022
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
+* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
