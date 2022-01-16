@@ -31,8 +31,6 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        replicationEvent = new(false);
-        replicationQueue = new(TaskCreationOptions.RunContinuationsAsynchronously);
         precedingTermCache = new TermCache(MaxTermCacheSize);
         this.maxLease = maxLease;
     }
@@ -209,7 +207,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             heartbeatTask = null;
 
             // cancel replication queue
-            replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
             replicationEvent.Dispose();
 
             Metrics = null;

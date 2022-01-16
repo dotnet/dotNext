@@ -153,23 +153,23 @@ internal partial class LeaderState
         }
     }
 
-    private readonly AsyncAutoResetEvent replicationEvent;
-    private volatile TaskCompletionSource replicationQueue;
+    private readonly AsyncAutoResetEvent replicationEvent = new(false);
+    private readonly AsyncTrigger replicationQueue = new();
 
     private void DrainReplicationQueue()
-        => Interlocked.Exchange(ref replicationQueue, new(TaskCreationOptions.RunContinuationsAsynchronously)).SetResult();
+        => replicationQueue.Signal(resumeAll: true);
 
     private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         => replicationEvent.WaitAsync(period, token);
 
-    internal Task ForceReplicationAsync(CancellationToken token)
+    internal ValueTask ForceReplicationAsync(CancellationToken token)
     {
-        var result = replicationQueue.Task;
+        var result = replicationQueue.WaitAsync(token);
 
         // resume heartbeat loop to force replication
         replicationEvent.Set();
 
         // enqueue a new task representing completion callback
-        return result.WaitAsync(token);
+        return result;
     }
 }
