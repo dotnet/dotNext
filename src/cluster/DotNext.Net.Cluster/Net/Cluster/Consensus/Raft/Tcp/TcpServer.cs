@@ -39,6 +39,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
         gracefulShutdownTimeout = 1000;
         this.localMember = localMember;
         ttl = ITcpTransport.DefaultTtl;
+        transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
         logger = loggerFactory.CreateLogger(GetType());
     }
 
@@ -245,7 +246,8 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
                 response = await localMember.AppendEntriesAsync(request.Id, request.Term, request.Entries, request.PrevLogIndex, request.PrevLogTerm, request.CommitIndex, request.Configuration, request.ApplyConfig, token).ConfigureAwait(false);
 
             // skip remaining log entries
-            while (await request.Entries.MoveNextAsync().ConfigureAwait(false));
+            while (await request.Entries.MoveNextAsync().ConfigureAwait(false))
+                await protocol.SkipAsync(token).ConfigureAwait(false);
         }
 
         protocol.Reset();

@@ -25,6 +25,7 @@ internal sealed partial class ProtocolStream : Stream
 
     internal ProtocolStream(Stream transport, MemoryAllocator<byte> allocator, int transmissionBlockSize)
     {
+        Debug.Assert(transmissionBlockSize > 0);
         Debug.Assert(transport is not null);
 
         buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);

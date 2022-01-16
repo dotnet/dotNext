@@ -356,6 +356,69 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             Equal(snapshot, member.ReceivedEntries[0]);
         }
 
+        private protected async Task SendingSnapshotAndEntriesAndConfiguration(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
+        {
+            var timeout = TimeSpan.FromMinutes(20);
+            var member = new LocalMember(false) { Behavior = behavior };
+
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
+
+            //prepare client
+            using var client = clientFactory(serverAddr, member, timeout);
+            var buffer = new byte[payloadSize];
+            Random.Shared.NextBytes(buffer);
+            var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
+            buffer = new byte[payloadSize];
+            Random.Shared.NextBytes(buffer);
+            var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, false, buffer);
+            var config = new BufferedClusterConfiguration(RandomBytes(312)) { Fingerprint = 42L };
+
+            var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
+
+            Result<bool> result;
+            for (var i = 0; i < 100; i++)
+            {
+                // process snapshot
+                result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, CancellationToken.None);
+                Equal(43L, result.Term);
+                True(result.Value);
+                NotEmpty(member.ReceivedEntries);
+                Equal(snapshot, member.ReceivedEntries[0]);
+                member.ReceivedEntries.Clear();
+
+                // process entries
+                result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, config, false, CancellationToken.None);
+                Equal(43L, result.Term);
+                True(result.Value);
+                switch (behavior)
+                {
+                    case ReceiveEntriesBehavior.ReceiveAll:
+                        Equal(2, member.ReceivedEntries.Count);
+                        Equal(entry1, member.ReceivedEntries[0]);
+                        Equal(entry2, member.ReceivedEntries[1]);
+                        break;
+                    case ReceiveEntriesBehavior.ReceiveFirst:
+                        Equal(1, member.ReceivedEntries.Count);
+                        Equal(entry1, member.ReceivedEntries[0]);
+                        break;
+                    case ReceiveEntriesBehavior.DropFirst:
+                        Equal(1, member.ReceivedEntries.Count);
+                        Equal(entry2, member.ReceivedEntries[0]);
+                        break;
+                    case ReceiveEntriesBehavior.DropAll:
+                        Empty(member.ReceivedEntries);
+                        break;
+                }
+
+                True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.FirstSpan));
+                member.ReceivedEntries.Clear();
+                member.ReceivedConfiguration = Array.Empty<byte>();
+            }
+        }
+
         private protected async Task SendingConfigurationTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
         {
             var timeout = TimeSpan.FromSeconds(20);

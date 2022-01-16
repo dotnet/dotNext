@@ -150,6 +150,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         }
 
         [Theory]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(0, ReceiveEntriesBehavior.DropAll)]
+        [InlineData(0, ReceiveEntriesBehavior.DropFirst)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(512, ReceiveEntriesBehavior.DropAll)]
+        [InlineData(512, ReceiveEntriesBehavior.DropFirst)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(50, ReceiveEntriesBehavior.DropAll)]
+        [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
+        public Task SendingLogEntriesAndConfigurationAndSnapshot(int payloadSize, ReceiveEntriesBehavior behavior)
+        {
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+            {
+                ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
+            };
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            {
+                RequestTimeout = timeout,
+                IsRemote = true
+            };
+
+            return SendingSnapshotAndEntriesAndConfiguration(CreateServer, CreateClient, payloadSize, behavior);
+        }
+
+        [Theory]
         [InlineData(512)]
         [InlineData(50)]
         [InlineData(0)]

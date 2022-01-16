@@ -327,7 +327,6 @@ internal partial class ProtocolStream
                         bufferEnd = await BaseStream.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
                     }
 
-                    // we can copy no more than remaining frame
                     SkipFrame();
                     continue;
             }
