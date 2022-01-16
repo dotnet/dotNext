@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
@@ -153,7 +154,10 @@ internal partial class LeaderState
         }
     }
 
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly AsyncAutoResetEvent replicationEvent = new(false);
+
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly AsyncTrigger replicationQueue = new();
 
     private void DrainReplicationQueue()
