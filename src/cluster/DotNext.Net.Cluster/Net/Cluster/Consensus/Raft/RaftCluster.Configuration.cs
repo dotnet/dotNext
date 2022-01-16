@@ -416,7 +416,7 @@ public partial class RaftCluster
         public int TransmissionBlockSize
         {
             get => transmissionBlockSize;
-            set => transmissionBlockSize = TcpTransport.ValidateTranmissionBlockSize(value);
+            set => transmissionBlockSize = ITcpTransport.ValidateTranmissionBlockSize(value);
         }
 
         /// <summary>
