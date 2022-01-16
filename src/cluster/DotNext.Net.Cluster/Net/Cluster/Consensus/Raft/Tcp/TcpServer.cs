@@ -238,7 +238,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
     [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask AppendEntriesAsync(ProtocolStream protocol, CancellationToken token)
     {
-        var request = await protocol.ReadAppendEntriesRequestAsync(allocator, token).ConfigureAwait(false);
+        var request = await protocol.ReadAppendEntriesRequestAsync(token).ConfigureAwait(false);
         Result<bool> response;
         await using (request.Entries.ConfigureAwait(false))
         {

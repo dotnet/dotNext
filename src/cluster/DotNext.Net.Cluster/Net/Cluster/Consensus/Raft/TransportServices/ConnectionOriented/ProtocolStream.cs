@@ -17,6 +17,7 @@ internal sealed partial class ProtocolStream : Stream
 
     [SuppressMessage("Usage", "CA2213", Justification = "The objec doesn't own the stream")]
     internal readonly Stream BaseStream;
+    private readonly MemoryAllocator<byte> allocator;
     private MemoryOwner<byte> buffer;
 
     // for reader, both fields are in use
@@ -29,8 +30,11 @@ internal sealed partial class ProtocolStream : Stream
         Debug.Assert(transport is not null);
 
         buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
+        this.allocator = allocator;
         BaseStream = transport;
     }
+
+    private int BufferLength => buffer.Length;
 
     public override bool CanRead => BaseStream.CanRead;
 

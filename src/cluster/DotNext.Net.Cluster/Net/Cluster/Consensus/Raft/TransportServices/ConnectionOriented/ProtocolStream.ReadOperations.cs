@@ -131,7 +131,7 @@ internal partial class ProtocolStream
 
     internal IRaftLogEntry CreateSnapshot(in LogEntryMetadata metadata) => new Snapshot(this, in metadata);
 
-    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, ILogEntryProducer<IRaftLogEntry> Entries, InMemoryClusterConfiguration Configuration, bool ApplyConfig)> ReadAppendEntriesRequestAsync(MemoryAllocator<byte>? allocator, CancellationToken token)
+    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, ILogEntryProducer<IRaftLogEntry> Entries, InMemoryClusterConfiguration Configuration, bool ApplyConfig)> ReadAppendEntriesRequestAsync(CancellationToken token)
     {
         // read headers
         var result = await ReadHeadersAsync().ConfigureAwait(false);

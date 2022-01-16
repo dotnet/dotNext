@@ -1,8 +1,9 @@
-using System.Buffers;
+using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Buffers;
 using IO;
 using IO.Log;
 
@@ -63,6 +64,15 @@ internal partial class ProtocolStream
 
             consumed = true;
             return new(writer.CopyFromAsync(stream, token));
+        }
+
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        async ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        {
+            using var buffer = stream.allocator.Invoke(stream.BufferLength, exactSize: false);
+            var result = await IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, buffer.Memory, token).ConfigureAwait(false);
+            consumed = true;
+            return result;
         }
 
         ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
