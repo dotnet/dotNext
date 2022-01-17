@@ -12,7 +12,15 @@ using static Buffers.BufferWriter;
 internal static class JsonLogEntry
 {
     private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
-    private static readonly JsonReaderOptions DefaultReaderOptions = new JsonSerializerOptions(JsonSerializerDefaults.General).GetReaderOptions();
+    private static readonly JsonReaderOptions DefaultReaderOptions;
+    private static readonly JsonWriterOptions DefaultWriterOptions;
+
+    static JsonLogEntry()
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.General);
+        DefaultReaderOptions = options.GetReaderOptions();
+        DefaultWriterOptions = options.GetWriterOptions();
+    }
 
     [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
     private static Type LoadType(string typeId, Func<string, Type>? typeLoader)
@@ -21,7 +29,7 @@ internal static class JsonLogEntry
     private static Encoding DefaultEncoding => Encoding.UTF8;
 
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
-    internal static ValueTask SerializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
+    internal static ValueTask SerializeAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T, TWriter>(TWriter writer, string typeId, T obj, JsonSerializerOptions? options, CancellationToken token)
         where TWriter : notnull, IAsyncBinaryWriter
     {
         // try to get synchronous writer
@@ -30,7 +38,7 @@ internal static class JsonLogEntry
         if (bufferWriter is null)
         {
             // slow path - delegate allocation is required and arguments must be packed
-            result = writer.WriteAsync(SerializeToJson, (typeId, obj), token);
+            result = writer.WriteAsync(SerializeToJson, (typeId, obj, options), token);
         }
         else
         {
@@ -38,7 +46,7 @@ internal static class JsonLogEntry
             result = new();
             try
             {
-                Serialize(typeId, obj, bufferWriter);
+                Serialize(typeId, obj, bufferWriter, options);
             }
             catch (Exception e)
             {
@@ -48,18 +56,18 @@ internal static class JsonLogEntry
 
         return result;
 
-        static void Serialize(string typeId, T value, IBufferWriter<byte> buffer)
+        static void Serialize(string typeId, T value, IBufferWriter<byte> buffer, JsonSerializerOptions? options)
         {
             // serialize type identifier
             buffer.WriteString(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
 
             // serialize object to JSON
-            using var jsonWriter = new Utf8JsonWriter(buffer, new() { SkipValidation = false, Indented = false });
-            JsonSerializer.Serialize(jsonWriter, value);
+            using var jsonWriter = new Utf8JsonWriter(buffer, options?.GetWriterOptions() ?? DefaultWriterOptions);
+            JsonSerializer.Serialize(jsonWriter, value, options);
         }
 
-        static void SerializeToJson((string TypeId, T Value) arg, IBufferWriter<byte> buffer)
-            => Serialize(arg.TypeId, arg.Value, buffer);
+        static void SerializeToJson((string TypeId, T Value, JsonSerializerOptions? Options) arg, IBufferWriter<byte> buffer)
+            => Serialize(arg.TypeId, arg.Value, buffer, arg.Options);
     }
 
     private static JsonReaderOptions GetReaderOptions(this JsonSerializerOptions options) => new()
@@ -67,6 +75,13 @@ internal static class JsonLogEntry
         AllowTrailingCommas = options.AllowTrailingCommas,
         CommentHandling = options.ReadCommentHandling,
         MaxDepth = options.MaxDepth,
+    };
+
+    private static JsonWriterOptions GetWriterOptions(this JsonSerializerOptions options) => new()
+    {
+        Indented = options.WriteIndented,
+        Encoder = options.Encoder,
+        SkipValidation = false,
     };
 
     [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
@@ -125,5 +140,5 @@ public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAcces
 
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        => JsonLogEntry.SerializeAsync<T, TWriter>(writer, TypeId, Content, token);
+        => JsonLogEntry.SerializeAsync<T, TWriter>(writer, TypeId, Content, options, token);
 }
