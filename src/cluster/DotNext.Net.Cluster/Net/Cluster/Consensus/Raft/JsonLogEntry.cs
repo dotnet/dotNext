@@ -206,6 +206,6 @@ public readonly struct JsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAcces
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         => optionsOrTypeInfo is JsonTypeInfo<T> typeInfo
-            ? JsonLogEntry.SerializeAsync<T, TWriter>(writer, TypeId, Content, typeInfo, token)
-            : JsonLogEntry.SerializeAsync<T, TWriter>(writer, TypeId, Content, optionsOrTypeInfo as JsonSerializerOptions, token);
+            ? JsonLogEntry.SerializeAsync(writer, TypeId, Content, typeInfo, token)
+            : JsonLogEntry.SerializeAsync(writer, TypeId, Content, optionsOrTypeInfo as JsonSerializerOptions, token);
 }
