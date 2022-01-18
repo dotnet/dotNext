@@ -146,11 +146,20 @@ public ref partial struct BufferWriterSlim<T>
     public void Advance(int count)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowArgumentOutOfRangeException();
+
         if (position > Capacity - count)
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
 
         position += count;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(count));
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidOperationException() => throw new InvalidOperationException();
     }
 
     /// <summary>
