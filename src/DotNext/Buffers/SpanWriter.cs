@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -75,11 +77,10 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        var newPosition = position + count;
-        if ((uint)newPosition > (uint)span.Length)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        if (count < 0 || position > span.Length - count)
+            ThrowCountOutOfRangeException();
 
-        position = newPosition;
+        position += count;
     }
 
     /// <summary>
@@ -90,7 +91,7 @@ public ref struct SpanWriter<T>
     public void Rewind(int count)
     {
         if ((uint)count > (uint)position)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowCountOutOfRangeException();
 
         position -= count;
     }
@@ -167,7 +168,7 @@ public ref struct SpanWriter<T>
     public void Add(T item)
     {
         if (!TryAdd(item))
-            throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
+            ThrowInternalBufferOverflowException();
     }
 
     /// <summary>
@@ -183,7 +184,7 @@ public ref struct SpanWriter<T>
     public bool TrySlide(int count, out Span<T> segment)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowCountOutOfRangeException();
 
         var newLength = position + count;
         if ((uint)newLength <= (uint)span.Length)
@@ -204,7 +205,20 @@ public ref struct SpanWriter<T>
     /// <returns>The portion of the underlying span.</returns>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
     public Span<T> Slide(int count)
-        => TrySlide(count, out var result) ? result : throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
+    {
+        if (!TrySlide(count, out var result))
+            ThrowInternalBufferOverflowException();
+
+        return result;
+    }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Writes a portion of data.
@@ -222,7 +236,7 @@ public ref struct SpanWriter<T>
             throw new ArgumentNullException(nameof(action));
 
         if (!TrySlide(count, out var buffer))
-            throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
+            ThrowInternalBufferOverflowException();
         action(arg, buffer);
     }
 
