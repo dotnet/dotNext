@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -327,9 +328,13 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
             AssertValid();
 
             if ((nuint)index >= (nuint)length)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                ThrowArgumentOutOfRangeException();
 
             return ref Unsafe.Add(ref First, index);
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(index));
         }
     }
 
