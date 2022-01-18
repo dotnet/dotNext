@@ -207,9 +207,8 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             heartbeatTask = null;
 
             // cancel replication queue
-            var e = new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
-            replicationQueue.Dispose(e);
-            replicationEvent.Dispose(e);
+            replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            replicationEvent.Dispose();
 
             Metrics = null;
         }

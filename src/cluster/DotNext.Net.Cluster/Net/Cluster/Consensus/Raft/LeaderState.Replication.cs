@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -154,9 +155,43 @@ internal partial class LeaderState
         }
     }
 
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
-    private readonly AsyncAutoResetEvent replicationEvent = new(false);
+    private sealed class ReplicationCallback : TaskCompletionSource
+    {
+        private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent;
 
+        internal ReplicationCallback(ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
+            => this.parent = parent;
+
+        internal void Invoke()
+        {
+            Debug.Assert(parent.IsCompleted);
+
+            try
+            {
+                parent.GetResult();
+                TrySetResult();
+            }
+            catch (ObjectDisposedException e)
+            {
+                TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
+            }
+            catch (Exception e)
+            {
+                TrySetException(e);
+            }
+            finally
+            {
+                parent = default; // help GC
+            }
+        }
+    }
+
+    private readonly AsyncAutoResetEvent replicationEvent = new(initialState: false);
+
+    // We're using AsyncTrigger instead of TaskCompletionSource because adding a new completion
+    // callback to AsyncTrigger is always O(1) in contrast to TaskCompletionSource which provides
+    // O(n) as worst case (underlying list of completion callbacks organized as List<T>
+    // in combination with monitor lock for insertion)
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly AsyncTrigger replicationQueue = new();
 
@@ -166,14 +201,38 @@ internal partial class LeaderState
     private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         => replicationEvent.WaitAsync(period, token);
 
-    internal ValueTask ForceReplicationAsync(CancellationToken token)
+    internal Task ForceReplicationAsync(CancellationToken token)
     {
-        var result = replicationQueue.WaitAsync(token);
+        Task result;
+        try
+        {
+            // enqueue a new task representing completion callback
+            var replicationTask = replicationQueue.WaitAsync(token).ConfigureAwait(false).GetAwaiter();
 
-        // resume heartbeat loop to force replication
-        replicationEvent.Set();
+            // resume heartbeat loop to force replication
+            replicationEvent.Set();
 
-        // enqueue a new task representing completion callback
+            if (replicationTask.IsCompleted)
+            {
+                replicationTask.GetResult();
+                result = Task.CompletedTask;
+            }
+            else
+            {
+                var callback = new ReplicationCallback(replicationTask);
+                replicationTask.UnsafeOnCompleted(callback.Invoke);
+                result = callback.Task;
+            }
+        }
+        catch (ObjectDisposedException e)
+        {
+            result = Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
+        }
+        catch (Exception e)
+        {
+            result = Task.FromException(e);
+        }
+
         return result;
     }
 }
