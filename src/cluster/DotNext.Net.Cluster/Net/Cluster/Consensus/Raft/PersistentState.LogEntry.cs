@@ -41,7 +41,7 @@ public partial class PersistentState
         // for regular log entry cached in memory
         internal LogEntry(in MemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
         {
-            Debug.Assert(cachedContent.IsEmpty || cachedContent.Length == metadata.Length);
+            Debug.Assert(cachedContent.IsEmpty || cachedContent.Length == metadata.Length, $"Log entry payload mismatch. Cached payload length: {cachedContent.Length}, length in metadata : {metadata.Length}");
             this.metadata = metadata;
             content = null;
             buffer = cachedContent.Memory;
