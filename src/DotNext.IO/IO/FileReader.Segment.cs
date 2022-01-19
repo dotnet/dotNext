@@ -48,6 +48,8 @@ public partial class FileReader
 
         public override int GetHashCode() => value.GetHashCode();
 
+        public override string ToString() => IsInfinite ? "Infinite" : value.ToString(CultureInfo.InvariantCulture);
+
         public static bool operator >(SegmentLength x, long y)
             => x.IsInfinite || x.value > y;
 
