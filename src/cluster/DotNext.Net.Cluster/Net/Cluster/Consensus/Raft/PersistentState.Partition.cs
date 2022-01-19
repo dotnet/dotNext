@@ -173,14 +173,6 @@ public partial class PersistentState
             return metadata.Span.Slice(offset = index * LogEntryMetadata.Size);
         }
 
-        private unsafe T ReadMetadata<T>(int index, delegate*<ReadOnlySpan<byte>, T> parser)
-            where T : unmanaged
-        {
-            Debug.Assert(parser != null);
-
-            return parser(GetMetadata(index, out _));
-        }
-
         private void WriteMetadata(int index, in LogEntryMetadata metadata)
         {
             metadata.Format(GetMetadata(index, out var offset));
@@ -189,19 +181,19 @@ public partial class PersistentState
             metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
         }
 
-        internal unsafe long GetTerm(long absoluteIndex)
+        internal long GetTerm(long absoluteIndex)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
-            return ReadMetadata(ToRelativeIndex(absoluteIndex), &LogEntryMetadata.GetTerm);
+            return LogEntryMetadata.GetTerm(GetMetadata(ToRelativeIndex(absoluteIndex), out _));
         }
 
-        internal unsafe LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
+        internal LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
-            var metadata = ReadMetadata(relativeIndex, &LogEntryMetadata.Parse);
+            var metadata = LogEntryMetadata.Parse(GetMetadata(relativeIndex, out _));
 
             ref readonly var cachedContent = ref EmptyBuffer;
 
@@ -281,7 +273,7 @@ public partial class PersistentState
             writeAddress += length;
         }
 
-        internal unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+        internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             // write operation always expects absolute index so we need to convert it to the relative index
