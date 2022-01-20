@@ -221,7 +221,7 @@ public partial class PersistentState
 
             // save new log entry to the allocation table
             WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
-            writeAddress += entry.Length;
+            writeAddress = offset + entry.Length;
         }
 
         internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
@@ -270,7 +270,7 @@ public partial class PersistentState
             // save new log entry to the allocation table
             var length = writer.WritePosition - offset;
             WriteMetadata(index, LogEntryMetadata.Create(entry, offset, length));
-            writeAddress += length;
+            writeAddress = offset + length;
         }
 
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
