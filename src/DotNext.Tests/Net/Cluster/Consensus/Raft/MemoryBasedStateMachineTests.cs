@@ -484,7 +484,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(readResult[2].IsSnapshot);
                     return default;
                 };
-                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
             }
 
             //read again
@@ -499,7 +499,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(readResult[2].IsSnapshot);
                     return default;
                 };
-                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
                 await state.AppendAsync(new Int64LogEntry(90L, true), 11);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
@@ -508,7 +508,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     True(readResult[0].IsSnapshot);
                     return default;
                 };
-                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
+            }
+        }
+
+        [Fact]
+        public static async Task RewriteLogEntry()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new MemoryBasedStateMachine.Options { UseCaching = true }))
+            {
+                Equal(1L, await state.AppendAsync(new TestLogEntry("SET X = 0") { Term = 42L }, true));
+                await state.AppendAsync(new EmptyLogEntry(43L), 1L);
+
+                Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Null(snapshotIndex);
+                    NotEmpty(readResult);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1L, 1L);
             }
         }
 
@@ -535,7 +554,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return default;
                 };
 
-                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
                 await state.ClearAsync();
 
                 Equal(0L, state.LastCommittedEntryIndex);
@@ -608,7 +627,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.CommitAsync(CancellationToken.None);
                 Equal(1L, state.CompactionCount);
                 Equal(entries.Length + 41L, state.Value);
-                await state.ForceCompactionAsync(1L, CancellationToken.None).ConfigureAwait(false);
+                await state.ForceCompactionAsync(1L, CancellationToken.None);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
                     Equal(3, readResult.Count);

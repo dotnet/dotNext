@@ -271,6 +271,10 @@ public partial class PersistentState
             var length = writer.WritePosition - offset;
             WriteMetadata(index, LogEntryMetadata.Create(entry, offset, length));
             writeAddress = offset + length;
+
+            // invalidate cached content
+            if (!entryCache.IsEmpty)
+                entryCache[index].Dispose();
         }
 
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
