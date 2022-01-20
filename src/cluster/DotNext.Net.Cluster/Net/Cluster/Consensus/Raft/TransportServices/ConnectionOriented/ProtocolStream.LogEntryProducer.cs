@@ -27,19 +27,24 @@ internal partial class ProtocolStream
 
         async ValueTask<bool> IAsyncEnumerator<IRaftLogEntry>.MoveNextAsync()
         {
-            if (entriesCount is 0)
-                return false;
-
             if (!consumed)
+            {
                 await stream.SkipAsync(token).ConfigureAwait(false);
+                consumed = true;
+            }
 
-            // read metadata
-            metadata = await stream.ReadLogEntryMetadataAsync(token).ConfigureAwait(false);
-            consumed = false;
-            stream.readState = ReadState.FrameNotStarted;
-            stream.frameSize = 0;
-            entriesCount -= 1;
-            return true;
+            bool result;
+            if (result = entriesCount > 0)
+            {
+                // read metadata
+                metadata = await stream.ReadLogEntryMetadataAsync(token).ConfigureAwait(false);
+                consumed = false;
+                stream.readState = ReadState.FrameNotStarted;
+                stream.frameSize = 0;
+                entriesCount--;
+            }
+
+            return result;
         }
 
         long ILogEntryProducer<IRaftLogEntry>.RemainingCount => entriesCount;
