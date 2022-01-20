@@ -75,7 +75,9 @@ public static class MemoryAllocator
         else
         {
             result = allocator(length);
-            if (!exactSize)
+            if (exactSize)
+                result.Truncate(length);
+            else
                 result.Expand();
         }
 
