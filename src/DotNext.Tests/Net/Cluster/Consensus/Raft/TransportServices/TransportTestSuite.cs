@@ -358,7 +358,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected async Task SendingSnapshotAndEntriesAndConfiguration(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            var timeout = TimeSpan.FromMinutes(20);
+            var timeout = TimeSpan.FromSeconds(20);
             var member = new LocalMember(false) { Behavior = behavior };
 
             //prepare server
