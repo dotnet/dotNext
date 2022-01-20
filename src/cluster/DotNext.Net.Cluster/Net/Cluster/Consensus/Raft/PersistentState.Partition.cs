@@ -215,9 +215,9 @@ public partial class PersistentState
             Debug.Assert(entryCache.IsEmpty is false);
             Debug.Assert((uint)index < (uint)entryCache.Length);
 
-            ref var cacheEntry = ref entryCache[index];
-            cacheEntry.Dispose();
-            cacheEntry = entry.Content;
+            ref var cachedEntry = ref entryCache[index];
+            cachedEntry.Dispose();
+            cachedEntry = entry.Content;
 
             // save new log entry to the allocation table
             WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
