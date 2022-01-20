@@ -193,7 +193,7 @@ public partial class PersistentState
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
-            var metadata = LogEntryMetadata.Parse(GetMetadata(relativeIndex, out _));
+            var metadata = new LogEntryMetadata(GetMetadata(relativeIndex, out _));
 
             ref readonly var cachedContent = ref EmptyBuffer;
 

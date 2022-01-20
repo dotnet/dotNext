@@ -89,8 +89,6 @@ public partial class PersistentState
             }
         }
 
-        internal static LogEntryMetadata Parse(ReadOnlySpan<byte> input) => new(input);
-
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
