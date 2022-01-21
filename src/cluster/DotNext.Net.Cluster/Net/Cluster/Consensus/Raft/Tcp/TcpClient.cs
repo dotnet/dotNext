@@ -145,6 +145,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
+            DestroyConnection();
             throw;
         }
         catch (Exception e)
@@ -153,12 +154,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             ChangeStatus(ClusterMemberStatus.Unavailable);
 
             // detect broken socket
-            protocol?.Dispose();
-            protocol = null;
-
-            transport?.Dispose();
-            transport = null;
-
+            DestroyConnection();
             throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
         }
         finally
@@ -168,6 +164,15 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
 
             Metrics?.ReportResponseTime(timeStamp.Elapsed);
             timeoutSource.Dispose();
+        }
+
+        void DestroyConnection()
+        {
+            protocol?.Dispose();
+            protocol = null;
+
+            transport?.Dispose();
+            transport = null;
         }
     }
 
