@@ -241,6 +241,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// </summary>
     /// <param name="token">The token that can be used to cancel initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
+    /// <seealso cref="StartFollowing"/>
     public virtual async Task StartAsync(CancellationToken token)
     {
         await auditTrail.InitializeAsync(token).ConfigureAwait(false);
@@ -251,7 +252,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         if (localMember is not null)
         {
             localMemberId = localMember.Id;
-            state = standbyNode ? new StandbyState(this) : new FollowerState(this).StartServing(ElectionTimeout, LifecycleToken);
+            state = standbyNode ? new StandbyState(this) : new FollowerState(this);
             readinessProbe.TrySetResult();
         }
         else
@@ -271,6 +272,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             return null;
         }
     }
+
+    /// <summary>
+    /// Starts Follower timer.
+    /// </summary>
+    protected void StartFollowing() => (state as FollowerState)?.StartServing(ElectionTimeout, LifecycleToken);
 
     /// <summary>
     /// Turns this node into regular state when the node can be elected as leader.

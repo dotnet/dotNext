@@ -150,6 +150,8 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
         if (!coldStart && announcer is not null)
             await announcer(LocalMemberId, localNode, token).ConfigureAwait(false);
+
+        StartFollowing();
     }
 
     public override Task StopAsync(CancellationToken token)

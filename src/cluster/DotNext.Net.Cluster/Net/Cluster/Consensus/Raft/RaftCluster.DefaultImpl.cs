@@ -130,9 +130,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             }
         }
 
+        await base.StartAsync(token).ConfigureAwait(false);
         server = serverFactory(this);
         server.Start();
-        await base.StartAsync(token).ConfigureAwait(false);
+        StartFollowing();
 
         if (!coldStart && announcer is not null)
             await announcer(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
