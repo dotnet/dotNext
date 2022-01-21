@@ -224,7 +224,12 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
     private async ValueTask InstallSnapshotAsync(ProtocolStream protocol, CancellationToken token)
     {
         var request = await protocol.ReadInstallSnapshotRequestAsync(token).ConfigureAwait(false);
-        var response = await localMember.InstallSnapshotAsync(request.Id, request.Term, protocol.CreateSnapshot(in request.SnapshotMetadata), request.SnapshotIndex, token).ConfigureAwait(false);
+        Result<bool> response;
+        using (request.Snapshot)
+        {
+            response = await localMember.InstallSnapshotAsync(request.Id, request.Term, request.Snapshot, request.SnapshotIndex, token).ConfigureAwait(false);
+        }
+
         if (!response.Value)
         {
             // skip contents of snapshot
@@ -240,7 +245,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
     {
         var request = await protocol.ReadAppendEntriesRequestAsync(token).ConfigureAwait(false);
         Result<bool> response;
-        await using (request.Entries.ConfigureAwait(false))
+        using (request.Entries)
         {
             using (request.Configuration)
                 response = await localMember.AppendEntriesAsync(request.Id, request.Term, request.Entries, request.PrevLogIndex, request.PrevLogTerm, request.CommitIndex, request.Configuration, request.ApplyConfig, token).ConfigureAwait(false);

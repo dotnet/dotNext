@@ -5,11 +5,11 @@ using IO.Log;
 
 internal partial class ProtocolStream
 {
-    private sealed class Snapshot : StreamTransferObject, IRaftLogEntry
+    internal sealed class ReceivedSnapshot : StreamTransferObject, IRaftLogEntry
     {
         private readonly LogEntryMetadata metadata;
 
-        internal Snapshot(ProtocolStream stream, in LogEntryMetadata metadata)
+        internal ReceivedSnapshot(ProtocolStream stream, in LogEntryMetadata metadata)
             : base(stream, leaveOpen: true)
             => this.metadata = metadata;
 

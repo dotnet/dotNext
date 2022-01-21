@@ -126,12 +126,22 @@ internal partial class ProtocolStream
         => (await Serializable.ReadFromAsync<MetadataTransferObject>(this, buffer, token).ConfigureAwait(false)).Metadata;
 #pragma warning restore CA2252
 
-    internal unsafe ValueTask<(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata)> ReadInstallSnapshotRequestAsync(CancellationToken token)
-        => ReadAsync<(ClusterMemberId, long, long, LogEntryMetadata)>(SnapshotMessage.Size, &SnapshotMessage.Read, token);
+    internal async ValueTask<(ClusterMemberId Id, long Term, long SnapshotIndex, ReceivedSnapshot Snapshot)> ReadInstallSnapshotRequestAsync(CancellationToken token)
+    {
+        var result = await ReadRequestAsync().ConfigureAwait(false);
+        return new()
+        {
+            Id = result.Id,
+            Term = result.Term,
+            SnapshotIndex = result.SnapshotIndex,
+            Snapshot = new(this, in result.SnapshotMetadata),
+        };
 
-    internal IRaftLogEntry CreateSnapshot(in LogEntryMetadata metadata) => new Snapshot(this, in metadata);
+        unsafe ValueTask<(ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata)> ReadRequestAsync()
+            => ReadAsync<(ClusterMemberId, long, long, LogEntryMetadata)>(SnapshotMessage.Size, &SnapshotMessage.Read, token);
+    }
 
-    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, ILogEntryProducer<IRaftLogEntry> Entries, InMemoryClusterConfiguration Configuration, bool ApplyConfig)> ReadAppendEntriesRequestAsync(CancellationToken token)
+    internal async ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, ReceivedLogEntries Entries, InMemoryClusterConfiguration Configuration, bool ApplyConfig)> ReadAppendEntriesRequestAsync(CancellationToken token)
     {
         // read headers
         var result = await ReadHeadersAsync().ConfigureAwait(false);
@@ -160,7 +170,7 @@ internal partial class ProtocolStream
             CommitIndex = result.CommitIndex,
             ApplyConfig = result.ApplyConfig,
             Configuration = new(config, result.Fingerprint),
-            Entries = new LogEntryProducer(this, result.EntriesCount, token),
+            Entries = new ReceivedLogEntries(this, result.EntriesCount, token),
         };
 
         unsafe ValueTask<(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount, bool ApplyConfig, long Fingerprint, long ConfigLength)> ReadHeadersAsync()

@@ -9,7 +9,7 @@ using IO.Log;
 
 internal partial class ProtocolStream
 {
-    private sealed class LogEntryProducer : Disposable, ILogEntryProducer<IRaftLogEntry>, IRaftLogEntry
+    internal sealed class ReceivedLogEntries : Disposable, ILogEntryProducer<IRaftLogEntry>, IRaftLogEntry
     {
         private readonly ProtocolStream stream;
         private readonly CancellationToken token;
@@ -17,7 +17,7 @@ internal partial class ProtocolStream
         private LogEntryMetadata metadata;
         private bool consumed;
 
-        internal LogEntryProducer(ProtocolStream stream, int entriesCount, CancellationToken token)
+        internal ReceivedLogEntries(ProtocolStream stream, int entriesCount, CancellationToken token)
         {
             this.stream = stream;
             this.entriesCount = entriesCount;
@@ -25,7 +25,7 @@ internal partial class ProtocolStream
             consumed = true;
         }
 
-        async ValueTask<bool> IAsyncEnumerator<IRaftLogEntry>.MoveNextAsync()
+        public async ValueTask<bool> MoveNextAsync()
         {
             if (!consumed)
             {
