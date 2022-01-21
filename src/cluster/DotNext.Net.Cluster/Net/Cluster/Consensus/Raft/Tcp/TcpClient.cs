@@ -8,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
 using Buffers;
 using Diagnostics;
-using Metrics;
 using Threading;
 using TransportServices;
 using TransportServices.ConnectionOriented;

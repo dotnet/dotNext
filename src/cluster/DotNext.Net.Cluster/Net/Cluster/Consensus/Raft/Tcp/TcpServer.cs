@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
 using Buffers;
-using IO.Log;
 using TransportServices;
 using TransportServices.ConnectionOriented;
 
