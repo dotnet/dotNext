@@ -127,7 +127,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     private async Task<TResponse> RequestAsync<TResponse>(Func<ProtocolStream, CancellationToken, ValueTask<TResponse>> request, CancellationToken token)
     {
         ThrowIfDisposed();
-        CancellationTokenSource timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeoutSource.CancelAfter(RequestTimeout);
         var timeStamp = new Timestamp();
         var lockTaken = false;
@@ -141,7 +141,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
 
             Debug.Assert(protocol is not null);
             protocol.Reset();
-            return await request(protocol, token).ConfigureAwait(false);
+            return await request(protocol, timeoutSource.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
@@ -153,14 +153,11 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             ChangeStatus(ClusterMemberStatus.Unavailable);
 
             // detect broken socket
-            if (e is SocketException || e.InnerException is SocketException || e is EndOfStreamException)
-            {
-                protocol?.Dispose();
-                protocol = null;
+            protocol?.Dispose();
+            protocol = null;
 
-                transport?.Dispose();
-                transport = null;
-            }
+            transport?.Dispose();
+            transport = null;
 
             throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
         }
