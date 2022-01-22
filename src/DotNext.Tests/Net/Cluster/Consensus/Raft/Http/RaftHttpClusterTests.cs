@@ -267,18 +267,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"partitioning", "false"},
                 {"publicEndPoint", "http://localhost:3262"},
                 {"coldStart", "true"},
+                {"metadata:nodeName", "node1"}
             };
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false" },
                 {"publicEndPoint", "http://localhost:3263"},
-                {"coldStart", "false"}
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node2"}
             };
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"publicEndPoint", "http://localhost:3264"},
-                {"coldStart", "false"}
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node3"}
             };
 
             var listener = new LeaderTracker();
@@ -305,6 +308,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host2).Leader.EndPoint);
             Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host3).Leader.EndPoint);
+
+            foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
+            {
+                if (member.IsRemote)
+                {
+                    NotEmpty(await member.GetMetadataAsync());
+                }
+            }
 
             await host3.StopAsync();
             await host2.StopAsync();

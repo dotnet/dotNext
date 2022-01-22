@@ -30,13 +30,49 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <typeparam name="T">The type of the value to encode.</typeparam>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
+    public ValueTask WriteAsync<T>(T value, CancellationToken token = default)
         where T : unmanaged
     {
-        if (Unsafe.SizeOf<T>() > FreeCapacity)
-            await FlushCoreAsync(token).ConfigureAwait(false);
+        ValueTask result;
 
-        Write(in value);
+        if (FreeCapacity >= Unsafe.SizeOf<T>())
+        {
+            result = new();
+
+            try
+            {
+                Write(in value);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+        }
+        else if (buffer.Length >= Unsafe.SizeOf<T>())
+        {
+            result = WriteSmallValueAsync();
+        }
+        else
+        {
+            result = WriteLargeValueAsync();
+        }
+
+        return result;
+
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        async ValueTask WriteSmallValueAsync()
+        {
+            await FlushCoreAsync(token).ConfigureAwait(false);
+            Write(in value);
+        }
+
+        async ValueTask WriteLargeValueAsync()
+        {
+            // rare case, T is very large and doesn't fit the buffer
+            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
+            Span.AsReadOnlyBytes(in value).CopyTo(buffer.Span);
+            await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+        }
     }
 
     private void Write7BitEncodedInt(int value)

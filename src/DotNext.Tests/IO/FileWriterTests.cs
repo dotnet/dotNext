@@ -134,5 +134,22 @@ namespace DotNext.IO
 
             Equal(expected, actual);
         }
+
+        [Fact]
+        public static async Task FlushWithOffsetAsync()
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+            using var writer = new FileWriter(handle, fileOffset: 100L, bufferSize: 64);
+            writer.Buffer.Span[0] = 1;
+            writer.Buffer.Span[1] = 2;
+            writer.Produce(2);
+            await writer.WriteAsync();
+
+            var actual = new byte[102];
+            await RandomAccess.ReadAsync(handle, actual, 0L);
+            Equal(2, actual[101]);
+            Equal(1, actual[100]);
+        }
     }
 }

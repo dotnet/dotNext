@@ -36,6 +36,8 @@ public partial class TaskCompletionPipe<T>
 
     private void Notify()
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
         {
             next = current.Next;
@@ -44,6 +46,19 @@ public partial class TaskCompletionPipe<T>
             if (current.TrySetResult(Sentinel.Instance, value: true))
                 break;
         }
+    }
+
+    private void DrainWaitQueue()
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        {
+            next = current.CleanupAndGotoNext();
+            current?.TrySetResult(value: false);
+        }
+
+        first = last = null;
     }
 
     private LinkedValueTaskCompletionSource<bool> EnqueueNode()

@@ -171,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             "Datagram with id {PacketId} has dropped from remote endpoint {Member} because it cannot be dispatched to appropriate logical channel",
             EventName = EventIdPrefix + "." + nameof(PacketDropped)
         )]
-        public static partial void PacketDropped(this ILogger logger, TransportServices.CorrelationId packetId, EndPoint? member);
+        public static partial void PacketDropped(this ILogger logger, TransportServices.Datagram.CorrelationId packetId, EndPoint? member);
 
         [LoggerMessage(
             EventIdOffset + 20,
@@ -192,10 +192,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [LoggerMessage(
             EventIdOffset + 22,
             LogLevel.Warning,
-            "Request has timed out",
+            "Timeout occurred while processing request from {RemoteEndPoint}",
             EventName = EventIdPrefix + "." + nameof(RequestTimedOut)
         )]
-        public static partial void RequestTimedOut(this ILogger logger);
+        public static partial void RequestTimedOut(this ILogger logger, EndPoint? remoteEndPoint, OperationCanceledException e);
 
         [LoggerMessage(
             EventIdOffset + 23,
@@ -228,5 +228,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             EventName = EventIdPrefix + "." + nameof(StopAsyncWasNotCalled)
         )]
         public static partial void StopAsyncWasNotCalled(this ILogger logger);
+
+        [LoggerMessage(
+            EventIdOffset + 27,
+            LogLevel.Error,
+            "TLS handshake with {RemoteEndPoint} failed",
+            EventName = EventIdPrefix + "." + nameof(TlsHandshakeFailed)
+        )]
+        public static partial void TlsHandshakeFailed(this ILogger logger, EndPoint? remoteEndPoint, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 28,
+            LogLevel.Error,
+            "Failed to process request from {RemoteEndPoint}",
+            EventName = EventIdPrefix + "." + nameof(FailedToProcessRequest)
+        )]
+        public static partial void FailedToProcessRequest(this ILogger logger, EndPoint? remoteEndPoint, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 29,
+            LogLevel.Information,
+            "Connection was reset by {RemoteEndPoint}",
+            EventName = EventIdPrefix + "." + nameof(ConnectionWasResetByClient)
+        )]
+        public static partial void ConnectionWasResetByClient(this ILogger logger, EndPoint? remoteEndPoint);
     }
 }

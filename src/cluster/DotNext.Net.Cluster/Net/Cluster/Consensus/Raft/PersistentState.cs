@@ -90,7 +90,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path, bufferManager.BufferAllocator);
+        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck);
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -418,26 +418,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         writeCounter?.Invoke(1D);
     }
 
-    private async ValueTask<long> UnsafeAppendAsync<TEntry>(TEntry entry, bool flush, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
-    {
-        var startIndex = state.TailIndex;
-        await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
-        if (flush)
-        {
-            await partition.FlushAsync(token).ConfigureAwait(false);
-            state.LastIndex = startIndex;
-            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
-        }
-        else
-        {
-            state.LastIndex = startIndex;
-        }
-
-        writeCounter?.Invoke(1D);
-        return startIndex;
-    }
-
     /// <summary>
     /// Adds uncommitted log entry to the end of this log.
     /// </summary>
@@ -520,15 +500,23 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private async ValueTask<long> AppendUncachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
+        long startIndex;
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         try
         {
-            return await UnsafeAppendAsync(entry, true, token).ConfigureAwait(false);
+            startIndex = state.TailIndex;
+            await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
+            await partition.FlushAsync(token).ConfigureAwait(false);
+            state.LastIndex = startIndex;
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(LockType.WriteLock);
         }
+
+        writeCounter?.Invoke(1D);
+        return startIndex;
     }
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -539,16 +527,22 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         // copy log entry to the memory
         var cachedEntry = new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId);
 
+        long startIndex;
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         try
         {
             // append it to the log
-            return await UnsafeAppendAsync(cachedEntry, false, token).ConfigureAwait(false);
+            startIndex = state.TailIndex;
+            await UnsafeAppendAsync(cachedEntry, startIndex, out var partition, token).ConfigureAwait(false);
+            state.LastIndex = startIndex;
         }
         finally
         {
             syncRoot.Release(LockType.WriteLock);
         }
+
+        writeCounter?.Invoke(1D);
+        return startIndex;
     }
 
     /// <summary>
@@ -737,7 +731,24 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result of the method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    public abstract Task InitializeAsync(CancellationToken token = default);
+    public virtual Task InitializeAsync(CancellationToken token = default)
+        => state.VerifyIntegrity() ? Task.CompletedTask : Task.FromException(new InternalStateBrokenException());
+
+    /// <summary>
+    /// Removes all log entries from the log.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous result of the method.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+    protected virtual async Task ClearAsync(CancellationToken token = default)
+    {
+        // invalidate state
+        await state.ClearAsync(token).ConfigureAwait(false);
+
+        // invalidate partitions
+        DeletePartitions(FirstPartition);
+        FirstPartition = LastPartition = null;
+    }
 
     private protected void OnCommit(long count)
     {

@@ -146,11 +146,20 @@ public ref partial struct BufferWriterSlim<T>
     public void Advance(int count)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowArgumentOutOfRangeException();
+
         if (position > Capacity - count)
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
 
         position += count;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(count));
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidOperationException() => throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -173,7 +182,11 @@ public ref partial struct BufferWriterSlim<T>
     /// </summary>
     /// <param name="item">The item to be added.</param>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="item"/> to it and this builder is not growable.</exception>
-    public void Add(T item) => Write(MemoryMarshal.CreateReadOnlySpan(ref item, 1));
+    public void Add(T item)
+    {
+        MemoryMarshal.GetReference(GetSpan(1)) = item;
+        position += 1;
+    }
 
     /// <summary>
     /// Gets the element at the specified zero-based index within this builder.

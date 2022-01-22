@@ -230,7 +230,7 @@ public static class Optional
     /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
     public static Optional<T> Create<T, TMonad>(TMonad value)
         where TMonad : struct, IOptionMonad<T>
-        => value.HasValue ? new(value.OrDefault()) : None<T>();
+        => value.TryGet(out var result) ? new(result) : None<T>();
 
     /// <summary>
     /// Flattens the nested optional value.

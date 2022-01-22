@@ -34,8 +34,9 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     new IPersistentState AuditTrail { get; set; }
 
     /// <summary>
-    /// Gets the lease that can be used to perform read with linerizability guarantees.
+    /// Gets the lease that can be used to perform the read with linerizability guarantees.
     /// </summary>
+    /// <value>The lease; or <see langword="null"/> if the current node is not a leader.</value>
     ILeaderLease? Lease { get; }
 
     /// <summary>

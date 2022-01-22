@@ -79,6 +79,14 @@ public partial class PersistentState
         public bool UseCaching { get; set; } = true;
 
         /// <summary>
+        /// Enables or disables integrity check of the internal WAL state.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see langword="false"/> for backward compatibility.
+        /// </remarks>
+        public bool IntegrityCheck { get; set; }
+
+        /// <summary>
         /// Gets memory allocator for internal purposes.
         /// </summary>
         /// <typeparam name="T">The type of items in the pool.</typeparam>

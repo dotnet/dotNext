@@ -1230,4 +1230,58 @@ public static partial class StreamExtensions
     /// <param name="streams">A collection of readable streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
     public static Stream Combine(this IEnumerable<Stream> streams) => new SparseStream(streams);
+
+    /// <summary>
+    /// Reads at least the specified number of bytes.
+    /// </summary>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="minimumSize">The minimum size to read.</param>
+    /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The actual number of bytes written to the <paramref name="buffer"/>. This value is equal to or greater than <paramref name="minimumSize"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is greater than the length of <paramref name="buffer"/>.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<int> ReadAtLeastAsync(this Stream stream, int minimumSize, Memory<byte> buffer, CancellationToken token = default)
+    {
+        if ((uint)minimumSize > (uint)buffer.Length)
+            throw new ArgumentOutOfRangeException(nameof(minimumSize));
+
+        var offset = 0;
+
+        for (int size = minimumSize, bytesRead; size > 0; size -= bytesRead, offset += bytesRead)
+        {
+            bytesRead = await stream.ReadAsync(buffer.Slice(offset), token).ConfigureAwait(false);
+            if (bytesRead is 0)
+                throw new EndOfStreamException();
+        }
+
+        return offset;
+    }
+
+    /// <summary>
+    /// Reads at least the specified number of bytes.
+    /// </summary>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="minimumSize">The minimum size to read.</param>
+    /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+    /// <returns>The actual number of bytes written to the <paramref name="buffer"/>. This value is equal to or greater than <paramref name="minimumSize"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is greater than the length of <paramref name="buffer"/>.</exception>
+    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+    public static int ReadAtLeast(this Stream stream, int minimumSize, Span<byte> buffer)
+    {
+        if ((uint)minimumSize > (uint)buffer.Length)
+            throw new ArgumentOutOfRangeException(nameof(minimumSize));
+
+        var offset = 0;
+
+        for (int size = minimumSize, bytesRead; size > 0; size -= bytesRead, offset += bytesRead)
+        {
+            bytesRead = stream.Read(buffer.Slice(offset));
+            if (bytesRead is 0)
+                throw new EndOfStreamException();
+        }
+
+        return offset;
+    }
 }

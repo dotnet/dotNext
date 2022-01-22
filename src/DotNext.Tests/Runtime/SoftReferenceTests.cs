@@ -12,16 +12,18 @@ namespace DotNext.Runtime
         }
 
         [Fact]
-        public static void EscapeGen0()
+        public static void SurviveGen0GC()
         {
             var reference = CreateReference();
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 30; i++)
             {
                 new object();
                 GC.Collect(generation: 0);
                 True(IsAlive(reference));
             }
+
+            True(reference.TargetAndState.Target.IsAlive);
 
             [MethodImpl(MethodImplOptions.NoInlining)]
             static SoftReference<Target> CreateReference() => new(new());
@@ -35,10 +37,11 @@ namespace DotNext.Runtime
         {
             var reference = CreateReference();
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 30; i++)
             {
                 new object();
                 GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
             Null((Target)reference);
@@ -49,24 +52,63 @@ namespace DotNext.Runtime
         }
 
         [Fact]
+        public static void TrackStrongReference()
+        {
+            var expected = new object();
+            var reference = new SoftReference<object>(expected);
+
+            for (var i = 0; i < 30; i++)
+            {
+                new object();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+
+            var (actual, state) = reference.TargetAndState;
+            Same(expected, actual);
+            Equal(SoftReferenceState.Weak, state);
+
+            GC.KeepAlive(expected);
+        }
+
+        [Fact]
         public static void Operators()
         {
-            var target = new object();
-            var ref1 = new SoftReference<object>(target);
-            var ref2 = ref1;
+            var reference = new SoftReference<string>(string.Empty);
+            Same(reference.TargetAndState.Target, ((Optional<string>)reference).Value);
+            Same(reference.TargetAndState.Target, (string)reference);
 
-            Equal(ref1, ref2);
-            True(ref1 == ref2);
-            False(ref1 != ref2);
-            Equal(ref1, target);
-            Equal(ref1.GetHashCode(), ref2.GetHashCode());
+            reference.Clear();
+            True(((Optional<string>)reference).IsNull);
+            Null((string)reference);
+        }
 
-            ref2 = default;
-            NotEqual(ref1, ref2);
-            False(ref1 == ref2);
-            True(ref1 != ref2);
-            NotEqual(target, ref1);
-            NotEqual(ref1.GetHashCode(), ref2.GetHashCode());
+        [Fact]
+        public static void ReferenceState()
+        {
+            var reference = new SoftReference<object>(new object());
+            Equal(SoftReferenceState.Strong, reference.TargetAndState.State);
+
+            reference.Clear();
+            Equal(SoftReferenceState.Empty, reference.TargetAndState.State);
+        }
+
+        [Fact]
+        public static void OptionMonadInterfaceInterop()
+        {
+            IOptionMonad<object> monad = new SoftReference<object>(null);
+            False(monad.HasValue);
+            False(monad.TryGet(out _));
+            Equal(string.Empty, monad.OrInvoke(Func.Constant(string.Empty)));
+            Null(monad.OrDefault());
+            Equal(string.Empty, monad.Or(string.Empty));
+
+            monad = new SoftReference<object>(new());
+            True(monad.HasValue);
+            True(monad.TryGet(out var target));
+            Same(monad.OrDefault(), target);
+            Same(target, monad.Or(string.Empty));
+            Same(target, monad.OrInvoke(Func.Constant(string.Empty)));
         }
     }
 }

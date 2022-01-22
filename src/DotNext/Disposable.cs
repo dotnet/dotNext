@@ -8,7 +8,8 @@ using static Runtime.Intrinsics;
 /// <summary>
 /// Provides implementation of dispose pattern.
 /// </summary>
-/// <see cref="IDisposable"/>
+/// <seealso cref="IDisposable"/>
+/// <seealso cref="IAsyncDisposable"/>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
 public abstract class Disposable : IDisposable
 {

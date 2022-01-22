@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace DotNext.Buffers;
 
 public static partial class BufferHelpers

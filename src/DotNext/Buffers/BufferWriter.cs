@@ -112,8 +112,8 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void Add(T item)
     {
-        GetSpan(1)[0] = item;
-        Advance(1);
+        MemoryMarshal.GetReference(GetSpan(1)) = item;
+        position += 1;
     }
 
     /// <inheritdoc />
@@ -126,8 +126,6 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public virtual void AddAll(ICollection<T> items)
     {
-        ThrowIfDisposed();
-
         if (items.Count == 0)
             return;
 

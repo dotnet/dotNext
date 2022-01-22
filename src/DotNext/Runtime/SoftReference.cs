@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
@@ -16,71 +14,103 @@ namespace DotNext.Runtime;
 /// All public instance members of this type are thread-safe.
 /// </remarks>
 /// <typeparam name="T">The type of the object referenced.</typeparam>
-[StructLayout(LayoutKind.Auto)]
-public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>
+[DebuggerDisplay($"State = {{{nameof(State)}}}")]
+public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
     private sealed class Tracker
     {
-        internal readonly T Target;
         private readonly SoftReferenceOptions options;
-        private readonly WeakReference parent;
+        private readonly SoftReference<T> parent;
 
-        internal Tracker(T target, WeakReference parent, SoftReferenceOptions options)
+        internal Tracker(SoftReference<T> parent, SoftReferenceOptions options)
         {
-            Target = target;
             this.options = options;
             this.parent = parent;
         }
-
-        // true if SoftReference<T>.Clear() was not called
-        private bool IsValid => ReferenceEquals(this, parent.Target);
 
         internal void StopTracking() => GC.SuppressFinalize(this);
 
         ~Tracker()
         {
-            if (IsValid && options.KeepTracking(Target))
+            // Thread safety: preserve order of fields
+            var target = parent.strongRef;
+            var thisRef = parent.trackerRef;
+
+            if (target is null || thisRef is null)
+            {
+                // do nothing
+            }
+            else if (ReferenceEquals(this, thisRef.Target) && options.KeepTracking(target))
+            {
                 GC.ReRegisterForFinalize(this);
+            }
             else
-                parent.Target = Target; // downgrade reference from soft to weak
+            {
+                try
+                {
+                    thisRef.Target = target; // downgrade to weak reference
+                }
+                catch (InvalidOperationException)
+                {
+                    // suspend exception, the weak reference is already finalized
+                }
+                finally
+                {
+                    parent.strongRef = null;
+                }
+            }
         }
     }
 
-    private sealed class TrackerReference : WeakReference
+    private sealed class IntermediateReference : WeakReference
     {
-        private bool cleared;
-
-        internal TrackerReference(T target, SoftReferenceOptions options)
-            : base(null, trackResurrection: true)
+        internal IntermediateReference(Tracker tracker)
+            : base(tracker, trackResurrection: true)
         {
-            var tracker = new Tracker(target, this, options);
-            Target = tracker;
-            GC.KeepAlive(tracker);
         }
 
-        internal TrackerReference(T target)
+        internal IntermediateReference(T target)
             : base(target, trackResurrection: false)
         {
         }
 
         internal void Clear()
         {
-            (Target as Tracker)?.StopTracking();
-            Target = null;
-            cleared = true;
-        }
+            switch (Target)
+            {
+                case null:
+                    break;
+                case Tracker tracker:
+                    tracker.StopTracking();
+                    goto default;
+                default:
+                    // Change target only if it is alive (not null).
+                    // Otherwise, CLR GC thread may crash with InvalidOperationException
+                    // because underlying GC handle is no longer valid
+                    try
+                    {
+                        Target = null;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // suspend exception, the weak reference is already finalized
+                    }
 
-        ~TrackerReference()
-        {
-            if (!cleared)
-                Clear();
+                    break;
+            }
         }
     }
 
-    // Target can be null, of type Tracker, or of type T
-    private readonly TrackerReference? trackerRef;
+    // Thread safety: this field must be requested first. If it is null then try to get the reference
+    // from trackerRef
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private volatile T? strongRef;
+
+    // Target can be of type Tracker, or of type T
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private volatile IntermediateReference? trackerRef;
 
     /// <summary>
     /// Initializes a new soft reference.
@@ -89,16 +119,29 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>
     /// <param name="options">The behavior of soft reference.</param>
     public SoftReference(T? target, SoftReferenceOptions? options = null)
     {
-        options ??= SoftReferenceOptions.Default;
+        if (target is not null)
+        {
+            options ??= SoftReferenceOptions.Default;
 
-        trackerRef = target is null
-            ? null
-            : options.KeepTracking(target)
-            ? new(target, options)
-            : new(target);
+            if (options.KeepTracking(target))
+            {
+                strongRef = target;
+                var tracker = new Tracker(this, options);
+                trackerRef = new(tracker);
+                GC.KeepAlive(tracker);
+            }
+            else
+            {
+                trackerRef = new(target);
+            }
+        }
     }
 
-    private SoftReference(TrackerReference? trackerRef) => this.trackerRef = trackerRef;
+    private void ClearCore()
+    {
+        Interlocked.Exchange(ref trackerRef, null)?.Clear();
+        strongRef = null;
+    }
 
     /// <summary>
     /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
@@ -107,7 +150,11 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>
     /// This method stops tracking the referenced object. Thus, the object
     /// will be reclaimable by GC even if it is not reached Generation 2.
     /// </remarks>
-    public void Clear() => trackerRef?.Clear();
+    public void Clear()
+    {
+        ClearCore();
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Tries to retrieve the target object.
@@ -117,65 +164,93 @@ public readonly struct SoftReference<T> : IEquatable<SoftReference<T>>
     public bool TryGetTarget([NotNullWhen(true)] out T? target)
         => (target = Target) is not null;
 
-    private T? Target
+    /// <summary>
+    /// Tries to retrieve the target object.
+    /// </summary>
+    /// <returns>The referenced object.</returns>
+    public Optional<T> TryGetTarget() => new(Target);
+
+    /// <summary>
+    /// Gets state of the referenced object and referenced object itself.
+    /// </summary>
+    /// <remarks>
+    /// The returned target object is not <see langword="null"/> when the state is <see cref="SoftReferenceState.Strong"/>
+    /// or <see cref="SoftReferenceState.Weak"/>.
+    /// </remarks>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    public (T? Target, SoftReferenceState State) TargetAndState
     {
         get
         {
-            var target = trackerRef?.Target;
-            Debug.Assert(target is null or Tracker or T);
+            SoftReferenceState state;
+            var target = strongRef;
 
-            return target is Tracker tracker ? tracker.Target : Unsafe.As<T>(target);
+            if (target is not null)
+            {
+                state = SoftReferenceState.Strong;
+            }
+            else
+            {
+                target = trackerRef?.Target as T;
+                state = target is null ? SoftReferenceState.Empty : SoftReferenceState.Weak;
+            }
+
+            return (target, state);
         }
     }
 
-    /// <summary>
-    /// Determines whether this object points to the same target as the speicifed object.
-    /// </summary>
-    /// <param name="other">Soft reference to compare.</param>
-    /// <returns><see langword="true"/> if this object points to the same target as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(SoftReference<T> other) => ReferenceEquals(Target, other.Target);
+    [ExcludeFromCodeCoverage]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private SoftReferenceState State => TargetAndState.State;
+
+    private T? Target => strongRef ?? trackerRef?.Target as T;
 
     /// <inheritdoc />
-    public override bool Equals([NotNullWhen(true)] object? other)
-        => other is SoftReference<T> reference ? Equals(reference) : ReferenceEquals(Target, other);
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    bool IOptionMonad<T>.HasValue => Target is not null;
 
     /// <inheritdoc />
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(Target);
+    [return: NotNullIfNotNull("defaultValue")]
+    T? IOptionMonad<T>.Or(T? defaultValue) => Target ?? defaultValue;
+
+    /// <inheritdoc />
+    T? IOptionMonad<T>.OrDefault() => Target;
+
+    /// <inheritdoc />
+    T IOptionMonad<T>.OrInvoke(Func<T> defaultFunc) => Target ?? defaultFunc();
+
+    /// <inheritdoc />
+    bool IOptionMonad<T>.TryGet([NotNullWhen(true)] out T? target) => TryGetTarget(out target);
+
+    /// <inheritdoc />
+    object? ISupplier<object?>.Invoke() => Target;
 
     /// <inheritdoc />
     public override string? ToString() => Target?.ToString();
-
-    /// <summary>
-    /// Determines whether the two objects point to the same target.
-    /// </summary>
-    /// <param name="x">The first reference to compare.</param>
-    /// <param name="y">The second reference to compare.</param>
-    /// <returns><see langword="true"/> if both objects point to the same target; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(SoftReference<T> x, SoftReference<T> y)
-        => x.Target == y.Target;
-
-    /// <summary>
-    /// Determines whether the two objects point to different targets.
-    /// </summary>
-    /// <param name="x">The first reference to compare.</param>
-    /// <param name="y">The second reference to compare.</param>
-    /// <returns><see langword="true"/> if both objects point to different targets; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(SoftReference<T> x, SoftReference<T> y)
-        => x.Target != y.Target;
 
     /// <summary>
     /// Gets the referenced object.
     /// </summary>
     /// <param name="reference">The reference to the object.</param>
     /// <returns>The referenced object; or <see langword="null"/> if the object is not reachable.</returns>
-    public static explicit operator T?(SoftReference<T> reference) => reference.Target;
+    public static explicit operator T?(SoftReference<T>? reference) => reference?.Target;
 
     /// <summary>
-    /// Casts typed reference to a reference of type <see cref="object"/>.
+    /// Tries to retrieve the target object.
     /// </summary>
-    /// <param name="reference">The reference to cast.</param>
-    public static implicit operator SoftReference<object>(SoftReference<T> reference)
-        => new(reference.trackerRef);
+    /// <param name="reference">Soft reference.</param>
+    /// <returns>
+    /// The referenced object;
+    /// or <see cref="Optional{T}.None"/> if reference is not allocated;
+    /// or <see cref="Optional{T}.IsNull"/> is <see langword="true"/>.
+    /// </returns>
+    public static explicit operator Optional<T>(SoftReference<T>? reference)
+        => reference?.TryGetTarget() ?? Optional<T>.None;
+
+    /// <summary>
+    /// Makes the referenced object available for garbage collection (if not referenced elsewhere).
+    /// </summary>
+    ~SoftReference() => ClearCore(); // if SoftRef itself is not reachable then prevent prolongation of the referenced object lifetime
 }
 
 /// <summary>
@@ -225,8 +300,29 @@ public class SoftReferenceOptions
         var info = GC.GetGCMemoryInfo();
         ReadOnlySpan<GCGenerationInfo> generations;
 
-        return info.Index is 0
+        return info.Index is 0L
             || (generations = info.GenerationInfo).Length <= generation
             || generations[generation].SizeAfterBytes < memoryLimit;
     }
+}
+
+/// <summary>
+/// Represents state of the referenced object.
+/// </summary>
+public enum SoftReferenceState
+{
+    /// <summary>
+    /// The referenced object is not reachable via soft reference.
+    /// </summary>
+    Empty = 0,
+
+    /// <summary>
+    /// Soft reference acting as a weak reference so the referenced object is available for GC.
+    /// </summary>
+    Weak,
+
+    /// <summary>
+    /// Soft reference acting as a strong reference so the referenced object is not available for GC.
+    /// </summary>
+    Strong,
 }

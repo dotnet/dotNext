@@ -2,6 +2,7 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 namespace DotNext.IO;
@@ -33,13 +34,48 @@ public partial class FileReader : IAsyncBinaryReader
     /// <returns>The decoded value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public async ValueTask<T> ReadAsync<T>(CancellationToken token = default)
+    public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
         where T : unmanaged
     {
-        if (Unsafe.SizeOf<T>() > BufferLength)
-            await ReadAsync(token).ConfigureAwait(false);
+        ValueTask<T> result;
 
-        return Read<T>();
+        var availableBytes = BufferLength;
+        if (availableBytes >= Unsafe.SizeOf<T>())
+        {
+            try
+            {
+                result = new(Read<T>());
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<T>(e);
+            }
+        }
+        else if (buffer.Length - availableBytes >= Unsafe.SizeOf<T>())
+        {
+            result = ReadSmallValueAsync();
+        }
+        else
+        {
+            result = ReadLargeValueAsync();
+        }
+
+        return result;
+
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        async ValueTask<T> ReadSmallValueAsync()
+        {
+            await ReadAsync(token).ConfigureAwait(false);
+            return Read<T>();
+        }
+
+        async ValueTask<T> ReadLargeValueAsync()
+        {
+            // rare case, T is very large and doesn't fit the buffer
+            using var tempBuffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
+            await ReadAsync(tempBuffer.Memory, token).ConfigureAwait(false);
+            return MemoryMarshal.Read<T>(tempBuffer.Span);
+        }
     }
 
     private int Read7BitEncodedInt()

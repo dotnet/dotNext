@@ -8,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp;
 
 using Buffers;
 using TransportServices;
+using TransportServices.Datagram;
 
 internal abstract class UdpSocket : Socket, INetworkTransport
 {
@@ -22,7 +23,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     private readonly int listeners;
 
     // I/O management
-    private int datagramSize;
+    private readonly int datagramSize;
 
     private protected UdpSocket(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
         : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
@@ -48,7 +49,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     internal int DatagramSize
     {
         get => datagramSize;
-        set => datagramSize = ValidateDatagramSize(value);
+        init => datagramSize = ValidateDatagramSize(value);
     }
 
     private protected abstract bool AllowReceiveFromAnyHost { get; }
@@ -110,7 +111,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     private protected abstract ValueTask ProcessDatagramAsync(EndPoint ep, CorrelationId id, PacketHeaders headers, ReadOnlyMemory<byte> payload);
 
     private protected async ValueTask ProcessDatagramAsync<TChannel>(EndPoint ep, ConcurrentDictionary<CorrelationId, TChannel> channels, TChannel channel, CorrelationId correlationId, PacketHeaders headers, ReadOnlyMemory<byte> datagram)
-        where TChannel : struct, INetworkTransport.IChannel
+        where TChannel : struct, IChannel
     {
         bool stateFlag;
         var error = default(Exception);
@@ -153,7 +154,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     }
 
     private protected async ValueTask<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)
-        where TChannel : struct, INetworkTransport.IChannel
+        where TChannel : struct, IChannel
     {
         bool waitForInput;
         var bufferHolder = AllocDatagramBuffer();

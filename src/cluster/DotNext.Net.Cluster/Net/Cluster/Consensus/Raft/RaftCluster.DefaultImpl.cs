@@ -130,9 +130,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             }
         }
 
+        await base.StartAsync(token).ConfigureAwait(false);
         server = serverFactory(this);
         server.Start();
-        await base.StartAsync(token).ConfigureAwait(false);
+        StartFollowing();
 
         if (!coldStart && announcer is not null)
             await announcer(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
@@ -266,6 +267,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
         return result;
     }
+
+    /// <inheritdoc />
+    Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, token);
 
     /// <inheritdoc />
     Task<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)

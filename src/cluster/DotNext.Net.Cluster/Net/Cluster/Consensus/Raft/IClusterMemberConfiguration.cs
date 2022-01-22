@@ -17,7 +17,7 @@ public interface IClusterMemberConfiguration
     /// The threshold should be in range (0, 1). The heartbeat timeout is computed as
     /// node election timeout X threshold. The default is 0.5.
     /// </remarks>
-    double HeartbeatThreshold { get; set; }
+    double HeartbeatThreshold { get; }
 
     /// <summary>
     /// Gets leader election timeout settings.
