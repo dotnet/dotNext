@@ -83,7 +83,11 @@ internal partial class LeaderState
                 else
                 {
                     member.ConfigurationFingerprint = 0L;
-                    logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(static index => index > 0L ? index - 1L : index));
+
+                    unsafe
+                    {
+                        logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(&DecrementIndex));
+                    }
                 }
 
                 SetResult(result);
@@ -96,6 +100,8 @@ internal partial class LeaderState
             {
                 replicationAwaiter = default;
             }
+
+            static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
         }
 
         private (IClusterConfiguration, bool) GetConfiguration()
