@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 01-05-2022
+# 01-22-2022
 <a href="https://www.nuget.org/packages/dotnext/4.2.0">DotNext 4.2.0</a>
 * Improved scalability of mechanism that allows to attach custom data to arbitrary objects using `UserDataStorage` and `UserDataSlot<T>` types. The improvement works better in high workloads without the risk of lock contention but requires a bit more CPU cycles to obtain the data attached to the object
 * Added ability to enumerate values stored in `TypeMap<T>` or `ConcurrentTypeMap<T>`
