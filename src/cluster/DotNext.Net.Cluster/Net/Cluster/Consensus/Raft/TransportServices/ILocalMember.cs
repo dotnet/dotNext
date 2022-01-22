@@ -18,6 +18,9 @@ internal interface ILocalMember
     Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry;
 
+    Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, Membership.IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry;
+
     Task<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
     Task<Result<bool>> PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);

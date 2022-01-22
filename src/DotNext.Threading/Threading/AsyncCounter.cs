@@ -1,6 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -12,10 +12,11 @@ using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bo
 /// </summary>
 /// <remarks>
 /// This class behaves in opposite to <see cref="AsyncCountdownEvent"/>.
-/// Every call of <see cref="Increment"/> increments the counter.
+/// Every call of <see cref="Increment()"/> increments the counter.
 /// Every call of <see cref="WaitAsync(TimeSpan, CancellationToken)"/>
 /// decrements counter and release the caller if the current count is greater than zero.
 /// </remarks>
+[DebuggerDisplay($"Counter = {{{nameof(Value)}}}")]
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
@@ -26,17 +27,40 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         internal StateManager(long initialValue)
             => state = initialValue;
 
-        internal long Value
+        internal readonly long Value => IntPtr.Size == sizeof(long) ? state : state.VolatileRead();
+
+        internal void Increment(long delta)
         {
-            readonly get => state.VolatileRead();
-            set => state.VolatileWrite(value);
+            var newValue = checked(state + delta);
+            if (IntPtr.Size == sizeof(long))
+                state.VolatileWrite(newValue);
+            else
+                state = newValue;
         }
 
-        internal void Increment() => state.IncrementAndGet();
+        internal void Decrement()
+        {
+            if (IntPtr.Size == sizeof(long))
+                state--;
+            else
+                state.DecrementAndGet();
+        }
 
-        internal void Decrement() => state.DecrementAndGet();
+        internal bool TryReset()
+        {
+            bool result;
+            if (IntPtr.Size == sizeof(long))
+            {
+                result = state > 0L;
+                state = 0L;
+            }
+            else
+            {
+                result = Interlocked.Exchange(ref state, 0L) > 0L;
+            }
 
-        internal bool TryReset() => Interlocked.Exchange(ref state, 0L) > 0L;
+            return result;
+        }
 
         bool ILockManager.IsLockAllowed => Value > 0L;
 
@@ -112,12 +136,39 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Increments counter and resume suspended callers.
     /// </summary>
+    /// <exception cref="OverflowException">Counter overflow detected.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public void Increment()
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Increment() => IncrementCore(1L);
+
+    /// <summary>
+    /// Increments counter and resume suspended callers.
+    /// </summary>
+    /// <param name="delta">The value to be added to the counter.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="delta"/> is less than zero.</exception>
+    /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
+    /// <exception cref="OverflowException">Counter overflow detected.</exception>
+    public void Increment(long delta)
     {
+        switch (delta)
+        {
+            case < 0L:
+                throw new ArgumentOutOfRangeException(nameof(delta));
+            case 0L:
+                break;
+            default:
+                IncrementCore(delta);
+                break;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void IncrementCore(long delta)
+    {
+        Debug.Assert(delta > 0L);
+
         ThrowIfDisposed();
-        manager.Increment();
+        manager.Increment(delta);
 
         for (LinkedValueTaskCompletionSource? current = first, next; current is not null && manager.Value > 0L; current = next)
         {
@@ -135,6 +186,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         return true;
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
     /// or just decrements it.
@@ -144,9 +199,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if counter is decremented successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -156,9 +214,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+        => WaitNoTimeout(token).Create(token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

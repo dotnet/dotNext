@@ -18,33 +18,62 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     /// <param name="allocator">The allocator of internal buffer.</param>
     /// <param name="initialCapacity">The initial capacity of the writer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
+    [Obsolete("Use init-only properties to set the capacity and allocator")]
     public PooledBufferWriter(MemoryAllocator<T>? allocator, int initialCapacity)
     {
         if (initialCapacity <= 0)
             throw new ArgumentOutOfRangeException(nameof(initialCapacity));
         this.allocator = allocator;
-        buffer = allocator.Invoke(initialCapacity, false);
+        buffer = allocator.Invoke(initialCapacity, exactSize: false);
     }
 
     /// <summary>
     /// Initializes a new writer with the default initial capacity.
     /// </summary>
     /// <param name="allocator">The allocator of internal buffer.</param>
-    public PooledBufferWriter(MemoryAllocator<T>? allocator = null)
+    [Obsolete("Use init-only properties to set the capacity and allocator")]
+    public PooledBufferWriter(MemoryAllocator<T>? allocator)
+        => this.allocator = allocator;
+
+    /// <summary>
+    /// Initializes a new empty writer.
+    /// </summary>
+    /// <seealso cref="BufferAllocator"/>
+    /// <seealso cref="Capacity"/>
+    public PooledBufferWriter()
     {
-        this.allocator = allocator;
     }
 
     /// <summary>
-    /// Gets the total amount of space within the underlying memory.
+    /// Sets the allocator of internal buffer.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+    /// <remarks>
+    /// It is recommended to initialize this property before <see cref="Capacity"/>.
+    /// </remarks>
+    public MemoryAllocator<T>? BufferAllocator
+    {
+        init => allocator = value;
+    }
+
+    /// <inheritdoc />
     public override int Capacity
     {
         get
         {
             ThrowIfDisposed();
             return buffer.Length;
+        }
+
+        init
+        {
+            switch (value)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                case > 0:
+                    buffer = allocator.Invoke(value, exactSize: false);
+                    break;
+            }
         }
     }
 

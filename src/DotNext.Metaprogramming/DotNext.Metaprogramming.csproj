@@ -7,8 +7,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>false</IsTrimmable>
-    <VersionPrefix>4.1.3</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <Features>nullablePublicOnly</Features>
+    <VersionPrefix>4.2.0</VersionPrefix>
+    <VersionSuffix>beta.1</VersionSuffix>
     <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>

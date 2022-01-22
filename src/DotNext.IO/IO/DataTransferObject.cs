@@ -39,9 +39,9 @@ public static class DataTransferObject
     // can return null if capacity == 0
     private static BufferWriter<byte>? CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator) => capacity switch
     {
-        null => new PooledBufferWriter<byte>(allocator),
+        null => new PooledBufferWriter<byte> { BufferAllocator = allocator },
         0L => null,
-        long length when length <= int.MaxValue => new PooledBufferWriter<byte>(allocator, (int)length),
+        long length when length <= Array.MaxLength => new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = (int)length },
         _ => throw new InsufficientMemoryException(),
     };
 
@@ -78,7 +78,7 @@ public static class DataTransferObject
 
         static async ValueTask WriteToStreamAsync(TObject dto, Stream output, int bufferSize, CancellationToken token)
         {
-            using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, bufferSize);
+            using var buffer = MemoryAllocator.Allocate<byte>(bufferSize, exactSize: false);
             await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
     }
@@ -171,7 +171,7 @@ public static class DataTransferObject
             try
             {
                 await dto.WriteToAsync(new AsyncBufferWriter(buffer), token).ConfigureAwait(false);
-                return buffer.WrittenCount == 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
+                return buffer.WrittenCount is 0 ? string.Empty : encoding.GetString(buffer.WrittenMemory.Span);
             }
             finally
             {

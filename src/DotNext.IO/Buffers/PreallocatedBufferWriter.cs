@@ -26,7 +26,7 @@ internal sealed class PreallocatedBufferWriter : Disposable, IBufferWriter<byte>
 
         if (extraBuffer is null)
         {
-            extraBuffer = new(null, sizeHint + position);
+            extraBuffer = new() { Capacity = sizeHint + position };
             extraBuffer.Write(buffer.Span);
         }
 

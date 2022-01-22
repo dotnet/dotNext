@@ -276,7 +276,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
     {
         string boundary;
 
-        if (count == 0L)
+        if (count is 0L)
         {
             // jump to empty set of log entries
         }
@@ -285,7 +285,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
             // log entries encoded as efficient binary stream
             return new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
-        else if (!string.IsNullOrEmpty(boundary = request.GetMultipartBoundary()))
+        else if ((boundary = request.GetMultipartBoundary()) is { Length: > 0 })
         {
             return new MultipartLogEntriesReader(boundary, request.Body, count);
         }
@@ -442,7 +442,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
             EncodingContext encodingContext = DefaultHttpEncoding;
             using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
-            using (var builder = new PooledArrayBufferWriter<char>(maxChars))
+            using (var builder = new PooledArrayBufferWriter<char> { Capacity = maxChars })
             {
                 // encode configuration in raw format without boundaries
                 await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);

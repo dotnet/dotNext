@@ -19,7 +19,7 @@ using Sequence = Collections.Generic.Sequence;
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
 /// <seealso cref="PooledArrayBufferWriter{T}"/>
 /// <seealso cref="PooledBufferWriter{T}"/>
-[DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FragmentedBytes = {" + nameof(FragmentedBytes) + "}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FragmentedBytes = {{{nameof(FragmentedBytes)}}}")]
 public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
     private readonly int chunkSize;
@@ -122,6 +122,8 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
         return false;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     private long FragmentedBytes
     {
         get
@@ -130,7 +132,7 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
             for (MemoryChunk? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (next is not null && next.WrittenMemory.Length > 0)
+                if (next is { WrittenMemory: { Length: > 0 } })
                     result += current.FreeCapacity;
             }
 

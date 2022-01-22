@@ -253,5 +253,21 @@ namespace DotNext
             True(Optional<Optional<int>>.IsValueDefined(42));
             False(Optional<Optional<int>>.IsValueDefined(Optional.None<int>()));
         }
+
+        [Fact]
+        public static void Flatten()
+        {
+            Optional<Optional<string>> input = default;
+            Optional<string> output = input.Flatten();
+            True(output.IsUndefined);
+
+            input = new(default(string));
+            output = input.Flatten();
+            True(output.IsNull);
+
+            input = new(string.Empty);
+            output = input.Flatten();
+            True(output.HasValue);
+        }
     }
 }

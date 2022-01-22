@@ -1,7 +1,6 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
@@ -11,6 +10,7 @@ using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bo
 /// <summary>
 /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
 /// </summary>
+[DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
@@ -136,6 +136,10 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Turns caller into idle state until the current event is set.
     /// </summary>
@@ -145,9 +149,12 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -156,7 +163,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+        => WaitNoTimeout(token).Create(token);
 }

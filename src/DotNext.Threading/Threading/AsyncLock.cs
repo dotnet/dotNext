@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -15,6 +16,7 @@ namespace DotNext.Threading;
 /// </remarks>
 /// <seealso cref="Lock"/>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"LockType = {{{nameof(LockTypeName)}}}, IsOwner = {{{nameof(owner)}}}")]
 public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
 {
     internal enum Type : byte
@@ -101,6 +103,10 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
         this.type = type;
         this.owner = owner;
     }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    private readonly string? LockTypeName => Enum.GetName(type);
 
     private readonly Holder CreateHolder() => new(lockedObject, type);
 

@@ -114,20 +114,17 @@ internal class LexicalScope : ILexicalScope, IDisposable, IEnumerable<Expression
 
     public void DeclareVariable(ParameterExpression variable)
     {
-        if (string.IsNullOrEmpty(variable.Name))
+        if (variable.Name is not { Length: > 0 })
             throw new ArgumentException(ExceptionMessages.VariableNameIsNullOrEmpty, nameof(variable));
+
         variables.Add(variable.Name, variable);
     }
 
-    private protected Expression Build()
-    {
-        if (first is null)
-            return Expression.Empty();
-        else if (ReferenceEquals(first, last) && Variables.Count == 0)
-            return first.Statement;
-        else
-            return Expression.Block(Variables, this);
-    }
+    private protected Expression Build() => first is null
+        ? Expression.Empty()
+        : ReferenceEquals(first, last) && Variables.Count is 0
+        ? first.Statement
+        : Expression.Block(Variables, this);
 
     private Enumerator GetEnumerator() => new(first);
 

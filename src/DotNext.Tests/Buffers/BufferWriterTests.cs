@@ -76,7 +76,7 @@ namespace DotNext.Buffers
 
         public static IEnumerable<object[]> CharWriters()
         {
-            yield return new object[] { new PooledBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
+            yield return new object[] { new PooledBufferWriter<char> { BufferAllocator = MemoryPool<char>.Shared.ToAllocator() } };
             yield return new object[] { new PooledArrayBufferWriter<char>() };
             yield return new object[] { new SparseBufferWriter<char>() };
             yield return new object[] { new SparseBufferWriter<char>(32) };
@@ -120,7 +120,7 @@ namespace DotNext.Buffers
 
         public static IEnumerable<object[]> ByteWriters()
         {
-            yield return new object[] { new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator()), Encoding.UTF32 };
+            yield return new object[] { new PooledBufferWriter<byte> { BufferAllocator = MemoryPool<byte>.Shared.ToAllocator() }, Encoding.UTF32 };
             yield return new object[] { new PooledArrayBufferWriter<byte>(), Encoding.UTF8 };
         }
 
@@ -186,7 +186,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void FormatValues()
         {
-            using var writer = new PooledArrayBufferWriter<char>(64);
+            using var writer = new PooledArrayBufferWriter<char> { Capacity = 64 };
 
             const string expectedString = "Hello, world!";
             Equal(expectedString.Length, writer.WriteAsString(expectedString));

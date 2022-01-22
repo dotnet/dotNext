@@ -22,7 +22,7 @@ namespace DotNext.Collections.Specialized
             list -= CheckLength;
             Equal(2, list.Count);
 
-            static bool CheckLength(object obj) => obj is string str && str.Length > 10;
+            static bool CheckLength(object obj) => obj is string { Length: > 10 };
         }
 
         [Fact]

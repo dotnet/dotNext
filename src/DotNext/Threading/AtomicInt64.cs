@@ -182,7 +182,6 @@ public static class AtomicInt64
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (long OldValue, long NewValue) Update<TUpdater>(ref long value, TUpdater updater)
         where TUpdater : struct, ISupplier<long, long>
     {
@@ -195,7 +194,6 @@ public static class AtomicInt64
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static (long OldValue, long NewValue) Accumulate<TAccumulator>(ref long value, long x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<long, long, long>
     {

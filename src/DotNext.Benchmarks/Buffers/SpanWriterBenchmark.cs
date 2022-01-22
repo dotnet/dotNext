@@ -37,7 +37,7 @@ public class SpanWriterBenchmark
     [Benchmark]
     public void AddRangeToArrayWriter()
     {
-        using var writer = new PooledArrayBufferWriter<int>(10);
+        using var writer = new PooledArrayBufferWriter<int> { Capacity = 10 };
         writer.Write(inputArray);
     }
 

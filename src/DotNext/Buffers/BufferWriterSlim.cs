@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -19,7 +20,7 @@ namespace DotNext.Buffers;
 /// <seealso cref="PooledBufferWriter{T}"/>
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
-[DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
+[DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
 public ref partial struct BufferWriterSlim<T>
 {
     private readonly Span<T> initialBuffer;
@@ -63,6 +64,8 @@ public ref partial struct BufferWriterSlim<T>
         position = 0;
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     private readonly int Overflow => Math.Max(0, position - initialBuffer.Length);
 
     /// <summary>
@@ -107,20 +110,14 @@ public ref partial struct BufferWriterSlim<T>
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
         Span<T> result;
-        int? newSize;
+        int newSize;
         if (extraBuffer.IsEmpty)
         {
-            newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position);
-
             // need to copy initial buffer
-            if (newSize.HasValue)
+            if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out newSize))
             {
-                extraBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
-                result = extraBuffer.Span;
-                initialBuffer.CopyTo(result);
-
-                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                    initialBuffer.Clear();
+                extraBuffer = allocator.Invoke(newSize, exactSize: false);
+                initialBuffer.CopyTo(result = extraBuffer.Span);
             }
             else
             {
@@ -129,13 +126,9 @@ public ref partial struct BufferWriterSlim<T>
         }
         else
         {
-            newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position);
-
             // no need to copy initial buffer
-            if (newSize.HasValue)
-            {
-                extraBuffer.Resize(newSize.GetValueOrDefault(), false, allocator);
-            }
+            if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out newSize))
+                extraBuffer.Resize(newSize, exactSize: false, allocator);
 
             result = extraBuffer.Span;
         }
@@ -153,11 +146,20 @@ public ref partial struct BufferWriterSlim<T>
     public void Advance(int count)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowArgumentOutOfRangeException();
+
         if (position > Capacity - count)
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
 
         position += count;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(count));
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidOperationException() => throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -180,7 +182,11 @@ public ref partial struct BufferWriterSlim<T>
     /// </summary>
     /// <param name="item">The item to be added.</param>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="item"/> to it and this builder is not growable.</exception>
-    public void Add(T item) => Write(MemoryMarshal.CreateReadOnlySpan(ref item, 1));
+    public void Add(T item)
+    {
+        MemoryMarshal.GetReference(GetSpan(1)) = item;
+        position += 1;
+    }
 
     /// <summary>
     /// Gets the element at the specified zero-based index within this builder.

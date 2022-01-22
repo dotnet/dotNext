@@ -156,15 +156,14 @@ public readonly struct EqualityComparerBuilder<T>
             {
                 var fieldX = Expression.Field(x, field);
                 var fieldY = Expression.Field(y, field);
-                Expression condition;
-                if (field.FieldType.IsPointer || field.FieldType.IsPrimitive || field.FieldType.IsEnum)
-                    condition = Expression.Equal(fieldX, fieldY);
-                else if (field.FieldType.IsValueType)
-                    condition = EqualsMethodForValueType(fieldX, fieldY);
-                else if (field.FieldType.IsSZArray)
-                    condition = EqualsMethodForArrayElementType(fieldX, fieldY);
-                else
-                    condition = Expression.Call(new Func<object, object, bool>(Equals).Method, fieldX, fieldY);
+                Expression condition = field.FieldType switch
+                {
+                    { IsPointer: true } or { IsPrimitive: true } or { IsEnum: true } => Expression.Equal(fieldX, fieldY),
+                    { IsValueType: true } => EqualsMethodForValueType(fieldX, fieldY),
+                    { IsSZArray: true } => EqualsMethodForArrayElementType(fieldX, fieldY),
+                    _ => Expression.Call(new Func<object, object, bool>(Equals).Method, fieldX, fieldY)
+                };
+
                 expr = expr is null ? condition : Expression.AndAlso(expr, condition);
             }
         }
@@ -206,29 +205,17 @@ public readonly struct EqualityComparerBuilder<T>
             if (IsIncluded(field))
             {
                 expr = Expression.Field(inputParam, field);
-                if (field.FieldType.IsPointer)
+                expr = field.FieldType switch
                 {
-                    expr = Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr);
-                }
-                else if (field.FieldType.IsPrimitive)
-                {
-                    expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
-                }
-                else if (field.FieldType.IsValueType)
-                {
-                    expr = HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode));
-                }
-                else if (field.FieldType.IsSZArray)
-                {
-                    expr = HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode));
-                }
-                else
-                {
-                    expr = Expression.Condition(
+                    { IsPointer: true } => Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
+                    { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), Type.EmptyTypes),
+                    { IsValueType: true } => HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode)),
+                    { IsSZArray: true } => HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode)),
+                    _ => Expression.Condition(
                         Expression.ReferenceEqual(expr, Expression.Constant(null, expr.Type)),
                         Expression.Constant(0, typeof(int)),
-                        Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>()));
-                }
+                        Expression.Call(expr, nameof(GetHashCode), Type.EmptyTypes)),
+                };
 
                 expr = Expression.Assign(hashCodeTemp, Expression.Add(Expression.Multiply(hashCodeTemp, Expression.Constant(-1521134295)), expr));
                 expressions.Add(expr);

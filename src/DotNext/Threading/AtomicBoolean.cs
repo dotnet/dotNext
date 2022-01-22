@@ -121,7 +121,6 @@ public struct AtomicBoolean : IEquatable<bool>
         return update;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private (bool OldValue, bool NewValue) Update<TUpdater>(TUpdater updater)
         where TUpdater : struct, ISupplier<bool, bool>
     {
@@ -134,7 +133,6 @@ public struct AtomicBoolean : IEquatable<bool>
         return (oldValue, newValue);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private (bool OldValue, bool NewValue) Accumulate<TAccumulator>(bool x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<bool, bool, bool>
     {
@@ -239,7 +237,6 @@ public struct AtomicBoolean : IEquatable<bool>
     public unsafe bool GetAndUpdate(delegate*<bool, bool> updater)
         => Update<Supplier<bool, bool>>(updater).OldValue;
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal void Acquire()
     {
         for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce());

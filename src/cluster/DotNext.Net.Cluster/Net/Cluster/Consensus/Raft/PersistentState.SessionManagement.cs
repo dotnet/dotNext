@@ -71,7 +71,7 @@ public partial class PersistentState
         internal override int Take()
         {
             // fast path attempt to obtain session ID is o(1)
-            var sessionId = (Environment.CurrentManagedThreadId & int.MaxValue) % tokens.Length;
+            var sessionId = (uint)Environment.CurrentManagedThreadId % (uint)tokens.Length;
             ref var first = ref MemoryMarshal.GetArrayDataReference(tokens);
             if (Unsafe.Add(ref first, sessionId).TrueToFalse())
                 goto exit;
@@ -87,7 +87,7 @@ public partial class PersistentState
             goto repeat_search;
 
             exit:
-            return sessionId;
+            return (int)sessionId;
         }
 
         internal override void Return(int sessionId)

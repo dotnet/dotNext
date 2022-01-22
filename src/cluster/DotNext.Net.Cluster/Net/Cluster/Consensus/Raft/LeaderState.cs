@@ -5,9 +5,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
+using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
-using static Threading.Tasks.Continuation;
-using AsyncResultSet = Buffers.PooledArrayBufferWriter<Task<Result<bool>>>;
 using Timestamp = Diagnostics.Timestamp;
 
 internal sealed partial class LeaderState : RaftState, ILeaderLease
@@ -32,15 +31,12 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        replicationEvent = new(false);
-        replicationQueue = new(TaskCreationOptions.RunContinuationsAsynchronously);
         precedingTermCache = new TermCache(MaxTermCacheSize);
         this.maxLease = maxLease;
     }
 
-    private async Task<bool> DoHeartbeats(AsyncResultSet taskBuffer, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    private async Task<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
-        var start = Timestamp.Current;
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastUncommittedEntryIndex,
             term = currentTerm,
@@ -65,9 +61,11 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
                 if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                taskBuffer.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync());
+                responsePipe.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync());
             }
         }
+
+        responsePipe.Complete();
 
         // clear cache
         if (precedingTermCache.Count > MaxTermCacheSize)
@@ -78,18 +76,20 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
 
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
-        foreach (var task in taskBuffer)
+        await foreach (var task in responsePipe.ConfigureAwait(false))
         {
+            Debug.Assert(task.IsCompleted);
+
             try
             {
-                var result = await task.ConfigureAwait(false);
+                var result = task.GetAwaiter().GetResult();
                 term = Math.Max(term, result.Term);
                 quorum++;
 
                 if (result.Value)
                 {
-                    if (--leaseRenewalThreshold == 0)
-                        Timestamp.VolatileWrite(ref replicatedAt, start + maxLease); // renew lease
+                    if (--leaseRenewalThreshold is 0)
+                        Timestamp.VolatileWrite(ref replicatedAt, startTime + maxLease); // renew lease
 
                     commitQuorum++;
                 }
@@ -106,7 +106,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             catch (OperationCanceledException)
             {
                 // leading was canceled
-                Metrics?.ReportBroadcastTime(start.Elapsed);
+                Metrics?.ReportBroadcastTime(startTime.Elapsed);
                 return false;
             }
             catch (Exception e)
@@ -115,7 +115,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             }
         }
 
-        Metrics?.ReportBroadcastTime(start.Elapsed);
+        Metrics?.ReportBroadcastTime(startTime.Elapsed);
 
         if (term <= currentTerm && (quorum > 0 || allowPartitioning))
         {
@@ -133,6 +133,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             }
 
             await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
+            UpdateLeaderStickiness();
             return true;
         }
 
@@ -144,16 +145,28 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
+        var responsePipe = CreatePipe(Members.Count);
 
-        // reuse this buffer to place responses from other nodes
-        using var taskBuffer = new AsyncResultSet(Members.Count);
-
-        for (var forced = false; await DoHeartbeats(taskBuffer, auditTrail, configurationStorage, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+        for (var forced = false; ; responsePipe.Reset())
         {
+            var startTime = new Timestamp();
+            if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, token).ConfigureAwait(false))
+                break;
+
             if (forced)
                 DrainReplicationQueue();
 
-            taskBuffer.Clear(true);
+            // subtract heartbeat processing duration from heartbeat period for better stability
+            var delay = period - startTime.Elapsed;
+            forced = await WaitForReplicationAsync(delay >= TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
+        }
+
+        static TaskCompletionPipe<Task<Result<bool>>> CreatePipe(int capacity)
+        {
+            if (capacity < int.MaxValue / 2)
+                capacity *= 2;
+
+            return new(capacity);
         }
     }
 
@@ -177,7 +190,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     }
 
     bool ILeaderLease.IsExpired
-        => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt) < Timestamp.Current;
+        => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt).IsPast;
 
     internal override Task StopAsync()
     {
@@ -194,7 +207,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
             heartbeatTask = null;
 
             // cancel replication queue
-            replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
             replicationEvent.Dispose();
 
             Metrics = null;

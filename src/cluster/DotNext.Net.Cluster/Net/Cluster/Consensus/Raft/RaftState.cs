@@ -16,6 +16,8 @@ internal abstract class RaftState : Disposable
 
     internal abstract Task StopAsync();
 
+    private protected void UpdateLeaderStickiness() => stateMachine.UpdateLeaderStickiness();
+
     private protected unsafe IThreadPoolWorkItem MoveToCandidateStateWorkItem()
     {
         return ThreadPoolWorkItemFactory.Create(&MoveToCandidateState, stateMachine);

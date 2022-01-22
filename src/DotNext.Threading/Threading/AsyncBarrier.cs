@@ -1,4 +1,6 @@
-﻿namespace DotNext.Threading;
+﻿using System.Diagnostics;
+
+namespace DotNext.Threading;
 
 /// <summary>
 /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
@@ -13,6 +15,7 @@
 /// <item><description>Number of phases is limited by <see cref="long"/> data type.</description></item>
 /// </list>
 /// </remarks>
+[DebuggerDisplay($"ParticipantsRemaining = {{{nameof(ParticipantsRemaining)}}}, CurrentPhaseNumber = {{{nameof(CurrentPhaseNumber)}}}")]
 public class AsyncBarrier : Disposable, IAsyncEvent
 {
     private readonly AsyncCountdownEvent countdown;

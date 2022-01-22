@@ -17,11 +17,35 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
     private readonly long ticks;
 
-    private Timestamp(long ticks) => this.ticks = ticks;
+    private Timestamp(long ticks) => this.ticks = Math.Max(ticks, 1L); // ensure that timestamp is not empty
+
+    /// <summary>
+    /// Captures the current point in time.
+    /// </summary>
+    public Timestamp()
+        : this(GetTimestamp())
+    {
+    }
+
+    /// <summary>
+    /// Gets a value indicating that the timestamp is zero.
+    /// </summary>
+    public bool IsEmpty => ticks is 0L;
+
+    /// <summary>
+    /// Gets a value indcating that the current timestamp represents the future point in time.
+    /// </summary>
+    public bool IsFuture => ticks > GetTimestamp();
+
+    /// <summary>
+    /// Gets a value indcating that the current timestamp represents the past point in time.
+    /// </summary>
+    public bool IsPast => ticks < GetTimestamp();
 
     /// <summary>
     /// Gets the current point in time.
     /// </summary>
+    [Obsolete("Use public parameterless constructor instead")]
     public static Timestamp Current => new(GetTimestamp());
 
     private static long ToTicks(double duration)
@@ -168,4 +192,11 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <param name="newValue">The value to write.</param>
     public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
         => Unsafe.AsRef(in location.ticks).VolatileWrite(newValue.ticks);
+
+    /// <summary>
+    /// Updates the timestamp to the current point in time and prevents the proces from reordering memory operations.
+    /// </summary>
+    /// <param name="location">The location of the timestampt to update.</param>
+    public static void Refresh(ref Timestamp location)
+        => Unsafe.AsRef(in location.ticks).VolatileWrite(Math.Max(1L, GetTimestamp()));
 }

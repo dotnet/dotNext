@@ -7,8 +7,9 @@
     <ImplicitUsings>true</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsTrimmable>true</IsTrimmable>
-    <VersionPrefix>4.1.3</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <Features>nullablePublicOnly</Features>
+    <VersionPrefix>4.2.0</VersionPrefix>
+    <VersionSuffix>beta.1</VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Basic framework for building clusters</Description>

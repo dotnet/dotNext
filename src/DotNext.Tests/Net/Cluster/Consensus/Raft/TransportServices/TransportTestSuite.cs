@@ -6,6 +6,7 @@ using System.Net;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using Buffers;
+    using Datagram;
     using IO;
     using IO.Log;
     using IClusterConfiguration = Membership.IClusterConfiguration;
@@ -57,6 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
             internal ReceiveEntriesBehavior Behavior;
             internal byte[] ReceivedConfiguration = Array.Empty<byte>();
+            private readonly ClusterMemberId localId = Random.Shared.Next<ClusterMemberId>();
 
             internal LocalMember(bool smallAmountOfMetadata = false)
             {
@@ -65,15 +67,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     metadata.Add("a", "b");
                 else
                 {
-                    var rnd = new Random();
                     const string AllowedChars = "abcdefghijklmnopqrstuvwxyz1234567890";
                     for (var i = 0; i < 20; i++)
-                        metadata.Add(string.Concat("key", i.ToString()), rnd.NextString(AllowedChars, 20));
+                        metadata.Add(string.Concat("key", i.ToString()), Random.Shared.NextString(AllowedChars, 20));
                 }
                 Metadata = metadata.ToImmutableDictionary();
             }
 
-            ref readonly ClusterMemberId ILocalMember.Id => throw new NotImplementedException();
+            ref readonly ClusterMemberId ILocalMember.Id => ref localId;
 
             bool ILocalMember.IsLeader(IRaftClusterMember member) => throw new NotImplementedException();
 
@@ -83,18 +84,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             {
                 using var buffer = MemoryAllocator.Allocate<byte>(configurationLength.Truncate(), true);
                 await configurationReader(buffer.Memory, token).ConfigureAwait(false);
-                Equal(43L, fingerprint);
+                Equal(42L, fingerprint);
                 ReceivedConfiguration = buffer.Memory.ToArray();
             }
 
-            async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+            private async Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+                where TEntry : IRaftLogEntry
             {
                 Equal(42L, senderTerm);
                 Equal(1, prevLogIndex);
                 Equal(56L, prevLogTerm);
                 Equal(10, commitIndex);
-                Equal(42L, fingerprint);
-                True(applyConfig);
+
+                if (fingerprint.HasValue)
+                    Equal(42L, fingerprint.GetValueOrDefault());
+
+                if (applyConfig)
+                    Empty(ReceivedConfiguration);
+                else
+                    NotEmpty(ReceivedConfiguration);
 
                 byte[] buffer;
                 switch (Behavior)
@@ -123,6 +131,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 }
 
                 return new Result<bool>(43L, true);
+            }
+
+            Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+                => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, fingerprint, applyConfig, token);
+
+            async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+            {
+                if (config.Length > 0L)
+                    ReceivedConfiguration = await config.ToByteArrayAsync(token: token);
+
+                return await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, config.Fingerprint, applyConfig, token);
             }
 
             async Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
@@ -177,53 +196,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
         private protected delegate IServer ServerFactory(ILocalMember localMember, IPEndPoint address, TimeSpan timeout);
-        private protected delegate IClient ClientFactory(IPEndPoint address);
+        private protected delegate RaftClusterMember ClientFactory(IPEndPoint address, ILocalMember localMember, TimeSpan timeout);
 
         private protected async Task RequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory)
         {
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(new LocalMember(), serverAddr, timeout);
+            var member = new LocalMember();
+            using var server = serverFactory(member, serverAddr, timeout);
             server.Start();
+
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, member, timeout);
+
             //Vote request
-            CancellationTokenSource timeoutTokenSource;
             Result<bool> result;
-            using (timeoutTokenSource = new CancellationTokenSource(timeout))
-            {
-                var exchange = new VoteExchange(42L, 1L, 56L);
-                client.Enqueue(exchange, timeoutTokenSource.Token);
-                result = await exchange.Task;
-                True(result.Value);
-                Equal(43L, result.Term);
-            }
+            result = await client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, CancellationToken.None);
+            True(result.Value);
+            Equal(43L, result.Term);
+
             // PreVote reqyest
-            using (timeoutTokenSource = new CancellationTokenSource(timeout))
-            {
-                var exchange = new PreVoteExchange(10L, 2L, 99L);
-                client.Enqueue(exchange, timeoutTokenSource.Token);
-                result = await exchange.Task;
-                True(result.Value);
-                Equal(44L, result.Term);
-            }
+            result = await client.As<IRaftClusterMember>().PreVoteAsync(10L, 2L, 99L, CancellationToken.None);
+            True(result.Value);
+            Equal(44L, result.Term);
+
             //Resign request
-            using (timeoutTokenSource = new CancellationTokenSource(timeout))
-            {
-                var exchange = new ResignExchange();
-                client.Enqueue(exchange, timeoutTokenSource.Token);
-                True(await exchange.Task);
-            }
+            True(await client.As<IRaftClusterMember>().ResignAsync(CancellationToken.None));
+
             //Heartbeat request
-            using (timeoutTokenSource = new CancellationTokenSource(timeout))
-            {
-                var exchange = new HeartbeatExchange(42L, 1L, 56L, 10L, new() { ApplyConfig = true, Fingerprint = 42L });
-                client.Enqueue(exchange, timeoutTokenSource.Token);
-                result = await exchange.Task;
-                True(result.Value);
-                Equal(43L, result.Term);
-            }
+            var config = IClusterConfiguration.CreateEmpty(fingerprint: 42L);
+            result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, true, CancellationToken.None);
+            True(result.Value);
+            Equal(43L, result.Term);
         }
 
         private protected async Task StressTestTest(ServerFactory serverFactory, ClientFactory clientFactory)
@@ -231,21 +236,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(new LocalMember(), serverAddr, timeout);
+            var member = new LocalMember();
+            using var server = serverFactory(member, serverAddr, timeout);
             server.Start();
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, member, timeout);
             ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
-            using (var timeoutTokenSource = new CancellationTokenSource(timeout))
+            for (var i = 0; i < 100; i++)
             {
-                for (var i = 0; i < 100; i++)
-                {
-                    var exchange = new VoteExchange(42L, 1L, 56L);
-                    client.Enqueue(exchange, timeoutTokenSource.Token);
-                    tasks.Add(exchange.Task);
-                }
-                await Task.WhenAll(tasks);
+                var task = client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, CancellationToken.None);
+                tasks.Add(task);
             }
+
+            await Task.WhenAll(tasks);
+
             foreach (var task in tasks)
             {
                 True(task.Result.Value);
@@ -261,11 +265,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = serverFactory(member, serverAddr, timeout);
             server.Start();
+
             //prepare client
-            using var client = clientFactory(serverAddr);
-            var exchange = new MetadataExchange(CancellationToken.None);
-            client.Enqueue(exchange, default);
-            Equal(member.Metadata, await exchange.Task);
+            using var client = clientFactory(serverAddr, member, timeout);
+            Equal(member.Metadata, await client.As<IRaftClusterMember>().GetMetadataAsync(refresh: true, CancellationToken.None));
         }
 
         private static void Equal(in BufferedEntry x, in BufferedEntry y)
@@ -278,10 +281,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             True(x.Content.FirstSpan.SequenceEqual(y.Content.FirstSpan));
         }
 
-        private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
+        private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
         {
             var timeout = TimeSpan.FromSeconds(20);
-            using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false) { Behavior = behavior };
 
             //prepare server
@@ -290,17 +292,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start();
 
             //prepare client
-            using var client = clientFactory(serverAddr);
-            var buffer = new byte[533];
-            Random.Shared.NextBytes(buffer);
+            using var client = clientFactory(serverAddr, member, timeout);
+            byte[] buffer;
+            if (useEmptyEntry)
+            {
+                buffer = Array.Empty<byte>();
+            }
+            else
+            {
+                Random.Shared.NextBytes(buffer = new byte[533]);
+            }
+
             var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
             buffer = new byte[payloadSize];
             Random.Shared.NextBytes(buffer);
             var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
 
-            await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, new() { ApplyConfig = true, Fingerprint = 42L });
-            client.Enqueue(exchange, timeoutTokenSource.Token);
-            var result = await exchange.Task;
+            var config = IClusterConfiguration.CreateEmpty(fingerprint: 42L);
+            var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, config, true, CancellationToken.None);
             Equal(43L, result.Term);
             True(result.Value);
             switch (behavior)
@@ -327,7 +336,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private protected async Task SendingSnapshotTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
         {
             var timeout = TimeSpan.FromSeconds(20);
-            using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false);
 
             //prepare server
@@ -336,24 +344,84 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start();
 
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, member, timeout);
 
             var buffer = new byte[payloadSize];
-            new Random().NextBytes(buffer);
+            Random.Shared.NextBytes(buffer);
             var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
-            await using var exchange = new SnapshotExchange(42L, snapshot, 10L);
-            client.Enqueue(exchange, timeoutTokenSource.Token);
-            var result = await exchange.Task;
+            var result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, CancellationToken.None);
             Equal(43L, result.Term);
             True(result.Value);
             NotEmpty(member.ReceivedEntries);
             Equal(snapshot, member.ReceivedEntries[0]);
         }
 
+        private protected async Task SendingSnapshotAndEntriesAndConfiguration(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
+        {
+            var timeout = TimeSpan.FromSeconds(20);
+            var member = new LocalMember(false) { Behavior = behavior };
+
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
+
+            //prepare client
+            using var client = clientFactory(serverAddr, member, timeout);
+            var buffer = new byte[payloadSize];
+            Random.Shared.NextBytes(buffer);
+            var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
+            buffer = new byte[payloadSize];
+            Random.Shared.NextBytes(buffer);
+            var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, false, buffer);
+            var config = new BufferedClusterConfiguration(RandomBytes(312)) { Fingerprint = 42L };
+
+            var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
+
+            Result<bool> result;
+            for (var i = 0; i < 100; i++)
+            {
+                // process snapshot
+                result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, CancellationToken.None);
+                Equal(43L, result.Term);
+                True(result.Value);
+                NotEmpty(member.ReceivedEntries);
+                Equal(snapshot, member.ReceivedEntries[0]);
+                member.ReceivedEntries.Clear();
+
+                // process entries
+                result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, config, false, CancellationToken.None);
+                Equal(43L, result.Term);
+                True(result.Value);
+                switch (behavior)
+                {
+                    case ReceiveEntriesBehavior.ReceiveAll:
+                        Equal(2, member.ReceivedEntries.Count);
+                        Equal(entry1, member.ReceivedEntries[0]);
+                        Equal(entry2, member.ReceivedEntries[1]);
+                        break;
+                    case ReceiveEntriesBehavior.ReceiveFirst:
+                        Equal(1, member.ReceivedEntries.Count);
+                        Equal(entry1, member.ReceivedEntries[0]);
+                        break;
+                    case ReceiveEntriesBehavior.DropFirst:
+                        Equal(1, member.ReceivedEntries.Count);
+                        Equal(entry2, member.ReceivedEntries[0]);
+                        break;
+                    case ReceiveEntriesBehavior.DropAll:
+                        Empty(member.ReceivedEntries);
+                        break;
+                }
+
+                True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.FirstSpan));
+                member.ReceivedEntries.Clear();
+                member.ReceivedConfiguration = Array.Empty<byte>();
+            }
+        }
+
         private protected async Task SendingConfigurationTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize)
         {
             var timeout = TimeSpan.FromSeconds(20);
-            using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false);
 
             //prepare server
@@ -362,20 +430,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start();
 
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, member, timeout);
 
-            var config = RandomBytes(payloadSize);
-            await using var exchange = new ConfigurationExchange(new BufferedClusterConfiguration(config) { Fingerprint = 43L });
-            client.Enqueue(exchange, timeoutTokenSource.Token);
-            var result = await exchange.Task;
+            var config = new BufferedClusterConfiguration(RandomBytes(payloadSize)) { Fingerprint = 42L };
+            var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, payloadSize is 0, CancellationToken.None);
 
-            True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config));
+            True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.FirstSpan));
         }
 
         private protected async Task SendingSynchronizationRequestTest(ServerFactory serverFactory, ClientFactory clientFactory)
         {
             var timeout = TimeSpan.FromSeconds(20);
-            using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false);
 
             //prepare server
@@ -384,12 +449,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start();
 
             //prepare client
-            using var client = clientFactory(serverAddr);
-
-            var exchange = new SynchronizeExchange();
-            client.Enqueue(exchange, timeoutTokenSource.Token);
-
-            Equal(42L, await exchange.Task);
+            using var client = clientFactory(serverAddr, member, timeout);
+            Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(CancellationToken.None));
         }
     }
 }

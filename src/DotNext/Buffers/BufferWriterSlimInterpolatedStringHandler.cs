@@ -2,12 +2,7 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 using Debug = System.Diagnostics.Debug;
-using FieldRef = InlineIL.FieldRef;
-using MethodRef = InlineIL.MethodRef;
-using TypeRef = InlineIL.TypeRef;
 
 namespace DotNext.Buffers;
 
@@ -59,35 +54,36 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     {
         int charsWritten;
 
-        if (value is IFormattable)
+        switch (value)
         {
-            if (value is ISpanFormattable)
-            {
-                for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+            case IFormattable:
+                if (value is ISpanFormattable)
                 {
-                    var span = buffer.GetSpan(bufferSize);
-
-                    // constrained call avoiding boxing for value types
-                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                     {
-                        buffer.Advance(charsWritten);
-                        break;
+                        var span = buffer.GetSpan(bufferSize);
+
+                        // constrained call avoiding boxing for value types
+                        if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                        {
+                            buffer.Advance(charsWritten);
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                // constrained call avoiding boxing for value types
-                charsWritten = Write(ref buffer, ((IFormattable)value).ToString(format, provider));
-            }
-        }
-        else if (value is not null)
-        {
-            charsWritten = Write(ref buffer, value.ToString());
-        }
-        else
-        {
-            charsWritten = 0;
+                else
+                {
+                    // constrained call avoiding boxing for value types
+                    charsWritten = Write(ref buffer, ((IFormattable)value).ToString(format, provider));
+                }
+
+                break;
+            case not null:
+                charsWritten = Write(ref buffer, value.ToString());
+                break;
+            default:
+                charsWritten = 0;
+                break;
         }
 
         return charsWritten;
@@ -186,45 +182,47 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             alignment = -alignment;
         }
 
-        if (value is IFormattable)
+        switch (value)
         {
-            if (value is ISpanFormattable)
-            {
-                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+            case IFormattable:
+                if (value is ISpanFormattable)
                 {
-                    var span = buffer.Value.GetSpan(bufferSize);
-                    if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
+                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                     {
-                        var padding = alignment - charsWritten;
+                        var span = buffer.Value.GetSpan(bufferSize);
+                        if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
+                        {
+                            var padding = alignment - charsWritten;
 
-                        if (padding <= 0)
-                        {
-                            alignment = charsWritten;
-                        }
-                        else if (leftAlign)
-                        {
-                            span.Slice(charsWritten, padding).Fill(Whitespace);
-                        }
-                        else
-                        {
-                            span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                            span.Slice(0, padding).Fill(Whitespace);
-                        }
+                            if (padding <= 0)
+                            {
+                                alignment = charsWritten;
+                            }
+                            else if (leftAlign)
+                            {
+                                span.Slice(charsWritten, padding).Fill(Whitespace);
+                            }
+                            else
+                            {
+                                span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
+                                span.Slice(0, padding).Fill(Whitespace);
+                            }
 
-                        buffer.Value.Advance(alignment);
-                        count += alignment;
-                        break;
+                            buffer.Value.Advance(alignment);
+                            count += alignment;
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
-            }
-        }
-        else if (value is not null)
-        {
-            AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
+                else
+                {
+                    AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
+                }
+
+                break;
+            case not null:
+                AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
+                break;
         }
     }
 

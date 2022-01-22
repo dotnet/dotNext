@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
@@ -81,6 +81,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool Signal() => SignalCore();
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private new LinkedValueTaskCompletionSource<bool>? DetachWaitQueue() => base.DetachWaitQueue();
+
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
     /// </summary>
@@ -90,24 +96,33 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Signal(bool resumeAll = false)
     {
         ThrowIfDisposed();
-        return resumeAll ? ResumeSuspendedCallers() > 0L : SignalCore();
+        return resumeAll ? ResumeAll(DetachWaitQueue()) > 0L : Signal();
+    }
+
+    private bool SignalCore(bool resumeAll)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        return resumeAll ? ResumeAll(base.DetachWaitQueue()) > 0L : SignalCore();
     }
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => first is null;
 
     /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    bool IAsyncEvent.Signal() => SignalCore();
+    bool IAsyncEvent.Signal() => Signal();
 
     private static void AlwaysFalse(ref ValueTuple timeout, ref bool flag)
     {
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Suspends the caller and waits for the signal.
     /// </summary>
@@ -119,10 +134,13 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <seealso cref="Signal"/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    /// <seealso cref="Signal(bool)"/>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends the caller and waits for the signal.
@@ -134,10 +152,18 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <seealso cref="Signal"/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    /// <seealso cref="Signal(bool)"/>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+        => WaitNoTimeout(token).Create(token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token)
+    {
+        ThrowIfDisposed();
+        return !SignalCore(resumeAll) && throwOnEmptyQueue
+            ? BooleanValueTaskFactory.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+            : WaitNoTimeout(ref manager, ref pool, timeout, token);
+    }
 
     /// <summary>
     /// Resumes the first suspended caller in the queue and suspends the immediate caller.
@@ -156,13 +182,16 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
+        => WaitNoTimeout(resumeAll, throwOnEmptyQueue, timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token)
     {
         ThrowIfDisposed();
-        return !Signal(resumeAll) && throwOnEmptyQueue
-            ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
-            : WaitAsync(timeout, token);
+        return !SignalCore(resumeAll) && throwOnEmptyQueue
+            ? ValueTaskFactory.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+            : WaitNoTimeout(ref manager, ref pool, token);
     }
 
     /// <summary>
@@ -181,14 +210,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
-    {
-        ThrowIfDisposed();
-        return !Signal(resumeAll) && throwOnEmptyQueue
-            ? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
-            : WaitAsync(token);
-    }
+        => WaitNoTimeout(resumeAll, throwOnEmptyQueue, token).Create(token);
 }
 
 /// <summary>
@@ -377,6 +400,10 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         return TryAcquire(ref manager);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout(ref LockManager manager, TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Performs conditional transition asynchronously.
     /// </summary>
@@ -388,13 +415,16 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
     /// <seealso cref="Signal"/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(transition);
         var manager = new LockManager(State, transition);
-        return WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        return WaitNoTimeout(ref manager, timeout, token).Create(timeout, token);
     }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout(ref LockManager manager, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends the caller and waits for the signal.
@@ -406,12 +436,11 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
     /// <seealso cref="Signal"/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(transition);
         var manager = new LockManager(State, transition);
-        return WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+        return WaitNoTimeout(ref manager, token).Create(token);
     }
 
     private protected sealed override bool IsReadyToDispose => first is null;

@@ -146,8 +146,7 @@ internal sealed class CandidateState : RaftState
         if (disposing)
         {
             votingCancellation.Dispose();
-            var task = Interlocked.Exchange(ref votingTask, null);
-            if (task is not null && task.IsCompleted)
+            if (Interlocked.Exchange(ref votingTask, null) is { IsCompleted: true } task)
                 task.Dispose();
         }
 

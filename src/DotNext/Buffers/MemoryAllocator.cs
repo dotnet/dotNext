@@ -75,7 +75,9 @@ public static class MemoryAllocator
         else
         {
             result = allocator(length);
-            if (!exactSize)
+            if (exactSize)
+                result.Truncate(length);
+            else
                 result.Expand();
         }
 
@@ -92,7 +94,7 @@ public static class MemoryAllocator
         return AllocateArray;
 
         static MemoryOwner<T> AllocateArray(int length)
-            => new(GC.AllocateUninitializedArray<T>(length, false));
+            => new(GC.AllocateUninitializedArray<T>(length, pinned: false));
     }
 
     /// <summary>

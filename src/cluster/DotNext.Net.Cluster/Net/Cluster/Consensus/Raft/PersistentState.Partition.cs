@@ -32,6 +32,9 @@ public partial class PersistentState
         private int metadataFlushStartAddress;
         private int metadataFlushEndAddress;
 
+        // represents offset within the file from which a newly added log entry payload can be recorded
+        private long writeAddress;
+
         internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
             : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
         {
@@ -44,6 +47,7 @@ public partial class PersistentState
             metadataFlushStartAddress = int.MaxValue;
 
             entryCache = manager.AllocLogEntryCache(recordsPerPartition);
+            writeAddress = fileOffset;
         }
 
         private async Task InitializeAsync()
@@ -52,6 +56,22 @@ public partial class PersistentState
             {
                 metadata.Span.Clear();
                 await RandomAccess.WriteAsync(Handle, metadata.Memory, 0L).ConfigureAwait(false);
+            }
+            else
+            {
+                writeAddress = Math.Max(fileOffset, GetWriteAddress(metadata.Span));
+            }
+
+            static long GetWriteAddress(ReadOnlySpan<byte> metadataTable)
+            {
+                long result;
+
+                for (result = 0L; !metadataTable.IsEmpty; metadataTable = metadataTable.Slice(LogEntryMetadata.Size))
+                {
+                    result = Math.Max(result, LogEntryMetadata.GetEndOfLogEntry(metadataTable));
+                }
+
+                return result;
             }
         }
 
@@ -153,14 +173,6 @@ public partial class PersistentState
             return metadata.Span.Slice(offset = index * LogEntryMetadata.Size);
         }
 
-        private unsafe T ReadMetadata<T>(int index, delegate*<ReadOnlySpan<byte>, T> parser)
-            where T : unmanaged
-        {
-            Debug.Assert(parser != null);
-
-            return parser(GetMetadata(index, out _));
-        }
-
         private void WriteMetadata(int index, in LogEntryMetadata metadata)
         {
             metadata.Format(GetMetadata(index, out var offset));
@@ -169,23 +181,23 @@ public partial class PersistentState
             metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
         }
 
-        internal unsafe long GetTerm(long absoluteIndex)
+        internal long GetTerm(long absoluteIndex)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
-            return ReadMetadata(ToRelativeIndex(absoluteIndex), &LogEntryMetadata.GetTerm);
+            return LogEntryMetadata.GetTerm(GetMetadata(ToRelativeIndex(absoluteIndex), out _));
         }
 
-        internal unsafe LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
+        internal LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
-            var metadata = ReadMetadata(relativeIndex, &LogEntryMetadata.Parse);
+            var metadata = new LogEntryMetadata(GetMetadata(relativeIndex, out _));
 
             ref readonly var cachedContent = ref EmptyBuffer;
 
-            if (hint == LogEntryReadOptimizationHint.MetadataOnly)
+            if (hint is LogEntryReadOptimizationHint.MetadataOnly)
                 goto return_cached;
 
             if (!entryCache.IsEmpty)
@@ -201,14 +213,15 @@ public partial class PersistentState
         private void UpdateCache(in CachedLogEntry entry, int index, long offset)
         {
             Debug.Assert(entryCache.IsEmpty is false);
-            Debug.Assert(index >= 0 && index < entryCache.Length);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
 
-            ref var cacheEntry = ref entryCache[index];
-            cacheEntry.Dispose();
-            cacheEntry = entry.Content;
+            ref var cachedEntry = ref entryCache[index];
+            cachedEntry.Dispose();
+            cachedEntry = entry.Content;
 
             // save new log entry to the allocation table
             WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
+            writeAddress = offset + entry.Length;
         }
 
         internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
@@ -216,7 +229,7 @@ public partial class PersistentState
             Debug.Assert(entryCache.IsEmpty is false);
 
             var index = ToRelativeIndex(absoluteIndex);
-            Debug.Assert(index >= 0 && index < entryCache.Length);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
 
             ReadOnlyMemory<byte> content = entryCache[index].Memory;
 
@@ -247,10 +260,6 @@ public partial class PersistentState
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsFirstEntry(int index)
-            => index == 0 || index == 1 && FirstIndex == 0L;
-
         private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, long offset, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
@@ -259,29 +268,31 @@ public partial class PersistentState
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
 
             // save new log entry to the allocation table
-            WriteMetadata(index, LogEntryMetadata.Create(entry, offset, writer.WritePosition - offset));
+            var length = writer.WritePosition - offset;
+            WriteMetadata(index, LogEntryMetadata.Create(entry, offset, length));
+            writeAddress = offset + length;
+
+            // invalidate cached content
+            if (!entryCache.IsEmpty)
+                entryCache[index].Dispose();
         }
 
-        internal unsafe ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
+        internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             // write operation always expects absolute index so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
-
-            // calculate offset of the previous entry
-            var offset = IsFirstEntry(relativeIndex)
-                ? fileOffset
-                : ReadMetadata(relativeIndex - 1, &LogEntryMetadata.GetEndOfLogEntry);
+            Debug.Assert(writeAddress > 0L);
 
             if (typeof(TEntry) == typeof(CachedLogEntry))
             {
                 // fast path - just add cached log entry to the cache table
-                UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex, offset);
+                UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex, writeAddress);
                 return ValueTask.CompletedTask;
             }
 
-            return WriteAsync(entry, relativeIndex, offset, token);
+            return WriteAsync(entry, relativeIndex, writeAddress, token);
         }
 
         protected override void Dispose(bool disposing)
@@ -461,7 +472,7 @@ public partial class PersistentState
     // during reads the index is growing monothonically
     private protected bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
     {
-        if (partition is not null && partition.Contains(recordIndex))
+        if (partition?.Contains(recordIndex) ?? false)
             goto success;
 
         if (LastPartition is null)

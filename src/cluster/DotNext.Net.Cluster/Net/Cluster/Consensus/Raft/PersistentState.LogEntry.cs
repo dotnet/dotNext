@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -39,7 +41,7 @@ public partial class PersistentState
         // for regular log entry cached in memory
         internal LogEntry(in MemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
         {
-            Debug.Assert(cachedContent.IsEmpty || cachedContent.Length == metadata.Length);
+            Debug.Assert(cachedContent.IsEmpty || cachedContent.Length == metadata.Length, $"Log entry payload mismatch. Cached payload length: {cachedContent.Length}, length in metadata : {metadata.Length}");
             this.metadata = metadata;
             content = null;
             buffer = cachedContent.Memory;
@@ -227,7 +229,7 @@ public partial class PersistentState
         /// <returns>The deserialized object.</returns>
         /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="CreateJsonLogEntry"/>
+        /// <seealso cref="CreateJsonLogEntry{T}(T, string?, JsonSerializerOptions?)"/>
         [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
         public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
         {
@@ -246,6 +248,41 @@ public partial class PersistentState
             await content.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
         }
+
+        /// <summary>
+        /// Deserializes JSON content represented by this log entry.
+        /// </summary>
+        /// <param name="typeLoader">
+        /// This overload is compatible with IL trimming and doesn't involve Reflection.
+        /// </param>
+        /// <param name="context">Deserialization context.</param>
+        /// <param name="token">The token that can be used to cancel the deserialization.</param>
+        /// <returns>The deserialized object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="typeLoader"/> or <paramref name="context"/> is <see langword="null"/>.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <seealso cref="CreateJsonLogEntry{T}(T, string?, JsonTypeInfo{T})"/>
+        public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token = default)
+        {
+            if (typeLoader is null)
+                return ValueTask.FromException<object?>(new ArgumentNullException(nameof(typeLoader)));
+
+            if (context is null)
+                return ValueTask.FromException<object?>(new ArgumentNullException(nameof(context)));
+
+            if (PrepareContent())
+                return DeserializeSlowAsync(typeLoader, context, token);
+
+            return new(buffer.IsEmpty ? default(object) : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, context));
+        }
+
+        private async ValueTask<object?> DeserializeSlowAsync(Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
+        {
+            Debug.Assert(content is not null);
+
+            using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
+            await content.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, context);
+        }
     }
 
     /// <summary>
@@ -259,7 +296,23 @@ public partial class PersistentState
     /// </param>
     /// <param name="options">Serialization options.</param>
     /// <returns>The log entry representing JSON-serializable content.</returns>
-    /// <seealso cref="LogEntry.DeserializeFromJsonAsync"/>
+    /// <seealso cref="LogEntry.DeserializeFromJsonAsync(Func{string, Type}?, JsonSerializerOptions?, CancellationToken)"/>
     public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
         => new(Term, content, typeId, options);
+
+    /// <summary>
+    /// Creates a log entry with JSON-serializable payload.
+    /// </summary>
+    /// <remarks>
+    /// This overload is compatible with IL trimming and doesn't involve Reflection.
+    /// </remarks>
+    /// <typeparam name="T">JSON-serializable type.</typeparam>
+    /// <param name="content">JSON-serializable content of the log entry.</param>
+    /// <param name="typeId">The type identifier required to recognize the correct type during deserialization.</param>
+    /// <param name="typeInfo">The metadata of the type required for serialization.</param>
+    /// <returns>The log entry representing JSON-serializable content.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="typeId"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    /// <seealso cref="LogEntry.DeserializeFromJsonAsync(Func{string, Type}, JsonSerializerContext, CancellationToken)"/>
+    public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string typeId, JsonTypeInfo<T> typeInfo)
+        => new(Term, content, typeId ?? throw new ArgumentNullException(nameof(typeId)), typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
 }

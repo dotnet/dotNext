@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers;
 
@@ -98,29 +99,24 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
     /// <returns><see langword="true"/> if the written content can be represented as contiguous block of memory; otherwise, <see langword="false"/>.</returns>
     bool TryGetWrittenContent(out ReadOnlyMemory<T> block);
 
-    internal static int? GetBufferSize(int sizeHint, int capacity, int writtenCount)
+    internal static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, out int newSize)
     {
         Debug.Assert(sizeHint >= 0);
+        Debug.Assert(capacity >= 0);
+        Debug.Assert(writtenCount >= 0);
 
-        if (sizeHint == 0)
+        if (sizeHint is 0)
             sizeHint = 1;
 
-        if (sizeHint > capacity - writtenCount)
+        bool result;
+        if (result = sizeHint > capacity - writtenCount)
         {
-            var growBy = Math.Max(capacity, sizeHint);
-            if (capacity == 0)
-                growBy = Math.Max(growBy, DefaultInitialBufferSize);
-            var newSize = capacity + growBy;
-            if ((uint)newSize > (uint)Array.MaxLength)
-            {
-                newSize = capacity + sizeHint;
-                if ((uint)newSize > (uint)Array.MaxLength)
-                    throw new InsufficientMemoryException();
-            }
-
-            return newSize;
+            var growBy = Math.Max(capacity is 0 ? DefaultInitialBufferSize : capacity, sizeHint);
+            if ((uint)(newSize = capacity + growBy) > (uint)Array.MaxLength && (uint)(newSize = capacity + sizeHint) > (uint)Array.MaxLength)
+                throw new InsufficientMemoryException();
         }
 
-        return null;
+        Unsafe.SkipInit(out newSize);
+        return result;
     }
 }

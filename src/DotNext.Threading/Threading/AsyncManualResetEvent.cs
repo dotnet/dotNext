@@ -1,13 +1,15 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
 /// </summary>
+[DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     private struct StateManager : ILockManager<DefaultWaitNode>
@@ -88,7 +90,21 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    public bool Set() => Set(false);
+    public bool Set() => Set(autoReset: false);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool SetCore(bool autoReset, out LinkedValueTaskCompletionSource<bool>? head)
+    {
+        ThrowIfDisposed();
+
+        bool result;
+
+        result = !manager.Value;
+        head = DetachWaitQueue();
+        manager.Value = !autoReset;
+
+        return result;
+    }
 
     /// <summary>
     /// Sets the state of the event to signaled, allowing one or more awaiters to proceed;
@@ -97,15 +113,11 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="autoReset"><see langword="true"/> to reset this object to non-signaled state automatically; <see langword="false"/> to leave this object in signaled state.</param>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Set(bool autoReset)
     {
-        ThrowIfDisposed();
         bool result;
-
-        result = !manager.Value;
-        ResumeSuspendedCallers();
-        manager.Value = !autoReset;
+        if (result = SetCore(autoReset, out var head))
+            ResumeAll(head);
 
         return result;
     }
@@ -125,6 +137,10 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Signal() => Set();
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+
     /// <summary>
     /// Turns caller into idle state until the current event is set.
     /// </summary>
@@ -134,9 +150,12 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitNoTimeout(timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
+        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -145,9 +164,12 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+        => WaitNoTimeout(token).Create(token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token)
+        => manager.Value || condition(arg) ? BooleanValueTaskFactory.True : WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -161,12 +183,19 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="timeout">The number of time to wait before this event is set.</param>
     /// <param name="token">The token that can be used to cancel waiting operation.</param>
     /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
-        => manager.Value || condition(arg) ? new(true) : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+    {
+        ArgumentNullException.ThrowIfNull(condition);
+        return WaitNoTimeout(condition, arg, timeout, token).Create(timeout, token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout<T>(Predicate<T> condition, T arg, CancellationToken token)
+        => manager.Value || condition(arg) ? ValueTaskFactory.Completed : WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -179,11 +208,18 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="arg">The argument to be passed to the predicate.</param>
     /// <param name="token">The token that can be used to cancel waiting operation.</param>
     /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
-        => manager.Value || condition(arg) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+    {
+        ArgumentNullException.ThrowIfNull(condition);
+        return WaitNoTimeout(condition, arg, token).Create(token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory WaitNoTimeout<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token)
+        => manager.Value || condition(arg1, arg2) ? BooleanValueTaskFactory.True : WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -199,12 +235,19 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="timeout">The number of time to wait before this event is set.</param>
     /// <param name="token">The token that can be used to cancel waiting operation.</param>
     /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
-        => manager.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeoutAsync(ref manager, ref pool, timeout, token);
+    {
+        ArgumentNullException.ThrowIfNull(condition);
+        return WaitNoTimeout(condition, arg1, arg2, timeout, token).Create(timeout, token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory WaitNoTimeout<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token)
+        => manager.Value || condition(arg1, arg2) ? ValueTaskFactory.Completed : WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -219,9 +262,12 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="arg2">The second argument to be passed to the predicate.</param>
     /// <param name="token">The token that can be used to cancel waiting operation.</param>
     /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
-        => manager.Value || condition(arg1, arg2) ? ValueTask.CompletedTask : WaitWithTimeoutAsync(ref manager, ref pool, InfiniteTimeSpan, token);
+    {
+        ArgumentNullException.ThrowIfNull(condition);
+        return WaitNoTimeout(condition, arg1, arg2, token).Create(token);
+    }
 }

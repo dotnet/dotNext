@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -86,11 +87,10 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        var newPosition = position + count;
-        if ((uint)newPosition > (uint)span.Length)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        if (count < 0 || position > span.Length - count)
+            ThrowCountOutOfRangeException();
 
-        position = newPosition;
+        position += count;
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public ref struct SpanReader<T>
     public void Rewind(int count)
     {
         if ((uint)count > (uint)position)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowCountOutOfRangeException();
 
         position -= count;
     }
@@ -129,7 +129,7 @@ public ref struct SpanReader<T>
     public bool TryRead(int count, out ReadOnlySpan<T> result)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowCountOutOfRangeException();
 
         var newLength = position + count;
 
@@ -181,7 +181,13 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <returns>The element obtained from the span.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    public T Read() => TryRead(out var result) ? result : throw new InternalBufferOverflowException();
+    public T Read()
+    {
+        if (!TryRead(out var result))
+            ThrowInternalBufferOverflowException();
+
+        return result;
+    }
 
     /// <summary>
     /// Reads the portion of data from the underlying span.
@@ -190,7 +196,20 @@ public ref struct SpanReader<T>
     /// <returns>The portion of data within the underlying span.</returns>
     /// <exception cref="InternalBufferOverflowException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
     public ReadOnlySpan<T> Read(int count)
-        => TryRead(count, out var result) ? result : throw new InternalBufferOverflowException();
+    {
+        if (!TryRead(count, out var result))
+            ThrowInternalBufferOverflowException();
+
+        return result;
+    }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException();
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Decodes the value from the block of memory.
@@ -204,11 +223,11 @@ public ref struct SpanReader<T>
     [CLSCompliant(false)]
     public unsafe TResult Read<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count)
     {
-        if (reader == null)
+        if (reader is null)
             throw new ArgumentNullException(nameof(reader));
 
         if (!TryRead(count, out var buffer))
-            throw new InternalBufferOverflowException();
+            ThrowInternalBufferOverflowException();
 
         return reader(buffer);
     }
@@ -225,7 +244,7 @@ public ref struct SpanReader<T>
     [CLSCompliant(false)]
     public unsafe bool TryRead<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count, [MaybeNullWhen(false)] out TResult result)
     {
-        if (reader == null)
+        if (reader is null)
             throw new ArgumentNullException(nameof(reader));
 
         if (TryRead(count, out var buffer))

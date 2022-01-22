@@ -333,7 +333,7 @@ public sealed class Indexer<TIndicies, TValue> : IndexerBase<TIndicies, TValue>
         {
             Debug.Assert(property.GetMethod is not null);
             if (property.GetMethod.SignatureEquals(actualParams))
-                getter = new Method<Getter>(property.GetMethod, arglist, new[] { input });
+                getter = new(property.GetMethod, arglist, new[] { input });
             else
                 return null;
         }
@@ -352,7 +352,7 @@ public sealed class Indexer<TIndicies, TValue> : IndexerBase<TIndicies, TValue>
             {
                 var valueParam = Expression.Parameter(property.PropertyType, "value");
                 arglist = arglist.Insert(valueParam, arglist.LongLength);
-                setter = new Method<Setter>(property.SetMethod, arglist, new[] { input, valueParam });
+                setter = new(property.SetMethod, arglist, new[] { input, valueParam });
             }
             else
             {
@@ -364,7 +364,7 @@ public sealed class Indexer<TIndicies, TValue> : IndexerBase<TIndicies, TValue>
             setter = null;
         }
 
-        return new Indexer<TIndicies, TValue>(property, getter, setter);
+        return new(property, getter, setter);
     }
 
     internal static Indexer<TIndicies, TValue>? GetOrCreate<T>(string propertyName, bool nonPublic)
@@ -475,7 +475,7 @@ public sealed class Indexer<T, TIndicies, TValue> : IndexerBase<TIndicies, TValu
         {
             Debug.Assert(property.GetMethod is not null);
             if (property.GetMethod.SignatureEquals(actualParams))
-                getter = new Method<Getter>(property.GetMethod, thisParam, arglist, new[] { input });
+                getter = new(property.GetMethod, thisParam, arglist, new[] { input });
             else
                 return null;
         }
@@ -494,7 +494,7 @@ public sealed class Indexer<T, TIndicies, TValue> : IndexerBase<TIndicies, TValu
             {
                 var valueParam = Expression.Parameter(property.PropertyType, "value");
                 arglist = arglist.Insert(valueParam, arglist.LongLength);
-                setter = new Method<Setter>(property.SetMethod, thisParam, arglist, new[] { input, valueParam });
+                setter = new(property.SetMethod, thisParam, arglist, new[] { input, valueParam });
             }
             else
             {
@@ -506,7 +506,7 @@ public sealed class Indexer<T, TIndicies, TValue> : IndexerBase<TIndicies, TValu
             setter = null;
         }
 
-        return new Indexer<T, TIndicies, TValue>(property, getter, setter);
+        return new(property, getter, setter);
     }
 
     internal static Indexer<T, TIndicies, TValue>? GetOrCreate(string propertyName, bool nonPublic)

@@ -32,7 +32,7 @@ public abstract class MessageAttribute : Attribute
     /// </summary>
     public string MimeType
     {
-        get => mimeType.IfNullOrEmpty(MediaTypeNames.Application.Octet);
+        get => mimeType is { Length: > 0 } ? mimeType : MediaTypeNames.Application.Octet;
         set => mimeType = value;
     }
 }

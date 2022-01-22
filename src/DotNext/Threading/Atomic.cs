@@ -47,7 +47,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         private readonly delegate*<in T, in T, bool> ptr;
 
         internal EqualityComparer(delegate*<in T, in T, bool> ptr)
-            => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+            => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
         bool IEqualityComparer.Equals(in T x, in T y) => ptr(in x, in y);
     }
@@ -89,7 +89,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Performs atomic read.
     /// </summary>
     /// <param name="result">The result of atomic read.</param>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public readonly void Read(out T result)
     {
         lockState.Acquire();
@@ -126,7 +125,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Performs atomic write.
     /// </summary>
     /// <param name="newValue">The value to be stored into this container.</param>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void Write(in T newValue)
     {
         lockState.Acquire();
@@ -228,7 +226,6 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// </summary>
     /// <param name="update">The value that replaces the stored value.</param>
     /// <param name="previous">The original stored value before modification.</param>
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public void Exchange(in T update, out T previous)
     {
         lockState.Acquire();

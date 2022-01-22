@@ -23,7 +23,8 @@ using static Reflection.TypeExtensions;
 /// </remarks>
 internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 {
-    private static readonly UserDataSlot<int> ParameterPositionSlot = UserDataSlot<int>.Allocate();
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+    private static readonly UserDataSlot<int> ParameterPositionSlot = new();
 
     // small optimization - reuse variable for awaiters of the same type
     private sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>
@@ -103,7 +104,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
             node = node.Update(node.Test, Statement.Wrap(node.IfTrue), Statement.Wrap(node.IfFalse));
             return context.Rewrite(node, base.VisitConditional);
         }
-        else if (node.IfTrue is BlockExpression && node.IfFalse is BlockExpression)
+        else if (node is { IfTrue: BlockExpression, IfFalse: BlockExpression })
         {
             throw new NotSupportedException(ExceptionMessages.UnsupportedConditionalExpr);
         }
@@ -128,7 +129,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
                     return result;
             }
 
-            if ((ExpressionAttributes.Get(node.IfTrue)?.ContainsAwait ?? false) || (ExpressionAttributes.Get(node.IfFalse)?.ContainsAwait ?? false))
+            if (ExpressionAttributes.Get(node.IfTrue) is { ContainsAwait: true } || ExpressionAttributes.Get(node.IfFalse) is { ContainsAwait: true })
             {
                 var tempVar = NewStateSlot(node.Type);
                 prologue(Expression.Condition(node.Test, Expression.Assign(tempVar, node.IfTrue), Expression.Assign(tempVar, node.IfFalse), typeof(void)));
@@ -289,8 +290,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         // do not place left operand at statement level because it has no side effects
         if (node.Left is ParameterExpression || node.Left is ConstantExpression || IsAssignment(node))
             return node;
-        var leftIsAsync = ExpressionAttributes.Get(node.Left)?.ContainsAwait ?? false;
-        var rightIsAsync = ExpressionAttributes.Get(node.Right)?.ContainsAwait ?? false;
+        var leftIsAsync = ExpressionAttributes.Get(node.Left) is { ContainsAwait: true };
+        var rightIsAsync = ExpressionAttributes.Get(node.Right) is { ContainsAwait: true };
 
         // left operand should be computed before right, so bump it before await expression
         if (rightIsAsync && !leftIsAsync)
@@ -335,7 +336,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         for (var i = arguments.LongLength - 1L; i >= 0L; i--)
         {
             ref Expression arg = ref arguments[i];
-            hasAwait |= ExpressionAttributes.Get(arg)?.ContainsAwait ?? false;
+            hasAwait |= ExpressionAttributes.Get(arg) is { ContainsAwait: true };
             if (hasAwait)
             {
                 var tempVar = NewStateSlot(arg.Type);

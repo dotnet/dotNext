@@ -381,7 +381,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// </remarks>
     public bool IsCompleted => status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -399,8 +399,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             status = ManualResetCompletionSourceStatus.Activated;
             StartTrackingCancellation(timeout, token);
         }
-
-        return;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
@@ -409,22 +407,22 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        var result = false;
+        bool result;
 
         // The task can be created for the completed source. This workaround is needed for AsyncBridge methods
-        if (status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.WaitForConsumption)
+        lock (SyncRoot)
         {
-            lock (SyncRoot)
+            switch (status)
             {
-                switch (status)
-                {
-                    case ManualResetCompletionSourceStatus.WaitForActivation:
-                        PrepareTaskCore(timeout, token);
-                        goto case ManualResetCompletionSourceStatus.WaitForConsumption;
-                    case ManualResetCompletionSourceStatus.WaitForConsumption:
-                        result = true;
-                        break;
-                }
+                case ManualResetCompletionSourceStatus.WaitForActivation:
+                    PrepareTaskCore(timeout, token);
+                    goto case ManualResetCompletionSourceStatus.WaitForConsumption;
+                case ManualResetCompletionSourceStatus.WaitForConsumption:
+                    result = true;
+                    break;
+                default:
+                    result = false;
+                    break;
             }
         }
 

@@ -12,7 +12,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple writers and use dedicated writer in each thread.
 /// </remarks>
-public partial class FileWriter : Disposable
+public partial class FileWriter : Disposable, IFlushable
 {
     /// <summary>
     /// Represents the file handle.
@@ -48,7 +48,7 @@ public partial class FileWriter : Disposable
         if (bufferSize <= 16)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-        buffer = allocator.Invoke(bufferSize, false);
+        buffer = allocator.Invoke(bufferSize, exactSize: false);
         this.handle = handle;
         this.fileOffset = fileOffset;
     }
@@ -64,6 +64,8 @@ public partial class FileWriter : Disposable
     /// The size of returned buffer may be less than or equal to <see cref="MaxBufferSize"/>.
     /// </remarks>
     public Memory<byte> Buffer => buffer.Memory.Slice(bufferOffset);
+
+    private Span<byte> BufferSpan => buffer.Span.Slice(bufferOffset);
 
     /// <summary>
     /// Gets the maximum available buffer size.
@@ -154,6 +156,9 @@ public partial class FileWriter : Disposable
         return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
+    /// <inheritdoc />
+    Task IFlushable.FlushAsync(CancellationToken token) => WriteAsync(token).AsTask();
+
     /// <summary>
     /// Flushes buffered data to the file.
     /// </summary>
@@ -165,6 +170,9 @@ public partial class FileWriter : Disposable
         if (HasBufferedData)
             FlushCore();
     }
+
+    /// <inheritdoc />
+    void IFlushable.Flush() => Write();
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
@@ -235,7 +243,7 @@ public partial class FileWriter : Disposable
 
         if (input.Length <= FreeCapacity)
         {
-            input.CopyTo(Buffer.Span);
+            input.CopyTo(BufferSpan);
             bufferOffset += input.Length;
         }
         else

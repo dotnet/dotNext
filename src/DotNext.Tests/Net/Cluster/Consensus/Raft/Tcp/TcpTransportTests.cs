@@ -44,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(false)]
         public Task RequestResponse(bool useSsl)
         {
-            TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 2, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 2, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535,
@@ -52,27 +52,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 SslOptions = useSsl ? CreateServerSslOptions() : null
             };
 
-            TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+            TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
+                RequestTimeout = timeout,
                 TransmissionBlockSize = 65535,
-                SslOptions = useSsl ? CreateClientSslOptions() : null
+                SslOptions = useSsl ? CreateClientSslOptions() : null,
+                IsRemote = true
             };
+
             return RequestResponseTest(CreateServer, CreateClient);
         }
 
         [Fact]
         public Task StressTest()
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
-                TransmissionBlockSize = 65535
+                RequestTimeout = timeout,
+                TransmissionBlockSize = 65535,
+                IsRemote = true
             };
+
             return StressTestTest(CreateServer, CreateClient);
         }
 
@@ -81,17 +88,65 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(false)]
         public Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 300,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
-                TransmissionBlockSize = 300
+                RequestTimeout = timeout,
+                TransmissionBlockSize = 300,
+                IsRemote = true
             };
+
             return MetadataRequestResponseTest(CreateServer, CreateClient, smallAmountOfMetadata);
+        }
+
+        [Theory]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll, false)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst, false)]
+        [InlineData(0, ReceiveEntriesBehavior.DropAll, false)]
+        [InlineData(0, ReceiveEntriesBehavior.DropFirst, false)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll, false)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst, false)]
+        [InlineData(512, ReceiveEntriesBehavior.DropAll, false)]
+        [InlineData(512, ReceiveEntriesBehavior.DropFirst, false)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll, false)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst, false)]
+        [InlineData(50, ReceiveEntriesBehavior.DropAll, false)]
+        [InlineData(50, ReceiveEntriesBehavior.DropFirst, false)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll, true)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst, true)]
+        [InlineData(0, ReceiveEntriesBehavior.DropAll, true)]
+        [InlineData(0, ReceiveEntriesBehavior.DropFirst, true)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll, true)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst, true)]
+        [InlineData(512, ReceiveEntriesBehavior.DropAll, true)]
+        [InlineData(512, ReceiveEntriesBehavior.DropFirst, true)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll, true)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst, true)]
+        [InlineData(50, ReceiveEntriesBehavior.DropAll, true)]
+        [InlineData(50, ReceiveEntriesBehavior.DropFirst, true)]
+        public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
+        {
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
+            {
+                TransmissionBlockSize = 400,
+                ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
+            };
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            {
+                TransmissionBlockSize = 400,
+                RequestTimeout = timeout,
+                IsRemote = true
+            };
+
+            return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior, useEmptyEntry);
         }
 
         [Theory]
@@ -107,19 +162,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst)]
         [InlineData(50, ReceiveEntriesBehavior.DropAll)]
         [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
-        public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
+        public Task SendingLogEntriesAndConfigurationAndSnapshot(int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
-                TransmissionBlockSize = 400,
                 ReceiveTimeout = timeout,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
-                TransmissionBlockSize = 400
+                RequestTimeout = timeout,
+                IsRemote = true
             };
-            return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior);
+
+            return SendingSnapshotAndEntriesAndConfiguration(CreateServer, CreateClient, payloadSize, behavior);
         }
 
         [Theory]
@@ -128,15 +185,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(0)]
         public Task SendingSnapshot(int payloadSize)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
-                TransmissionBlockSize = 350
+                RequestTimeout = timeout,
+                TransmissionBlockSize = 350,
+                IsRemote = true
             };
 
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
@@ -148,15 +208,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(0)]
         public Task SendingConfiguration(int payloadSize)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
-                TransmissionBlockSize = 350
+                RequestTimeout = timeout,
+                TransmissionBlockSize = 350,
+                IsRemote = true
             };
 
             return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
@@ -206,15 +269,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [Fact]
         public Task RequestSynchronization()
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
-                TransmissionBlockSize = 350
+                RequestTimeout = timeout,
+                TransmissionBlockSize = 350,
+                IsRemote = true
             };
 
             return SendingSynchronizationRequestTest(CreateServer, CreateClient);

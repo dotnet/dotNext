@@ -9,6 +9,7 @@ using static Tasks.Synchronization;
 /// Provides support for asynchronous lazy initialization.
 /// </summary>
 /// <typeparam name="T">The type of object that is being asynchronously initialized.</typeparam>
+[DebuggerDisplay($"IsValueCreated = {{{nameof(IsValueCreated)}}}")]
 public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
 {
     private const string NotAvailable = "<NotAvailable>";

@@ -1,9 +1,10 @@
 using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using Encoder = System.Text.Encoder;
 
 namespace DotNext.IO;
 
@@ -16,7 +17,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     private void Write<T>(in T value)
         where T : unmanaged
     {
-        var writer = new SpanWriter<byte>(Buffer.Span);
+        var writer = new SpanWriter<byte>(BufferSpan);
         writer.Write(in value);
         Produce(writer.WrittenCount);
     }
@@ -29,13 +30,49 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <typeparam name="T">The type of the value to encode.</typeparam>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
+    public ValueTask WriteAsync<T>(T value, CancellationToken token = default)
         where T : unmanaged
     {
-        if (Unsafe.SizeOf<T>() > FreeCapacity)
-            await FlushCoreAsync(token).ConfigureAwait(false);
+        ValueTask result;
 
-        Write(in value);
+        if (FreeCapacity >= Unsafe.SizeOf<T>())
+        {
+            result = new();
+
+            try
+            {
+                Write(in value);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+        }
+        else if (buffer.Length >= Unsafe.SizeOf<T>())
+        {
+            result = WriteSmallValueAsync();
+        }
+        else
+        {
+            result = WriteLargeValueAsync();
+        }
+
+        return result;
+
+        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        async ValueTask WriteSmallValueAsync()
+        {
+            await FlushCoreAsync(token).ConfigureAwait(false);
+            Write(in value);
+        }
+
+        async ValueTask WriteLargeValueAsync()
+        {
+            // rare case, T is very large and doesn't fit the buffer
+            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
+            Span.AsReadOnlyBytes(in value).CopyTo(buffer.Span);
+            await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+        }
     }
 
     private void Write7BitEncodedInt(int value)
@@ -113,14 +150,20 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         var encoder = context.GetEncoder();
 
-        for (int charsLeft = chars.Length, charsUsed; charsLeft > 0; chars = chars.Slice(charsUsed), charsLeft -= charsUsed)
+        for (int charsLeft = chars.Length, charsUsed, bytesUsed; charsLeft > 0; chars = chars.Slice(charsUsed), charsLeft -= charsUsed)
         {
             if (FreeCapacity < maxByteCount)
                 await FlushCoreAsync(token).ConfigureAwait(false);
 
-            charsUsed = Math.Min(Buffer.Length / maxByteCount, charsLeft);
-            encoder.Convert(chars.Span.Slice(0, charsUsed), Buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
+            Convert(encoder, chars.Span, BufferSpan, maxByteCount, charsLeft, out charsUsed, out bytesUsed);
             Produce(bytesUsed);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void Convert(Encoder encoder, ReadOnlySpan<char> input, Span<byte> output, int maxByteCount, int charsLeft, out int charsUsed, out int bytesUsed)
+        {
+            charsUsed = Math.Min(output.Length / maxByteCount, charsLeft);
+            encoder.Convert(input.Slice(0, charsUsed), output, charsUsed == charsLeft, out charsUsed, out bytesUsed, out _);
         }
     }
 
@@ -145,20 +188,20 @@ public partial class FileWriter : IAsyncBinaryWriter
             WriteLength(bytesCount, lengthFormat.GetValueOrDefault());
         }
 
-        if (bytesCount == 0)
+        if (bytesCount is 0)
             return;
 
         if (FreeCapacity < bytesCount)
             await FlushCoreAsync(token).ConfigureAwait(false);
 
-        if (value.TryWriteBytes(Buffer.Span, out var bytesWritten, isBigEndian: !littleEndian))
+        if (value.TryWriteBytes(BufferSpan, out var bytesWritten, isBigEndian: !littleEndian))
         {
             Produce(bytesWritten);
         }
         else
         {
-            Debug.Assert(bufferOffset == 0);
-            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
+            Debug.Assert(bufferOffset is 0);
+            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, exactSize: true);
             value.TryWriteBytes(buffer.Span, out bytesWritten, isBigEndian: !littleEndian);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += bytesCount;
@@ -215,7 +258,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         if (FreeCapacity >= T.Size)
         {
-            IBinaryFormattable<T>.Format(value, Buffer.Span);
+            IBinaryFormattable<T>.Format(value, BufferSpan);
             Produce(T.Size);
         }
         else
@@ -272,23 +315,36 @@ public partial class FileWriter : IAsyncBinaryWriter
         => WriteAsync(input, token);
 
     /// <inheritdoc />
-    async ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
+    ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
     {
-        if (FreeCapacity == 0)
-            await FlushCoreAsync(token).ConfigureAwait(false);
-
-        using var output = new PreallocatedBufferWriter(Buffer);
-        writer(arg, output);
-
-        var result = output.WrittenMemory;
-        if (result.Length <= buffer.Length)
+        ValueTask result;
+        if (FreeCapacity > 0)
         {
-            bufferOffset += result.Length;
+            result = ValueTask.CompletedTask;
+
+            try
+            {
+                writer(arg, this);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
         }
         else
         {
+            result = WriteSlowAsync();
+        }
+
+        return result;
+
+        async ValueTask WriteSlowAsync()
+        {
             await FlushCoreAsync(token).ConfigureAwait(false);
-            await WriteAsync(result, token).ConfigureAwait(false);
+            writer(arg, this);
         }
     }
+
+    /// <inheritdoc />
+    IBufferWriter<byte> IAsyncBinaryWriter.TryGetBufferWriter() => this;
 }

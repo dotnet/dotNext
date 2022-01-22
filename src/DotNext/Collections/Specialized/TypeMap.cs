@@ -9,10 +9,10 @@ namespace DotNext.Collections.Specialized;
 /// that is not thread safe.
 /// </summary>
 /// <typeparam name="TValue">The type of the value.</typeparam>
-public class TypeMap<TValue> : ITypeMap<TValue>
+public partial class TypeMap<TValue> : ITypeMap<TValue>
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct Entry
+    internal struct Entry
     {
         internal bool HasValue;
         internal TValue? Value;
@@ -30,7 +30,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity];
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void EnsureCapacity(int index)
     {
-        if (index >= entries.Length)
+        if ((uint)index >= (uint)entries.Length)
             Array.Resize(ref entries, ITypeMap<TValue>.RecommendedCapacity);
     }
 
@@ -143,12 +143,12 @@ public class TypeMap<TValue> : ITypeMap<TValue>
         return ContainsKey(entries, ITypeMap<TValue>.GetIndex<TKey>());
 
         static bool ContainsKey(Entry[] entries, int index)
-            => index < entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
+            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
     }
 
     private bool Remove(int index)
     {
-        if (index >= entries.Length)
+        if ((uint)index >= (uint)entries.Length)
             goto fail;
 
         ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
@@ -175,7 +175,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
     {
         bool result;
 
-        if (index < entries.Length)
+        if ((uint)index < (uint)entries.Length)
         {
             ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
@@ -205,7 +205,7 @@ public class TypeMap<TValue> : ITypeMap<TValue>
 
     private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
     {
-        if (index < entries.Length)
+        if ((uint)index < (uint)entries.Length)
         {
             ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             value = holder.Value;

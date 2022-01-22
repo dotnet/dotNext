@@ -164,16 +164,12 @@ public static class Optional
         where T : class
         => new(null);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
         where T : struct
         where TException : struct, ISupplier<Exception>
     {
-        ref readonly T result = ref Optional<T>.GetReference(in optional);
-        if (!optional.HasValue)
-            throw exceptionFactory.Invoke();
-
-        return ref result;
+        optional.Validate(exceptionFactory);
+        return ref Optional<T>.GetReference(in optional);
     }
 
     /// <summary>
@@ -221,11 +217,8 @@ public static class Optional
     public static ref readonly T GetReference<T>(in Optional<T> optional)
         where T : struct
     {
-        ref readonly T result = ref Optional<T>.GetReference(in optional);
-        if (!optional.HasValue)
-            throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
-
-        return ref result;
+        optional.Validate();
+        return ref Optional<T>.GetReference(in optional);
     }
 
     /// <summary>
@@ -237,7 +230,16 @@ public static class Optional
     /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
     public static Optional<T> Create<T, TMonad>(TMonad value)
         where TMonad : struct, IOptionMonad<T>
-        => value.HasValue ? new(value.OrDefault()) : None<T>();
+        => value.TryGet(out var result) ? new(result) : None<T>();
+
+    /// <summary>
+    /// Flattens the nested optional value.
+    /// </summary>
+    /// <typeparam name="T">The type of the underlying value.</typeparam>
+    /// <param name="optional">The nested optional value.</param>
+    /// <returns>Flattened value.</returns>
+    public static Optional<T> Flatten<T>(this in Optional<Optional<T>> optional)
+        => new(in optional);
 }
 
 /// <summary>
@@ -276,6 +278,12 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         this.value = value;
         kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value) : NotEmptyValue;
+    }
+
+    internal Optional(in Optional<Optional<T>> value)
+    {
+        this.value = value.value.value;
+        kind = value.kind;
     }
 
     private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
@@ -353,7 +361,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
     public bool TryGet([MaybeNullWhen(false)] out T value)
     {
-        value = this.value!;
+        value = this.value;
         return HasValue;
     }
 
@@ -403,7 +411,22 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [return: NotNull]
     private T OrThrow<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
-        => HasValue ? value! : throw exceptionFactory.Invoke();
+    {
+        Validate(exceptionFactory);
+        return value;
+    }
+
+    [MemberNotNull(nameof(value))]
+    internal void Validate<TFactory>(TFactory exceptionFactory)
+        where TFactory : struct, ISupplier<Exception>
+    {
+        if (!HasValue)
+            Throw(exceptionFactory);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void Throw(TFactory exceptionFactory) => throw exceptionFactory.Invoke();
+    }
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -427,7 +450,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrInvoke<TSupplier>(TSupplier defaultFunc)
         where TSupplier : struct, ISupplier<T>
-        => HasValue ? value! : defaultFunc.Invoke();
+        => HasValue ? value : defaultFunc.Invoke();
 
     /// <summary>
     /// Returns the value if present; otherwise invoke delegate.
@@ -459,27 +482,38 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     {
         get
         {
-            string msg;
-            switch (kind)
-            {
-                default:
-                    return value!;
-                case UndefinedValue:
-                    msg = ExceptionMessages.OptionalNoValue;
-                    break;
-                case NullValue:
-                    msg = ExceptionMessages.OptionalNullValue;
-                    break;
-            }
-
-            throw new InvalidOperationException(msg);
+            Validate();
+            return value;
         }
     }
+
+    [MemberNotNull(nameof(value))]
+    internal void Validate()
+    {
+        var kind = this.kind;
+
+        if (kind is NotEmptyValue)
+        {
+            Debug.Assert(value is not null);
+        }
+        else
+        {
+            Throw(kind is UndefinedValue);
+        }
+
+        [StackTraceHidden]
+        [DoesNotReturn]
+        static void Throw(bool isUndefined)
+            => throw new InvalidOperationException(isUndefined ? ExceptionMessages.OptionalNoValue : ExceptionMessages.OptionalNullValue);
+    }
+
+    /// <inheritdoc />
+    object? ISupplier<object?>.Invoke() => HasValue ? value : null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value!) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -505,7 +539,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> ConvertOptional<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, Optional<TResult>>
-        => HasValue ? converter.Invoke(value!) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -531,7 +565,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)
         where TPredicate : struct, ISupplier<T, bool>
-        => HasValue && condition.Invoke(value!) ? this : None;
+        => HasValue && condition.Invoke(value) ? this : None;
 
     /// <summary>
     /// If a value is present, and the value matches the given predicate,

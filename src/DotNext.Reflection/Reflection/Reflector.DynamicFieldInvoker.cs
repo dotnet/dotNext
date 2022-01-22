@@ -9,13 +9,12 @@ public static partial class Reflector
 {
     private static MemberExpression BuildFieldAccess(FieldInfo field, ParameterExpression target)
     {
-        Expression? owner;
-        if (field.IsStatic || field.DeclaringType is null)
-            owner = null;
-        else if (field.DeclaringType.IsValueType)
-            owner = Expression.Unbox(target, field.DeclaringType);
-        else
-            owner = Expression.Convert(target, field.DeclaringType);
+        Expression? owner = field switch
+        {
+            { IsStatic: true } or { DeclaringType: null } => null,
+            { DeclaringType: { IsValueType: true } } => Expression.Unbox(target, field.DeclaringType),
+            _ => Expression.Convert(target, field.DeclaringType)
+        };
 
         return Expression.Field(owner, field);
     }

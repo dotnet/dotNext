@@ -103,7 +103,7 @@ public static partial class Sequence
     /// <returns>First element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
     public static T? FirstOrNull<T>(this IEnumerable<T> seq)
         where T : struct
-        => FirstOrEmpty(seq).OrNull();
+        => FirstOrNone(seq).OrNull();
 
     /// <summary>
     /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
@@ -112,20 +112,31 @@ public static partial class Sequence
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
     /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
     /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
+    [Obsolete("Use FirstOrNone() extension method instead")]
     public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
+        => FirstOrNone(seq);
+
+    /// <summary>
+    /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
+    /// if sequence is empty.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the sequence.</typeparam>
+    /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
+    public static Optional<T> FirstOrNone<T>(this IEnumerable<T> seq)
     {
         return seq switch
         {
-            List<T> list => Span.FirstOrEmpty<T>(CollectionsMarshal.AsSpan(list)),
-            T[] array => Span.FirstOrEmpty<T>(array),
-            string str => str.Length > 0 ? ReinterpretCast<char, T>(str[0]) : Optional<T>.None, // Workaround for https://github.com/dotnet/runtime/issues/57484
+            List<T> list => Span.FirstOrNone<T>(CollectionsMarshal.AsSpan(list)),
+            T[] array => Span.FirstOrNone<T>(array),
+            string str => ReinterpretCast<Optional<char>, Optional<T>>(str.AsSpan().FirstOrNone()), // Workaround for https://github.com/dotnet/runtime/issues/57484
             IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
             IReadOnlyList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
-            _ => FirstOrEmptySlow(seq),
+            _ => FirstOrNoneSlow(seq),
         };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq)
+        static Optional<T> FirstOrNoneSlow(IEnumerable<T> seq)
         {
             using var enumerator = seq.GetEnumerator();
             return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
@@ -138,23 +149,28 @@ public static partial class Sequence
     /// <typeparam name="T">The type of the elements of source.</typeparam>
     /// <param name="seq">A collection to return an element from.</param>
     /// <param name="filter">A function to test each element for a condition.</param>
-    /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+    /// <returns>The first element in the sequence that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
+    [Obsolete("Use FirstOrNone() extension method instead")]
     public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
-        where T : notnull
+        => FirstOrNone(seq, filter);
+
+    /// <summary>
+    /// Returns the first element in a sequence that satisfies a specified condition.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="seq">A collection to return an element from.</param>
+    /// <param name="filter">A function to test each element for a condition.</param>
+    /// <returns>The first element in the sequence that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
+    public static Optional<T> FirstOrNone<T>(this IEnumerable<T> seq, Predicate<T> filter)
     {
-        switch (seq)
+        return seq switch
         {
-            case List<T> list:
-                var index = list.FindIndex(filter);
-                return index >= 0 ? list[0] : Optional<T>.None;
-            case T[] array:
-                index = Array.FindIndex(array, filter);
-                return index >= 0 ? array[0] : Optional<T>.None;
-            case LinkedList<T> list:
-                return FindInLinkedList(list, filter);
-            default:
-                return FirstOrEmptySlow(seq, filter);
-        }
+            List<T> list => Span.FirstOrNone(CollectionsMarshal.AsSpan(list), filter),
+            T[] array => Span.FirstOrNone(array, filter),
+            string str => ReinterpretCast<Optional<char>, Optional<T>>(str.AsSpan().FirstOrNone(Unsafe.As<Predicate<char>>(filter))),
+            LinkedList<T> list => FindInLinkedList(list, filter),
+            _ => FirstOrNoneSlow(seq, filter)
+        };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         static Optional<T> FindInLinkedList(LinkedList<T> list, Predicate<T> filter)
@@ -170,7 +186,7 @@ public static partial class Sequence
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static Optional<T> FirstOrEmptySlow(IEnumerable<T> seq, Predicate<T> filter)
+        static Optional<T> FirstOrNoneSlow(IEnumerable<T> seq, Predicate<T> filter)
         {
             foreach (var item in seq)
             {
@@ -283,7 +299,7 @@ public static partial class Sequence
 
         static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
-            if (index >= 0 && index < list.Count)
+            if ((uint)index < (uint)list.Count)
             {
                 element = list[index];
                 return true;
@@ -295,7 +311,7 @@ public static partial class Sequence
 
         static bool ReadOnlyListElementAt(IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
         {
-            if (index >= 0 && index < list.Count)
+            if ((uint)index < (uint)list.Count)
             {
                 element = list[index];
                 return true;
@@ -325,7 +341,7 @@ public static partial class Sequence
     /// <param name="ifEmpty">A string to be returned if collection has no elements.</param>
     /// <returns>Converted collection into string.</returns>
     public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
-        => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
+        => string.Join(delimiter, collection) is { Length: > 0 } result ? result : ifEmpty;
 
     /// <summary>
     /// Constructs a sequence from the single element.

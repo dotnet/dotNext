@@ -167,7 +167,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
         }
-        else if (count == 0L || !IsBackgroundCompaction)
+        else if (count is 0L || !IsBackgroundCompaction)
         {
             result = new();
         }
@@ -518,12 +518,34 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     }
 
     /// <inheritdoc />
-    public sealed override Task InitializeAsync(CancellationToken token = default)
+    public override async Task InitializeAsync(CancellationToken token = default)
     {
-        if (token.IsCancellationRequested)
-            return Task.FromCanceled(token);
+        ThrowIfDisposed();
 
-        return replayOnInitialize ? ReplayAsync(token) : Task.CompletedTask;
+        await base.InitializeAsync().ConfigureAwait(false);
+
+        if (replayOnInitialize)
+            await ReplayAsync(token).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected sealed override async Task ClearAsync(CancellationToken token = default)
+    {
+        ThrowIfDisposed();
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        try
+        {
+            await base.ClearAsync(token).ConfigureAwait(false);
+
+            // delete snapshot
+            snapshot.Dispose();
+            File.Delete(snapshot.FileName);
+            snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough);
+        }
+        finally
+        {
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
     }
 
     /// <inheritdoc />

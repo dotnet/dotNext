@@ -87,7 +87,7 @@ namespace DotNext.Threading
         public static async Task RegressionIssue82()
         {
             using var ev = new AsyncAutoResetEvent(false);
-            var start = Timestamp.Current;
+            var start = new Timestamp();
 
             var producer = Task.Run(() =>
             {

@@ -74,9 +74,9 @@ namespace DotNext.Buffers
         public static void PooledBufferWriterDefaultCapacity()
         {
             var allocator = MemoryPool<byte>.Shared.ToAllocator();
-            using (var writer = new PooledBufferWriter<byte>(allocator))
+            using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator })
                 WriteReadUsingSpan(writer);
-            using (var writer = new PooledBufferWriter<byte>(allocator))
+            using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator })
                 WriteReadUsingMemory(writer);
         }
 
@@ -84,36 +84,36 @@ namespace DotNext.Buffers
         public static void PooledBufferWriterWithCapacity()
         {
             var allocator = MemoryPool<byte>.Shared.ToAllocator();
-            Throws<ArgumentOutOfRangeException>(new Action(() => new PooledBufferWriter<byte>(allocator, 0)));
-            using (var writer = new PooledBufferWriter<byte>(allocator, 30))
+            Throws<ArgumentOutOfRangeException>(new Action(() => new PooledBufferWriter<byte> { Capacity = -1 }));
+            using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = 30 })
                 WriteReadUsingSpan(writer);
-            using (var writer = new PooledBufferWriter<byte>(allocator, 20))
+            using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = 20 })
                 WriteReadUsingMemory(writer);
         }
 
         [Fact]
         public static void PooledArrayBufferWriterDefaultCapacity()
         {
-            using (var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared))
+            using (var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared })
                 WriteReadUsingSpan(writer);
-            using (var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared))
+            using (var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared })
                 WriteReadUsingMemory(writer);
         }
 
         [Fact]
         public static void PooledArrayBufferWriterWithCapacity()
         {
-            Throws<ArgumentOutOfRangeException>(new Action(() => new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 0)));
-            using (var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 30))
+            Throws<ArgumentOutOfRangeException>(new Action(() => new PooledArrayBufferWriter<byte> { Capacity = -1 }));
+            using (var writer = new PooledArrayBufferWriter<byte> { Capacity = 30 })
                 WriteReadUsingSpan(writer);
-            using (var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 20))
+            using (var writer = new PooledArrayBufferWriter<byte> { Capacity = 20 })
                 WriteReadUsingMemory(writer);
         }
 
         [Fact]
         public static void ReadWriteUsingArray()
         {
-            using var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 25);
+            using var writer = new PooledArrayBufferWriter<byte> { Capacity = 25 };
             True(writer.Capacity >= 25);
             True(writer.WrittenArray.Count == 0);
             Equal(0, writer.WrittenCount);
@@ -190,7 +190,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void ReuseMemoryWriter()
         {
-            using var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator());
+            using var writer = new PooledBufferWriter<byte> { BufferAllocator = MemoryPool<byte>.Shared.ToAllocator() };
             Equal(0, writer.Capacity);
             var span = writer.GetSpan(10);
             span[0] = 20;

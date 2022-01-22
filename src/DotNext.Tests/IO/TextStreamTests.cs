@@ -82,6 +82,9 @@ namespace DotNext.IO
             actual.WriteLine();
             expected.WriteLine();
 
+            actual.Write(default(StringBuilder));
+            expected.Write(default(StringBuilder));
+
             actual.Flush();
             Equal(expected.ToString(), writer.ToString());
             Equal(expected.ToString(), actual.ToString());

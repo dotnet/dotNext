@@ -281,10 +281,7 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter
 
     public override void Write(StringBuilder? sb)
     {
-        if (sb.IsNullOrEmpty())
-            return;
-
-        foreach (var chunk in sb.GetChunks())
+        foreach (var chunk in sb?.GetChunks() ?? new())
             Write(chunk.Span);
     }
 

@@ -6,12 +6,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
+    <Features>nullablePublicOnly</Features>
     <RootNamespace>DotNext</RootNamespace>
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <VersionPrefix>4.1.3</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <VersionPrefix>4.2.0</VersionPrefix>
+    <VersionSuffix>beta.1</VersionSuffix>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>

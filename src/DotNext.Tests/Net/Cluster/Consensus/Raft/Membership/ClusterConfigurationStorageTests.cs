@@ -75,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             Null(storage.As<IClusterConfigurationStorage>().ProposedConfiguration);
             NotEmpty(storage.ActiveConfiguration);
 
-            var ev = await storage.PollChangesAsync().FirstOrEmptyAsync();
+            var ev = await storage.PollChangesAsync().FirstOrNoneAsync();
             True(ev.HasValue);
             True(ev.OrDefault().IsAdded);
             Equal(ev.OrDefault().Id, id);
@@ -93,7 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             Empty(storage.ActiveConfiguration);
             Null(storage.ProposedConfiguration);
 
-            ev = await storage.PollChangesAsync().FirstOrEmptyAsync();
+            ev = await storage.PollChangesAsync().FirstOrNoneAsync();
             True(ev.HasValue);
             False(ev.OrDefault().IsAdded);
             Equal(ev.OrDefault().Id, id);

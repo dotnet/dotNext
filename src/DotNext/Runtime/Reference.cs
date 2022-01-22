@@ -80,7 +80,7 @@ public readonly unsafe struct Reference<TValue>
             {
                 result = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), (nint)accessor);
             }
-            else if (accessor == null)
+            else if (accessor is null)
             {
                 // leave getter
             }
@@ -157,7 +157,7 @@ public static class Reference
     [CLSCompliant(false)]
     public static unsafe Reference<TValue> Create<TValue>(delegate*<ref TValue> getter)
     {
-        if (getter == null)
+        if (getter is null)
             throw new ArgumentNullException(nameof(getter));
 
         return new(getter);
@@ -184,10 +184,10 @@ public static class Reference
     {
         ArgumentNullException.ThrowIfNull(owner);
 
-        if (getter == null)
+        if (getter is null)
             throw new ArgumentNullException(nameof(getter));
 
-        if (owner is Array array && array.Rank == 1)
+        if (owner is Array { Rank: 1 })
             throw new ArgumentException(ExceptionMessages.ObjectMustNotBeArray, nameof(owner));
 
         return Reference<TValue>.Create(owner, getter);
@@ -258,7 +258,7 @@ public static class Reference
     public static unsafe Reference<TValue> FromPointer<TValue>(TValue* ptr)
         where TValue : unmanaged
     {
-        if (ptr == null)
+        if (ptr is null)
             throw new ArgumentNullException(nameof(ptr));
 
         return new(ptr);

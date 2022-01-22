@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp;
 
 using Buffers;
-using TransportServices;
+using TransportServices.Datagram;
 using static Threading.AtomicInt64;
 
 internal sealed class UdpClient : UdpSocket, IClient
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Channel : INetworkTransport.IChannel
+    private readonly struct Channel : IChannel
     {
         private readonly IExchange exchange;
         private readonly CancellationTokenSource tokenSource;
@@ -28,7 +28,7 @@ internal sealed class UdpClient : UdpSocket, IClient
 
         public CancellationToken Token { get; }
 
-        IExchange INetworkTransport.IChannel.Exchange => exchange;
+        IExchange IChannel.Exchange => exchange;
 
         internal void Complete(Exception e) => exchange.OnException(e);
 
@@ -43,14 +43,14 @@ internal sealed class UdpClient : UdpSocket, IClient
 
     // I/O management
     private readonly long applicationId;
-    private readonly INetworkTransport.ChannelPool<Channel> channels;
+    private readonly ChannelPool<Channel> channels;
     private readonly IPEndPoint localEndPoint;
     private long streamNumber;
 
     internal UdpClient(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
         : base(remoteEndPoint, backlog, allocator, loggerFactory)
     {
-        channels = new INetworkTransport.ChannelPool<Channel>(backlog);
+        channels = new(backlog);
         cancellationHandler = channels.CancellationRequested;
         applicationId = appIdGenerator();
         streamNumber = long.MinValue;

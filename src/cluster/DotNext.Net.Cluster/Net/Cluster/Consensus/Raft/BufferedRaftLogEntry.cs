@@ -140,7 +140,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        var writer = new PooledBufferWriter<byte>(allocator, length);
+        var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = length };
         try
         {
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
@@ -204,7 +204,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         ValueTask<BufferedRaftLogEntry> result;
         if (!entry.Length.TryGetValue(out var length))
             result = CopyToMemoryOrFileAsync(entry, options, token);
-        else if (length == 0L)
+        else if (length is 0L)
             result = new(new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
         else if (length <= options.MemoryThreshold)
             result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);

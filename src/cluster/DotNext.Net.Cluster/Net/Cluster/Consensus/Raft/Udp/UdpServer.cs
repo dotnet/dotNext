@@ -6,11 +6,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp;
 
 using Buffers;
 using TransportServices;
+using TransportServices.Datagram;
 
 internal sealed class UdpServer : UdpSocket, IServer
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Channel : INetworkTransport.IChannel
+    private readonly struct Channel : IChannel
     {
         private readonly IExchangePool exchangeOwner;
         private readonly IExchange exchange;
@@ -27,7 +28,7 @@ internal sealed class UdpServer : UdpSocket, IServer
             timeoutTokenSource.CancelAfter(timeout);
         }
 
-        IExchange INetworkTransport.IChannel.Exchange => exchange;
+        IExchange IChannel.Exchange => exchange;
 
         public CancellationToken Token { get; }
 
@@ -40,14 +41,14 @@ internal sealed class UdpServer : UdpSocket, IServer
     }
 
     private readonly IExchangePool exchanges;
-    private readonly INetworkTransport.ChannelPool<Channel> channels;
+    private readonly ChannelPool<Channel> channels;
     private readonly Action<object?, CancellationToken> cancellationHandler;
-    private TimeSpan receiveTimeout;
+    private readonly TimeSpan receiveTimeout;
 
     internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
         : base(address, backlog, allocator, loggerFactory)
     {
-        channels = new INetworkTransport.ChannelPool<Channel>(backlog);
+        channels = new(backlog);
         cancellationHandler = channels.CancellationRequested;
         exchanges = exchangePoolFactory(backlog);
     }
@@ -88,7 +89,7 @@ internal sealed class UdpServer : UdpSocket, IServer
     public new TimeSpan ReceiveTimeout
     {
         get => receiveTimeout;
-        set
+        init
         {
             base.ReceiveTimeout = (int)value.TotalMilliseconds;
             receiveTimeout = value;

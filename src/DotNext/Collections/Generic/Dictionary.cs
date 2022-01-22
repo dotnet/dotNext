@@ -317,7 +317,7 @@ public static class Dictionary
     /// <typeparam name="TValue">Type of dictionary values.</typeparam>
     /// <returns>The optional value associated with the key.</returns>
     public static Optional<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.None;
+        => dictionary.TryGetValue(key, out var value) ? value : Optional<TValue>.None;
 
     /// <summary>
     /// Removes the value with the specified key and return the removed value.
@@ -328,7 +328,7 @@ public static class Dictionary
     /// <typeparam name="TValue">Type of dictionary values.</typeparam>
     /// <returns>The removed value.</returns>
     public static Optional<TValue> TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? new Optional<TValue>(value) : Optional<TValue>.None;
+        => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? value : Optional<TValue>.None;
 
     /// <summary>
     /// Gets the value associated with the specified key.
@@ -339,7 +339,7 @@ public static class Dictionary
     /// <typeparam name="TValue">Type of dictionary values.</typeparam>
     /// <returns>The optional value associated with the key.</returns>
     public static Optional<TValue> TryGetValue<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary, TKey key)
-        => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.None;
+        => dictionary.TryGetValue(key, out var value) ? value : Optional<TValue>.None;
 
     /// <summary>
     /// Applies lazy conversion for each dictionary value.
@@ -352,4 +352,13 @@ public static class Dictionary
     /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
     public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Converter<TValue, TResult> mapper)
         => new(dictionary, mapper);
+
+    /// <summary>
+    /// Gets empty read-only dictionary.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <returns>The empty dictionary.</returns>
+    public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>()
+        => EmptyDictionary<TKey, TValue>.Instance;
 }

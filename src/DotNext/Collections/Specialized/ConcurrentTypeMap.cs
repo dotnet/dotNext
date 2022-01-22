@@ -10,13 +10,13 @@ using Threading;
 /// Represents thread-safe implementation of <see cref="ITypeMap{TValue}"/> interface.
 /// </summary>
 /// <typeparam name="TValue">The type of the value.</typeparam>
-public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
+public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
     private const int EmptyValueState = 0;
     private const int LockedState = 1;
     private const int HasValueState = 2;
 
-    private sealed class Entry
+    internal sealed class Entry
     {
         private int state; // volatile
         internal TValue? Value;
@@ -28,7 +28,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             {
                 currentState = state.VolatileRead();
 
-                if (currentState != LockedState && state.CompareAndSet(currentState, LockedState))
+                if (currentState is not LockedState && state.CompareAndSet(currentState, LockedState))
                     return currentState;
             }
         }
@@ -45,10 +45,10 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 {
                     currentState = state.VolatileRead();
 
-                    if (currentState == LockedState)
+                    if (currentState is LockedState)
                         continue;
 
-                    return currentState == HasValueState;
+                    return currentState is HasValueState;
                 }
             }
         }
@@ -61,7 +61,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             {
                 currentState = state.VolatileRead();
 
-                if (currentState == LockedState)
+                if (currentState is LockedState)
                     continue;
 
                 if (currentState != expectedState)
@@ -76,7 +76,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     // Assuming that the map will not contain hunders or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
     // As a result, we don't need the concurrency level. Also, we can modify different entries concurrently
-    // and perform resizing in paralle with read/write of individual entry
+    // and perform resizing in parallel with read/write of individual entry
     private volatile Entry[] entries;
 
     /// <summary>
@@ -89,7 +89,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        var entries = capacity == 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        var entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity];
         entries.AsSpan().Initialize();
         this.entries = entries;
     }
@@ -202,7 +202,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         return ContainsKey(entries, ITypeMap<TValue>.GetIndex<TKey>());
 
         static bool ContainsKey(Entry[] entries, int index)
-            => index < entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
+            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
     }
 
     private TValue GetOrAdd(int index, TValue value, out bool added)
@@ -219,7 +219,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            if (added = entry.AcquireLock() == EmptyValueState)
+            if (added = entry.AcquireLock() is EmptyValueState)
             {
                 entry.Value = value;
             }
@@ -258,7 +258,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            var added = entry.AcquireLock() == EmptyValueState;
+            var added = entry.AcquireLock() is EmptyValueState;
             entry.Value = value;
             entry.ReleaseLock(HasValueState);
 
@@ -291,7 +291,7 @@ public class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            result = entry.AcquireLock() == EmptyValueState
+            result = entry.AcquireLock() is EmptyValueState
                 ? Optional<TValue>.None
                 : entry.Value;
 

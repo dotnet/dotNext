@@ -341,5 +341,34 @@ namespace DotNext.Runtime
                 Equal(BinaryPrimitives.ReadUInt32LittleEndian(Span.AsReadOnlyBytes(in tmp)), i);
             }
         }
+
+        [Fact]
+        public static void HasFinalizer()
+        {
+            True(Intrinsics.HasFinalizer(new WeakReference(null)));
+            False(Intrinsics.HasFinalizer(string.Empty));
+            False(Intrinsics.HasFinalizer(new object()));
+        }
+
+        private sealed class ObjectWithFinalizer
+        {
+            internal bool IsFinalizerCalled;
+
+            ~ObjectWithFinalizer() => IsFinalizerCalled = true;
+        }
+
+        [Fact]
+        public static void InvokeFinalizer()
+        {
+            var obj = new ObjectWithFinalizer();
+            False(obj.IsFinalizerCalled);
+            Intrinsics.Finalize(obj);
+            True(obj.IsFinalizerCalled);
+
+            obj.IsFinalizerCalled = false;
+            GC.SuppressFinalize(obj);
+            Intrinsics.Finalize(obj);
+            True(obj.IsFinalizerCalled);
+        }
     }
 }

@@ -85,5 +85,18 @@ namespace DotNext.Threading.Tasks
 
             False(pipe.TryRead(out task));
         }
+
+        [Fact]
+        public static async Task ResetWhenScheduled()
+        {
+            var pipe = new TaskCompletionPipe<Task>(capacity: 1);
+            var source = new TaskCompletionSource();
+            pipe.Add(source.Task);
+
+            pipe.Reset(capacity: 10);
+            pipe.Complete();
+            source.SetResult();
+            False(await pipe.WaitToReadAsync());
+        }
     }
 }

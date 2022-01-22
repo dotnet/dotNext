@@ -17,14 +17,16 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
 {
     private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
     private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
-    private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = UserDataSlot<Constructor<TSignature>?>.Allocate();
+
+    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
+    private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = new();
 
     private readonly TSignature invoker;
     private readonly object ctorInfo;
 
     private Constructor(ConstructorInfo ctor, Expression<TSignature> invoker)
     {
-        if (ctor.IsStatic || ctor.DeclaringType is null)
+        if (ctor is { IsStatic: true } or { DeclaringType: null })
             throw new ArgumentException(ExceptionMessages.StaticCtorDetected, nameof(ctor));
         ctorInfo = ctor;
         this.invoker = invoker.Compile();
@@ -293,8 +295,8 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
     {
         ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
         if (ctor is null)
-            return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<TSignature>(declaringType) : null;
-        return new Constructor<TSignature>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
+            return declaringType.IsValueType && parameters.Length is 0 ? new(declaringType) : null;
+        return new(ctor, Array.ConvertAll(parameters, Expression.Parameter));
     }
 
     private static Constructor<TSignature>? Reflect(Type declaringType, Type argumentsType, bool nonPublic)
@@ -303,8 +305,8 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
         ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
         if (ctor is null)
-            return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<TSignature>(declaringType, Seq.Singleton(input)) : null;
-        return new Constructor<TSignature>(ctor, arglist, Seq.Singleton(input));
+            return declaringType.IsValueType && parameters.Length is 0 ? new(declaringType, Seq.Singleton(input)) : null;
+        return new(ctor, arglist, Seq.Singleton(input));
     }
 
     private static Constructor<TSignature>? Reflect(bool nonPublic)
@@ -358,36 +360,32 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
             epilogue.AddLast(returnArg);
         }
 
-        body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First!.Value : Expression.Block(locals, prologue.Concat(epilogue));
-        return new Constructor<TSignature>(ctor, Expression.Lambda<TSignature>(body, input));
+        body = prologue.Count is 0 && epilogue.Count is 1 ? epilogue.First!.Value : Expression.Block(locals, prologue.Concat(epilogue));
+        return new(ctor, Expression.Lambda<TSignature>(body, input));
     }
 
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private static Constructor<TSignature>? Unreflect(ConstructorInfo ctor)
     {
         var delegateType = typeof(TSignature);
         if (delegateType.IsAbstract)
-        {
             throw new AbstractDelegateException<TSignature>();
-        }
-        else if (ctor is Constructor<TSignature> existing)
+
+        switch (ctor)
         {
-            return existing;
+            case Constructor<TSignature> existing:
+                return existing;
+            case { IsGenericMethodDefinition: true } or { IsAbstract: true }:
+                return null;
         }
-        else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
-        {
-            return null;
-        }
-        else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
-        {
+
+        if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
             return Unreflect(ctor, argumentsType, returnType);
-        }
-        else
-        {
-            var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
-            return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-                new Constructor<TSignature>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
-                null;
-        }
+
+        var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+        return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
+            new(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
+            null;
     }
 
     internal static unsafe Constructor<TSignature>? GetOrCreate(ConstructorInfo ctor)

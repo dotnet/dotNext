@@ -50,7 +50,7 @@ internal readonly struct TaskType
 
     internal bool HasResult => resultType is not null;
 
-    internal bool IsValueTask => taskType?.IsValueType ?? false;
+    internal bool IsValueTask => taskType is { IsValueType: true };
 
     public static implicit operator Type(in TaskType type) => type.taskType ?? typeof(Task);
 }

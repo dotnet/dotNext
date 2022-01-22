@@ -136,8 +136,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <returns>The task representing asynchronous result.</returns>
     public sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
     {
-        using var writer = new PooledBufferWriter<byte>(allocator, bufferSize);
-        writer.WriteInt64(configuration.Fingerprint, true);
+        using var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = bufferSize };
+        writer.WriteInt64(configuration.Fingerprint, littleEndian: true);
         await configuration.WriteToAsync(writer, token).ConfigureAwait(false);
 
         proposed.Fingerprint = configuration.Fingerprint;
@@ -178,8 +178,11 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     {
         var builder = ImmutableDictionary.CreateBuilder<ClusterMemberId, TAddress>();
 
-        var initialSize = active.IsEmpty ? bufferSize : active.Length.Truncate();
-        using var buffer = new PooledBufferWriter<byte>(allocator, initialSize);
+        using var buffer = new PooledBufferWriter<byte>
+        {
+            BufferAllocator = allocator,
+            Capacity = active.IsEmpty ? bufferSize : active.Length.Truncate(),
+        };
 
         // restore active configuration
         if (!active.IsEmpty)

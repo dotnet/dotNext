@@ -1,155 +1,261 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
-using EndOfStreamException = System.IO.EndOfStreamException;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
 using Buffers;
 using TransportServices;
+using TransportServices.ConnectionOriented;
 
-internal sealed class TcpServer : TcpTransport, IServer
+internal sealed class TcpServer : Disposable, IServer, ITcpTransport
 {
-    private enum ExchangeResult : byte
-    {
-        Success = 0,
-        SocketError,
-        TimeOut,
-        Stopped,
-    }
-
-    private sealed class ServerNetworkStream : PacketStream
-    {
-        internal ServerNetworkStream(Socket client, bool useSsl)
-            : base(client, true, useSsl)
-        {
-        }
-
-        internal Task Authenticate(SslServerAuthenticationOptions options, CancellationToken token)
-            => ssl is null ? Task.CompletedTask : ssl.AuthenticateAsServerAsync(options, token);
-
-        internal async Task<ExchangeResult> Exchange(IExchange exchange, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
-        {
-            var result = ExchangeResult.Success;
-            CancellationTokenSource? timeoutTracker = null;
-            try
-            {
-                var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
-                timeoutTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
-                timeoutTracker.CancelAfter(receiveTimeout);
-                while (await exchange.ProcessInboundMessageAsync(headers, request, timeoutTracker.Token).ConfigureAwait(false))
-                {
-                    bool waitForInput;
-                    int count;
-                    (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), timeoutTracker.Token).ConfigureAwait(false);
-
-                    // transmit packet to the remote endpoint
-                    await WritePacket(headers, buffer, count, timeoutTracker.Token).ConfigureAwait(false);
-                    if (!waitForInput)
-                        break;
-
-                    // read response
-                    (headers, request) = await ReadPacket(buffer, timeoutTracker.Token).ConfigureAwait(false);
-                }
-            }
-            catch (OperationCanceledException e)
-            {
-                exchange.OnCanceled(e.CancellationToken);
-                result = timeoutTracker is null || token.IsCancellationRequested ? ExchangeResult.Stopped : ExchangeResult.TimeOut;
-            }
-            catch (Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
-            {
-                exchange.OnException(e);
-                result = ExchangeResult.SocketError;
-            }
-            catch (Exception e)
-            {
-                exchange.OnException(e);
-            }
-            finally
-            {
-                timeoutTracker?.Dispose();
-            }
-
-            return result;
-        }
-    }
-
     private readonly Socket socket;
-    private readonly int backlog;
-    private readonly Func<IReusableExchange> exchangeFactory;
+    private readonly IPEndPoint address;
+    private readonly int backlog, transmissionBlockSize;
+    private readonly byte ttl;
     private readonly CancellationTokenSource transmissionState;
     private readonly CancellationToken lifecycleToken;
-    private TimeSpan receiveTimeout;
+    private readonly TimeSpan receiveTimeout;
+    private readonly ILogger logger;
+    private readonly LingerOption linger;
+    private readonly MemoryAllocator<byte> allocator;
+    private readonly ILocalMember localMember;
+    private readonly int gracefulShutdownTimeout;
     private volatile int connections;
-    internal int GracefulShutdownTimeout;
 
-    internal TcpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<IReusableExchange> exchangeFactory, ILoggerFactory loggerFactory)
-        : base(address, allocator, loggerFactory)
+    internal TcpServer(IPEndPoint address, int backlog, ILocalMember localMember, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
     {
         socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         this.backlog = backlog;
-        this.exchangeFactory = exchangeFactory;
-        transmissionState = new CancellationTokenSource();
+        transmissionState = new();
         lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
+        linger = ITcpTransport.CreateDefaultLingerOption();
+        this.allocator = allocator;
+        this.address = address;
+        gracefulShutdownTimeout = 1000;
+        this.localMember = localMember;
+        ttl = ITcpTransport.DefaultTtl;
+        transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
+        logger = loggerFactory.CreateLogger(GetType());
     }
 
     public TimeSpan ReceiveTimeout
     {
         get => receiveTimeout;
-        set
+        init
         {
             socket.ReceiveTimeout = (int)value.TotalMilliseconds;
             receiveTimeout = value;
         }
     }
 
-    internal SslServerAuthenticationOptions? SslOptions
+    public SslServerAuthenticationOptions? SslOptions
     {
         get;
-        set;
+        init;
+    }
+
+    public int TransmissionBlockSize
+    {
+        get => transmissionBlockSize;
+        init => transmissionBlockSize = ITcpTransport.ValidateTranmissionBlockSize(value);
+    }
+
+    public byte Ttl
+    {
+        get => ttl;
+        init => ttl = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
+
+    public LingerOption LingerOption
+    {
+        get => linger;
+        init => linger = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public int GracefulShutdownTimeout
+    {
+        get => gracefulShutdownTimeout;
+        init => gracefulShutdownTimeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     private async void HandleConnection(Socket remoteClient)
     {
-        var sslOptions = SslOptions;
-        var stream = new ServerNetworkStream(remoteClient, sslOptions is not null);
-        var buffer = AllocTransmissionBlock();
-        var exchange = exchangeFactory();
+        var clientAddress = remoteClient.RemoteEndPoint;
+        var transport = new TcpStream(remoteClient, owns: true);
+        ProtocolStream protocol;
+        CancellationTokenSource timeoutSource;
+
+        // TLS handshake
+        if (SslOptions is null)
+        {
+            protocol = new(transport, allocator, transmissionBlockSize);
+        }
+        else
+        {
+            var ssl = new SslStream(transport, leaveInnerStreamOpen: true);
+            timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
+            timeoutSource.CancelAfter(receiveTimeout);
+            try
+            {
+                await ssl.AuthenticateAsServerAsync(SslOptions, timeoutSource.Token).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                ssl.Dispose();
+                transport.Dispose();
+                logger.TlsHandshakeFailed(clientAddress, e);
+                return;
+            }
+            finally
+            {
+                timeoutSource.Dispose();
+            }
+
+            protocol = new(ssl, allocator, transmissionBlockSize);
+        }
+
         Interlocked.Increment(ref connections);
+        timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
         try
         {
-            if (sslOptions is not null)
-                await stream.Authenticate(sslOptions, lifecycleToken).ConfigureAwait(false);
-
-            while (stream.Connected && !IsDisposed)
+            // message processing loop
+            while (transport.Connected && !IsDisposed && !lifecycleToken.IsCancellationRequested)
             {
-                switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, lifecycleToken).ConfigureAwait(false))
+                var messageType = await protocol.ReadMessageTypeAsync(lifecycleToken).ConfigureAwait(false);
+                if (messageType is MessageType.None)
+                    break;
+
+                timeoutSource.CancelAfter(receiveTimeout);
+                await ProcessRequestAsync(messageType, protocol, timeoutSource.Token).ConfigureAwait(false);
+                protocol.Reset();
+
+                // reuse CTS if possible to avoid allocations
+                if (!timeoutSource.TryReset())
                 {
-                    default:
-                        return;
-                    case ExchangeResult.Success:
-                        exchange.Reset();
-                        continue;
-                    case ExchangeResult.TimeOut:
-                        await remoteClient.DisconnectAsync(false, lifecycleToken).ConfigureAwait(false);
-                        logger.RequestTimedOut();
-                        goto default;
+                    timeoutSource.Dispose();
+                    timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
                 }
             }
         }
+        catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } || e.InnerException is SocketException { SocketErrorCode: SocketError.ConnectionReset })
+        {
+            logger.ConnectionWasResetByClient(clientAddress);
+        }
+        catch (OperationCanceledException e)
+        {
+            // if lifecycleToken is canceled then shutdown socket gracefully without logging
+            if (e.CancellationToken != lifecycleToken)
+                logger.RequestTimedOut(clientAddress, e);
+        }
         catch (Exception e)
         {
-            exchange.OnException(e);
+            logger.FailedToProcessRequest(clientAddress, e);
         }
         finally
         {
-            buffer.Dispose();
-            stream.Close(GracefulShutdownTimeout);
-            stream.Dispose();
+            protocol.Dispose();
+            (protocol.BaseStream as SslStream)?.Dispose();
+            timeoutSource.Dispose();
+            transport.Close(GracefulShutdownTimeout);
             Interlocked.Decrement(ref connections);
         }
+    }
+
+    private ValueTask ProcessRequestAsync(MessageType type, ProtocolStream protocol, CancellationToken token) => type switch
+    {
+        MessageType.Vote => VoteAsync(protocol, token),
+        MessageType.PreVote => PreVoteAsync(protocol, token),
+        MessageType.Synchronize => SynchronizeAsync(protocol, token),
+        MessageType.Metadata => GetMetadataAsync(protocol, token),
+        MessageType.Resign => ResignAsync(protocol, token),
+        MessageType.InstallSnapshot => InstallSnapshotAsync(protocol, token),
+        MessageType.AppendEntries => AppendEntriesAsync(protocol, token),
+        _ => ValueTask.FromException(new InvalidOperationException(ExceptionMessages.UnknownRaftMessageType(type))),
+    };
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask VoteAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        var request = await protocol.ReadVoteRequestAsync(token).ConfigureAwait(false);
+        var response = await localMember.VoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false);
+        protocol.Reset();
+        await protocol.WriteResponseAsync(in response, token).ConfigureAwait(false);
+    }
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask PreVoteAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        var request = await protocol.ReadPreVoteRequestAsync(token).ConfigureAwait(false);
+        var response = await localMember.PreVoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false);
+        protocol.Reset();
+        await protocol.WriteResponseAsync(in response, token).ConfigureAwait(false);
+    }
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask SynchronizeAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        protocol.Reset();
+        var commitIndex = await localMember.SynchronizeAsync(token).ConfigureAwait(false);
+        await protocol.WriteResponseAsync(in commitIndex, token).ConfigureAwait(false);
+    }
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask GetMetadataAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        protocol.Reset();
+        using var buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
+        await protocol.WriteMetadataResponseAsync(localMember.Metadata, buffer.Memory, token).ConfigureAwait(false);
+    }
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask ResignAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        protocol.Reset();
+        var response = await localMember.ResignAsync(token).ConfigureAwait(false);
+        await protocol.WriteResponseAsync(response, token).ConfigureAwait(false);
+    }
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask InstallSnapshotAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        var request = await protocol.ReadInstallSnapshotRequestAsync(token).ConfigureAwait(false);
+        Result<bool> response;
+        using (request.Snapshot)
+        {
+            response = await localMember.InstallSnapshotAsync(request.Id, request.Term, request.Snapshot, request.SnapshotIndex, token).ConfigureAwait(false);
+        }
+
+        if (!response.Value)
+        {
+            // skip contents of snapshot
+            await protocol.SkipAsync(token).ConfigureAwait(false);
+        }
+
+        protocol.Reset();
+        await protocol.WriteResponseAsync(in response, token).ConfigureAwait(false);
+    }
+
+    [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask AppendEntriesAsync(ProtocolStream protocol, CancellationToken token)
+    {
+        var request = await protocol.ReadAppendEntriesRequestAsync(token).ConfigureAwait(false);
+        Result<bool> response;
+        using (request.Entries)
+        {
+            using (request.Configuration)
+                response = await localMember.AppendEntriesAsync(request.Id, request.Term, request.Entries, request.PrevLogIndex, request.PrevLogTerm, request.CommitIndex, request.Configuration, request.ApplyConfig, token).ConfigureAwait(false);
+
+            // skip remaining log entries
+            while (await request.Entries.MoveNextAsync().ConfigureAwait(false))
+                await protocol.SkipAsync(token).ConfigureAwait(false);
+        }
+
+        protocol.Reset();
+        await protocol.WriteResponseAsync(in response, token).ConfigureAwait(false);
     }
 
     private async void Listen()
@@ -159,10 +265,10 @@ internal sealed class TcpServer : TcpTransport, IServer
             try
             {
                 var remoteClient = await socket.AcceptAsync(lifecycleToken).ConfigureAwait(false);
-                ConfigureSocket(remoteClient, LingerOption, Ttl);
-                ThreadPool.QueueUserWorkItem(HandleConnection, remoteClient, false);
+                ITcpTransport.ConfigureSocket(remoteClient, linger, ttl);
+                ThreadPool.QueueUserWorkItem(HandleConnection, remoteClient, preferLocal: false);
             }
-            catch (ObjectDisposedException)
+            catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
             {
                 pending = false;
             }
@@ -191,12 +297,14 @@ internal sealed class TcpServer : TcpTransport, IServer
 
     public void Start()
     {
-        socket.Bind(Address);
+        socket.Bind(address);
         socket.Listen(backlog);
         Listen();
     }
 
     private bool NoMoreConnections() => connections <= 0;
+
+    IPEndPoint INetworkTransport.Address => address;
 
     protected override void Dispose(bool disposing)
     {

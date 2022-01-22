@@ -34,7 +34,7 @@ public static class RandomExtensions
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
         foreach (ref var element in buffer)
         {
-            var randomNumber = (BitConverter.ToInt32(bytes.Span.Slice(offset)) & int.MaxValue) % allowedChars.Length;
+            var randomNumber = (uint)BitConverter.ToInt32(bytes.Span.Slice(offset)) % (uint)allowedChars.Length;
             element = Unsafe.Add(ref firstChar, randomNumber);
             offset += sizeof(int);
         }

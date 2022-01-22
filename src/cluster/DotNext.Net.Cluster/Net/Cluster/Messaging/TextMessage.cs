@@ -24,7 +24,11 @@ public class TextMessage : IMessage
     internal TextMessage(string name, string value, string? mediaType)
     {
         Content = value;
-        Type = new ContentType() { MediaType = mediaType.IfNullOrEmpty(MediaTypeNames.Text.Plain), CharSet = "utf-8" };
+        Type = new ContentType()
+        {
+            MediaType = mediaType is { Length: > 0 } ? mediaType : MediaTypeNames.Text.Plain,
+            CharSet = "utf-8",
+        };
         Name = name;
     }
 
