@@ -1,12 +1,12 @@
 .NEXT 4.x
 ====
 
-.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
+.NEXT (dotNext) is the family of powerful libraries aimed to improve development productivity and extend the .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
 
 > [!NOTE]
 > The documentation for previous major versions is no longer available on this website. However, API docs are still available on [FuGet](https://www.fuget.org/) website for any specific library version. Migration guides are [here](./migration/index.md).
 
-This chapter gives quick overview of these libraries. Read [articles](features/core/index.md) for closer look at all available features.
+This chapter gives a quick overview of these libraries. Read [articles](./features/core/index.md) for a closer look at all available features.
 
 Prerequisites:
 * Runtime: .NET 6
@@ -33,7 +33,7 @@ This library is the core of .NEXT which extends .NET standard library with
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
 .NET Reflection is slow because relies on late-bound calls when every actual argument should be validated. There is alternative approach: dynamic code generation optimized for every member call. Reflection library from .NEXT family provides provides fully-featured fast reflection using dynamic code generation. Invocation cost is comparable to direct call. Check [Benchmarks](benchmarks.md) to see how it is fast.
 
-Additionally, the library provides support of [Type Classes](https://github.com/dotnet/csharplang/issues/110). You don't need to wait C# language of version _X_ to obtain this feature.
+Additionally, the library provides support of [Type Classes](https://github.com/dotnet/csharplang/issues/110). You don't need to wait for C# language of version _X_ to obtain this feature.
 
 # DotNext.Metaprogramming
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.metaprogramming.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.metaprogramming.svg)<br/>
