@@ -239,11 +239,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     /// Tries to retrieve the target object.
     /// </summary>
     /// <param name="reference">Soft reference.</param>
-    /// <returns>
-    /// The referenced object;
-    /// or <see cref="Optional{T}.None"/> if reference is not allocated;
-    /// or <see cref="Optional{T}.IsNull"/> is <see langword="true"/>.
-    /// </returns>
+    /// <returns>The referenced object.</returns>
     public static explicit operator Optional<T>(SoftReference<T>? reference)
         => reference?.TryGetTarget() ?? Optional<T>.None;
 
