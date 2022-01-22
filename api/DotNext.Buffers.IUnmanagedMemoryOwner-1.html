@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IUnmanagedMemoryOwner&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,10 +83,10 @@ unmanaged memory.</p>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_1_DotNext_ISupplier_Memory_T___Invoke">IUnmanagedMemory&lt;T&gt;.ISupplier&lt;Memory&lt;T&gt;&gt;.Invoke()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory#System_Buffers_IMemoryOwner_1_Memory">IMemoryOwner&lt;T&gt;.Memory</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory#system-buffers-imemoryowner-1-memory">IMemoryOwner&lt;T&gt;.Memory</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#System_IDisposable_Dispose">IDisposable.Dispose()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#system-idisposable-dispose">IDisposable.Dispose()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Memory&lt;T&gt;&gt;.Invoke()</a>
@@ -189,7 +189,7 @@ unmanaged memory.</p>
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemoryOwner&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IMemoryOwner&lt;T&gt;, IDisposable, ISupplier&lt;Memory&lt;T&gt;&gt;, IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, IDisposable, ISupplier&lt;Stream&gt;, IEnumerable&lt;T&gt;, ICloneable, ISupplier&lt;T[]&gt; where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemoryOwner&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IMemoryOwner&lt;T&gt;, IDisposable, ISupplier&lt;Memory&lt;T&gt;&gt;, IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, ISupplier&lt;Stream&gt;, ISupplier&lt;T[]&gt; where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -244,7 +244,7 @@ unmanaged memory.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_Reallocate_System_Int32__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is dangerous becase it invalidates all buffers returned by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory#System_Buffers_IMemoryOwner_1_Memory">Memory</a> property.</p>
+  <div class="markdown level1 remarks"><p>This method is dangerous becase it invalidates all buffers returned by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory#system-buffers-imemoryowner-1-memory">Memory</a> property.</p>
 </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

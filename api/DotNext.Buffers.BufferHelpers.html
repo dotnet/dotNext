@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BufferHelpers
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,25 +83,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
@@ -298,10 +298,76 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_GetReference__1_DotNext_Buffers_MemoryOwner___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.GetReference%60%601(DotNext.Buffers.MemoryOwner%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.MemoryOwner.cs/#L13">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferHelpers_GetReference_" data-uid="DotNext.Buffers.BufferHelpers.GetReference*"></a>
+  <h4 id="DotNext_Buffers_BufferHelpers_GetReference__1_DotNext_Buffers_MemoryOwner___0___" data-uid="DotNext.Buffers.BufferHelpers.GetReference``1(DotNext.Buffers.MemoryOwner{``0}@)">GetReference&lt;T&gt;(in MemoryOwner&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets managed pointer to the first element in the rented memory block.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ref T GetReference&lt;T&gt;(in MemoryOwner&lt;T&gt; owner)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
+        <td><span class="parametername">owner</span></td>
+        <td><p>The rented memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>A managed pointer to the first element; or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.unsafe.nullref#system-runtime-compilerservices-unsafe-nullref-1">NullRef&lt;T&gt;()</a> if memory block is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements in the memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_Read__1_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.Read%60%601(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L41">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_Read_" data-uid="DotNext.Buffers.BufferHelpers.Read*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_Read__1_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Buffers.BufferHelpers.Read``1(DotNext.Buffers.SpanReader{System.Byte}@)">Read&lt;T&gt;(ref SpanReader&lt;Byte&gt;)</h4>
@@ -370,7 +436,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadDouble_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadDouble(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L145">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L162">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadDouble_" data-uid="DotNext.Buffers.BufferHelpers.ReadDouble*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadDouble_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadDouble(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadDouble(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -423,10 +489,66 @@ represents by memory block.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadHalf_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadHalf(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L173">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferHelpers_ReadHalf_" data-uid="DotNext.Buffers.BufferHelpers.ReadHalf*"></a>
+  <h4 id="DotNext_Buffers_BufferHelpers_ReadHalf_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadHalf(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadHalf(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes half-precision floating-point number.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Half ReadHalf(this ref SpanReader&lt;byte&gt; reader, bool isLittleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.SpanReader-1.html">SpanReader</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The memory reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">isLittleEndian</span></td>
+        <td><p><span class="xref">true</span> to use little-endian encoding; <span class="xref">false</span> to use big-endian encoding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Half</span></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadInt16_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadInt16(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L65">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L52">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadInt16_" data-uid="DotNext.Buffers.BufferHelpers.ReadInt16*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadInt16_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadInt16(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadInt16(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -482,7 +604,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadInt32_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadInt32(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L88">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadInt32_" data-uid="DotNext.Buffers.BufferHelpers.ReadInt32*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadInt32_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadInt32(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadInt32(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -538,7 +660,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadInt64_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadInt64(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L111">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadInt64_" data-uid="DotNext.Buffers.BufferHelpers.ReadInt64*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadInt64_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadInt64(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadInt64(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -594,7 +716,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadSingle_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadSingle(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L134">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadSingle_" data-uid="DotNext.Buffers.BufferHelpers.ReadSingle*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadSingle_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadSingle(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadSingle(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -650,7 +772,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadUInt16_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadUInt16(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L76">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L68">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadUInt16_" data-uid="DotNext.Buffers.BufferHelpers.ReadUInt16*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadUInt16_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadUInt16(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadUInt16(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -706,7 +828,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadUInt32_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadUInt32(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadUInt32_" data-uid="DotNext.Buffers.BufferHelpers.ReadUInt32*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadUInt32_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadUInt32(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadUInt32(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -762,7 +884,7 @@ represents by memory block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_ReadUInt64_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.ReadUInt64(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanReader.cs/#L134">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_ReadUInt64_" data-uid="DotNext.Buffers.BufferHelpers.ReadUInt64*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_ReadUInt64_DotNext_Buffers_SpanReader_System_Byte___System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.ReadUInt64(DotNext.Buffers.SpanReader{System.Byte}@,System.Boolean)">ReadUInt64(ref SpanReader&lt;Byte&gt;, Boolean)</h4>
@@ -874,7 +996,7 @@ object in the rented block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_System_Boolean_DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.Resize%60%601(DotNext.Buffers.MemoryOwner%7B%60%600%7D%40%2CSystem.Int32%2CSystem.Boolean%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.MemoryOwner.cs/#L17">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.MemoryOwner.cs/#L28">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_Resize_" data-uid="DotNext.Buffers.BufferHelpers.Resize*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_System_Boolean_DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Buffers.BufferHelpers.Resize``1(DotNext.Buffers.MemoryOwner{``0}@,System.Int32,System.Boolean,DotNext.Buffers.MemoryAllocator{``0})">Resize&lt;T&gt;(ref MemoryOwner&lt;T&gt;, Int32, Boolean, MemoryAllocator&lt;T&gt;)</h4>
@@ -1231,7 +1353,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_TryWrite__1_DotNext_Buffers_SpanWriter_System_Byte_____0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.TryWrite%60%601(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L19">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L20">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_TryWrite_" data-uid="DotNext.Buffers.BufferHelpers.TryWrite*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_TryWrite__1_DotNext_Buffers_SpanWriter_System_Byte_____0__" data-uid="DotNext.Buffers.BufferHelpers.TryWrite``1(DotNext.Buffers.SpanWriter{System.Byte}@,``0@)">TryWrite&lt;T&gt;(ref SpanWriter&lt;Byte&gt;, in T)</h4>
@@ -1346,7 +1468,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_Write_DotNext_Buffers_SpanWriter_System_Char___System_Text_StringBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.Write(DotNext.Buffers.SpanWriter%7BSystem.Char%7D%40%2CSystem.Text.StringBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L138">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L143">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_Write_" data-uid="DotNext.Buffers.BufferHelpers.Write*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_Write_DotNext_Buffers_SpanWriter_System_Char___System_Text_StringBuilder_" data-uid="DotNext.Buffers.BufferHelpers.Write(DotNext.Buffers.SpanWriter{System.Char}@,System.Text.StringBuilder)">Write(ref SpanWriter&lt;Char&gt;, StringBuilder)</h4>
@@ -1426,7 +1548,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_Write__1_DotNext_Buffers_SpanWriter_System_Byte_____0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.Write%60%601(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L30">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L31">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_Write_" data-uid="DotNext.Buffers.BufferHelpers.Write*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_Write__1_DotNext_Buffers_SpanWriter_System_Byte_____0__" data-uid="DotNext.Buffers.BufferHelpers.Write``1(DotNext.Buffers.SpanWriter{System.Byte}@,``0@)">Write&lt;T&gt;(ref SpanWriter&lt;Byte&gt;, in T)</h4>
@@ -1484,7 +1606,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_Write__1_DotNext_Buffers_SpanWriter_System_Char_____0_ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.Write%60%601(DotNext.Buffers.SpanWriter%7BSystem.Char%7D%40%2C%60%600%2CReadOnlySpan%7BSystem.Char%7D%2CSystem.Nullable%7BIFormatProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L153">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L158">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_Write_" data-uid="DotNext.Buffers.BufferHelpers.Write*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_Write__1_DotNext_Buffers_SpanWriter_System_Char_____0_ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__" data-uid="DotNext.Buffers.BufferHelpers.Write``1(DotNext.Buffers.SpanWriter{System.Char}@,``0,ReadOnlySpan{System.Char},System.Nullable{IFormatProvider})">Write&lt;T&gt;(ref SpanWriter&lt;Char&gt;, T, ReadOnlySpan&lt;Char&gt;, Nullable&lt;IFormatProvider&gt;)</h4>
@@ -1880,7 +2002,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteDouble_DotNext_Buffers_SpanWriter_System_Byte___System_Double_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteDouble(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.Double%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L129">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteDouble_" data-uid="DotNext.Buffers.BufferHelpers.WriteDouble*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteDouble_DotNext_Buffers_SpanWriter_System_Byte___System_Double_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteDouble(DotNext.Buffers.SpanWriter{System.Byte}@,System.Double,System.Boolean)">WriteDouble(ref SpanWriter&lt;Byte&gt;, Double, Boolean)</h4>
@@ -2327,6 +2449,52 @@ otherwise, <span class="xref">false</span>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteHalf_DotNext_Buffers_SpanWriter_System_Byte___Half_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteHalf(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CHalf%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L134">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_BufferHelpers_WriteHalf_" data-uid="DotNext.Buffers.BufferHelpers.WriteHalf*"></a>
+  <h4 id="DotNext_Buffers_BufferHelpers_WriteHalf_DotNext_Buffers_SpanWriter_System_Byte___Half_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteHalf(DotNext.Buffers.SpanWriter{System.Byte}@,Half,System.Boolean)">WriteHalf(ref SpanWriter&lt;Byte&gt;, Half, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Writes half-precision floating-point number to the block of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void WriteHalf(this ref SpanWriter&lt;byte&gt; writer, Half value, bool isLittleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.SpanWriter-1.html">SpanWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>Memory writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Half</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to be encoded in the block of memory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">isLittleEndian</span></td>
+        <td><p><span class="xref">true</span> to use little-endian encoding; <span class="xref">false</span> to use big-endian encoding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteInt16_DotNext_Buffers_BufferWriterSlim_System_Byte___System_Int16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteInt16(DotNext.Buffers.BufferWriterSlim%7BSystem.Byte%7D%40%2CSystem.Int16%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -2376,7 +2544,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteInt16_DotNext_Buffers_SpanWriter_System_Byte___System_Int16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteInt16(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.Int16%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L49">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L43">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteInt16_" data-uid="DotNext.Buffers.BufferHelpers.WriteInt16*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteInt16_DotNext_Buffers_SpanWriter_System_Byte___System_Int16_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteInt16(DotNext.Buffers.SpanWriter{System.Byte}@,System.Int16,System.Boolean)">WriteInt16(ref SpanWriter&lt;Byte&gt;, Int16, Boolean)</h4>
@@ -2468,7 +2636,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteInt32_DotNext_Buffers_SpanWriter_System_Byte___System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteInt32(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteInt32_" data-uid="DotNext.Buffers.BufferHelpers.WriteInt32*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteInt32_DotNext_Buffers_SpanWriter_System_Byte___System_Int32_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteInt32(DotNext.Buffers.SpanWriter{System.Byte}@,System.Int32,System.Boolean)">WriteInt32(ref SpanWriter&lt;Byte&gt;, Int32, Boolean)</h4>
@@ -2560,7 +2728,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteInt64_DotNext_Buffers_SpanWriter_System_Byte___System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteInt64(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L95">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L89">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteInt64_" data-uid="DotNext.Buffers.BufferHelpers.WriteInt64*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteInt64_DotNext_Buffers_SpanWriter_System_Byte___System_Int64_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteInt64(DotNext.Buffers.SpanWriter{System.Byte}@,System.Int64,System.Boolean)">WriteInt64(ref SpanWriter&lt;Byte&gt;, Int64, Boolean)</h4>
@@ -2800,7 +2968,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteSingle_DotNext_Buffers_SpanWriter_System_Byte___System_Single_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteSingle(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.Single%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L118">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L112">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteSingle_" data-uid="DotNext.Buffers.BufferHelpers.WriteSingle*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteSingle_DotNext_Buffers_SpanWriter_System_Byte___System_Single_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteSingle(DotNext.Buffers.SpanWriter{System.Byte}@,System.Single,System.Boolean)">WriteSingle(ref SpanWriter&lt;Byte&gt;, Single, Boolean)</h4>
@@ -3128,7 +3296,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteUInt16_DotNext_Buffers_SpanWriter_System_Byte___System_UInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteUInt16(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.UInt16%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L60">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteUInt16_" data-uid="DotNext.Buffers.BufferHelpers.WriteUInt16*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteUInt16_DotNext_Buffers_SpanWriter_System_Byte___System_UInt16_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteUInt16(DotNext.Buffers.SpanWriter{System.Byte}@,System.UInt16,System.Boolean)">WriteUInt16(ref SpanWriter&lt;Byte&gt;, UInt16, Boolean)</h4>
@@ -3220,7 +3388,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteUInt32_DotNext_Buffers_SpanWriter_System_Byte___System_UInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteUInt32(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.UInt32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L77">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteUInt32_" data-uid="DotNext.Buffers.BufferHelpers.WriteUInt32*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteUInt32_DotNext_Buffers_SpanWriter_System_Byte___System_UInt32_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteUInt32(DotNext.Buffers.SpanWriter{System.Byte}@,System.UInt32,System.Boolean)">WriteUInt32(ref SpanWriter&lt;Byte&gt;, UInt32, Boolean)</h4>
@@ -3312,7 +3480,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferHelpers_WriteUInt64_DotNext_Buffers_SpanWriter_System_Byte___System_UInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferHelpers.WriteUInt64(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2CSystem.UInt64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L106">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferHelpers.SpanWriter.cs/#L100">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferHelpers_WriteUInt64_" data-uid="DotNext.Buffers.BufferHelpers.WriteUInt64*"></a>
   <h4 id="DotNext_Buffers_BufferHelpers_WriteUInt64_DotNext_Buffers_SpanWriter_System_Byte___System_UInt64_System_Boolean_" data-uid="DotNext.Buffers.BufferHelpers.WriteUInt64(DotNext.Buffers.SpanWriter{System.Byte}@,System.UInt64,System.Boolean)">WriteUInt64(ref SpanWriter&lt;Byte&gt;, UInt64, Boolean)</h4>

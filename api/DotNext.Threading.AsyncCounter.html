@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncCounter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -111,6 +111,9 @@
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_">QueuedSynchronizer.Dispose(Boolean)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Nullable_Exception__">QueuedSynchronizer.Dispose(Nullable&lt;Exception&gt;)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore">QueuedSynchronizer.DisposeAsyncCore()</a>
     </div>
     <div>
@@ -154,7 +157,7 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncCounter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncCounter : QueuedSynchronizer, IAsyncEvent, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncCounter : QueuedSynchronizer, IAsyncEvent</code></pre>
   </div>
   <h5 id="DotNext_Threading_AsyncCounter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class behaves in opposite to <a class="xref" href="DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a>.
@@ -169,7 +172,7 @@ decrements counter and release the caller if the current count is greater than z
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter__ctor_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.%23ctor(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L77">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter__ctor_" data-uid="DotNext.Threading.AsyncCounter.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncCounter__ctor_System_Int64_" data-uid="DotNext.Threading.AsyncCounter.#ctor(System.Int64)">AsyncCounter(Int64)</h4>
@@ -203,7 +206,7 @@ decrements counter and release the caller if the current count is greater than z
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter__ctor_System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.%23ctor(System.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L60">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter__ctor_" data-uid="DotNext.Threading.AsyncCounter.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncCounter__ctor_System_Int64_System_Int32_" data-uid="DotNext.Threading.AsyncCounter.#ctor(System.Int64,System.Int32)">AsyncCounter(Int64, Int32)</h4>
@@ -245,7 +248,7 @@ decrements counter and release the caller if the current count is greater than z
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L106">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_Value_" data-uid="DotNext.Threading.AsyncCounter.Value*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_Value" data-uid="DotNext.Threading.AsyncCounter.Value">Value</h4>
@@ -283,7 +286,7 @@ blocking.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_Increment.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.Increment%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L116">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_Increment_" data-uid="DotNext.Threading.AsyncCounter.Increment*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_Increment" data-uid="DotNext.Threading.AsyncCounter.Increment">Increment()</h4>
@@ -296,10 +299,44 @@ blocking.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_Increment_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.Increment(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L151">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncCounter_Increment_" data-uid="DotNext.Threading.AsyncCounter.Increment*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_Increment_System_Int64_" data-uid="DotNext.Threading.AsyncCounter.Increment(System.Int64)">Increment(Int64)</h4>
+  <div class="markdown level1 summary"><p>Increments counter and resume suspended callers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Increment(long delta)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">delta</span></td>
+        <td><p>The value to be added to the counter.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_TryDecrement.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.TryDecrement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L167">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L224">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_TryDecrement_" data-uid="DotNext.Threading.AsyncCounter.TryDecrement*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_TryDecrement" data-uid="DotNext.Threading.AsyncCounter.TryDecrement">TryDecrement()</h4>
@@ -331,7 +368,7 @@ blocking.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_WaitAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.WaitAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L159">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L217">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_WaitAsync_" data-uid="DotNext.Threading.AsyncCounter.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_WaitAsync_CancellationToken_" data-uid="DotNext.Threading.AsyncCounter.WaitAsync(CancellationToken)">WaitAsync(CancellationToken)</h4>
@@ -382,7 +419,7 @@ or just decrements it.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_WaitAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.WaitAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L147">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L202">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_WaitAsync_" data-uid="DotNext.Threading.AsyncCounter.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_WaitAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncCounter.WaitAsync(TimeSpan,CancellationToken)">WaitAsync(TimeSpan, CancellationToken)</h4>
@@ -441,7 +478,7 @@ or just decrements it.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_IsSet.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.DotNext%23Threading%23IAsyncEvent%23IsSet%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L120">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_IsSet_" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#IsSet*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_IsSet" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#IsSet">IAsyncEvent.IsSet</h4>
@@ -471,7 +508,7 @@ or just decrements it.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Reset.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.DotNext%23Threading%23IAsyncEvent%23Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L109">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L133">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Reset_" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Reset*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Reset" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Reset">IAsyncEvent.Reset()</h4>
@@ -501,7 +538,7 @@ or just decrements it.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Signal.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.DotNext%23Threading%23IAsyncEvent%23Signal%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L183">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Signal_" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Signal*"></a>
   <h4 id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Signal" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Signal">IAsyncEvent.Signal()</h4>

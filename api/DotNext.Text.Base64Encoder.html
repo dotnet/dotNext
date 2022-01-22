@@ -1,0 +1,1255 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct Base64Encoder
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct Base64Encoder
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.59.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Text.Base64Encoder">
+  
+  
+  <h1 id="DotNext_Text_Base64Encoder" data-uid="DotNext.Text.Base64Encoder" class="text-break">Struct Base64Encoder
+  </h1>
+  <div class="markdown level0 summary"><p>Represents base64 encoder suitable for encoding large binary
+data using streaming approach.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Text.html">DotNext.Text</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Text_Base64Encoder_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct Base64Encoder</code></pre>
+  </div>
+  <h5 id="DotNext_Text_Base64Encoder_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This type maintains internal state for correct encoding of streaming data.
+Therefore, it must be passed by reference to any routine. It's not a <code>ref struct</code>
+to allow construction of high-level encoders in the form of classes.
+The output can be in the form of UTF-8 encoded bytes or Unicode characters.
+Encoding methods should not be intermixed by the caller code.</p>
+</div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_MaxBufferedDataSize.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.MaxBufferedDataSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.cs/#L25">View Source</a>
+  </span>
+  <h4 id="DotNext_Text_Base64Encoder_MaxBufferedDataSize" data-uid="DotNext.Text.Base64Encoder.MaxBufferedDataSize">MaxBufferedDataSize</h4>
+  <div class="markdown level1 summary"><p>Gets the maximum number of bytes that can be buffered by the encoder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int MaxBufferedDataSize = 2</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_MaxInputSize.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.MaxInputSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.cs/#L30">View Source</a>
+  </span>
+  <h4 id="DotNext_Text_Base64Encoder_MaxInputSize" data-uid="DotNext.Text.Base64Encoder.MaxInputSize">MaxInputSize</h4>
+  <div class="markdown level1 summary"><p>Gets the maximum size of the input block of bytes to encode.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int MaxInputSize = 1610612733</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_BufferedDataSize.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.BufferedDataSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.cs/#L54">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_BufferedDataSize_" data-uid="DotNext.Text.Base64Encoder.BufferedDataSize*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_BufferedDataSize" data-uid="DotNext.Text.Base64Encoder.BufferedDataSize">BufferedDataSize</h4>
+  <div class="markdown level1 summary"><p>Gets the number of buffered bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int BufferedDataSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Text_Base64Encoder_BufferedDataSize_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The range of the returned value is [0..<a class="xref" href="DotNext.Text.Base64Encoder.html#DotNext_Text_Base64Encoder_MaxBufferedDataSize">MaxBufferedDataSize</a>].</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_HasBufferedData.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.HasBufferedData%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.cs/#L46">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_HasBufferedData_" data-uid="DotNext.Text.Base64Encoder.HasBufferedData*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_HasBufferedData" data-uid="DotNext.Text.Base64Encoder.HasBufferedData">HasBufferedData</h4>
+  <div class="markdown level1 summary"><p>Indicates that the size of the encoded data is not a multiple of 3
+and the encoder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool HasBufferedData { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan%7BSystem.Byte%7D%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L93">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan{System.Byte},DotNext.Buffers.MemoryAllocator{System.Char},System.Boolean)">EncodeToChars(ReadOnlySpan&lt;Byte&gt;, MemoryAllocator&lt;Char&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;char&gt; EncodeToChars(ReadOnlySpan&lt;byte&gt; bytes, MemoryAllocator&lt;char&gt; allocator = null, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the result buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><p>The buffer containing encoded bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__System_Buffers_IBufferWriter_System_Char__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L72">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__System_Buffers_IBufferWriter_System_Char__System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan{System.Byte},System.Buffers.IBufferWriter{System.Char},System.Boolean)">EncodeToChars(ReadOnlySpan&lt;Byte&gt;, IBufferWriter&lt;Char&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToChars(ReadOnlySpan&lt;byte&gt; bytes, IBufferWriter&lt;char&gt; output, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__System_Text_StringBuilder_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Text.StringBuilder%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L234">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__System_Text_StringBuilder_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan{System.Byte},System.Text.StringBuilder,System.Boolean)">EncodeToChars(ReadOnlySpan&lt;Byte&gt;, StringBuilder, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToChars(ReadOnlySpan&lt;byte&gt; bytes, StringBuilder output, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.stringbuilder">StringBuilder</a></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The builder used as a destination for encoded data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__TextWriter_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan%7BSystem.Byte%7D%2CTextWriter%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L222">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars_ReadOnlySpan_System_Byte__TextWriter_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars(ReadOnlySpan{System.Byte},TextWriter,System.Boolean)">EncodeToChars(ReadOnlySpan&lt;Byte&gt;, TextWriter, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToChars(ReadOnlySpan&lt;byte&gt; bytes, TextWriter output, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TextWriter</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The writer used as a destination for encoded data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars__1_ReadOnlySpan_System_Byte_____0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars%60%601(ReadOnlySpan%7BSystem.Byte%7D%2C%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L209">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars__1_ReadOnlySpan_System_Byte_____0_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars``1(ReadOnlySpan{System.Byte},,``0,System.Boolean)">EncodeToChars&lt;TArg&gt;(ReadOnlySpan&lt;Byte&gt;, delegate*&lt;ReadOnlySpan&lt;Char&gt;, TArg, Void&gt;, TArg, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToChars&lt;TArg&gt;(ReadOnlySpan&lt;byte&gt; bytes, delegate*&lt;ReadOnlySpan&lt;char&gt;, TArg, void&gt; output, TArg arg, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;<span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;, TArg, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The consumer called for encoded portion of data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the callback.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars__1_ReadOnlySpan_System_Byte____0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars%60%601(ReadOnlySpan%7BSystem.Byte%7D%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L175">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars__1_ReadOnlySpan_System_Byte____0_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars``1(ReadOnlySpan{System.Byte},``0,System.Boolean)">EncodeToChars&lt;TConsumer&gt;(ReadOnlySpan&lt;Byte&gt;, TConsumer, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToChars&lt;TConsumer&gt;(ReadOnlySpan&lt;byte&gt; bytes, TConsumer output, bool flush = false)
+
+    where TConsumer : IReadOnlySpanConsumer&lt;char&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TConsumer</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The consumer called for encoded portion of data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TConsumer</span></td>
+        <td><p>The type of the consumer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToChars__1_ReadOnlySpan_System_Byte__System_Buffers_ReadOnlySpanAction_System_Char___0____0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToChars%60%601(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Char%2C%60%600%7D%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L195">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToChars_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToChars__1_ReadOnlySpan_System_Byte__System_Buffers_ReadOnlySpanAction_System_Char___0____0_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToChars``1(ReadOnlySpan{System.Byte},System.Buffers.ReadOnlySpanAction{System.Char,``0},``0,System.Boolean)">EncodeToChars&lt;TArg&gt;(ReadOnlySpan&lt;Byte&gt;, ReadOnlySpanAction&lt;Char, TArg&gt;, TArg, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToChars&lt;TArg&gt;(ReadOnlySpan&lt;byte&gt; bytes, ReadOnlySpanAction&lt;char, TArg&gt; output, TArg arg, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>, TArg&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The consumer called for encoded portion of data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the callback.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToUtf8_ReadOnlySpan_System_Byte__DotNext_Buffers_MemoryAllocator_System_Byte__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L89">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToUtf8_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToUtf8_ReadOnlySpan_System_Byte__DotNext_Buffers_MemoryAllocator_System_Byte__System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8(ReadOnlySpan{System.Byte},DotNext.Buffers.MemoryAllocator{System.Byte},System.Boolean)">EncodeToUtf8(ReadOnlySpan&lt;Byte&gt;, MemoryAllocator&lt;Byte&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded UTF-8 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; EncodeToUtf8(ReadOnlySpan&lt;byte&gt; bytes, MemoryAllocator&lt;byte&gt; allocator = null, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the result buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><p>The buffer containing encoded bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToUtf8_ReadOnlySpan_System_Byte__Stream_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CStream%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L202">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToUtf8_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToUtf8_ReadOnlySpan_System_Byte__Stream_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8(ReadOnlySpan{System.Byte},Stream,System.Boolean)">EncodeToUtf8(ReadOnlySpan&lt;Byte&gt;, Stream, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded UTF-8 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToUtf8(ReadOnlySpan&lt;byte&gt; bytes, Stream output, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Stream</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The stream used as a destination for encoded data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToUtf8_ReadOnlySpan_System_Byte__System_Buffers_IBufferWriter_System_Byte__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L68">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToUtf8_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToUtf8_ReadOnlySpan_System_Byte__System_Buffers_IBufferWriter_System_Byte__System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8(ReadOnlySpan{System.Byte},System.Buffers.IBufferWriter{System.Byte},System.Boolean)">EncodeToUtf8(ReadOnlySpan&lt;Byte&gt;, IBufferWriter&lt;Byte&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded UTF-8 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToUtf8(ReadOnlySpan&lt;byte&gt; bytes, IBufferWriter&lt;byte&gt; output, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToUtf8__1_ReadOnlySpan_System_Byte_____0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToUtf8%60%601(ReadOnlySpan%7BSystem.Byte%7D%2C%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToUtf8_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToUtf8__1_ReadOnlySpan_System_Byte_____0_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8``1(ReadOnlySpan{System.Byte},,``0,System.Boolean)">EncodeToUtf8&lt;TArg&gt;(ReadOnlySpan&lt;Byte&gt;, delegate*&lt;ReadOnlySpan&lt;Byte&gt;, TArg, Void&gt;, TArg, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded UTF-8 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToUtf8&lt;TArg&gt;(ReadOnlySpan&lt;byte&gt; bytes, delegate*&lt;ReadOnlySpan&lt;byte&gt;, TArg, void&gt; output, TArg arg, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;<span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, TArg, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The consumer called for encoded portion of data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the callback.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToUtf8__1_ReadOnlySpan_System_Byte____0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToUtf8%60%601(ReadOnlySpan%7BSystem.Byte%7D%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L155">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToUtf8_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToUtf8__1_ReadOnlySpan_System_Byte____0_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8``1(ReadOnlySpan{System.Byte},``0,System.Boolean)">EncodeToUtf8&lt;TConsumer&gt;(ReadOnlySpan&lt;Byte&gt;, TConsumer, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded UTF-8 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToUtf8&lt;TConsumer&gt;(ReadOnlySpan&lt;byte&gt; bytes, TConsumer output, bool flush = false)
+
+    where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TConsumer</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The consumer called for encoded portion of data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TConsumer</span></td>
+        <td><p>The type of the consumer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_EncodeToUtf8__1_ReadOnlySpan_System_Byte__System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.EncodeToUtf8%60%601(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L175">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_EncodeToUtf8_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_EncodeToUtf8__1_ReadOnlySpan_System_Byte__System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Boolean_" data-uid="DotNext.Text.Base64Encoder.EncodeToUtf8``1(ReadOnlySpan{System.Byte},System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Boolean)">EncodeToUtf8&lt;TArg&gt;(ReadOnlySpan&lt;Byte&gt;, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Encodes a block of bytes to base64-encoded UTF-8 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EncodeToUtf8&lt;TArg&gt;(ReadOnlySpan&lt;byte&gt; bytes, ReadOnlySpanAction&lt;byte, TArg&gt; output, TArg arg, bool flush = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>A block of bytes to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The consumer called for encoded portion of data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the callback.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">flush</span></td>
+        <td><p><span class="xref">true</span> to encode the final block and insert padding if necessary;
+<span class="xref">false</span> to encode a fragment without padding.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_Flush_DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.Flush(DotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L210">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_Flush_" data-uid="DotNext.Text.Base64Encoder.Flush*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_Flush_DotNext_Span_System_Byte__" data-uid="DotNext.Text.Base64Encoder.Flush(DotNext.Span{System.Byte})">Flush(Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Flushes the buffered data as base64-encoded UTF-8 characters to the output buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Flush(Span&lt;byte&gt; output)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output buffer of size 4.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of written bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_Flush_DotNext_Span_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.Flush(DotNext.Span%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Unicode.cs/#L242">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_Flush_" data-uid="DotNext.Text.Base64Encoder.Flush*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_Flush_DotNext_Span_System_Char__" data-uid="DotNext.Text.Base64Encoder.Flush(DotNext.Span{System.Char})">Flush(Span&lt;Char&gt;)</h4>
+  <div class="markdown level1 summary"><p>Flushes the buffered data as base64-encoded characters to the output buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Flush(Span&lt;char&gt; output)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The buffer of characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_GetBufferedData_DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.GetBufferedData(DotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.cs/#L62">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_GetBufferedData_" data-uid="DotNext.Text.Base64Encoder.GetBufferedData*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_GetBufferedData_DotNext_Span_System_Byte__" data-uid="DotNext.Text.Base64Encoder.GetBufferedData(DotNext.Span{System.Byte})">GetBufferedData(Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets the buffered data.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int GetBufferedData(Span&lt;byte&gt; output)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of bytes copied to <code data-dev-comment-type="paramref" class="paramref">output</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder_Reset.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_Text_Base64Encoder_Reset_" data-uid="DotNext.Text.Base64Encoder.Reset*"></a>
+  <h4 id="DotNext_Text_Base64Encoder_Reset" data-uid="DotNext.Text.Base64Encoder.Reset">Reset()</h4>
+  <div class="markdown level1 summary"><p>Resets the internal state of the encoder.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_Base64Encoder.md&amp;value=---%0Auid%3A%20DotNext.Text.Base64Encoder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/Base64Encoder.Utf8.cs/#L11" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

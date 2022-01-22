@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IResultMonad&lt;T, TError&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,7 +78,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_Value">IOptionMonad&lt;T&gt;.Value</a>
+      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_DotNext_ISupplier_System_Object__Invoke">IOptionMonad&lt;T&gt;.ISupplier&lt;Object&gt;.Invoke()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_HasValue">IOptionMonad&lt;T&gt;.HasValue</a>
@@ -95,12 +95,15 @@
     <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_TryGet__0__">IOptionMonad&lt;T&gt;.TryGet(T)</a>
     </div>
+    <div>
+      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Object&gt;.Invoke()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IResultMonad_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IResultMonad&lt;T, TError&gt; : IOptionMonad&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IResultMonad&lt;T, TError&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">

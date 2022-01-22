@@ -8,7 +8,7 @@
     <title>Alloc vs Pooling | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Alloc vs Pooling | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -125,7 +125,7 @@ rentedMemory.Memory.Slice(0, 5);
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 
-using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
+using var writer = new PooledArrayBufferWriter&lt;byte&gt; { BufferPool = ArrayPool&lt;byte&gt;.Shared };
 
 // write bytes using stream
 using Stream writeStream = StreamSource.AsStream(writer);

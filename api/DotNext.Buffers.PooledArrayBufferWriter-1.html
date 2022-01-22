@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PooledArrayBufferWriter&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -197,7 +197,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IReadOnlyList&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IDisposable, ISupplier&lt;ArraySegment&lt;T&gt;&gt;, IList&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, ISupplier&lt;ArraySegment&lt;T&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -225,11 +225,11 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L49">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor">PooledArrayBufferWriter()</h4>
-  <div class="markdown level1 summary"><p>Initializes a new writer with the default initial capacity and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#System_Buffers_ArrayPool_1_Shared">Shared</a>
+  <div class="markdown level1 summary"><p>Initializes a new writer with the default initial capacity and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>
 as the array pooling mechanism.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -237,12 +237,17 @@ as the array pooling mechanism.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public PooledArrayBufferWriter()</code></pre>
   </div>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool">BufferPool</a></div>
+      <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity">Capacity</a></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})">PooledArrayBufferWriter(ArrayPool&lt;T&gt;)</h4>
@@ -316,11 +321,11 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L60">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L53">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Int32)">PooledArrayBufferWriter(Int32)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new writer with the specified initial capacity and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#System_Buffers_ArrayPool_1_Shared">Shared</a>
+  <div class="markdown level1 summary"><p>Initializes a new writer with the specified initial capacity and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>
 as the array pooling mechanism.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -350,19 +355,53 @@ as the array pooling mechanism.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.BufferPool%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L242">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L78">View Source</a>
   </span>
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity*"></a>
-  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity">Capacity</h4>
-  <div class="markdown level1 summary"><p>Gets the total amount of space within the underlying memory.</p>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.BufferPool*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.BufferPool">BufferPool</h4>
+  <div class="markdown level1 summary"><p>Sets the array pool that will be used to rent the internal buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Capacity { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public ArrayPool&lt;T&gt; BufferPool { set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It is recommended to initialize this property before <a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity">Capacity</a>.
+<span class="xref">null</span> value is the same as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L271">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int Capacity { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -386,7 +425,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L82">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L114">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int32)">Item[Int32]</h4>
@@ -436,7 +475,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Item(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int64_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int64)">Item[Int64]</h4>
@@ -486,7 +525,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.WrittenArray%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L268">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L309">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray">WrittenArray</h4>
@@ -517,7 +556,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.WrittenMemory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L255">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L296">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory">WrittenMemory</h4>
@@ -552,7 +591,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_ICollection__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.AddAll(ICollection%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L376">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L417">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.AddAll*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_ICollection__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.AddAll(ICollection{`0})">AddAll(ICollection&lt;T&gt;)</h4>
@@ -584,7 +623,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Clear(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L291">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L332">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear(System.Boolean)">Clear(Boolean)</h4>
@@ -620,7 +659,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.DetachBuffer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L309">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L350">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DetachBuffer*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DetachBuffer">DetachBuffer()</h4>
@@ -652,7 +691,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L459">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L500">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -686,7 +725,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetArray(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L366">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L407">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray(System.Int32)">GetArray(Int32)</h4>
@@ -736,7 +775,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetMemory(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L334">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L375">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory(System.Int32)">GetMemory(Int32)</h4>
@@ -788,7 +827,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetSpan(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L350">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L391">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan(System.Int32)">GetSpan(Int32)</h4>
@@ -840,7 +879,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Insert_System_Int32_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Insert(System.Int32%2CReadOnlySpan%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L161">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Insert_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Insert*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Insert_System_Int32_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Insert(System.Int32,ReadOnlySpan{`0})">Insert(Int32, ReadOnlySpan&lt;T&gt;)</h4>
@@ -880,7 +919,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_System_Int32_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Overwrite(System.Int32%2CReadOnlySpan%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L201">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L233">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Overwrite*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_System_Int32_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Overwrite(System.Int32,ReadOnlySpan{`0})">Overwrite(Int32, ReadOnlySpan&lt;T&gt;)</h4>
@@ -920,7 +959,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.RemoveFirst(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L425">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L466">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveFirst*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveFirst(System.Int32)">RemoveFirst(Int32)</h4>
@@ -954,7 +993,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.RemoveLast(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L395">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L436">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveLast*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveLast(System.Int32)">RemoveLast(Int32)</h4>
@@ -990,7 +1029,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_ISupplier_ArraySegment_T___Invoke.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.DotNext%23ISupplier%7BArraySegment%7BT%7D%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L319">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_ISupplier_ArraySegment_T___Invoke_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#ISupplier{ArraySegment{T}}#Invoke*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_ISupplier_ArraySegment_T___Invoke" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#ISupplier{ArraySegment{T}}#Invoke">ISupplier&lt;ArraySegment&lt;T&gt;&gt;.Invoke()</h4>

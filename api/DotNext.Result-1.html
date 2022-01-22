@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct Result&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,30 +81,31 @@
     <div><a class="xref" href="DotNext.IResultMonad-2.html">IResultMonad</a>&lt;T, <span class="xref">Exception</span>&gt;</div>
     <div><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad</a>&lt;T, <a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Result_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct Result&lt;T&gt; : IResultMonad&lt;T, Exception, Result&lt;T&gt;&gt;, IResultMonad&lt;T, Exception&gt;, IOptionMonad&lt;T, Result&lt;T&gt;&gt;, IOptionMonad&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct Result&lt;T&gt; : IResultMonad&lt;T, Exception, Result&lt;T&gt;&gt;, IResultMonad&lt;T, Exception&gt;, IOptionMonad&lt;T, Result&lt;T&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -129,7 +130,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Result_1__ctor_" data-uid="DotNext.Result`1.#ctor*"></a>
   <h4 id="DotNext_Result_1__ctor__0_" data-uid="DotNext.Result`1.#ctor(`0)">Result(T)</h4>
@@ -163,7 +164,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1__ctor_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.%23ctor(Exception)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L124">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L125">View Source</a>
   </span>
   <a id="DotNext_Result_1__ctor_" data-uid="DotNext.Result`1.#ctor*"></a>
   <h4 id="DotNext_Result_1__ctor_Exception_" data-uid="DotNext.Result`1.#ctor(Exception)">Result(Exception)</h4>
@@ -230,7 +231,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_IsSuccessful.md&amp;value=---%0Auid%3A%20DotNext.Result%601.IsSuccessful%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L172">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L167">View Source</a>
   </span>
   <a id="DotNext_Result_1_IsSuccessful_" data-uid="DotNext.Result`1.IsSuccessful*"></a>
   <h4 id="DotNext_Result_1_IsSuccessful" data-uid="DotNext.Result`1.IsSuccessful">IsSuccessful</h4>
@@ -262,7 +263,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Result%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L182">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L177">View Source</a>
   </span>
   <a id="DotNext_Result_1_Value_" data-uid="DotNext.Result`1.Value*"></a>
   <h4 id="DotNext_Result_1_Value" data-uid="DotNext.Result`1.Value">Value</h4>
@@ -461,7 +462,7 @@ caused by the converter.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_FromOptional_DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.FromOptional(DotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L155">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Result_1_FromOptional_" data-uid="DotNext.Result`1.FromOptional*"></a>
   <h4 id="DotNext_Result_1_FromOptional_DotNext_Optional__0___" data-uid="DotNext.Result`1.FromOptional(DotNext.Optional{`0}@)">FromOptional(in Optional&lt;T&gt;)</h4>
@@ -821,7 +822,7 @@ caused by the converter.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_TryGet.md&amp;value=---%0Auid%3A%20DotNext.Result%601.TryGet%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -1268,7 +1269,7 @@ caused by the converter.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_DotNext_IOptionMonad_T__HasValue.md&amp;value=---%0Auid%3A%20DotNext.Result%601.DotNext%23IOptionMonad%7BT%7D%23HasValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L176">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_Result_1_DotNext_IOptionMonad_T__HasValue_" data-uid="DotNext.Result`1.DotNext#IOptionMonad{T}#HasValue*"></a>
   <h4 id="DotNext_Result_1_DotNext_IOptionMonad_T__HasValue" data-uid="DotNext.Result`1.DotNext#IOptionMonad{T}#HasValue">IOptionMonad&lt;T&gt;.HasValue</h4>
@@ -1293,6 +1294,36 @@ caused by the converter.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_DotNext_ISupplier_System_Object__Invoke.md&amp;value=---%0Auid%3A%20DotNext.Result%601.DotNext%23ISupplier%7BSystem%23Object%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_DotNext_ISupplier_System_Object__Invoke_" data-uid="DotNext.Result`1.DotNext#ISupplier{System#Object}#Invoke*"></a>
+  <h4 id="DotNext_Result_1_DotNext_ISupplier_System_Object__Invoke" data-uid="DotNext.Result`1.DotNext#ISupplier{System#Object}#Invoke">ISupplier&lt;Object&gt;.Invoke()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly object ISupplier&lt;object&gt;.Invoke()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.IResultMonad-3.html">IResultMonad&lt;T, TError, TSelf&gt;</a>
@@ -1305,6 +1336,9 @@ caused by the converter.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -1327,7 +1361,7 @@ caused by the converter.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1.md&amp;value=---%0Auid%3A%20DotNext.Result%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L104" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L105" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

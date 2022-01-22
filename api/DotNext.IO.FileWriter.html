@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class FileWriter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,6 +85,8 @@
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a></div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
+    <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -132,7 +134,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class FileWriter : Disposable, IAsyncBinaryWriter, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class FileWriter : Disposable, IAsyncBinaryWriter, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IBufferWriter&lt;byte&gt;, IFlushable</code></pre>
   </div>
   <h5 id="DotNext_IO_FileWriter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class is not thread-safe. However, it's possible to share the same file
@@ -265,7 +267,7 @@ handle across multiple writers and use dedicated writer in each thread.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_FilePosition.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.FilePosition%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L103">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_FilePosition_" data-uid="DotNext.IO.FileWriter.FilePosition*"></a>
   <h4 id="DotNext_IO_FileWriter_FilePosition" data-uid="DotNext.IO.FileWriter.FilePosition">FilePosition</h4>
@@ -296,7 +298,7 @@ handle across multiple writers and use dedicated writer in each thread.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_HasBufferedData.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.HasBufferedData%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L94">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_HasBufferedData_" data-uid="DotNext.IO.FileWriter.HasBufferedData*"></a>
   <h4 id="DotNext_IO_FileWriter_HasBufferedData" data-uid="DotNext.IO.FileWriter.HasBufferedData">HasBufferedData</h4>
@@ -327,7 +329,7 @@ handle across multiple writers and use dedicated writer in each thread.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_MaxBufferSize.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.MaxBufferSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_MaxBufferSize_" data-uid="DotNext.IO.FileWriter.MaxBufferSize*"></a>
   <h4 id="DotNext_IO_FileWriter_MaxBufferSize" data-uid="DotNext.IO.FileWriter.MaxBufferSize">MaxBufferSize</h4>
@@ -358,7 +360,7 @@ handle across multiple writers and use dedicated writer in each thread.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WritePosition.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WritePosition%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L123">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L125">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WritePosition_" data-uid="DotNext.IO.FileWriter.WritePosition*"></a>
   <h4 id="DotNext_IO_FileWriter_WritePosition" data-uid="DotNext.IO.FileWriter.WritePosition">WritePosition</h4>
@@ -395,7 +397,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_ClearBuffer.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.ClearBuffer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_ClearBuffer_" data-uid="DotNext.IO.FileWriter.ClearBuffer*"></a>
   <h4 id="DotNext_IO_FileWriter_ClearBuffer" data-uid="DotNext.IO.FileWriter.ClearBuffer">ClearBuffer()</h4>
@@ -411,7 +413,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_CopyFromAsync_Stream_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.CopyFromAsync(Stream%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L241">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L284">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_CopyFromAsync_" data-uid="DotNext.IO.FileWriter.CopyFromAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_CopyFromAsync_Stream_CancellationToken_" data-uid="DotNext.IO.FileWriter.CopyFromAsync(Stream,CancellationToken)">CopyFromAsync(Stream, CancellationToken)</h4>
@@ -467,7 +469,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_CopyFromAsync_System_IO_Pipelines_PipeReader_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.CopyFromAsync(System.IO.Pipelines.PipeReader%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L260">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L303">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_CopyFromAsync_" data-uid="DotNext.IO.FileWriter.CopyFromAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_CopyFromAsync_System_IO_Pipelines_PipeReader_CancellationToken_" data-uid="DotNext.IO.FileWriter.CopyFromAsync(System.IO.Pipelines.PipeReader,CancellationToken)">CopyFromAsync(PipeReader, CancellationToken)</h4>
@@ -523,7 +525,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L248">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L256">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_Dispose_" data-uid="DotNext.IO.FileWriter.Dispose*"></a>
   <h4 id="DotNext_IO_FileWriter_Dispose_System_Boolean_" data-uid="DotNext.IO.FileWriter.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -557,7 +559,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_Produce_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.Produce(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_Produce_" data-uid="DotNext.IO.FileWriter.Produce*"></a>
   <h4 id="DotNext_IO_FileWriter_Produce_System_Int32_" data-uid="DotNext.IO.FileWriter.Produce(System.Int32)">Produce(Int32)</h4>
@@ -591,7 +593,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_Write.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.Write%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L161">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L166">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_Write_" data-uid="DotNext.IO.FileWriter.Write*"></a>
   <h4 id="DotNext_IO_FileWriter_Write" data-uid="DotNext.IO.FileWriter.Write">Write()</h4>
@@ -607,7 +609,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_Write_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.Write(ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L232">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L240">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_Write_" data-uid="DotNext.IO.FileWriter.Write*"></a>
   <h4 id="DotNext_IO_FileWriter_Write_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.FileWriter.Write(ReadOnlySpan{System.Byte})">Write(ReadOnlySpan&lt;Byte&gt;)</h4>
@@ -641,7 +643,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L146">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteAsync_CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteAsync(CancellationToken)">WriteAsync(CancellationToken)</h4>
@@ -691,7 +693,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteAsync_ReadOnlyMemory_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteAsync(ReadOnlyMemory%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L212">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L220">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteAsync_ReadOnlyMemory_System_Byte__CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteAsync(ReadOnlyMemory{System.Byte},CancellationToken)">WriteAsync(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</h4>
@@ -747,7 +749,7 @@ performs buffered write.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteAsync_ReadOnlyMemory_System_Byte__DotNext_IO_LengthFormat_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteAsync(ReadOnlyMemory%7BSystem.Byte%7D%2CDotNext.IO.LengthFormat%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteAsync_ReadOnlyMemory_System_Byte__DotNext_IO_LengthFormat_CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteAsync(ReadOnlyMemory{System.Byte},DotNext.IO.LengthFormat,CancellationToken)">WriteAsync(ReadOnlyMemory&lt;Byte&gt;, LengthFormat, CancellationToken)</h4>
@@ -810,7 +812,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L32">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteAsync__1___0_CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteAsync``1(``0,CancellationToken)">WriteAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -819,7 +821,7 @@ according with the specified format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async ValueTask WriteAsync&lt;T&gt;(T value, CancellationToken token = null)
+    <pre><code class="lang-csharp hljs">public ValueTask WriteAsync&lt;T&gt;(T value, CancellationToken token = null)
 
     where T : struct</code></pre>
   </div>
@@ -884,7 +886,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteBigIntegerAsync_System_Numerics_BigInteger_System_Boolean_System_Nullable_DotNext_IO_LengthFormat__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteBigIntegerAsync(System.Numerics.BigInteger%2CSystem.Boolean%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L136">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L179">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteBigIntegerAsync_" data-uid="DotNext.IO.FileWriter.WriteBigIntegerAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteBigIntegerAsync_System_Numerics_BigInteger_System_Boolean_System_Nullable_DotNext_IO_LengthFormat__CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteBigIntegerAsync(System.Numerics.BigInteger,System.Boolean,System.Nullable{DotNext.IO.LengthFormat},CancellationToken)">WriteBigIntegerAsync(BigInteger, Boolean, Nullable&lt;LengthFormat&gt;, CancellationToken)</h4>
@@ -952,7 +954,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteFormattableAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteFormattableAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L209">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L252">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteFormattableAsync_" data-uid="DotNext.IO.FileWriter.WriteFormattableAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteFormattableAsync__1___0_CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteFormattableAsync``1(``0,CancellationToken)">WriteFormattableAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -1026,7 +1028,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteFormattableAsync__1___0_DotNext_IO_LengthFormat_DotNext_Text_EncodingContext_System_String_System_Nullable_IFormatProvider__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteFormattableAsync%60%601(%60%600%2CDotNext.IO.LengthFormat%2CDotNext.Text.EncodingContext%2CSystem.String%2CSystem.Nullable%7BIFormatProvider%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L181">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L224">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteFormattableAsync_" data-uid="DotNext.IO.FileWriter.WriteFormattableAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteFormattableAsync__1___0_DotNext_IO_LengthFormat_DotNext_Text_EncodingContext_System_String_System_Nullable_IFormatProvider__CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteFormattableAsync``1(``0,DotNext.IO.LengthFormat,DotNext.Text.EncodingContext,System.String,System.Nullable{IFormatProvider},CancellationToken)">WriteFormattableAsync&lt;T&gt;(T, LengthFormat, EncodingContext, String, Nullable&lt;IFormatProvider&gt;, CancellationToken)</h4>
@@ -1124,7 +1126,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_WriteStringAsync_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.WriteStringAsync(ReadOnlyMemory%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L97">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L134">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_WriteStringAsync_" data-uid="DotNext.IO.FileWriter.WriteStringAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_WriteStringAsync_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__CancellationToken_" data-uid="DotNext.IO.FileWriter.WriteStringAsync(ReadOnlyMemory{System.Char},DotNext.Text.EncodingContext,System.Nullable{DotNext.IO.LengthFormat},CancellationToken)">WriteStringAsync(ReadOnlyMemory&lt;Char&gt;, EncodingContext, Nullable&lt;LengthFormat&gt;, CancellationToken)</h4>
@@ -1194,7 +1196,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_CopyFromAsync__1_DotNext_Func___0_CancellationToken_ValueTask_ReadOnlyMemory_System_Byte______0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23IO%23IAsyncBinaryWriter%23CopyFromAsync%60%601(DotNext.Func%7B%60%600%2CCancellationToken%2CValueTask%7BReadOnlyMemory%7BSystem.Byte%7D%7D%7D%2C%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L264">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L307">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#CopyFromAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_CopyFromAsync__1_DotNext_Func___0_CancellationToken_ValueTask_ReadOnlyMemory_System_Byte______0_CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#CopyFromAsync``1(DotNext.Func{``0,CancellationToken,ValueTask{ReadOnlyMemory{System.Byte}}},``0,CancellationToken)">IAsyncBinaryWriter.CopyFromAsync&lt;TArg&gt;(Func&lt;TArg, CancellationToken, ValueTask&lt;ReadOnlyMemory&lt;Byte&gt;&gt;&gt;, TArg, CancellationToken)</h4>
@@ -1263,10 +1265,40 @@ according with the specified format.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_TryGetBufferWriter.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23IO%23IAsyncBinaryWriter%23TryGetBufferWriter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L349">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_TryGetBufferWriter_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#TryGetBufferWriter*"></a>
+  <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_TryGetBufferWriter" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#TryGetBufferWriter">IAsyncBinaryWriter.TryGetBufferWriter()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IBufferWriter&lt;byte&gt; IAsyncBinaryWriter.TryGetBufferWriter()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_ReadOnlyMemory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23IO%23IAsyncBinaryWriter%23WriteAsync(ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L231">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L274">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_ReadOnlyMemory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync(ReadOnlyMemory{System.Byte},System.Nullable{DotNext.IO.LengthFormat},CancellationToken)">IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory&lt;Byte&gt;, Nullable&lt;LengthFormat&gt;, CancellationToken)</h4>
@@ -1323,7 +1355,7 @@ according with the specified format.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync__1_Action___0_System_Buffers_IBufferWriter_System_Byte_____0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23IO%23IAsyncBinaryWriter%23WriteAsync%60%601(Action%7B%60%600%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D%7D%2C%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L275">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L318">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_IO_IAsyncBinaryWriter_WriteAsync__1_Action___0_System_Buffers_IBufferWriter_System_Byte_____0_CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IAsyncBinaryWriter#WriteAsync``1(Action{``0,System.Buffers.IBufferWriter{System.Byte}},``0,CancellationToken)">IAsyncBinaryWriter.WriteAsync&lt;TArg&gt;(Action&lt;TArg, IBufferWriter&lt;Byte&gt;&gt;, TArg, CancellationToken)</h4>
@@ -1331,7 +1363,7 @@ according with the specified format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">async ValueTask IAsyncBinaryWriter.WriteAsync&lt;TArg&gt;(Action&lt;TArg, IBufferWriter&lt;byte&gt;&gt; writer, TArg arg, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask IAsyncBinaryWriter.WriteAsync&lt;TArg&gt;(Action&lt;TArg, IBufferWriter&lt;byte&gt;&gt; writer, TArg arg, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1392,10 +1424,25 @@ according with the specified format.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_IO_IFlushable_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23IO%23IFlushable%23Flush%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.cs/#L175">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileWriter_DotNext_IO_IFlushable_Flush_" data-uid="DotNext.IO.FileWriter.DotNext#IO#IFlushable#Flush*"></a>
+  <h4 id="DotNext_IO_FileWriter_DotNext_IO_IFlushable_Flush" data-uid="DotNext.IO.FileWriter.DotNext#IO#IFlushable#Flush">IFlushable.Flush()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void IFlushable.Flush()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_ReadOnlyMemory_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.DotNext%23ISupplier%7BReadOnlyMemory%7BSystem%23Byte%7D%2CCancellationToken%2CValueTask%7D%23Invoke(ReadOnlyMemory%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L271">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L314">View Source</a>
   </span>
   <a id="DotNext_IO_FileWriter_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_" data-uid="DotNext.IO.FileWriter.DotNext#ISupplier{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}#Invoke*"></a>
   <h4 id="DotNext_IO_FileWriter_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_ReadOnlyMemory_System_Byte__CancellationToken_" data-uid="DotNext.IO.FileWriter.DotNext#ISupplier{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}#Invoke(ReadOnlyMemory{System.Byte},CancellationToken)">ISupplier&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</h4>
@@ -1442,12 +1489,50 @@ according with the specified format.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_System_Buffers_IBufferWriter_System_Byte__Advance_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.System%23Buffers%23IBufferWriter%7BSystem%23Byte%7D%23Advance(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.BufferWriter.cs/#L11">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileWriter_System_Buffers_IBufferWriter_System_Byte__Advance_" data-uid="DotNext.IO.FileWriter.System#Buffers#IBufferWriter{System#Byte}#Advance*"></a>
+  <h4 id="DotNext_IO_FileWriter_System_Buffers_IBufferWriter_System_Byte__Advance_System_Int32_" data-uid="DotNext.IO.FileWriter.System#Buffers#IBufferWriter{System#Byte}#Advance(System.Int32)">IBufferWriter&lt;Byte&gt;.Advance(Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void IBufferWriter&lt;byte&gt;.Advance(int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">System.Buffers.IBufferWriter&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -1481,6 +1566,21 @@ according with the specified format.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0____0_">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_">BufferHelpers.WriteFormattable&lt;T&gt;(IBufferWriter&lt;Byte&gt;, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte__ReadOnlySpan___0__">BufferHelpers.WriteFormattable&lt;T&gt;(IBufferWriter&lt;Byte&gt;, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsStream__1___0_System_Nullable_Action___0___System_Nullable_DotNext_Func___0_CancellationToken_Task___">StreamSource.AsStream&lt;TWriter&gt;(TWriter, Nullable&lt;Action&lt;TWriter&gt;&gt;, Nullable&lt;Func&lt;TWriter, CancellationToken, Task&gt;&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
@@ -1497,6 +1597,45 @@ according with the specified format.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter_System_Byte____0__">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;Byte&gt;, in T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteBigInteger_System_Buffers_IBufferWriter_System_Byte__System_Numerics_BigInteger__System_Boolean_System_Nullable_DotNext_IO_LengthFormat__">BufferWriter.WriteBigInteger(IBufferWriter&lt;Byte&gt;, in BigInteger, Boolean, Nullable&lt;LengthFormat&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_">BufferWriter.WriteInt64(IBufferWriter&lt;Byte&gt;, Int64, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_">BufferWriter.WriteUInt64(IBufferWriter&lt;Byte&gt;, UInt64, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_">BufferWriter.WriteInt32(IBufferWriter&lt;Byte&gt;, Int32, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_">BufferWriter.WriteUInt32(IBufferWriter&lt;Byte&gt;, UInt32, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_">BufferWriter.WriteInt16(IBufferWriter&lt;Byte&gt;, Int16, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_">BufferWriter.WriteUInt16(IBufferWriter&lt;Byte&gt;, UInt16, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__">BufferWriter.WriteString(IBufferWriter&lt;Byte&gt;, ReadOnlySpan&lt;Char&gt;, in EncodingContext, Nullable&lt;LengthFormat&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__DotNext_Text_EncodingContext__ReadOnlySpan_System_Char__System_Nullable_IFormatProvider__">BufferWriter.WriteFormattable&lt;T&gt;(IBufferWriter&lt;Byte&gt;, T, Nullable&lt;LengthFormat&gt;, in EncodingContext, ReadOnlySpan&lt;Char&gt;, Nullable&lt;IFormatProvider&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__DotNext_Span_System_Char__System_Nullable_IFormatProvider__DotNext_Buffers_BufferWriter_EncodingInterpolatedStringHandler__">BufferWriter.WriteString(IBufferWriter&lt;Byte&gt;, in EncodingContext, Span&lt;Char&gt;, Nullable&lt;IFormatProvider&gt;, ref BufferWriter.EncodingInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__DotNext_Buffers_BufferWriter_EncodingInterpolatedStringHandler__">BufferWriter.WriteString(IBufferWriter&lt;Byte&gt;, in EncodingContext, ref BufferWriter.EncodingInterpolatedStringHandler)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_AsTextWriter__1___0_System_Text_Encoding_System_Nullable_IFormatProvider__System_Nullable_Action___0___System_Nullable_DotNext_Func___0_CancellationToken_Task___">TextStreamExtensions.AsTextWriter&lt;TWriter&gt;(TWriter, Encoding, Nullable&lt;IFormatProvider&gt;, Nullable&lt;Action&lt;TWriter&gt;&gt;, Nullable&lt;Func&lt;TWriter, CancellationToken, Task&gt;&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>

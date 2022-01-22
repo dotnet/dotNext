@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Type&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,22 +83,22 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
@@ -157,7 +157,7 @@
   </table>
   <h5 id="DotNext_Reflection_Type_1_Equals_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>If type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> has equality operator then use it.
-Otherwise, for reference types, this delegate always calls <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Equals(Object, Object)</a> method.
+Otherwise, for reference types, this delegate always calls <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Equals(Object, Object)</a> method.
 For value type, it calls equality operator or <see cref="!:IEquatable&lt;T>.Equals(T)"></see> if it is implemented by the value type; else,
 it calls <a class="xref" href="DotNext.BitwiseComparer-1.html#DotNext_BitwiseComparer_1_Equals__1__0____0__">Equals&lt;TOther&gt;(in T, in TOther)</a>.</p>
 </div>
@@ -192,8 +192,8 @@ it calls <a class="xref" href="DotNext.BitwiseComparer-1.html#DotNext_BitwiseCom
     </tbody>
   </table>
   <h5 id="DotNext_Reflection_Type_1_GetHashCode_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>For reference types, this delegate always calls <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">GetHashCode()</a> virtual method.
-For value type, it calls <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">GetHashCode()</a> if it is overridden by the value type; otherwise,
+  <div class="markdown level1 remarks"><p>For reference types, this delegate always calls <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">GetHashCode()</a> virtual method.
+For value type, it calls <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">GetHashCode()</a> if it is overridden by the value type; otherwise,
 it calls <a class="xref" href="DotNext.BitwiseComparer-1.html#DotNext_BitwiseComparer_1_GetHashCode__0__System_Boolean_">GetHashCode(in T, Boolean)</a>.</p>
 </div>
   <h3 id="properties">Properties

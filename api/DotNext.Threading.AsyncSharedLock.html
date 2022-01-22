@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncSharedLock
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -110,6 +110,9 @@
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_">QueuedSynchronizer.Dispose(Boolean)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Nullable_Exception__">QueuedSynchronizer.Dispose(Nullable&lt;Exception&gt;)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore">QueuedSynchronizer.DisposeAsyncCore()</a>
     </div>
     <div>
@@ -153,7 +156,7 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncSharedLock_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncSharedLock : QueuedSynchronizer</code></pre>
   </div>
   <h5 id="DotNext_Threading_AsyncSharedLock_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This lock represents the combination of semaphore and reader-writer
@@ -337,7 +340,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncSharedLock_AcquireAsync_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncSharedLock.AcquireAsync(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L232">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L260">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncSharedLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncSharedLock.AcquireAsync*"></a>
   <h4 id="DotNext_Threading_AsyncSharedLock_AcquireAsync_System_Boolean_CancellationToken_" data-uid="DotNext.Threading.AsyncSharedLock.AcquireAsync(System.Boolean,CancellationToken)">AcquireAsync(Boolean, CancellationToken)</h4>
@@ -393,7 +396,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncSharedLock_AcquireAsync_System_Boolean_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncSharedLock.AcquireAsync(System.Boolean%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L209">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L227">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncSharedLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncSharedLock.AcquireAsync*"></a>
   <h4 id="DotNext_Threading_AsyncSharedLock_AcquireAsync_System_Boolean_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncSharedLock.AcquireAsync(System.Boolean,TimeSpan,CancellationToken)">AcquireAsync(Boolean, TimeSpan, CancellationToken)</h4>
@@ -455,7 +458,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncSharedLock_Downgrade.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncSharedLock.Downgrade%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L276">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L318">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncSharedLock_Downgrade_" data-uid="DotNext.Threading.AsyncSharedLock.Downgrade*"></a>
   <h4 id="DotNext_Threading_AsyncSharedLock_Downgrade" data-uid="DotNext.Threading.AsyncSharedLock.Downgrade">Downgrade()</h4>
@@ -471,7 +474,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncSharedLock_Release.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncSharedLock.Release%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L293">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L335">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncSharedLock_Release_" data-uid="DotNext.Threading.AsyncSharedLock.Release*"></a>
   <h4 id="DotNext_Threading_AsyncSharedLock_Release" data-uid="DotNext.Threading.AsyncSharedLock.Release">Release()</h4>
@@ -537,7 +540,7 @@ otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncSharedLock_TryAcquireAsync_System_Boolean_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncSharedLock.TryAcquireAsync(System.Boolean%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L183">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L191">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncSharedLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncSharedLock.TryAcquireAsync*"></a>
   <h4 id="DotNext_Threading_AsyncSharedLock_TryAcquireAsync_System_Boolean_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncSharedLock.TryAcquireAsync(System.Boolean,TimeSpan,CancellationToken)">TryAcquireAsync(Boolean, TimeSpan, CancellationToken)</h4>
@@ -661,7 +664,7 @@ otherwise, <span class="xref">false</span>.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncSharedLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncSharedLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L19" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncSharedLock.cs/#L18" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

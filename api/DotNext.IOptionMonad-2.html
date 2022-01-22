@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IOptionMonad&lt;T, TSelf&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,7 +78,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_Value">IOptionMonad&lt;T&gt;.Value</a>
+      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_DotNext_ISupplier_System_Object__Invoke">IOptionMonad&lt;T&gt;.ISupplier&lt;Object&gt;.Invoke()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_HasValue">IOptionMonad&lt;T&gt;.HasValue</a>
@@ -95,12 +95,15 @@
     <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_TryGet__0__">IOptionMonad&lt;T&gt;.TryGet(T)</a>
     </div>
+    <div>
+      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Object&gt;.Invoke()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IOptionMonad_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IOptionMonad&lt;T, TSelf&gt; : IOptionMonad&lt;T&gt; where TSelf : struct, IOptionMonad&lt;T, TSelf&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IOptionMonad&lt;T, TSelf&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt; where TSelf : struct, IOptionMonad&lt;T, TSelf&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -130,7 +133,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_Explicit__1____0.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Explicit(%601%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L70">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_Explicit_" data-uid="DotNext.IOptionMonad`2.op_Explicit*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_Explicit__1____0" data-uid="DotNext.IOptionMonad`2.op_Explicit(`1@)~`0">Explicit(in TSelf to T)</h4>
@@ -180,7 +183,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_False__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_False(%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L84">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_False_" data-uid="DotNext.IOptionMonad`2.op_False*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_False__1__" data-uid="DotNext.IOptionMonad`2.op_False(`1@)">False(in TSelf)</h4>
@@ -230,7 +233,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_Implicit__0___1.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Implicit(%600)~%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L63">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_Implicit_" data-uid="DotNext.IOptionMonad`2.op_Implicit*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_Implicit__0___1" data-uid="DotNext.IOptionMonad`2.op_Implicit(`0)~`1">Implicit(T to TSelf)</h4>
@@ -280,7 +283,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_True__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_True(%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L77">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_True_" data-uid="DotNext.IOptionMonad`2.op_True*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_True__1__" data-uid="DotNext.IOptionMonad`2.op_True(`1@)">True(in TSelf)</h4>
@@ -388,7 +391,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L54" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L55" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

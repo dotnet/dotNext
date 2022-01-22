@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PooledBufferWriter&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -203,7 +203,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_PooledBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IReadOnlyList&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IDisposable, IMemoryOwner&lt;T&gt;, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PooledBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IMemoryOwner&lt;T&gt;, IDisposable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -225,10 +225,31 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L43">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledBufferWriter`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_PooledBufferWriter_1__ctor" data-uid="DotNext.Buffers.PooledBufferWriter`1.#ctor">PooledBufferWriter()</h4>
+  <div class="markdown level1 summary"><p>Initializes a new empty writer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PooledBufferWriter()</code></pre>
+  </div>
+  <h5 id="DotNext_Buffers_PooledBufferWriter_1__ctor_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_BufferAllocator">BufferAllocator</a></div>
+      <div><a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Capacity">Capacity</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1__ctor_DotNext_Buffers_MemoryAllocator__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.%23ctor(DotNext.Buffers.MemoryAllocator%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L33">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1__ctor_DotNext_Buffers_MemoryAllocator__0__" data-uid="DotNext.Buffers.PooledBufferWriter`1.#ctor(DotNext.Buffers.MemoryAllocator{`0})">PooledBufferWriter(MemoryAllocator&lt;T&gt;)</h4>
@@ -237,7 +258,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PooledBufferWriter(MemoryAllocator&lt;T&gt; allocator = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public PooledBufferWriter(MemoryAllocator&lt;T&gt; allocator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -301,19 +322,52 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_BufferAllocator.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.BufferAllocator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L53">View Source</a>
   </span>
-  <a id="DotNext_Buffers_PooledBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Capacity*"></a>
-  <h4 id="DotNext_Buffers_PooledBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledBufferWriter`1.Capacity">Capacity</h4>
-  <div class="markdown level1 summary"><p>Gets the total amount of space within the underlying memory.</p>
+  <a id="DotNext_Buffers_PooledBufferWriter_1_BufferAllocator_" data-uid="DotNext.Buffers.PooledBufferWriter`1.BufferAllocator*"></a>
+  <h4 id="DotNext_Buffers_PooledBufferWriter_1_BufferAllocator" data-uid="DotNext.Buffers.PooledBufferWriter`1.BufferAllocator">BufferAllocator</h4>
+  <div class="markdown level1 summary"><p>Sets the allocator of internal buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Capacity { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public MemoryAllocator&lt;T&gt; BufferAllocator { set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_PooledBufferWriter_1_BufferAllocator_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It is recommended to initialize this property before <a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Capacity">Capacity</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L59">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Capacity*"></a>
+  <h4 id="DotNext_Buffers_PooledBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledBufferWriter`1.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int Capacity { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -337,7 +391,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_WrittenMemory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.WrittenMemory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L61">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L90">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_WrittenMemory_" data-uid="DotNext.Buffers.PooledBufferWriter`1.WrittenMemory*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_WrittenMemory" data-uid="DotNext.Buffers.PooledBufferWriter`1.WrittenMemory">WrittenMemory</h4>
@@ -372,7 +426,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.Clear(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L100">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Clear*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Clear(System.Boolean)">Clear(Boolean)</h4>
@@ -408,7 +462,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_DetachBuffer.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.DetachBuffer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L133">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_DetachBuffer_" data-uid="DotNext.Buffers.PooledBufferWriter`1.DetachBuffer*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_DetachBuffer" data-uid="DotNext.Buffers.PooledBufferWriter`1.DetachBuffer">DetachBuffer()</h4>
@@ -440,7 +494,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L131">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L160">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -474,7 +528,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.GetMemory(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L94">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PooledBufferWriter`1.GetMemory*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PooledBufferWriter`1.GetMemory(System.Int32)">GetMemory(Int32)</h4>

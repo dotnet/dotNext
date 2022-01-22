@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Optional
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,25 +83,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
@@ -267,7 +267,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_Create__2___1_.md&amp;value=---%0Auid%3A%20DotNext.Optional.Create%60%602(%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L221">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L231">View Source</a>
   </span>
   <a id="DotNext_Optional_Create_" data-uid="DotNext.Optional.Create*"></a>
   <h4 id="DotNext_Optional_Create__2___1_" data-uid="DotNext.Optional.Create``2(``1)">Create&lt;T, TMonad&gt;(TMonad)</h4>
@@ -337,10 +337,144 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_Flatten__1_DotNext_Optional_DotNext_Optional___0____.md&amp;value=---%0Auid%3A%20DotNext.Optional.Flatten%60%601(DotNext.Optional%7BDotNext.Optional%7B%60%600%7D%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L241">View Source</a>
+  </span>
+  <a id="DotNext_Optional_Flatten_" data-uid="DotNext.Optional.Flatten*"></a>
+  <h4 id="DotNext_Optional_Flatten__1_DotNext_Optional_DotNext_Optional___0____" data-uid="DotNext.Optional.Flatten``1(DotNext.Optional{DotNext.Optional{``0}}@)">Flatten&lt;T&gt;(in Optional&lt;Optional&lt;T&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Flattens the nested optional value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; Flatten&lt;T&gt;(this in Optional&lt;Optional&lt;T&gt;&gt; optional)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;<a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</td>
+        <td><span class="parametername">optional</span></td>
+        <td><p>The nested optional value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td><p>Flattened value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the underlying value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_GetReference__1_DotNext_Optional___0___.md&amp;value=---%0Auid%3A%20DotNext.Optional.GetReference%60%601(DotNext.Optional%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L217">View Source</a>
+  </span>
+  <a id="DotNext_Optional_GetReference_" data-uid="DotNext.Optional.GetReference*"></a>
+  <h4 id="DotNext_Optional_GetReference__1_DotNext_Optional___0___" data-uid="DotNext.Optional.GetReference``1(DotNext.Optional{``0}@)">GetReference&lt;T&gt;(in Optional&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Obtains immutable reference to the value in the container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ref readonly T GetReference&lt;T&gt;(in Optional&lt;T&gt; optional)
+
+    where T : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td><span class="parametername">optional</span></td>
+        <td><p>The optional container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The immutable reference to the value in the container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_GetReference__1_DotNext_Optional___0____.md&amp;value=---%0Auid%3A%20DotNext.Optional.GetReference%60%601(DotNext.Optional%7B%60%600%7D%40%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L209">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L205">View Source</a>
   </span>
   <a id="DotNext_Optional_GetReference_" data-uid="DotNext.Optional.GetReference*"></a>
   <h4 id="DotNext_Optional_GetReference__1_DotNext_Optional___0____" data-uid="DotNext.Optional.GetReference``1(DotNext.Optional{``0}@,)">GetReference&lt;T&gt;(in Optional&lt;T&gt;, delegate*&lt;Exception&gt;)</h4>
@@ -414,7 +548,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_GetReference__1_DotNext_Optional___0___DotNext_Func_Exception__.md&amp;value=---%0Auid%3A%20DotNext.Optional.GetReference%60%601(DotNext.Optional%7B%60%600%7D%40%2CDotNext.Func%7BException%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L198">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L194">View Source</a>
   </span>
   <a id="DotNext_Optional_GetReference_" data-uid="DotNext.Optional.GetReference*"></a>
   <h4 id="DotNext_Optional_GetReference__1_DotNext_Optional___0___DotNext_Func_Exception__" data-uid="DotNext.Optional.GetReference``1(DotNext.Optional{``0}@,DotNext.Func{Exception})">GetReference&lt;T&gt;(in Optional&lt;T&gt;, Func&lt;Exception&gt;)</h4>
@@ -488,7 +622,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_GetReference__2_DotNext_Optional___0___.md&amp;value=---%0Auid%3A%20DotNext.Optional.GetReference%60%602(DotNext.Optional%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L186">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_Optional_GetReference_" data-uid="DotNext.Optional.GetReference*"></a>
   <h4 id="DotNext_Optional_GetReference__2_DotNext_Optional___0___" data-uid="DotNext.Optional.GetReference``2(DotNext.Optional{``0}@)">GetReference&lt;T, TException&gt;(in Optional&lt;T&gt;)</h4>

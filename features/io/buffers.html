@@ -8,7 +8,7 @@
     <title>Dynamic Buffers | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Dynamic Buffers | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -80,7 +80,7 @@
 <p><a class="xref" href="../../api/DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a> is similar to <code>ArrayBufferWriter</code> but accepts <a class="xref" href="../../api/DotNext.Buffers.MemoryAllocator-1.html">memory allocator</a> that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
-using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared.ToAllocator());
+using var writer = new PooledBufferWriter&lt;byte&gt; { BufferAllocator = ArrayPool&lt;byte&gt;.Shared.ToAllocator() };
 Span&lt;byte&gt; span = writer.GetSpan(1024);
 new byte[512].AsSpan().CopyTo(span);
 span.Advance(512);
@@ -93,7 +93,7 @@ var result = writer.WrittenMemory;  //length is 512
 using DotNext.IO;
 using System;
 
-using var writer = new PooledArrayBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
+using var writer = new PooledArrayBufferWriter&lt;byte&gt; { BufferPool = ArrayPool&lt;byte&gt;.Shared };
 ArraySegment&lt;byte&gt; array = writer.GetArray(1024);
 array[0] = 42;
 array[1] = 43;
@@ -152,7 +152,7 @@ ReadOnlySpan&lt;byte&gt; result = builder.WrittenSpan;
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder">StringBuilder</a> is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by <code>PooledBufferWriter&lt;T&gt;</code>, <code>PooledArrayBufferWriter&lt;T&gt;</code>, <code>SparseBufferWriter&lt;T&gt;</code> and <code>BufferWriterSlim&lt;T&gt;</code> types as described above. But we need suitable methods for adding characters to the builder similar to the methods of <code>StringBuilder</code>. They are provided as extension methods declared in <a class="xref" href="../../api/DotNext.Buffers.BufferWriter.html">BufferWriter</a> class for all objects implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;char&gt;</a> interface:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
-using var writer = new PooledArrayBufferWriter&lt;char&gt;(ArrayPool&lt;char&gt;.Shared);
+using var writer = new PooledArrayBufferWriter&lt;char&gt; { BufferPool = ArrayPool&lt;char&gt;.Shared };
 writer.Write(&quot;Hello,&quot;);
 writer.Write(' ');
 writer.Write(&quot;world!&quot;);
@@ -170,7 +170,7 @@ string result = writer.ToString();
 using System.IO;
 using static DotNext.IO.TextWriterExtensions;
 
-using var buffer = new PooledArrayBufferWriter&lt;char&gt;(ArrayPool&lt;char&gt;.Shared);
+using var buffer = new PooledArrayBufferWriter&lt;char&gt; { BufferPool = ArrayPool&lt;char&gt;.Shared };
 using TextWriter writer = buffer.AsTextWriter();
 writer.Write(&quot;Hello,&quot;);
 writer.Write(' ');

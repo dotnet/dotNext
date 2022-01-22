@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct UserDataStorage
    | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,13 +78,13 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
@@ -97,14 +97,83 @@
   <div class="markdown level0 remarks"><p>This is by-ref struct because user data should have
 the same lifetime as its owner.</p>
 </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_IsValid.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.IsValid%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L124">View Source</a>
+  </span>
+  <a id="DotNext_UserDataStorage_IsValid_" data-uid="DotNext.UserDataStorage.IsValid*"></a>
+  <h4 id="DotNext_UserDataStorage_IsValid" data-uid="DotNext.UserDataStorage.IsValid">IsValid</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that this storage is valid.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool IsValid { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Capture.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Capture%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L30">View Source</a>
+  </span>
+  <a id="DotNext_UserDataStorage_Capture_" data-uid="DotNext.UserDataStorage.Capture*"></a>
+  <h4 id="DotNext_UserDataStorage_Capture" data-uid="DotNext.UserDataStorage.Capture">Capture()</h4>
+  <div class="markdown level1 summary"><p>Extracts a copy of all custom data in this storage.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly IReadOnlyDictionary&lt;string, object&gt; Capture()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IReadOnlyDictionary</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>&gt;</td>
+        <td><p>The copy of all custom data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_UserDataStorage_Capture_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method is useful for debugging purposes to observe the data associated
+with arbitrary object.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_CopyTo_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.CopyTo(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L506">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L375">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_CopyTo_" data-uid="DotNext.UserDataStorage.CopyTo*"></a>
   <h4 id="DotNext_UserDataStorage_CopyTo_System_Object_" data-uid="DotNext.UserDataStorage.CopyTo(System.Object)">CopyTo(Object)</h4>
@@ -138,7 +207,7 @@ the same lifetime as its owner.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L532">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L408">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Equals_" data-uid="DotNext.UserDataStorage.Equals*"></a>
   <h4 id="DotNext_UserDataStorage_Equals_System_Object_" data-uid="DotNext.UserDataStorage.Equals(System.Object)">Equals(Object)</h4>
@@ -185,13 +254,13 @@ the given object.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Get%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L329">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Get_" data-uid="DotNext.UserDataStorage.Get*"></a>
   <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0})">Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
@@ -257,7 +326,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Get%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L316">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L147">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Get_" data-uid="DotNext.UserDataStorage.Get*"></a>
   <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0},``0)">Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue)</h4>
@@ -329,7 +398,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L524">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L400">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetHashCode_" data-uid="DotNext.UserDataStorage.GetHashCode*"></a>
   <h4 id="DotNext_UserDataStorage_GetHashCode" data-uid="DotNext.UserDataStorage.GetHashCode">GetHashCode()</h4>
@@ -357,13 +426,13 @@ the given object.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L341">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L180">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0})">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
@@ -431,7 +500,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0___.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L373">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L215">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0___" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},)">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, delegate*&lt;TValue&gt;)</h4>
@@ -503,7 +572,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__DotNext_Func___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2CDotNext.Func%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L363">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L204">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__DotNext_Func___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},DotNext.Func{``0})">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, Func&lt;TValue&gt;)</h4>
@@ -575,7 +644,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L352">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L192">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})">GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt;)</h4>
@@ -648,7 +717,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0____1_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%600%7D%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L439">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L286">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0____1_" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0},``1)">GetOrSet&lt;TValue, TFactory&gt;(UserDataSlot&lt;TValue&gt;, TFactory)</h4>
@@ -727,7 +796,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%601%7D%2C%60%600%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L398">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L242">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,)">GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, delegate*&lt;T, TValue&gt;)</h4>
@@ -810,7 +879,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_DotNext_Func___0___1__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%601%7D%2C%60%600%2CDotNext.Func%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L386">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L229">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_DotNext_Func___0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,DotNext.Func{``0,``1})">GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, Func&lt;T, TValue&gt;)</h4>
@@ -893,7 +962,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%603(DotNext.UserDataSlot%7B%60%602%7D%2C%60%600%2C%60%601%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L427">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,)">GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, delegate*&lt;T1, T2, TValue&gt;)</h4>
@@ -987,7 +1056,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_DotNext_Func___0___1___2__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%603(DotNext.UserDataSlot%7B%60%602%7D%2C%60%600%2C%60%601%2CDotNext.Func%7B%60%600%2C%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L413">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L258">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
   <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_DotNext_Func___0___1___2__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,DotNext.Func{``0,``1,``2})">GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, Func&lt;T1, T2, TValue&gt;)</h4>
@@ -1081,7 +1150,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Remove%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L477">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L340">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Remove_" data-uid="DotNext.UserDataStorage.Remove*"></a>
   <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0})">Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
@@ -1147,7 +1216,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Remove%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L490">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L356">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Remove_" data-uid="DotNext.UserDataStorage.Remove*"></a>
   <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0},``0@)">Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)</h4>
@@ -1219,7 +1288,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Set%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L468">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L325">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Set_" data-uid="DotNext.UserDataStorage.Set*"></a>
   <h4 id="DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Set``1(DotNext.UserDataSlot{``0},``0)">Set&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue)</h4>
@@ -1275,7 +1344,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_ToString.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L538">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L414">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_ToString_" data-uid="DotNext.UserDataStorage.ToString*"></a>
   <h4 id="DotNext_UserDataStorage_ToString" data-uid="DotNext.UserDataStorage.ToString">ToString()</h4>
@@ -1303,13 +1372,13 @@ the given object.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.TryGet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L450">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L303">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_TryGet_" data-uid="DotNext.UserDataStorage.TryGet*"></a>
   <h4 id="DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.TryGet``1(DotNext.UserDataSlot{``0},``0@)">TryGet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)</h4>
@@ -1383,7 +1452,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage%2CDotNext.UserDataStorage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L546">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L422">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_op_Equality_" data-uid="DotNext.UserDataStorage.op_Equality*"></a>
   <h4 id="DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)">Equality(UserDataStorage, UserDataStorage)</h4>
@@ -1439,7 +1508,7 @@ the given object.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage%2CDotNext.UserDataStorage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L555">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L431">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_op_Inequality_" data-uid="DotNext.UserDataStorage.op_Inequality*"></a>
   <h4 id="DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage,DotNext.UserDataStorage)">Inequality(UserDataStorage, UserDataStorage)</h4>
@@ -1501,7 +1570,7 @@ the given object.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -8,7 +8,7 @@
     <title>Optional Type | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Optional Type | .NEXT ">
-    <meta name="generator" content="docfx 2.58.9.0">
+    <meta name="generator" content="docfx 2.59.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -74,7 +74,7 @@
 using DotNext.Collections.Generic;
 
 IEnumerable&lt;int&gt; array = new int[] { 1, 2, 3 };
-Optional&lt;int&gt; i = array.FirstOrEmpty(); //extension method from Sequence class
+Optional&lt;int&gt; i = array.FirstOrNone(); //extension method from Sequence class
 var value = (int)i; //cast is supported
 if(i.TryGet(out value))
 {
@@ -118,18 +118,18 @@ var first2 = Optional&lt;string&gt;.None;    //or default(Optional&lt;string&gt;
 <p>Now it's possible to apply additional logic to the optional result:</p>
 <pre><code class="lang-csharp">Optional&lt;string&gt; first = FirstOrNull(array);
 
-if (first.HasValue)
+switch (first)
 {
-    // value is present
-    string result = first.Value;
-}
-else if (first.IsNull)
-{
-    // value is null
-}
-else
-{
-    // result is undefined
+    case { HasValue: true }:
+        // value is present
+        string result = first.Value;
+        break;
+    case { IsNull: true }:
+        // value is null
+        break;
+    default:
+        // value is undefined
+        break;
 }
 </code></pre>
 <p>Undefined <code>Optional&lt;T&gt;</code> instance can be produced only by <code>None</code> static property or by default value:</p>
