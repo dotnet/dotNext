@@ -31,20 +31,6 @@ public class PersistentStateBenchmark
             => throw new NotImplementedException();
     }
 
-    private sealed class BinaryLogEntry : BinaryTransferObject, IRaftLogEntry
-    {
-        internal BinaryLogEntry(long term, ReadOnlyMemory<byte> content)
-            : base(content)
-        {
-            Term = term;
-            Timestamp = DateTimeOffset.UtcNow;
-        }
-
-        public long Term { get; }
-
-        public DateTimeOffset Timestamp { get; }
-    }
-
     private sealed class LogEntrySizeCounter : ILogEntryConsumer<IRaftLogEntry, long>
     {
         internal static readonly LogEntrySizeCounter Instance = new();
@@ -81,9 +67,9 @@ public class PersistentStateBenchmark
         var state = new TestPersistentState(path, configuration);
         var bytes = new byte[PayloadSize];
         Random.Shared.NextBytes(bytes);
-        await state.AppendAsync(new BinaryLogEntry(10L, bytes), addToCache);
+        await state.AppendAsync(new RaftLogEntry { Term = 10L, Content = bytes }, addToCache);
         Random.Shared.NextBytes(bytes);
-        await state.AppendAsync(new BinaryLogEntry(20L, bytes), addToCache);
+        await state.AppendAsync(new RaftLogEntry { Term = 20L, Content = bytes }, addToCache);
         this.state = state;
     }
 
@@ -126,10 +112,10 @@ public class PersistentStateBenchmark
     public void DropAddedLogEntryAsync() => state.DbgChangeLastIndex(0L);
 
     [Benchmark]
-    public async Task WriteCachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+    public async Task WriteCachedLogEntryAsync() => await state.AppendAsync(new RaftLogEntry { Term = 10L, Content = writePayload });
 
     [Benchmark]
-    public async Task WriteUncachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry(10L, writePayload));
+    public async Task WriteUncachedLogEntryAsync() => await state.AppendAsync(new RaftLogEntry { Term = 10L, Content = writePayload });
 
     [GlobalSetup(Target = nameof(WriteToFileAsync))]
     public void CreateTempFile()
