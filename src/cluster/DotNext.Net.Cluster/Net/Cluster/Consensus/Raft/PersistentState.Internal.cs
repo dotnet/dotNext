@@ -21,13 +21,18 @@ public partial class PersistentState
         HasIdentifier = 0x01,
     }
 
-    [StructLayout(LayoutKind.Auto)]
+    // Perf: in case of LE, we want to store the metadata in the block of memory as-is
+    [StructLayout(LayoutKind.Sequential)]
     internal readonly struct LogEntryMetadata
     {
         internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
+
+        internal readonly long Term;
+        internal readonly long Timestamp;
+        internal readonly long Length;
+        internal readonly long Offset;
         private readonly LogEntryFlags flags;
         private readonly int identifier;
-        internal readonly long Term, Timestamp, Length, Offset;
 
         internal LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id = null)
         {
@@ -42,12 +47,8 @@ public partial class PersistentState
         }
 
         // slow version if target architecture has BE byte order or pointer is not aligned
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private LogEntryMetadata(ReadOnlySpan<byte> input, bool dummy)
+        private LogEntryMetadata(ref SpanReader<byte> reader)
         {
-            Debug.Assert(dummy);
-
-            var reader = new SpanReader<byte>(input);
             Term = reader.ReadInt64(true);
             Timestamp = reader.ReadInt64(true);
             Length = reader.ReadInt64(true);
@@ -62,30 +63,29 @@ public partial class PersistentState
 
             // fast path without any overhead for LE byte order
             ref var ptr = ref MemoryMarshal.GetReference(input);
-            const nint moduloOperand = sizeof(long) - 1; // x % 8 is the same as x & 7
 
-            if (BitConverter.IsLittleEndian && (Intrinsics.AddressOf(in ptr) & moduloOperand) is 0)
+            if (!BitConverter.IsLittleEndian)
             {
-                Term = Unsafe.As<byte, long>(ref ptr);
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Timestamp = Unsafe.As<byte, long>(ref ptr);
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Length = Unsafe.As<byte, long>(ref ptr);
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Offset = Unsafe.As<byte, long>(ref ptr);
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                flags = Unsafe.As<byte, LogEntryFlags>(ref ptr);
-                ptr = ref Unsafe.Add(ref ptr, sizeof(LogEntryFlags));
-
-                identifier = Unsafe.As<byte, int>(ref ptr);
+                // BE case
+                Create(input, out this);
+            }
+            else if (IntPtr.Size is sizeof(long))
+            {
+                // 64-bit LE case, the pointer is always aligned to 8 bytes
+                Debug.Assert(Intrinsics.AddressOf(in ptr) % IntPtr.Size is 0);
+                this = Unsafe.As<byte, LogEntryMetadata>(ref ptr);
             }
             else
             {
-                this = new(input, true);
+                // 32-bit LE case, the pointer may not be aligned to 8 bytes
+                this = Unsafe.ReadUnaligned<LogEntryMetadata>(ref ptr);
+            }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            static void Create(ReadOnlySpan<byte> input, out LogEntryMetadata metadata)
+            {
+                var reader = new SpanReader<byte>(input);
+                metadata = new(ref reader);
             }
         }
 
@@ -118,44 +118,47 @@ public partial class PersistentState
 
             // fast path without any overhead for LE byte order
             ref var ptr = ref MemoryMarshal.GetReference(output);
-            const nint moduloOperand = sizeof(long) - 1; // x % 8 is the same as x & 7
 
-            if (BitConverter.IsLittleEndian && (Intrinsics.AddressOf(in ptr) & moduloOperand) is 0)
+            if (!BitConverter.IsLittleEndian)
             {
-                Unsafe.As<byte, long>(ref ptr) = Term;
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Unsafe.As<byte, long>(ref ptr) = Timestamp;
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Unsafe.As<byte, long>(ref ptr) = Length;
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Unsafe.As<byte, long>(ref ptr) = Offset;
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-
-                Unsafe.As<byte, LogEntryFlags>(ref ptr) = flags;
-                ptr = ref Unsafe.Add(ref ptr, sizeof(LogEntryFlags));
-
-                Unsafe.As<byte, int>(ref ptr) = identifier;
+                // BE case
+                FormatSlow(output);
+            }
+            else if (IntPtr.Size is sizeof(long))
+            {
+                // 64-bit LE case, the pointer is always aligned to 8 bytes
+                Debug.Assert(Intrinsics.AddressOf(in ptr) % IntPtr.Size is 0);
+                Unsafe.As<byte, LogEntryMetadata>(ref ptr) = this;
             }
             else
             {
-                FormatSlow(output);
+                // 32-bit LE case, the pointer may not be aligned to 8 bytes
+                Unsafe.WriteUnaligned<LogEntryMetadata>(ref ptr, this);
             }
         }
 
         internal static long GetTerm(ReadOnlySpan<byte> input)
             => BinaryPrimitives.ReadInt64LittleEndian(input);
 
+        private long End => Length + Offset;
+
         internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
         {
-            ref var ptr = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), sizeof(long) + sizeof(long));
-            const nint moduloOperand = sizeof(long) - 1; // x % 8 is the same as x & 7
+            ref var ptr = ref MemoryMarshal.GetReference(input);
 
-            return BitConverter.IsLittleEndian && (Intrinsics.AddressOf(in ptr) & moduloOperand) is 0
-                ? Unsafe.As<byte, long>(ref ptr) + Unsafe.As<byte, long>(ref Unsafe.Add(ref ptr, sizeof(long)))
-                : GetEndOfLogEntrySlow(input);
+            // BE case
+            if (!BitConverter.IsLittleEndian)
+                return GetEndOfLogEntrySlow(input);
+
+            // 64-bit LE case, the pointer is always aligned to 8 bytes
+            if (IntPtr.Size is sizeof(long))
+            {
+                Debug.Assert(Intrinsics.AddressOf(in ptr) % IntPtr.Size is 0);
+                return Unsafe.As<byte, LogEntryMetadata>(ref ptr).End;
+            }
+
+            // 32-bit LE case, the pointer may not be aligned to 8 bytes
+            return Unsafe.ReadUnaligned<LogEntryMetadata>(ref ptr).End;
 
             [MethodImpl(MethodImplOptions.NoInlining)]
             static long GetEndOfLogEntrySlow(ReadOnlySpan<byte> input)
