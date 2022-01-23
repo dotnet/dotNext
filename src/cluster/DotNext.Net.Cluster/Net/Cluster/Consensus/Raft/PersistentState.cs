@@ -533,7 +533,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             // append it to the log
             startIndex = state.TailIndex;
-            await UnsafeAppendAsync(cachedEntry, startIndex, out var partition, token).ConfigureAwait(false);
+            await UnsafeAppendAsync(cachedEntry, startIndex, out _, token).ConfigureAwait(false);
             state.LastIndex = startIndex;
         }
         finally
