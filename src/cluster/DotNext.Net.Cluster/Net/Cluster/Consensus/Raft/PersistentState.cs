@@ -521,11 +521,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
+        => await AppendCachedAsync(new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId), token).ConfigureAwait(false);
+
+    private async ValueTask<long> AppendCachedAsync(CachedLogEntry cachedEntry, CancellationToken token)
     {
         Debug.Assert(bufferManager.IsCachingEnabled);
-
-        // copy log entry to the memory
-        var cachedEntry = new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId);
 
         long startIndex;
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
@@ -580,13 +580,23 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         ValueTask<long> result;
         if (IsDisposed)
+        {
             result = new(GetDisposedTask<long>());
+        }
         else if (entry.IsSnapshot)
+        {
             result = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
+        }
         else if (bufferManager.IsCachingEnabled && addToCache)
-            result = AppendCachedAsync(entry, token);
+        {
+            result = entry is IBinaryLogEntry
+                ? AppendCachedAsync(new CachedLogEntry(((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), entry.Term, entry.Timestamp, entry.CommandId), token)
+                : AppendCachedAsync(entry, token);
+        }
         else
+        {
             result = AppendUncachedAsync(entry, token);
+        }
 
         return result;
     }
