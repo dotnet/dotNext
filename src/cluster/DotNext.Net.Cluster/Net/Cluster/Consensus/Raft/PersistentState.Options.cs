@@ -26,6 +26,27 @@ public partial class PersistentState
     }
 
     /// <summary>
+    /// Describes how the log interacts with underlying storage device.
+    /// </summary>
+    public enum StorageDeviceWriteMode
+    {
+        /// <summary>
+        /// Default mode.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Synchronizes log entries with storage device on each commit.
+        /// </summary>
+        FlushToDevice,
+
+        /// <summary>
+        /// Bypass intermediate buffers for disk writes.
+        /// </summary>
+        WriteThrough,
+    }
+
+    /// <summary>
     /// Represents configuration options of the persistent audit trail.
     /// </summary>
     public class Options : IBufferManagerSettings, IAsyncLockSettings
@@ -41,7 +62,17 @@ public partial class PersistentState
         /// <value>
         /// <see langword="true"/> to bypass intermediate buffers for disk writes.
         /// </value>
+        [Obsolete("Use WriteMode property instead.")]
         public bool WriteThrough
+        {
+            get => WriteMode is StorageDeviceWriteMode.WriteThrough;
+            set => WriteMode = value ? StorageDeviceWriteMode.WriteThrough : StorageDeviceWriteMode.None;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating how the log interacts with underlying storage device.
+        /// </summary>
+        public StorageDeviceWriteMode WriteMode
         {
             get;
             set;

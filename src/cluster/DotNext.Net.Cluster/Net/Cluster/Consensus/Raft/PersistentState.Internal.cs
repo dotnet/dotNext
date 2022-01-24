@@ -227,6 +227,7 @@ public partial class PersistentState
     internal abstract class ConcurrentStorageAccess : Disposable
     {
         internal readonly SafeFileHandle Handle;
+        private readonly FileStream? streamForFlush;
         private protected readonly FileWriter writer;
         private protected readonly int fileOffset;
         private readonly MemoryAllocator<byte> allocator;
@@ -239,8 +240,12 @@ public partial class PersistentState
         // This field is used to control 'freshness' of the read buffers
         private long version; // volatile
 
-        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, FileOptions options, long initialSize)
+        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, StorageDeviceWriteMode writeMode, long initialSize)
         {
+            var options = writeMode is StorageDeviceWriteMode.WriteThrough
+                ? FileOptions.Asynchronous | FileOptions.WriteThrough
+                : FileOptions.Asynchronous;
+
             FileMode fileMode;
             if (File.Exists(fileName))
             {
@@ -264,6 +269,10 @@ public partial class PersistentState
 
             if (readersCount == 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
+
+            streamForFlush = writeMode is StorageDeviceWriteMode.FlushToDevice
+                ? new(Handle, FileAccess.Write, bufferSize: 1)
+                : null;
         }
 
         internal long FileSize => RandomAccess.GetLength(Handle);
@@ -296,7 +305,13 @@ public partial class PersistentState
         public virtual ValueTask FlushAsync(CancellationToken token = default)
         {
             Invalidate();
-            return writer.WriteAsync(token);
+            return streamForFlush is null ? writer.WriteAsync(token) : FlushToDiskAsync(writer, streamForFlush, token);
+
+            static async ValueTask FlushToDiskAsync(FileWriter writer, FileStream streamForFlush, CancellationToken token)
+            {
+                await writer.WriteAsync(token).ConfigureAwait(false);
+                streamForFlush.Flush(flushToDisk: true);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -336,6 +351,7 @@ public partial class PersistentState
                 readers = Array.Empty<VersionedFileReader?>();
                 writer.Dispose();
                 Handle.Dispose();
+                streamForFlush?.Dispose();
             }
 
             base.Dispose(disposing);

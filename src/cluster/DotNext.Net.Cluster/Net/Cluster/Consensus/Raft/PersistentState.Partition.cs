@@ -35,8 +35,8 @@ public partial class PersistentState
         // represents offset within the file from which a newly added log entry payload can be recorded
         private long writeAddress;
 
-        internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough, long initialSize)
-            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+        internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, StorageDeviceWriteMode writeMode, long initialSize)
+            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
         {
             FirstIndex = partitionNumber * recordsPerPartition;
             LastIndex = FirstIndex + recordsPerPartition - 1L;
@@ -79,14 +79,6 @@ public partial class PersistentState
         {
             using var task = InitializeAsync();
             task.Wait();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static FileOptions GetOptions(bool writeThrough)
-        {
-            const FileOptions skipBufferOptions = FileOptions.WriteThrough | FileOptions.Asynchronous;
-            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
-            return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

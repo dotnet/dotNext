@@ -34,7 +34,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly BufferManager bufferManager;
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
-    private protected readonly bool writeThrough;
+    private protected readonly StorageDeviceWriteMode writeMode;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -46,7 +46,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         if (!path.Exists)
             path.Create();
         bufferingConsumer = configuration.CreateBufferingConsumer();
-        writeThrough = configuration.WriteThrough;
+        writeMode = configuration.WriteMode;
         backupCompression = configuration.BackupCompression;
         bufferSize = configuration.BufferSize;
         Location = path;
@@ -67,7 +67,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             if (long.TryParse(file.Name, out var partitionNumber))
             {
-                var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
+                var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
                 partition.Initialize();
                 partitionTable.Add(partition);
             }
@@ -113,7 +113,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial Partition CreatePartition(long partitionNumber)
-        => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
+        => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
