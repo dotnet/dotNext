@@ -57,7 +57,7 @@ public partial class PersistentState
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
         private SnapshotMetadata snapshot; // cached snapshot metadata to avoid backward writes
 
-        private NodeState(string fileName, MemoryAllocator<byte> allocator, bool integrityCheck)
+        private NodeState(string fileName, MemoryAllocator<byte> allocator, bool integrityCheck, bool writeThrough)
         {
             Debug.Assert(Capacity >= LastVoteOffset + sizeof(long));
 
@@ -69,7 +69,7 @@ public partial class PersistentState
             }
             else
             {
-                handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, FileOptions.None, Capacity);
+                handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, FileOptions.WriteThrough, Capacity);
                 buffer.Span.Clear();
                 if (integrityCheck)
                     WriteInt64LittleEndian(Checksum, Hash(Data));
@@ -79,7 +79,10 @@ public partial class PersistentState
 
             // reopen handle in asynchronous mode
             handle.Dispose();
-            handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
+
+            const FileOptions dontSkipBuffer = FileOptions.Asynchronous;
+            const FileOptions skipBuffer = FileOptions.Asynchronous | FileOptions.WriteThrough;
+            handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, writeThrough ? skipBuffer : dontSkipBuffer);
 
             // restore state
             ReadOnlySpan<byte> bufferSpan = buffer.Span;
@@ -93,8 +96,8 @@ public partial class PersistentState
             this.integrityCheck = integrityCheck;
         }
 
-        internal NodeState(DirectoryInfo location, MemoryAllocator<byte> allocator, bool integrityCheck)
-            : this(Path.Combine(location.FullName, FileName), allocator, integrityCheck)
+        internal NodeState(DirectoryInfo location, MemoryAllocator<byte> allocator, bool integrityCheck, bool writeThrough)
+            : this(Path.Combine(location.FullName, FileName), allocator, integrityCheck, writeThrough)
         {
         }
 
@@ -160,21 +163,24 @@ public partial class PersistentState
             static long HashRound(long hash, long data) => unchecked((hash ^ data) * prime);
         }
 
-        private ValueTask FlushWithoutChecksumAsync(in Range range, CancellationToken token)
+        internal ValueTask FlushAsync(in Range range)
         {
-            var memory = buffer.Memory;
-            var (offset, length) = range.GetOffsetAndLength(memory.Length);
-            return RandomAccess.WriteAsync(handle, memory.Slice(offset, length), offset, token);
-        }
+            ReadOnlyMemory<byte> data = buffer.Memory;
+            int offset;
 
-        private ValueTask FlushWithChecksumAsync(CancellationToken token)
-        {
-            WriteInt64LittleEndian(Checksum, Hash(Data));
-            return RandomAccess.WriteAsync(handle, buffer.Memory, 0L, token);
-        }
+            if (integrityCheck)
+            {
+                WriteInt64LittleEndian(Checksum, Hash(Data));
+                offset = 0;
+            }
+            else
+            {
+                (offset, var length) = range.GetOffsetAndLength(data.Length);
+                data = data.Slice(offset, length);
+            }
 
-        internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
-            => integrityCheck ? FlushWithChecksumAsync(token) : FlushWithoutChecksumAsync(in range, token);
+            return RandomAccess.WriteAsync(handle, data, offset);
+        }
 
         internal ValueTask ClearAsync(CancellationToken token = default)
         {

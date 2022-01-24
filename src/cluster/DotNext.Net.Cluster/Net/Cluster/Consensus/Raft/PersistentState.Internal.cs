@@ -240,9 +240,9 @@ public partial class PersistentState
         // This field is used to control 'freshness' of the read buffers
         private long version; // volatile
 
-        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, StorageDeviceWriteMode writeMode, long initialSize)
+        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize)
         {
-            var options = writeMode is StorageDeviceWriteMode.WriteThrough
+            var options = writeMode is WriteMode.WriteThrough
                 ? FileOptions.Asynchronous | FileOptions.WriteThrough
                 : FileOptions.Asynchronous;
 
@@ -270,7 +270,7 @@ public partial class PersistentState
             if (readersCount == 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
 
-            streamForFlush = writeMode is StorageDeviceWriteMode.FlushToDevice
+            streamForFlush = writeMode is WriteMode.FlushOnCommit
                 ? new(Handle, FileAccess.Write, bufferSize: 1)
                 : null;
         }

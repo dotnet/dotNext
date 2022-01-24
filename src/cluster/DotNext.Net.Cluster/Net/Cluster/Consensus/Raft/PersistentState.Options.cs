@@ -28,20 +28,20 @@ public partial class PersistentState
     /// <summary>
     /// Describes how the log interacts with underlying storage device.
     /// </summary>
-    public enum StorageDeviceWriteMode
+    public enum WriteMode
     {
         /// <summary>
-        /// Default mode.
+        /// Delegates intermediate buffer flush to operating system.
         /// </summary>
-        None = 0,
+        Optimistic = 0,
 
         /// <summary>
-        /// Synchronizes log entries with storage device on each commit.
+        /// Synchronizes only committed log entries with storage device.
         /// </summary>
-        FlushToDevice,
+        FlushOnCommit,
 
         /// <summary>
-        /// Bypass intermediate buffers for disk writes.
+        /// Bypass intermediate buffers for all disk writes.
         /// </summary>
         WriteThrough,
     }
@@ -65,14 +65,14 @@ public partial class PersistentState
         [Obsolete("Use WriteMode property instead.")]
         public bool WriteThrough
         {
-            get => WriteMode is StorageDeviceWriteMode.WriteThrough;
-            set => WriteMode = value ? StorageDeviceWriteMode.WriteThrough : StorageDeviceWriteMode.None;
+            get => WriteMode is WriteMode.WriteThrough;
+            set => WriteMode = value ? WriteMode.WriteThrough : WriteMode.Optimistic;
         }
 
         /// <summary>
         /// Gets or sets a value indicating how the log interacts with underlying storage device.
         /// </summary>
-        public StorageDeviceWriteMode WriteMode
+        public WriteMode WriteMode
         {
             get;
             set;

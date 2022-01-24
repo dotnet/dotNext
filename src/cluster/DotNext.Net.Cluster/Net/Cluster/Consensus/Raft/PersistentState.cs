@@ -34,7 +34,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly BufferManager bufferManager;
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
-    private protected readonly StorageDeviceWriteMode writeMode;
+    private protected readonly WriteMode writeMode;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -90,7 +90,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck);
+        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.Optimistic);
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -358,7 +358,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
-        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -413,7 +413,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await partition.FlushAsync(token).ConfigureAwait(false);
 
         state.LastIndex = startIndex;
-        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
 
         writeCounter?.Invoke(1D);
     }
@@ -508,7 +508,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
         finally
         {
@@ -655,7 +655,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             count = state.LastIndex - startIndex + 1L;
             state.LastIndex = startIndex - 1L;
-            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
 
             if (reuseSpace)
                 InvalidatePartitions(startIndex);

@@ -20,7 +20,7 @@ public partial class MemoryBasedStateMachine
         private new const string FileName = "snapshot";
         private const string TempFileName = "snapshot.new";
 
-        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, StorageDeviceWriteMode writeMode, bool tempSnapshot = false, long initialSize = 0L)
+        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, WriteMode writeMode, bool tempSnapshot = false, long initialSize = 0L)
             : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
         {
         }

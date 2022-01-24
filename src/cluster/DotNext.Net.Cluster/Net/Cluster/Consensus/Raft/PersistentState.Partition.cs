@@ -35,7 +35,7 @@ public partial class PersistentState
         // represents offset within the file from which a newly added log entry payload can be recorded
         private long writeAddress;
 
-        internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, StorageDeviceWriteMode writeMode, long initialSize)
+        internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
             : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
         {
             FirstIndex = partitionNumber * recordsPerPartition;
