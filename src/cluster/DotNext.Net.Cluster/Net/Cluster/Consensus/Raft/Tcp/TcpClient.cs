@@ -189,16 +189,16 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         }
     }
 
-    private protected override Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    private protected override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        async ValueTask<Result<PreVoteResult>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
         {
             await protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
             protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
+            return await protocol.ReadPreVoteResultAsync(token).ConfigureAwait(false);
         }
     }
 

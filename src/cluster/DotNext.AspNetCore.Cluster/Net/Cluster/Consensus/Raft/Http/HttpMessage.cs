@@ -70,10 +70,23 @@ internal abstract class HttpMessage
             ? result
             : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 
+    private protected static async Task<T> ParseEnumResponse<T>(HttpResponseMessage response, CancellationToken token)
+        where T : struct, Enum
+        => Enum.TryParse<T>(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)
+            ? result
+            : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
+
     private protected static Task SaveResponse(HttpResponse response, bool result, CancellationToken token)
     {
         response.StatusCode = StatusCodes.Status200OK;
         return response.WriteAsync(result.ToString(InvariantCulture), token);
+    }
+
+    private protected static Task SaveResponse<T>(HttpResponse response, T result, CancellationToken token)
+        where T : struct, Enum
+    {
+        response.StatusCode = StatusCodes.Status200OK;
+        return response.WriteAsync(Enum.GetName<T>(result) ?? string.Empty, token);
     }
 
     private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader, ValueParser<T> parser)

@@ -4,7 +4,7 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-internal sealed class PreVoteMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
+internal sealed class PreVoteMessage : RaftHttpMessage, IHttpMessageReader<Result<PreVoteResult>>, IHttpMessageWriter<Result<PreVoteResult>>
 {
     internal new const string MessageType = "PreVote";
 
@@ -37,7 +37,7 @@ internal sealed class PreVoteMessage : RaftHttpMessage, IHttpMessageReader<Resul
         base.PrepareRequest(request);
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<Result<PreVoteResult>> IHttpMessageReader<Result<PreVoteResult>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseEnumResponse<PreVoteResult>(response, token);
 
-    public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    public Task SaveResponse(HttpResponse response, Result<PreVoteResult> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
 }

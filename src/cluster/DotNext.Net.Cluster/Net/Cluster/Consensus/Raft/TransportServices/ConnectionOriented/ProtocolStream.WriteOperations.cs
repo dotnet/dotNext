@@ -29,9 +29,13 @@ internal partial class ProtocolStream
     internal ValueTask WriteResponseAsync(in Result<bool> result, CancellationToken token)
     {
         Reset();
-        var writer = new SpanWriter<byte>(buffer.Span);
-        Result.Write(ref writer, in result);
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, Result.Write(buffer.Span, in result)), token);
+    }
+
+    internal ValueTask WriteResponseAsync(in Result<PreVoteResult> result, CancellationToken token)
+    {
+        Reset();
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, Result.WritePreVoteResult(buffer.Span, in result)), token);
     }
 
     internal ValueTask WriteResponseAsync(bool value, CancellationToken token)

@@ -144,10 +144,10 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
             : Task.FromResult(new Result<bool>(term, true));
 
-    Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote
-            ? SendAsync<Result<bool>, PreVoteMessage>(new PreVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
-            : Task.FromResult(new Result<bool>(term, true));
+            ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
+            : Task.FromResult(new Result<PreVoteResult>(term, PreVoteResult.Accepted));
 
     Task<bool> IClusterMember.ResignAsync(CancellationToken token)
         => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMember), token);

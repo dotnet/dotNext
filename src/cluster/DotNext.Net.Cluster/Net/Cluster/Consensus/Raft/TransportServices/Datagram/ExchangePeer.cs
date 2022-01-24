@@ -4,7 +4,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 using IClusterConfiguration = Membership.IClusterConfiguration;
 using Timestamp = Diagnostics.Timestamp;
 
@@ -63,8 +62,8 @@ internal sealed class ExchangePeer : RaftClusterMember
     private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), token);
 
-    private protected override Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => SendAsync<Result<bool>, PreVoteExchange>(new PreVoteExchange(term, lastLogIndex, lastLogTerm), token);
+    private protected override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        => SendAsync<Result<PreVoteResult>, PreVoteExchange>(new PreVoteExchange(term, lastLogIndex, lastLogTerm), token);
 
     private protected override async Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
     {

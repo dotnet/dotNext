@@ -10,7 +10,7 @@ using IO.Log;
 /// <summary>
 /// Represents a log entry with binary payload.
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 [RequiresPreviewFeatures]
 public struct BinaryLogEntry<T> : IBinaryLogEntry

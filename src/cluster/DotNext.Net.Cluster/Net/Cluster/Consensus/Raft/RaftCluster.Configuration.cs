@@ -239,6 +239,12 @@ public partial class RaftCluster
         /// </summary>
         public bool Standby { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating that the follower node should not try to upgrade
+        /// to the candidate state if the leader is reachable via the network.
+        /// </summary>
+        public bool AggressiveLeaderStickiness { get; set; }
+
         internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
 
         internal abstract IServer CreateServer(ILocalMember localMember);
