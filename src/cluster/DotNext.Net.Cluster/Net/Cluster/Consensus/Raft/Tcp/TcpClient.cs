@@ -143,10 +143,12 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             await accessLock.AcquireAsync(token).ConfigureAwait(false);
             lockTaken = true;
 
+            var requestTimeout = RequestTimeout;
             timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
             if (protocol is null)
             {
                 timeoutSource.CancelAfter(ConnectTimeout);
+                var connectionTimeTracker = new Timestamp();
                 await ConnectAsync(timeoutSource.Token).ConfigureAwait(false);
 
                 // try to reuse CTS
@@ -155,10 +157,12 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
                     timeoutSource.Dispose();
                     timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
                 }
+
+                requestTimeout = Subtract(requestTimeout, connectionTimeTracker.Elapsed);
             }
 
             Debug.Assert(protocol is not null);
-            timeoutSource.CancelAfter(RequestTimeout);
+            timeoutSource.CancelAfter(requestTimeout);
             protocol.Reset();
             return await request(protocol, timeoutSource.Token).ConfigureAwait(false);
         }
@@ -193,6 +197,9 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             transport?.Dispose();
             transport = null;
         }
+
+        static TimeSpan Subtract(TimeSpan requestTimeout, TimeSpan connectionDuration)
+            => requestTimeout > connectionDuration ? requestTimeout - connectionDuration : TimeSpan.Zero;
     }
 
     private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
