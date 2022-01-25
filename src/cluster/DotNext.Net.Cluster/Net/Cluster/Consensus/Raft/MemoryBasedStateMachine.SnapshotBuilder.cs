@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -21,17 +20,9 @@ public partial class MemoryBasedStateMachine
         private new const string FileName = "snapshot";
         private const string TempFileName = "snapshot.new";
 
-        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, bool writeThrough, bool tempSnapshot = false, long initialSize = 0L)
-            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, GetOptions(writeThrough), initialSize)
+        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, WriteMode writeMode, bool tempSnapshot = false, long initialSize = 0L)
+            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
         {
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static FileOptions GetOptions(bool writeThrough)
-        {
-            const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.WriteThrough;
-            const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous;
-            return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
         }
 
         internal async ValueTask<long> WriteAsync<TEntry>(TEntry entry, CancellationToken token = default)

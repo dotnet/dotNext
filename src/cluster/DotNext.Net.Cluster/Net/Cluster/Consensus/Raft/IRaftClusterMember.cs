@@ -29,10 +29,10 @@ public interface IRaftClusterMember : IClusterMember
     /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
     /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
+    /// <returns>Pre-vote result received from the member.</returns>
     /// <seealso href="https://www.openlife.cc/sites/default/files/4-modifications-for-Raft-consensus.pdf">Four modifications for the Raft consensus algorithm.</seealso>
-    Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => token.IsCancellationRequested ? Task.FromCanceled<Result<bool>>(token) : Task.FromResult<Result<bool>>(new(term, true));
+    Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        => token.IsCancellationRequested ? Task.FromCanceled<Result<PreVoteResult>>(token) : Task.FromResult<Result<PreVoteResult>>(new(term, PreVoteResult.Accepted));
 
     /// <summary>
     /// Transfers log entries to the member.

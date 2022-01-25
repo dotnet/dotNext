@@ -304,7 +304,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         base.PrepareRequest(request);
     }
 
-    public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    public Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
 }
 
 internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessageReader<Result<bool>>

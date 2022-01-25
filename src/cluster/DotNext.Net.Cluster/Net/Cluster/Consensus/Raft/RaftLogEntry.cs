@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Buffers;
 using IO;
 using IO.Log;
 
@@ -9,7 +10,7 @@ using IO.Log;
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct RaftLogEntry : IRaftLogEntry
+public readonly struct RaftLogEntry : IBinaryLogEntry
 {
     private readonly ReadOnlyMemory<byte> content;
 
@@ -54,6 +55,14 @@ public readonly struct RaftLogEntry : IRaftLogEntry
     }
 
     /// <inheritdoc />
+    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+        => content.Span.Copy(allocator);
+
+    /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         => writer.WriteAsync(content, lengthFormat: null, token);
+
+    /// <inheritdoc />
+    ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        => transformation.TransformAsync(IAsyncBinaryReader.Create(content), token);
 }

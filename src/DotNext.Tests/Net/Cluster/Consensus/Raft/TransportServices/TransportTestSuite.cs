@@ -163,13 +163,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<bool>(43L, true));
             }
 
-            Task<Result<bool>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(10L, term);
                 Equal(2L, lastLogIndex);
                 Equal(99L, lastLogTerm);
-                return Task.FromResult(new Result<bool>(44L, true));
+                return Task.FromResult(new Result<PreVoteResult>(44L, PreVoteResult.Accepted));
             }
 
             Task<long?> ILocalMember.SynchronizeAsync(CancellationToken token)
@@ -211,15 +211,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             using var client = clientFactory(serverAddr, member, timeout);
 
             //Vote request
-            Result<bool> result;
-            result = await client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, CancellationToken.None);
+            var result = await client.As<IRaftClusterMember>().VoteAsync(42L, 1L, 56L, CancellationToken.None);
             True(result.Value);
             Equal(43L, result.Term);
 
-            // PreVote reqyest
-            result = await client.As<IRaftClusterMember>().PreVoteAsync(10L, 2L, 99L, CancellationToken.None);
-            True(result.Value);
-            Equal(44L, result.Term);
+            // PreVote request
+            var preVote = await client.As<IRaftClusterMember>().PreVoteAsync(10L, 2L, 99L, CancellationToken.None);
+            Equal(PreVoteResult.Accepted, preVote.Value);
+            Equal(44L, preVote.Term);
 
             //Resign request
             True(await client.As<IRaftClusterMember>().ResignAsync(CancellationToken.None));

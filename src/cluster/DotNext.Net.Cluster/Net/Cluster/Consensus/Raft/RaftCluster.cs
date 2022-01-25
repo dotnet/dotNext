@@ -24,7 +24,7 @@ using Timestamp = Diagnostics.Timestamp;
 public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
     where TMember : class, IRaftClusterMember, IDisposable
 {
-    private readonly bool allowPartitioning;
+    private readonly bool allowPartitioning, aggressiveStickiness;
     private readonly ElectionTimeout electionTimeoutProvider;
     private readonly CancellationTokenSource transitionCancellation;
     private readonly double heartbeatThreshold, clockDriftBound;
@@ -64,6 +64,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         clockDriftBound = config.ClockDriftBound;
         readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
         localMemberId = new(random);
+        aggressiveStickiness = config.AggressiveLeaderStickiness;
     }
 
     /// <summary>
@@ -501,10 +502,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
     /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
-    protected async Task<Result<bool>> PreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    /// <returns>Pre-vote result received from the member.</returns>
+    protected async Task<Result<PreVoteResult>> PreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
-        bool result;
+        PreVoteResult result;
         long currentTerm;
 
         // PreVote doesn't cause transition to another Raft state so locking not needed
@@ -514,9 +515,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             currentTerm = auditTrail.Term;
 
             // provide leader stickiness
-            result = Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout &&
-                currentTerm <= nextTerm &&
-                await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
+            if (aggressiveStickiness && state is LeaderState)
+            {
+                result = PreVoteResult.RejectedByLeader;
+            }
+            else if (Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && currentTerm <= nextTerm && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+            {
+                result = PreVoteResult.Accepted;
+            }
+            else
+            {
+                result = PreVoteResult.RejectedByFollower;
+            }
         }
         finally
         {
@@ -540,7 +550,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
             try
             {
-                votes += response.GetAwaiter().GetResult().Value ? +1 : -1;
+                switch (response.GetAwaiter().GetResult().Value)
+                {
+                    case PreVoteResult.Accepted:
+                        votes++;
+                        break;
+                    case PreVoteResult.RejectedByFollower:
+                        votes--;
+                        break;
+                    case PreVoteResult.RejectedByLeader:
+                        votes = short.MinValue;
+                        break;
+                }
             }
             catch (OperationCanceledException)
             {
@@ -558,10 +579,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
         return votes > 0;
 
-        IAsyncEnumerable<Task<Result<bool>>> SendRequestsAsync(long currentTerm, long lastIndex, long lastTerm)
+        IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(long currentTerm, long lastIndex, long lastTerm)
         {
             var members = this.members;
-            var responses = new TaskCompletionPipe<Task<Result<bool>>>(members.Count);
+            var responses = new TaskCompletionPipe<Task<Result<PreVoteResult>>>(members.Count);
             foreach (var member in members.Values)
                 responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, LifecycleToken));
 
@@ -745,7 +766,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             Logger.TransitionToCandidateStateStarted();
 
             // if term changed after lock then assumes that leader will be updated soon
-            if (currentTerm == auditTrail.Term && readyForTransition)
+            if (currentTerm == auditTrail.Term)
+                Leader = null;
+            else
+                readyForTransition = false;
+
+            if (readyForTransition)
             {
                 Leader = null;
                 followerState.Dispose();

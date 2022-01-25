@@ -34,7 +34,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly BufferManager bufferManager;
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
-    private protected readonly bool writeThrough;
+    private protected readonly WriteMode writeMode;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -46,7 +46,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         if (!path.Exists)
             path.Create();
         bufferingConsumer = configuration.CreateBufferingConsumer();
-        writeThrough = configuration.WriteThrough;
+        writeMode = configuration.WriteMode;
         backupCompression = configuration.BackupCompression;
         bufferSize = configuration.BufferSize;
         Location = path;
@@ -67,7 +67,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             if (long.TryParse(file.Name, out var partitionNumber))
             {
-                var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
+                var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
                 partition.Initialize();
                 partitionTable.Add(partition);
             }
@@ -90,7 +90,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck);
+        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.Optimistic);
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -113,7 +113,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private partial Partition CreatePartition(long partitionNumber)
-        => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeThrough, initialSize);
+        => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
@@ -358,7 +358,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
-        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -413,7 +413,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await partition.FlushAsync(token).ConfigureAwait(false);
 
         state.LastIndex = startIndex;
-        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
 
         writeCounter?.Invoke(1D);
     }
@@ -508,7 +508,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
         finally
         {
@@ -521,11 +521,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
+        => await AppendCachedAsync(new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId), token).ConfigureAwait(false);
+
+    private async ValueTask<long> AppendCachedAsync(CachedLogEntry cachedEntry, CancellationToken token)
     {
         Debug.Assert(bufferManager.IsCachingEnabled);
-
-        // copy log entry to the memory
-        var cachedEntry = new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId);
 
         long startIndex;
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
@@ -533,7 +533,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             // append it to the log
             startIndex = state.TailIndex;
-            await UnsafeAppendAsync(cachedEntry, startIndex, out var partition, token).ConfigureAwait(false);
+            await UnsafeAppendAsync(cachedEntry, startIndex, out _, token).ConfigureAwait(false);
             state.LastIndex = startIndex;
         }
         finally
@@ -580,13 +580,23 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         ValueTask<long> result;
         if (IsDisposed)
+        {
             result = new(GetDisposedTask<long>());
+        }
         else if (entry.IsSnapshot)
+        {
             result = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
+        }
         else if (bufferManager.IsCachingEnabled && addToCache)
-            result = AppendCachedAsync(entry, token);
+        {
+            result = entry is IBinaryLogEntry
+                ? AppendCachedAsync(new CachedLogEntry(((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), entry.Term, entry.Timestamp, entry.CommandId), token)
+                : AppendCachedAsync(entry, token);
+        }
         else
+        {
             result = AppendUncachedAsync(entry, token);
+        }
 
         return result;
     }
@@ -645,7 +655,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             count = state.LastIndex - startIndex + 1L;
             state.LastIndex = startIndex - 1L;
-            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
 
             if (reuseSpace)
                 InvalidatePartitions(startIndex);

@@ -94,4 +94,10 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
         get => warmupRounds;
         set => warmupRounds = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(warmupRounds));
     }
+
+    /// <summary>
+    /// Gets a value indicating that the follower node should not try to upgrade
+    /// to the candidate state if the leader is reachable via the network.
+    /// </summary>
+    public bool AggressiveLeaderStickiness { get; set; }
 }

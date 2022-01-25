@@ -55,6 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 TransmissionBlockSize = 65535,
                 SslOptions = useSsl ? CreateClientSslOptions() : null,
                 IsRemote = true
@@ -76,6 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 TransmissionBlockSize = 65535,
                 IsRemote = true
             };
@@ -98,6 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 TransmissionBlockSize = 300,
                 IsRemote = true
             };
@@ -143,6 +146,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 TransmissionBlockSize = 400,
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 IsRemote = true
             };
 
@@ -173,6 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 IsRemote = true
             };
 
@@ -195,6 +200,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 TransmissionBlockSize = 350,
                 IsRemote = true
             };
@@ -218,6 +224,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 TransmissionBlockSize = 350,
                 IsRemote = true
             };
@@ -279,6 +286,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpClient CreateClient(IPEndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
             {
                 RequestTimeout = timeout,
+                ConnectTimeout = timeout,
                 TransmissionBlockSize = 350,
                 IsRemote = true
             };

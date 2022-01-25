@@ -44,10 +44,24 @@ internal abstract class RaftHttpMessage : HttpMessage
         return new(term, result);
     }
 
-    private protected static Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token)
+    private protected static new async Task<Result<T>> ParseEnumResponse<T>(HttpResponseMessage response, CancellationToken token)
+        where T : struct, Enum
     {
-        response.StatusCode = StatusCodes.Status200OK;
+        var result = await HttpMessage.ParseEnumResponse<T>(response, token).ConfigureAwait(false);
+        var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
+        return new(term, result);
+    }
+
+    private protected static Task SaveResponse(HttpResponse response, in Result<bool> result, CancellationToken token)
+    {
         response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return response.WriteAsync(result.Value.ToString(InvariantCulture), token);
+        return HttpMessage.SaveResponse(response, result.Value, token);
+    }
+
+    private protected static Task SaveResponse<T>(HttpResponse response, in Result<T> result, CancellationToken token)
+        where T : struct, Enum
+    {
+        response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
+        return HttpMessage.SaveResponse(response, result.Value, token);
     }
 }
