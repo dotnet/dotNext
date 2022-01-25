@@ -766,7 +766,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             Logger.TransitionToCandidateStateStarted();
 
             // if term changed after lock then assumes that leader will be updated soon
-            if (currentTerm == auditTrail.Term && readyForTransition)
+            if (currentTerm == auditTrail.Term)
+                Leader = null;
+            else
+                readyForTransition = false;
+
+            if (readyForTransition)
             {
                 Leader = null;
                 followerState.Dispose();
