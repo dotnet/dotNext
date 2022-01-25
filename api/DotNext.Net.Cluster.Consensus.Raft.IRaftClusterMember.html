@@ -439,7 +439,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">virtual Task&lt;Result&lt;bool&gt;&gt; PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">virtual Task&lt;Result&lt;PreVoteResult&gt;&gt; PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -487,8 +487,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Result-1.html">Result</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;&gt;</td>
-        <td><p>Pre-vote result received from the member; <span class="xref">true</span> if the member confirms transition of the caller to Candidate state.</p>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Result-1.html">Result</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PreVoteResult.html">PreVoteResult</a>&gt;&gt;</td>
+        <td><p>Pre-vote result received from the member.</p>
 </td>
       </tr>
     </tbody>

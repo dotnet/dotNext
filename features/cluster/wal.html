@@ -98,7 +98,8 @@
 <li><code>GetMemoryAllocator</code> generic method used for renting the memory and can be overridden</li>
 <li><code>MaxConcurrentReads</code> is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.</li>
 <li><code>ReplayOnInitialize</code> is a flag indicating that state of underlying database engine should be reconstructed when <code>InitializeAsync</code> is called by infrastructure. It can be done manually using <code>ReplayAsync</code> method.</li>
-<li><code>WriteThrough</code> indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls <em>fsync</em> for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.</li>
+<li><code>WriteMode</code> indicates how WAL must manage intermediate buffers when performing disk I/O</li>
+<li><code>IntegrityCheck</code> allows to verify internal WAL at initialization phase to ensure that the log was not damaged by hard shutdown</li>
 <li><code>BackupCompression</code> represents compression level used by <code>CreateBackupAsync</code> method.</li>
 <li><code>CompactionMode</code> represents log compaction mode. The default is <em>Sequential</em>.</li>
 <li><code>CopyOnReadOptions</code> allows to enable <em>copy-on-read</em> behavior which allows to avoid lock contention between log compaction and replication processes</li>

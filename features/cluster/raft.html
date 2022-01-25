@@ -197,12 +197,6 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>Defines range for election timeout (in milliseconds) which is picked randomly inside of it for each cluster member. If cluster node doesn't receive heartbeat from leader node during this timeout then it becomes a candidate and start a election. The recommended value for  <em>upperElectionTimeout</em> is <code>2  X lowerElectionTimeout</code></td>
 </tr>
 <tr>
-<td>PipeConfig</td>
-<td>No</td>
-<td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipeoptions.default">PipeOptions.Default</a></td>
-<td>The configuration of I/O pipeline used for passing bytes between application and network transport</td>
-</tr>
-<tr>
 <td>MemoryAllocator</td>
 <td>No</td>
 <td>Memory pool from <em>PipeConfig</em> property</td>
@@ -660,7 +654,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <tr>
 <td>GracefulShutdownTimeout</td>
 <td>No</td>
-<td>The same as <em>LowerElectionTimeout</em></td>
+<td><em>LowerElectionTimeout</em></td>
 <td>The timeout of graceful shutdown of active incoming connections</td>
 </tr>
 <tr>
@@ -670,10 +664,16 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retransmission of large blocks.</td>
 </tr>
 <tr>
+<td>RequestTimeout</td>
+<td>No</td>
+<td><em>LowerElectionTimeout / 2</em></td>
+<td>A timeout used for Raft RPC call. Must be less than or equal to <em>LowerElectionTimeout</em></td>
+</tr>
+<tr>
 <td>ConnectTimeout</td>
 <td>No</td>
-<td>The same as <em>LowerElectionTimeout / 2</em></td>
-<td>TCP connection timeout. Must be less than or equal to <em>LowerElectionTimeout</em></td>
+<td><em>LowerElectionTimeout / 2</em></td>
+<td>TCP connection timeout. Must be less than or equal to <em>RequestTimeout</em></td>
 </tr>
 <tr>
 <td>SslOptions</td>
@@ -684,6 +684,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 </tbody>
 </table>
 <p>TCP transport is WAN friendly and support transport-level encryption. However, the underlying application-level protocol is binary and can be a problem for corporate firewalls.</p>
+<p>The recommended relationship between timeouts: <code>ConnectTimeout &lt; RequestTimeout &lt; LowerElectionTimeout</code>. In practice, <em>ConnectTimeout</em> should be as small as possible to avoid impact on the cluster by disconnected nodes.</p>
 <h2 id="udp-transport">UDP Transport</h2>
 <p>UDP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport doesn't use persistent connection in contrast to TCP. As a result, it has no TCP overhead related to congestion and flow control of messages. These capabilities are implemented by application protocol itself. However, retransmission of lost packets is not implemented. The transport uses pessimistic approach and interprets lost packets as connection timeout. This is reasonable approach because the leader node examines other cluster members periodically and the next attempt may be successful. Some Raft messages such as <em>Vote</em> and <em>Heartbeat</em> with empty set of log entries (or if log entries are small enough) for replication can be easily placed to single datagram without fragmentation.</p>
 <p>The transport has very low overhead which is equal to ~20 bytes per datagram. Therefore, most Raft messages can be placed to single datagram without streaming per request.</p>
@@ -728,6 +729,12 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>No</td>
 <td>0.0.0.0 with random port</td>
 <td>Used for receiving responses from other cluster nodes</td>
+</tr>
+<tr>
+<td>PipeConfig</td>
+<td>No</td>
+<td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipeoptions.default">PipeOptions.Default</a></td>
+<td>The configuration of I/O pipeline used for passing bytes between application and network transport</td>
 </tr>
 </tbody>
 </table>
