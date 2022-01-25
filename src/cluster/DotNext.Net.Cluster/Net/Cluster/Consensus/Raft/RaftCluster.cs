@@ -559,7 +559,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                         votes--;
                         break;
                     case PreVoteResult.RejectedByLeader:
-                        votes = int.MinValue;
+                        votes = ushort.MinValue;
                         break;
                 }
             }
