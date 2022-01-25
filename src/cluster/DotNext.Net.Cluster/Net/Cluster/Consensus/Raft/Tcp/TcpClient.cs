@@ -135,36 +135,28 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     private async Task<TResponse> RequestAsync<TResponse>(Func<ProtocolStream, CancellationToken, ValueTask<TResponse>> request, CancellationToken token)
     {
         ThrowIfDisposed();
-        CancellationTokenSource? timeoutSource = null;
+
         var timeStamp = new Timestamp();
         var lockTaken = false;
+
+        var requestDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
+        requestDurationTracker.CancelAfter(RequestTimeout);
         try
         {
-            await accessLock.AcquireAsync(token).ConfigureAwait(false);
+            await accessLock.AcquireAsync(requestDurationTracker.Token).ConfigureAwait(false);
             lockTaken = true;
 
-            var requestTimeout = RequestTimeout;
-            timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
             if (protocol is null)
             {
-                timeoutSource.CancelAfter(ConnectTimeout);
-                var connectionTimeTracker = new Timestamp();
-                await ConnectAsync(timeoutSource.Token).ConfigureAwait(false);
-
-                // try to reuse CTS
-                if (!timeoutSource.TryReset())
-                {
-                    timeoutSource.Dispose();
-                    timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-                }
-
-                requestTimeout = Subtract(requestTimeout, connectionTimeTracker.Elapsed);
+                // connection has separated timeout
+                using var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(requestDurationTracker.Token);
+                connectDurationTracker.CancelAfter(ConnectTimeout);
+                await ConnectAsync(connectDurationTracker.Token).ConfigureAwait(false);
             }
 
             Debug.Assert(protocol is not null);
-            timeoutSource.CancelAfter(requestTimeout);
             protocol.Reset();
-            return await request(protocol, timeoutSource.Token).ConfigureAwait(false);
+            return await request(protocol, requestDurationTracker.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
@@ -186,7 +178,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
                 accessLock.Release();
 
             Metrics?.ReportResponseTime(timeStamp.Elapsed);
-            timeoutSource?.Dispose();
+            requestDurationTracker.Dispose();
         }
 
         void DestroyConnection()
@@ -197,9 +189,6 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             transport?.Dispose();
             transport = null;
         }
-
-        static TimeSpan Subtract(TimeSpan requestTimeout, TimeSpan connectionDuration)
-            => requestTimeout > connectionDuration ? requestTimeout - connectionDuration : TimeSpan.Zero;
     }
 
     private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
