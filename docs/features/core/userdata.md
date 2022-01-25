@@ -7,7 +7,7 @@ using System.Text;
 
 public static class StringBuilderHelpers
 {
-    private static readonly UserDataSlot<DateTime> CreationTimeSlot = UserDataSlot<DateTime>.Allocate();
+    private static readonly UserDataSlot<DateTime> CreationTimeSlot = new();
 
     public static StringBuilder CreateStringBuilder()
     {

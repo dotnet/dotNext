@@ -28,7 +28,8 @@ Internally, persistent WAL uses files to store the state of cluster member and l
 * `GetMemoryAllocator` generic method used for renting the memory and can be overridden
 * `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.
 * `ReplayOnInitialize` is a flag indicating that state of underlying database engine should be reconstructed when `InitializeAsync` is called by infrastructure. It can be done manually using `ReplayAsync` method.
-* `WriteThrough` indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls _fsync_ for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.
+* `WriteMode` indicates how WAL must manage intermediate buffers when performing disk I/O
+* `IntegrityCheck` allows to verify internal WAL at initialization phase to ensure that the log was not damaged by hard shutdown
 * `BackupCompression` represents compression level used by `CreateBackupAsync` method.
 * `CompactionMode` represents log compaction mode. The default is _Sequential_.
 * `CopyOnReadOptions` allows to enable _copy-on-read_ behavior which allows to avoid lock contention between log compaction and replication processes

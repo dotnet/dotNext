@@ -195,14 +195,14 @@ The same behavior can be achieved using [Span](https://docs.microsoft.com/en-us/
 using DotNext.Diagnostics;
 using System;
 
-var timestamp = Timestamp.Current;
+var timestamp = new Timestamp();
 //long-running operation
 Console.WriteLine(timestamp.Elapsed);
 ```
 
 `Elapsed` property returning value of [TimeSpan](https://docs.microsoft.com/en-us/dotnet/api/system.timespan) type which indicates the difference between `timestamp` and the current point in time.
 
-This type should not be used as unique identifier of some point in time. The created time stamp may identify the time since the start of the process, OS, user session or whatever else.
+This type should not be used as a unique identifier of some point in time. The created time stamp may identify the time since the start of the process, OS, user session or whatever else.
 
 # Dynamic Task Result
 In .NET it is not possible to obtain a result from [task](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1) if its result type is not known at compile-time. It can be useful if you are writing proxy or SOAP Middleware using ASP.NET Core and task type is not known for your code. .NEXT provides two ways of doing that:
