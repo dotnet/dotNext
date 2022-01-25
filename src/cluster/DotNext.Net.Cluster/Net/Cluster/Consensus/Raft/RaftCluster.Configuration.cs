@@ -239,6 +239,12 @@ public partial class RaftCluster
         /// </summary>
         public bool Standby { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating that the follower node should not try to upgrade
+        /// to the candidate state if the leader is reachable via the network.
+        /// </summary>
+        public bool AggressiveLeaderStickiness { get; set; }
+
         internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
 
         internal abstract IServer CreateServer(ILocalMember localMember);
@@ -371,7 +377,7 @@ public partial class RaftCluster
     public sealed class TcpConfiguration : NodeConfiguration
     {
         private int transmissionBlockSize;
-        private TimeSpan? gracefulShutdown;
+        private TimeSpan? gracefulShutdown, connectTimeout;
 
         /// <summary>
         /// Initializes a new UDP transport settings.
@@ -432,11 +438,10 @@ public partial class RaftCluster
         /// <summary>
         /// Gets or sets TCP connection timeout, in milliseconds.
         /// </summary>
-        [Obsolete("ConnectTimeout is no longer in use. RequestTimeout is used for connection instead")]
-        public int ConnectTimeout
+        public TimeSpan ConnectTimeout
         {
-            get => (int)RequestTimeout.TotalMilliseconds;
-            set => RequestTimeout = TimeSpan.FromMilliseconds(value);
+            get => connectTimeout ?? RequestTimeout;
+            set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         internal override TcpClient CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
@@ -447,6 +452,7 @@ public partial class RaftCluster
                 Ttl = TimeToLive,
                 SslOptions = SslOptions?.ClientOptions,
                 RequestTimeout = RequestTimeout,
+                ConnectTimeout = ConnectTimeout,
                 Metrics = metrics,
             };
 

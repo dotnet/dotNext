@@ -58,7 +58,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
         compactionCounter = ToDelegate(configuration.CompactionCounter);
 
-        snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough, initialSize: configuration.InitialPartitionSize);
+        snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode, initialSize: configuration.InitialPartitionSize);
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
         var snapshotLength = snapshot.Length.GetValueOrDefault();
-        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, writeThrough, tempSnapshot: true, initialSize: snapshotLength))
+        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, WriteMode.Optimistic, tempSnapshot: true, initialSize: snapshotLength))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             snapshotLength = await tempSnapshot.WriteAsync(snapshot).ConfigureAwait(false);
@@ -261,7 +261,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
         }
 
-        this.snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough);
+        this.snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeMode);
         UpdateSnapshotInfo(SnapshotMetadata.Create(snapshot, snapshotIndex, snapshotLength));
 
         // Apply snapshot to the underlying state machine
@@ -540,7 +540,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             // delete snapshot
             snapshot.Dispose();
             File.Delete(snapshot.FileName);
-            snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeThrough);
+            snapshot = new(Location, snapshotBufferSize, in bufferManager, concurrentReads, writeMode);
         }
         finally
         {

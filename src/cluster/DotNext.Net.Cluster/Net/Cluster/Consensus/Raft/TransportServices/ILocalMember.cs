@@ -23,7 +23,7 @@ internal interface ILocalMember
 
     Task<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-    Task<Result<bool>> PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+    Task<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
     Task<bool> ResignAsync(CancellationToken token);
 

@@ -37,4 +37,10 @@ public interface IClusterMemberConfiguration
     /// represents standby node which will never become a leader.
     /// </summary>
     bool Standby { get; }
+
+    /// <summary>
+    /// Gets a value indicating that the follower node should not try to upgrade
+    /// to the candidate state if the leader is reachable via the network.
+    /// </summary>
+    bool AggressiveLeaderStickiness => false;
 }

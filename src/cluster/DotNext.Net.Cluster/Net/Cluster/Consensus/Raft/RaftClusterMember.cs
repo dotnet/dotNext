@@ -111,11 +111,11 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote ? VoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
 
-    private protected abstract Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+    private protected abstract Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
     /// <inheritdoc/>
-    Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<bool>(term, true));
+    Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        => IsRemote ? PreVoteAsync(term, lastLogIndex, lastLogTerm, token) : Task.FromResult(new Result<PreVoteResult>(term, PreVoteResult.Accepted));
 
     private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         where TEntry : IRaftLogEntry

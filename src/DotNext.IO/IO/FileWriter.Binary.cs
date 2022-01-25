@@ -69,8 +69,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         async ValueTask WriteLargeValueAsync()
         {
             // rare case, T is very large and doesn't fit the buffer
-            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
-            Span.AsReadOnlyBytes(in value).CopyTo(buffer.Span);
+            using var buffer = Span.AsReadOnlyBytes(in value).Copy();
             await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
     }

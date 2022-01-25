@@ -19,6 +19,19 @@ internal static class Result
         return writer.WrittenCount;
     }
 
+    internal static void WritePreVoteResult(ref SpanWriter<byte> writer, in Result<PreVoteResult> result)
+    {
+        writer.WriteInt64(result.Term, true);
+        writer.Add((byte)result.Value);
+    }
+
+    internal static int WritePreVoteResult(Span<byte> output, in Result<PreVoteResult> result)
+    {
+        var writer = new SpanWriter<byte>(output);
+        WritePreVoteResult(ref writer, in result);
+        return writer.WrittenCount;
+    }
+
     internal static Result<bool> Read(ref SpanReader<byte> reader)
         => new(reader.ReadInt64(true), ValueTypeExtensions.ToBoolean(reader.Read()));
 
@@ -26,5 +39,14 @@ internal static class Result
     {
         var reader = new SpanReader<byte>(input);
         return Read(ref reader);
+    }
+
+    internal static Result<PreVoteResult> ReadPreVoteResult(ref SpanReader<byte> reader)
+        => new(reader.ReadInt64(true), (PreVoteResult)reader.Read());
+
+    internal static Result<PreVoteResult> ReadPreVoteResult(ReadOnlySpan<byte> input)
+    {
+        var reader = new SpanReader<byte>(input);
+        return ReadPreVoteResult(ref reader);
     }
 }
