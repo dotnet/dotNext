@@ -33,12 +33,12 @@ public partial class PersistentState
         /// <summary>
         /// Delegates intermediate buffer flush to operating system.
         /// </summary>
-        Optimistic = 0,
+        NoFlush = 0,
 
         /// <summary>
-        /// Synchronizes only committed log entries with storage device.
+        /// Flushes data to disk only if the internal buffer oveflows.
         /// </summary>
-        FlushOnCommit,
+        AutoFlush,
 
         /// <summary>
         /// Bypass intermediate buffers for all disk writes.
@@ -66,7 +66,7 @@ public partial class PersistentState
         public bool WriteThrough
         {
             get => WriteMode is WriteMode.WriteThrough;
-            set => WriteMode = value ? WriteMode.WriteThrough : WriteMode.Optimistic;
+            set => WriteMode = value ? WriteMode.WriteThrough : WriteMode.NoFlush;
         }
 
         /// <summary>

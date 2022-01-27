@@ -35,6 +35,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
+    private readonly LogEntryWriter entryWriter;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -58,6 +59,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
+        entryWriter = bufferManager.IsCachingEnabled
+            ? new CachingLogEntryWriter(bufferManager.BufferAllocator)
+            : new LogEntryWriter();
 
         syncRoot = new(configuration);
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -90,7 +94,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.Optimistic);
+        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.NoFlush);
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -338,13 +342,15 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
-            if (supplier.Current.IsSnapshot)
+            var currentEntry = supplier.Current;
+
+            if (currentEntry.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
 
             if (startIndex > state.CommitIndex)
             {
                 GetOrCreatePartition(startIndex, ref partition);
-                await partition.WriteAsync(supplier.Current, startIndex, token).ConfigureAwait(false);
+                await entryWriter.InvokeAsync(partition, currentEntry, startIndex, token).ConfigureAwait(false);
 
                 // flush if last entry is added to the partition or the last entry is consumed from the iterator
                 if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
@@ -521,7 +527,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
-        => await AppendCachedAsync(new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId), token).ConfigureAwait(false);
+        => await AppendCachedAsync(new CachedLogEntry { Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token).ConfigureAwait(false);
 
     private async ValueTask<long> AppendCachedAsync(CachedLogEntry cachedEntry, CancellationToken token)
     {
@@ -590,7 +596,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (bufferManager.IsCachingEnabled && addToCache)
         {
             result = entry is IBinaryLogEntry
-                ? AppendCachedAsync(new CachedLogEntry(((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), entry.Term, entry.Timestamp, entry.CommandId), token)
+                ? AppendCachedAsync(new CachedLogEntry { Content = ((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token)
                 : AppendCachedAsync(entry, token);
         }
         else

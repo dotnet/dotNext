@@ -237,7 +237,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
         var snapshotLength = snapshot.Length.GetValueOrDefault();
-        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, WriteMode.Optimistic, tempSnapshot: true, initialSize: snapshotLength))
+        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, WriteMode.NoFlush, tempSnapshot: true, initialSize: snapshotLength))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             snapshotLength = await tempSnapshot.WriteAsync(snapshot).ConfigureAwait(false);
@@ -452,12 +452,12 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             if (TryGetPartition(startIndex, ref partition))
             {
-                var entry = partition.Read(sessionId, startIndex);
+                var entry = partition.Read(sessionId, startIndex, out var persisted);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
                 lastTerm.VolatileWrite(entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
-                if (entry.IsBuffered)
+                if (!persisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, entry.Position, evictOnCommit).ConfigureAwait(false);
 

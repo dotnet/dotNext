@@ -81,8 +81,6 @@ public partial class PersistentState
             }
         }
 
-        internal bool IsBuffered => content is null;
-
         internal long Position => metadata.Offset;
 
         /// <summary>

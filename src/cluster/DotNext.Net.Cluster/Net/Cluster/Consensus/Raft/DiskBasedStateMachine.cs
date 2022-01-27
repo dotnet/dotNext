@@ -59,12 +59,12 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         {
             if (TryGetPartition(startIndex, ref partition))
             {
-                var entry = partition.Read(sessionId, startIndex);
+                var entry = partition.Read(sessionId, startIndex, out var persisted);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
                 lastTerm.VolatileWrite(entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
-                if (entry.IsBuffered)
+                if (!persisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, entry.Position, snapshotLength.HasValue).ConfigureAwait(false);
 

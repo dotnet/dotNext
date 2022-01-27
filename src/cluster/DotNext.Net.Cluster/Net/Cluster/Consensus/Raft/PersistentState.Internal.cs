@@ -270,7 +270,7 @@ public partial class PersistentState
             if (readersCount == 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
 
-            streamForFlush = writeMode is WriteMode.FlushOnCommit
+            streamForFlush = writeMode is WriteMode.AutoFlush
                 ? new(Handle, FileAccess.Write, bufferSize: 1)
                 : null;
         }

@@ -23,12 +23,12 @@ public partial class PersistentState
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct BufferManager
     {
-        private readonly MemoryAllocator<MemoryOwner<byte>>? cacheAllocator;
+        private readonly MemoryAllocator<CacheRecord>? cacheAllocator;
         private readonly MemoryAllocator<LogEntry> entryAllocator;
 
         internal BufferManager(IBufferManagerSettings options)
         {
-            cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<MemoryOwner<byte>>() : null;
+            cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<CacheRecord>() : null;
             BufferAllocator = options.GetMemoryAllocator<byte>();
             entryAllocator = options.GetMemoryAllocator<LogEntry>();
         }
@@ -37,7 +37,7 @@ public partial class PersistentState
 
         internal MemoryAllocator<byte> BufferAllocator { get; }
 
-        internal MemoryOwner<MemoryOwner<byte>> AllocLogEntryCache(int recordsPerPartition)
+        internal MemoryOwner<CacheRecord> AllocLogEntryCache(int recordsPerPartition)
             => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
 
         internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator(length);
