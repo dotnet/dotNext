@@ -107,8 +107,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 Equal(0, state.Term);
-                Equal(1, await state.IncrementTermAsync());
-                True(state.IsVotedFor(default(ClusterMemberId?)));
+                Equal(1, await state.IncrementTermAsync(default));
+                True(state.IsVotedFor(default(ClusterMemberId)));
                 await state.UpdateVotedForAsync(member);
                 False(state.IsVotedFor(default(ClusterMemberId?)));
                 True(state.IsVotedFor(member));
@@ -532,7 +532,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
-        public static async Task ClearPersistentLog()
+        public static async Task ClearLog()
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
@@ -559,6 +559,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 Equal(0L, state.LastCommittedEntryIndex);
                 Equal(0L, state.LastUncommittedEntryIndex);
+            }
+        }
+
+        [Theory]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Background)]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Foreground)]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Sequential)]
+        public static async Task AppendAndCommitAsync(MemoryBasedStateMachine.CompactionMode compaction)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using (var state = new PersistentStateWithSnapshot(dir, true, compaction))
+            {
+                Equal(0L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 1L, false, 0L));
+                Equal(0L, state.LastCommittedEntryIndex);
+                Equal(9L, state.LastUncommittedEntryIndex);
+
+                Equal(9L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 10L, false, 9L));
+                Equal(9L, state.LastCommittedEntryIndex);
+                Equal(18L, state.LastUncommittedEntryIndex);
+
+                Equal(9L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 19L, false, 18L));
+                Equal(18L, state.LastCommittedEntryIndex);
+                Equal(27L, state.LastUncommittedEntryIndex);
             }
         }
 
@@ -737,8 +762,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 //define node state
-                Equal(1, await state.IncrementTermAsync());
-                await state.UpdateVotedForAsync(member);
+                Equal(1, await state.IncrementTermAsync(member));
                 True(state.IsVotedFor(member));
                 //define log entries
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));

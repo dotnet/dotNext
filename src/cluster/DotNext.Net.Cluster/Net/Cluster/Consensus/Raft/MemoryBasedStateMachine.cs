@@ -1,8 +1,10 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using IO.Log;
 using static Threading.AtomicInt64;
 
 /// <summary>
@@ -217,7 +219,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 try
                 {
                     // Persist snapshot (cannot be canceled to avoid inconsistency)
-                    await UpdateSnapshotInfoAsync(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false)).ConfigureAwait(false);
+                    UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
+                    await PersistInternalStateAsync(InternalStateScope.Snapshot).ConfigureAwait(false);
 
                     // Remove squashed partitions
                     removedHead = DetachPartitions(upperBoundIndex);
@@ -254,7 +257,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
          */
         try
         {
-            File.Move(tempSnapshotFile, snapshotFile, true);
+            File.Move(tempSnapshotFile, snapshotFile, overwrite: true);
         }
         catch (Exception e)
         {
@@ -280,8 +283,120 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         lastTerm.VolatileWrite(snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
-        await PersistInternalStateAsync(includeSnapshotMetadata: true).ConfigureAwait(false);
+        await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
         OnCommit(1L);
+    }
+
+    private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long endIndex, CancellationToken token)
+    {
+        /*
+         * The following concurrency could happened here:
+         * UnsafeAppendAsync invalidates readers of the partition on flush
+         * while the readers are in use by ApplyAsync or snapshot building process.
+         * It's happening if caching disabled, or EvictOnCommit and Sequential compaction mode.
+         * But we can easily ignore this concurrency because invalidation works only when
+         * GetSessionReader() is called. In worst case, we will have empty internal buffer
+         * of the reader. No additional synchronization is required.
+         */
+        Debug.Assert(endIndex < startIndex);
+
+        long result;
+        Partition? removedHead;
+        ExceptionDispatchInfo? error = null;
+
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        var session = sessionManager.Take();
+        try
+        {
+            if (startIndex > LastUncommittedEntryIndex + 1L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            // start commit task in parallel
+            var commitTask = Task.Run<(long, Partition?)>(compaction switch
+            {
+                CompactionMode.Sequential => CommitAndCompactSequentiallyAsync,
+                CompactionMode.Foreground => CommitAndCompactInParallelAsync,
+                _ => CommitWithoutCompactionAsync,
+            });
+
+            // append log entries on this thread
+            InternalStateScope scope;
+            try
+            {
+                await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+                scope = InternalStateScope.IndexesAndSnapshot;
+            }
+            catch (Exception e)
+            {
+                // cannot append entries
+                error = ExceptionDispatchInfo.Capture(e);
+                scope = InternalStateScope.Snapshot;
+            }
+
+            (result, removedHead) = await commitTask.ConfigureAwait(false);
+            await PersistInternalStateAsync(scope).ConfigureAwait(false);
+        }
+        finally
+        {
+            sessionManager.Return(session);
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
+
+        OnCommit(result);
+        DeletePartitions(removedHead);
+        error?.Throw();
+        return result;
+
+        async Task<(long, Partition?)> CommitAndCompactSequentiallyAsync()
+        {
+            Partition? removedHead;
+            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
+            LastCommittedEntryIndex = commitIndex;
+            await ApplyAsync(session, token).ConfigureAwait(false);
+            if (IsCompactionRequired(commitIndex))
+            {
+                await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
+                removedHead = DetachPartitions(commitIndex);
+            }
+            else
+            {
+                removedHead = null;
+            }
+
+            return (count, removedHead);
+        }
+
+        async Task<(long, Partition?)> CommitWithoutCompactionAsync()
+        {
+            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
+            LastCommittedEntryIndex = commitIndex;
+            await ApplyAsync(session, token).ConfigureAwait(false);
+
+            return (count, null);
+        }
+
+        async Task<(long, Partition?)> CommitAndCompactInParallelAsync()
+        {
+            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
+
+            var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
+            LastCommittedEntryIndex = commitIndex;
+
+            var compaction = compactionIndex > 0L
+                ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                : Task.CompletedTask;
+
+            try
+            {
+                await ApplyAsync(session, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                await compaction.ConfigureAwait(false);
+            }
+
+            return (count, DetachPartitions(compactionIndex));
+        }
     }
 
     private protected sealed override ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -309,7 +424,20 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
                 LastCommittedEntryIndex = commitIndex;
                 await ApplyAsync(session, token).ConfigureAwait(false);
-                removedHead = await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
+                InternalStateScope scope;
+                if (IsCompactionRequired(commitIndex))
+                {
+                    await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
+                    removedHead = DetachPartitions(commitIndex);
+                    scope = InternalStateScope.IndexesAndSnapshot;
+                }
+                else
+                {
+                    removedHead = null;
+                    scope = InternalStateScope.Indexes;
+                }
+
+                await PersistInternalStateAsync(scope).ConfigureAwait(false);
             }
             finally
             {
@@ -320,28 +448,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             OnCommit(count);
             DeletePartitions(removedHead);
             return count;
-        }
-
-        async ValueTask<Partition?> ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)
-        {
-            Partition? removedHead;
-            if (IsCompactionRequired(upperBoundIndex))
-            {
-                using var builder = CreateSnapshotBuilder();
-                await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
-
-                // Persist snapshot (cannot be canceled to avoid inconsistency)
-                await UpdateSnapshotInfoAsync(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false)).ConfigureAwait(false);
-
-                // Remove squashed partitions
-                removedHead = DetachPartitions(upperBoundIndex);
-            }
-            else
-            {
-                removedHead = null;
-            }
-
-            return removedHead;
         }
 
         async ValueTask<long> CommitWithoutCompactionAsync()
@@ -357,6 +463,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
                 LastCommittedEntryIndex = commitIndex;
                 await ApplyAsync(session, token).ConfigureAwait(false);
+                await PersistInternalStateAsync(InternalStateScope.Indexes).ConfigureAwait(false);
             }
             finally
             {
@@ -366,37 +473,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
             OnCommit(count);
             return count;
-        }
-
-        async Task<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
-        {
-            Partition? removedHead;
-            if (upperBoundIndex > 0L)
-            {
-                var builder = CreateSnapshotBuilder();
-                var session = sessionManager.Take();
-                try
-                {
-                    await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
-
-                    // Persist snapshot (cannot be canceled to avoid inconsistency)
-                    await UpdateSnapshotInfoAsync(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false)).ConfigureAwait(false);
-
-                    // Remove squashed partitions
-                    removedHead = DetachPartitions(upperBoundIndex);
-                }
-                finally
-                {
-                    sessionManager.Return(session);
-                    builder.Dispose();
-                }
-            }
-            else
-            {
-                removedHead = null;
-            }
-
-            return removedHead;
         }
 
         async ValueTask<long> CommitAndCompactInParallelAsync()
@@ -413,15 +489,22 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
                 var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
                 LastCommittedEntryIndex = commitIndex;
-                var compaction = Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token));
+
+                var compaction = compactionIndex > 0L
+                    ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                    : Task.CompletedTask;
+
                 try
                 {
                     await ApplyAsync(session, token).ConfigureAwait(false);
                 }
                 finally
                 {
-                    removedHead = await compaction.ConfigureAwait(false);
+                    await compaction.ConfigureAwait(false);
+                    removedHead = DetachPartitions(compactionIndex);
                 }
+
+                await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
             }
             finally
             {
@@ -432,6 +515,33 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             OnCommit(count);
             DeletePartitions(removedHead);
             return count;
+        }
+    }
+
+    private async ValueTask ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)
+    {
+        using var builder = CreateSnapshotBuilder();
+        await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
+
+        // Persist snapshot (cannot be canceled to avoid inconsistency)
+        UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
+    }
+
+    private async Task ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
+    {
+        var builder = CreateSnapshotBuilder();
+        var session = sessionManager.Take();
+        try
+        {
+            await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+
+            // Persist snapshot (cannot be canceled to avoid inconsistency)
+            UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
+        }
+        finally
+        {
+            sessionManager.Return(session);
+            builder.Dispose();
         }
     }
 
@@ -471,8 +581,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 throw new MissingPartitionException(startIndex);
             }
         }
-
-        await PersistInternalStateAsync(includeSnapshotMetadata: false).ConfigureAwait(false);
     }
 
     private ValueTask ApplyAsync(int sessionId, CancellationToken token)

@@ -42,9 +42,9 @@ public partial class PersistentState
         private const int ChecksumOffset = Capacity - sizeof(long);
 
         internal static readonly Range IndexesRange = CommitIndexOffset..SnapshotMetadataOffset,
-                                        TermRange = TermOffset..LastVotePresenceOffset,
                                         LastVoteRange = LastVotePresenceOffset.. (LastVoteOffset + ClusterMemberId.Size),
                                         TermAndLastVoteFlagRange = TermOffset..LastVoteOffset,
+                                        TermAndLastVoteRange = TermOffset.. (LastVoteOffset + ClusterMemberId.Size),
                                         IndexesAndSnapshotRange = CommitIndexOffset..TermOffset,
                                         SnapshotRange = SnapshotMetadataOffset..TermOffset;
 
@@ -239,10 +239,11 @@ public partial class PersistentState
             term.VolatileWrite(value);
         }
 
-        internal long IncrementTerm()
+        internal long IncrementTerm(ClusterMemberId id)
         {
             var result = term.IncrementAndGet();
             WriteInt64LittleEndian(buffer.Span.Slice(TermOffset), result);
+            UpdateVotedFor(id);
             return result;
         }
 
@@ -252,18 +253,22 @@ public partial class PersistentState
         {
             if (member.HasValue)
             {
-                var id = member.GetValueOrDefault();
-                votedFor = id;
-                buffer[LastVotePresenceOffset] = True;
-#pragma warning disable CA2252 // TODO: Remove in .NET 7
-                IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));
-#pragma warning restore CA2252
+                UpdateVotedFor(member.GetValueOrDefault());
             }
             else
             {
                 votedFor = null;
                 buffer[LastVotePresenceOffset] = False;
             }
+        }
+
+        private void UpdateVotedFor(ClusterMemberId id)
+        {
+            votedFor = id;
+            buffer[LastVotePresenceOffset] = True;
+#pragma warning disable CA2252 // TODO: Remove in .NET 7
+            IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));
+#pragma warning restore CA2252
         }
 
         internal ref readonly SnapshotMetadata Snapshot => ref snapshot;
@@ -327,9 +332,17 @@ public partial class PersistentState
 
     private protected abstract long LastTerm { get; }
 
-    private protected ValueTask PersistInternalStateAsync(bool includeSnapshotMetadata)
+    private protected enum InternalStateScope : byte
     {
-        ref readonly Range range = ref includeSnapshotMetadata ? ref NodeState.IndexesAndSnapshotRange : ref NodeState.IndexesRange;
-        return state.FlushAsync(in range);
+        Indexes = 0,
+        Snapshot = 1,
+        IndexesAndSnapshot = 2,
     }
+
+    private protected ValueTask PersistInternalStateAsync(InternalStateScope scope) => scope switch
+    {
+        InternalStateScope.Indexes => state.FlushAsync(in NodeState.IndexesRange),
+        InternalStateScope.Snapshot => state.FlushAsync(in NodeState.SnapshotRange),
+        _ => state.FlushAsync(in NodeState.IndexesAndSnapshotRange),
+    };
 }
