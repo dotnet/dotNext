@@ -64,7 +64,7 @@ public partial class PersistentState
             buffer = allocator.Invoke(Capacity, true);
             if (File.Exists(fileName))
             {
-                handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.None);
+                handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.SequentialScan);
                 RandomAccess.Read(handle, buffer.Span, 0L);
             }
             else
@@ -80,8 +80,8 @@ public partial class PersistentState
             // reopen handle in asynchronous mode
             handle.Dispose();
 
-            const FileOptions dontSkipBuffer = FileOptions.Asynchronous;
-            const FileOptions skipBuffer = FileOptions.Asynchronous | FileOptions.WriteThrough;
+            const FileOptions dontSkipBuffer = FileOptions.Asynchronous | FileOptions.SequentialScan;
+            const FileOptions skipBuffer = FileOptions.Asynchronous | FileOptions.WriteThrough | FileOptions.SequentialScan;
             handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, writeThrough ? skipBuffer : dontSkipBuffer);
 
             // restore state
