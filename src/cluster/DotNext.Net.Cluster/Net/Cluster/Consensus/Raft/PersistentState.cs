@@ -35,6 +35,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
+    private readonly bool parallelIO;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -58,6 +59,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
+        parallelIO = configuration.ParallelIO;
 
         syncRoot = new(configuration);
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -340,7 +342,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             result = new(AppendUncachedAsync(supplier, startIndex, skipCommitted, token));
         }
-        else if (supplier.RemainingCount is 1L)
+        else if (supplier.RemainingCount is 1L || (supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) != 0)
         {
             result = AppendCachedAsync();
         }
@@ -465,7 +467,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             ? new(GetDisposedTask<long>())
             : entries.RemainingCount is 0L
             ? CommitAsync(new long?(commitIndex), token)
-            : commitIndex < startIndex && bufferManager.IsCachingEnabled
+            : commitIndex < startIndex && parallelIO
             ? AppendAndCommitAsync(entries, startIndex, skipCommitted, commitIndex, token)
             : AppendAndCommitSlowAsync();
 
