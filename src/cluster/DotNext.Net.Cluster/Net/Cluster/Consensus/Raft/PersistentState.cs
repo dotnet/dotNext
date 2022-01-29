@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -35,7 +36,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
-    private readonly LogEntryWriter entryWriter;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -59,9 +59,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
-        entryWriter = bufferManager.IsCachingEnabled
-            ? new CachingLogEntryWriter(bufferManager.BufferAllocator)
-            : new LogEntryWriter();
 
         syncRoot = new(configuration);
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -333,24 +330,84 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         return result;
     }
 
-    private async ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+    private ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         Debug.Assert(startIndex <= state.TailIndex);
+        Debug.Assert(supplier.RemainingCount > 0L);
+
+        ValueTask result;
+        if (!bufferManager.IsCachingEnabled)
+        {
+            result = new(AppendUncachedAsync(supplier, startIndex, skipCommitted, token));
+        }
+        else if (supplier.RemainingCount is 1L)
+        {
+            result = AppendCachedAsync();
+        }
+        else
+        {
+            // bufferize log entries in parallel with disk I/O
+            // (without Task.Run because we want to bufferize the first entry using the current thread)
+            var bufferingSupplier = new BufferingLogEntryProducer<TEntry>(supplier, bufferManager.BufferAllocator) { Token = token };
+            result = new(Task.WhenAll(bufferingSupplier.BufferizeAsync(), AppendUncachedAsync(bufferingSupplier, startIndex, skipCommitted, token)));
+        }
 
         writeCounter?.Invoke(supplier.RemainingCount);
+        return result;
 
+        async ValueTask AppendCachedAsync()
+        {
+            for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
+            {
+                var currentEntry = supplier.Current;
+
+                if (currentEntry.IsSnapshot)
+                    throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
+
+                if (startIndex > state.CommitIndex)
+                {
+                    GetOrCreatePartition(startIndex, ref partition);
+
+                    var cachedEntry = new CachedLogEntry
+                    {
+                        Content = await currentEntry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false),
+                        Term = currentEntry.Term,
+                        CommandId = currentEntry.CommandId,
+                        Timestamp = currentEntry.Timestamp,
+                        PersistenceRequired = true,
+                    };
+
+                    await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
+
+                    // flush if last entry is added to the partition or the last entry is consumed from the iterator
+                    if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                        await partition.FlushAsync(token).ConfigureAwait(false);
+                }
+                else if (!skipCommitted)
+                {
+                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                }
+            }
+
+            // flush updated state. Update index here to guarantee safe reads of recently added log entries
+            state.LastIndex = startIndex - 1L;
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
+        }
+    }
+
+    private async Task AppendUncachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
-            var currentEntry = supplier.Current;
-
-            if (currentEntry.IsSnapshot)
+            if (supplier.Current.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
 
             if (startIndex > state.CommitIndex)
             {
                 GetOrCreatePartition(startIndex, ref partition);
-                await entryWriter.InvokeAsync(partition, currentEntry, startIndex, token).ConfigureAwait(false);
+                await partition.WriteAsync(supplier.Current, startIndex, token).ConfigureAwait(false);
 
                 // flush if last entry is added to the partition or the last entry is consumed from the iterator
                 if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)

@@ -8,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using IntegrityException = IO.Log.IntegrityException;
 using LogEntryReadOptimizationHint = IO.Log.LogEntryReadOptimizationHint;
-using static IO.DataTransferObject;
 
 public partial class PersistentState
 {
@@ -317,35 +316,6 @@ public partial class PersistentState
             }
 
             base.Dispose(disposing);
-        }
-    }
-
-    private class LogEntryWriter
-    {
-        internal virtual ValueTask InvokeAsync<TEntry>(Partition partition, TEntry entry, long index, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
-            => partition.WriteAsync(entry, index, token);
-    }
-
-    private sealed class CachingLogEntryWriter : LogEntryWriter
-    {
-        private readonly MemoryAllocator<byte> allocator;
-
-        internal CachingLogEntryWriter(MemoryAllocator<byte> allocator) => this.allocator = allocator;
-
-        internal override async ValueTask InvokeAsync<TEntry>(Partition partition, TEntry entry, long index, CancellationToken token)
-        {
-            // caching here is efficient to eliminiate subsequent disk reads caused by underlying state machine
-            var cachedEntry = new CachedLogEntry
-            {
-                Content = await entry.ToMemoryAsync(allocator).ConfigureAwait(false),
-                Term = entry.Term,
-                CommandId = entry.CommandId,
-                Timestamp = entry.Timestamp,
-                PersistenceRequired = true,
-            };
-
-            await partition.WriteAsync(cachedEntry, index, token).ConfigureAwait(false);
         }
     }
 
