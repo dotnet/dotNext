@@ -41,7 +41,7 @@ public partial class PersistentState
             this.allocator = allocator;
         }
 
-        static TOptions ConfigureOptions<TOptions>(TOptions options)
+        private static TOptions ConfigureOptions<TOptions>(TOptions options)
             where TOptions : ChannelOptions
         {
             options.AllowSynchronousContinuations = false;

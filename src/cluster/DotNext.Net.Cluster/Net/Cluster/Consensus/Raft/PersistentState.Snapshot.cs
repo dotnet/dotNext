@@ -11,12 +11,6 @@ public partial class PersistentState
     private protected void UpdateSnapshotInfo(in SnapshotMetadata metadata)
         => state.UpdateSnapshotMetadata(in metadata);
 
-    private protected ValueTask UpdateSnapshotInfoAsync(in SnapshotMetadata metadata)
-    {
-        UpdateSnapshotInfo(in metadata);
-        return state.FlushAsync(in NodeState.SnapshotRange);
-    }
-
     private protected abstract ValueTask InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
         where TSnapshot : notnull, IRaftLogEntry;
 

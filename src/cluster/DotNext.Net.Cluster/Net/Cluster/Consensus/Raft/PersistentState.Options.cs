@@ -55,6 +55,7 @@ public partial class PersistentState
         private int bufferSize = 4096;
         private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
         private long partitionSize;
+        private bool parallelIO;
 
         /// <summary>
         /// Gets or sets a value indicating usage of intermediate buffers during I/O.
@@ -116,6 +117,22 @@ public partial class PersistentState
         /// The default value is <see langword="false"/> for backward compatibility.
         /// </remarks>
         public bool IntegrityCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating that the underlying storage device
+        /// can perform read/write operations simultaneously.
+        /// </summary>
+        /// <remarks>
+        /// This parameter makes no sense if <see cref="UseCaching"/> is <see langword="true"/>.
+        /// If caching is disabled, set this property to <see langword="true"/> if the underlying
+        /// storage is attached using parallel interface such as NVMe (via PCIe bus).
+        /// The default value is <see langword="false"/>.
+        /// </remarks>
+        public bool ParallelIO
+        {
+            get => UseCaching || parallelIO;
+            set => parallelIO = value;
+        }
 
         /// <summary>
         /// Gets memory allocator for internal purposes.

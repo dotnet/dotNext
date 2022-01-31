@@ -554,6 +554,10 @@ public partial class PersistentState
         {
             FirstPartition = LastPartition = null;
         }
+        else if (ReferenceEquals(current, result))
+        {
+            result = null;
+        }
         else
         {
             current.DetachAscendant();

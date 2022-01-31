@@ -266,7 +266,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
             {
                 var remoteClient = await socket.AcceptAsync(lifecycleToken).ConfigureAwait(false);
                 ITcpTransport.ConfigureSocket(remoteClient, linger, ttl);
-                ThreadPool.QueueUserWorkItem(HandleConnection, remoteClient, preferLocal: false);
+                ThreadPool.UnsafeQueueUserWorkItem(HandleConnection, remoteClient, preferLocal: false);
             }
             catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
             {

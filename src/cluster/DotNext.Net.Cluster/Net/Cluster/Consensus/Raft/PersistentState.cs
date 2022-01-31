@@ -36,6 +36,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
+    private readonly bool parallelIO;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -53,12 +54,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Location = path;
         this.recordsPerPartition = recordsPerPartition;
         initialSize = configuration.InitialPartitionSize;
-        commitEvent = new(false);
+        commitEvent = new(initialState: false);
         bufferManager = new(configuration);
         concurrentReads = configuration.MaxConcurrentReads;
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
+        parallelIO = configuration.ParallelIO;
 
         syncRoot = new(configuration);
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -129,7 +131,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             if (snapshotRequested)
             {
                 LogEntry snapshot;
-                if (reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+                if (reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
                 {
                     snapshot = new(in SnapshotInfo);
                     snapshotRequested = false;
@@ -330,7 +332,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         return result;
     }
 
-    private ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+    private protected ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         Debug.Assert(startIndex <= state.TailIndex);
@@ -341,7 +343,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             result = new(AppendUncachedAsync(supplier, startIndex, skipCommitted, token));
         }
-        else if (supplier.RemainingCount is 1L)
+        else if (supplier.RemainingCount is 1L || (supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) != 0)
         {
             result = AppendCachedAsync();
         }
@@ -390,9 +392,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 }
             }
 
-            // flush updated state. Update index here to guarantee safe reads of recently added log entries
             state.LastIndex = startIndex - 1L;
-            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
     }
 
@@ -419,18 +419,16 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
         }
 
-        // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
-        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
-    {
-        ThrowIfDisposed();
-        if (entries.RemainingCount == 0L)
-            return;
+    ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
+        => IsDisposed ? new(DisposedTask) : entries.RemainingCount is 0L ? ValueTask.CompletedTask : AppendAsync(entries, startIndex, skipCommitted, token);
 
+    private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
         // assuming that we want to add log entry to the tail
         LockType lockType;
         await syncRoot.AcquireAsync(lockType = LockType.WriteLock, token).ConfigureAwait(false);
@@ -450,10 +448,34 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
 
             await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+
+            // flush updated state. Update index here to guarantee safe reads of recently added log entries
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(lockType);
+        }
+    }
+
+    private protected abstract ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry;
+
+    /// <inheritdoc />
+    ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
+    {
+        return IsDisposed
+            ? new(GetDisposedTask<long>())
+            : entries.RemainingCount is 0L
+            ? CommitAsync(new long?(commitIndex), token)
+            : commitIndex < startIndex && parallelIO
+            ? AppendAndCommitAsync(entries, startIndex, skipCommitted, commitIndex, token)
+            : AppendAndCommitSlowAsync();
+
+        async ValueTask<long> AppendAndCommitSlowAsync()
+        {
+            await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+            return await CommitAsync(new long?(commitIndex), token).ConfigureAwait(false);
         }
     }
 
@@ -684,6 +706,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             await UnsafeAppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
+
+            // flush updated state. Update index here to guarantee safe reads of recently added log entries
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
         finally
         {
@@ -825,8 +850,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private protected void OnCommit(long count)
     {
-        commitEvent.Set(true);
-        commitCounter?.Invoke(count);
+        if (count > 0L)
+        {
+            commitEvent.Set(true);
+            commitCounter?.Invoke(count);
+        }
     }
 
     private bool IsConsistent => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
@@ -855,6 +883,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         return commitIndex - startIndex + 1L;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected long GetCommitIndexAndCount(long endIndex, out long commitIndex)
+    {
+        var startIndex = state.CommitIndex + 1L;
+        commitIndex = Math.Min(state.LastIndex, endIndex);
+        return commitIndex - startIndex + 1L;
+    }
+
     /// <inheritdoc/>
     bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);
 
@@ -864,14 +900,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     public long Term => state.Term;
 
     /// <inheritdoc/>
-    async ValueTask<long> IPersistentState.IncrementTermAsync()
+    async ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
     {
         long result;
         await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
         try
         {
-            result = state.IncrementTerm();
-            await state.FlushAsync(in NodeState.TermRange).ConfigureAwait(false);
+            result = state.IncrementTerm(member);
+            await state.FlushAsync(in NodeState.TermAndLastVoteRange).ConfigureAwait(false);
         }
         finally
         {
