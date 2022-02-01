@@ -12,7 +12,7 @@
     <Company />
     <Product>.NEXT Family of Libraries</Product>
     <VersionPrefix>4.2.0</VersionPrefix>
-    <VersionSuffix>beta.2</VersionSuffix>
+    <VersionSuffix>beta.3</VersionSuffix>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
