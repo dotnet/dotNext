@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -343,9 +342,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             result = new(AppendUncachedAsync(supplier, startIndex, skipCommitted, token));
         }
-        else if (supplier.RemainingCount is 1L || (supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) != 0)
+        else if (supplier.RemainingCount is 1L)
         {
-            result = AppendCachedAsync();
+            result = AppendCachedAsync(writeThrough: true);
+        }
+        else if ((supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) != 0)
+        {
+            result = AppendCachedAsync(writeThrough: false);
         }
         else
         {
@@ -358,7 +361,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         writeCounter?.Invoke(supplier.RemainingCount);
         return result;
 
-        async ValueTask AppendCachedAsync()
+        async ValueTask AppendCachedAsync(bool writeThrough)
         {
             for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
             {
@@ -377,7 +380,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                         Term = currentEntry.Term,
                         CommandId = currentEntry.CommandId,
                         Timestamp = currentEntry.Timestamp,
-                        PersistenceRequired = true,
+                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.WriteThrough : CachedLogEntryPersistenceMode.CopyToBuffer,
                     };
 
                     await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);

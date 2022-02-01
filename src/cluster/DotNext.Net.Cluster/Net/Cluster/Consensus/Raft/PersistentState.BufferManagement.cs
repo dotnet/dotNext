@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
 
@@ -61,11 +62,11 @@ public partial class PersistentState
                     var current = entries.Current;
                     var cachedEntry = new CachedLogEntry
                     {
-                        Content = await current.ToMemoryAsync(allocator, Token).ConfigureAwait(false),
+                        Content = await BufferizeAsync(current, out var completedSynchronously, allocator, Token).ConfigureAwait(false),
                         Term = current.Term,
                         CommandId = current.CommandId,
                         Timestamp = current.Timestamp,
-                        PersistenceRequired = true,
+                        PersistenceMode = completedSynchronously ? CachedLogEntryPersistenceMode.CopyToBuffer : CachedLogEntryPersistenceMode.WriteThrough,
                     };
 
                     await queue.Writer.WriteAsync(cachedEntry, Token).ConfigureAwait(false);
@@ -76,6 +77,14 @@ public partial class PersistentState
             catch (Exception e)
             {
                 queue.Writer.Complete(e);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static ValueTask<MemoryOwner<byte>> BufferizeAsync(TEntry entry, out bool completedSynchronously, MemoryAllocator<byte> allocator, CancellationToken token)
+            {
+                var task = entry.ToMemoryAsync(allocator, token);
+                completedSynchronously = task.IsCompleted;
+                return task;
             }
         }
 

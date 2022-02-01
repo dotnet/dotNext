@@ -12,9 +12,16 @@ public partial class PersistentState
     internal struct CacheRecord : IDisposable
     {
         internal MemoryOwner<byte> Content;
-        internal bool Persisted;
+        internal CachedLogEntryPersistenceMode PersistenceMode;
 
         public void Dispose() => Content.Dispose();
+    }
+
+    internal enum CachedLogEntryPersistenceMode : byte
+    {
+        None = 0,
+        CopyToBuffer,
+        WriteThrough,
     }
 
     /// <summary>
@@ -25,10 +32,10 @@ public partial class PersistentState
     {
         private readonly CacheRecord record;
 
-        internal bool PersistenceRequired
+        internal CachedLogEntryPersistenceMode PersistenceMode
         {
-            get => record.Persisted;
-            init => record.Persisted = value;
+            get => record.PersistenceMode;
+            init => record.PersistenceMode = value;
         }
 
         internal MemoryOwner<byte> Content

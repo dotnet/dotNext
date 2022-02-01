@@ -21,7 +21,7 @@ public partial class PersistentState
     private protected sealed class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
-        private static readonly CacheRecord EmptyRecord = new() { Persisted = true };
+        private static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
         private MemoryOwner<CacheRecord> entryCache;
@@ -203,7 +203,7 @@ public partial class PersistentState
             }
 
         return_cached:
-            persisted = cachedContent.Persisted;
+            persisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None;
             return new(in cachedContent.Content, in metadata, absoluteIndex);
         }
 
@@ -215,20 +215,6 @@ public partial class PersistentState
         internal LogEntry Read(int sessionId, long absoluteIndex, out bool persisted)
             => Read(sessionId, absoluteIndex, out persisted, LogEntryReadOptimizationHint.None);
 
-        private void UpdateCache(in CachedLogEntry entry, int index, long offset)
-        {
-            Debug.Assert(entryCache.IsEmpty is false);
-            Debug.Assert((uint)index < (uint)entryCache.Length);
-
-            ref var cachedEntry = ref entryCache[index];
-            cachedEntry.Dispose();
-            cachedEntry = entry;
-
-            // save new log entry to the allocation table
-            WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
-            writeAddress = offset + entry.Length;
-        }
-
         internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
         {
             Debug.Assert(entryCache.IsEmpty is false);
@@ -237,8 +223,8 @@ public partial class PersistentState
             Debug.Assert((uint)index < (uint)entryCache.Length);
 
             ref var cachedEntry = ref entryCache[index];
-            Debug.Assert(cachedEntry.Persisted is false);
-            cachedEntry.Persisted = true;
+            Debug.Assert(cachedEntry.PersistenceMode is CachedLogEntryPersistenceMode.None);
+            cachedEntry.PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
 
             return cachedEntry.Content.IsEmpty
                 ? ValueTask.CompletedTask
@@ -267,6 +253,19 @@ public partial class PersistentState
             }
         }
 
+        private void UpdateCache(in CachedLogEntry entry, int index, long offset)
+        {
+            Debug.Assert(entryCache.IsEmpty is false);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
+
+            ref var cachedEntry = ref entryCache[index];
+            cachedEntry.Dispose();
+            cachedEntry = entry;
+
+            // save new log entry to the allocation table
+            WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
+        }
+
         private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, long offset, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
@@ -278,6 +277,15 @@ public partial class PersistentState
             var length = writer.WritePosition - offset;
             WriteMetadata(index, LogEntryMetadata.Create(entry, offset, length));
             writeAddress = offset + length;
+        }
+
+        private async ValueTask WriteThroughAsync(ReadOnlyMemory<byte> content, long offset, CancellationToken token)
+        {
+            await SetWritePositionAsync(offset, token).ConfigureAwait(false);
+            Debug.Assert(writer.HasBufferedData is false);
+
+            await RandomAccess.WriteAsync(Handle, content, offset, token).ConfigureAwait(false);
+            writeAddress = offset + content.Length;
         }
 
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
@@ -294,9 +302,24 @@ public partial class PersistentState
 
                 // fast path - just add cached log entry to the cache table
                 UpdateCache(in cachedEntry, relativeIndex, writeAddress);
-                return cachedEntry.PersistenceRequired
-                    ? WriteAsync(entry, relativeIndex, writeAddress, token)
-                    : ValueTask.CompletedTask;
+
+                // Perf: we can skip FileWriter internal buffer and write cached log entry directly to the disk
+                ValueTask result;
+                switch (cachedEntry.PersistenceMode)
+                {
+                    case CachedLogEntryPersistenceMode.CopyToBuffer:
+                        result = WriteAsync(entry, relativeIndex, writeAddress, token);
+                        break;
+                    case CachedLogEntryPersistenceMode.WriteThrough:
+                        result = WriteThroughAsync(cachedEntry.Content.Memory, writeAddress, token);
+                        break;
+                    default:
+                        writeAddress += cachedEntry.Length;
+                        result = ValueTask.CompletedTask;
+                        break;
+                }
+
+                return result;
             }
 
             // invalidate cached log entry on write
