@@ -254,7 +254,11 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     public long LastUncommittedEntryIndex => index.VolatileRead();
 
     /// <inheritdoc/>
-    ValueTask<long> IPersistentState.IncrementTermAsync() => new(term.IncrementAndGet());
+    ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
+    {
+        lastVote = member;
+        return new(term.IncrementAndGet());
+    }
 
     /// <inheritdoc/>
     Task IAuditTrail.InitializeAsync(CancellationToken token)

@@ -35,6 +35,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private readonly int bufferSize;
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
+    private readonly bool parallelIO;
 
     // diagnostic counters
     private readonly Action<double>? readCounter, writeCounter, commitCounter;
@@ -52,12 +53,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Location = path;
         this.recordsPerPartition = recordsPerPartition;
         initialSize = configuration.InitialPartitionSize;
-        commitEvent = new(false);
+        commitEvent = new(initialState: false);
         bufferManager = new(configuration);
         concurrentReads = configuration.MaxConcurrentReads;
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
+        parallelIO = configuration.ParallelIO;
 
         syncRoot = new(configuration);
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -90,7 +92,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         partitionTable.Clear();
-        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.Optimistic);
+        state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.NoFlush);
 
         // counters
         readCounter = ToDelegate(configuration.ReadCounter);
@@ -128,7 +130,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             if (snapshotRequested)
             {
                 LogEntry snapshot;
-                if (reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+                if (reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
                 {
                     snapshot = new(in SnapshotInfo);
                     snapshotRequested = false;
@@ -329,13 +331,77 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         return result;
     }
 
-    private async ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+    private protected ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         Debug.Assert(startIndex <= state.TailIndex);
+        Debug.Assert(supplier.RemainingCount > 0L);
+
+        ValueTask result;
+        if (!bufferManager.IsCachingEnabled)
+        {
+            result = new(AppendUncachedAsync(supplier, startIndex, skipCommitted, token));
+        }
+        else if (supplier.RemainingCount is 1L)
+        {
+            result = AppendCachedAsync(writeThrough: true);
+        }
+        else if ((supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) != 0)
+        {
+            result = AppendCachedAsync(writeThrough: false);
+        }
+        else
+        {
+            // bufferize log entries in parallel with disk I/O
+            // (without Task.Run because we want to bufferize the first entry using the current thread)
+            var bufferingSupplier = new BufferingLogEntryProducer<TEntry>(supplier, bufferManager.BufferAllocator) { Token = token };
+            result = new(Task.WhenAll(bufferingSupplier.BufferizeAsync(), AppendUncachedAsync(bufferingSupplier, startIndex, skipCommitted, token)));
+        }
 
         writeCounter?.Invoke(supplier.RemainingCount);
+        return result;
 
+        async ValueTask AppendCachedAsync(bool writeThrough)
+        {
+            for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
+            {
+                var currentEntry = supplier.Current;
+
+                if (currentEntry.IsSnapshot)
+                    throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
+
+                if (startIndex > state.CommitIndex)
+                {
+                    GetOrCreatePartition(startIndex, ref partition);
+
+                    var cachedEntry = new CachedLogEntry
+                    {
+                        Content = await currentEntry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false),
+                        Term = currentEntry.Term,
+                        CommandId = currentEntry.CommandId,
+                        Timestamp = currentEntry.Timestamp,
+                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.WriteThrough : CachedLogEntryPersistenceMode.CopyToBuffer,
+                    };
+
+                    await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
+
+                    // flush if last entry is added to the partition or the last entry is consumed from the iterator
+                    if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                        await partition.FlushAsync(token).ConfigureAwait(false);
+                }
+                else if (!skipCommitted)
+                {
+                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                }
+            }
+
+            state.LastIndex = startIndex - 1L;
+        }
+    }
+
+    private async Task AppendUncachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
             if (supplier.Current.IsSnapshot)
@@ -356,18 +422,16 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
         }
 
-        // flush updated state. Update index here to guarantee safe reads of recently added log entries
         state.LastIndex = startIndex - 1L;
-        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
-    {
-        ThrowIfDisposed();
-        if (entries.RemainingCount == 0L)
-            return;
+    ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
+        => IsDisposed ? new(DisposedTask) : entries.RemainingCount is 0L ? ValueTask.CompletedTask : AppendAsync(entries, startIndex, skipCommitted, token);
 
+    private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
         // assuming that we want to add log entry to the tail
         LockType lockType;
         await syncRoot.AcquireAsync(lockType = LockType.WriteLock, token).ConfigureAwait(false);
@@ -387,10 +451,34 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
 
             await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+
+            // flush updated state. Update index here to guarantee safe reads of recently added log entries
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
         finally
         {
             syncRoot.Release(lockType);
+        }
+    }
+
+    private protected abstract ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry;
+
+    /// <inheritdoc />
+    ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
+    {
+        return IsDisposed
+            ? new(GetDisposedTask<long>())
+            : entries.RemainingCount is 0L
+            ? CommitAsync(new long?(commitIndex), token)
+            : commitIndex < startIndex && parallelIO
+            ? AppendAndCommitAsync(entries, startIndex, skipCommitted, commitIndex, token)
+            : AppendAndCommitSlowAsync();
+
+        async ValueTask<long> AppendAndCommitSlowAsync()
+        {
+            await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+            return await CommitAsync(new long?(commitIndex), token).ConfigureAwait(false);
         }
     }
 
@@ -521,7 +609,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
-        => await AppendCachedAsync(new CachedLogEntry(await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), entry.Term, entry.Timestamp, entry.CommandId), token).ConfigureAwait(false);
+        => await AppendCachedAsync(new CachedLogEntry { Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token).ConfigureAwait(false);
 
     private async ValueTask<long> AppendCachedAsync(CachedLogEntry cachedEntry, CancellationToken token)
     {
@@ -590,7 +678,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (bufferManager.IsCachingEnabled && addToCache)
         {
             result = entry is IBinaryLogEntry
-                ? AppendCachedAsync(new CachedLogEntry(((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), entry.Term, entry.Timestamp, entry.CommandId), token)
+                ? AppendCachedAsync(new CachedLogEntry { Content = ((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token)
                 : AppendCachedAsync(entry, token);
         }
         else
@@ -621,6 +709,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             await UnsafeAppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
+
+            // flush updated state. Update index here to guarantee safe reads of recently added log entries
+            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
         }
         finally
         {
@@ -762,8 +853,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private protected void OnCommit(long count)
     {
-        commitEvent.Set(true);
-        commitCounter?.Invoke(count);
+        if (count > 0L)
+        {
+            commitEvent.Set(true);
+            commitCounter?.Invoke(count);
+        }
     }
 
     private bool IsConsistent => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
@@ -792,6 +886,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         return commitIndex - startIndex + 1L;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected long GetCommitIndexAndCount(long endIndex, out long commitIndex)
+    {
+        var startIndex = state.CommitIndex + 1L;
+        commitIndex = Math.Min(state.LastIndex, endIndex);
+        return commitIndex - startIndex + 1L;
+    }
+
     /// <inheritdoc/>
     bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);
 
@@ -801,14 +903,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     public long Term => state.Term;
 
     /// <inheritdoc/>
-    async ValueTask<long> IPersistentState.IncrementTermAsync()
+    async ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
     {
         long result;
         await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
         try
         {
-            result = state.IncrementTerm();
-            await state.FlushAsync(in NodeState.TermRange).ConfigureAwait(false);
+            result = state.IncrementTerm(member);
+            await state.FlushAsync(in NodeState.TermAndLastVoteRange).ConfigureAwait(false);
         }
         finally
         {

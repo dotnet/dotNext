@@ -243,8 +243,8 @@ public partial class PersistentState
         private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize)
         {
             var options = writeMode is WriteMode.WriteThrough
-                ? FileOptions.Asynchronous | FileOptions.WriteThrough
-                : FileOptions.Asynchronous;
+                ? FileOptions.Asynchronous | FileOptions.WriteThrough | FileOptions.SequentialScan
+                : FileOptions.Asynchronous | FileOptions.SequentialScan;
 
             FileMode fileMode;
             if (File.Exists(fileName))
@@ -270,7 +270,7 @@ public partial class PersistentState
             if (readersCount == 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
 
-            streamForFlush = writeMode is WriteMode.FlushOnCommit
+            streamForFlush = writeMode is WriteMode.AutoFlush
                 ? new(Handle, FileAccess.Write, bufferSize: 1)
                 : null;
         }

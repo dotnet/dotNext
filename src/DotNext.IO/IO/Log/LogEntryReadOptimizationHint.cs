@@ -4,7 +4,7 @@ namespace DotNext.IO.Log;
 /// Represents read hint that can help audit trail to optimize
 /// read operations.
 /// </summary>
-public enum LogEntryReadOptimizationHint : byte
+public enum LogEntryReadOptimizationHint
 {
     /// <summary>
     /// Return log entry metadata and payload.

@@ -452,24 +452,16 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                     * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
                     * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                     */
-                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
+                    await auditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, token).ConfigureAwait(false);
+                    result = true;
 
-                    if (commitIndex <= auditTrail.LastCommittedEntryIndex)
+                    // This node is in sync with the leader and no entries arrived
+                    if (emptySet)
                     {
-                        // This node is in sync with the leader and no entries arrived
-                        if (emptySet)
-                        {
-                            if (senderMember is not null && !replicationHandlers.IsEmpty)
-                                replicationHandlers.Invoke(this, senderMember);
+                        if (senderMember is not null && !replicationHandlers.IsEmpty)
+                            replicationHandlers.Invoke(this, senderMember);
 
-                            await UnfreezeAsync().ConfigureAwait(false);
-                        }
-
-                        result = true;
-                    }
-                    else
-                    {
-                        result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
+                        await UnfreezeAsync().ConfigureAwait(false);
                     }
 
                     // process configuration
@@ -773,10 +765,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
             if (readyForTransition)
             {
-                Leader = null;
                 followerState.Dispose();
-                await auditTrail.UpdateVotedForAsync(LocalMemberId).ConfigureAwait(false);     // vote for self
-                state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+
+                // vote for self
+                state = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
                 Metrics?.MovedToCandidateState();
                 Logger.TransitionToCandidateStateCompleted();
             }

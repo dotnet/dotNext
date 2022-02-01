@@ -23,10 +23,11 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     long Term { get; }
 
     /// <summary>
-    /// Increments Term value.
+    /// Increments <see cref="Term"/> value and persists the item that was voted for on in the last vote.
     /// </summary>
-    /// <returns>The updated Term value.</returns>
-    ValueTask<long> IncrementTermAsync();
+    /// <param name="member">The member which identifier should be stored inside of persistence storage. May be <see langword="null"/>.</param>
+    /// <returns>The updated <see cref="Term"/> value.</returns>
+    ValueTask<long> IncrementTermAsync(ClusterMemberId member);
 
     /// <summary>
     /// Persists the last actual Term.
@@ -42,7 +43,7 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// <summary>
     /// Persists the item that was voted for on in the last vote.
     /// </summary>
-    /// <param name="member">The member which identifier should be stored inside of persistence storage. May be <see langword="null"/>.</param>
+    /// <param name="member">The member which identifier should be stored inside of persistence storage.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
     ValueTask UpdateVotedForAsync(ClusterMemberId? member);
 

@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IPersistentState auditTrail = new ConsensusOnlyState();
             await auditTrail.UpdateTermAsync(10, false);
             Equal(10, auditTrail.Term);
-            await auditTrail.IncrementTermAsync();
+            await auditTrail.IncrementTermAsync(default);
             Equal(11, auditTrail.Term);
         }
 

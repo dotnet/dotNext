@@ -8,48 +8,68 @@ using IO.Log;
 
 public partial class PersistentState
 {
+    [StructLayout(LayoutKind.Auto)]
+    internal struct CacheRecord : IDisposable
+    {
+        internal MemoryOwner<byte> Content;
+        internal CachedLogEntryPersistenceMode PersistenceMode;
+
+        public void Dispose() => Content.Dispose();
+    }
+
+    internal enum CachedLogEntryPersistenceMode : byte
+    {
+        None = 0,
+        CopyToBuffer,
+        WriteThrough,
+    }
+
     /// <summary>
     /// Represents buffered Raft log entry.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct CachedLogEntry : IRaftLogEntry
     {
-        private readonly MemoryOwner<byte> content;
+        private readonly CacheRecord record;
 
-        internal CachedLogEntry(in MemoryOwner<byte> content, long term, DateTimeOffset timestamp, int? commandId)
+        internal CachedLogEntryPersistenceMode PersistenceMode
         {
-            this.content = content;
-            Term = term;
-            Timestamp = timestamp;
-            CommandId = commandId;
+            get => record.PersistenceMode;
+            init => record.PersistenceMode = value;
         }
 
-        internal MemoryOwner<byte> Content => content;
+        internal MemoryOwner<byte> Content
+        {
+            get => record.Content;
+            init => record.Content = value;
+        }
 
-        public long Term { get; }
+        public long Term { get; init; }
 
-        public int? CommandId { get; }
+        public int? CommandId { get; init; }
 
-        internal long Length => content.Length;
+        internal long Length => record.Content.Length;
 
         long? IDataTransferObject.Length => Length;
 
         bool ILogEntry.IsSnapshot => false;
 
-        public DateTimeOffset Timestamp { get; }
+        public DateTimeOffset Timestamp { get; init; }
 
         bool IDataTransferObject.IsReusable => true;
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(content.Memory, null, token);
+            => writer.WriteAsync(record.Content.Memory, null, token);
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            => transformation.TransformAsync(IAsyncBinaryReader.Create(content.Memory), token);
+            => transformation.TransformAsync(IAsyncBinaryReader.Create(record.Content.Memory), token);
 
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
         {
-            memory = content.Memory;
+            memory = record.Content.Memory;
             return true;
         }
+
+        public static implicit operator CacheRecord(in CachedLogEntry entry) => entry.record;
     }
 }

@@ -172,7 +172,8 @@ public partial class MemoryBasedStateMachine
         /// Gets the offset from the start of the snapshot file that is reserved
         /// and should not be used for storing data.
         /// </summary>
-        protected static long SnapshotOffset => SnapshotMetadata.Size;
+        [Obsolete("Snapshot payload has no offset within the file")]
+        protected static long SnapshotOffset => 0L;
 
         /// <summary>
         /// Initializes a new snapshot builder.
@@ -186,7 +187,6 @@ public partial class MemoryBasedStateMachine
         /// <summary>
         /// Gets the file descriptor pointing to the snapshot file.
         /// </summary>
-        /// <seealso cref="SnapshotOffset"/>
         protected SafeFileHandle SnapshotFileHandle => Context.Snapshot.Handle;
 
         /// <summary>
