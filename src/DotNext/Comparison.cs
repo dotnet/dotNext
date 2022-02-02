@@ -41,11 +41,9 @@ public static class Comparison
     /// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
     public static bool IsBetween<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
         where T : notnull, IComparable<T>
-        => (Math.Sign(value.CompareTo(left)) + Math.Sign(value.CompareTo(right))) switch
-        {
-            0 => true,
-            1 => (boundType & BoundType.RightClosed) != 0,
-            -1 => (boundType & BoundType.LeftClosed) != 0,
-            _ => false,
-        };
+    {
+        int l = value.CompareTo(left), r = value.CompareTo(right);
+        return (l > 0 || (l is 0 && (boundType & BoundType.LeftClosed) is not 0))
+          && (r < 0 || (r is 0 && (boundType & BoundType.RightClosed) is not 0));
+    }
 }
