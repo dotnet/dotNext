@@ -304,7 +304,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
          */
         Debug.Assert(endIndex < startIndex);
 
-        long result;
+        long count, commitIndex;
         Partition? removedHead;
         ExceptionDispatchInfo? error = null;
 
@@ -316,13 +316,17 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 
             // start commit task in parallel
-            var commitTask = Task.Run<(long, Partition?)>(compaction switch
-            {
-                CompactionMode.Sequential => CommitAndCompactSequentiallyAsync,
-                CompactionMode.Foreground => CommitAndCompactInParallelAsync,
-                CompactionMode.Incremental => CommitAndCompactIncrementallyAsync,
-                _ => CommitWithoutCompactionAsync,
-            });
+            count = GetCommitIndexAndCount(endIndex, out commitIndex);
+            LastCommittedEntryIndex = commitIndex;
+            var commitTask = count > 0L
+                ? Task.Run<Partition?>(compaction switch
+                {
+                    CompactionMode.Sequential => CommitAndCompactSequentiallyAsync,
+                    CompactionMode.Foreground => CommitAndCompactInParallelAsync,
+                    CompactionMode.Incremental => CommitAndCompactIncrementallyAsync,
+                    _ => CommitWithoutCompactionAsync,
+                })
+                : Task.FromResult<Partition?>(null);
 
             // append log entries on this thread
             InternalStateScope scope;
@@ -338,7 +342,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 scope = InternalStateScope.Snapshot;
             }
 
-            (result, removedHead) = await commitTask.ConfigureAwait(false);
+            removedHead = await commitTask.ConfigureAwait(false);
             await PersistInternalStateAsync(scope).ConfigureAwait(false);
         }
         finally
@@ -347,16 +351,14 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             syncRoot.Release(LockType.ExclusiveLock);
         }
 
-        OnCommit(result);
+        OnCommit(count);
         DeletePartitions(removedHead);
         error?.Throw();
-        return result;
+        return count;
 
-        async Task<(long, Partition?)> CommitAndCompactSequentiallyAsync()
+        async Task<Partition?> CommitAndCompactSequentiallyAsync()
         {
             Partition? removedHead;
-            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
-            LastCommittedEntryIndex = commitIndex;
             await ApplyAsync(session, token).ConfigureAwait(false);
             if (IsCompactionRequired(commitIndex))
             {
@@ -368,24 +370,18 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 removedHead = null;
             }
 
-            return (count, removedHead);
+            return removedHead;
         }
 
-        async Task<(long, Partition?)> CommitWithoutCompactionAsync()
+        async Task<Partition?> CommitWithoutCompactionAsync()
         {
-            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
-            LastCommittedEntryIndex = commitIndex;
             await ApplyAsync(session, token).ConfigureAwait(false);
-
-            return (count, null);
+            return null;
         }
 
-        async Task<(long, Partition?)> CommitAndCompactInParallelAsync()
+        async Task<Partition?> CommitAndCompactInParallelAsync()
         {
-            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
-
             var compactionIndex = Math.Min(LastAppliedEntryIndex, SnapshotInfo.Index + count);
-            LastCommittedEntryIndex = commitIndex;
 
             var compactionTask = compactionIndex > 0L
                 ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
@@ -400,15 +396,13 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 await compactionTask.ConfigureAwait(false);
             }
 
-            return (count, DetachPartitions(compactionIndex));
+            return DetachPartitions(compactionIndex);
         }
 
-        async Task<(long, Partition?)> CommitAndCompactIncrementallyAsync()
+        async Task<Partition?> CommitAndCompactIncrementallyAsync()
         {
             Partition? removedHead;
-            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
             var compactionIndex = LastAppliedEntryIndex;
-            LastCommittedEntryIndex = commitIndex;
             var compactionTask = compactionIndex > 0L
                 ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
                 : Task.FromResult(false);
@@ -424,7 +418,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                     : null;
             }
 
-            return (count, removedHead);
+            return removedHead;
         }
     }
 
