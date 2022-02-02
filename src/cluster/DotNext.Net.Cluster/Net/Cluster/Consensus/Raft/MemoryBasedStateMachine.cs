@@ -279,6 +279,10 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         try
         {
             await ApplyCoreAsync(new(this.snapshot[session], in SnapshotInfo)).ConfigureAwait(false);
+
+            // refresh the current builder
+            incrementalBuilder?.Dispose();
+            incrementalBuilder = await InitializeLongLivingSnapshotBuilderAsync(session).ConfigureAwait(false);
         }
         finally
         {
