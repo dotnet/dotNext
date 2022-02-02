@@ -69,7 +69,6 @@ public partial class MemoryBasedStateMachine
     protected abstract class SnapshotBuilder : Disposable
     {
         internal readonly SnapshotBuilderContext Context;
-        private protected readonly DateTimeOffset Timestamp;
 
         private protected SnapshotBuilder(in SnapshotBuilderContext context)
         {
@@ -86,6 +85,10 @@ public partial class MemoryBasedStateMachine
             private protected get;
             set;
         }
+
+        private protected DateTimeOffset Timestamp { get; private set; }
+
+        internal void RefreshTimestamp() => Timestamp = DateTimeOffset.UtcNow;
 
         /// <summary>
         /// Interprets the command specified by the log entry.
@@ -214,6 +217,25 @@ public partial class MemoryBasedStateMachine
         }
     }
 
+    private sealed class LongLivingSnapshotBuilder : Disposable
+    {
+        internal readonly SnapshotBuilder Builder;
+        internal long LastAppliedIndex;
+
+        internal LongLivingSnapshotBuilder(SnapshotBuilder builder)
+            => Builder = builder;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Builder.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
     /// <summary>
     /// Creates a new snapshot builder.
     /// </summary>
@@ -223,6 +245,15 @@ public partial class MemoryBasedStateMachine
 
     private SnapshotBuilder CreateSnapshotBuilder()
         => CreateSnapshotBuilder(new SnapshotBuilderContext(snapshot, bufferManager.BufferAllocator));
+
+    private async ValueTask<LongLivingSnapshotBuilder> InitializeLongLivingSnapshotBuilderAsync(int session)
+    {
+        var result = new LongLivingSnapshotBuilder(CreateSnapshotBuilder());
+        await result.Builder.InitializeAsync(session, SnapshotInfo).ConfigureAwait(false);
+        result.LastAppliedIndex = SnapshotInfo.Index;
+        result.Builder.Term = SnapshotInfo.RecordMetadata.Term;
+        return result;
+    }
 
     private protected sealed override ValueTask<IAsyncBinaryReader> BeginReadSnapshotAsync(int sessionId, CancellationToken token)
         => token.IsCancellationRequested ? ValueTask.FromCanceled<IAsyncBinaryReader>(token) : new(snapshot[sessionId]);

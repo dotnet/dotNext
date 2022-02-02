@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using Debug = System.Diagnostics.Debug;
@@ -43,6 +44,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     // write to this field must be protected with exclusive async lock
     private Snapshot snapshot;
+    private LongLivingSnapshotBuilder? incrementalBuilder; // used by Incremental compaction only
 
     /// <summary>
     /// Initializes a new memory-based state machine.
@@ -57,7 +59,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         compaction = configuration.CompactionMode;
         replayOnInitialize = configuration.ReplayOnInitialize;
         snapshotBufferSize = configuration.SnapshotBufferSize;
-        evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
+
+        // with concurrent compaction, we will release cached log entries according to partition lifetime
+        evictOnCommit = compaction is not CompactionMode.Incremental && configuration.CacheEvictionPolicy is LogEntryCacheEvictionPolicy.OnCommit;
         compactionCounter = ToDelegate(configuration.CompactionCounter);
 
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode, initialSize: configuration.InitialPartitionSize);
@@ -89,7 +93,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
         // Calculate the term of the snapshot
         Partition? current = LastPartition;
-        builder.Term = this.TryGetPartition(upperBoundIndex, ref current)
+        builder.Term = TryGetPartition(upperBoundIndex, ref current)
             ? current.GetTerm(upperBoundIndex)
             : throw new MissingPartitionException(upperBoundIndex);
 
@@ -98,24 +102,24 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         current = FirstPartition;
         Debug.Assert(current is not null);
-        for (long startIndex = SnapshotInfo.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++, token.ThrowIfCancellationRequested())
+        for (long startIndex = SnapshotInfo.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current); currentIndex++, token.ThrowIfCancellationRequested())
         {
             await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
         }
 
         // update counter
         compactionCounter?.Invoke(upperBoundIndex - SnapshotInfo.Index);
-
-        bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, ref Partition? partition)
-        {
-            builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
-            return currentIndex.IsBetween(startIndex, endIndex, BoundType.Closed) && this.TryGetPartition(currentIndex, ref partition);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ValueTask ApplyIfNotEmptyAsync(SnapshotBuilder builder, LogEntry entry)
-            => entry.IsEmpty ? ValueTask.CompletedTask : builder.ApplyAsync(entry);
     }
+
+    private bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, [NotNullWhen(true)] ref Partition? partition)
+    {
+        builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
+        return currentIndex.IsBetween(startIndex, endIndex, BoundType.Closed) && TryGetPartition(currentIndex, ref partition);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ValueTask ApplyIfNotEmptyAsync(SnapshotBuilder builder, LogEntry entry)
+        => entry.IsEmpty ? ValueTask.CompletedTask : builder.ApplyAsync(entry);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
@@ -316,6 +320,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             {
                 CompactionMode.Sequential => CommitAndCompactSequentiallyAsync,
                 CompactionMode.Foreground => CommitAndCompactInParallelAsync,
+                CompactionMode.Incremental => CommitAndCompactIncrementallyAsync,
                 _ => CommitWithoutCompactionAsync,
             });
 
@@ -382,8 +387,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
             LastCommittedEntryIndex = commitIndex;
 
-            var compaction = compactionIndex > 0L
-                ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+            var compactionTask = compactionIndex > 0L
+                ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
                 : Task.CompletedTask;
 
             try
@@ -392,10 +397,31 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
             finally
             {
-                await compaction.ConfigureAwait(false);
+                await compactionTask.ConfigureAwait(false);
             }
 
             return (count, DetachPartitions(compactionIndex));
+        }
+
+        async Task<(long, Partition?)> CommitAndCompactIncrementallyAsync()
+        {
+            Partition? removedHead;
+            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
+            LastCommittedEntryIndex = commitIndex;
+            var compactionTask = Task.Run(() => ForceIncrementalCompactionAsync(commitIndex, token));
+
+            try
+            {
+                await ApplyAsync(session, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                removedHead = await compactionTask.ConfigureAwait(false)
+                    ? DetachPartitions(commitIndex)
+                    : null;
+            }
+
+            return (count, removedHead);
         }
     }
 
@@ -407,6 +433,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(),
             CompactionMode.Foreground => CommitAndCompactInParallelAsync(),
+            CompactionMode.Incremental => CommitAndCompactIncrementallyAsync(),
             _ => CommitWithoutCompactionAsync(),
         };
 
@@ -490,8 +517,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
                 LastCommittedEntryIndex = commitIndex;
 
-                var compaction = compactionIndex > 0L
-                    ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                var compactionTask = compactionIndex > 0L
+                    ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
                     : Task.CompletedTask;
 
                 try
@@ -500,11 +527,58 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 }
                 finally
                 {
-                    await compaction.ConfigureAwait(false);
+                    await compactionTask.ConfigureAwait(false);
                     removedHead = DetachPartitions(compactionIndex);
                 }
 
                 await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
+            }
+            finally
+            {
+                sessionManager.Return(session);
+                syncRoot.Release(LockType.ExclusiveLock);
+            }
+
+            OnCommit(count);
+            DeletePartitions(removedHead);
+            return count;
+        }
+
+        async ValueTask<long> CommitAndCompactIncrementallyAsync()
+        {
+            Partition? removedHead;
+            long count;
+            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+            var session = sessionManager.Take();
+            try
+            {
+                count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
+                if (count <= 0L)
+                    return 0L;
+
+                LastCommittedEntryIndex = commitIndex;
+                var compactionTask = Task.Run(() => ForceIncrementalCompactionAsync(commitIndex, token));
+                InternalStateScope scope;
+
+                try
+                {
+                    await ApplyAsync(session, token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    if (await compactionTask.ConfigureAwait(false))
+                    {
+                        removedHead = DetachPartitions(commitIndex);
+                        scope = InternalStateScope.IndexesAndSnapshot;
+                    }
+                    else
+                    {
+                        removedHead = null;
+                        scope = InternalStateScope.Indexes;
+                    }
+                }
+
+                await PersistInternalStateAsync(scope).ConfigureAwait(false);
             }
             finally
             {
@@ -527,7 +601,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
     }
 
-    private async Task ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
+    private async Task ForceParallelCompactionAsync(long upperBoundIndex, CancellationToken token)
     {
         var builder = CreateSnapshotBuilder();
         var session = sessionManager.Take();
@@ -543,6 +617,39 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             sessionManager.Return(session);
             builder.Dispose();
         }
+    }
+
+    private async Task<bool> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
+    {
+        var session = sessionManager.Take();
+        try
+        {
+            // initialize snapshot builder if needed
+            incrementalBuilder ??= await InitializeLongLivingSnapshotBuilderAsync(session).ConfigureAwait(false);
+
+            long startIndex = incrementalBuilder.LastAppliedIndex + 1L, currentIndex = startIndex;
+            for (Partition? partition = FirstPartition; TryGetPartition(incrementalBuilder.Builder, startIndex, upperBoundIndex, ref currentIndex, ref partition); currentIndex++, token.ThrowIfCancellationRequested())
+            {
+                var entry = partition.Read(session, currentIndex);
+                await ApplyIfNotEmptyAsync(incrementalBuilder.Builder, entry).ConfigureAwait(false);
+                incrementalBuilder.Builder.Term = entry.Term;
+                incrementalBuilder.LastAppliedIndex = currentIndex;
+            }
+        }
+        finally
+        {
+            sessionManager.Return(session);
+        }
+
+        if (IsCompactionRequired(upperBoundIndex))
+        {
+            incrementalBuilder.Builder.RefreshTimestamp();
+            UpdateSnapshotInfo(await incrementalBuilder.Builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
+            compactionCounter?.Invoke(upperBoundIndex - SnapshotInfo.Index);
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -616,7 +723,20 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             }
 
             // 2. Apply all committed entries
-            await ApplyAsync(session, startIndex + 1L, token).ConfigureAwait(false);
+            await ApplyAsync(session, startIndex += 1L, token).ConfigureAwait(false);
+
+            // 3. Initialize long-living snapshot builder
+            if (compaction is CompactionMode.Incremental)
+            {
+                incrementalBuilder = await InitializeLongLivingSnapshotBuilderAsync(session).ConfigureAwait(false);
+                for (Partition? partition = FirstPartition; TryGetPartition(startIndex, ref partition) && partition is not null && startIndex <= LastCommittedEntryIndex; startIndex++)
+                {
+                    entry = partition.Read(session, startIndex);
+                    incrementalBuilder.Builder.Term = entry.Term;
+                    await ApplyIfNotEmptyAsync(incrementalBuilder.Builder, entry).ConfigureAwait(false);
+                    incrementalBuilder.LastAppliedIndex = startIndex;
+                }
+            }
         }
         finally
         {
@@ -662,6 +782,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         if (disposing)
         {
             snapshot.Dispose();
+            incrementalBuilder?.Dispose();
         }
 
         base.Dispose(disposing);

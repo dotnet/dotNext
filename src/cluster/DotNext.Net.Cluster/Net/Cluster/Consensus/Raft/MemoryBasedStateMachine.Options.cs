@@ -42,6 +42,18 @@ public partial class MemoryBasedStateMachine
         /// time as <see cref="SnapshotBuilder.ApplyAsync(LogEntry)"/>.
         /// </remarks>
         Foreground = 2,
+
+        /// <summary>
+        /// Log compaction is executing for each committed log entry and flushes
+        /// the snapshot only when the partition overflows.
+        /// </summary>
+        /// <remarks>
+        /// This log compaction algorithm is a combination of <see cref="Foreground"/>
+        /// and <see cref="Sequential"/>.
+        /// This compaction mode doesn't use <see cref="SnapshotBuilder.AdjustIndex(long, long, ref long)"/>
+        /// method.
+        /// </remarks>
+        Incremental = 3,
     }
 
     /// <summary>
