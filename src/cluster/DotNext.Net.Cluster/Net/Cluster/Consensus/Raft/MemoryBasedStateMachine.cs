@@ -384,7 +384,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
 
-            var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
+            var compactionIndex = Math.Min(LastAppliedEntryIndex, SnapshotInfo.Index + count);
             LastCommittedEntryIndex = commitIndex;
 
             var compactionTask = compactionIndex > 0L
@@ -407,8 +407,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             Partition? removedHead;
             var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
+            var compactionIndex = LastAppliedEntryIndex;
             LastCommittedEntryIndex = commitIndex;
-            var compactionTask = Task.Run(() => ForceIncrementalCompactionAsync(commitIndex, token));
+            var compactionTask = compactionIndex > 0L
+                ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                : Task.FromResult(false);
 
             try
             {
@@ -417,7 +420,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             finally
             {
                 removedHead = await compactionTask.ConfigureAwait(false)
-                    ? DetachPartitions(commitIndex)
+                    ? DetachPartitions(compactionIndex)
                     : null;
             }
 
@@ -556,8 +559,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 if (count <= 0L)
                     return 0L;
 
+                var compactionIndex = LastAppliedEntryIndex;
                 LastCommittedEntryIndex = commitIndex;
-                var compactionTask = Task.Run(() => ForceIncrementalCompactionAsync(commitIndex, token));
+                var compactionTask = compactionIndex > 0L
+                    ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                    : Task.FromResult(false);
                 InternalStateScope scope;
 
                 try
@@ -568,7 +574,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 {
                     if (await compactionTask.ConfigureAwait(false))
                     {
-                        removedHead = DetachPartitions(commitIndex);
+                        removedHead = DetachPartitions(compactionIndex);
                         scope = InternalStateScope.IndexesAndSnapshot;
                     }
                     else

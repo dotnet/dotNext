@@ -761,18 +761,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 False(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
-                Equal(0L, state.CompactionCount);
+                await state.CommitAsync(4, CancellationToken.None);
                 await state.CommitAsync(CancellationToken.None);
                 Equal(entries.Length + 41L, state.Value);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(1, readResult.Count);
-                    Equal(9, snapshotIndex);
+                    Equal(3, readResult.Count);
+                    Equal(4, snapshotIndex);
                     True(readResult[0].IsSnapshot);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
-                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
             //read again
@@ -780,7 +779,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(1, readResult.Count);
+                    Equal(3, readResult.Count);
                     NotNull(snapshotIndex);
                     return default;
                 };
@@ -788,8 +787,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(0L, state.Value);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(1, readResult.Count);
-                    Equal(9, snapshotIndex);
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
