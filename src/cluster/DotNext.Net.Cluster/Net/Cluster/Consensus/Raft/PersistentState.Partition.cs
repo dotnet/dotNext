@@ -285,7 +285,7 @@ public partial class PersistentState
             Debug.Assert(writer.HasBufferedData is false);
 
             await RandomAccess.WriteAsync(Handle, content, offset, token).ConfigureAwait(false);
-            writeAddress = offset + content.Length;
+            writer.FilePosition = writeAddress = offset + content.Length;
         }
 
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
