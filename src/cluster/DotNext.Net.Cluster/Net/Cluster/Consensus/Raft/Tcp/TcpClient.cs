@@ -24,6 +24,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     private readonly TimeSpan connectTimeout;
     private TcpStream? transport;
     private ProtocolStream? protocol;
+    private MemoryOwner<byte> buffer;
 
     internal TcpClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
         : base(localMember, endPoint, id)
@@ -106,6 +107,9 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
 
             protocol = new(ssl, allocator, transmissionBlockSize);
         }
+
+        if (buffer.IsEmpty)
+            buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
     }
 
     public override async ValueTask CancelPendingRequestsAsync()
@@ -132,7 +136,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         }
     }
 
-    private async Task<TResponse> RequestAsync<TResponse>(Func<ProtocolStream, CancellationToken, ValueTask<TResponse>> request, CancellationToken token)
+    private async Task<TResponse> RequestAsync<TResponse>(Func<ProtocolStream, Memory<byte>, CancellationToken, ValueTask<TResponse>> request, CancellationToken token)
     {
         ThrowIfDisposed();
 
@@ -154,9 +158,10 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
                 await ConnectAsync(connectDurationTracker.Token).ConfigureAwait(false);
             }
 
+            Debug.Assert(buffer.IsEmpty is false);
             Debug.Assert(protocol is not null);
             protocol.Reset();
-            return await request(protocol, requestDurationTracker.Token).ConfigureAwait(false);
+            return await request(protocol, buffer.Memory, requestDurationTracker.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
@@ -196,7 +201,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
             protocol.Reset();
@@ -209,7 +214,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<PreVoteResult>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        async ValueTask<Result<PreVoteResult>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
             protocol.Reset();
@@ -222,7 +227,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        static async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteSynchronizeRequestAsync(token).ConfigureAwait(false);
             protocol.Reset();
@@ -235,12 +240,11 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<IReadOnlyDictionary<string, string>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        static async ValueTask<IReadOnlyDictionary<string, string>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteMetadataRequestAsync(token).ConfigureAwait(false);
             protocol.Reset();
-            using var buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
-            return await protocol.ReadMetadataResponseAsync(buffer.Memory, token).ConfigureAwait(false);
+            return await protocol.ReadMetadataResponseAsync(buffer, token).ConfigureAwait(false);
         }
     }
 
@@ -249,7 +253,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        static async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteResignRequestAsync(token).ConfigureAwait(false);
             protocol.Reset();
@@ -262,10 +266,9 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
-            using var buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
-            await protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer.Memory, token).ConfigureAwait(false);
+            await protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
@@ -276,10 +279,9 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, CancellationToken token)
+        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
-            using var buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
-            await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer.Memory, token).ConfigureAwait(false);
+            await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
@@ -296,6 +298,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
             protocol?.Dispose();
             transport?.Dispose();
             accessLock.Dispose();
+            buffer.Dispose();
         }
     }
 }
