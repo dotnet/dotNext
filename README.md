@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 02-01-2022
+Release Date: 02-04-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.2.0">DotNext 4.2.0</a>
 * Improved scalability of mechanism that allows to attach custom data to arbitrary objects using `UserDataStorage` and `UserDataSlot<T>` types. The improvement works better in high workloads without the risk of lock contention but requires a bit more CPU cycles to obtain the data attached to the object
@@ -93,6 +93,7 @@ Release Date: 02-01-2022
 * Increased overall stability of the cluster
 * Fixed bug with incorrect calculation of the offset within partition file when using persistent WAL. The bug could prevent the node to start correctly with non-empty WAL
 * Added Reflection-free support of JSON log entries powered by JSON Source Generator from .NET
+* Introduced _Incremental_ log compaction mode to achieve the best performance when the snapshot is relatively small
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
 * Improved compatibility with IL trimming
