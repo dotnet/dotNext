@@ -853,11 +853,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private protected void OnCommit(long count)
     {
-        if (count > 0L)
-        {
-            commitEvent.Set(true);
-            commitCounter?.Invoke(count);
-        }
+        Debug.Assert(count > 0L);
+
+        commitEvent.Set(true);
+        commitCounter?.Invoke(count);
     }
 
     private bool IsConsistent => state.Term == LastTerm && state.CommitIndex == state.LastApplied;

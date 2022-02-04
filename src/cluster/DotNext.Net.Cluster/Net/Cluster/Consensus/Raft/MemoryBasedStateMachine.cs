@@ -355,7 +355,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             syncRoot.Release(LockType.ExclusiveLock);
         }
 
-        OnCommit(count);
+        if (count > 0L)
+            OnCommit(count);
+
         DeletePartitions(removedHead);
         error?.Throw();
         return count;
