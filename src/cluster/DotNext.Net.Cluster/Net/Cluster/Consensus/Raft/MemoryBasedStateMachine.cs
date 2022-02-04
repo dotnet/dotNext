@@ -295,7 +295,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         OnCommit(1L);
     }
 
-    private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long endIndex, CancellationToken token)
+    private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
     {
         /*
          * The following concurrency could happened here:
@@ -306,9 +306,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
          * GetSessionReader() is called. In worst case, we will have empty internal buffer
          * of the reader. No additional synchronization is required.
          */
-        Debug.Assert(endIndex < startIndex);
+        Debug.Assert(commitIndex < startIndex);
 
-        long count, commitIndex;
+        long count;
         Partition? removedHead;
         ExceptionDispatchInfo? error = null;
 
@@ -320,7 +320,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 
             // start commit task in parallel
-            count = GetCommitIndexAndCount(endIndex, out commitIndex);
+            count = GetCommitIndexAndCount(ref commitIndex);
             LastCommittedEntryIndex = commitIndex;
             var commitTask = count > 0L
                 ? Task.Run<Partition?>(compaction switch

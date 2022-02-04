@@ -880,18 +880,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected long GetCommitIndexAndCount(in long? endIndex, out long commitIndex)
     {
-        var startIndex = state.CommitIndex + 1L;
         commitIndex = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
-        return commitIndex - startIndex + 1L;
+        return commitIndex - state.CommitIndex;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected long GetCommitIndexAndCount(long endIndex, out long commitIndex)
-    {
-        var startIndex = state.CommitIndex + 1L;
-        commitIndex = Math.Min(state.LastIndex, endIndex);
-        return commitIndex - startIndex + 1L;
-    }
+    private protected long GetCommitIndexAndCount(ref long commitIndex)
+        => (commitIndex = Math.Min(state.LastIndex, commitIndex)) - state.CommitIndex;
 
     /// <inheritdoc/>
     bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);
