@@ -669,18 +669,22 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <summary>
-    /// Processes <see cref="IRaftClusterMember.SynchronizeAsync(CancellationToken)"/>
+    /// Processes <see cref="IRaftClusterMember.SynchronizeAsync(long, CancellationToken)"/>
     /// request.
     /// </summary>
+    /// <param name="commitIndex">The index of the last committed log entry.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The index of the last committed log entry.</returns>
-    protected async Task<long?> SynchronizeAsync(CancellationToken token)
+    protected async Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
     {
         using var tokenSource = token.LinkTo(LifecycleToken);
 
+        // do not execute the next round of heartbeats if the sender is already in sync with the leader
         if (state is LeaderState leaderState)
         {
-            await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+            if (commitIndex != auditTrail.LastCommittedEntryIndex)
+                await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+
             return ReferenceEquals(state, leaderState) ? auditTrail.LastCommittedEntryIndex : null;
         }
 
@@ -703,7 +707,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             }
             else if (this.leader is TMember leader)
             {
-                var commitIndex = await leader.SynchronizeAsync(token).ConfigureAwait(false);
+                var commitIndex = await leader.SynchronizeAsync(auditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false);
                 if (commitIndex is null)
                     continue;
 

@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Buffers.Binary.BinaryPrimitives;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -12,20 +13,27 @@ using static IO.StreamExtensions;
 internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?>, IHttpMessageWriter<long?>
 {
     internal new const string MessageType = "Synchronize";
+    private const string CommitIndexHeader = "X-Raft-Commit-Index";
 
-    internal SynchronizeMessage(in ClusterMemberId sender)
+    internal readonly long CommitIndex;
+
+    internal SynchronizeMessage(in ClusterMemberId sender, long commitIndex)
         : base(MessageType, in sender)
-    {
-    }
+        => CommitIndex = commitIndex;
 
     private SynchronizeMessage(HeadersReader<StringValues> headers)
         : base(headers)
-    {
-    }
+        => CommitIndex = ParseHeader(CommitIndexHeader, headers, Int64Parser);
 
     internal SynchronizeMessage(HttpRequest request)
         : this(request.Headers.TryGetValue)
     {
+    }
+
+    internal override void PrepareRequest(HttpRequestMessage request)
+    {
+        request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
+        base.PrepareRequest(request);
     }
 
     async Task<long?> IHttpMessageReader<long?>.ParseResponse(HttpResponseMessage response, CancellationToken token)

@@ -299,8 +299,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    Task<long?> ILocalMember.SynchronizeAsync(CancellationToken token)
-        => SynchronizeAsync(token);
+    Task<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)
+        => SynchronizeAsync(commitIndex, token);
 
     private void Cleanup()
     {

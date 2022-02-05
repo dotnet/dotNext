@@ -222,14 +222,14 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         }
     }
 
-    private protected override Task<long?> SynchronizeAsync(CancellationToken token)
+    private protected override Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
     {
         return RequestAsync(ExecuteAsync, token);
 
         [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
-            await protocol.WriteSynchronizeRequestAsync(token).ConfigureAwait(false);
+            await protocol.WriteSynchronizeRequestAsync(commitIndex, token).ConfigureAwait(false);
             protocol.Reset();
             return await protocol.ReadNullableInt64Async(token).ConfigureAwait(false);
         }
