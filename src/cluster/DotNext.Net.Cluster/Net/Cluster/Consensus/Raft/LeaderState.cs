@@ -138,7 +138,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         }
 
         // it is partitioned network with absolute majority, not possible to have more than one leader
-        ThreadPool.UnsafeQueueUserWorkItem(MoveToFollowerStateWorkItem(false, term), preferLocal: true);
+        MoveToFollowerState(randomizeTimeout: false, term);
         return false;
     }
 
