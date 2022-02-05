@@ -19,7 +19,7 @@ internal partial class RaftHttpCluster
     }
 
     private readonly ClusterMemberAnnouncer<HttpEndPoint>? announcer;
-    private Task pollingLoopTask;
+    private Task pollingLoopTask = Task.CompletedTask;
 
     private async Task ConfigurationPollingLoop()
     {
