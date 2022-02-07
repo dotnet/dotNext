@@ -90,7 +90,7 @@ public partial class DiskBasedStateMachine
         lastTerm.VolatileWrite(snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
         UpdateSnapshotInfo(SnapshotMetadata.Create(snapshot, snapshotIndex, snapshotLength));
-        await PersistInternalStateAsync(includeSnapshotMetadata: true).ConfigureAwait(false);
+        await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
     }
 
     /// <summary>

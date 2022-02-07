@@ -70,8 +70,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
         // track changes in configuration, do not track membership
         configurationTracker = config.OnChange(ConfigurationChanged);
-
-        pollingLoopTask = Task.CompletedTask;
     }
 
     protected override IClusterConfigurationStorage<HttpEndPoint> ConfigurationStorage { get; }

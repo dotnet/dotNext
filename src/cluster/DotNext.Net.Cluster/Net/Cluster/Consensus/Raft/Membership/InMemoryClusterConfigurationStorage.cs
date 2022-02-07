@@ -112,21 +112,23 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     }
 
     /// <inheritdoc />
-    public sealed override async ValueTask ApplyAsync(CancellationToken token)
+    public sealed override ValueTask ApplyAsync(CancellationToken token)
     {
-        if (proposed is null)
-            return;
+        return proposed is null ? ValueTask.CompletedTask : ApplyProposedAsync();
 
-        await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
+        async ValueTask ApplyProposedAsync()
+        {
+            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
 
-        active?.Dispose();
-        active = proposed;
-        activeCache = proposedCache;
+            active?.Dispose();
+            active = proposed;
+            activeCache = proposedCache;
 
-        proposed = null;
-        proposedCache = proposedCache.Clear();
+            proposed = null;
+            proposedCache = proposedCache.Clear();
 
-        OnActivated();
+            OnActivated();
+        }
     }
 
     private MemoryOwner<byte> Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration)

@@ -19,11 +19,11 @@ internal partial class RaftHttpCluster
     }
 
     private readonly ClusterMemberAnnouncer<HttpEndPoint>? announcer;
-    private Task pollingLoopTask;
+    private Task pollingLoopTask = Task.CompletedTask;
 
     private async Task ConfigurationPollingLoop()
     {
-        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken))
+        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken).ConfigureAwait(false))
         {
             if (eventInfo.IsAdded)
             {

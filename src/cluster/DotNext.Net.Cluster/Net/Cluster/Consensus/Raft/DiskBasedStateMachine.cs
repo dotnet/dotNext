@@ -1,5 +1,9 @@
+using System.Runtime.ExceptionServices;
+using Debug = System.Diagnostics.Debug;
+
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using IO.Log;
 using static Threading.AtomicInt64;
 
 /// <summary>
@@ -59,12 +63,12 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         {
             if (TryGetPartition(startIndex, ref partition))
             {
-                var entry = partition.Read(sessionId, startIndex);
+                var entry = partition.Read(sessionId, startIndex, out var persisted);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
                 lastTerm.VolatileWrite(entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
-                if (entry.IsBuffered)
+                if (!persisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, entry.Position, snapshotLength.HasValue).ConfigureAwait(false);
 
@@ -85,7 +89,6 @@ public abstract partial class DiskBasedStateMachine : PersistentState
             }
         }
 
-        await PersistInternalStateAsync(includeSnapshotMetadata: removalIndex.HasValue).ConfigureAwait(false);
         return removalIndex;
     }
 
@@ -106,7 +109,16 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
             LastCommittedEntryIndex = commitIndex;
             var removalIndex = await ApplyAsync(session, token).ConfigureAwait(false);
-            removedHead = removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null;
+            if (removalIndex.HasValue)
+            {
+                removedHead = DetachPartitions(removalIndex.GetValueOrDefault());
+                await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
+            }
+            else
+            {
+                removedHead = null;
+                await PersistInternalStateAsync(InternalStateScope.Indexes).ConfigureAwait(false);
+            }
         }
         finally
         {
@@ -117,6 +129,65 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         OnCommit(count);
         DeletePartitions(removedHead);
         return count;
+    }
+
+    private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
+    {
+        Debug.Assert(commitIndex < startIndex);
+
+        long count;
+        Partition? removedHead;
+        ExceptionDispatchInfo? error = null;
+
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        var session = sessionManager.Take();
+        try
+        {
+            if (startIndex > LastUncommittedEntryIndex + 1L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+            // start commit task in parallel
+            count = GetCommitIndexAndCount(ref commitIndex);
+            LastCommittedEntryIndex = commitIndex;
+            var commitTask = count > 0L
+                ? Task.Run<Partition?>(CommitAsync)
+                : Task.FromResult<Partition?>(null);
+
+            // append log entries on this thread
+            InternalStateScope scope;
+            try
+            {
+                await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+                scope = InternalStateScope.IndexesAndSnapshot;
+            }
+            catch (Exception e)
+            {
+                // cannot append entries
+                error = ExceptionDispatchInfo.Capture(e);
+                scope = InternalStateScope.Snapshot;
+            }
+
+            removedHead = await commitTask.ConfigureAwait(false);
+            await PersistInternalStateAsync(scope).ConfigureAwait(false);
+        }
+        finally
+        {
+            sessionManager.Return(session);
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
+
+        if (count > 0L)
+            OnCommit(count);
+
+        DeletePartitions(removedHead);
+        error?.Throw();
+        return count;
+
+        async Task<Partition?> CommitAsync()
+        {
+            var removalIndex = await ApplyAsync(session, token).ConfigureAwait(false);
+            return removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null;
+        }
     }
 
     /// <summary>
@@ -138,6 +209,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         try
         {
             await ApplyAsync(session, SnapshotInfo.Index + 1L, token).ConfigureAwait(false);
+            await PersistInternalStateAsync(InternalStateScope.Indexes).ConfigureAwait(false);
         }
         finally
         {

@@ -278,7 +278,7 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         TryGetMember(message.Sender)?.Touch();
 
-        var result = await SynchronizeAsync(token).ConfigureAwait(false);
+        var result = await SynchronizeAsync(message.CommitIndex, token).ConfigureAwait(false);
         await message.SaveResponse(response, result, token).ConfigureAwait(false);
     }
 

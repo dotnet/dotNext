@@ -154,19 +154,21 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    public sealed override async ValueTask ApplyAsync(CancellationToken token = default)
+    public sealed override ValueTask ApplyAsync(CancellationToken token = default)
     {
-        if (proposed.IsEmpty)
-            return;
+        return proposed.IsEmpty ? ValueTask.CompletedTask : ApplyProposedAsync();
 
-        await proposed.CopyToAsync(active, bufferSize, token).ConfigureAwait(false);
-        await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
-        activeCache = proposedCache;
+        async ValueTask ApplyProposedAsync()
+        {
+            await proposed.CopyToAsync(active, bufferSize, token).ConfigureAwait(false);
+            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
+            activeCache = proposedCache;
 
-        proposed.Clear();
-        proposedCache = proposedCache.Clear();
+            proposed.Clear();
+            proposedCache = proposedCache.Clear();
 
-        OnActivated();
+            OnActivated();
+        }
     }
 
     /// <summary>

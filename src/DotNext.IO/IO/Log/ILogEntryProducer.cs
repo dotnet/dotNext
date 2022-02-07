@@ -12,4 +12,9 @@ public interface ILogEntryProducer<out TEntry> : IAsyncEnumerator<TEntry>
     /// </summary>
     /// <value>The remaining count of log entries.</value>
     long RemainingCount { get; }
+
+    /// <summary>
+    /// Gets optimization hint that may be used by the audit trail to optimize the consumption.
+    /// </summary>
+    LogEntryProducerOptimizationHint OptimizationHint => LogEntryProducerOptimizationHint.None;
 }

@@ -9,7 +9,7 @@
     <IsTrimmable>true</IsTrimmable>
     <VersionPrefix>4.2.0</VersionPrefix>
     <Features>nullablePublicOnly</Features>
-    <VersionSuffix>beta.2</VersionSuffix>
+    <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Rich data types to work with unmanaged memory in CLS-compliant way</Description>

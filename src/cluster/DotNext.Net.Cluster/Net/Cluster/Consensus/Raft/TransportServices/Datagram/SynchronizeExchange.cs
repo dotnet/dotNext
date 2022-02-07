@@ -1,3 +1,4 @@
+using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
@@ -6,6 +7,10 @@ using Buffers;
 
 internal sealed class SynchronizeExchange : ClientExchange<long?>
 {
+    private readonly long commitIndex;
+
+    internal SynchronizeExchange(long commitIndex) => this.commitIndex = commitIndex;
+
     public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
         Debug.Assert(headers.Control == FlowControl.Ack);
@@ -26,5 +31,8 @@ internal sealed class SynchronizeExchange : ClientExchange<long?>
     }
 
     public override ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
-        => new((new PacketHeaders(MessageType.Synchronize, FlowControl.None), 0, true));
+    {
+        BinaryPrimitives.WriteInt64LittleEndian(payload.Span, commitIndex);
+        return new((new PacketHeaders(MessageType.Synchronize, FlowControl.None), sizeof(long), true));
+    }
 }

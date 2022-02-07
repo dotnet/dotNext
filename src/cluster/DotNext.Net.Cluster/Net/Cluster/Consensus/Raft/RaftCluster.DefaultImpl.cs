@@ -194,7 +194,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
     private async Task ConfigurationPollingLoop()
     {
-        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken))
+        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken).ConfigureAwait(false))
         {
             if (eventInfo.IsAdded)
             {
@@ -299,8 +299,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    Task<long?> ILocalMember.SynchronizeAsync(CancellationToken token)
-        => SynchronizeAsync(token);
+    Task<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)
+        => SynchronizeAsync(commitIndex, token);
 
     private void Cleanup()
     {

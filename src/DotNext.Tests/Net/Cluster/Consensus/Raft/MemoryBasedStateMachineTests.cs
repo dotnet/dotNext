@@ -85,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal PersistentStateWithSnapshot(string path, bool useCaching, MemoryBasedStateMachine.CompactionMode compactionMode = default)
-                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode, IntegrityCheck = true, WriteMode = WriteMode.FlushOnCommit })
+                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode, IntegrityCheck = true, WriteMode = WriteMode.AutoFlush })
             {
             }
 
@@ -107,8 +107,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 Equal(0, state.Term);
-                Equal(1, await state.IncrementTermAsync());
-                True(state.IsVotedFor(default(ClusterMemberId?)));
+                Equal(1, await state.IncrementTermAsync(default));
+                True(state.IsVotedFor(default(ClusterMemberId)));
                 await state.UpdateVotedForAsync(member);
                 False(state.IsVotedFor(default(ClusterMemberId?)));
                 True(state.IsVotedFor(member));
@@ -532,7 +532,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
-        public static async Task ClearPersistentLog()
+        public static async Task ClearLog()
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
@@ -563,6 +563,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Theory]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Background)]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Foreground)]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Sequential)]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Incremental)]
+        public static async Task AppendAndCommitAsync(MemoryBasedStateMachine.CompactionMode compaction)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using (var state = new PersistentStateWithSnapshot(dir, true, compaction))
+            {
+                Equal(0L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 1L, false, 0L));
+                Equal(0L, state.LastCommittedEntryIndex);
+                Equal(9L, state.LastUncommittedEntryIndex);
+
+                Equal(9L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 10L, false, 9L));
+                Equal(9L, state.LastCommittedEntryIndex);
+                Equal(18L, state.LastUncommittedEntryIndex);
+
+                Equal(9L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 19L, false, 18L));
+                Equal(18L, state.LastCommittedEntryIndex);
+                Equal(27L, state.LastUncommittedEntryIndex);
+            }
+        }
+
+        [Theory]
         [InlineData(false)]
         [InlineData(true)]
         public static async Task SequentialCompaction(bool useCaching)
@@ -589,7 +615,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
-            //read agian
+            //read again
             using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
@@ -650,7 +676,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
-            //read agian
+            //read again
             using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
@@ -701,7 +727,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
             }
 
-            //read agian
+            //read again
             using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
@@ -716,6 +742,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Equal(7, readResult.Count);
                     Equal(3, snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task IncrementalCompaction(bool useCaching)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching, MemoryBasedStateMachine.CompactionMode.Incremental))
+            {
+                False(state.IsBackgroundCompaction);
+                await state.AppendAsync(new LogEntryList(entries));
+                await state.CommitAsync(4, CancellationToken.None);
+                await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(4, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            }
+
+            //read again
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
+            {
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    NotNull(snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+                Equal(0L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
@@ -737,8 +810,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 //define node state
-                Equal(1, await state.IncrementTermAsync());
-                await state.UpdateVotedForAsync(member);
+                Equal(1, await state.IncrementTermAsync(member));
                 True(state.IsVotedFor(member));
                 //define log entries
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));

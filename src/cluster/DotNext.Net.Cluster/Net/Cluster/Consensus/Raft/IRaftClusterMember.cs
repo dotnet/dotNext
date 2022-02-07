@@ -70,12 +70,13 @@ public interface IRaftClusterMember : IClusterMember
     /// <summary>
     /// Starts a new round of heartbeats.
     /// </summary>
+    /// <param name="commitIndex">The index of the last committed log entry.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The index of the last committed log entry;
     /// or <see langword="null"/> if the member is not a leader.
     /// </returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<long?> SynchronizeAsync(CancellationToken token);
+    Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 
     /// <summary>
     /// Index of next log entry to send to this node.

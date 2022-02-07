@@ -1,11 +1,13 @@
+using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using static Runtime.Intrinsics;
 
 internal partial class ServerExchange
 {
-    private void BeginSynchronize(CancellationToken token)
-        => task = server.SynchronizeAsync(token);
+    private void BeginSynchronize(ReadOnlyMemory<byte> payload, CancellationToken token)
+        => task = server.SynchronizeAsync(BinaryPrimitives.ReadInt64LittleEndian(payload.Span), token);
 
     private async ValueTask<(PacketHeaders, int, bool)> EndSynchronize(Memory<byte> payload)
     {
