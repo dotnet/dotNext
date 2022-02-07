@@ -18,24 +18,24 @@ internal abstract class RaftState : Disposable
 
     private protected void UpdateLeaderStickiness() => stateMachine.UpdateLeaderStickiness();
 
-    private protected unsafe IThreadPoolWorkItem MoveToCandidateStateWorkItem()
+    private protected unsafe void MoveToCandidateState()
     {
-        return ThreadPoolWorkItemFactory.Create(&MoveToCandidateState, stateMachine);
+        ThreadPool.UnsafeQueueUserWorkItem(ThreadPoolWorkItemFactory.Create(&MoveToCandidateState, stateMachine), preferLocal: true);
 
         static void MoveToCandidateState(IRaftStateMachine stateMachine) => stateMachine.MoveToCandidateState();
     }
 
-    private protected unsafe IThreadPoolWorkItem MoveToLeaderStateWorkItem(IRaftClusterMember member)
+    private protected unsafe void MoveToLeaderState(IRaftClusterMember member)
     {
-        return ThreadPoolWorkItemFactory.Create(&MoveToLeaderState, stateMachine, member);
+        ThreadPool.UnsafeQueueUserWorkItem(ThreadPoolWorkItemFactory.Create(&MoveToLeaderState, stateMachine, member), preferLocal: true);
 
         static void MoveToLeaderState(IRaftStateMachine stateMachine, IRaftClusterMember member)
             => stateMachine.MoveToLeaderState(member);
     }
 
-    private protected unsafe IThreadPoolWorkItem MoveToFollowerStateWorkItem(bool randomizeTimeout, long? newTerm = null)
+    private protected unsafe void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null)
     {
-        return ThreadPoolWorkItemFactory.Create(&MoveToFollowerState, stateMachine, randomizeTimeout, newTerm);
+        ThreadPool.UnsafeQueueUserWorkItem(ThreadPoolWorkItemFactory.Create(&MoveToFollowerState, stateMachine, randomizeTimeout, newTerm), preferLocal: true);
 
         static void MoveToFollowerState(IRaftStateMachine stateMachine, bool randomizeTimeout, long? newTerm)
             => stateMachine.MoveToFollowerState(randomizeTimeout, newTerm);

@@ -78,14 +78,14 @@ internal sealed class CandidateState : RaftState
             // current node is outdated
             if (result.Term > Term)
             {
-                ThreadPool.UnsafeQueueUserWorkItem(MoveToFollowerStateWorkItem(false, result.Term), preferLocal: true);
+                MoveToFollowerState(randomizeTimeout: false, result.Term);
                 return;
             }
 
             switch (result.Value)
             {
                 case VotingResult.Canceled: // candidate timeout happened
-                    ThreadPool.UnsafeQueueUserWorkItem(MoveToFollowerStateWorkItem(false), preferLocal: true);
+                    MoveToFollowerState(randomizeTimeout: false);
                     return;
                 case VotingResult.Granted:
                     Logger.VoteGranted(state.Voter.EndPoint);
@@ -107,11 +107,10 @@ internal sealed class CandidateState : RaftState
         }
 
         Logger.VotingCompleted(votes);
-        ThreadPool.UnsafeQueueUserWorkItem(
-            votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null
-            ? MoveToFollowerStateWorkItem(true) // no clear consensus
-            : MoveToLeaderStateWorkItem(localMember),   // becomes a leader
-            preferLocal: true);
+        if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
+            MoveToFollowerState(randomizeTimeout: true); // no clear consensus
+        else
+            MoveToLeaderState(localMember); // becomes a leader
     }
 
     /// <summary>

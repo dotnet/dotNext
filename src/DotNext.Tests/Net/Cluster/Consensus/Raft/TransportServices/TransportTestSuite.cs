@@ -172,8 +172,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<PreVoteResult>(44L, PreVoteResult.Accepted));
             }
 
-            Task<long?> ILocalMember.SynchronizeAsync(CancellationToken token)
-                => Task.FromResult<long?>(42L);
+            Task<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)
+            {
+                Equal(long.MaxValue, commitIndex);
+                return Task.FromResult<long?>(42L);
+            }
 
             public IReadOnlyDictionary<string, string> Metadata { get; }
         }
@@ -449,7 +452,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare client
             using var client = clientFactory(serverAddr, member, timeout);
-            Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(CancellationToken.None));
+            Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(long.MaxValue, CancellationToken.None));
         }
     }
 }

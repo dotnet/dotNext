@@ -150,9 +150,9 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
         return metadataCache;
     }
 
-    private protected abstract Task<long?> SynchronizeAsync(CancellationToken token);
+    private protected abstract Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 
     /// <inheritdoc />
-    Task<long?> IRaftClusterMember.SynchronizeAsync(CancellationToken token)
-        => IsRemote ? SynchronizeAsync(token) : Task.FromResult<long?>(null);
+    Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
+        => IsRemote ? SynchronizeAsync(commitIndex, token) : Task.FromResult<long?>(null);
 }

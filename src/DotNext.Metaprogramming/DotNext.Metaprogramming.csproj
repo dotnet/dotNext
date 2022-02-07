@@ -9,7 +9,7 @@
     <IsTrimmable>false</IsTrimmable>
     <Features>nullablePublicOnly</Features>
     <VersionPrefix>4.2.0</VersionPrefix>
-    <VersionSuffix>beta.3</VersionSuffix>
+    <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>

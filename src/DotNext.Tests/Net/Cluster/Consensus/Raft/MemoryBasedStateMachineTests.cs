@@ -566,6 +566,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [InlineData(MemoryBasedStateMachine.CompactionMode.Background)]
         [InlineData(MemoryBasedStateMachine.CompactionMode.Foreground)]
         [InlineData(MemoryBasedStateMachine.CompactionMode.Sequential)]
+        [InlineData(MemoryBasedStateMachine.CompactionMode.Incremental)]
         public static async Task AppendAndCommitAsync(MemoryBasedStateMachine.CompactionMode compaction)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
@@ -614,7 +615,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
-            //read agian
+            //read again
             using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
@@ -675,7 +676,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
-            //read agian
+            //read again
             using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
@@ -726,7 +727,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
             }
 
-            //read agian
+            //read again
             using (var state = new PersistentStateWithSnapshot(dir, useCaching))
             {
                 checker = static (readResult, snapshotIndex, token) =>
@@ -741,6 +742,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Equal(7, readResult.Count);
                     Equal(3, snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task IncrementalCompaction(bool useCaching)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching, MemoryBasedStateMachine.CompactionMode.Incremental))
+            {
+                False(state.IsBackgroundCompaction);
+                await state.AppendAsync(new LogEntryList(entries));
+                await state.CommitAsync(4, CancellationToken.None);
+                await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(4, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            }
+
+            //read again
+            using (var state = new PersistentStateWithSnapshot(dir, useCaching))
+            {
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(3, readResult.Count);
+                    NotNull(snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+                Equal(0L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);

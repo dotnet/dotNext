@@ -21,7 +21,7 @@ public partial class PersistentState
     {
         None = 0,
         CopyToBuffer,
-        WriteThrough,
+        SkipBuffer,
     }
 
     /// <summary>

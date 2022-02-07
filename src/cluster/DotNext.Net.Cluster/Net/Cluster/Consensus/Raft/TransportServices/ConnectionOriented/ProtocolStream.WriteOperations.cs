@@ -63,12 +63,13 @@ internal partial class ProtocolStream
         return BaseStream.WriteAsync(buffer, token);
     }
 
-    internal ValueTask WriteSynchronizeRequestAsync(CancellationToken token)
+    internal ValueTask WriteSynchronizeRequestAsync(long commitIndex, CancellationToken token)
     {
         Reset();
-        var buffer = this.buffer.Memory.Slice(0, 1);
-        buffer.Span[0] = (byte)MessageType.Synchronize;
-        return BaseStream.WriteAsync(buffer, token);
+        var writer = new SpanWriter<byte>(buffer.Span);
+        writer.Write((byte)MessageType.Synchronize);
+        writer.WriteInt64(commitIndex, true);
+        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteMetadataRequestAsync(CancellationToken token)

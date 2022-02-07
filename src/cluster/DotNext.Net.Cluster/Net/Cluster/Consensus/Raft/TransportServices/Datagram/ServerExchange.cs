@@ -124,7 +124,7 @@ internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
                 break;
             case MessageType.Synchronize:
                 state = State.SynchronizeReceived;
-                BeginSynchronize(token);
+                BeginSynchronize(payload, token);
                 break;
         }
 

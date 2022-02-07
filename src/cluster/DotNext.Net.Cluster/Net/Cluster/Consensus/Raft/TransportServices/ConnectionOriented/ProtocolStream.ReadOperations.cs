@@ -123,6 +123,13 @@ internal partial class ProtocolStream
         }
     }
 
+    internal unsafe ValueTask<long> ReadInt64Async(CancellationToken token)
+    {
+        return ReadAsync<long>(sizeof(long), &Read, token);
+
+        static long Read(ref SpanReader<byte> reader) => reader.ReadInt64(true);
+    }
+
     [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     internal async ValueTask<IReadOnlyDictionary<string, string>> ReadMetadataResponseAsync(Memory<byte> buffer, CancellationToken token)
 #pragma warning disable CA2252  // TODO: Remove in .NET 7

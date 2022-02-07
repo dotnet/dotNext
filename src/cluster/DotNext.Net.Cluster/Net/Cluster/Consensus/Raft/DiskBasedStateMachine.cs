@@ -131,11 +131,11 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         return count;
     }
 
-    private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long endIndex, CancellationToken token)
+    private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
     {
-        Debug.Assert(endIndex < startIndex);
+        Debug.Assert(commitIndex < startIndex);
 
-        long result;
+        long count;
         Partition? removedHead;
         ExceptionDispatchInfo? error = null;
 
@@ -147,7 +147,11 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 
             // start commit task in parallel
-            var commitTask = Task.Run<(long, Partition?)>(CommitAsync);
+            count = GetCommitIndexAndCount(ref commitIndex);
+            LastCommittedEntryIndex = commitIndex;
+            var commitTask = count > 0L
+                ? Task.Run<Partition?>(CommitAsync)
+                : Task.FromResult<Partition?>(null);
 
             // append log entries on this thread
             InternalStateScope scope;
@@ -163,7 +167,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 scope = InternalStateScope.Snapshot;
             }
 
-            (result, removedHead) = await commitTask.ConfigureAwait(false);
+            removedHead = await commitTask.ConfigureAwait(false);
             await PersistInternalStateAsync(scope).ConfigureAwait(false);
         }
         finally
@@ -172,20 +176,17 @@ public abstract partial class DiskBasedStateMachine : PersistentState
             syncRoot.Release(LockType.ExclusiveLock);
         }
 
-        OnCommit(result);
+        if (count > 0L)
+            OnCommit(count);
+
         DeletePartitions(removedHead);
         error?.Throw();
-        return result;
+        return count;
 
-        async Task<(long, Partition?)> CommitAsync()
+        async Task<Partition?> CommitAsync()
         {
-            var count = GetCommitIndexAndCount(endIndex, out var commitIndex);
-            if (count <= 0L)
-                return (0L, null);
-
-            LastCommittedEntryIndex = commitIndex;
             var removalIndex = await ApplyAsync(session, token).ConfigureAwait(false);
-            return (count, removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null);
+            return removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null;
         }
     }
 

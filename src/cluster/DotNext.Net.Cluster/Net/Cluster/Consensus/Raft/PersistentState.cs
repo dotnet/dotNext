@@ -380,7 +380,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                         Term = currentEntry.Term,
                         CommandId = currentEntry.CommandId,
                         Timestamp = currentEntry.Timestamp,
-                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.WriteThrough : CachedLogEntryPersistenceMode.CopyToBuffer,
+                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.SkipBuffer : CachedLogEntryPersistenceMode.CopyToBuffer,
                     };
 
                     await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
@@ -853,11 +853,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private protected void OnCommit(long count)
     {
-        if (count > 0L)
-        {
-            commitEvent.Set(true);
-            commitCounter?.Invoke(count);
-        }
+        Debug.Assert(count > 0L);
+
+        commitEvent.Set(true);
+        commitCounter?.Invoke(count);
     }
 
     private bool IsConsistent => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
@@ -881,18 +880,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected long GetCommitIndexAndCount(in long? endIndex, out long commitIndex)
     {
-        var startIndex = state.CommitIndex + 1L;
         commitIndex = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
-        return commitIndex - startIndex + 1L;
+        return commitIndex - state.CommitIndex;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected long GetCommitIndexAndCount(long endIndex, out long commitIndex)
-    {
-        var startIndex = state.CommitIndex + 1L;
-        commitIndex = Math.Min(state.LastIndex, endIndex);
-        return commitIndex - startIndex + 1L;
-    }
+    private protected long GetCommitIndexAndCount(ref long commitIndex)
+        => (commitIndex = Math.Min(state.LastIndex, commitIndex)) - state.CommitIndex;
 
     /// <inheritdoc/>
     bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);

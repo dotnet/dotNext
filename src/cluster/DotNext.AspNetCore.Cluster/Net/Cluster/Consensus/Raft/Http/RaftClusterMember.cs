@@ -183,8 +183,8 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         return metadata;
     }
 
-    Task<long?> IRaftClusterMember.SynchronizeAsync(CancellationToken token)
-        => IsRemote ? SendAsync<long?, SynchronizeMessage>(new SynchronizeMessage(context.LocalMember), token) : Task.FromResult<long?>(null);
+    Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
+        => IsRemote ? SendAsync<long?, SynchronizeMessage>(new SynchronizeMessage(context.LocalMember, commitIndex), token) : Task.FromResult<long?>(null);
 
     EndPoint IPeer.EndPoint => EndPoint;
 

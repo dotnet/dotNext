@@ -136,6 +136,9 @@ public partial class RaftCluster<TMember>
 
         using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
         {
+            // assuming that the member is in sync with the leader
+            member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
+
             if (!MemberList.TryAdd(ref members, member))
                 return false;
         }

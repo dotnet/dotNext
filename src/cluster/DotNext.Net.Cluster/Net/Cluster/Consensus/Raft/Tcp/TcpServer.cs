@@ -198,9 +198,10 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
     [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask SynchronizeAsync(ProtocolStream protocol, CancellationToken token)
     {
+        var request = await protocol.ReadInt64Async(token).ConfigureAwait(false);
+        var response = await localMember.SynchronizeAsync(request, token).ConfigureAwait(false);
         protocol.Reset();
-        var commitIndex = await localMember.SynchronizeAsync(token).ConfigureAwait(false);
-        await protocol.WriteResponseAsync(in commitIndex, token).ConfigureAwait(false);
+        await protocol.WriteResponseAsync(in response, token).ConfigureAwait(false);
     }
 
     [AsyncIteratorStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
