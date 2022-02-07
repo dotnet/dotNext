@@ -10,7 +10,7 @@
   <Features>nullablePublicOnly</Features>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<VersionPrefix>4.2.0</VersionPrefix>
-  <VersionSuffix>beta.3</VersionSuffix>
+  <VersionSuffix></VersionSuffix>
 	<Authors>.NET Foundation and Contributors</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
