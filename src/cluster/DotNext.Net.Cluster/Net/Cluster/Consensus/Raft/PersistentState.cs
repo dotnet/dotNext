@@ -380,7 +380,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                         Term = currentEntry.Term,
                         CommandId = currentEntry.CommandId,
                         Timestamp = currentEntry.Timestamp,
-                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.WriteThrough : CachedLogEntryPersistenceMode.CopyToBuffer,
+                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.SkipBuffer : CachedLogEntryPersistenceMode.CopyToBuffer,
                     };
 
                     await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);

@@ -66,7 +66,7 @@ public partial class PersistentState
                         Term = current.Term,
                         CommandId = current.CommandId,
                         Timestamp = current.Timestamp,
-                        PersistenceMode = CachedLogEntryPersistenceMode.WriteThrough,
+                        PersistenceMode = CachedLogEntryPersistenceMode.SkipBuffer,
                     };
 
                     await queue.Writer.WriteAsync(cachedEntry, Token).ConfigureAwait(false);

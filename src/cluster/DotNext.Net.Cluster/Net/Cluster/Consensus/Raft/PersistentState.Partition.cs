@@ -310,7 +310,7 @@ public partial class PersistentState
                     case CachedLogEntryPersistenceMode.CopyToBuffer:
                         result = WriteAsync(entry, relativeIndex, writeAddress, token);
                         break;
-                    case CachedLogEntryPersistenceMode.WriteThrough:
+                    case CachedLogEntryPersistenceMode.SkipBuffer:
                         result = WriteThroughAsync(cachedEntry.Content.Memory, writeAddress, token);
                         break;
                     default:
