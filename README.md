@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 02-04-2022
+Release Date: 02-07-2022
 
 Many thanks to [Copenhagen Atomics](https://www.copenhagenatomics.com/) for supporting this release.
 

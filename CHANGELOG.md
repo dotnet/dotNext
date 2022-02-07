@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 02-01-2022
+# 02-07-2022
 Many thanks to [Copenhagen Atomics](https://www.copenhagenatomics.com/) for supporting this release.
 
 <a href="https://www.nuget.org/packages/dotnext/4.2.0">DotNext 4.2.0</a>
