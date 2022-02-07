@@ -103,6 +103,12 @@ in the background.</p>
 </td>
       </tr>
       <tr>
+        <td id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CompactionMode_Incremental">Incremental</td>
+        <td><p>Log compaction is executing for each committed log entry and flushes
+the snapshot only when the partition overflows.</p>
+</td>
+      </tr>
+      <tr>
         <td id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CompactionMode_Sequential">Sequential</td>
         <td><p>Log compaction forced automatically during the commit process
 which tries to squash as many committed entries as possible.</p>

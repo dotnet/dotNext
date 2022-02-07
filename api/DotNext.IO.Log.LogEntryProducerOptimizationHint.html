@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Enum LogEntryReadOptimizationHint
+    <title>Enum LogEntryProducerOptimizationHint
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Enum LogEntryReadOptimizationHint
+    <meta name="title" content="Enum LogEntryProducerOptimizationHint
    | .NEXT ">
     <meta name="generator" content="docfx 2.59.0.0">
     
@@ -67,20 +67,20 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.IO.Log.LogEntryReadOptimizationHint">
+            <article class="content wrap" id="_content" data-uid="DotNext.IO.Log.LogEntryProducerOptimizationHint">
   
   
-  <h1 id="DotNext_IO_Log_LogEntryReadOptimizationHint" data-uid="DotNext.IO.Log.LogEntryReadOptimizationHint" class="text-break">Enum LogEntryReadOptimizationHint
+  <h1 id="DotNext_IO_Log_LogEntryProducerOptimizationHint" data-uid="DotNext.IO.Log.LogEntryProducerOptimizationHint" class="text-break">Enum LogEntryProducerOptimizationHint
   </h1>
-  <div class="markdown level0 summary"><p>Represents read hint that can help audit trail to optimize
-read operations.</p>
+  <div class="markdown level0 summary"><p>Represents producer hint that can help audit trail to optimize
+consumption operations.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.Log.html">DotNext.IO.Log</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
-  <h5 id="DotNext_IO_Log_LogEntryReadOptimizationHint_syntax">Syntax</h5>
+  <h5 id="DotNext_IO_Log_LogEntryProducerOptimizationHint_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum LogEntryReadOptimizationHint</code></pre>
+    <pre><code class="lang-csharp hljs">public enum LogEntryProducerOptimizationHint</code></pre>
   </div>
   <h3 id="fields">Fields
   </h3>
@@ -93,23 +93,30 @@ read operations.</p>
     <thead>
     <tbody>
       <tr>
-        <td id="DotNext_IO_Log_LogEntryReadOptimizationHint_MetadataOnly">MetadataOnly</td>
-        <td><p>Return log entry metadata only.</p>
+        <td id="DotNext_IO_Log_LogEntryProducerOptimizationHint_LogEntryPayloadAvailableImmediately">LogEntryPayloadAvailableImmediately</td>
+        <td><p>The payload of log entries provided by the producer are ready for consumption
+synchronously.</p>
 </td>
       </tr>
       <tr>
-        <td id="DotNext_IO_Log_LogEntryReadOptimizationHint_None">None</td>
-        <td><p>Return log entry metadata and payload.</p>
+        <td id="DotNext_IO_Log_LogEntryProducerOptimizationHint_None">None</td>
+        <td><p>Optimization is not applicable.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="DotNext_IO_Log_LogEntryProducerOptimizationHint_SynchronousCompletion">SynchronousCompletion</td>
+        <td><p>The producer will likely to provide log entries synchronously
+and <see cref="!:IAsyncEnumerator&lt;T>.MoveNextAsync"></see> will not suspend the caller.</p>
 </td>
       </tr>
     </tbody>
   </thead></thead></table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;LogEntryReadOptimizationHint, T&gt;(Int32)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;LogEntryProducerOptimizationHint, T&gt;(Int32)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;LogEntryReadOptimizationHint&gt;()</a>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;LogEntryProducerOptimizationHint&gt;()</a>
   </div>
 </article>
           </div>
@@ -119,10 +126,10 @@ read operations.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Log_LogEntryReadOptimizationHint.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.LogEntryReadOptimizationHint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Log_LogEntryProducerOptimizationHint.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.LogEntryProducerOptimizationHint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/LogEntryReadOptimizationHint.cs/#L7" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/LogEntryProducerOptimizationHint.cs/#L7" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

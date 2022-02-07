@@ -92,12 +92,12 @@
     <thead>
     <tbody>
       <tr>
-        <td id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WriteMode_FlushOnCommit">FlushOnCommit</td>
-        <td><p>Synchronizes only committed log entries with storage device.</p>
+        <td id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WriteMode_AutoFlush">AutoFlush</td>
+        <td><p>Flushes data to disk only if the internal buffer oveflows.</p>
 </td>
       </tr>
       <tr>
-        <td id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WriteMode_Optimistic">Optimistic</td>
+        <td id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_WriteMode_NoFlush">NoFlush</td>
         <td><p>Delegates intermediate buffer flush to operating system.</p>
 </td>
       </tr>

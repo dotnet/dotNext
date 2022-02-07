@@ -621,18 +621,18 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftClusterMember%23SynchronizeAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftClusterMember%23SynchronizeAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftClusterMember.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#SynchronizeAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#SynchronizeAsync(CancellationToken)">IRaftClusterMember.SynchronizeAsync(CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_SynchronizeAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#SynchronizeAsync(System.Int64,CancellationToken)">IRaftClusterMember.SynchronizeAsync(Int64, CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;long?&gt; IRaftClusterMember.SynchronizeAsync(CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">Task&lt;long?&gt; IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -644,6 +644,11 @@
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">commitIndex</span></td>
+        <td></td>
+      </tr>
       <tr>
         <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
