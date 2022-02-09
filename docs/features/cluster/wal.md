@@ -30,8 +30,9 @@ Internally, persistent WAL uses files to store the state of cluster member and l
 * `ReplayOnInitialize` is a flag indicating that state of underlying database engine should be reconstructed when `InitializeAsync` is called by infrastructure. It can be done manually using `ReplayAsync` method.
 * `WriteMode` indicates how WAL must manage intermediate buffers when performing disk I/O
 * `IntegrityCheck` allows to verify internal WAL at initialization phase to ensure that the log was not damaged by hard shutdown
+* `ParallelIO` indicates that the underlying storage device can perform read/write operations simultaneously. This parameter makes no sense if `UseCaching` is **true**. Otherwise, this option can be enabled only if the underlying storage is attached using parallel interface such as NVMe (via PCIe bus)
 * `BackupCompression` represents compression level used by `CreateBackupAsync` method.
-* `CompactionMode` represents log compaction mode. The default is _Sequential_.
+* `CompactionMode` represents log compaction mode. The default is _Sequential_
 * `CopyOnReadOptions` allows to enable _copy-on-read_ behavior which allows to avoid lock contention between log compaction and replication processes
 * `CacheEvictionPolicy` represents eviction policy of the cached log entries.
 
@@ -120,12 +121,12 @@ The following methods allows to implement this scenario:
 Raft implementation must deal with the following bottlenecks: _network_, _disk I/O_ and synchronization when accessing WAL concurrently. The current implementation of persistent WAL provides many configuration options that allows to reduce the overhead caused by the last two aspects.
 
 ## Durable disk I/O
-By default, `WriteThrough` option is disabled. It means that OS is responsible to decide when to do [fsync](https://man7.org/linux/man-pages/man2/fsync.2.html). The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to **true** by the cost of I/O performance. However, this overhead can be mitigated by the caching mechanism.
+By default, `WriteMode` option is `NoFlush`. It means that OS is responsible to decide when to do [fsync](https://man7.org/linux/man-pages/man2/fsync.2.html). The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to `AutoFlush` or even `WriteThrough` by the cost of I/O performance.
 
 ## Caching
-`UseCaching` allows to enable caching of the log entries and their metadata. If enabled, log entry metadata is always cached in the memory for all appended log entries by the cost of increased RAM consumption. Cached metadata allows to avoid disk I/O when requesting entries. However, reading of log entry payload still requires disk I/O. This overhead can be eliminated by the calling of _AppendAsync_ or _AppendAndEnsureCommitAsync_ method with **true** argument passed to **bool** parameter. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.
+`UseCaching` allows to enable caching of the log entries and their metadata. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.
 
-The following operations have the positive impact provided by caching:
+Caching has a positive effect on the following operations:
 * All reads including replication process
 * Commit process, because state machine interprets a series of log entries cached in the memory
 * Snapshotting process, because snapshot builder deals with the log entries cached in the memory
