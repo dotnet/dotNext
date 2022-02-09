@@ -140,8 +140,9 @@ WAL needs to squash old committed log entries to prevent growth of disk space us
 * _Sequential_ offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.
 * _Background_ doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using `ForceCompactionAsync` method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.
 * _Foreground_ is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.
+* _Incremental_ is a mix of _Foreground_ and _Sequential_ compaction modes. The snapshot is permanently located in the memory during entire WAL lifetime. A new log entry is applied to the underlying state machine and the snapshot builder on each commit. When the time for compaction comes, WAL just saves the snapshot to the disk from the memory.
 
-_Foreground_ and _Background_ compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while _Sequential_ is suitable for classic HDD.
+_Foreground_ and _Background_ compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while _Sequential_ is suitable for classic HDD. _Incremental_ demonstrates the low overhead caused by log compaction but requires enough memory to keep the snapshot.
 
 ## Snapshot Building
 `CreateSnapshotBuilder(in SnapshotBuilderContext)` method of [MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine) class allows to provide a snapshot builder which is responsible for snapshot construction. There are two types of builders:
@@ -151,6 +152,9 @@ _Foreground_ and _Background_ compaction modes demonstrate the best I/O performa
 	* Apply other log entries
 	* Build a new snapshot and rewrite the current snapshot with a new one
 * [Inline builder](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InlineSnapshotBuilder) allows to apply the change to the existing snapshot on-the-fly. In means that there is no temporary representation of the snapshot during build process.
+
+> [!NOTE]
+> _Incremental_ snapshot builder and _Incremental_ log compaction are different things. You can choose any type of snapshot builder for _Incremental_ log compaction. However, the lifetime for the snapshot for _Incremental_ compaction differs from other compaction modes: it is created once per lifetime of Write-Ahead Log.
 
 _Incremental_ approach is much simplier for programming. However, it is suitable for relatively simple WALs where the data in the log is of kilobytes or megabytes in size, because a whole snapshot must be interpreted at the start of build process.
 
