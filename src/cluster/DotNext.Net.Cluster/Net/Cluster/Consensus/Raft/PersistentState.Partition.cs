@@ -50,12 +50,13 @@ public partial class PersistentState
             writeAddress = fileOffset;
         }
 
-        private async Task InitializeAsync()
+        internal void Initialize()
         {
-            if (await RandomAccess.ReadAsync(Handle, metadata.Memory, 0L).ConfigureAwait(false) < fileOffset)
+            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.SequentialScan);
+            if (RandomAccess.Read(handle, metadata.Span, 0L) < fileOffset)
             {
                 metadata.Span.Clear();
-                await RandomAccess.WriteAsync(Handle, metadata.Memory, 0L).ConfigureAwait(false);
+                RandomAccess.Write(handle, metadata.Span, 0L);
             }
             else
             {
@@ -73,12 +74,6 @@ public partial class PersistentState
 
                 return result;
             }
-        }
-
-        internal void Initialize()
-        {
-            using var task = InitializeAsync();
-            task.Wait();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
