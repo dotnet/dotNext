@@ -52,7 +52,7 @@ public partial class PersistentState
 
         internal void Initialize()
         {
-            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.SequentialScan);
+            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
             if (RandomAccess.Read(handle, metadata.Span, 0L) < fileOffset)
             {
                 metadata.Span.Clear();
