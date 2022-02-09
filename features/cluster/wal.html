@@ -100,8 +100,9 @@
 <li><code>ReplayOnInitialize</code> is a flag indicating that state of underlying database engine should be reconstructed when <code>InitializeAsync</code> is called by infrastructure. It can be done manually using <code>ReplayAsync</code> method.</li>
 <li><code>WriteMode</code> indicates how WAL must manage intermediate buffers when performing disk I/O</li>
 <li><code>IntegrityCheck</code> allows to verify internal WAL at initialization phase to ensure that the log was not damaged by hard shutdown</li>
+<li><code>ParallelIO</code> indicates that the underlying storage device can perform read/write operations simultaneously. This parameter makes no sense if <code>UseCaching</code> is <strong>true</strong>. Otherwise, this option can be enabled only if the underlying storage is attached using parallel interface such as NVMe (via PCIe bus)</li>
 <li><code>BackupCompression</code> represents compression level used by <code>CreateBackupAsync</code> method.</li>
-<li><code>CompactionMode</code> represents log compaction mode. The default is <em>Sequential</em>.</li>
+<li><code>CompactionMode</code> represents log compaction mode. The default is <em>Sequential</em></li>
 <li><code>CopyOnReadOptions</code> allows to enable <em>copy-on-read</em> behavior which allows to avoid lock contention between log compaction and replication processes</li>
 <li><code>CacheEvictionPolicy</code> represents eviction policy of the cached log entries.</li>
 </ul>
@@ -183,10 +184,10 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 <h1 id="performance">Performance</h1>
 <p>Raft implementation must deal with the following bottlenecks: <em>network</em>, <em>disk I/O</em> and synchronization when accessing WAL concurrently. The current implementation of persistent WAL provides many configuration options that allows to reduce the overhead caused by the last two aspects.</p>
 <h2 id="durable-disk-io">Durable disk I/O</h2>
-<p>By default, <code>WriteThrough</code> option is disabled. It means that OS is responsible to decide when to do <a href="https://man7.org/linux/man-pages/man2/fsync.2.html">fsync</a>. The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to <strong>true</strong> by the cost of I/O performance. However, this overhead can be mitigated by the caching mechanism.</p>
+<p>By default, <code>WriteMode</code> option is <code>NoFlush</code>. It means that OS is responsible to decide when to do <a href="https://man7.org/linux/man-pages/man2/fsync.2.html">fsync</a>. The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to <code>AutoFlush</code> or even <code>WriteThrough</code> by the cost of I/O performance.</p>
 <h2 id="caching">Caching</h2>
-<p><code>UseCaching</code> allows to enable caching of the log entries and their metadata. If enabled, log entry metadata is always cached in the memory for all appended log entries by the cost of increased RAM consumption. Cached metadata allows to avoid disk I/O when requesting entries. However, reading of log entry payload still requires disk I/O. This overhead can be eliminated by the calling of <em>AppendAsync</em> or <em>AppendAndEnsureCommitAsync</em> method with <strong>true</strong> argument passed to <strong>bool</strong> parameter. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.</p>
-<p>The following operations have the positive impact provided by caching:</p>
+<p><code>UseCaching</code> allows to enable caching of the log entries and their metadata. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.</p>
+<p>Caching has a positive effect on the following operations:</p>
 <ul>
 <li>All reads including replication process</li>
 <li>Commit process, because state machine interprets a series of log entries cached in the memory</li>
@@ -201,8 +202,9 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 <li><em>Sequential</em> offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.</li>
 <li><em>Background</em> doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using <code>ForceCompactionAsync</code> method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.</li>
 <li><em>Foreground</em> is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.</li>
+<li><em>Incremental</em> is a mix of <em>Foreground</em> and <em>Sequential</em> compaction modes. The snapshot is permanently located in the memory during entire WAL lifetime. A new log entry is applied to the underlying state machine and the snapshot builder on each commit. When the time for compaction comes, WAL just saves the snapshot to the disk from the memory.</li>
 </ul>
-<p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD.</p>
+<p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD. <em>Incremental</em> demonstrates the low overhead caused by log compaction but requires enough memory to keep the snapshot.</p>
 <h2 id="snapshot-building">Snapshot Building</h2>
 <p><code>CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a> class allows to provide a snapshot builder which is responsible for snapshot construction. There are two types of builders:</p>
 <ul>
@@ -216,6 +218,10 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 </li>
 <li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InlineSnapshotBuilder.html">Inline builder</a> allows to apply the change to the existing snapshot on-the-fly. In means that there is no temporary representation of the snapshot during build process.</li>
 </ul>
+<div class="NOTE">
+<h5>Note</h5>
+<p><em>Incremental</em> snapshot builder and <em>Incremental</em> log compaction are different things. You can choose any type of snapshot builder for <em>Incremental</em> log compaction. However, the lifetime for the snapshot for <em>Incremental</em> compaction differs from other compaction modes: it is created once per lifetime of Write-Ahead Log.</p>
+</div>
 <p><em>Incremental</em> approach is much simplier for programming. However, it is suitable for relatively simple WALs where the data in the log is of kilobytes or megabytes in size, because a whole snapshot must be interpreted at the start of build process.</p>
 <p><em>Inline</em> approach doesn't require interpretation of a whole snapshot. Instead, you can modify the current snapshot according to the data associated with the log entry included in the scope of log compaction.</p>
 <h1 id="interpreter-framework">Interpreter Framework</h1>
