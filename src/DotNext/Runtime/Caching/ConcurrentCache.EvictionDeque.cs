@@ -4,6 +4,10 @@ using ExceptionAggregator = ExceptionServices.ExceptionAggregator;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
+    /// <summary>
+    /// Represents an eviction deque controlling the order of cache items.
+    /// Each thread has its own local copy of the deque to avoid synchronization overhead.
+    /// </summary>
     private abstract class EvictionDeque
     {
         private protected readonly int index;

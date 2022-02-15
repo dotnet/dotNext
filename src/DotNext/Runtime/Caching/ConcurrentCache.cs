@@ -6,6 +6,18 @@ namespace DotNext.Runtime.Caching;
 /// <summary>
 /// Represents concurrect cache.
 /// </summary>
+/// <remarks>
+/// The cache provides O(1) lookup performance if there is no hash collision. Asymptotic complexity of other
+/// operations are same as for <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey, TValue}"/> class.
+/// The cache has the following architecture to deal with lock contention: the cache has multiple eviction deques
+/// distributed between evenly. Each deque has its own read cursor within the shared queue of commands.
+/// Each access to the cache produces a command published in the queue. This operation has low impact in concurrent scenario
+/// because it uses lock-free approach. Then the thread choses the dequeue and interprets the commands starting from the read
+/// position associated with the dequeu up to the last added command.
+/// As a result, each thread has its own local copy of the deque. All copies are weakly consistent and synchronized using
+/// the shared queue of commands. All manipulations with the local copy of the deque do not require any
+/// cross-thread synchronization.
+/// </remarks>
 /// <typeparam name="TKey">The key of the cache entry.</typeparam>
 /// <typeparam name="TValue">The cached value.</typeparam>
 public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
@@ -320,6 +332,9 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// <summary>
     /// Removes all items from the cache.
     /// </summary>
+    /// <remarks>
+    /// This operation locks the entire cache exclusively.
+    /// </remarks>
     public void Clear()
     {
         var acquiredLocks = 0;
@@ -378,6 +393,10 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// <summary>
     /// Gets the number of cache entries.
     /// </summary>
+    /// <remarks>
+    /// In contrast to <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey, TValue}.Count"/>,
+    /// this property is fast and doesn't require an exclusive lock.
+    /// </remarks>
     public int Count => table.Count;
 
     /// <summary>

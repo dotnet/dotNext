@@ -6,13 +6,19 @@ namespace DotNext.Runtime.Caching;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
-    private enum CommandType
+    /// <summary>
+    /// Represents a set of actions that can be applied to the deque.
+    /// </summary>
+    private enum CommandType : byte
     {
         Read = 0,
         Add,
         Remove,
     }
 
+    /// <summary>
+    /// Represents a command to be applied to the deque.
+    /// </summary>
     [DebuggerDisplay($"{{{nameof(Type)}}} {{{nameof(Pair)}}}")]
     private sealed class Command
     {
@@ -27,6 +33,9 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
+    /// <summary>
+    /// Represents read position within the queue of commands.
+    /// </summary>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"Pending commands = {{{nameof(Count)}}}")]
     private struct CommandQueueReader
@@ -64,14 +73,29 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
+    /// <summary>
+    /// Last written command in the queue.
+    /// </summary>
     private Command commandQueueWritePosition;
 
+    /// <summary>
+    /// Enqueues a new command to the queue.
+    /// </summary>
+    /// <param name="commandQueueWritePosition">The location of the queue head.</param>
+    /// <param name="type">The command type.</param>
+    /// <param name="pair">The command argument.</param>
+    /// <returns>The enqueued command.</returns>
     private static Command Enqueue(ref Command commandQueueWritePosition, CommandType type, KeyValuePair pair)
     {
         var command = new Command(type, pair);
         return Interlocked.Exchange(ref commandQueueWritePosition, command).Next = command;
     }
 
+    /// <summary>
+    /// Enqueues a new command to the queue and drains the queue for the selected deque.
+    /// </summary>
+    /// <param name="type">The command type.</param>
+    /// <param name="pair">The command argument.</param>
     private void EnqueueCommandAndDrainQueue(CommandType type, KeyValuePair pair)
     {
         // enqueue command
