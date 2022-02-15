@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -9,6 +10,7 @@ public partial class ConcurrentCache<TKey, TValue>
 {
     private static readonly bool IsValueWriteAtomic;
 
+    [DebuggerDisplay($"Key = {{{nameof(Key)}}} Value = {{{nameof(Value)}}}")]
     private abstract class KeyValuePair
     {
         // index = of eviction deque

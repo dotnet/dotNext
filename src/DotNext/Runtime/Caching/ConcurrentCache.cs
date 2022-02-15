@@ -228,7 +228,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// Attempts to remove the cache entry.
     /// </summary>
     /// <remarks>
-    /// This method will not raise <see cref="OnEvicted"/> event for the removed entry.
+    /// This method will not raise <see cref="OnEviction"/> event for the removed entry.
     /// </remarks>
     /// <param name="key">The key of the cache entry.</param>
     /// <param name="value">The cache entry, if successful.</param>
@@ -236,7 +236,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     public bool TryRemove(TKey key, [MaybeNullWhen(false)] out TValue value)
     {
         var keyComparer = table.KeyComparer;
-        var hashCode = keyComparer?.GetHashCode() ?? key.GetHashCode();
+        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
         ref var bucket = ref table.GetBucket(hashCode, out var bucketLock);
         bool result;
         KeyValuePair pair;
@@ -311,7 +311,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// <summary>
     /// Gets or sets a handler that can be used to capture evicted cache items.
     /// </summary>
-    public event Action<TKey, TValue> OnEvicted
+    public event Action<TKey, TValue> OnEviction
     {
         add => evictionHandler += value;
         remove => evictionHandler -= value;
