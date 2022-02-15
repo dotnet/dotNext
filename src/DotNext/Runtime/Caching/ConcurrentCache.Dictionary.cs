@@ -13,7 +13,7 @@ public partial class ConcurrentCache<TKey, TValue>
     [DebuggerDisplay($"Key = {{{nameof(Key)}}} Value = {{{nameof(Value)}}}")]
     private abstract class KeyValuePair
     {
-        // index = of eviction deque
+        // index = eviction deque
         private readonly (KeyValuePair? Previous, KeyValuePair? Next)[] links;
         internal readonly int KeyHashCode;
         internal readonly TKey Key;
