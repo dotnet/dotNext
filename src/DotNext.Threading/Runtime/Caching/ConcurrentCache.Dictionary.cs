@@ -11,8 +11,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private abstract class KeyValuePair
     {
-        // [X, 0] - previous, [X, 1] - next, X - index of eviction deque
-        private readonly KeyValuePair?[,] links;
+        // index = of eviction deque
+        private readonly (KeyValuePair? Previous, KeyValuePair? Next)[] links;
         internal readonly int KeyHashCode;
         internal readonly TKey Key;
         internal volatile KeyValuePair? Next;
@@ -23,14 +23,13 @@ public partial class ConcurrentCache<TKey, TValue>
             Key = key;
             KeyHashCode = hashCode;
             IsAlive = new(true);
-            links = new KeyValuePair?[buffersCount, 2];
+            links = new (KeyValuePair? Previous, KeyValuePair? Next)[buffersCount];
         }
 
         internal abstract TValue Value { get; set; }
 
-        internal ref KeyValuePair? GetPrevious(int dequeIndex) => ref links[dequeIndex, 0];
-
-        internal ref KeyValuePair? GetNext(int dequeIndex) => ref links[dequeIndex, 1];
+        internal ref (KeyValuePair? Previous, KeyValuePair? Next) GetLinks(int dequeIndex)
+            => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(links), dequeIndex);
     }
 
     private sealed class KeyValuePairAtomicAccess : KeyValuePair

@@ -54,18 +54,32 @@ public partial class ConcurrentCache<TKey, TValue>
 
         private void Add(KeyValuePair pair, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
         {
+            AddFirst(pair);
+            count += 1;
+            Evict(ref commandQueueWritePosition, evictionHandler);
+        }
+
+        private protected void AddFirst(KeyValuePair pair)
+        {
             if (first is null || last is null)
             {
                 first = last = pair;
             }
             else
             {
-                first.GetPrevious(index) = pair;
+                first.GetLinks(index).Previous = pair;
+                pair.GetLinks(index).Next = first;
                 first = pair;
             }
+        }
 
-            count += 1;
-            Evict(ref commandQueueWritePosition, evictionHandler);
+        private protected void Append(KeyValuePair parent, KeyValuePair child)
+        {
+            ref var links = ref child.GetLinks(index);
+            links.Previous = parent;
+
+            if ((links.Next = parent.Next) is not null)
+                links.Next.GetLinks(index).Previous = child;
         }
 
         private void Evict(ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
@@ -84,28 +98,31 @@ public partial class ConcurrentCache<TKey, TValue>
 
         private void Remove(KeyValuePair pair)
         {
-            ref var previous = ref pair.GetPrevious(index);
-            ref var next = ref pair.GetNext(index);
-
-            if (ReferenceEquals(first, pair))
-                first = next;
-
-            if (ReferenceEquals(last, pair))
-                last = previous;
-
-            Link(previous, next);
-            previous = next = null;
-
+            Detach(pair);
             count -= 1;
         }
 
-        private protected void Link(KeyValuePair? previous, KeyValuePair? next)
+        private protected void Detach(KeyValuePair pair)
+        {
+            ref var links = ref pair.GetLinks(index);
+
+            if (ReferenceEquals(first, pair))
+                first = links.Next;
+
+            if (ReferenceEquals(last, pair))
+                last = links.Previous;
+
+            MakeLink(links.Previous, links.Next);
+            links = default;
+        }
+
+        private protected void MakeLink(KeyValuePair? previous, KeyValuePair? next)
         {
             if (previous is not null)
-                previous.GetNext(index) = next;
+                previous.GetLinks(index).Next = next;
 
             if (next is not null)
-                next.GetPrevious(index) = previous;
+                next.GetLinks(index).Previous = previous;
         }
     }
 
@@ -118,20 +135,10 @@ public partial class ConcurrentCache<TKey, TValue>
 
         private protected override void Read(KeyValuePair pair)
         {
-            if (first is null || last is null)
+            if (!ReferenceEquals(pair, first))
             {
-                first = last = pair;
-            }
-            else if (!ReferenceEquals(first, pair))
-            {
-                ref var previous = ref pair.GetPrevious(index);
-                ref var next = ref pair.GetNext(index);
-
-                Link(previous, next);
-                previous = null;
-
-                first.GetPrevious(index) = pair;
-                first = pair;
+                Detach(pair);
+                AddFirst(pair);
             }
         }
     }
@@ -145,21 +152,15 @@ public partial class ConcurrentCache<TKey, TValue>
 
         private protected override void Read(KeyValuePair pair)
         {
-            if (first is null || last is null)
+            if (!ReferenceEquals(pair, first))
             {
-                first = last = pair;
-            }
-            else if (!ReferenceEquals(first, pair))
-            {
-                ref var previous = ref pair.GetPrevious(index);
-                ref var next = ref pair.GetNext(index);
+                var parent = pair.GetLinks(index).Previous?.GetLinks(index).Previous;
+                Detach(pair);
 
-                Debug.Assert(previous is not null);
-
-                // replace previous with the current pair
-                previous.GetNext(index) = next;
-                (next = previous).GetPrevious(index) = pair;
-                previous = next.GetPrevious(index);
+                if (parent is null)
+                    AddFirst(pair);
+                else
+                    Append(parent, pair);
             }
         }
     }
