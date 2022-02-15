@@ -10,6 +10,9 @@ public partial class ConcurrentCache<TKey, TValue>
 {
     private static readonly bool IsValueWriteAtomic;
 
+    /// <summary>
+    /// Represents key/value pair within the dictionary and the node in eviction deque.
+    /// </summary>
     [DebuggerDisplay($"Key = {{{nameof(Key)}}} Value = {{{nameof(Value)}}}")]
     private abstract class KeyValuePair
     {
@@ -59,6 +62,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
+    [DebuggerDisplay("KV Pair Placeholder")]
     private sealed class SentinelKeyValuePair : KeyValuePair
     {
         internal SentinelKeyValuePair(int buffersCount)
@@ -73,6 +77,10 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
+    /// <summary>
+    /// Represents concurrent dictionary of a fixed size.
+    /// </summary>
+    [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
     private sealed class Table
     {
         private readonly KeyValuePair?[] buckets;
