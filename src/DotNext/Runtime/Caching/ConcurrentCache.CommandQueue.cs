@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
@@ -11,6 +13,7 @@ public partial class ConcurrentCache<TKey, TValue>
         Remove,
     }
 
+    [DebuggerDisplay($"{{{nameof(Type)}}} {{{nameof(Pair)}}}")]
     private sealed class Command
     {
         internal readonly CommandType Type;
@@ -25,6 +28,7 @@ public partial class ConcurrentCache<TKey, TValue>
     }
 
     [StructLayout(LayoutKind.Auto)]
+    [DebuggerDisplay($"Pending commands = {{{nameof(Count)}}}")]
     private struct CommandQueueReader
     {
         private Command current;
@@ -42,6 +46,20 @@ public partial class ConcurrentCache<TKey, TValue>
 
                 positionReached = ReferenceEquals(next, position);
                 return current = next;
+            }
+        }
+
+        [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private int Count
+        {
+            get
+            {
+                var result = 0;
+                for (var current = this.current.Next; current is not null; current = current.Next)
+                    result++;
+
+                return result;
             }
         }
     }

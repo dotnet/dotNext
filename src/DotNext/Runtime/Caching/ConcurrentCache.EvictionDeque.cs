@@ -1,6 +1,6 @@
-using Debug = System.Diagnostics.Debug;
-
 namespace DotNext.Runtime.Caching;
+
+using ExceptionAggregator = ExceptionServices.ExceptionAggregator;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
@@ -84,6 +84,7 @@ public partial class ConcurrentCache<TKey, TValue>
 
         private void Evict(ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
         {
+            var aggregator = new ExceptionAggregator();
             for (KeyValuePair? last; count > table.Capacity; count--)
             {
                 last = this.last;
@@ -91,9 +92,19 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     table.Remove(last);
                     Enqueue(ref commandQueueWritePosition, CommandType.Remove, last);
-                    evictionHandler?.Invoke(last.Key, last.Value);
+
+                    try
+                    {
+                        evictionHandler?.Invoke(last.Key, last.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        aggregator.Add(e);
+                    }
                 }
             }
+
+            aggregator.ThrowIfNeeded();
         }
 
         private void Remove(KeyValuePair pair)
