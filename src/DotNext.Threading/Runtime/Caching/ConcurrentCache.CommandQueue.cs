@@ -60,31 +60,33 @@ public partial class ConcurrentCache<TKey, TValue>
         var command = Enqueue(ref commandQueueWritePosition, type, pair);
 
         // drain buffer using load balancing
-        for (var spinCounter = 0; ;)
+        for (var spinCounter = 0; ; spinCounter++)
         {
             var deque = currentDeque;
 
             // spin deque
             Interlocked.CompareExchange(ref currentDeque, deque.Next, deque);
 
-            if (Monitor.IsEntered(deque))
-            {
-                try
-                {
-                    deque.DrainCommandQueue(command, ref commandQueueWritePosition, evictionHandler);
-                }
-                finally
-                {
-                    Monitor.Exit(deque);
-                }
+            if (Monitor.TryEnter(deque))
+                goto drain_command_queue;
 
-                break;
-            }
-            else if (++spinCounter == concurrencyLevel)
+            if (spinCounter < concurrencyLevel)
+                continue;
+
+            // concurrencyLevel is less than the number of concurrent threads
+            Monitor.Enter(deque);
+
+        drain_command_queue:
+            try
             {
-                spinCounter = 0;
-                Thread.Yield();
+                deque.DrainCommandQueue(command, ref commandQueueWritePosition, evictionHandler);
             }
+            finally
+            {
+                Monitor.Exit(deque);
+            }
+
+            break;
         }
     }
 }
