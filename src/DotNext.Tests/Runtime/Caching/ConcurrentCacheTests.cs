@@ -80,5 +80,26 @@ namespace DotNext.Runtime.Caching
             Equal(0, evictionList[0].Key);
             Equal("0", evictionList[0].Value);
         }
+
+        [Fact]
+        public static void Enumerators()
+        {
+            var cache = new ConcurrentCache<int, string>(3, 3);
+            cache[0] = "0";
+            cache[1] = "1";
+            cache[2] = "2";
+
+            IReadOnlyDictionary<int, string> dictionary = cache;
+            True(dictionary.ContainsKey(0));
+            False(dictionary.ContainsKey(3));
+
+            Equal(new int[] { 0, 1, 2 }, dictionary.Keys.ToArray());
+            Equal(new string[] { "0", "1", "2" }, dictionary.Values.ToArray());
+            Equal(new KeyValuePair<int, string>[] { new(0, "0"), new(1, "1"), new(2, "2") }, dictionary.ToArray());
+
+            cache.Clear();
+            Equal(0, cache.Count);
+            False(dictionary.ContainsKey(0));
+        }
     }
 }

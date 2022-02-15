@@ -157,6 +157,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
                 Volatile.Write(ref root, null);
             }
+
+            Volatile.Write(ref count, 0);
         }
 
         internal IEnumerable<TKey> Keys
