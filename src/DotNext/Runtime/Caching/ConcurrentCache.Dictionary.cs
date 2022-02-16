@@ -128,6 +128,7 @@ public partial class ConcurrentCache<TKey, TValue>
                             previous.Next = actual.Next;
 
                         OnRemoved();
+                        break;
                     }
                 }
             }

@@ -101,5 +101,16 @@ namespace DotNext.Runtime.Caching
             Equal(0, cache.Count);
             False(dictionary.ContainsKey(0));
         }
+
+        [Fact]
+        public static void HashCollision()
+        {
+            var cache = new ConcurrentCache<int, int>(2);
+
+            foreach (var item in new int[] { 0, -2, -1, -3, -5, 4 })
+                cache.AddOrUpdate(item, item, out _);
+
+            Assert.False(cache.TryGetValue(-1, out _));
+        }
     }
 }
