@@ -28,42 +28,35 @@ public partial class ConcurrentCache<TKey, TValue>
         internal void Clear() => first = last = null;
 
         internal void DrainCommandQueue(CommandType type, KeyValuePair pair, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
-            => DrainCommandQueue(Enqueue(ref commandQueueWritePosition, type, pair), ref commandQueueWritePosition, evictionHandler);
+            => DrainCommandQueue(Enqueue(ref commandQueueWritePosition, type, pair), evictionHandler);
 
-        private void DrainCommandQueue(Command last, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
+        private void DrainCommandQueue(Command last, Action<TKey, TValue>? evictionHandler)
         {
             for (var lastReached = false; !lastReached;)
             {
                 var command = commandReader.Read(last, out lastReached);
-                if (command.Pair.IsAlive.Value)
+                switch (command.Type)
                 {
-                    switch (command.Type)
-                    {
-                        case CommandType.Read:
-                            Read(command.Pair);
-                            break;
-                        case CommandType.Add:
-                            Add(command.Pair, ref commandQueueWritePosition, evictionHandler);
-                            break;
-                        case CommandType.Remove:
-                            Remove(command.Pair);
-                            break;
-                    }
-                }
-                else
-                {
-                    Remove(command.Pair);
+                    case CommandType.Read:
+                        Read(command.Pair);
+                        break;
+                    case CommandType.Add:
+                        Add(command.Pair);
+                        Evict(evictionHandler);
+                        break;
+                    case CommandType.Remove:
+                        Remove(command.Pair);
+                        break;
                 }
             }
         }
 
         private protected abstract void Read(KeyValuePair pair);
 
-        private void Add(KeyValuePair pair, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
+        private void Add(KeyValuePair pair)
         {
             AddFirst(pair);
             count += 1;
-            Evict(ref commandQueueWritePosition, evictionHandler);
         }
 
         private protected void AddFirst(KeyValuePair pair)
@@ -89,24 +82,27 @@ public partial class ConcurrentCache<TKey, TValue>
                 links.Next.GetLinks(index).Previous = child;
         }
 
-        private void Evict(ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
+        private void Evict(Action<TKey, TValue>? evictionHandler)
         {
             var aggregator = new ExceptionAggregator();
             for (KeyValuePair? last; count > table.Capacity; count--)
             {
                 last = this.last;
-                if (last is not null && last.IsAlive.TrueToFalse())
+                if (last is not null)
                 {
-                    table.Remove(last);
-                    Enqueue(ref commandQueueWritePosition, CommandType.Remove, last);
+                    Detach(last);
+                    if (last.IsAlive.TrueToFalse())
+                    {
+                        table.Remove(last);
 
-                    try
-                    {
-                        evictionHandler?.Invoke(last.Key, last.Value);
-                    }
-                    catch (Exception e)
-                    {
-                        aggregator.Add(e);
+                        try
+                        {
+                            evictionHandler?.Invoke(last.Key, last.Value);
+                        }
+                        catch (Exception e)
+                        {
+                            aggregator.Add(e);
+                        }
                     }
                 }
             }
