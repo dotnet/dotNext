@@ -98,9 +98,6 @@ public partial class ConcurrentCache<TKey, TValue>
     /// <param name="pair">The command argument.</param>
     private void EnqueueCommandAndDrainQueue(CommandType type, KeyValuePair pair)
     {
-        // enqueue command
-        var command = Enqueue(ref commandQueueWritePosition, type, pair);
-
         // drain buffer using load balancing
         for (var spinCounter = 0; ; spinCounter++)
         {
@@ -121,7 +118,8 @@ public partial class ConcurrentCache<TKey, TValue>
         drain_command_queue:
             try
             {
-                deque.DrainCommandQueue(command, ref commandQueueWritePosition, evictionHandler);
+                // limit write rate by the monitor lock
+                deque.DrainCommandQueue(type, pair, ref commandQueueWritePosition, evictionHandler);
             }
             finally
             {

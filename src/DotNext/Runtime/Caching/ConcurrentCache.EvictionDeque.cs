@@ -27,7 +27,10 @@ public partial class ConcurrentCache<TKey, TValue>
 
         internal void Clear() => first = last = null;
 
-        internal void DrainCommandQueue(Command last, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
+        internal void DrainCommandQueue(CommandType type, KeyValuePair pair, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
+            => DrainCommandQueue(Enqueue(ref commandQueueWritePosition, type, pair), ref commandQueueWritePosition, evictionHandler);
+
+        private void DrainCommandQueue(Command last, ref Command commandQueueWritePosition, Action<TKey, TValue>? evictionHandler)
         {
             for (var lastReached = false; !lastReached;)
             {
