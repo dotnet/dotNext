@@ -89,7 +89,7 @@ public struct ReaderWriterSpinLock
     public LockStamp TryOptimisticRead()
     {
         var stamp = new LockStamp(in version);
-        return state == WriteLockState ? new LockStamp() : stamp;
+        return state is WriteLockState ? default : stamp;
     }
 
     /// <summary>
@@ -97,12 +97,12 @@ public struct ReaderWriterSpinLock
     /// </summary>
     /// <param name="stamp">A stamp to check.</param>
     /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public readonly bool Validate(in LockStamp stamp) => stamp.IsValid(in version);
+    public readonly bool Validate(in LockStamp stamp) => stamp.IsValid(in version) && state is not WriteLockState;
 
     /// <summary>
     /// Gets a value that indicates whether the current thread has entered the lock in write mode.
     /// </summary>
-    public readonly bool IsWriteLockHeld => state == WriteLockState;
+    public readonly bool IsWriteLockHeld => state is WriteLockState;
 
     /// <summary>
     /// Gets a value that indicates whether the current thread has entered the lock in read mode.
