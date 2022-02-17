@@ -84,5 +84,50 @@ namespace DotNext.Threading
             rwLock.Value.ExitWriteLock();
             await task.WaitAsync(DefaultTimeout);
         }
+
+        [Fact]
+        public static void ReadLockUpgrade1()
+        {
+            var rwLock = new ReaderWriterSpinLock();
+            rwLock.EnterReadLock();
+            False(rwLock.IsWriteLockHeld);
+
+            True(rwLock.TryUpgradeToWriteLock());
+            True(rwLock.IsWriteLockHeld);
+
+            rwLock.DowngradeFromWriteLock();
+            False(rwLock.IsWriteLockHeld);
+            True(rwLock.IsReadLockHeld);
+        }
+
+        [Fact]
+        public static void ReadLockUpgrade2()
+        {
+            var rwLock = new ReaderWriterSpinLock();
+            rwLock.EnterReadLock();
+            False(rwLock.IsWriteLockHeld);
+
+            rwLock.UpgradeToWriteLock();
+            True(rwLock.IsWriteLockHeld);
+
+            rwLock.DowngradeFromWriteLock();
+            False(rwLock.IsWriteLockHeld);
+            True(rwLock.IsReadLockHeld);
+        }
+
+        [Fact]
+        public static void ReadLockUpgrade3()
+        {
+            var rwLock = new ReaderWriterSpinLock();
+            rwLock.EnterReadLock();
+            False(rwLock.IsWriteLockHeld);
+
+            True(rwLock.TryUpgradeToWriteLock(TimeSpan.Zero, CancellationToken.None));
+            True(rwLock.IsWriteLockHeld);
+
+            rwLock.DowngradeFromWriteLock();
+            False(rwLock.IsWriteLockHeld);
+            True(rwLock.IsReadLockHeld);
+        }
     }
 }
