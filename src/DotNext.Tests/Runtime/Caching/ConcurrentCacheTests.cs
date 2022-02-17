@@ -147,5 +147,22 @@ namespace DotNext.Runtime.Caching
                 True(cache.TryGetValue(index, out _));
             }
         }
+
+        [Fact]
+        public static void ReplaceItem()
+        {
+            var cache = new ConcurrentCache<int, int>(4, CacheEvictionPolicy.LRU);
+            cache[0] = 0;
+            cache[1] = 1;
+
+            False(cache.TryRemove(new KeyValuePair<int, int>(0, 1)));
+            False(cache.TryRemove(new KeyValuePair<int, int>(10, 1)));
+
+            True(cache.TryRemove(new KeyValuePair<int, int>(1, 1)));
+            False(cache.TryUpdate(1, 2, 1));
+
+            True(cache.TryUpdate(0, 42, 0));
+            Equal(42, cache[0]);
+        }
     }
 }

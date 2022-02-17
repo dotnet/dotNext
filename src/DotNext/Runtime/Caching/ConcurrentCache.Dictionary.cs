@@ -295,6 +295,31 @@ public partial class ConcurrentCache<TKey, TValue>
     /// <returns><see langword="true"/> if the cache entry removed successfully; otherwise, <see langword="false"/>.</returns>
     public bool TryRemove(TKey key, [MaybeNullWhen(false)] out TValue value)
     {
+        Unsafe.SkipInit(out value);
+
+        bool result;
+        if (!(result = TryRemove(key, matchValue: false, ref value)))
+            value = default;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Attempts to remove the cache entry.
+    /// </summary>
+    /// <remarks>
+    /// This method will not raise <see cref="Eviction"/> event for the removed entry.
+    /// </remarks>
+    /// <param name="pair">The pair to be removed.</param>
+    /// <returns><see langword="true"/> if the cache entry removed successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryRemove(KeyValuePair<TKey, TValue> pair)
+    {
+        var (key, value) = pair;
+        return TryRemove(key, matchValue: true, ref value);
+    }
+
+    private bool TryRemove(TKey key, bool matchValue, ref TValue? value)
+    {
         var keyComparer = this.keyComparer;
         var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
         ref var bucket = ref GetBucket(hashCode, out var bucketLock);
@@ -307,7 +332,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
                 {
-                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)))
+                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, current.Value)))
                     {
                         result = true;
                         pair = current;
@@ -326,7 +351,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
                 {
-                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key))
+                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, current.Value)))
                     {
                         result = true;
                         pair = current;
@@ -349,6 +374,62 @@ public partial class ConcurrentCache<TKey, TValue>
 
     enqueue_and_exit:
         EnqueueAndDrain(CommandType.Remove, pair);
+
+    exit:
+        return result;
+    }
+
+    /// <summary>
+    /// Updates the cache entry associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key whose value is compared with <paramref name="expectedValue"/> and possibly replaced.</param>
+    /// <param name="newValue">The value that replaces the value of the entry with <paramref name="key"/> if the comparison results in equality.</param>
+    /// <param name="expectedValue">The value that is compared to the value of the element with <paramref name="key"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if the value with <paramref name="key"/> was equal to <paramref name="expectedValue"/> and
+    /// replaced with <paramref name="newValue"/>; otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool TryUpdate(TKey key, TValue newValue, TValue expectedValue)
+    {
+        var keyComparer = this.keyComparer;
+        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
+        ref var bucket = ref GetBucket(hashCode, out var bucketLock);
+        bool result;
+        KeyValuePair pair;
+
+        lock (bucketLock)
+        {
+            if (keyComparer is null)
+            {
+                for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
+                {
+                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && EqualityComparer<TValue>.Default.Equals(expectedValue, current.Value))
+                    {
+                        result = true;
+                        (pair = current).Value = newValue;
+                        goto enqueue_and_exit;
+                    }
+                }
+            }
+            else
+            {
+                for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
+                {
+                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && EqualityComparer<TValue>.Default.Equals(expectedValue, current.Value))
+                    {
+                        result = true;
+                        (pair = current).Value = newValue;
+                        goto enqueue_and_exit;
+                    }
+                }
+            }
+
+            result = false;
+            goto exit;
+        }
+
+    enqueue_and_exit:
+        EnqueueAndDrain(CommandType.Read, pair);
 
     exit:
         return result;
