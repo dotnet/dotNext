@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 02-17-2022
+<a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
+* Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
+* Improved performance of atomic operations based on CAS (Compare-And-Swap)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.3.0">DotNext.Metaprogramming 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.3.0">DotNext.Reflection 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.3.0">DotNext.Unsafe 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.3.0">DotNext.Threading 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.3.0">DotNext.IO 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.0">DotNext.Net.Cluster 4.3.0</a>
+* Improved startup time of persistent WAL
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.0">DotNext.AspNetCore.Cluster 4.3.0</a>
+* Updated dependencies
+
 # 02-07-2022
 Many thanks to [Copenhagen Atomics](https://www.copenhagenatomics.com/) for supporting this release.
 
