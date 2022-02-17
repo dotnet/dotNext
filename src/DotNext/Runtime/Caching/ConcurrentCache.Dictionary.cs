@@ -288,7 +288,7 @@ public partial class ConcurrentCache<TKey, TValue>
     /// Attempts to remove the cache entry.
     /// </summary>
     /// <remarks>
-    /// This method will not raise <see cref="OnEviction"/> event for the removed entry.
+    /// This method will not raise <see cref="Eviction"/> event for the removed entry.
     /// </remarks>
     /// <param name="key">The key of the cache entry.</param>
     /// <param name="value">The cache entry, if successful.</param>
