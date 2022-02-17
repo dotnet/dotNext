@@ -84,7 +84,7 @@ public static class AtomicSingle
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool Equals(float x, float y)
-        => x == y || float.IsNaN(x) && float.IsNaN(y);
+        => BitConverter.SingleToInt32Bits(x) == BitConverter.SingleToInt32Bits(y);
 
     /// <summary>
     /// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -123,24 +123,26 @@ public static class AtomicSingle
     private static (float OldValue, float NewValue) Update<TUpdater>(ref float value, TUpdater updater)
         where TUpdater : struct, ISupplier<float, float>
     {
-        float oldValue, newValue;
+        float oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = updater.Invoke(oldValue = VolatileRead(in value));
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while (!Equals(tmp = Interlocked.CompareExchange(ref value, newValue, oldValue), oldValue));
+
         return (oldValue, newValue);
     }
 
     private static (float OldValue, float NewValue) Accumulate<TAccumulator>(ref float value, float x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<float, float, float>
     {
-        float oldValue, newValue;
+        float oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while (!Equals(tmp = Interlocked.CompareExchange(ref value, newValue, oldValue), oldValue));
+
         return (oldValue, newValue);
     }
 

@@ -2,8 +2,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using static Runtime.Intrinsics;
-
 /// <summary>
 /// Various atomic operations for <see cref="IntPtr"/> data type
 /// accessible as extension methods.
@@ -217,24 +215,26 @@ public static class AtomicIntPtr
     private static (IntPtr OldValue, IntPtr NewValue) Update<TUpdater>(ref IntPtr value, TUpdater updater)
         where TUpdater : struct, ISupplier<IntPtr, IntPtr>
     {
-        IntPtr oldValue, newValue;
+        IntPtr oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = updater.Invoke(oldValue = VolatileRead(in value));
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
     private static (IntPtr OldValue, IntPtr NewValue) Accumulate<TAccumulator>(ref IntPtr value, IntPtr x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<IntPtr, IntPtr, IntPtr>
     {
-        IntPtr oldValue, newValue;
+        IntPtr oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
