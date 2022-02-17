@@ -102,10 +102,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private void OnRemoved() => Interlocked.Decrement(ref count);
 
-    private bool TryAdd(TKey key, TValue value, bool updateIfExists, out TValue? previous)
+    private bool TryAdd(TKey key, IEqualityComparer<TKey>? keyComparer, int hashCode, TValue value, bool updateIfExists, out TValue? previous)
     {
-        var keyComparer = this.keyComparer;
-        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
         ref var bucket = ref GetBucket(hashCode, out var bucketLock);
         bool result;
         CommandType command;
@@ -181,7 +179,12 @@ public partial class ConcurrentCache<TKey, TValue>
     public TValue this[TKey key]
     {
         get => TryGetValue(key, out var value) ? value : throw new KeyNotFoundException();
-        set => TryAdd(key, value, true, out _);
+        set
+        {
+            var keyComparer = this.keyComparer;
+            var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
+            TryAdd(key, keyComparer, hashCode, value, updateIfExists: true, out _);
+        }
     }
 
     /// <summary>
@@ -190,7 +193,12 @@ public partial class ConcurrentCache<TKey, TValue>
     /// <param name="key">The key of the cache entry.</param>
     /// <param name="value">The cache entry.</param>
     /// <returns><see langword="true"/> if the entry is added successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryAdd(TKey key, TValue value) => TryAdd(key, value, false, out _);
+    public bool TryAdd(TKey key, TValue value)
+    {
+        var keyComparer = this.keyComparer;
+        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
+        return TryAdd(key, keyComparer, hashCode, value, updateIfExists: false, out _);
+    }
 
     /// <summary>
     /// Adds or modifies the cache entry as an atomic operation.
@@ -207,7 +215,10 @@ public partial class ConcurrentCache<TKey, TValue>
     /// </returns>
     public TValue AddOrUpdate(TKey key, TValue value, out bool added)
     {
-        if (added = TryAdd(key, value, true, out var result))
+        var keyComparer = this.keyComparer;
+        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
+
+        if (added = TryAdd(key, keyComparer, hashCode, value, updateIfExists: true, out var result))
             result = value;
 
         return result!;
@@ -229,11 +240,14 @@ public partial class ConcurrentCache<TKey, TValue>
     public TValue GetOrAdd(TKey key, TValue value, out bool added)
     {
         TValue? result;
-        if (TryGetValue(key, out result))
+        var keyComparer = this.keyComparer;
+        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
+
+        if (TryGetValue(key, keyComparer, hashCode, out result))
         {
             added = false;
         }
-        else if (added = TryAdd(key, value, false, out result))
+        else if (added = TryAdd(key, keyComparer, hashCode, value, updateIfExists: false, out result))
         {
             result = value;
         }
@@ -250,12 +264,16 @@ public partial class ConcurrentCache<TKey, TValue>
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
     {
         var keyComparer = this.keyComparer;
-        int hashCode;
+        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
+        return TryGetValue(key, keyComparer, hashCode, out value);
+    }
+
+    private bool TryGetValue(TKey key, IEqualityComparer<TKey>? keyComparer, int hashCode, [MaybeNullWhen(false)] out TValue value)
+    {
         KeyValuePair? pair;
 
         if (keyComparer is null)
         {
-            hashCode = key.GetHashCode();
             for (pair = Volatile.Read(ref GetBucket(hashCode)); pair is not null; pair = pair.Next)
             {
                 if (hashCode == pair.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, pair.Key) : pair.Key.Equals(key)))
@@ -268,7 +286,6 @@ public partial class ConcurrentCache<TKey, TValue>
         }
         else
         {
-            hashCode = keyComparer.GetHashCode(key);
             for (pair = Volatile.Read(ref GetBucket(hashCode)); pair is not null; pair = pair.Next)
             {
                 if (hashCode == pair.KeyHashCode && keyComparer.Equals(key, pair.Key))
