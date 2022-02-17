@@ -111,11 +111,11 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
 
         try
         {
-            // block all keys
-            acquiredLocks = AcquireAllLocks();
-
             // block eviction queue
             Monitor.Enter(evictionLock, ref evictionLockTaken);
+
+            // block all keys
+            acquiredLocks = AcquireAllLocks();
 
             // mark all pairs as removed
             RemoveAllKeys();
@@ -125,10 +125,10 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         }
         finally
         {
+            ReleaseLocks(acquiredLocks);
+
             if (evictionLockTaken)
                 Monitor.Exit(evictionLock);
-
-            ReleaseLocks(acquiredLocks);
         }
     }
 
