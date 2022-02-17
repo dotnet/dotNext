@@ -20,7 +20,7 @@ namespace DotNext.Runtime.Caching
 
             True(cache.TryRemove(0, out var actual));
             Equal("0", actual);
-            Equal(1, cache.Count);
+            NotEmpty(cache);
 
             False(cache.TryGetValue(0, out _));
 
@@ -46,7 +46,7 @@ namespace DotNext.Runtime.Caching
 
             True(cache.TryRemove(value1.ToString(), out var actual));
             Equal(value1, actual);
-            Equal(1, cache.Count);
+            NotEmpty(cache);
 
             False(cache.TryGetValue(value1.ToString(), out _));
 
@@ -98,7 +98,7 @@ namespace DotNext.Runtime.Caching
             Equal(new KeyValuePair<int, string>[] { new(0, "0"), new(1, "1"), new(2, "2") }, dictionary.ToArray());
 
             cache.Clear();
-            Equal(0, cache.Count);
+            Empty(cache);
             False(dictionary.ContainsKey(0));
         }
 
