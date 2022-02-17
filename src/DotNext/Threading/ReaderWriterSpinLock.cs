@@ -137,12 +137,10 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void EnterReadLock()
     {
-        int currentState, nextState = state;
         for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
-            currentState = nextState;
-
-            if (currentState is not WriteLockState or int.MaxValue && (nextState = Interlocked.CompareExchange(ref state, currentState + 1, currentState)) == currentState)
+            var currentState = state;
+            if (currentState is not WriteLockState and not int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
                 break;
         }
     }
@@ -154,12 +152,10 @@ public struct ReaderWriterSpinLock
 
     private bool TryEnterReadLock(in Timeout timeout, CancellationToken token)
     {
-        int currentState, nextState = state;
         for (var spinner = new SpinWait(); !timeout.IsExpired; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
-            currentState = nextState;
-
-            if (currentState is not WriteLockState or int.MaxValue && (nextState = Interlocked.CompareExchange(ref state, currentState + 1, currentState)) == currentState)
+            var currentState = state;
+            if (currentState is not WriteLockState and not int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
                 return true;
         }
 
