@@ -70,7 +70,8 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         Span.Initialize<object>(locks = new object[capacity]);
         this.keyComparer = keyComparer;
         this.concurrencyLevel = concurrencyLevel;
-        commandQueueReadPosition = commandQueueWritePosition = new(CommandType.Read, new SentinelKeyValuePair(concurrencyLevel));
+        this.evictionPolicy = evictionPolicy;
+        commandQueueReadPosition = commandQueueWritePosition = new();
     }
 
     /// <summary>

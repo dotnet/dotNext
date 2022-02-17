@@ -55,21 +55,6 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
-    [DebuggerDisplay("KV Pair Placeholder")]
-    private sealed class SentinelKeyValuePair : KeyValuePair
-    {
-        internal SentinelKeyValuePair(int buffersCount)
-            : base(default!, 0, buffersCount)
-        {
-        }
-
-        internal override TValue Value
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-    }
-
     private readonly KeyValuePair?[] buckets;
     private readonly object[] locks;
     private readonly IEqualityComparer<TKey>? keyComparer;
