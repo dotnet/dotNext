@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Runtime.Caching;
 
@@ -9,20 +8,17 @@ namespace DotNext.Runtime.Caching;
 /// <remarks>
 /// The cache provides O(1) lookup performance if there is no hash collision. Asymptotic complexity of other
 /// operations are same as for <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey, TValue}"/> class.
-/// The cache has the following architecture to deal with lock contention: the cache has multiple eviction deques
-/// distributed between evenly. Each deque has its own read cursor within the shared queue of commands.
-/// Each access to the cache produces a command published in the queue. This operation has low impact in concurrent scenario
-/// because it uses lock-free approach. Then the thread choses the dequeue and interprets the commands starting from the read
-/// position associated with the dequeu up to the last added command.
-/// As a result, each thread has its own local copy of the deque. All copies are weakly consistent and synchronized using
-/// the shared queue of commands. All manipulations with the local copy of the deque do not require any
-/// cross-thread synchronization.
+/// The cache has the following architecture to deal with lock contention: the access to the concurrect dictionary is
+/// synchronouse while the access to the eviction deque is asynchronous. All actions need to be applied to the deque
+/// are delayed and distributed across concurrent threads. Thus, the deque is weakly consistent with the dictionary.
 /// </remarks>
-/// <typeparam name="TKey">The key of the cache entry.</typeparam>
-/// <typeparam name="TValue">The cached value.</typeparam>
+/// <typeparam name="TKey">The type of the keys.</typeparam>
+/// <typeparam name="TValue">The type of the cache items.</typeparam>
 public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
 {
+    private static readonly bool IsValueWriteAtomic;
+
     static ConcurrentCache()
     {
         // Section 12.6.6 of ECMA CLI explains which types can be read and written atomically without
@@ -45,7 +41,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         }
     }
 
-    private Action<TKey, TValue>? evictionHandler;
+    private readonly int concurrencyLevel;
 
     /// <summary>
     /// Initializes a new empty cache.
@@ -59,7 +55,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// or <paramref name="concurrencyLevel"/> is less than 1;
     /// or <paramref name="evictionPolicy"/> is invalid.
     /// </exception>
-    public ConcurrentCache(int capacity, int concurrencyLevel, CacheEvictionPolicy evictionPolicy = CacheEvictionPolicy.LRU, IEqualityComparer<TKey>? keyComparer = null)
+    public ConcurrentCache(int capacity, int concurrencyLevel, CacheEvictionPolicy evictionPolicy, IEqualityComparer<TKey>? keyComparer = null)
     {
         if (capacity < 1)
             throw new ArgumentOutOfRangeException(nameof(capacity));
@@ -70,28 +66,11 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         if (Enum.GetName(evictionPolicy) is null)
             throw new ArgumentOutOfRangeException(nameof(evictionPolicy));
 
-        table = new(capacity, keyComparer);
+        buckets = new KeyValuePair?[capacity];
+        Span.Initialize<object>(locks = new object[capacity]);
+        this.keyComparer = keyComparer;
         this.concurrencyLevel = concurrencyLevel;
-        commandQueueWritePosition = new(CommandType.Read, new SentinelKeyValuePair(concurrencyLevel));
-
-        // construct thread-bounded buffers
-        var commandReader = new CommandQueueReader(commandQueueWritePosition);
-        Func<int, CommandQueueReader, Table, EvictionDeque> dequeFactory = evictionPolicy switch
-        {
-            CacheEvictionPolicy.LFU => static (index, reader, table) => new LFUEvictionStrategy(index, reader, table),
-            _ => static (index, reader, table) => new LRUEvictionStrategy(index, reader, table),
-        };
-
-        EvictionDeque last = currentDeque = dequeFactory(0, commandReader, table);
-
-        for (var index = 1; index < concurrencyLevel; index++)
-        {
-            var deque = dequeFactory(index, commandReader, table);
-            last.Next = deque;
-            last = deque;
-        }
-
-        last.Next = currentDeque;
+        commandQueueReadPosition = commandQueueWritePosition = new(CommandType.Read, new SentinelKeyValuePair(concurrencyLevel));
     }
 
     /// <summary>
@@ -104,229 +83,18 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// <paramref name="capacity"/> is less than 1;
     /// or <paramref name="evictionPolicy"/> is invalid.
     /// </exception>
-    public ConcurrentCache(int capacity, CacheEvictionPolicy evictionPolicy = CacheEvictionPolicy.LRU, IEqualityComparer<TKey>? keyComparer = null)
-        : this(capacity, RecommendedCapacity, evictionPolicy, keyComparer)
+    public ConcurrentCache(int capacity, CacheEvictionPolicy evictionPolicy, IEqualityComparer<TKey>? keyComparer = null)
+        : this(capacity, RecommendedConcurrencyLevel, evictionPolicy, keyComparer)
     {
     }
 
-    private static int RecommendedCapacity
+    private static int RecommendedConcurrencyLevel
     {
         get
         {
             var result = Environment.ProcessorCount;
             return result + ((result + 1) / 2);
         }
-    }
-
-    /// <summary>
-    /// Gets or sets cache entry.
-    /// </summary>
-    /// <param name="key">The key of the cache entry.</param>
-    /// <returns>The cache entry.</returns>
-    /// <exception cref="KeyNotFoundException">The cache entry with <paramref name="key"/> doesn't exist.</exception>
-    public TValue this[TKey key]
-    {
-        get => TryGetValue(key, out var value) ? value : throw new KeyNotFoundException();
-        set => TryAdd(key, value, true, out _);
-    }
-
-    /// <summary>
-    /// Adds a new cache entry if the cache is not full.
-    /// </summary>
-    /// <param name="key">The key of the cache entry.</param>
-    /// <param name="value">The cache entry.</param>
-    /// <returns><see langword="true"/> if the entry is added successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryAdd(TKey key, TValue value) => TryAdd(key, value, false, out _);
-
-    /// <summary>
-    /// Adds or modifies the cache entry as an atomic operation.
-    /// </summary>
-    /// <param name="key">The key of the cache entry.</param>
-    /// <param name="value">The cache entry.</param>
-    /// <param name="added">
-    /// <see langword="true"/> if a new entry is added;
-    /// <see langword="false"/> if the existing entry is modified.
-    /// </param>
-    /// <returns>
-    /// <paramref name="value"/> if <paramref name="added"/> is <see langword="true"/>;
-    /// or the value before modification.
-    /// </returns>
-    public TValue AddOrUpdate(TKey key, TValue value, out bool added)
-    {
-        if (added = TryAdd(key, value, true, out var result))
-            result = value;
-
-        return result!;
-    }
-
-    /// <summary>
-    /// Gets or adds the cache entry as an atomic operation.
-    /// </summary>
-    /// <param name="key">The key of the cache entry.</param>
-    /// <param name="value">The cache entry.</param>
-    /// <param name="added">
-    /// <see langword="true"/> if a new entry is added;
-    /// <see langword="false"/> if the entry is already exist.
-    /// </param>
-    /// <returns>
-    /// <paramref name="value"/> if <paramref name="added"/> is <see langword="true"/>;
-    /// or existing value.
-    /// </returns>
-    public TValue GetOrAdd(TKey key, TValue value, out bool added)
-    {
-        TValue? result;
-        if (TryGetValue(key, out result))
-        {
-            added = false;
-        }
-        else if (added = TryAdd(key, value, false, out result))
-        {
-            result = value;
-        }
-
-        return result!;
-    }
-
-    /// <summary>
-    /// Attempts to get existing cache entry.
-    /// </summary>
-    /// <param name="key">The key of the cache entry.</param>
-    /// <param name="value">The cache entry, if successful.</param>
-    /// <returns><see langword="true"/> if the cache entry exists; otherwise, <see langword="false"/>.</returns>
-    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-    {
-        var keyComparer = table.KeyComparer;
-        int hashCode;
-        KeyValuePair? pair;
-
-        if (keyComparer is null)
-        {
-            hashCode = key.GetHashCode();
-            for (pair = Volatile.Read(ref table.GetBucket(hashCode)); pair is not null; pair = pair.Next)
-            {
-                if (hashCode == pair.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, pair.Key) : pair.Key.Equals(key)))
-                {
-                    if (!pair.IsAlive.Value)
-                        break;
-
-                    EnqueueCommandAndDrainQueue(CommandType.Read, pair);
-                    value = pair.Value;
-                    return true;
-                }
-            }
-        }
-        else
-        {
-            hashCode = keyComparer.GetHashCode(key);
-            for (pair = Volatile.Read(ref table.GetBucket(hashCode)); pair is not null; pair = pair.Next)
-            {
-                if (hashCode == pair.KeyHashCode && keyComparer.Equals(key, pair.Key))
-                {
-                    if (!pair.IsAlive.Value)
-                        break;
-
-                    EnqueueCommandAndDrainQueue(CommandType.Read, pair);
-                    value = pair.Value;
-                    return true;
-                }
-            }
-        }
-
-        value = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Attempts to remove the cache entry.
-    /// </summary>
-    /// <remarks>
-    /// This method will not raise <see cref="OnEviction"/> event for the removed entry.
-    /// </remarks>
-    /// <param name="key">The key of the cache entry.</param>
-    /// <param name="value">The cache entry, if successful.</param>
-    /// <returns><see langword="true"/> if the cache entry removed successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryRemove(TKey key, [MaybeNullWhen(false)] out TValue value)
-    {
-        var keyComparer = table.KeyComparer;
-        var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
-        ref var bucket = ref table.GetBucket(hashCode, out var bucketLock);
-        bool result;
-        KeyValuePair pair;
-
-        lock (bucketLock)
-        {
-            if (keyComparer is null)
-            {
-                for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
-                {
-                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)))
-                    {
-                        if (current.IsAlive.TrueToFalse())
-                        {
-                            result = true;
-                            pair = current;
-                            if (previous is null)
-                                Volatile.Write(ref bucket, current.Next);
-                            else
-                                previous.Next = current.Next;
-
-                            table.OnRemoved();
-                            value = current.Value;
-                            goto enqueue_and_exit;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
-                {
-                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key))
-                    {
-                        if (current.IsAlive.TrueToFalse())
-                        {
-                            result = true;
-                            pair = current;
-                            if (previous is null)
-                                Volatile.Write(ref bucket, current.Next);
-                            else
-                                previous.Next = current.Next;
-
-                            table.OnRemoved();
-                            value = current.Value;
-                            goto enqueue_and_exit;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            value = default;
-            result = false;
-            goto exit;
-        }
-
-    enqueue_and_exit:
-        EnqueueCommandAndDrainQueue(CommandType.Remove, pair);
-
-    exit:
-        return result;
-    }
-
-    /// <summary>
-    /// Gets or sets a handler that can be used to capture evicted cache items.
-    /// </summary>
-    public event Action<TKey, TValue> OnEviction
-    {
-        add => evictionHandler += value;
-        remove => evictionHandler -= value;
     }
 
     /// <summary>
@@ -338,54 +106,56 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     public void Clear()
     {
         var acquiredLocks = 0;
+        var evictionLockTaken = false;
 
         try
         {
             // block all keys
-            acquiredLocks = table.AcquireAllLocks();
+            acquiredLocks = AcquireAllLocks();
 
-            // block all deques
-            EvictionDeque firstDeque = this.currentDeque, currentDeque = firstDeque;
-            do
-            {
-                Monitor.Enter(currentDeque);
-                currentDeque = currentDeque.Next;
-            }
-            while (!ReferenceEquals(currentDeque, firstDeque));
+            // block eviction queue
+            Monitor.Enter(evictionLock, ref evictionLockTaken);
 
             // mark all pairs as removed
-            table.Clear();
+            RemoveAllKeys();
 
-            // clear deques
-            currentDeque = firstDeque;
-
-            do
-            {
-                currentDeque.Clear();
-                currentDeque = currentDeque.Next;
-            }
-            while (!ReferenceEquals(currentDeque, firstDeque));
-
-            // release deques
-            currentDeque = firstDeque;
-            do
-            {
-                Monitor.Exit(currentDeque);
-                currentDeque = currentDeque.Next;
-            }
-            while (!ReferenceEquals(currentDeque, firstDeque));
+            // clear deque
+            firstPair = lastPair = null;
         }
         finally
         {
-            table.ReleaseLocks(acquiredLocks);
+            if (evictionLockTaken)
+                Monitor.Exit(evictionLock);
+
+            ReleaseLocks(acquiredLocks);
         }
     }
 
     /// <inheritdoc/>
-    IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => table.Keys;
+    IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
+    {
+        get
+        {
+            for (var i = 0; i < buckets.Length; i++)
+            {
+                for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
+                    yield return current.Key;
+            }
+        }
+    }
 
     /// <inheritdoc />
-    IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => table.Values;
+    IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
+    {
+        get
+        {
+            for (var i = 0; i < buckets.Length; i++)
+            {
+                for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
+                    yield return current.Value;
+            }
+        }
+    }
 
     /// <inheritdoc />
     bool IReadOnlyDictionary<TKey, TValue>.ContainsKey(TKey key) => TryGetValue(key, out _);
@@ -397,13 +167,20 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// In contrast to <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey, TValue}.Count"/>,
     /// this property is fast and doesn't require an exclusive lock.
     /// </remarks>
-    public int Count => table.Count;
+    public int Count => count;
 
     /// <summary>
     /// Gets enumerator over all key/value pairs.
     /// </summary>
     /// <returns>Gets the enumerator over all key/value pairs.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => table.GetEnumerator();
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+    {
+        for (var i = 0; i < buckets.Length; i++)
+        {
+            for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
+                yield return new(current.Key, current.Value);
+        }
+    }
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

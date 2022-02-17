@@ -8,7 +8,7 @@ namespace DotNext.Runtime.Caching
         [Fact]
         public static void DefaultKeyComparer()
         {
-            var cache = new ConcurrentCache<int, string>(10);
+            var cache = new ConcurrentCache<int, string>(10, CacheEvictionPolicy.LRU);
             True(cache.TryAdd(0, "0"));
             True(cache.TryAdd(1, "1"));
 
@@ -57,9 +57,9 @@ namespace DotNext.Runtime.Caching
         [Fact]
         public static void Overflow()
         {
-            var cache = new ConcurrentCache<int, string>(3, 3);
+            var cache = new ConcurrentCache<int, string>(3, 3, CacheEvictionPolicy.LRU);
             var evictionList = new List<KeyValuePair<int, string>>();
-            cache.OnEviction += (key, value) => evictionList.Add(new(key, value));
+            cache.Eviction += (key, value) => evictionList.Add(new(key, value));
 
             Equal("0", cache.AddOrUpdate(0, "0", out var added));
             True(added);
@@ -84,7 +84,7 @@ namespace DotNext.Runtime.Caching
         [Fact]
         public static void Enumerators()
         {
-            var cache = new ConcurrentCache<int, string>(3, 3);
+            var cache = new ConcurrentCache<int, string>(3, 3, CacheEvictionPolicy.LRU);
             cache[0] = "0";
             cache[1] = "1";
             cache[2] = "2";
@@ -105,7 +105,7 @@ namespace DotNext.Runtime.Caching
         [Fact]
         public static void HashCollision()
         {
-            var cache = new ConcurrentCache<int, int>(2);
+            var cache = new ConcurrentCache<int, int>(2, CacheEvictionPolicy.LRU);
 
             foreach (var item in new int[] { 0, -2, -1, -3, -5, 4 })
                 cache.AddOrUpdate(item, item, out _);
