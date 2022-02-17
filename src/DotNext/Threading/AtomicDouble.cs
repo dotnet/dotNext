@@ -123,24 +123,26 @@ public static class AtomicDouble
     private static (double OldValue, double NewValue) Update<TUpdater>(ref double value, TUpdater updater)
         where TUpdater : struct, ISupplier<double, double>
     {
-        double oldValue, newValue;
+        double oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = updater.Invoke(oldValue = VolatileRead(in value));
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
     private static (double OldValue, double NewValue) Accumulate<TAccumulator>(ref double value, double x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<double, double, double>
     {
-        double oldValue, newValue;
+        double oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 

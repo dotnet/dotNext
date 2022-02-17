@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
@@ -121,14 +120,15 @@ public struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if reader lock is acquired; otherwise, <see langword="false"/>.</returns>
     public bool TryEnterReadLock()
     {
-        int currentState;
+        int currentState, nextState = state;
         do
         {
-            currentState = state;
+            currentState = nextState;
             if (currentState is WriteLockState or int.MaxValue)
                 return false;
         }
-        while (Interlocked.CompareExchange(ref state, currentState + 1, currentState) != currentState);
+        while ((nextState = Interlocked.CompareExchange(ref state, currentState + 1, currentState)) != currentState);
+
         return true;
     }
 
@@ -137,10 +137,12 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void EnterReadLock()
     {
+        int currentState, nextState = state;
         for (var spinner = new SpinWait(); ; spinner.SpinOnce())
         {
-            var currentState = state;
-            if (currentState is not WriteLockState or int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
+            currentState = nextState;
+
+            if (currentState is not WriteLockState or int.MaxValue && (nextState = Interlocked.CompareExchange(ref state, currentState + 1, currentState)) == currentState)
                 break;
         }
     }
@@ -152,10 +154,12 @@ public struct ReaderWriterSpinLock
 
     private bool TryEnterReadLock(in Timeout timeout, CancellationToken token)
     {
+        int currentState, nextState = state;
         for (var spinner = new SpinWait(); !timeout.IsExpired; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
-            var currentState = state;
-            if (currentState is not WriteLockState or int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
+            currentState = nextState;
+
+            if (currentState is not WriteLockState or int.MaxValue && (nextState = Interlocked.CompareExchange(ref state, currentState + 1, currentState)) == currentState)
                 return true;
         }
 
@@ -177,7 +181,7 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void EnterWriteLock()
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce());
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState; spinner.SpinOnce());
 
         Interlocked.Increment(ref version);
     }
@@ -188,7 +192,7 @@ public struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if writer lock is acquired; otherwise, <see langword="false"/>.</returns>
     public bool TryEnterWriteLock()
     {
-        if (Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) == NoLockState)
+        if (Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is NoLockState)
         {
             Interlocked.Increment(ref version);
             return true;
@@ -199,7 +203,7 @@ public struct ReaderWriterSpinLock
 
     private bool TryEnterWriteLock(in Timeout timeout, CancellationToken token)
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
             if (timeout)
                 return false;
@@ -232,7 +236,7 @@ public struct ReaderWriterSpinLock
     /// </remarks>
     public void UpgradeToWriteLock()
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) != SingleReaderState; spinner.SpinOnce());
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) is not SingleReaderState; spinner.SpinOnce());
 
         Interlocked.Increment(ref version);
     }
@@ -243,7 +247,7 @@ public struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
     public bool TryUpgradeToWriteLock()
     {
-        if (Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) == SingleReaderState)
+        if (Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) is SingleReaderState)
         {
             Interlocked.Increment(ref version);
             return true;
@@ -254,7 +258,7 @@ public struct ReaderWriterSpinLock
 
     private bool TryUpgradeToWriteLock(in Timeout timeout, CancellationToken token)
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) != SingleReaderState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
+        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) is not SingleReaderState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
             if (timeout)
                 return false;

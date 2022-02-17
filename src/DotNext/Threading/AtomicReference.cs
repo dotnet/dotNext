@@ -26,12 +26,13 @@ public static class AtomicReference
         where T : class?
         where TUpdater : struct, ISupplier<T, T>
     {
-        T oldValue, newValue;
+        T oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = updater.Invoke(oldValue = Volatile.Read(ref value));
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref value, newValue, oldValue), oldValue));
+
         return (oldValue, newValue);
     }
 
@@ -39,12 +40,13 @@ public static class AtomicReference
         where T : class?
         where TAccumulator : struct, ISupplier<T, T, T>
     {
-        T oldValue, newValue;
+        T oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = accumulator.Invoke(oldValue = Volatile.Read(ref value), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref value, newValue, oldValue), oldValue));
+
         return (oldValue, newValue);
     }
 

@@ -185,24 +185,26 @@ public static class AtomicInt32
     private static (int OldValue, int NewValue) Update<TUpdater>(ref int value, TUpdater updater)
         where TUpdater : struct, ISupplier<int, int>
     {
-        int oldValue, newValue;
+        int oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = updater.Invoke(oldValue = VolatileRead(in value));
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
     private static (int OldValue, int NewValue) Accumulate<TAccumulator>(ref int value, int x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<int, int, int>
     {
-        int oldValue, newValue;
+        int oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
