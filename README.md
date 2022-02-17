@@ -68,6 +68,7 @@ Release Date: 02-17-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.0">DotNext.Net.Cluster 4.3.0</a>
+* Improved startup time of persistent WAL
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.0">DotNext.AspNetCore.Cluster 4.3.0</a>
