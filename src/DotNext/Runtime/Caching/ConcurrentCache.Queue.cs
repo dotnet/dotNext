@@ -2,6 +2,8 @@ using System.Diagnostics;
 
 namespace DotNext.Runtime.Caching;
 
+using static Threading.AtomicReference;
+
 public partial class ConcurrentCache<TKey, TValue>
 {
     /// <summary>
@@ -16,21 +18,51 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private sealed class Command
     {
-        internal readonly CommandType Type;
-        internal readonly KeyValuePair Target;
+        internal CommandType Type;
+        internal KeyValuePair? Target;
         internal volatile Command? Next;
-
-        internal Command(CommandType type, KeyValuePair target)
-        {
-            Type = type;
-            Target = target;
-        }
     }
 
+    // eviction deque fields
     private readonly object evictionLock = new();
     private volatile bool rateLimitReached;
     private volatile Command commandQueueWritePosition;
     private Command commandQueueReadPosition;
+
+    // Command pool fields
+    private Command? pooledCommand; // volatile
+
+    private Command RentCommand(CommandType type, KeyValuePair target)
+    {
+        Command? current, next = Volatile.Read(ref pooledCommand);
+        do
+        {
+            current = next;
+
+            if (current is null)
+            {
+                current = new();
+                break;
+            }
+
+            next = current.Next;
+        }
+        while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pooledCommand, next, current), current));
+
+        current.Type = type;
+        current.Target = target;
+        current.Next = null;
+        return current;
+    }
+
+    private void ReturnCommand(Command command)
+    {
+        // this method doesn't ensure that the command returned back to the pool
+        // this assumption is needed to avoid spin-lock inside of the monitor lock
+        command.Target = null;
+        var currentValue = command.Next = Volatile.Read(ref pooledCommand);
+        Interlocked.CompareExchange(ref pooledCommand, command, currentValue);
+    }
 
     private void EnqueueAndDrain(CommandType type, KeyValuePair target)
     {
@@ -74,7 +106,7 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private void Enqueue(CommandType type, KeyValuePair target)
     {
-        var command = new Command(type, target);
+        var command = RentCommand(type, target);
         Interlocked.Exchange(ref commandQueueWritePosition, command).Next = command;
     }
 
@@ -85,11 +117,13 @@ public partial class ConcurrentCache<TKey, TValue>
         KeyValuePair? evictedHead = null, evictedTail = null;
         var rateLimitReached = false;
         var command = commandQueueReadPosition.Next;
+
         for (var readerCounter = 0; command is not null; commandQueueReadPosition = command, command = command.Next, readerCounter++)
         {
             if (readerCounter < concurrencyLevel)
             {
                 // interpret command
+                Debug.Assert(command.Target is not null);
                 var evictedPair = Execute(command.Type, command.Target);
 
                 if (evictedHead is null || evictedTail is null)
@@ -101,6 +135,9 @@ public partial class ConcurrentCache<TKey, TValue>
                     evictedTail.Next = evictedPair;
                     evictedTail = evictedPair;
                 }
+
+                // commandQueueReadPosition points to the previous command that can be returned to the pool
+                ReturnCommand(commandQueueReadPosition);
             }
             else
             {

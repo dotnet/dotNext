@@ -112,5 +112,40 @@ namespace DotNext.Runtime.Caching
 
             Assert.False(cache.TryGetValue(-1, out _));
         }
+
+        [Fact]
+        public static void ConcurrentReads()
+        {
+            const int capacity = 10;
+            var cache = new ConcurrentCache<int, int>(capacity, CacheEvictionPolicy.LRU);
+
+            for (var i = 0; i < capacity; i++)
+                cache[i] = i;
+
+            var t1 = new Thread(Run);
+            var t2 = new Thread(Run);
+            var t3 = new Thread(Run);
+
+            t1.Start();
+            t2.Start();
+            t3.Start();
+
+            t1.Join();
+            t2.Join();
+            t3.Join();
+
+            void Run()
+            {
+                var rnd = new Random();
+                for (var i = 0; i < 100; i++)
+                    TouchCache(rnd);
+            }
+
+            void TouchCache(Random rnd)
+            {
+                var index = rnd.Next(capacity);
+                True(cache.TryGetValue(index, out _));
+            }
+        }
     }
 }
