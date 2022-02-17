@@ -323,7 +323,6 @@ public partial class ConcurrentCache<TKey, TValue>
         var keyComparer = this.keyComparer;
         var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
         ref var bucket = ref GetBucket(hashCode, out var bucketLock);
-        bool result;
         KeyValuePair pair;
 
         lock (bucketLock)
@@ -334,7 +333,6 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, current.Value)))
                     {
-                        result = true;
                         pair = current;
                         if (previous is null)
                             Volatile.Write(ref bucket, current.Next);
@@ -353,7 +351,6 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, current.Value)))
                     {
-                        result = true;
                         pair = current;
                         if (previous is null)
                             Volatile.Write(ref bucket, current.Next);
@@ -368,15 +365,12 @@ public partial class ConcurrentCache<TKey, TValue>
             }
 
             value = default;
-            result = false;
-            goto exit;
+            return false;
         }
 
     enqueue_and_exit:
         EnqueueAndDrain(CommandType.Remove, pair);
-
-    exit:
-        return result;
+        return true;
     }
 
     /// <summary>
@@ -394,7 +388,6 @@ public partial class ConcurrentCache<TKey, TValue>
         var keyComparer = this.keyComparer;
         var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
         ref var bucket = ref GetBucket(hashCode, out var bucketLock);
-        bool result;
         KeyValuePair pair;
 
         lock (bucketLock)
@@ -405,7 +398,6 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && EqualityComparer<TValue>.Default.Equals(expectedValue, current.Value))
                     {
-                        result = true;
                         (pair = current).Value = newValue;
                         goto enqueue_and_exit;
                     }
@@ -417,22 +409,18 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && EqualityComparer<TValue>.Default.Equals(expectedValue, current.Value))
                     {
-                        result = true;
                         (pair = current).Value = newValue;
                         goto enqueue_and_exit;
                     }
                 }
             }
 
-            result = false;
-            goto exit;
+            return false;
         }
 
     enqueue_and_exit:
         EnqueueAndDrain(CommandType.Read, pair);
-
-    exit:
-        return result;
+        return true;
     }
 
     private int AcquireAllLocks()
