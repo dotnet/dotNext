@@ -15,7 +15,7 @@ public partial class ConcurrentCache<TKey, TValue>
         internal volatile KeyValuePair? Next;
         internal (KeyValuePair? Previous, KeyValuePair? Next) Links;
 
-        private protected KeyValuePair(TKey key, int hashCode, int buffersCount)
+        private protected KeyValuePair(TKey key, int hashCode)
         {
             Key = key;
             KeyHashCode = hashCode;
@@ -32,8 +32,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private sealed class KeyValuePairAtomicAccess : KeyValuePair
     {
-        internal KeyValuePairAtomicAccess(TKey key, TValue value, int hashCode, int buffersCount)
-            : base(key, hashCode, buffersCount)
+        internal KeyValuePairAtomicAccess(TKey key, TValue value, int hashCode)
+            : base(key, hashCode)
             => Value = value;
 
         internal override TValue Value { get; set; }
@@ -44,8 +44,8 @@ public partial class ConcurrentCache<TKey, TValue>
     {
         private object value;
 
-        internal KeyValuePairNonAtomicAccess(TKey key, TValue value, int hashCode, int buffersCount)
-            : base(key, hashCode, buffersCount)
+        internal KeyValuePairNonAtomicAccess(TKey key, TValue value, int hashCode)
+            : base(key, hashCode)
             => this.value = value!;
 
         internal override TValue Value
@@ -156,8 +156,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
             previous = default;
             pair = IsValueWriteAtomic
-                ? new KeyValuePairAtomicAccess(key, value, hashCode, concurrencyLevel)
-                : new KeyValuePairNonAtomicAccess(key, value, hashCode, concurrencyLevel);
+                ? new KeyValuePairAtomicAccess(key, value, hashCode)
+                : new KeyValuePairNonAtomicAccess(key, value, hashCode);
             pair.Next = bucket;
             Volatile.Write(ref bucket, pair);
             command = CommandType.Add;
