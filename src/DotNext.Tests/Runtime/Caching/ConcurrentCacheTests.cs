@@ -57,9 +57,11 @@ namespace DotNext.Runtime.Caching
         [Fact]
         public static void Overflow()
         {
-            var cache = new ConcurrentCache<int, string>(3, 3, CacheEvictionPolicy.LRU);
             var evictionList = new List<KeyValuePair<int, string>>();
-            cache.Eviction += (key, value) => evictionList.Add(new(key, value));
+            var cache = new ConcurrentCache<int, string>(3, 3, CacheEvictionPolicy.LRU)
+            {
+                Eviction = (key, value) => evictionList.Add(new(key, value))
+            };
 
             Equal("0", cache.AddOrUpdate(0, "0", out var added));
             True(added);
