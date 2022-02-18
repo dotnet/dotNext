@@ -21,7 +21,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     // A conforming CLI shall guarantee that read and write access to properly aligned memory 
     // locations no larger than the native word size.
     // See Section I.12.6 6 in https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf 
-    private static bool IsValueWriteAtomic => Unsafe.SizeOf<TValue>() == IntPtr.Size;
+    private static bool IsValueWriteAtomic => Unsafe.SizeOf<TValue>() <= IntPtr.Size;
 
     private readonly int concurrencyLevel;
 
