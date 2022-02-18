@@ -706,7 +706,7 @@ public static class Span
     }
 
     /// <summary>
-    /// Gets random element from the span.
+    /// Chooses the random element in the span.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
