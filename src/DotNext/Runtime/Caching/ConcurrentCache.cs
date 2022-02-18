@@ -1,4 +1,5 @@
 using System.Collections;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Runtime.Caching;
 
@@ -17,29 +18,10 @@ namespace DotNext.Runtime.Caching;
 public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
 {
-    private static readonly bool IsValueWriteAtomic;
-
-    static ConcurrentCache()
-    {
-        // Section 12.6.6 of ECMA CLI explains which types can be read and written atomically without
-        // the risk of tearing. See https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
-        var valueType = typeof(TValue);
-        if (!valueType.IsValueType ||
-            valueType == typeof(nint) ||
-            valueType == typeof(nuint))
-        {
-            IsValueWriteAtomic = true;
-        }
-        else
-        {
-            IsValueWriteAtomic = Type.GetTypeCode(valueType) switch
-            {
-                TypeCode.Boolean or TypeCode.Byte or TypeCode.Char or TypeCode.Int16 or TypeCode.Int32 or TypeCode.SByte or TypeCode.Single or TypeCode.UInt16 or TypeCode.UInt32 => true,
-                TypeCode.Double or TypeCode.Int64 or TypeCode.UInt64 => IntPtr.Size is sizeof(long),
-                _ => false,
-            };
-        }
-    }
+    // A conforming CLI shall guarantee that read and write access to properly aligned memory 
+    // locations no larger than the native word size.
+    // See Section I.12.6 6 in https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf 
+    private static bool IsValueWriteAtomic => Unsafe.SizeOf<TValue>() == IntPtr.Size;
 
     private readonly int concurrencyLevel;
 
