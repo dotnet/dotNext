@@ -83,8 +83,7 @@ public partial class ConcurrentCache<TKey, TValue>
             }
 
             // invoke handlers out of the lock
-            if (evictedPair is not null)
-                OnEviction(evictedPair);
+            OnEviction(evictedPair);
         }
     }
 
@@ -128,15 +127,10 @@ public partial class ConcurrentCache<TKey, TValue>
 
                 if (evictedPair is not null)
                 {
-                    if (evictedHead is null || evictedTail is null)
-                    {
-                        evictedHead = evictedTail = evictedPair;
-                    }
+                    if (evictionHandler is not null)
+                        AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
                     else
-                    {
-                        evictedTail.Next = evictedPair;
-                        evictedTail = evictedPair;
-                    }
+                        evictedPair.Clear();
                 }
 
                 // commandQueueReadPosition points to the previous command that can be returned to the pool
@@ -151,5 +145,18 @@ public partial class ConcurrentCache<TKey, TValue>
 
         this.rateLimitReached = rateLimitReached;
         return evictedHead;
+
+        static void AddToEvictionList(KeyValuePair pair, ref KeyValuePair? head, ref KeyValuePair? tail)
+        {
+            if (head is null || tail is null)
+            {
+                head = tail = pair;
+            }
+            else
+            {
+                tail.Next = pair;
+                tail = pair;
+            }
+        }
     }
 }

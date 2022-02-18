@@ -4,10 +4,10 @@ namespace DotNext.Runtime.Caching;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
+    private readonly Action<TKey, TValue>? evictionHandler;
     private readonly CacheEvictionPolicy evictionPolicy;
     private int evictionListSize;
     private KeyValuePair? firstPair, lastPair;
-    private Action<TKey, TValue>? evictionHandler;
 
     private KeyValuePair? Execute(CommandType command, KeyValuePair target)
     {
@@ -130,27 +130,42 @@ public partial class ConcurrentCache<TKey, TValue>
             next.Links.Previous = previous;
     }
 
+    private static void OnEviction(KeyValuePair? pair, Action<TKey, TValue> evictionHandler)
+    {
+        for (KeyValuePair? next; pair is not null; pair = next)
+        {
+            next = pair.Next;
+            pair.Clear();
+            evictionHandler.Invoke(pair.Key, pair.Value);
+        }
+    }
+
     private void OnEviction(KeyValuePair? pair)
     {
-        var evictionHandler = this.evictionHandler;
-
-        if (evictionHandler is not null)
+        if (pair is not null && evictionHandler is not null)
         {
-            for (KeyValuePair? next; pair is not null; pair = next)
-            {
-                next = pair.Next;
-                pair.Clear();
-                evictionHandler.Invoke(pair.Key, pair.Value);
-            }
+            if (ExecuteEvictionAsynchronously)
+                ThreadPool.QueueUserWorkItem(static args => OnEviction(args.Item1, args.Item2), (pair, evictionHandler), preferLocal: true);
+            else
+                OnEviction(pair, evictionHandler);
         }
     }
 
     /// <summary>
     /// Gets or sets a handler that can be used to capture evicted cache items.
     /// </summary>
-    public event Action<TKey, TValue> Eviction
+    public Action<TKey, TValue>? Eviction
     {
-        add => evictionHandler += value;
-        remove => evictionHandler -= value;
+        get => evictionHandler;
+        init => evictionHandler = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating that <see cref="Eviction"/> callback must be executed asynchronously.
+    /// </summary>
+    public bool ExecuteEvictionAsynchronously
+    {
+        get;
+        init;
     }
 }
