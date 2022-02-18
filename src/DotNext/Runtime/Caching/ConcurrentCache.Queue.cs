@@ -125,12 +125,11 @@ public partial class ConcurrentCache<TKey, TValue>
                 Debug.Assert(command.Target is not null);
                 var evictedPair = Execute(command.Type, command.Target);
 
-                if (evictedPair is not null)
+                if (evictedPair is not null && evictionHandler is not null)
                 {
-                    evictedPair.Next = null;
+                    Debug.Assert(evictedPair.Next is null);
 
-                    if (evictionHandler is not null)
-                        AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
+                    AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
                 }
 
                 // commandQueueReadPosition points to the previous command that can be returned to the pool
