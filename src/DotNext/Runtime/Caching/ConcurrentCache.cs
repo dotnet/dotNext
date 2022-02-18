@@ -137,10 +137,15 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     {
         get
         {
-            for (var i = 0; i < buckets.Length; i++)
+            return GetKeys(buckets);
+
+            static IEnumerable<TKey> GetKeys(KeyValuePair?[] buckets)
             {
-                for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
-                    yield return current.Key;
+                for (var i = 0; i < buckets.Length; i++)
+                {
+                    for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
+                        yield return current.Key;
+                }
             }
         }
     }
@@ -150,10 +155,15 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     {
         get
         {
-            for (var i = 0; i < buckets.Length; i++)
+            return GetValues(buckets);
+
+            static IEnumerable<TValue> GetValues(KeyValuePair?[] buckets)
             {
-                for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
-                    yield return current.Value;
+                for (var i = 0; i < buckets.Length; i++)
+                {
+                    for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
+                        yield return current.Value;
+                }
             }
         }
     }
@@ -176,10 +186,15 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// <returns>Gets the enumerator over all key/value pairs.</returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        for (var i = 0; i < buckets.Length; i++)
+        return GetEnumerator(buckets);
+
+        static IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(KeyValuePair?[] buckets)
         {
-            for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
-                yield return new(current.Key, current.Value);
+            for (var i = 0; i < buckets.Length; i++)
+            {
+                for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
+                    yield return new(current.Key, current.Value);
+            }
         }
     }
 
