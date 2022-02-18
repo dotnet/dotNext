@@ -127,10 +127,10 @@ public partial class ConcurrentCache<TKey, TValue>
 
                 if (evictedPair is not null)
                 {
+                    evictedPair.Next = null;
+
                     if (evictionHandler is not null)
                         AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
-                    else
-                        evictedPair.Clear();
                 }
 
                 // commandQueueReadPosition points to the previous command that can be returned to the pool
