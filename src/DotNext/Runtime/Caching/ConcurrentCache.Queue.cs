@@ -37,17 +37,15 @@ public partial class ConcurrentCache<TKey, TValue>
         Command? current, next = Volatile.Read(ref pooledCommand);
         do
         {
-            current = next;
-
-            if (current is null)
+            if (next is null)
             {
                 current = new();
                 break;
             }
 
-            next = current.Next;
+            current = next;
         }
-        while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pooledCommand, next, current), current));
+        while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pooledCommand, current.Next, current), current));
 
         current.Type = type;
         current.Target = target;
