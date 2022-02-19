@@ -1,14 +1,13 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.Caching;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
-    [DebuggerDisplay($"Key = {{{nameof(Key)}}} Value = {{{nameof(Value)}}}")]
-    private abstract class KeyValuePair
+    private class KeyValuePair
     {
         internal readonly int KeyHashCode;
         internal readonly TKey Key;
@@ -21,8 +20,6 @@ public partial class ConcurrentCache<TKey, TValue>
             KeyHashCode = hashCode;
         }
 
-        internal abstract TValue Value { get; set; }
-
         internal void Clear()
         {
             Links = default;
@@ -32,33 +29,65 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private sealed class KeyValuePairAtomicAccess : KeyValuePair
     {
+        internal TValue Value;
+
         internal KeyValuePairAtomicAccess(TKey key, TValue value, int hashCode)
             : base(key, hashCode)
             => Value = value;
 
-        internal override TValue Value { get; set; }
+        public override string ToString() => $"Key = {{{nameof(Key)}}} Value = {{{nameof(Value)}}}";
     }
 
     // non-atomic access utilizes copy-on-write semantics
     private sealed class KeyValuePairNonAtomicAccess : KeyValuePair
     {
-        private object value;
+        private sealed class ValueHolder
+        {
+            internal readonly TValue Value;
+
+            internal ValueHolder(TValue value) => Value = value;
+        }
+
+        private ValueHolder holder;
 
         internal KeyValuePairNonAtomicAccess(TKey key, TValue value, int hashCode)
             : base(key, hashCode)
-            => this.value = value!;
+            => holder = new(value);
 
-        internal override TValue Value
+        internal TValue Value
         {
-            get => (TValue)value;
-            set => this.value = value!;
+            get => holder.Value;
+            set => holder = new(value);
         }
+
+        public override string ToString() => $"Key = {{{nameof(Key)}}} Value = {{{nameof(Value)}}}";
     }
 
     private readonly KeyValuePair?[] buckets;
     private readonly object[] locks;
     private readonly IEqualityComparer<TKey>? keyComparer;
     private volatile int count;
+
+    // devirtualize Value getter manually (JIT will replace this method with one of the actual branches)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static TValue GetValue(KeyValuePair pair)
+    {
+        Debug.Assert(IsValueWriteAtomic ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+
+        return IsValueWriteAtomic ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
+    }
+
+    // devirtualize Value setter manually (JIT will replace this method with one of the actual branches)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void SetValue(KeyValuePair pair, TValue value)
+    {
+        Debug.Assert(IsValueWriteAtomic ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+
+        if (IsValueWriteAtomic)
+            Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = value;
+        else
+            Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value = value;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref KeyValuePair? GetBucket(int hashCode)
@@ -117,11 +146,11 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)))
                     {
-                        previous = current.Value;
+                        previous = GetValue(current);
                         result = false;
                         if (updateIfExists)
                         {
-                            current.Value = value;
+                            SetValue(current, value);
                             command = CommandType.Read;
                             pair = current;
                             goto enqueue_and_exit;
@@ -137,11 +166,11 @@ public partial class ConcurrentCache<TKey, TValue>
                 {
                     if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key))
                     {
-                        previous = current.Value;
+                        previous = GetValue(current);
                         result = false;
                         if (updateIfExists)
                         {
-                            current.Value = value;
+                            SetValue(current, value);
                             command = CommandType.Read;
                             pair = current;
                             goto enqueue_and_exit;
@@ -279,7 +308,7 @@ public partial class ConcurrentCache<TKey, TValue>
                 if (hashCode == pair.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, pair.Key) : pair.Key.Equals(key)))
                 {
                     EnqueueAndDrain(CommandType.Read, pair);
-                    value = pair.Value;
+                    value = GetValue(pair);
                     return true;
                 }
             }
@@ -291,7 +320,7 @@ public partial class ConcurrentCache<TKey, TValue>
                 if (hashCode == pair.KeyHashCode && keyComparer.Equals(key, pair.Key))
                 {
                     EnqueueAndDrain(CommandType.Read, pair);
-                    value = pair.Value;
+                    value = GetValue(pair);
                     return true;
                 }
             }
@@ -348,7 +377,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
                 {
-                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, current.Value)))
+                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, GetValue(current))))
                     {
                         pair = current;
                         if (previous is null)
@@ -357,7 +386,7 @@ public partial class ConcurrentCache<TKey, TValue>
                             previous.Next = current.Next;
 
                         OnRemoved();
-                        value = current.Value;
+                        value = GetValue(current);
                         goto enqueue_and_exit;
                     }
                 }
@@ -366,7 +395,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
                 {
-                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, current.Value)))
+                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && (!matchValue || EqualityComparer<TValue>.Default.Equals(value, GetValue(current))))
                     {
                         pair = current;
                         if (previous is null)
@@ -375,7 +404,7 @@ public partial class ConcurrentCache<TKey, TValue>
                             previous.Next = current.Next;
 
                         OnRemoved();
-                        value = current.Value;
+                        value = GetValue(current);
                         goto enqueue_and_exit;
                     }
                 }
@@ -413,9 +442,9 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
                 {
-                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && EqualityComparer<TValue>.Default.Equals(expectedValue, current.Value))
+                    if (hashCode == current.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) && EqualityComparer<TValue>.Default.Equals(expectedValue, GetValue(current)))
                     {
-                        (pair = current).Value = newValue;
+                        SetValue(pair = current, newValue);
                         goto enqueue_and_exit;
                     }
                 }
@@ -424,9 +453,9 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 for (KeyValuePair? current = Volatile.Read(ref bucket), previous = null; current is not null; previous = current, current = current.Next)
                 {
-                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && EqualityComparer<TValue>.Default.Equals(expectedValue, current.Value))
+                    if (hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && EqualityComparer<TValue>.Default.Equals(expectedValue, GetValue(current)))
                     {
-                        (pair = current).Value = newValue;
+                        SetValue(pair = current, newValue);
                         goto enqueue_and_exit;
                     }
                 }

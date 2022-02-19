@@ -136,7 +136,7 @@ public partial class ConcurrentCache<TKey, TValue>
         {
             next = pair.Next;
             pair.Clear();
-            evictionHandler.Invoke(pair.Key, pair.Value);
+            evictionHandler.Invoke(pair.Key, GetValue(pair));
         }
     }
 

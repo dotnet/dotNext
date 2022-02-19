@@ -144,7 +144,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
                 for (var i = 0; i < buckets.Length; i++)
                 {
                     for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
-                        yield return current.Value;
+                        yield return GetValue(current);
                 }
             }
         }
@@ -175,7 +175,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
             for (var i = 0; i < buckets.Length; i++)
             {
                 for (var current = Volatile.Read(ref buckets[i]); current is not null; current = current.Next)
-                    yield return new(current.Key, current.Value);
+                    yield return new(current.Key, GetValue(current));
             }
         }
     }
