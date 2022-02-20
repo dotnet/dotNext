@@ -5,6 +5,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
 * Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
 * Improved performance of atomic operations based on CAS (Compare-And-Swap)
+* Fixed behavior of optimistic read lock in [ReaderWriterSpinLock](https://dotnet.github.io/dotNext/api/DotNext.Threading.ReaderWriterSpinLock.html) class
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.3.0">DotNext.Metaprogramming 4.3.0</a>
 * Updated dependencies
@@ -16,6 +17,7 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.3.0">DotNext.Threading 4.3.0</a>
+* Fixed behavior of optimistic read lock in [AsyncReaderWriterLock](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncReaderWriterLock.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.3.0">DotNext.IO 4.3.0</a>
