@@ -73,11 +73,7 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets a value indicating how the log interacts with underlying storage device.
         /// </summary>
-        public WriteMode WriteMode
-        {
-            get;
-            set;
-        }
+        public WriteMode WriteMode { get; set; } = WriteMode.AutoFlush;
 
         /// <summary>
         /// Gets or sets size of in-memory buffer for I/O operations.
