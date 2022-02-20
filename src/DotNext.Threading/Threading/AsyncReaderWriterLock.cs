@@ -155,14 +155,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private readonly long version;
         private readonly bool valid;
 
-        internal LockStamp(in State state)
+        internal LockStamp(State state)
         {
             version = state.Version;
             valid = true;
         }
 
-        internal bool IsValid(in State state)
-            => valid && state.Version == version;
+        internal bool IsValid(State state)
+            => valid && state.Version == version && !state.WriteLock;
 
         private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
 
@@ -264,11 +264,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns>Optimistic read stamp. May be invalid.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public LockStamp TryOptimisticRead()
     {
         ThrowIfDisposed();
-        return state.WriteLock ? new LockStamp() : new LockStamp(in state);
+        var stamp = new LockStamp(state);
+        return state.WriteLock ? default : stamp;
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <param name="stamp">A stamp to check.</param>
     /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public bool Validate(in LockStamp stamp) => stamp.IsValid(in state);
+    public bool Validate(in LockStamp stamp) => stamp.IsValid(state);
 
     /// <summary>
     /// Attempts to obtain reader lock synchronously without blocking caller thread.
@@ -359,7 +359,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public bool TryEnterWriteLock(in LockStamp stamp)
     {
         ThrowIfDisposed();
-        if (stamp.IsValid(in state))
+        if (stamp.IsValid(state))
         {
             var manager = new WriteLockManager(state);
             return TryAcquire(ref manager);
