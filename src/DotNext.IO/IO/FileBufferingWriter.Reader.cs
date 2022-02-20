@@ -150,7 +150,7 @@ public partial class FileBufferingWriter
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-        await FlushCoreAsync(token).ConfigureAwait(false);
+        await FlushAsync(flushToDisk: false, token).ConfigureAwait(false);
         return new ReaderStream(this, true);
     }
 }
