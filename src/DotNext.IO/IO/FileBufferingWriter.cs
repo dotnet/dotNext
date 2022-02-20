@@ -532,13 +532,34 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <returns>The asynchronous result of the operation.</returns>
     public ValueTask FlushAsync(bool flushToDisk, CancellationToken token = default)
     {
-        return fileBackend is null
-            ? ValueTask.CompletedTask
-            : HasBufferedData
-            ? FlushToDiskAsync()
-            : PersistBufferAsync(token);
+        var result = ValueTask.CompletedTask;
+        if (fileBackend is not null)
+        {
+            switch ((flushToDisk, HasBufferedData))
+            {
+                case (true, false):
+                    try
+                    {
+                        FlushToDisk();
+                    }
+                    catch (Exception e)
+                    {
+                        result = ValueTask.FromException(e);
+                    }
 
-        async ValueTask FlushToDiskAsync()
+                    break;
+                case (false, true):
+                    result = PersistBufferAsync(token);
+                    break;
+                case (true, true):
+                    result = PersistAndFlushToDiskAsync();
+                    break;
+            }
+        }
+
+        return result;
+
+        async ValueTask PersistAndFlushToDiskAsync()
         {
             await PersistBufferAsync(token).ConfigureAwait(false);
             FlushToDisk();
