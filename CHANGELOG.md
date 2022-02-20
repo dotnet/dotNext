@@ -21,10 +21,12 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.3.0">DotNext.IO 4.3.0</a>
+* Added _flushToDisk_ option to `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.0">DotNext.Net.Cluster 4.3.0</a>
 * Improved startup time of persistent WAL
+* Default value of [PersistentState.Options.WriteMode](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode) is changed to `AutoFlush`
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.0">DotNext.AspNetCore.Cluster 4.3.0</a>
