@@ -88,6 +88,9 @@ public struct ReaderWriterSpinLock
     /// <returns>Optimistic read stamp. May be invalid.</returns>
     public LockStamp TryOptimisticRead()
     {
+        // Ordering of version and lock state must be respected:
+        // Write lock acquisition changes the state to Acquired and then increments the version.
+        // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positivies.
         var stamp = new LockStamp(in version);
         return state is WriteLockState ? default : stamp;
     }

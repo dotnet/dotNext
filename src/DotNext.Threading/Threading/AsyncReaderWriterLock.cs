@@ -267,6 +267,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public LockStamp TryOptimisticRead()
     {
         ThrowIfDisposed();
+
+        // Ordering of version and lock state must be respected:
+        // Write lock acquisition changes the state to Acquired and then increments the version.
+        // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positivies.
         var stamp = new LockStamp(state);
         return state.WriteLock ? default : stamp;
     }
