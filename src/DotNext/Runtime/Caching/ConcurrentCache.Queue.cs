@@ -2,8 +2,6 @@ using System.Diagnostics;
 
 namespace DotNext.Runtime.Caching;
 
-using static Threading.AtomicReference;
-
 public partial class ConcurrentCache<TKey, TValue>
 {
     /// <summary>
