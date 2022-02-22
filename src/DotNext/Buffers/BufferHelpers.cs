@@ -20,10 +20,18 @@ public static partial class BufferHelpers
     public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<ReadOnlyMemory<T>> chunks)
     {
         Chunk<T>? head = null, tail = null;
-        foreach (var segment in chunks)
+
+        switch (chunks)
         {
-            if (!segment.IsEmpty)
-                Chunk<T>.AddChunk(segment, ref head, ref tail);
+            case ReadOnlyMemory<T>[] array:
+                ToReadOnlySequence(array.AsSpan(), ref head, ref tail);
+                break;
+            case List<ReadOnlyMemory<T>> list:
+                ToReadOnlySequence(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                break;
+            default:
+                ToReadOnlySequenceSlow(chunks, ref head, ref tail);
+                break;
         }
 
         if (head is null || tail is null)
@@ -33,6 +41,24 @@ public static partial class BufferHelpers
             return new ReadOnlySequence<T>(head.Memory);
 
         return Chunk<T>.CreateSequence(head, tail);
+
+        static void ToReadOnlySequenceSlow(IEnumerable<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+        {
+            foreach (var segment in chunks)
+            {
+                if (!segment.IsEmpty)
+                    Chunk<T>.AddChunk(segment, ref head, ref tail);
+            }
+        }
+
+        static void ToReadOnlySequence(ReadOnlySpan<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+        {
+            foreach (ref readonly var segment in chunks)
+            {
+                if (!segment.IsEmpty)
+                    Chunk<T>.AddChunk(segment, ref head, ref tail);
+            }
+        }
     }
 
     /// <summary>
