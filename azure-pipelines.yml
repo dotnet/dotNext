@@ -22,6 +22,7 @@ stages:
               projects: '$(Solution)'
               feedsToUse: 'config'
               nugetConfigPath: 'NuGet.config'
+              requestedMajorVersion: 6
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             inputs:
@@ -31,6 +32,7 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
+              requestedMajorVersion: 6
       - job: Linux
         pool:
           vmImage: ubuntu-latest
@@ -42,7 +44,7 @@ stages:
               projects: '$(Solution)'
               feedsToUse: 'config'
               nugetConfigPath: 'NuGet.config'
-              arguments: --configuration Debug
+              requestedMajorVersion: 6
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             inputs:
@@ -52,6 +54,7 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
+              requestedMajorVersion: 6
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:
@@ -68,6 +71,7 @@ stages:
               packDirectory: $(Build.ArtifactStagingDirectory)/packages
               verbosityPack: Minimal
               packagesToPack: src/DotNext/DotNext.csproj;src/DotNext.IO/DotNext.IO.csproj;src/DotNext.Metaprogramming/DotNext.Metaprogramming.csproj;src/DotNext.Reflection/DotNext.Reflection.csproj;src/DotNext.Threading/DotNext.Threading.csproj;src/DotNext.Unsafe/DotNext.Unsafe.csproj;src/cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj;src/cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj
+              requestedMajorVersion: 6
           - publish: build
             displayName: Publish signing config
             artifact: config
@@ -89,6 +93,7 @@ stages:
               command: custom
               custom: tool
               arguments: install --tool-path . SignClient
+              requestedMajorVersion: 6
           - download: current
             displayName: Download packages
             artifact: packages
