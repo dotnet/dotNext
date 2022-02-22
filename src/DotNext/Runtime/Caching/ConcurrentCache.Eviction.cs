@@ -5,74 +5,42 @@ namespace DotNext.Runtime.Caching;
 public partial class ConcurrentCache<TKey, TValue>
 {
     private readonly Action<TKey, TValue>? evictionHandler;
-    private readonly CacheEvictionPolicy evictionPolicy;
+    private readonly Func<KeyValuePair, KeyValuePair?> addCommand, removeCommand, readCommand;
     private int evictionListSize;
     private KeyValuePair? firstPair, lastPair;
 
-    private KeyValuePair? Execute(CommandType command, KeyValuePair target)
+    private KeyValuePair? OnAdd(KeyValuePair target)
     {
-        KeyValuePair? evictedPair = null;
+        AddFirst(target);
+        evictionListSize += 1;
+        return evictionListSize > buckets.Length ? Evict() : null;
+    }
 
-        switch (command)
-        {
-            case CommandType.Read:
-                Read();
-                break;
-            case CommandType.Add:
-                Add();
-                evictedPair = evictionListSize > buckets.Length ? Evict() : null;
-                break;
-            case CommandType.Remove:
-                Remove();
-                break;
-        }
+    private KeyValuePair? OnRemove(KeyValuePair target)
+    {
+        Detach(target);
+        evictionListSize--;
+        return null;
+    }
 
-        return evictedPair;
+    private KeyValuePair? OnReadLFU(KeyValuePair target)
+    {
+        var parent = target.Links.Previous?.Links.Previous;
+        Detach(target);
 
-        void Add()
-        {
+        if (parent is null)
             AddFirst(target);
-            evictionListSize += 1;
-        }
+        else
+            Append(parent, target);
 
-        void Remove()
-        {
-            Detach(target);
-            evictionListSize--;
-        }
+        return null;
+    }
 
-        void Read()
-        {
-            if (!ReferenceEquals(lastPair, target))
-            {
-                switch (evictionPolicy)
-                {
-                    case CacheEvictionPolicy.LFU:
-                        ReadLFU();
-                        break;
-                    default:
-                        ReadLRU();
-                        break;
-                }
-            }
-        }
-
-        void ReadLFU()
-        {
-            var parent = target.Links.Previous?.Links.Previous;
-            Detach(target);
-
-            if (parent is null)
-                AddFirst(target);
-            else
-                Append(parent, target);
-        }
-
-        void ReadLRU()
-        {
-            Detach(target);
-            AddFirst(target);
-        }
+    private KeyValuePair? OnReadLRU(KeyValuePair target)
+    {
+        Detach(target);
+        AddFirst(target);
+        return null;
     }
 
     private static void Append(KeyValuePair parent, KeyValuePair child)

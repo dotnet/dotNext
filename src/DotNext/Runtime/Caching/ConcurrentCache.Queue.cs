@@ -4,21 +4,31 @@ namespace DotNext.Runtime.Caching;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
-    /// <summary>
-    /// Represents a set of actions that can be applied to the deque.
-    /// </summary>
-    private enum CommandType : byte
-    {
-        Read = 0,
-        Add,
-        Remove,
-    }
-
     private sealed class Command
     {
-        internal CommandType Type;
-        internal KeyValuePair? Target;
+        private Func<KeyValuePair, KeyValuePair?>? invoker;
+        private KeyValuePair? target;
         internal volatile Command? Next;
+
+        internal void Initialize(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
+        {
+            this.invoker = invoker;
+            this.target = target;
+        }
+
+        internal void Clear()
+        {
+            invoker = null;
+            target = null;
+        }
+
+        internal KeyValuePair? Invoke()
+        {
+            Debug.Assert(target is not null);
+            Debug.Assert(invoker is not null);
+
+            return invoker.Invoke(target);
+        }
     }
 
     // eviction deque fields
@@ -30,7 +40,7 @@ public partial class ConcurrentCache<TKey, TValue>
     // Command pool fields
     private Command? pooledCommand; // volatile
 
-    private Command RentCommand(CommandType type, KeyValuePair target)
+    private Command RentCommand()
     {
         Command? current, next = Volatile.Read(ref pooledCommand);
         do
@@ -45,8 +55,6 @@ public partial class ConcurrentCache<TKey, TValue>
         }
         while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pooledCommand, current.Next, current), current));
 
-        current.Type = type;
-        current.Target = target;
         current.Next = null;
         return current;
     }
@@ -55,15 +63,15 @@ public partial class ConcurrentCache<TKey, TValue>
     {
         // this method doesn't ensure that the command returned back to the pool
         // this assumption is needed to avoid spin-lock inside of the monitor lock
-        command.Target = null;
+        command.Clear();
         var currentValue = command.Next = Volatile.Read(ref pooledCommand);
         Interlocked.CompareExchange(ref pooledCommand, command, currentValue);
     }
 
-    private void EnqueueAndDrain(CommandType type, KeyValuePair target)
+    private void EnqueueAndDrain(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
     {
         // enqueue
-        Enqueue(type, target);
+        Enqueue(invoker, target);
 
         if (TryEnterEvictionLock())
         {
@@ -99,9 +107,10 @@ public partial class ConcurrentCache<TKey, TValue>
         return result;
     }
 
-    private void Enqueue(CommandType type, KeyValuePair target)
+    private void Enqueue(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
     {
-        var command = RentCommand(type, target);
+        var command = RentCommand();
+        command.Initialize(invoker, target);
         Interlocked.Exchange(ref commandQueueWritePosition, command).Next = command;
     }
 
@@ -118,10 +127,7 @@ public partial class ConcurrentCache<TKey, TValue>
             if (readerCounter < concurrencyLevel)
             {
                 // interpret command
-                Debug.Assert(command.Target is not null);
-                var evictedPair = Execute(command.Type, command.Target);
-
-                if (evictedPair is not null && evictionHandler is not null)
+                if (command.Invoke() is KeyValuePair evictedPair && evictionHandler is not null)
                 {
                     Debug.Assert(evictedPair.Next is null);
 
