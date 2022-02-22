@@ -1,30 +1,41 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.Caching;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
+    private readonly object evictionLock = new();
     private readonly Action<TKey, TValue>? evictionHandler;
     private readonly Func<KeyValuePair, KeyValuePair?> addCommand, removeCommand, readCommand;
     private int evictionListSize;
     private KeyValuePair? firstPair, lastPair;
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private KeyValuePair? OnAdd(KeyValuePair target)
     {
+        Debug.Assert(Monitor.IsEntered(evictionLock));
+
         AddFirst(target);
         evictionListSize += 1;
         return evictionListSize > buckets.Length ? Evict() : null;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private KeyValuePair? OnRemove(KeyValuePair target)
     {
+        Debug.Assert(Monitor.IsEntered(evictionLock));
+
         Detach(target);
         evictionListSize--;
         return null;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private KeyValuePair? OnReadLFU(KeyValuePair target)
     {
+        Debug.Assert(Monitor.IsEntered(evictionLock));
+
         var parent = target.Links.Previous?.Links.Previous;
         Detach(target);
 
@@ -36,8 +47,11 @@ public partial class ConcurrentCache<TKey, TValue>
         return null;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private KeyValuePair? OnReadLRU(KeyValuePair target)
     {
+        Debug.Assert(Monitor.IsEntered(evictionLock));
+
         Detach(target);
         AddFirst(target);
         return null;
