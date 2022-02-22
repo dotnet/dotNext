@@ -31,14 +31,44 @@ namespace DotNext.Buffers
             Equal(Array.Empty<byte>(), new[] { block1, block2 }.ToReadOnlySequence().ToArray());
 
             block1 = new byte[] { 1, 2 };
-            Equal(new byte[] { 1, 2 }, new[] { block1, block2 }.ToReadOnlySequence().ToArray());
+            Equal(new byte[] { 1, 2 }, new List<ReadOnlyMemory<byte>> { block1, block2 }.ToReadOnlySequence().ToArray());
 
             block2 = block1;
             block1 = default;
-            Equal(new byte[] { 1, 2 }, new[] { block1, block2 }.ToReadOnlySequence().ToArray());
+            Equal(new byte[] { 1, 2 }, ToEnumerable(block1, block2).ToReadOnlySequence().ToArray());
 
             block1 = new byte[] { 3, 4 };
             Equal(new byte[] { 1, 2, 3, 4 }, new[] { block2, block1 }.ToReadOnlySequence().ToArray());
+
+            static IEnumerable<ReadOnlyMemory<byte>> ToEnumerable(ReadOnlyMemory<byte> block1, ReadOnlyMemory<byte> block2)
+            {
+                yield return block1;
+                yield return block2;
+            }
+        }
+
+        [Fact]
+        public static void StringConcatenation()
+        {
+            string block1 = string.Empty, block2 = null;
+            Equal(string.Empty, new[] { block1, block2 }.ToReadOnlySequence().ToString());
+
+            block1 = "Hello";
+            Equal(block1, new List<string> { block1, block2 }.ToReadOnlySequence().ToString());
+
+            block2 = block1;
+            block1 = default;
+            Equal(block2, ToEnumerable(block1, block2).ToReadOnlySequence().ToString());
+
+            block1 = "Hello, ";
+            block2 = "world!";
+            Equal(block1 + block2, new[] { block1, block2 }.ToReadOnlySequence().ToString());
+
+            static IEnumerable<string> ToEnumerable(string block1, string block2)
+            {
+                yield return block1;
+                yield return block2;
+            }
         }
 
         [Fact]
