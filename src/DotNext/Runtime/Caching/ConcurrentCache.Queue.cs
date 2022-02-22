@@ -31,8 +31,6 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
-    // eviction deque fields
-    private readonly object evictionLock = new();
     private volatile bool rateLimitReached;
     private volatile Command commandQueueWritePosition;
     private Command commandQueueReadPosition;
