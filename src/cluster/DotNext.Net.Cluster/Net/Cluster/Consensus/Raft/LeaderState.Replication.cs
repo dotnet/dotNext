@@ -165,7 +165,7 @@ internal partial class LeaderState
     {
         private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent;
 
-        internal ReplicationCallback(ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
+        internal ReplicationCallback(in ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
             => this.parent = parent;
 
         internal void Invoke()
