@@ -181,6 +181,10 @@ internal partial class LeaderState
             {
                 TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
             }
+            catch (OperationCanceledException e)
+            {
+                TrySetCanceled(e.CancellationToken);
+            }
             catch (Exception e)
             {
                 TrySetException(e);
@@ -233,6 +237,10 @@ internal partial class LeaderState
         catch (ObjectDisposedException e)
         {
             result = Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
+        }
+        catch (OperationCanceledException e)
+        {
+            result = Task.FromCanceled(e.CancellationToken);
         }
         catch (Exception e)
         {
