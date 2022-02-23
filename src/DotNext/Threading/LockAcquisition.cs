@@ -29,7 +29,7 @@ public static class LockAcquisition
                 throw new ArgumentNullException(nameof(obj));
             case ReaderWriterLockSlim rws:
                 return rws;
-            case SemaphoreSlim or WaitHandle or ReaderWriterLock _:
+            case SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
             case string str when string.IsInterned(str) is not null:
                 throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
             default:

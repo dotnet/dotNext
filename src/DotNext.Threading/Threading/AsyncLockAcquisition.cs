@@ -24,7 +24,7 @@ public static class AsyncLockAcquisition
                 throw new ArgumentNullException(nameof(obj));
             case AsyncReaderWriterLock rwl:
                 return rwl;
-            case AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or ReaderWriterLock _:
+            case AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
             case string str when string.IsInterned(str) is not null:
                 throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
             default:
@@ -53,7 +53,7 @@ public static class AsyncLockAcquisition
             case AsyncReaderWriterLock rwl:
                 @lock = AsyncLock.WriteLock(rwl);
                 break;
-            case ReaderWriterLockSlim or WaitHandle or ReaderWriterLock _:
+            case ReaderWriterLockSlim or WaitHandle or System.Threading.ReaderWriterLock:
             case string str when string.IsInterned(str) is not null:
                 throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
             default:
@@ -126,8 +126,6 @@ public static class AsyncLockAcquisition
     /// <returns>The acquired lock holder.</returns>
     public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token)
         where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(token);
-
-    private static bool IsObjectDisposedException(this AggregateException e) => e.InnerException is ObjectDisposedException;
 
     /// <summary>
     /// Suspends <see cref="ObjectDisposedException"/> if the target lock
