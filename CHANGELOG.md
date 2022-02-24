@@ -31,6 +31,7 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.0">DotNext.AspNetCore.Cluster 4.3.0</a>
+* Fixed [103](https://github.com/dotnet/dotNext/issues/103)
 * Updated dependencies
 
 # 02-07-2022
