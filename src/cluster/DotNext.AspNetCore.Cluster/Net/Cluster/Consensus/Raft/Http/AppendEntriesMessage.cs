@@ -13,6 +13,7 @@ using static System.Buffers.BuffersExtensions;
 using static System.Globalization.CultureInfo;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
+using AspNetMediaTypeHeaderValue = Microsoft.Net.Http.Headers.MediaTypeHeaderValue;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -274,20 +275,20 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
     {
-        string boundary;
+        StringSegment boundary;
 
-        if (count is 0L)
+        if (count is 0L || !AspNetMediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
         {
             // jump to empty set of log entries
         }
-        else if (request.ContentLength.HasValue)
+        else if (StringSegment.Equals(mediaType.MediaType, MediaTypeNames.Application.Octet, StringComparison.OrdinalIgnoreCase))
         {
             // log entries encoded as efficient binary stream
             return new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
-        else if ((boundary = request.GetMultipartBoundary()) is { Length: > 0 })
+        else if ((boundary = HeaderUtils.RemoveQuotes(mediaType.Boundary)).Length > 0)
         {
-            return new MultipartLogEntriesReader(boundary, request.Body, count);
+            return new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
         }
 
         return EmptyProducer;
