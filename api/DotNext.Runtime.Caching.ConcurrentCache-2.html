@@ -1,0 +1,988 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ConcurrentCache&lt;TKey, TValue&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ConcurrentCache&lt;TKey, TValue&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.59.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2">
+  
+  
+  <h1 id="DotNext_Runtime_Caching_ConcurrentCache_2" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2" class="text-break">Class ConcurrentCache&lt;TKey, TValue&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents concurrect cache.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">ConcurrentCache&lt;TKey, TValue&gt;</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.Caching.html">DotNext.Runtime.Caching</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class ConcurrentCache&lt;TKey, TValue&gt; : IReadOnlyDictionary&lt;TKey, TValue&gt;</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of the cache items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The cache provides O(1) lookup performance if there is no hash collision. Asymptotic complexity of other
+operations are same as for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentdictionary-2">ConcurrentDictionary&lt;TKey,TValue&gt;</a> class.
+The cache has the following architecture to deal with lock contention: the access to the concurrect dictionary is
+synchronouse while the access to the eviction deque is asynchronous. All actions need to be applied to the deque
+are delayed and distributed across concurrent threads. Thus, the deque is weakly consistent with the dictionary.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Nullable_System_Collections_IEqualityComparer__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.%23ctor(System.Int32%2CDotNext.Runtime.Caching.CacheEvictionPolicy%2CSystem.Nullable%7BSystem.Collections.IEqualityComparer%7B%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L76">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Nullable_System_Collections_IEqualityComparer__0___" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor(System.Int32,DotNext.Runtime.Caching.CacheEvictionPolicy,System.Nullable{System.Collections.IEqualityComparer{`0}})">ConcurrentCache(Int32, CacheEvictionPolicy, Nullable&lt;IEqualityComparer&lt;TKey&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new empty cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ConcurrentCache(int capacity, CacheEvictionPolicy evictionPolicy, IEqualityComparer&lt;TKey&gt;? keyComparer = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The maximum number of cached items.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.CacheEvictionPolicy.html">CacheEvictionPolicy</a></td>
+        <td><span class="parametername">evictionPolicy</span></td>
+        <td><p>The eviction policy describing how the cached items must be removed on cache overflow.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">System.Collections.IEqualityComparer</span>&lt;TKey&gt;&gt;</td>
+        <td><span class="parametername">keyComparer</span></td>
+        <td><p>The comparer that can be used to compare keys within the cache.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Nullable_System_Collections_IEqualityComparer__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.%23ctor(System.Int32%2CSystem.Int32%2CDotNext.Runtime.Caching.CacheEvictionPolicy%2CSystem.Nullable%7BSystem.Collections.IEqualityComparer%7B%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L40">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Nullable_System_Collections_IEqualityComparer__0___" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor(System.Int32,System.Int32,DotNext.Runtime.Caching.CacheEvictionPolicy,System.Nullable{System.Collections.IEqualityComparer{`0}})">ConcurrentCache(Int32, Int32, CacheEvictionPolicy, Nullable&lt;IEqualityComparer&lt;TKey&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new empty cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ConcurrentCache(int capacity, int concurrencyLevel, CacheEvictionPolicy evictionPolicy, IEqualityComparer&lt;TKey&gt;? keyComparer = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The maximum number of cached items.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">concurrencyLevel</span></td>
+        <td><p>The number of thread that can access the cache concurrently.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.CacheEvictionPolicy.html">CacheEvictionPolicy</a></td>
+        <td><span class="parametername">evictionPolicy</span></td>
+        <td><p>The eviction policy describing how the cached items must be removed on cache overflow.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">System.Collections.IEqualityComparer</span>&lt;TKey&gt;&gt;</td>
+        <td><span class="parametername">keyComparer</span></td>
+        <td><p>The comparer that can be used to compare keys within the cache.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Count.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L170">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Count_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Count*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Count" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Count">Count</h4>
+  <div class="markdown level1 summary"><p>Gets the number of cache entries.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_Count_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>In contrast to <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentdictionary-2.count#system-collections-concurrent-concurrentdictionary-2-count">Count</a>,
+this property is fast and doesn't require an exclusive lock.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Eviction.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Eviction%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Eviction.cs/#L139">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Eviction_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Eviction*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Eviction" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Eviction">Eviction</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a handler that can be used to capture evicted cache items.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Action&lt;TKey, TValue&gt;? Eviction { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">Action</span>&lt;TKey, TValue&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_ExecuteEvictionAsynchronously.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.ExecuteEvictionAsynchronously%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Eviction.cs/#L148">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_ExecuteEvictionAsynchronously_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.ExecuteEvictionAsynchronously*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_ExecuteEvictionAsynchronously" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.ExecuteEvictionAsynchronously">ExecuteEvictionAsynchronously</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating that <a class="xref" href="DotNext.Runtime.Caching.ConcurrentCache-2.html#DotNext_Runtime_Caching_ConcurrentCache_2_Eviction">Eviction</a> callback must be executed asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool ExecuteEvictionAsynchronously { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Item__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Item(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L208">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Item_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Item*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Item__0_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Item(`0)">Item[TKey]</h4>
+  <div class="markdown level1 summary"><p>Gets or sets cache entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TValue this[TKey key] { get; set; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The cache entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_AddOrUpdate__0__1_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.AddOrUpdate(%600%2C%601%2CSystem.Boolean%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L245">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_AddOrUpdate_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.AddOrUpdate*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_AddOrUpdate__0__1_System_Boolean__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.AddOrUpdate(`0,`1,System.Boolean@)">AddOrUpdate(TKey, TValue, out Boolean)</h4>
+  <div class="markdown level1 summary"><p>Adds or modifies the cache entry as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TValue AddOrUpdate(TKey key, TValue value, out bool added)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">added</span></td>
+        <td><p><span class="xref">true</span> if a new entry is added;
+<span class="xref">false</span> if the existing entry is modified.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">value</code> if <code data-dev-comment-type="paramref" class="paramref">added</code> is <span class="xref">true</span>;
+or the value before modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L96">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Clear_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Clear*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Clear" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Clear">Clear()</h4>
+  <div class="markdown level1 summary"><p>Removes all items from the cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+  <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_Clear_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This operation locks the entire cache exclusively.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L176">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_GetEnumerator_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_GetEnumerator" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"><p>Gets enumerator over all key/value pairs.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerator&lt;ConcurrentCache&lt;TKey, TValue&gt;.KeyValuePair&lt;TKey, TValue&gt;&gt; GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.IEnumerator</span>&lt;<span class="xref">DotNext.Runtime.Caching.ConcurrentCache.KeyValuePair</span>&lt;TKey, TValue&gt;&gt;</td>
+        <td><p>Gets the enumerator over all key/value pairs.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_GetOrAdd__0__1_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.GetOrAdd(%600%2C%601%2CSystem.Boolean%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L269">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_GetOrAdd_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.GetOrAdd*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_GetOrAdd__0__1_System_Boolean__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.GetOrAdd(`0,`1,System.Boolean@)">GetOrAdd(TKey, TValue, out Boolean)</h4>
+  <div class="markdown level1 summary"><p>Gets or adds the cache entry as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TValue GetOrAdd(TKey key, TValue value, out bool added)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">added</span></td>
+        <td><p><span class="xref">true</span> if a new entry is added;
+<span class="xref">false</span> if the entry is already exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">value</code> if <code data-dev-comment-type="paramref" class="paramref">added</code> is <span class="xref">true</span>;
+or existing value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_TryAdd__0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.TryAdd(%600%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L225">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_TryAdd_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryAdd*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryAdd__0__1_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryAdd(`0,`1)">TryAdd(TKey, TValue)</h4>
+  <div class="markdown level1 summary"><p>Adds a new cache entry if the cache is not full.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryAdd(TKey key, TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The cache entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the entry is added successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_TryGetValue__0__1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.TryGetValue(%600%2C%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L293">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_TryGetValue_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryGetValue*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryGetValue__0__1__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryGetValue(`0,`1@)">TryGetValue(TKey, out TValue)</h4>
+  <div class="markdown level1 summary"><p>Attempts to get existing cache entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGetValue(TKey key, out TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The cache entry, if successful.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the cache entry exists; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove__0__1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.TryRemove(%600%2C%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L342">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryRemove*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove__0__1__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryRemove(`0,`1@)">TryRemove(TKey, out TValue)</h4>
+  <div class="markdown level1 summary"><p>Attempts to remove the cache entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryRemove(TKey key, out TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache entry.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The cache entry, if successful.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the cache entry removed successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove__0__1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method will not raise <a class="xref" href="DotNext.Runtime.Caching.ConcurrentCache-2.html#DotNext_Runtime_Caching_ConcurrentCache_2_Eviction">Eviction</a> event for the removed entry.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove_DotNext_Runtime_Caching_ConcurrentCache__0__1__KeyValuePair__0__1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.TryRemove(DotNext.Runtime.Caching.ConcurrentCache%7B%600%2C%601%7D.KeyValuePair%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L361">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryRemove*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove_DotNext_Runtime_Caching_ConcurrentCache__0__1__KeyValuePair__0__1__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryRemove(DotNext.Runtime.Caching.ConcurrentCache{`0,`1}.KeyValuePair{`0,`1})">TryRemove(ConcurrentCache&lt;TKey, TValue&gt;.KeyValuePair&lt;TKey, TValue&gt;)</h4>
+  <div class="markdown level1 summary"><p>Attempts to remove the cache entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryRemove(ConcurrentCache&lt;TKey, TValue&gt;.KeyValuePair&lt;TKey, TValue&gt; pair)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Runtime.Caching.ConcurrentCache.KeyValuePair</span>&lt;TKey, TValue&gt;</td>
+        <td><span class="parametername">pair</span></td>
+        <td><p>The pair to be removed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the cache entry removed successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryRemove_DotNext_Runtime_Caching_ConcurrentCache__0__1__KeyValuePair__0__1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method will not raise <a class="xref" href="DotNext.Runtime.Caching.ConcurrentCache-2.html#DotNext_Runtime_Caching_ConcurrentCache_2_Eviction">Eviction</a> event for the removed entry.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_TryUpdate__0__1__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.TryUpdate(%600%2C%601%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Dictionary.cs/#L432">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_TryUpdate_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryUpdate*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_TryUpdate__0__1__1_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TryUpdate(`0,`1,`1)">TryUpdate(TKey, TValue, TValue)</h4>
+  <div class="markdown level1 summary"><p>Updates the cache entry associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryUpdate(TKey key, TValue newValue, TValue expectedValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key whose value is compared with <code data-dev-comment-type="paramref" class="paramref">expectedValue</code> and possibly replaced.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>The value that replaces the value of the entry with <code data-dev-comment-type="paramref" class="paramref">key</code> if the comparison results in equality.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">expectedValue</span></td>
+        <td><p>The value that is compared to the value of the element with <code data-dev-comment-type="paramref" class="paramref">key</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the value with <code data-dev-comment-type="paramref" class="paramref">key</code> was equal to <code data-dev-comment-type="paramref" class="paramref">expectedValue</code> and
+replaced with <code data-dev-comment-type="paramref" class="paramref">newValue</code>; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L191">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_ConcurrentCache_2_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.System#Collections#IEnumerable#GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IEnumerator IEnumerable.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.Queue.cs/#L5" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
