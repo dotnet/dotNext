@@ -672,9 +672,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// Processes <see cref="IRaftClusterMember.SynchronizeAsync(long, CancellationToken)"/>
     /// request.
     /// </summary>
-    /// <param name="commitIndex">The index of the last committed log entry.</param>
+    /// <param name="commitIndex">The index of the last committed log entry on the sender side.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The index of the last committed log entry.</returns>
+    /// <returns>The index of the last committed log entry known by the leader.</returns>
     protected async Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
     {
         using var tokenSource = token.LinkTo(LifecycleToken);

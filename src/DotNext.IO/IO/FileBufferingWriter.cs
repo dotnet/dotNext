@@ -164,6 +164,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private int position;
     private string? fileName;
     private SafeFileHandle? fileBackend;
+    private FileStream? streamForFlush;
     private long filePosition;
 
     // If null or .Target is null then there is no active readers.
@@ -267,6 +268,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
         buffer.Dispose();
+        streamForFlush?.Dispose();
+        streamForFlush = null;
         fileBackend?.Dispose();
         fileBackend = null;
         fileName = null;
@@ -500,18 +503,79 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         => EndWrite((Task)ar);
 
     /// <inheritdoc/>
-    public override void Flush()
+    public override void Flush() => Flush(flushToDisk: false);
+
+    /// <summary>
+    /// Flushes the internal buffer with the file and optionally
+    /// synchronize a file's in-core state with storage device.
+    /// </summary>
+    /// <param name="flushToDisk"><see langword="true"/> to synchronize a file's in-core state with storage device; otherwise, <see langword="false"/>.</param>
+    public void Flush(bool flushToDisk)
     {
-        if (fileBackend is not null && HasBufferedData)
-            PersistBuffer();
+        if (fileBackend is not null)
+        {
+            if (HasBufferedData)
+                PersistBuffer();
+
+            if (flushToDisk)
+                FlushToDisk();
+        }
     }
 
-    private ValueTask FlushCoreAsync(CancellationToken token)
-        => fileBackend is not null && HasBufferedData ? PersistBufferAsync(token) : ValueTask.CompletedTask;
+    /// <summary>
+    /// Flushes the internal buffer with the file and optionally
+    /// synchronize a file's in-core state with storage device.
+    /// </summary>
+    /// <param name="flushToDisk"><see langword="true"/> to synchronize a file's in-core state with storage device; otherwise, <see langword="false"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <returns>The asynchronous result of the operation.</returns>
+    public ValueTask FlushAsync(bool flushToDisk, CancellationToken token = default)
+    {
+        var result = ValueTask.CompletedTask;
+        if (fileBackend is not null)
+        {
+            switch ((flushToDisk, HasBufferedData))
+            {
+                case (true, false):
+                    try
+                    {
+                        FlushToDisk();
+                    }
+                    catch (Exception e)
+                    {
+                        result = ValueTask.FromException(e);
+                    }
+
+                    break;
+                case (false, true):
+                    result = PersistBufferAsync(token);
+                    break;
+                case (true, true):
+                    result = PersistAndFlushToDiskAsync();
+                    break;
+            }
+        }
+
+        return result;
+
+        async ValueTask PersistAndFlushToDiskAsync()
+        {
+            await PersistBufferAsync(token).ConfigureAwait(false);
+            FlushToDisk();
+        }
+    }
 
     /// <inheritdoc/>
     public override Task FlushAsync(CancellationToken token)
-        => FlushCoreAsync(token).AsTask();
+        => FlushAsync(flushToDisk: false, token).AsTask();
+
+    private void FlushToDisk()
+    {
+        Debug.Assert(fileBackend is not null);
+
+        (streamForFlush ??= new(fileBackend, FileAccess.Write, bufferSize: 1)).Flush(flushToDisk: true);
+    }
 
     /// <inheritdoc/>
     public override int ReadByte()
@@ -902,6 +966,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (disposing)
         {
+            streamForFlush?.Dispose();
+            streamForFlush = null;
             fileBackend?.Dispose();
             fileBackend = null;
             fileName = null;

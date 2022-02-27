@@ -15,11 +15,6 @@ stages:
         pool:
           vmImage: windows-latest
         steps:
-          - task: UseDotNet@2
-            displayName: Install .NET 6 SDK
-            inputs:
-              packageType: sdk
-              version: 6.0.100
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
             inputs:
@@ -40,11 +35,6 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-          - task: UseDotNet@2
-            displayName: Install .NET 6 SDK
-            inputs:
-              packageType: sdk
-              version: 6.0.100
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
             inputs:
@@ -69,11 +59,6 @@ stages:
         pool:
           vmImage: ubuntu-latest
         steps:
-          - task: UseDotNet@2
-            displayName: Install .NET 6 SDK
-            inputs:
-              packageType: sdk
-              version: 6.0.100
           - task: DotNetCoreCLI@2
             displayName: Pack
             inputs:

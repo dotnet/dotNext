@@ -303,7 +303,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     }
 
     /// <summary>
-    /// Gets the daya written to the underlying array so far.
+    /// Gets the data written to the underlying array so far.
     /// </summary>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public ArraySegment<T> WrittenArray

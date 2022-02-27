@@ -165,7 +165,7 @@ internal partial class LeaderState
     {
         private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent;
 
-        internal ReplicationCallback(ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
+        internal ReplicationCallback(in ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
             => this.parent = parent;
 
         internal void Invoke()
@@ -180,6 +180,10 @@ internal partial class LeaderState
             catch (ObjectDisposedException e)
             {
                 TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
+            }
+            catch (OperationCanceledException e)
+            {
+                TrySetCanceled(e.CancellationToken);
             }
             catch (Exception e)
             {
@@ -233,6 +237,10 @@ internal partial class LeaderState
         catch (ObjectDisposedException e)
         {
             result = Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
+        }
+        catch (OperationCanceledException e)
+        {
+            result = Task.FromCanceled(e.CancellationToken);
         }
         catch (Exception e)
         {

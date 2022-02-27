@@ -1,6 +1,39 @@
 Release Notes
 ====
 
+# 02-28-2022
+<a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
+* Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
+* Improved performance of atomic operations based on CAS (Compare-And-Swap)
+* Fixed behavior of optimistic read lock in [ReaderWriterSpinLock](https://dotnet.github.io/dotNext/api/DotNext.Threading.ReaderWriterSpinLock.html) class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.3.0">DotNext.Metaprogramming 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.3.0">DotNext.Reflection 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.3.0">DotNext.Unsafe 4.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.3.0">DotNext.Threading 4.3.0</a>
+* Fixed behavior of optimistic read lock in [AsyncReaderWriterLock](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncReaderWriterLock.html) class
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.3.0">DotNext.IO 4.3.0</a>
+* Added _flushToDisk_ option to `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.0">DotNext.Net.Cluster 4.3.0</a>
+* Improved startup time of persistent WAL
+* Default value of [PersistentState.Options.WriteMode](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode) is changed to `AutoFlush`
+* Fixed transfer of custom cancellation token passed to `RaftCluster.ReplicateAsync` method
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.0">DotNext.AspNetCore.Cluster 4.3.0</a>
+* Fixed [103](https://github.com/dotnet/dotNext/issues/103)
+* Updated dependencies
+
 # 02-07-2022
 Many thanks to [Copenhagen Atomics](https://www.copenhagenatomics.com/) for supporting this release.
 

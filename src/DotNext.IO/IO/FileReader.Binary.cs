@@ -389,7 +389,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="EndOfStreamException">The expected block cannot be obtained.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask ReadBlockAsync(Memory<byte> output, CancellationToken token)
+    public async ValueTask ReadBlockAsync(Memory<byte> output, CancellationToken token = default)
     {
         if (length < output.Length)
             throw new EndOfStreamException();

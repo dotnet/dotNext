@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
 
@@ -19,10 +20,18 @@ public static partial class BufferHelpers
     public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<ReadOnlyMemory<T>> chunks)
     {
         Chunk<T>? head = null, tail = null;
-        foreach (var segment in chunks)
+
+        switch (chunks)
         {
-            if (!segment.IsEmpty)
-                Chunk<T>.AddChunk(segment, ref head, ref tail);
+            case ReadOnlyMemory<T>[] array:
+                ToReadOnlySequence(array.AsSpan(), ref head, ref tail);
+                break;
+            case List<ReadOnlyMemory<T>> list:
+                ToReadOnlySequence(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                break;
+            default:
+                ToReadOnlySequenceSlow(chunks, ref head, ref tail);
+                break;
         }
 
         if (head is null || tail is null)
@@ -32,6 +41,69 @@ public static partial class BufferHelpers
             return new ReadOnlySequence<T>(head.Memory);
 
         return Chunk<T>.CreateSequence(head, tail);
+
+        static void ToReadOnlySequenceSlow(IEnumerable<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+        {
+            foreach (var segment in chunks)
+            {
+                if (!segment.IsEmpty)
+                    Chunk<T>.AddChunk(segment, ref head, ref tail);
+            }
+        }
+
+        static void ToReadOnlySequence(ReadOnlySpan<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+        {
+            foreach (ref readonly var segment in chunks)
+            {
+                if (!segment.IsEmpty)
+                    Chunk<T>.AddChunk(segment, ref head, ref tail);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Constructs a sequence of characters from a collection of strings.
+    /// </summary>
+    /// <param name="strings">A collection of strings.</param>
+    /// <returns>A sequence of characters representing concatenated strings.</returns>
+    public static ReadOnlySequence<char> ToReadOnlySequence(this IEnumerable<string?> strings)
+    {
+        Chunk<char>? head = null, tail = null;
+
+        switch (strings)
+        {
+            case List<string?> list:
+                ToReadOnlySequence(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                break;
+            case string?[] array:
+                ToReadOnlySequence(array.AsSpan(), ref head, ref tail);
+                break;
+            default:
+                foreach (var str in strings)
+                {
+                    if (str is { Length: > 0 })
+                        Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
+                }
+
+                break;
+        }
+
+        if (head is null || tail is null)
+            return ReadOnlySequence<char>.Empty;
+
+        if (ReferenceEquals(head, tail))
+            return new ReadOnlySequence<char>(head.Memory);
+
+        return Chunk<char>.CreateSequence(head, tail);
+
+        static void ToReadOnlySequence(ReadOnlySpan<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
+        {
+            foreach (var str in strings)
+            {
+                if (str is { Length: > 0 })
+                    Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
+            }
+        }
     }
 
     /// <summary>

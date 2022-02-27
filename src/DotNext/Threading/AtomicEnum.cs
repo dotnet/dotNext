@@ -143,12 +143,12 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     private (TEnum OldValue, TEnum NewValue) Update<TUpdater>(TUpdater updater)
         where TUpdater : struct, ISupplier<TEnum, TEnum>
     {
-        TEnum oldValue, newValue;
+        TEnum oldValue, newValue, tmp = Value;
         do
         {
-            newValue = updater.Invoke(oldValue = Value);
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(oldValue, newValue));
+        while (!EqualityComparer<TEnum>.Default.Equals(tmp = CompareExchange(newValue, oldValue), oldValue));
 
         return (oldValue, newValue);
     }
@@ -156,12 +156,12 @@ public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     private (TEnum OldValue, TEnum NewValue) Accumulate<TAccumulator>(TEnum x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<TEnum, TEnum, TEnum>
     {
-        TEnum oldValue, newValue;
+        TEnum oldValue, newValue, tmp = Value;
         do
         {
-            newValue = accumulator.Invoke(oldValue = Value, x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(oldValue, newValue));
+        while (!EqualityComparer<TEnum>.Default.Equals(tmp = CompareExchange(newValue, oldValue), oldValue));
 
         return (oldValue, newValue);
     }

@@ -186,24 +186,26 @@ public static class AtomicUInt32
     private static (uint OldValue, uint NewValue) Update<TUpdater>(ref uint value, TUpdater updater)
         where TUpdater : struct, ISupplier<uint, uint>
     {
-        uint oldValue, newValue;
+        uint oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = updater.Invoke(oldValue = VolatileRead(in value));
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
     private static (uint OldValue, uint NewValue) Accumulate<TAccumulator>(ref uint value, uint x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<uint, uint, uint>
     {
-        uint oldValue, newValue;
+        uint oldValue, newValue, tmp = Volatile.Read(ref value);
         do
         {
-            newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(ref value, oldValue, newValue));
+        while ((tmp = Interlocked.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 

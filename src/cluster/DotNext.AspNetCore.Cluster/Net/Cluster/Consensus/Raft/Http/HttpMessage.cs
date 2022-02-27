@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
@@ -122,7 +123,7 @@ internal abstract class HttpMessage
 
     private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)
         where THeaders : IEnumerable<string>
-        => ParseHeader(headerName, reader, static (string str, out string value) =>
+        => ParseHeader(headerName, reader, static (string str, [MaybeNullWhen(false)] out string value) =>
     {
         value = str;
         return true;

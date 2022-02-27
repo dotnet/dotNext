@@ -46,61 +46,39 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 02-07-2022
+Release Date: 02-28-2022
 
-Many thanks to [Copenhagen Atomics](https://www.copenhagenatomics.com/) for supporting this release.
+<a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
+* Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
+* Improved performance of atomic operations based on CAS (Compare-And-Swap)
+* Fixed behavior of optimistic read lock in [ReaderWriterSpinLock](https://dotnet.github.io/dotNext/api/DotNext.Threading.ReaderWriterSpinLock.html) class
 
-<a href="https://www.nuget.org/packages/dotnext/4.2.0">DotNext 4.2.0</a>
-* Improved scalability of mechanism that allows to attach custom data to arbitrary objects using `UserDataStorage` and `UserDataSlot<T>` types. The improvement works better in high workloads without the risk of lock contention but requires a bit more CPU cycles to obtain the data attached to the object
-* Added ability to enumerate values stored in `TypeMap<T>` or `ConcurrentTypeMap<T>`
-* Improved debugging experience of `UserDataStorage` type
-* Added `Dictionary.Empty` static method that allows to obtain a singleton of empty [IReadOnlyDictionary&lt;TKey, TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlydictionary-2)
-* Fixed decoding buffer oveflow in `Base64Decoder` type
-* Added `Base64Encoder` type for fast encoding of large binary data
-* Deprecation of `Sequence.FirstOrEmpty` extension methods in favor of `Sequence.FirstOrNone`
-* Fixed [#91](https://github.com/dotnet/dotNext/pull/91)
-* Public constructors of `PooledBufferWriter` and `PooledArrayBufferWriter` with parameters are obsolete in favor of init-only properties
-* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
-* Optimized performance of `Timeout`, `Optional<T>`, `Result<T>` and `Result<T, TError>` types
-* Introduced `DotNext.Runtime.SoftReference` data type in addition to [WeakReference](https://docs.microsoft.com/en-us/dotnet/api/system.weakreference) from .NET
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.2.0">DotNext.Metaprogramming 4.2.0</a>
-* Improved overall performance of some scenarios where `UserDataStorage` is used
-* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.2.0">DotNext.Reflection 4.2.0</a>
-* Improved overall performance of some scenarios where `UserDataStorage` is used
-* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.2.0">DotNext.Unsafe 4.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.3.0">DotNext.Metaprogramming 4.3.0</a>
 * Updated dependencies
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.2.0">DotNext.Threading 4.2.0</a>
-* Reduced execution time of `CreateTask` overloads declared in `ValueTaskCompletionSource` and `ValueTaskCompletionSource<T>` classes
-* Added overflow check to `AsyncCounter` class
-* Improved debugging experience of all asynchronous locks
-* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
-* Reduced lock contention that can be caused by asynchronous locks in concurrent scenarios
-* Added `Reset()` method to `TaskCompletionPipe<T>` that allows to reuse the pipe
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.3.0">DotNext.Reflection 4.3.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.2.0">DotNext.IO 4.2.0</a>
-* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
-* `FileWriter` now implements [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.3.0">DotNext.Unsafe 4.3.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.2.0">DotNext.Net.Cluster 4.2.0</a>
-* Improved compatibility with IL trimming
-* Reduced size of the compiled assembly: omit private and internal member's nullability attributes
-* Completely rewritten implementation of TCP transport: better buffering and less network overhead. This version of protocol is not binary compatible with any version prior to 4.2.0
-* Increased overall stability of the cluster
-* Fixed bug with incorrect calculation of the offset within partition file when using persistent WAL. The bug could prevent the node to start correctly with non-empty WAL
-* Added Reflection-free support of JSON log entries powered by JSON Source Generator from .NET
-* Introduced _Incremental_ log compaction mode to achieve the best performance when the snapshot is relatively small
-* Reduced network overhead caused by read barrier used on the follower side for linearizable reads
+<a href="https://www.nuget.org/packages/dotnext.threading/4.3.0">DotNext.Threading 4.3.0</a>
+* Fixed behavior of optimistic read lock in [AsyncReaderWriterLock](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncReaderWriterLock.html) class
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.2.0">DotNext.AspNetCore.Cluster 4.2.0</a>
-* Improved compatibility with IL trimming
-* Reduced size of the compiled assembly: omit nullability attributes for private and internal members
+<a href="https://www.nuget.org/packages/dotnext.io/4.3.0">DotNext.IO 4.3.0</a>
+* Added _flushToDisk_ option to `FileBufferingWriter.Flush` and `FileBufferingWriter.FlushAsync` methods
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.0">DotNext.Net.Cluster 4.3.0</a>
+* Improved startup time of persistent WAL
+* Default value of [PersistentState.Options.WriteMode](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode) is changed to `AutoFlush`
+* Fixed transfer of custom cancellation token passed to `RaftCluster.ReplicateAsync` method
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.0">DotNext.AspNetCore.Cluster 4.3.0</a>
+* Fixed [103](https://github.com/dotnet/dotNext/issues/103)
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

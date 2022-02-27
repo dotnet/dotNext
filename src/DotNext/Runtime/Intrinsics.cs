@@ -21,7 +21,9 @@ public static class Intrinsics
         private const int Offset = unchecked((int)2166136261);
         private const int Prime = 16777619;
 
-        private int result = Offset;
+        private int result;
+
+        public FNV1a32() => result = Offset;
 
         internal readonly int Result => result;
 
@@ -34,7 +36,9 @@ public static class Intrinsics
         private const long Offset = unchecked((long)14695981039346656037);
         private const long Prime = 1099511628211;
 
-        private long result = Offset;
+        private long result;
+
+        public FNV1a64() => result = Offset;
 
         internal readonly long Result => result;
 

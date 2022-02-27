@@ -124,24 +124,26 @@ public struct AtomicBoolean : IEquatable<bool>
     private (bool OldValue, bool NewValue) Update<TUpdater>(TUpdater updater)
         where TUpdater : struct, ISupplier<bool, bool>
     {
-        bool oldValue, newValue;
+        bool oldValue, newValue, tmp = Value;
         do
         {
-            newValue = updater.Invoke(oldValue = AtomicInt32.VolatileRead(in value).ToBoolean());
+            newValue = updater.Invoke(oldValue = tmp);
         }
-        while (!CompareAndSet(oldValue, newValue));
+        while ((tmp = CompareExchange(newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
     private (bool OldValue, bool NewValue) Accumulate<TAccumulator>(bool x, TAccumulator accumulator)
         where TAccumulator : struct, ISupplier<bool, bool, bool>
     {
-        bool oldValue, newValue;
+        bool oldValue, newValue, tmp = Value;
         do
         {
-            newValue = accumulator.Invoke(oldValue = AtomicInt32.VolatileRead(in value).ToBoolean(), x);
+            newValue = accumulator.Invoke(oldValue = tmp, x);
         }
-        while (!CompareAndSet(oldValue, newValue));
+        while ((tmp = CompareExchange(newValue, oldValue)) != oldValue);
+
         return (oldValue, newValue);
     }
 
