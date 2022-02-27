@@ -37,6 +37,8 @@
       href: core/softref.md
     - name: TypeMap
       href: core/typem.md
+    - name: In-Memory Cache
+      href: core/cache.md
 - name: I/O Enhancements
   href: io/index.md
   items:
