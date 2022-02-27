@@ -26,8 +26,9 @@ This library is the core of .NEXT which extends .NET standard library with
   * A rich set of dynamic buffer types
   * Fast HEX conversion
   * Fast Base64 encoding/decoding in streaming scenarios
-  * _Optional_ and _Result_ monads
+  * [Optional](features/core/optional.md) and [Result](features/core/result.md) monads
   * [Soft Reference](features/core/softref.md)
+  * [LRU/LFU cache](features/core/cache.md)
 
 # DotNext.Reflection
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
