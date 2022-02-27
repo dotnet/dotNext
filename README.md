@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 02-17-2022
+Release Date: 02-28-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
 * Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
