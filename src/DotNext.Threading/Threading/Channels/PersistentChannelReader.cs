@@ -33,16 +33,14 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             readyToRead.Value = true;
         }
 
-        bool IReadBuffer.TryRead([NotNullWhen(true)] out T result)
+        bool IReadBuffer.TryRead([MaybeNullWhen(false)] out T result)
         {
-            if (readyToRead.CompareAndSet(true, false))
-            {
-                result = value;
-                return true;
-            }
+            bool success;
+            result = (success = readyToRead.TrueToFalse())
+                ? value
+                : default;
 
-            result = default!;
-            return false;
+            return success;
         }
 
         void IReadBuffer.Clear() => value = default;
