@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
 
@@ -35,6 +36,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
 
     private PartitionStream Partition => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public override async ValueTask WriteAsync(T item, CancellationToken token)
     {
         using (await writeLock.AcquireAsync(token).ConfigureAwait(false))

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
+using System.Runtime.CompilerServices;
 using System.Threading.Channels;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Channels;
 
@@ -57,11 +59,12 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     private readonly FileCreationOptions fileOptions;
     private readonly IChannelReader<T> reader;
     private readonly IncrementingEventCounter? readRate;
+    private readonly bool reliableEnumeration;
     private AsyncLock readLock;
     private PartitionStream? readTopic;
     private ChannelCursor cursor;
 
-    internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader, IncrementingEventCounter? readRate)
+    internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader, bool reliableEnumeration, IncrementingEventCounter? readRate)
     {
         this.reader = reader;
         if (singleReader)
@@ -78,6 +81,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
         cursor = new ChannelCursor(reader.Location, StateFileName);
         this.readRate = readRate;
+        this.reliableEnumeration = reliableEnumeration;
     }
 
     public override Task Completion => reader.Completion;
@@ -97,6 +101,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         return result;
     }
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public override async ValueTask<T> ReadAsync(CancellationToken token)
     {
         var task = await Task.WhenAny(reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
@@ -117,13 +122,14 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             // reset file cache
             await lookup.FlushAsync(token).ConfigureAwait(false);
             result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
-            await cursor.AdvanceAsync(lookup.Position, token).ConfigureAwait(false);
+            await EndReadAsync(lookup.Position, token).ConfigureAwait(false);
         }
 
         readRate?.Increment();
         return result;
     }
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public override async ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
     {
         bool result;
@@ -143,7 +149,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             {
                 var lookup = Partition;
                 buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
-                await cursor.AdvanceAsync(lookup.Position, token).ConfigureAwait(false);
+                await EndReadAsync(lookup.Position, token).ConfigureAwait(false);
             }
 
             result = true;
@@ -151,6 +157,14 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
         return result;
     }
+
+    private ValueTask EndReadAsync(long offset, CancellationToken token = default)
+        => cursor.AdvanceAsync(offset, token);
+
+    private void RollbackRead() => reader.RollbackRead();
+
+    public override IAsyncEnumerable<T> ReadAllAsync(CancellationToken token = default)
+        => reliableEnumeration ? new ReliableReader(this) { ProducerToken = token } : base.ReadAllAsync(token);
 
     private void Dispose(bool disposing)
     {
@@ -172,4 +186,108 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     }
 
     ~PersistentChannelReader() => Dispose(false);
+
+    private sealed class ReliableReader : IAsyncEnumerable<T>
+    {
+        private readonly PersistentChannelReader<T> reader;
+
+        internal ReliableReader(PersistentChannelReader<T> reader)
+        {
+            Debug.Assert(reader is not null);
+
+            this.reader = reader;
+        }
+
+        internal CancellationToken ProducerToken { private get; init; }
+
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken consumerToken)
+            => new ReliableAsyncEnumerator(reader, ProducerToken, consumerToken);
+    }
+
+    private sealed class ReliableAsyncEnumerator : Disposable, IAsyncEnumerator<T>
+    {
+        private readonly CancellationTokenSource? tokenSource;
+        private readonly PersistentChannelReader<T> reader;
+        private readonly CancellationToken token;
+        private AsyncLock.Holder readLock;
+        private long offset;
+        private Optional<T> current;
+        private bool rollbackRead;
+
+        internal ReliableAsyncEnumerator(PersistentChannelReader<T> reader, CancellationToken producerToken, CancellationToken consumerToken)
+        {
+            Debug.Assert(reader is not null);
+
+            this.reader = reader;
+            tokenSource = producerToken.LinkTo(consumerToken);
+            token = producerToken;
+            offset = long.MinValue;
+        }
+
+        public T Current => current.Value;
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        public async ValueTask<bool> MoveNextAsync()
+        {
+            // acquire lock if needed
+            if (readLock.IsEmpty)
+                readLock = await reader.readLock.AcquireAsync(token).ConfigureAwait(false);
+
+            // commit previous read
+            bool dryRun;
+            if (offset < 0L)
+            {
+                dryRun = true;
+            }
+            else
+            {
+                await reader.EndReadAsync(offset).ConfigureAwait(false);
+                reader.readRate?.Increment();
+                dryRun = false;
+            }
+
+            bool result;
+            rollbackRead = false;
+            var task = await Task.WhenAny(reader.reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
+
+            // propagate exception if needed
+            await task.ConfigureAwait(false);
+            if (ReferenceEquals(task, reader.Completion))
+            {
+                result = false;
+            }
+            else
+            {
+                rollbackRead = true;
+                var lookup = reader.Partition;
+
+                if (dryRun)
+                    reader.cursor.Adjust(lookup);
+
+                // reset file cache
+                await lookup.FlushAsync(token).ConfigureAwait(false);
+                current = await reader.reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
+                offset = lookup.Position;
+                result = true;
+            }
+
+            return result;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                readLock.Dispose();
+                tokenSource?.Dispose();
+
+                if (rollbackRead)
+                    reader.RollbackRead();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
+    }
 }

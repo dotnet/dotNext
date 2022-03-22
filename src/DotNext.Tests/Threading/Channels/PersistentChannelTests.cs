@@ -196,5 +196,36 @@ namespace DotNext.Threading.Channels
             False(await channel.Reader.WaitToReadAsync());
             await ThrowsAsync<ChannelClosedException>(channel.Reader.ReadAsync().AsTask);
         }
+
+        [Fact]
+        public static async Task ReliableEnumeration()
+        {
+            Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
+            using var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { ReliableEnumeration = true });
+
+            await channel.Writer.WriteAsync(g1);
+            await channel.Writer.WriteAsync(g2);
+            await channel.Writer.WriteAsync(g3);
+            True(channel.Writer.TryComplete());
+
+            await using (var enumerator = channel.Reader.ReadAllAsync().GetAsyncEnumerator())
+            {
+                True(await enumerator.MoveNextAsync());
+                Equal(g1, enumerator.Current);
+
+                True(await enumerator.MoveNextAsync());
+            }
+
+            await using (var enumerator = channel.Reader.ReadAllAsync().GetAsyncEnumerator())
+            {
+                True(await enumerator.MoveNextAsync());
+                Equal(g2, enumerator.Current);
+
+                True(await enumerator.MoveNextAsync());
+                Equal(g3, enumerator.Current);
+
+                False(await enumerator.MoveNextAsync());
+            }
+        }
     }
 }

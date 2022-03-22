@@ -81,4 +81,15 @@ public sealed class PersistentChannelOptions : ChannelOptions
         get;
         set;
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating that <see cref="ChannelReader{T}.ReadAllAsync(CancellationToken)"/>
+    /// must provide reliable (transactional) enumeration over persisted elements.
+    /// </summary>
+    /// <remarks>
+    /// Reliable read means that the element obtained via <see cref="IAsyncEnumerator{T}.Current"/> is not marked
+    /// as read before the next call of <see cref="IAsyncEnumerator{T}.MoveNextAsync"/>.
+    /// Note that reliable enumeration affects the performance of asynchronous enumerator.
+    /// </remarks>
+    public bool ReliableEnumeration { get; set; }
 }

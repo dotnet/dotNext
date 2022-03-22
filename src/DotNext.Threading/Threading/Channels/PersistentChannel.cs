@@ -30,11 +30,11 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     {
         maxCount = options.PartitionCapacity;
         bufferSize = options.BufferSize;
-        location = new DirectoryInfo(options.Location);
+        location = new(options.Location);
         if (!location.Exists)
             location.Create();
         var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
-        var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReadRateCounter);
+        var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration, options.ReadRateCounter);
         Reader = reader;
         Writer = writer;
         readTrigger = new AsyncCounter(writer.Position - reader.Position);
@@ -65,6 +65,9 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
 
     /// <inheritdoc />
     Task IChannelReader<TOutput>.Completion => completionTask.Task;
+
+    /// <inheritdoc />
+    void IChannelReader<TOutput>.RollbackRead() => readTrigger.Signal();
 
     /// <inheritdoc />
     DirectoryInfo IChannel.Location => location;
