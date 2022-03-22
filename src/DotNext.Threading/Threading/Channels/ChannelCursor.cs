@@ -37,7 +37,7 @@ internal struct ChannelCursor
         }
 
         stateFile.Dispose();
-        stateFile = File.OpenHandle(stateFileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
+        stateFile = File.OpenHandle(stateFileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.WriteThrough);
         position = BinaryPrimitives.ReadInt64LittleEndian(stateBuffer.AsSpan(PositionOffset));
         offset = BinaryPrimitives.ReadInt64LittleEndian(stateBuffer.AsSpan(OffsetOffset));
     }
