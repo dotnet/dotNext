@@ -80,6 +80,8 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         this.readRate = readRate;
     }
 
+    public override Task Completion => reader.Completion;
+
     public long Position => cursor.Position;
 
     public override bool CanCount => true;
@@ -97,7 +99,14 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     public override async ValueTask<T> ReadAsync(CancellationToken token)
     {
-        await reader.WaitToReadAsync(token).ConfigureAwait(false);
+        var task = await Task.WhenAny(reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
+
+        // propagate exception if needed
+        await task.ConfigureAwait(false);
+
+        // throw if completed
+        if (ReferenceEquals(task, reader.Completion))
+            throw new ChannelClosedException();
 
         // lock and deserialize
         T result;
@@ -117,17 +126,30 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     public override async ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
     {
-        await reader.WaitToReadAsync(token).ConfigureAwait(false);
+        bool result;
+        var task = await Task.WhenAny(reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
 
-        // lock and deserialize
-        using (await readLock.AcquireAsync(token).ConfigureAwait(false))
+        // propagate exception if needed
+        await task.ConfigureAwait(false);
+
+        if (ReferenceEquals(task, reader.Completion))
         {
-            var lookup = Partition;
-            buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
-            await cursor.AdvanceAsync(lookup.Position, token).ConfigureAwait(false);
+            result = false;
+        }
+        else
+        {
+            // lock and deserialize
+            using (await readLock.AcquireAsync(token).ConfigureAwait(false))
+            {
+                var lookup = Partition;
+                buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
+                await cursor.AdvanceAsync(lookup.Position, token).ConfigureAwait(false);
+            }
+
+            result = true;
         }
 
-        return true;
+        return result;
     }
 
     private void Dispose(bool disposing)

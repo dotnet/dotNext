@@ -7,4 +7,6 @@ internal interface IChannelWriter<T> : IChannel
     void MessageReady();
 
     ValueTask SerializeAsync(T input, PartitionStream output, CancellationToken token);
+
+    bool TryComplete(Exception? e = null);
 }

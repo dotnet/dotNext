@@ -167,5 +167,34 @@ namespace DotNext.Threading.Channels
             var producer2 = Produce(channel.Writer, 250M, 500M);
             await Task.WhenAll(consumer, producer1, producer2);
         }
+
+        [Theory]
+        [InlineData(false, false, 0L)]
+        [InlineData(false, true, 0L)]
+        [InlineData(true, false, 0L)]
+        [InlineData(true, true, 0L)]
+        [InlineData(false, false, 10240)]
+        [InlineData(false, true, 10240)]
+        [InlineData(true, false, 10240)]
+        [InlineData(true, true, 10240)]
+        public static async Task ChannelCompletion(bool singleReader, bool singleWriter, long initialSize)
+        {
+            Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
+            using var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
+            await channel.Writer.WriteAsync(g1);
+            await channel.Writer.WriteAsync(g2);
+            await channel.Writer.WriteAsync(g3);
+            True(channel.Writer.TryComplete());
+            await ThrowsAsync<ChannelClosedException>(channel.Writer.WriteAsync(Guid.Empty).AsTask);
+
+            True(channel.Reader.Completion.IsCompletedSuccessfully);
+            Equal(g1, await channel.Reader.ReadAsync());
+            Equal(g2, await channel.Reader.ReadAsync());
+            True(await channel.Reader.WaitToReadAsync());
+            True(channel.Reader.TryRead(out var last));
+            Equal(g3, last);
+            False(await channel.Reader.WaitToReadAsync());
+            await ThrowsAsync<ChannelClosedException>(channel.Reader.ReadAsync().AsTask);
+        }
     }
 }

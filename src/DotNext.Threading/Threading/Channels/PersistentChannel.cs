@@ -20,6 +20,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     private readonly int bufferSize;
     private readonly DirectoryInfo location;
     private readonly IncrementingEventCounter? writeRate;
+    private readonly TaskCompletionSource completionTask;
 
     /// <summary>
     /// Initializes a new persistent channel with the specified options.
@@ -38,6 +39,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
         Writer = writer;
         readTrigger = new AsyncCounter(writer.Position - reader.Position);
         writeRate = options.WriteRateCounter;
+        completionTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     /// <summary>
@@ -62,6 +64,9 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     long IChannelReader<TOutput>.WrittenCount => (Writer as IChannelInfo)?.Position ?? 0L;
 
     /// <inheritdoc />
+    Task IChannelReader<TOutput>.Completion => completionTask.Task;
+
+    /// <inheritdoc />
     DirectoryInfo IChannel.Location => location;
 
     /// <inheritdoc />
@@ -74,6 +79,10 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     /// <inheritdoc />
     ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
         => SerializeAsync(input, output, token);
+
+    /// <inheritdoc />
+    bool IChannelWriter<TInput>.TryComplete(Exception? e)
+        => e is null ? completionTask.TrySetResult() : completionTask.TrySetException(e);
 
     /// <inheritdoc />
     Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
@@ -142,6 +151,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
             readTrigger.Dispose();
             (Reader as IDisposable)?.Dispose();
             (Writer as IDisposable)?.Dispose();
+            completionTask.TrySetException(new ObjectDisposedException(GetType().Name));
         }
     }
 
