@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 03-23-2022
+<a href="https://www.nuget.org/packages/dotnext.threading/4.4.0">DotNext.Threading 4.4.0</a>
+* Added support of channel completion to [PersistentChannel&lt;TInput, TOutput&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class
+* Added `PersistentChannelOptions.ReliableEnumeration` option that allows transactional reads
+
 # 02-28-2022
 <a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
 * Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
