@@ -189,5 +189,27 @@ namespace DotNext.Buffers
                 writer.Dispose();
             }
         }
+
+        [Fact]
+        public static void Concatenation()
+        {
+            var writer = new BufferWriterSlim<char>(stackalloc char[32]);
+            try
+            {
+                writer.Concat(default(ValueTuple).AsReadOnlySpan<string>());
+                Empty(writer.ToString());
+
+                writer.Concat(new ValueTuple<string>("Hello, world!").AsReadOnlySpan());
+                Equal("Hello, world!", writer.ToString());
+                writer.Clear(reuseBuffer: true);
+
+                writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
+                Equal("Hello, world!", writer.ToString());
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+        }
     }
 }

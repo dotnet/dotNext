@@ -187,6 +187,57 @@ public static partial class BufferHelpers
     }
 
     /// <summary>
+    /// Writes concatenated strings.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="values">An array of strings.</param>
+    /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
+    public static void Concat(this ref BufferWriterSlim<char> writer, ReadOnlySpan<string?> values)
+    {
+        switch (values.Length)
+        {
+            case 0:
+                break;
+            case 1:
+                writer.Write(values[0]);
+                break;
+            default:
+                var totalLength = 0L;
+
+                foreach (var str in values)
+                {
+                    if (str is { Length: > 0 })
+                    {
+                        totalLength += str.Length;
+                    }
+                }
+
+                switch (totalLength)
+                {
+                    case 0L:
+                        break;
+                    case > int.MaxValue:
+                        throw new OutOfMemoryException();
+                    default:
+                        var output = writer.GetSpan((int)totalLength);
+                        foreach (var str in values)
+                        {
+                            if (str is { Length: > 0 })
+                            {
+                                str.CopyTo(output);
+                                output = output.Slice(str.Length);
+                                writer.Advance(str.Length);
+                            }
+                        }
+
+                        break;
+                }
+
+                break;
+        }
+    }
+
+    /// <summary>
     /// Writes the value as a sequence of bytes.
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
