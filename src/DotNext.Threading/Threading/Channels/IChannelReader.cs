@@ -6,8 +6,6 @@ internal interface IChannelReader<T> : IChannel, IDisposable
 {
     long WrittenCount { get; }
 
-    Task Completion { get; }
-
     Task WaitToReadAsync(CancellationToken token);
 
     void RollbackRead();

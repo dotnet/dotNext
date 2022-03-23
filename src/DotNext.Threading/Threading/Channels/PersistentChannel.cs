@@ -64,7 +64,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     long IChannelReader<TOutput>.WrittenCount => (Writer as IChannelInfo)?.Position ?? 0L;
 
     /// <inheritdoc />
-    Task IChannelReader<TOutput>.Completion => completionTask.Task;
+    Task IChannel.Completion => completionTask.Task;
 
     /// <inheritdoc />
     void IChannelReader<TOutput>.RollbackRead() => readTrigger.Signal();

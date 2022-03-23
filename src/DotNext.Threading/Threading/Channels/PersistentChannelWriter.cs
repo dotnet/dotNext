@@ -14,7 +14,6 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     private AsyncLock writeLock;
     private PartitionStream? writeTopic;
     private ChannelCursor cursor;
-    private AtomicBoolean completed;
 
     internal PersistentChannelWriter(IChannelWriter<T> writer, bool singleWriter, long initialSize)
     {
@@ -26,8 +25,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
 
     public long Position => cursor.Position;
 
-    public override bool TryComplete(Exception? error = null)
-        => completed.FalseToTrue() && writer.TryComplete(error);
+    public override bool TryComplete(Exception? error = null) => writer.TryComplete(error);
 
     public override bool TryWrite(T item) => false;
 
@@ -41,7 +39,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     {
         using (await writeLock.AcquireAsync(token).ConfigureAwait(false))
         {
-            if (completed.Value)
+            if (writer.Completion.IsCompleted)
                 throw new ChannelClosedException();
 
             var partition = Partition;
