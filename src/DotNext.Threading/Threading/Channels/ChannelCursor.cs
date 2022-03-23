@@ -12,7 +12,7 @@ namespace DotNext.Threading.Channels;
 [StructLayout(LayoutKind.Auto)]
 internal struct ChannelCursor
 {
-    private const long StateFileSize = sizeof(long) + sizeof(long);
+    private const int StateFileSize = sizeof(long) + sizeof(long);
     private const int PositionOffset = 0;
     private const int OffsetOffset = PositionOffset + sizeof(long);
     private readonly SafeFileHandle stateFile;
@@ -23,7 +23,7 @@ internal struct ChannelCursor
     internal ChannelCursor(DirectoryInfo location, string stateFileName)
     {
         stateFileName = Path.Combine(location.FullName, stateFileName);
-        stateBuffer = new byte[StateFileSize];
+        stateBuffer = GC.AllocateUninitializedArray<byte>(StateFileSize, pinned: true);
         if (File.Exists(stateFileName))
         {
             stateFile = File.OpenHandle(stateFileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.None);
