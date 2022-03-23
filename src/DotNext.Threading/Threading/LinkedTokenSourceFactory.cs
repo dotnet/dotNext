@@ -14,19 +14,16 @@ public static class LinkedTokenSourceFactory
     public static CancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second)
     {
         var result = default(CancellationTokenSource);
-        if (first == second || first.IsCancellationRequested || second.IsCancellationRequested)
+
+        if (first == second)
         {
             // nothing to do, just return from this method
         }
-        else if (first.IsCancellationRequested || second.IsCancellationRequested)
-        {
-            result = null;
-        }
-        else if (!first.CanBeCanceled)
+        else if (!first.CanBeCanceled || second.IsCancellationRequested)
         {
             first = second;
         }
-        else if (second.CanBeCanceled)
+        else if (second.CanBeCanceled && !first.IsCancellationRequested)
         {
             result = CancellationTokenSource.CreateLinkedTokenSource(first, second);
             first = result.Token;
@@ -74,13 +71,9 @@ public static class LinkedTokenSourceFactory
         {
             result = LinkTo(ref first, timeout);
         }
-        else if (timeout < TimeSpan.Zero || !second.CanBeCanceled)
+        else if (timeout < TimeSpan.Zero || !second.CanBeCanceled || first.IsCancellationRequested || second.IsCancellationRequested)
         {
             result = LinkTo(ref first, second);
-        }
-        else if (first.IsCancellationRequested || second.IsCancellationRequested)
-        {
-            result = null;
         }
         else if (!first.CanBeCanceled)
         {
