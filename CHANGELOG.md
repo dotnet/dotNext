@@ -6,6 +6,13 @@ Release Notes
 * Added support of channel completion to [PersistentChannel&lt;TInput, TOutput&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class
 * Added `PersistentChannelOptions.ReliableEnumeration` option that allows transactional reads
 
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.1">DotNext.Net.Cluster 4.3.1</a>
+* Fixed exception type for cancellation of replication
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.1">DotNext.AspNetCore.Cluster 4.3.1</a>
+* Updated dependencies
+
 # 02-28-2022
 <a href="https://www.nuget.org/packages/dotnext/4.3.0">DotNext 4.3.0</a>
 * Introduced `DotNext.Runtime.Caching.ConcurrentCache<TKey, TValue>` class with LRU/LFU cache eviction policies
