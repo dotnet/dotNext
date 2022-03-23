@@ -552,19 +552,22 @@ public static class Span
         MemoryOwner<T> result;
         var length = first.Length + second.Length;
 
-        if (length == 0)
+        switch (length)
         {
-            result = default;
-        }
-        else
-        {
-            result = allocator is null ?
-                new(ArrayPool<T>.Shared, length) :
-                allocator(length);
+            case 0:
+                result = default;
+                break;
+            case < 0:
+                throw new OutOfMemoryException();
+            default:
+                result = allocator is null
+                    ? new(ArrayPool<T>.Shared, length)
+                    : allocator(length);
 
-            var output = result.Span;
-            first.CopyTo(output);
-            second.CopyTo(output.Slice(first.Length));
+                var output = result.Span;
+                first.CopyTo(output);
+                second.CopyTo(output.Slice(first.Length));
+                break;
         }
 
         return result;
@@ -744,5 +747,68 @@ public static class Span
     {
         foreach (ref var item in span)
             item = new T();
+    }
+
+    /// <summary>
+    /// Concatenates multiple strings.
+    /// </summary>
+    /// <remarks>
+    /// You can use methods from <see cref="TupleExtensions"/> to emulate variadic arguments.
+    /// </remarks>
+    /// <param name="values">An array of strings.</param>
+    /// <param name="allocator">The allocator of the concatenated string.</param>
+    /// <returns>A buffer containing characters from the concatenated strings.</returns>
+    /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
+    public static MemoryOwner<char> Concat(ReadOnlySpan<string?> values, MemoryAllocator<char>? allocator = null)
+    {
+        MemoryOwner<char> result;
+
+        switch (values.Length)
+        {
+            case 0:
+                result = default;
+                break;
+            case 1:
+                result = Copy(values[0].AsSpan(), allocator);
+                break;
+            default:
+                var totalLength = 0L;
+                foreach (var str in values)
+                {
+                    if (str is { Length: > 0 })
+                    {
+                        totalLength += str.Length;
+                    }
+                }
+
+                switch (totalLength)
+                {
+                    case 0L:
+                        result = default;
+                        break;
+                    case > int.MaxValue:
+                        throw new OutOfMemoryException();
+                    default:
+                        result = allocator is null
+                            ? new(ArrayPool<char>.Shared, (int)totalLength)
+                            : allocator((int)totalLength);
+
+                        var output = result.Span;
+                        foreach (var str in values)
+                        {
+                            if (str is { Length: > 0 })
+                            {
+                                str.CopyTo(output);
+                                output = output.Slice(str.Length);
+                            }
+                        }
+
+                        break;
+                }
+
+                break;
+        }
+
+        return result;
     }
 }

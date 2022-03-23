@@ -468,5 +468,24 @@ namespace DotNext
 
             static void Exists(ref int item, int[] array) => Contains(item, array);
         }
+
+        [Fact]
+        public static void ConcatStrings()
+        {
+            using (var buffer = Span.Concat(default(ValueTuple).AsReadOnlySpan<string>()))
+            {
+                Empty(buffer.Span.ToString());
+            }
+
+            using (var buffer = Span.Concat(new ValueTuple<string>("Hello, world!").AsReadOnlySpan()))
+            {
+                Equal("Hello, world!", buffer.Span.ToString());
+            }
+
+            using (var buffer = Span.Concat(("Hello, ", "world!").AsReadOnlySpan()))
+            {
+                Equal("Hello, world!", buffer.Span.ToString());
+            }
+        }
     }
 }
