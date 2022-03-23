@@ -45,7 +45,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        if (Enum.GetName(evictionPolicy) is null)
+        if (!Enum.IsDefined<CacheEvictionPolicy>(evictionPolicy))
             throw new ArgumentOutOfRangeException(nameof(evictionPolicy));
 
         buckets = new KeyValuePair?[capacity];
