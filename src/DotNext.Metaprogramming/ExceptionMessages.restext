@@ -24,3 +24,4 @@ ExpressionTypeExpected=Expression should be of {0} type
 CollectionExpected=Type {0} should have Length/Count property, indexer or Slice method
 AsyncEnumerableExpected=Collection expression doesn't implement IAsyncEnumerable<T>
 VariableNameIsNullOrEmpty=Local variable must have a name
+RecordTypeExpected=Type {0} is not a record type

@@ -150,10 +150,10 @@ public sealed class CollectionAccessExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override CollectionAccessExpression VisitChildren(ExpressionVisitor visitor)
     {
         var index = visitor.Visit(Index);
         var collection = visitor.Visit(Collection);
-        return ReferenceEquals(index, Index) && ReferenceEquals(collection, Collection) ? this : new CollectionAccessExpression(collection, index);
+        return ReferenceEquals(index, Index) && ReferenceEquals(collection, Collection) ? this : new(collection, index);
     }
 }

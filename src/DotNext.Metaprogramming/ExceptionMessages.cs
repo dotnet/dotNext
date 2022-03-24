@@ -67,4 +67,6 @@ internal static class ExceptionMessages
     internal static string AsyncEnumerableExpected => (string)Resources.Get();
 
     internal static string VariableNameIsNullOrEmpty => (string)Resources.Get();
+
+    internal static string RecordTypeExpected(Type type) => Resources.Get().Format(type);
 }

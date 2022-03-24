@@ -135,11 +135,11 @@ public sealed class SliceExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override SliceExpression VisitChildren(ExpressionVisitor visitor)
     {
         var range = visitor.Visit(Range);
         var collection = visitor.Visit(Collection);
 
-        return ReferenceEquals(range, Range) && ReferenceEquals(collection, Collection) ? this : new SliceExpression(collection, range);
+        return ReferenceEquals(range, Range) && ReferenceEquals(collection, Collection) ? this : new(collection, range);
     }
 }

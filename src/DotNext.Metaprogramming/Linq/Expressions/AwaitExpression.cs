@@ -81,11 +81,11 @@ public sealed class AwaitExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override AwaitExpression VisitChildren(ExpressionVisitor visitor)
     {
         Debug.Assert(GetAwaiter.Object is not null);
         var expression = visitor.Visit(GetAwaiter.Object);
-        return ReferenceEquals(expression, GetAwaiter.Object) ? this : new AwaitExpression(expression);
+        return ReferenceEquals(expression, GetAwaiter.Object) ? this : new(expression);
     }
 
     internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, uint state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint prologue)

@@ -98,10 +98,10 @@ public sealed class NullCoalescingAssignmentExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override NullCoalescingAssignmentExpression VisitChildren(ExpressionVisitor visitor)
     {
         var left = visitor.Visit(Left);
         var right = visitor.Visit(Right);
-        return ReferenceEquals(left, Left) && ReferenceEquals(right, Right) ? this : new NullCoalescingAssignmentExpression(left, right);
+        return ReferenceEquals(left, Left) && ReferenceEquals(right, Right) ? this : new(left, right);
     }
 }

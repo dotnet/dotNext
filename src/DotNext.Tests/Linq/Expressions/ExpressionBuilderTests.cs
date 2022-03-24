@@ -601,5 +601,73 @@ namespace DotNext.Linq.Expressions
             dynamic result = 42.Const().AsDynamic();
             Throws<NotSupportedException>(() => (long)result);
         }
+
+        [Fact]
+        public static void InitExpression()
+        {
+            MemberInitExpression initialization = typeof(UriBuilder).New().Init(new()
+            {
+                { nameof(UriBuilder.Host), "localhost".Const() },
+                { nameof(UriBuilder.Scheme), Uri.UriSchemeHttps.Const() }
+            });
+
+            Contains(initialization.Bindings, static item => nameof(UriBuilder.Host) == item.Member.Name);
+            Contains(initialization.Bindings, static item => nameof(UriBuilder.Scheme) == item.Member.Name);
+        }
+
+        public record class RecordClass(int A);
+
+        [Fact]
+        public static void MutateRecordClass1()
+        {
+            MutationExpression mut = typeof(RecordClass).New(42.Const()).With(new MemberBindings()
+            {
+                { nameof(RecordClass.A), 52.Const() }
+            });
+
+            Contains(mut.Bindings, static item => nameof(RecordClass.A) == item.Member.Name);
+            Equal(typeof(RecordClass), mut.Reduce().Type);
+        }
+
+        [Fact]
+        public static void MutateRecordClass2()
+        {
+            var constructExpr = typeof(RecordClass).New(42.Const());
+            var bindings = new MemberBindings()
+            {
+                { nameof(RecordClass.A), 52.Const() }
+            };
+
+            MutationExpression mut = MutationExpression.Create(constructExpr, bindings.Bind(constructExpr.Type));
+
+            Contains(mut.Bindings, static item => nameof(RecordClass.A) == item.Member.Name);
+            Equal(typeof(RecordClass), mut.Reduce().Type);
+        }
+
+        public record struct RecordStruct(int A);
+
+        [Fact]
+        public static void MutateRecordStruct()
+        {
+            MutationExpression mut = typeof(RecordStruct).New(42.Const()).With(new MemberBindings
+            {
+                { nameof(RecordStruct.A), 52.Const() }
+            });
+
+            Contains(mut.Bindings, static item => nameof(RecordStruct.A) == item.Member.Name);
+            Equal(typeof(RecordClass), mut.Reduce().Type);
+        }
+
+        [Fact]
+        public static void MutateRegularStruct()
+        {
+            MutationExpression mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New(42L.Const(), true.Const()).With(new MemberBindings
+            {
+                {nameof(Net.Cluster.Consensus.Raft.Result<bool>.Value), false.Const()}
+            });
+
+            Contains(mut.Bindings, static item => nameof(Net.Cluster.Consensus.Raft.Result<bool>.Value) == item.Member.Name);
+            Equal(typeof(Net.Cluster.Consensus.Raft.Result<bool>), mut.Reduce().Type);
+        }
     }
 }
