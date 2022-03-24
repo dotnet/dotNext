@@ -56,6 +56,9 @@ Release Date: 03-23-2022
 * Added support of [with operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) from C#
 * Added support of [object initializer](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers#object-initializers)
 
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.4.0">DotNext.Reflection 4.4.0</a>
+* Added `Record<T>` concept class to work with [record types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
+
 <a href="https://www.nuget.org/packages/dotnext.threading/4.4.0">DotNext.Threading 4.4.0</a>
 * Added support of channel completion to [PersistentChannel&lt;TInput, TOutput&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class
 * Added `PersistentChannelOptions.ReliableEnumeration` option that allows transactional reads
