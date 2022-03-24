@@ -48,9 +48,18 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 03-23-2022
 
+<a href="https://www.nuget.org/packages/dotnext/4.4.0">DotNext 4.4.0</a>
+* Added efficient way to concate multiple strings and represent the result as a rented buffer. See `Span.Concat` method.
+* String concatenation support is added to [BufferWriterSlim&lt;char&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) as well
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.4.0">DotNext.Metaprogramming 4.4.0</a>
+* Added support of [with operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) from C#
+* Added support of [object initializer](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers#object-initializers)
+
 <a href="https://www.nuget.org/packages/dotnext.threading/4.4.0">DotNext.Threading 4.4.0</a>
 * Added support of channel completion to [PersistentChannel&lt;TInput, TOutput&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class
 * Added `PersistentChannelOptions.ReliableEnumeration` option that allows transactional reads
+* Fixed token linkage represented by extension methods from [LinkedTokenSourceFactory](https://dotnet.github.io/dotNext/api/DotNext.Threading.LinkedTokenSourceFactory.html) class
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.1">DotNext.Net.Cluster 4.3.1</a>
 * Fixed exception type for cancellation of replication
