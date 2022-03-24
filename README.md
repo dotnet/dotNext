@@ -64,11 +64,11 @@ Release Date: 03-23-2022
 * Added `PersistentChannelOptions.ReliableEnumeration` option that allows transactional reads
 * Fixed token linkage represented by extension methods from [LinkedTokenSourceFactory](https://dotnet.github.io/dotNext/api/DotNext.Threading.LinkedTokenSourceFactory.html) class
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.3.1">DotNext.Net.Cluster 4.3.1</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.4.0">DotNext.Net.Cluster 4.4.0</a>
 * Fixed exception type for cancellation of replication
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.3.1">DotNext.AspNetCore.Cluster 4.3.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.4.0">DotNext.AspNetCore.Cluster 4.4.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
