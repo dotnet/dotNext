@@ -487,5 +487,13 @@ namespace DotNext
                 Equal("Hello, world!", buffer.Span.ToString());
             }
         }
+
+        [Fact]
+        public static void SpanContravariance()
+        {
+            ReadOnlySpan<IEnumerable<char>> sequence = new ReadOnlySpan<string>(new string[] { "a", "b" }).Contravariance<string, IEnumerable<char>>();
+            Contains('a', sequence[0]);
+            Contains('b', sequence[1]);
+        }
     }
 }
