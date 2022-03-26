@@ -220,7 +220,6 @@ public struct BufferWriterInterpolatedStringHandler
                 }
 
                 break;
-
             case not null:
                 AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
                 break;
