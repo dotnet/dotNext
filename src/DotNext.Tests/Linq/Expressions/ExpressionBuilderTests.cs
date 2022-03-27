@@ -655,7 +655,7 @@ namespace DotNext.Linq.Expressions
             });
 
             Contains(mut.Bindings, static item => nameof(RecordStruct.A) == item.Member.Name);
-            Equal(typeof(RecordClass), mut.Reduce().Type);
+            Equal(typeof(RecordStruct), mut.Reduce().Type);
         }
 
         [Fact]
