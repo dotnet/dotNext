@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-23-2022
+Release Date: 03-27-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.4.0">DotNext 4.4.0</a>
 * Added efficient way to concate multiple strings and represent the result as a rented buffer. See `Span.Concat` method.
@@ -59,6 +59,9 @@ Release Date: 03-23-2022
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/4.4.0">DotNext.Reflection 4.4.0</a>
 * Added `Record<T>` concept class to work with [record types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.4.0">DotNext.Unsafe 4.4.0</a>
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.4.0">DotNext.Threading 4.4.0</a>
 * Added support of channel completion to [PersistentChannel&lt;TInput, TOutput&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class
