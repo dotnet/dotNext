@@ -146,6 +146,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
         var responsePipe = CreatePipe(Members.Count);
+        await Task.Yield(); // unblock the caller
 
         for (var forced = false; ; responsePipe.Reset())
         {
