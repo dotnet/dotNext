@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-27-2022
+Release Date: 03-28-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.4.0">DotNext 4.4.0</a>
 * Added efficient way to concate multiple strings and represent the result as a rented buffer. See `Span.Concat` method.
@@ -73,6 +73,7 @@ Release Date: 03-27-2022
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.4.0">DotNext.Net.Cluster 4.4.0</a>
 * Fixed exception type for cancellation of replication
+* Fixed incorrect behavior when `IRaftCluster.LeaderChanged` fired but `IRaftCluster.LeadershipToken` indicates that leader is not yet elected
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.4.0">DotNext.AspNetCore.Cluster 4.4.0</a>
