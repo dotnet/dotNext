@@ -289,5 +289,20 @@ namespace DotNext.Buffers
 
             Equal($"{x,4:X} = {y,-3:X}", context.Encoding.GetString(writer.WrittenSpan));
         }
+
+        [Fact]
+        public static void Concatenation()
+        {
+            var writer = new ArrayBufferWriter<char>();
+            writer.Concat(default(ValueTuple).AsReadOnlySpan<string>());
+            Empty(writer.BuildString());
+
+            writer.Concat(new ValueTuple<string>("Hello, world!").AsReadOnlySpan());
+            Equal("Hello, world!", writer.BuildString());
+            writer.Clear();
+
+            writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
+            Equal("Hello, world!", writer.BuildString());
+        }
     }
 }

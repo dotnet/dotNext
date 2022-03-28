@@ -8,5 +8,7 @@ internal interface IChannelReader<T> : IChannel, IDisposable
 
     Task WaitToReadAsync(CancellationToken token);
 
+    void RollbackRead();
+
     ValueTask<T> DeserializeAsync(PartitionStream input, CancellationToken token);
 }

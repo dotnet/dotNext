@@ -259,6 +259,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
 
             // add two nodes to the cluster
+            NotNull(host1.Leader);
+            NotNull(host1.Lease);
+            False(host1.LeadershipToken.IsCancellationRequested);
             True(await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress));
             await host2.Readiness.WaitAsync(DefaultTimeout);
 

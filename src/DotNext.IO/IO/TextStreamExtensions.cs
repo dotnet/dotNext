@@ -1,9 +1,11 @@
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DotNext.IO;
 
 using Buffers;
+using InterpolatedString = Text.InterpolatedString;
 
 /// <summary>
 /// Represents various extension methods for <see cref="TextWriter"/> and <see cref="TextReader"/> classes.
@@ -77,4 +79,113 @@ public static class TextStreamExtensions
         IFlushable.DiscoverFlushMethods(writer, ref flush, ref flushAsync);
         return new EncodingTextWriter<TWriter>(writer, encoding, provider, flush, flushAsync);
     }
+
+    /// <summary>
+    /// Writes interpolated string.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    public static ValueTask WriteAsync(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument("allocator", "provider")] ref PoolingInterpolatedStringHandler handler, CancellationToken token = default)
+    {
+        return WriteAsync(InterpolatedString.Allocate(allocator, provider, ref handler));
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        async ValueTask WriteAsync(MemoryOwner<char> buffer)
+        {
+            try
+            {
+                await writer.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Writes interpolated string.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    public static ValueTask WriteAsync(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler, CancellationToken token = default)
+        => WriteAsync(writer, allocator, null, ref handler, token);
+
+    /// <summary>
+    /// Writes interpolated string and appends a new line after it.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    public static ValueTask WriteLineAsync(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument("allocator", "provider")] ref PoolingInterpolatedStringHandler handler, CancellationToken token = default)
+    {
+        handler.AppendLiteral(Environment.NewLine);
+        return WriteAsync(writer, allocator, provider, ref handler, token);
+    }
+
+    /// <summary>
+    /// Writes interpolated string and appends a new line after it.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    public static ValueTask WriteLineAsync(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler, CancellationToken token = default)
+        => WriteLineAsync(writer, allocator, null, ref handler, token);
+
+    /// <summary>
+    /// Writes interpolated string and appends a new line after it.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    public static void Write(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler)
+    {
+        using var buffer = InterpolatedString.Allocate(allocator, provider, ref handler);
+        writer.Write(buffer.Span);
+    }
+
+    /// <summary>
+    /// Writes interpolated string and appends a new line after it.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    public static void Write(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler)
+        => Write(writer, allocator, null, ref handler);
+
+    /// <summary>
+    /// Writes interpolated string and appends a new line after it.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    public static void WriteLine(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler)
+    {
+        handler.AppendLiteral(Environment.NewLine);
+        using var buffer = InterpolatedString.Allocate(allocator, provider, ref handler);
+        writer.Write(buffer.Span);
+    }
+
+    /// <summary>
+    /// Writes interpolated string and appends a new line after it.
+    /// </summary>
+    /// <param name="writer">An output for the interpolated string.</param>
+    /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
+    /// <param name="handler">The interpolated string handler.</param>
+    public static void WriteLine(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler)
+        => WriteLine(writer, allocator, null, ref handler);
 }

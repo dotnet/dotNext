@@ -84,15 +84,15 @@ public sealed class ItemIndexExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override ItemIndexExpression VisitChildren(ExpressionVisitor visitor)
     {
         var expression = visitor.Visit(Value);
-        return ReferenceEquals(expression, Value) ? this : new ItemIndexExpression(expression, IsFromEnd);
+        return ReferenceEquals(expression, Value) ? this : new(expression, IsFromEnd);
     }
 
     internal ItemIndexExpression Visit(ExpressionVisitor visitor)
     {
         var expression = visitor.Visit(this);
-        return expression is ItemIndexExpression index ? index : new ItemIndexExpression(expression);
+        return expression is ItemIndexExpression index ? index : new(expression);
     }
 }

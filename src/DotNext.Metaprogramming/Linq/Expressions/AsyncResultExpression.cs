@@ -99,9 +99,9 @@ public sealed class AsyncResultExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override AsyncResultExpression VisitChildren(ExpressionVisitor visitor)
     {
         var expression = visitor.Visit(AsyncResult);
-        return ReferenceEquals(expression, AsyncResult) ? this : new AsyncResultExpression(expression, taskType);
+        return ReferenceEquals(expression, AsyncResult) ? this : new(expression, taskType);
     }
 }

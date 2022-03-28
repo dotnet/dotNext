@@ -795,10 +795,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
         {
             candidateState.Dispose();
-            Leader = newLeader as TMember;
             state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
                 .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
             await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+            Leader = newLeader as TMember;
             Metrics?.MovedToLeaderState();
             Logger.TransitionToLeaderStateCompleted();
         }

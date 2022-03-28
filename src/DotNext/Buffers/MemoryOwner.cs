@@ -94,7 +94,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     }
 
     /// <summary>
-    /// Retns the memory.
+    /// Rents the memory.
     /// </summary>
     /// <param name="provider">The memory provider.</param>
     /// <param name="length">The number of elements to rent.</param>

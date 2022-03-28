@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,19 +6,19 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Buffers;
 
 /// <summary>
-/// Represents handler of the interpolated string
-/// that can be written to <see cref="IBufferWriter{T}"/> without temporary allocations.
+/// Represents interpolated string builder that utilizes reusable buffer rented from the pool.
 /// </summary>
 [InterpolatedStringHandler]
 [EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Auto)]
-public struct BufferWriterInterpolatedStringHandler
+public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposable
 {
     private const int MaxBufferSize = int.MaxValue / 2;
     private const char Whitespace = ' ';
 
-    private readonly IBufferWriter<char> buffer;
+    private readonly MemoryAllocator<char>? allocator;
     private readonly IFormatProvider? provider;
+    private MemoryOwner<char> buffer;
     private int count;
 
     /// <summary>
@@ -27,21 +26,84 @@ public struct BufferWriterInterpolatedStringHandler
     /// </summary>
     /// <param name="literalLength">The total number of characters in known at compile-time.</param>
     /// <param name="formattedCount">The number of placeholders.</param>
-    /// <param name="buffer">The output buffer.</param>
+    /// <param name="allocator">The buffer allocator.</param>
     /// <param name="provider">Optional formatting provider.</param>
-    public BufferWriterInterpolatedStringHandler(int literalLength, int formattedCount, IBufferWriter<char> buffer, IFormatProvider? provider = null)
+    public PoolingInterpolatedStringHandler(int literalLength, int formattedCount, MemoryAllocator<char>? allocator, IFormatProvider? provider = null)
     {
-        this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+        buffer = allocator.Invoke(literalLength + formattedCount, exactSize: false);
+        this.allocator = allocator;
         this.provider = provider;
-
-        buffer.GetSpan(literalLength + formattedCount);
         count = 0;
     }
 
-    /// <summary>
-    /// Gets number of written characters.
-    /// </summary>
-    public readonly int WrittenCount => count;
+    /// <inheritdoc />
+    readonly long IGrowableBuffer<char>.WrittenCount => count;
+
+    /// <inheritdoc />
+    void IGrowableBuffer<char>.Write(ReadOnlySpan<char> value) => AppendFormatted(value);
+
+    /// <inheritdoc />
+    void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> value) => AppendFormatted(value);
+
+    /// <inheritdoc />
+    void IGrowableBuffer<char>.Write(char value) => AppendFormatted(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
+
+    /// <inheritdoc />
+    void IGrowableBuffer<char>.CopyTo<TConsumer>(TConsumer consumer) => consumer.Invoke(WrittenMemory.Span);
+
+    /// <inheritdoc />
+    ValueTask IGrowableBuffer<char>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+        => consumer.Invoke(WrittenMemory, token);
+
+    /// <inheritdoc />
+    int IGrowableBuffer<char>.CopyTo(Span<char> output)
+    {
+        WrittenMemory.Span.CopyTo(output, out var writtenCount);
+        return writtenCount;
+    }
+
+    /// <inheritdoc />
+    void IGrowableBuffer<char>.Clear()
+    {
+        buffer.Dispose();
+        count = 0;
+    }
+
+    /// <inheritdoc />
+    bool IGrowableBuffer<char>.TryGetWrittenContent(out ReadOnlyMemory<char> block)
+    {
+        block = WrittenMemory;
+        return true;
+    }
+
+    private readonly ReadOnlyMemory<char> WrittenMemory => count > 0 ? buffer.Memory.Slice(0, count) : ReadOnlyMemory<char>.Empty;
+
+    internal MemoryOwner<char> DetachBuffer()
+    {
+        MemoryOwner<char> result;
+
+        if (count is 0)
+        {
+            result = default;
+        }
+        else
+        {
+            result = buffer;
+            result.Truncate(count);
+            count = 0;
+            buffer = default;
+        }
+
+        return result;
+    }
+
+    private Span<char> GetSpan(int sizeHint)
+    {
+        if (IGrowableBuffer<char>.GetBufferSize(sizeHint, buffer.Length, count, out sizeHint))
+            buffer.Resize(sizeHint, exactSize: false, allocator);
+
+        return buffer.Span.Slice(count);
+    }
 
     /// <summary>
     /// Writes the specified string to the handler.
@@ -50,51 +112,6 @@ public struct BufferWriterInterpolatedStringHandler
     public void AppendLiteral(string? value)
         => AppendFormatted(value.AsSpan());
 
-    internal static int AppendFormatted<T>(IBufferWriter<char> buffer, T value, string? format, IFormatProvider? provider)
-    {
-        int charsWritten;
-
-        switch (value)
-        {
-            case IFormattable:
-                if (value is ISpanFormattable)
-                {
-                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
-                    {
-                        var span = buffer.GetSpan(bufferSize);
-
-                        // constrained call avoiding boxing for value types
-                        if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
-                        {
-                            buffer.Advance(charsWritten);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    // constrained call avoiding boxing for value types
-                    charsWritten = Write(buffer, ((IFormattable)value).ToString(format, provider));
-                }
-
-                break;
-            case not null:
-                charsWritten = Write(buffer, value.ToString());
-                break;
-            default:
-                charsWritten = 0;
-                break;
-        }
-
-        return charsWritten;
-
-        static int Write(IBufferWriter<char> buffer, ReadOnlySpan<char> chars)
-        {
-            buffer.Write(chars);
-            return chars.Length;
-        }
-    }
-
     /// <summary>
     /// Writes the specified value to the handler.
     /// </summary>
@@ -102,16 +119,35 @@ public struct BufferWriterInterpolatedStringHandler
     /// <param name="value">The value to write.</param>
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, string? format = null)
-        => count += AppendFormatted(buffer, value, format, provider);
-
-    /// <summary>
-    /// Writes the specified character span to the handler.
-    /// </summary>
-    /// <param name="value">The span to write.</param>
-    public void AppendFormatted(ReadOnlySpan<char> value)
     {
-        buffer.Write(value);
-        count += value.Length;
+        switch (value)
+        {
+            case IFormattable:
+                if (value is ISpanFormattable)
+                {
+                    int charsWritten;
+                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                    {
+                        var span = GetSpan(bufferSize);
+
+                        // constrained call avoiding boxing for value types
+                        if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                            break;
+                    }
+
+                    count += charsWritten;
+                }
+                else
+                {
+                    // constrained call avoiding boxing for value types
+                    AppendLiteral(((IFormattable)value).ToString(format, provider));
+                }
+
+                break;
+            case not null:
+                AppendLiteral(value.ToString());
+                break;
+        }
     }
 
     private void AppendFormatted(ReadOnlySpan<char> value, int alignment, bool leftAlign)
@@ -125,7 +161,7 @@ public struct BufferWriterInterpolatedStringHandler
             return;
         }
 
-        var span = buffer.GetSpan(alignment);
+        var span = GetSpan(alignment);
         if (leftAlign)
         {
             span.Slice(value.Length, padding).Fill(Whitespace);
@@ -137,7 +173,6 @@ public struct BufferWriterInterpolatedStringHandler
             value.CopyTo(span.Slice(padding));
         }
 
-        buffer.Advance(alignment);
         count += alignment;
     }
 
@@ -189,7 +224,7 @@ public struct BufferWriterInterpolatedStringHandler
                 {
                     for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                     {
-                        var span = buffer.GetSpan(bufferSize);
+                        var span = GetSpan(bufferSize);
                         if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                         {
                             var padding = alignment - charsWritten;
@@ -208,7 +243,6 @@ public struct BufferWriterInterpolatedStringHandler
                                 span.Slice(0, padding).Fill(Whitespace);
                             }
 
-                            buffer.Advance(alignment);
                             count += alignment;
                             break;
                         }
@@ -224,5 +258,27 @@ public struct BufferWriterInterpolatedStringHandler
                 AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
                 break;
         }
+    }
+
+    /// <summary>
+    /// Writes the specified character span to the handler.
+    /// </summary>
+    /// <param name="value">The span to write.</param>
+    public void AppendFormatted(ReadOnlySpan<char> value)
+    {
+        value.CopyTo(GetSpan(value.Length));
+        count += value.Length;
+    }
+
+    /// <inheritdoc />
+    public readonly override string ToString() => WrittenMemory.ToString();
+
+    /// <summary>
+    /// Releases the buffer associated with this handler.
+    /// </summary>
+    public void Dispose()
+    {
+        buffer.Dispose();
+        this = default;
     }
 }

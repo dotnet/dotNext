@@ -122,11 +122,11 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// <returns>The stream over elements in this array.</returns>
     public unsafe Stream AsStream()
     {
-        if (array.IsNullOrEmpty())
-            return Stream.Null;
-        if (typeof(T) == typeof(byte))
-            return new MemoryStream(Unsafe.As<byte[]>(array), true);
-        return new UnmanagedMemoryStream((byte*)RawPointer, Size);
+        return array.IsNullOrEmpty()
+            ? Stream.Null
+            : typeof(T) == typeof(byte)
+            ? new MemoryStream(Unsafe.As<byte[]>(array), writable: true)
+            : new UnmanagedMemoryStream((byte*)RawPointer, Size);
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// Returns a string that represents the current array.
     /// </summary>
     /// <returns>A string that represents the current array.</returns>
-    public override string? ToString() => Pointer.ToString();
+    public override string ToString() => Pointer.ToString();
 
     /// <summary>
     /// Determines whether the current object references the same array as other object.

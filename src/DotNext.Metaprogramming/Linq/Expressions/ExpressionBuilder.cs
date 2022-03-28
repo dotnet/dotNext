@@ -1104,6 +1104,18 @@ public static partial class ExpressionBuilder
             Expression.New(ctor, args);
     }
 
+    /// <summary>
+    /// Constructs an expression representing initialization of members during object construction.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>new T() { M1 = V1, M2 = V2 }</c>.
+    /// </remarks>
+    /// <param name="expression">An expression representing object construction.</param>
+    /// <param name="bindings">A collection of members to initialize.</param>
+    /// <returns>Initialization expression.</returns>
+    public static MemberInitExpression Init(this NewExpression expression, MemberBindings bindings)
+        => Expression.MemberInit(expression, bindings.Bind(expression.Type));
+
     internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
     {
         if (instructions.Count == 0)
@@ -1230,6 +1242,16 @@ public static partial class ExpressionBuilder
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
     public static WithExpression With(this Expression obj, WithExpression.Statement body)
         => WithExpression.Create(obj, body);
+
+    /// <summary>
+    /// Creates a new instance of <see cref="MutationExpression"/>.
+    /// </summary>
+    /// <param name="obj">An expression representing an object to copy.</param>
+    /// <param name="bindings">A collection of members to mutate.</param>
+    /// <returns>The constructed expression.</returns>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression">with expression</seealso>
+    public static MutationExpression With(this Expression obj, MemberBindings bindings)
+        => MutationExpression.Create(obj, bindings);
 
     internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
 
