@@ -111,6 +111,8 @@
       href: metaprogramming/interp.md
     - name: Pattern Matching
       href: metaprogramming/match.md
+    - name: with Expression and record types
+      href: metaprogramming/with.md
     - name: Miscellaneous Statements
       href: metaprogramming/misc.md
 - name: Unsafe Data Structures
