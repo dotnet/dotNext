@@ -148,9 +148,18 @@ buffer.WriteString($"{x} + {y} = {x + y}");
 string result = buffer.ToString();
 ```
 
-Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler) and [BufferWriterInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler) data types.
+Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler), [BufferWriterInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler), and [PoolingInterpolatedStringHandler](xref:DotNext.Buffers.PoolingInterpolatedStringHandler) data types.
 
-# What to choose?
+[BufferHelpers](xref:DotNext.Buffers.BufferHelpers) class offers extension methods for efficient concatenation of strings:
+```csharp
+using DotNext.Buffers;
+
+int x = 10, y = 20;
+using var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
+buffer.Concat(("Hello,", " ", "world!").AsReadOnlySpan());
+```
+
+# How to choose?
 The following table describes the main differences between various growable buffer types:
 
 | Buffer Writer | When to use | Compatible with async methods | Space complexity (write operation) |
