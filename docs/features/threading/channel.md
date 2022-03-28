@@ -71,6 +71,7 @@ Producer and consumer maintaining their own file streams and **cursors**. **Curs
 | InitialPartitionSize | 0 | The initial size (in bytes) on disk of newly created partition file. If this parameter is greater than 0 then the created partition file will be filled with zeroes. Such approach helps to avoid fragmentation of partition file and significantly improves I/O performance |
 | SingleWriter | false | `true` if there is only one producer of the messages. `false` if `WriteAsync` method can be called concurrently from different asynchronous flows and causes synchronization of multiple producers so it has runtime overhead. |
 | SingleReader | false | `true` if the is only one consumer of the messages. `false` if `ReadAsync` method can be called concurrently from different asynchronous flows and causes synchronization of multiple producers so it has runtime overhead. |
+| ReliableEnumeration | false | `true` to enable transactional reads using enumerator returned by [ChannelReader&lt;T&gt;.ReadAllAsync](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1.readallasync) method. This property has no effect on other methods.
 
 The best performance can be achieved using the following configuration:
 * `SingleWriter=true`
@@ -83,4 +84,4 @@ However, the configuration depends on use cases.
 # Diagnostics
 _Throughput_ property of `PersistentChannel` class allows to measure ratio between consumed and produced messages. The value is always in range [0, 1). The value `1` means that consumer is reading messages with the same speed as producer writing new messages. If throughput is less than `1` then disk space utilized for messages may grow.
 
-_RemainintCount_ property provides the number of unread messages in the channel.
+_RemainingCount_ property provides the number of unread messages in the channel.
