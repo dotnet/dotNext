@@ -164,6 +164,11 @@ The example shown previously demonstrates basic implementation of serialization 
 <td>false</td>
 <td><code>true</code> if the is only one consumer of the messages. <code>false</code> if <code>ReadAsync</code> method can be called concurrently from different asynchronous flows and causes synchronization of multiple producers so it has runtime overhead.</td>
 </tr>
+<tr>
+<td>ReliableEnumeration</td>
+<td>false</td>
+<td><code>true</code> to enable transactional reads using enumerator returned by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1.readallasync">ChannelReader&lt;T&gt;.ReadAllAsync</a> method. This property has no effect on other methods.</td>
+</tr>
 </tbody>
 </table>
 <p>The best performance can be achieved using the following configuration:</p>
@@ -176,7 +181,7 @@ The example shown previously demonstrates basic implementation of serialization 
 <p>However, the configuration depends on use cases.</p>
 <h1 id="diagnostics">Diagnostics</h1>
 <p><em>Throughput</em> property of <code>PersistentChannel</code> class allows to measure ratio between consumed and produced messages. The value is always in range [0, 1). The value <code>1</code> means that consumer is reading messages with the same speed as producer writing new messages. If throughput is less than <code>1</code> then disk space utilized for messages may grow.</p>
-<p><em>RemainintCount</em> property provides the number of unread messages in the channel.</p>
+<p><em>RemainingCount</em> property provides the number of unread messages in the channel.</p>
 </article>
           </div>
           

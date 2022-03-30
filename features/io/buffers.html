@@ -193,8 +193,15 @@ buffer.WriteString($&quot;{x} + {y} = {x + y}&quot;);
 
 string result = buffer.ToString();
 </code></pre>
-<p>Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see <a href="xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler">BufferWriterSlimInterpolatedStringHandler</a> and <a href="xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler">BufferWriterInterpolatedStringHandler</a> data types.</p>
-<h1 id="what-to-choose">What to choose?</h1>
+<p>Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see <a href="xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler">BufferWriterSlimInterpolatedStringHandler</a>, <a href="xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler">BufferWriterInterpolatedStringHandler</a>, and <a href="xref:DotNext.Buffers.PoolingInterpolatedStringHandler">PoolingInterpolatedStringHandler</a> data types.</p>
+<p><a class="xref" href="../../api/DotNext.Buffers.BufferHelpers.html">BufferHelpers</a> class offers extension methods for efficient concatenation of strings:</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+
+int x = 10, y = 20;
+using var buffer = new BufferWriterSlim&lt;char&gt;(stackalloc char[128]);
+buffer.Concat((&quot;Hello,&quot;, &quot; &quot;, &quot;world!&quot;).AsReadOnlySpan());
+</code></pre>
+<h1 id="how-to-choose">How to choose?</h1>
 <p>The following table describes the main differences between various growable buffer types:</p>
 <table>
 <thead>

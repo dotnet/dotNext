@@ -1,6 +1,6 @@
 with Expression
 ====
-[with Operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) provides nondestructive mutation of the record using copy-on-write approach. .NEXT Metaprogramming provides [special expression type](DotNext.Linq.Expressions.MutationExpression) to support the operator:
+[with Operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) provides nondestructive mutation of the record using copy-on-write approach. .NEXT Metaprogramming provides [special expression type](xref:DotNext.Linq.Expressions.MutationExpression) to support the operator:
 ```csharp
 using DotNext.Linq.Expressions;
 using System.Linq.Expressions;

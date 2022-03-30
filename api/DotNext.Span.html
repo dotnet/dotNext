@@ -1579,6 +1579,65 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Concat_ReadOnlySpan_System_String__DotNext_Buffers_MemoryAllocator_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Span.Concat(ReadOnlySpan%7BSystem.String%7D%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L762">View Source</a>
+  </span>
+  <a id="DotNext_Span_Concat_" data-uid="DotNext.Span.Concat*"></a>
+  <h4 id="DotNext_Span_Concat_ReadOnlySpan_System_String__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.Span.Concat(ReadOnlySpan{System.String},DotNext.Buffers.MemoryAllocator{System.Char})">Concat(ReadOnlySpan&lt;String&gt;, MemoryAllocator&lt;Char&gt;)</h4>
+  <div class="markdown level1 summary"><p>Concatenates multiple strings.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Concat(ReadOnlySpan&lt;string&gt; values, MemoryAllocator&lt;char&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><span class="parametername">values</span></td>
+        <td><p>An array of strings.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the concatenated string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><p>A buffer containing characters from the concatenated strings.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Span_Concat_ReadOnlySpan_System_String__DotNext_Buffers_MemoryAllocator_System_Char___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>You can use methods from <a class="xref" href="DotNext.TupleExtensions.html">TupleExtensions</a> to emulate variadic arguments.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Concat__1_ReadOnlySpan___0__ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Concat%60%601(ReadOnlySpan%7B%60%600%7D%2CReadOnlySpan%7B%60%600%7D%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1660,7 +1719,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Concat__1_ReadOnlySpan___0__ReadOnlySpan___0__ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Concat%60%601(ReadOnlySpan%7B%60%600%7D%2CReadOnlySpan%7B%60%600%7D%2CReadOnlySpan%7B%60%600%7D%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L582">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L585">View Source</a>
   </span>
   <a id="DotNext_Span_Concat_" data-uid="DotNext.Span.Concat*"></a>
   <h4 id="DotNext_Span_Concat__1_ReadOnlySpan___0__ReadOnlySpan___0__ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Span.Concat``1(ReadOnlySpan{``0},ReadOnlySpan{``0},ReadOnlySpan{``0},DotNext.Buffers.MemoryAllocator{``0})">Concat&lt;T&gt;(ReadOnlySpan&lt;T&gt;, ReadOnlySpan&lt;T&gt;, ReadOnlySpan&lt;T&gt;, MemoryAllocator&lt;T&gt;)</h4>
@@ -1741,10 +1800,83 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Contravariance__2_ReadOnlySpan___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Contravariance%60%602(ReadOnlySpan%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L822">View Source</a>
+  </span>
+  <a id="DotNext_Span_Contravariance_" data-uid="DotNext.Span.Contravariance*"></a>
+  <h4 id="DotNext_Span_Contravariance__2_ReadOnlySpan___0__" data-uid="DotNext.Span.Contravariance``2(ReadOnlySpan{``0})">Contravariance&lt;T, TBase&gt;(ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Upcasts the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ReadOnlySpan&lt;TBase&gt; Contravariance&lt;T, TBase&gt;(this ReadOnlySpan&lt;T&gt; span)
+
+    where T : class, TBase where TBase : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td><p>The span over elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;TBase&gt;</td>
+        <td><p>The span pointing to the same memory as <code data-dev-comment-type="paramref" class="paramref">span</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The source type.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TBase</span></td>
+        <td><p>The target type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Copy__1_ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Copy%60%601(ReadOnlySpan%7B%60%600%7D%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L607">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L610">View Source</a>
   </span>
   <a id="DotNext_Span_Copy_" data-uid="DotNext.Span.Copy*"></a>
   <h4 id="DotNext_Span_Copy__1_ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Span.Copy``1(ReadOnlySpan{``0},DotNext.Buffers.MemoryAllocator{``0})">Copy&lt;T&gt;(ReadOnlySpan&lt;T&gt;, MemoryAllocator&lt;T&gt;)</h4>
@@ -1816,7 +1948,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_CopyTo__1_DotNext_Span___0__DotNext_Span___0__System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Span.CopyTo%60%601(DotNext.Span%7B%60%600%7D%2CDotNext.Span%7B%60%600%7D%2CSystem.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L649">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L652">View Source</a>
   </span>
   <a id="DotNext_Span_CopyTo_" data-uid="DotNext.Span.CopyTo*"></a>
   <h4 id="DotNext_Span_CopyTo__1_DotNext_Span___0__DotNext_Span___0__System_Int32__" data-uid="DotNext.Span.CopyTo``1(DotNext.Span{``0},DotNext.Span{``0},System.Int32@)">CopyTo&lt;T&gt;(Span&lt;T&gt;, Span&lt;T&gt;, out Int32)</h4>
@@ -1878,7 +2010,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_CopyTo__1_ReadOnlySpan___0__DotNext_Span___0__System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Span.CopyTo%60%601(ReadOnlySpan%7B%60%600%7D%2CDotNext.Span%7B%60%600%7D%2CSystem.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L627">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L630">View Source</a>
   </span>
   <a id="DotNext_Span_CopyTo_" data-uid="DotNext.Span.CopyTo*"></a>
   <h4 id="DotNext_Span_CopyTo__1_ReadOnlySpan___0__DotNext_Span___0__System_Int32__" data-uid="DotNext.Span.CopyTo``1(ReadOnlySpan{``0},DotNext.Span{``0},System.Int32@)">CopyTo&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Span&lt;T&gt;, out Int32)</h4>
@@ -1940,7 +2072,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_FirstOrEmpty__1_ReadOnlySpan___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.FirstOrEmpty%60%601(ReadOnlySpan%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L673">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L676">View Source</a>
   </span>
   <a id="DotNext_Span_FirstOrEmpty_" data-uid="DotNext.Span.FirstOrEmpty*"></a>
   <h4 id="DotNext_Span_FirstOrEmpty__1_ReadOnlySpan___0__" data-uid="DotNext.Span.FirstOrEmpty``1(ReadOnlySpan{``0})">FirstOrEmpty&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</h4>
@@ -2006,7 +2138,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_FirstOrNone__1_ReadOnlySpan___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.FirstOrNone%60%601(ReadOnlySpan%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L683">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L686">View Source</a>
   </span>
   <a id="DotNext_Span_FirstOrNone_" data-uid="DotNext.Span.FirstOrNone*"></a>
   <h4 id="DotNext_Span_FirstOrNone__1_ReadOnlySpan___0__" data-uid="DotNext.Span.FirstOrNone``1(ReadOnlySpan{``0})">FirstOrNone&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</h4>
@@ -2072,7 +2204,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_FirstOrNone__1_ReadOnlySpan___0__DotNext_Predicate___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.FirstOrNone%60%601(ReadOnlySpan%7B%60%600%7D%2CDotNext.Predicate%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L694">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L697">View Source</a>
   </span>
   <a id="DotNext_Span_FirstOrNone_" data-uid="DotNext.Span.FirstOrNone*"></a>
   <h4 id="DotNext_Span_FirstOrNone__1_ReadOnlySpan___0__DotNext_Predicate___0__" data-uid="DotNext.Span.FirstOrNone``1(ReadOnlySpan{``0},DotNext.Predicate{``0})">FirstOrNone&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Predicate&lt;T&gt;)</h4>
@@ -2541,7 +2673,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Initialize__1_DotNext_Span___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Initialize%60%601(DotNext.Span%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L742">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L745">View Source</a>
   </span>
   <a id="DotNext_Span_Initialize_" data-uid="DotNext.Span.Initialize*"></a>
   <h4 id="DotNext_Span_Initialize__1_DotNext_Span___0__" data-uid="DotNext.Span.Initialize``1(DotNext.Span{``0})">Initialize&lt;T&gt;(Span&lt;T&gt;)</h4>
@@ -2596,7 +2728,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_PeekRandom__1_ReadOnlySpan___0__Random_.md&amp;value=---%0Auid%3A%20DotNext.Span.PeekRandom%60%601(ReadOnlySpan%7B%60%600%7D%2CRandom)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L715">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L718">View Source</a>
   </span>
   <a id="DotNext_Span_PeekRandom_" data-uid="DotNext.Span.PeekRandom*"></a>
   <h4 id="DotNext_Span_PeekRandom__1_ReadOnlySpan___0__Random_" data-uid="DotNext.Span.PeekRandom``1(ReadOnlySpan{``0},Random)">PeekRandom&lt;T&gt;(ReadOnlySpan&lt;T&gt;, Random)</h4>
@@ -2668,7 +2800,7 @@ into <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Shuffle__1_DotNext_Span___0__Random_.md&amp;value=---%0Auid%3A%20DotNext.Span.Shuffle%60%601(DotNext.Span%7B%60%600%7D%2CRandom)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L658">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L661">View Source</a>
   </span>
   <a id="DotNext_Span_Shuffle_" data-uid="DotNext.Span.Shuffle*"></a>
   <h4 id="DotNext_Span_Shuffle__1_DotNext_Span___0__Random_" data-uid="DotNext.Span.Shuffle``1(DotNext.Span{``0},Random)">Shuffle&lt;T&gt;(Span&lt;T&gt;, Random)</h4>
