@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
 
@@ -24,6 +25,8 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
 
     public long Position => cursor.Position;
 
+    public override bool TryComplete(Exception? error = null) => writer.TryComplete(error);
+
     public override bool TryWrite(T item) => false;
 
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken token = default)
@@ -31,10 +34,14 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
 
     private PartitionStream Partition => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public override async ValueTask WriteAsync(T item, CancellationToken token)
     {
         using (await writeLock.AcquireAsync(token).ConfigureAwait(false))
         {
+            if (writer.Completion.IsCompleted)
+                throw new ChannelClosedException();
+
             var partition = Partition;
             await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);

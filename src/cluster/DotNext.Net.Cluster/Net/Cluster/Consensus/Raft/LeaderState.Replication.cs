@@ -92,6 +92,10 @@ internal partial class LeaderState
 
                 SetResult(result);
             }
+            catch (OperationCanceledException e)
+            {
+                SetCanceled(e.CancellationToken);
+            }
             catch (Exception e)
             {
                 SetException(e);

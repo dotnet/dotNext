@@ -282,5 +282,41 @@ namespace DotNext.IO
             Equal(expected.StringArray, actual.StringArray);
             Equal(expected.ByteArray, actual.ByteArray);
         }
+
+        [Fact]
+        public static async Task WriteInterpolatedString1Async()
+        {
+            using var writer = new StringWriter();
+            int x = 10, y = 20;
+            await writer.WriteAsync(null, $"{x} + {y} = {x + y}");
+            Equal($"{x} + {y} = {x + y}", writer.ToString());
+        }
+
+        [Fact]
+        public static async Task WriteInterpolatedString2Async()
+        {
+            using var writer = new StringWriter();
+            int x = 10, y = 20;
+            await writer.WriteLineAsync(null, $"{x} + {y} = {x + y}");
+            Equal($"{x} + {y} = {x + y}{Environment.NewLine}", writer.ToString());
+        }
+
+        [Fact]
+        public static void WriteInterpolatedString1()
+        {
+            using var writer = new StringWriter();
+            int x = 10, y = 20;
+            writer.Write(default(MemoryAllocator<char>), $"{x} + {y} = {x + y}");
+            Equal($"{x} + {y} = {x + y}", writer.ToString());
+        }
+
+        [Fact]
+        public static void WriteInterpolatedString2()
+        {
+            using var writer = new StringWriter();
+            int x = 10, y = 20;
+            writer.WriteLine(default(MemoryAllocator<char>), $"{x} + {y} = {x + y}");
+            Equal($"{x} + {y} = {x + y}{Environment.NewLine}", writer.ToString());
+        }
     }
 }

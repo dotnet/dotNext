@@ -66,10 +66,10 @@ public sealed class RangeExpression : CustomExpression
     /// </summary>
     /// <param name="visitor">Expression visitor.</param>
     /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
-    protected override Expression VisitChildren(ExpressionVisitor visitor)
+    protected override RangeExpression VisitChildren(ExpressionVisitor visitor)
     {
         var start = Start.Visit(visitor);
         var end = End.Visit(visitor);
-        return ReferenceEquals(start, Start) && ReferenceEquals(end, End) ? this : new RangeExpression(start, end);
+        return ReferenceEquals(start, Start) && ReferenceEquals(end, End) ? this : new(start, end);
     }
 }
