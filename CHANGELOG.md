@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 03-27-2022
+# 03-30-2022
 <a href="https://www.nuget.org/packages/dotnext/4.4.0">DotNext 4.4.0</a>
 * Added efficient way to concate multiple strings and represent the result as a rented buffer. See `Span.Concat` method.
 * String concatenation support is added to [BufferWriterSlim&lt;char&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) as well
