@@ -131,11 +131,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
                 await storage.ApplyAsync();
             }
 
+            var ep2 = new HttpEndPoint(new Uri("https://localhost:3263", UriKind.Absolute));
+            var id2 = ClusterMemberId.FromEndPoint(ep2);
+
+            await using (var storage = new PersistentClusterConfigurationStorage(path))
+            {
+                await storage.LoadConfigurationAsync();
+                True(await storage.AddMemberAsync(id2, ep2));
+                await storage.ApplyAsync();
+            }
+
             await using (var storage = new PersistentClusterConfigurationStorage(path))
             {
                 await storage.LoadConfigurationAsync();
                 Null(storage.As<IClusterConfigurationStorage<HttpEndPoint>>().ProposedConfiguration);
                 Equal(ep, storage.As<IClusterConfigurationStorage<HttpEndPoint>>().ActiveConfiguration[id]);
+                Equal(ep2, storage.As<IClusterConfigurationStorage<HttpEndPoint>>().ActiveConfiguration[id2]);
             }
         }
 
