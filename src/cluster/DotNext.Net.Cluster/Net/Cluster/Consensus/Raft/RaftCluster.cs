@@ -736,16 +736,41 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         }
     }
 
+    private async ValueTask MoveToStandbyState()
+    {
+        Leader = null;
+        if (Interlocked.Exchange(ref state, new StandbyState(this)) is RaftState currentState)
+        {
+            await currentState.StopAsync().ConfigureAwait(false);
+            currentState.Dispose();
+        }
+    }
+
     /// <inheritdoc />
     async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
     {
         Debug.Assert(state is not StandbyState);
-        using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-        if (lockHolder)
+
+        var lockHolder = default(AsyncLock.Holder);
+        try
         {
-            if (randomizeTimeout)
-                electionTimeout = electionTimeoutProvider.RandomTimeout(random);
-            await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
+            lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            if (lockHolder)
+            {
+                if (randomizeTimeout)
+                    electionTimeout = electionTimeoutProvider.RandomTimeout(random);
+
+                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.TransitionToFollowerStateFailed(e);
+            await MoveToStandbyState().ConfigureAwait(false);
+        }
+        finally
+        {
+            lockHolder.Dispose();
         }
     }
 
@@ -754,34 +779,47 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     {
         Debug.Assert(state is not StandbyState);
 
-        var currentTerm = auditTrail.Term;
-        var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
-        using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-        if (lockHolder && state is FollowerState { IsExpired: true } followerState)
+        var lockHolder = default(AsyncLock.Holder);
+        try
         {
-            Logger.TransitionToCandidateStateStarted();
-
-            // if term changed after lock then assumes that leader will be updated soon
-            if (currentTerm == auditTrail.Term)
-                Leader = null;
-            else
-                readyForTransition = false;
-
-            if (readyForTransition)
+            var currentTerm = auditTrail.Term;
+            var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
+            lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            if (lockHolder && state is FollowerState { IsExpired: true } followerState)
             {
-                followerState.Dispose();
+                Logger.TransitionToCandidateStateStarted();
 
-                // vote for self
-                state = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
-                Metrics?.MovedToCandidateState();
-                Logger.TransitionToCandidateStateCompleted();
+                // if term changed after lock then assumes that leader will be updated soon
+                if (currentTerm == auditTrail.Term)
+                    Leader = null;
+                else
+                    readyForTransition = false;
+
+                if (readyForTransition)
+                {
+                    followerState.Dispose();
+
+                    // vote for self
+                    state = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    Metrics?.MovedToCandidateState();
+                    Logger.TransitionToCandidateStateCompleted();
+                }
+                else
+                {
+                    // resume follower state
+                    followerState.StartServing(ElectionTimeout, LifecycleToken);
+                    Logger.DowngradedToFollowerState();
+                }
             }
-            else
-            {
-                // resume follower state
-                followerState.StartServing(ElectionTimeout, LifecycleToken);
-                Logger.DowngradedToFollowerState();
-            }
+        }
+        catch (Exception e)
+        {
+            Logger.TransitionToCandidateStateFailed(e);
+            await MoveToStandbyState().ConfigureAwait(false);
+        }
+        finally
+        {
+            lockHolder.Dispose();
         }
     }
 
@@ -789,18 +827,32 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
     {
         Debug.Assert(state is not StandbyState);
-        Logger.TransitionToLeaderStateStarted();
-        using var lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-        long currentTerm;
-        if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
+        var lockHolder = default(AsyncLock.Holder);
+
+        try
         {
-            candidateState.Dispose();
-            state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
-                .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
-            await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
-            Leader = newLeader as TMember;
-            Metrics?.MovedToLeaderState();
-            Logger.TransitionToLeaderStateCompleted();
+            Logger.TransitionToLeaderStateStarted();
+            lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            long currentTerm;
+            if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
+            {
+                candidateState.Dispose();
+                state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
+                    .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
+                await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+                Leader = newLeader as TMember;
+                Metrics?.MovedToLeaderState();
+                Logger.TransitionToLeaderStateCompleted();
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.TransitionToLeaderStateFailed(e);
+            await MoveToStandbyState().ConfigureAwait(false);
+        }
+        finally
+        {
+            lockHolder.Dispose();
         }
     }
 
