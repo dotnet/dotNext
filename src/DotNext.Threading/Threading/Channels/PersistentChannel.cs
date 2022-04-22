@@ -80,8 +80,8 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     }
 
     /// <inheritdoc />
-    ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
-        => SerializeAsync(input, output, token);
+    ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, Partition output, CancellationToken token)
+        => SerializeAsync(input, output.Stream, token);
 
     /// <inheritdoc />
     bool IChannelWriter<TInput>.TryComplete(Exception? e)
@@ -91,35 +91,27 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
         => readTrigger.WaitAsync(token).AsTask();
 
-    private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
+    private Partition CreateTopicStream(long partition, in FileCreationOptions options)
         => new(location, partition, options, bufferSize);
 
     /// <inheritdoc />
-    PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull] ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)
+    void IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull] ref Partition? partition, in FileCreationOptions options, bool deleteOnDispose)
     {
         var partitionNumber = state.Position / maxCount;
-        PartitionStream result;
         if (partition is null)
         {
-            partition = result = CreateTopicStream(partitionNumber, options);
-            state.Adjust(result);
+            state.Adjust((partition = CreateTopicStream(partitionNumber, options)).Stream);
         }
-        else if (partition.PartitionNumber == partitionNumber)
-        {
-            result = partition;
-        }
-        else
+        else if (partition.PartitionNumber != partitionNumber)
         {
             // delete previous topic file
-            var fileName = partition.Name;
+            var fileName = partition.FileName;
             partition.Dispose();
             if (deleteOnDispose)
                 File.Delete(fileName);
-            partition = result = CreateTopicStream(partitionNumber, options);
+            partition = CreateTopicStream(partitionNumber, options);
             state.Reset();
         }
-
-        return result;
     }
 
     /// <summary>
@@ -140,8 +132,8 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     protected abstract ValueTask<TOutput> DeserializeAsync(Stream input, CancellationToken token);
 
     /// <inheritdoc />
-    ValueTask<TOutput> IChannelReader<TOutput>.DeserializeAsync(PartitionStream input, CancellationToken token)
-        => DeserializeAsync(input, token);
+    ValueTask<TOutput> IChannelReader<TOutput>.DeserializeAsync(Partition input, CancellationToken token)
+        => DeserializeAsync(input.Stream, token);
 
     /// <summary>
     /// Releases managed and, optionally, unmanaged resources associated with this channel.

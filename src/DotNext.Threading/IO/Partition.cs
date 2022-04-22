@@ -2,16 +2,31 @@
 
 namespace DotNext.IO;
 
-internal sealed class PartitionStream : FileStream
+internal sealed class Partition : Disposable
 {
     internal readonly long PartitionNumber;
+    private readonly FileStream fs;
 
-    internal PartitionStream(DirectoryInfo location, long partitionNumber, in FileCreationOptions options, int bufferSize)
-        : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), options.ToFileStreamOptions(bufferSize))
+    internal Partition(DirectoryInfo location, long partitionNumber, in FileCreationOptions options, int bufferSize)
     {
-        if (Length == 0L && options.InitialSize > 0L)
-            SetLength(options.InitialSize);
+        fs = new(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), options.ToFileStreamOptions(bufferSize));
+        if (fs is { Length: 0L } && options.InitialSize > 0L)
+            fs.SetLength(options.InitialSize);
 
         PartitionNumber = partitionNumber;
+    }
+
+    internal Stream Stream => fs;
+
+    internal string FileName => fs.Name;
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            fs.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }

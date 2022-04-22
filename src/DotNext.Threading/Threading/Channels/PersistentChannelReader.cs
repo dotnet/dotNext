@@ -61,7 +61,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     private readonly IncrementingEventCounter? readRate;
     private readonly bool reliableEnumeration;
     private AsyncLock readLock;
-    private PartitionStream? readTopic;
+    private Partition? readTopic;
     private ChannelCursor cursor;
 
     internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader, bool reliableEnumeration, IncrementingEventCounter? readRate)
@@ -92,7 +92,8 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     public override int Count => checked((int)(reader.WrittenCount - Position));
 
-    private PartitionStream Partition => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
+    [MemberNotNull(nameof(readTopic))]
+    private void GetOrCreatePartition() => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
 
     public override bool TryRead([MaybeNullWhen(false)] out T item)
     {
@@ -117,12 +118,12 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         T result;
         using (await readLock.AcquireAsync(token).ConfigureAwait(false))
         {
-            var lookup = Partition;
+            GetOrCreatePartition();
 
             // reset file cache
-            await lookup.FlushAsync(token).ConfigureAwait(false);
-            result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
-            await EndReadAsync(lookup.Position, token).ConfigureAwait(false);
+            await readTopic.Stream.FlushAsync(token).ConfigureAwait(false);
+            result = await reader.DeserializeAsync(readTopic, token).ConfigureAwait(false);
+            await EndReadAsync(readTopic.Stream.Position, token).ConfigureAwait(false);
         }
 
         readRate?.Increment();
@@ -147,9 +148,9 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             // lock and deserialize
             using (await readLock.AcquireAsync(token).ConfigureAwait(false))
             {
-                var lookup = Partition;
-                buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
-                await EndReadAsync(lookup.Position, token).ConfigureAwait(false);
+                GetOrCreatePartition();
+                buffer.Add(await reader.DeserializeAsync(readTopic, token).ConfigureAwait(false));
+                await EndReadAsync(readTopic.Stream.Position, token).ConfigureAwait(false);
             }
 
             result = true;
@@ -259,15 +260,16 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             else
             {
                 rollbackRead = true;
-                var lookup = reader.Partition;
+                reader.GetOrCreatePartition();
 
                 if (dryRun)
-                    reader.cursor.Adjust(lookup);
+                    reader.cursor.Adjust(reader.readTopic.Stream);
 
                 // reset file cache
-                await lookup.FlushAsync(token).ConfigureAwait(false);
-                current = await reader.reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
-                offset = lookup.Position;
+                var output = reader.readTopic.Stream;
+                await output.FlushAsync(token).ConfigureAwait(false);
+                current = await reader.reader.DeserializeAsync(reader.readTopic, token).ConfigureAwait(false);
+                offset = output.Position;
                 result = true;
             }
 
