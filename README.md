@@ -61,6 +61,7 @@ Release Date: 04-23-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.4.1">DotNext.Threading 4.4.1</a>
+* Fixed issue that ignores the value of `PersistentChannelOptions.BufferSize` property
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.4.1">DotNext.IO 4.4.1</a>
