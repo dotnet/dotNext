@@ -1,6 +1,34 @@
 Release Notes
 ====
 
+# 04-23-2022
+<a href="https://www.nuget.org/packages/dotnext/4.4.1">DotNext 4.4.1</a>
+* Added memory threshold option to `SoftReferenceOptions`
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.4.1">DotNext.Metaprogramming 4.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.4.1">DotNext.Reflection 4.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.4.1">DotNext.Unsafe 4.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.4.1">DotNext.Threading 4.4.1</a>
+* Fixed issue that ignores the value of `PersistentChannelOptions.BufferSize` property
+* Fixed critical bug in `PersistentChannel` that leads to incorrect position of the reader within the file with stored messages
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.4.1">DotNext.IO 4.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.4.1">DotNext.Net.Cluster 4.4.1</a>
+* Improved logging in case of critical faults during Raft state transitions
+* Fixed [105](https://github.com/dotnet/dotNext/issues/105)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.4.1">DotNext.AspNetCore.Cluster 4.4.1</a>
+* Updated dependencies
+
 # 03-30-2022
 <a href="https://www.nuget.org/packages/dotnext/4.4.0">DotNext 4.4.0</a>
 * Added efficient way to concate multiple strings and represent the result as a rented buffer. See `Span.Concat` method.
