@@ -149,6 +149,9 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             using (await readLock.AcquireAsync(token).ConfigureAwait(false))
             {
                 GetOrCreatePartition();
+
+                // reset file cache
+                await readTopic.Stream.FlushAsync(token).ConfigureAwait(false);
                 buffer.Add(await reader.DeserializeAsync(readTopic, token).ConfigureAwait(false));
                 await EndReadAsync(readTopic.Stream.Position, token).ConfigureAwait(false);
             }
