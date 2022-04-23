@@ -23,7 +23,7 @@ internal struct ChannelCursor
     internal ChannelCursor(DirectoryInfo location, string stateFileName)
     {
         stateFileName = Path.Combine(location.FullName, stateFileName);
-        stateBuffer = GC.AllocateUninitializedArray<byte>(StateFileSize, pinned: true);
+        stateBuffer = GC.AllocateArray<byte>(StateFileSize, pinned: true);
         if (File.Exists(stateFileName))
         {
             stateFile = File.OpenHandle(stateFileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.None);
