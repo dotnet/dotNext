@@ -19,7 +19,7 @@ public sealed class PersistentChannelOptions : ChannelOptions
     /// </summary>
     public PersistentChannelOptions()
     {
-        location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         bufferSize = DefaultBufferSize;
         capacity = DefaultCapacity;
     }
