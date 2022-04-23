@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct ClusterMemberId
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.0.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,7 +78,7 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Buffers.IBinaryFormattable-1.html">IBinaryFormattable</a>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</div>
+    <div><span class="xref">IBinaryFormattable</span>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -96,44 +96,10 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_ClusterMemberId_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct ClusterMemberId : IBinaryFormattable&lt;ClusterMemberId&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct ClusterMemberId</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L116">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_ClusterMemberId__ctor_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor*"></a>
-  <h4 id="DotNext_Net_Cluster_ClusterMemberId__ctor_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor(DotNext.Buffers.SpanReader{System.Byte}@)">ClusterMemberId(ref SpanReader&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Deserializes the cluster member ID.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ClusterMemberId(ref SpanReader&lt;byte&gt; reader)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.SpanReader-1.html">SpanReader</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">reader</span></td>
-        <td><p>The memory block reader.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_Random_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(Random)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -198,6 +164,40 @@
         <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">bytes</span></td>
         <td><p>The memory block of bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L116">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_ClusterMemberId__ctor_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor*"></a>
+  <h4 id="DotNext_Net_Cluster_ClusterMemberId__ctor_SpanReader_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor(SpanReader{System.Byte}@)">ClusterMemberId(ref SpanReader&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Deserializes the cluster member ID.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ClusterMemberId(ref SpanReader&lt;byte&gt; reader)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">SpanReader</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The memory block reader.</p>
 </td>
       </tr>
     </tbody>
@@ -343,13 +343,13 @@ to another identifier.</p>
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_Format_DotNext_Buffers_SpanWriter_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.Format(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_Format_SpanWriter_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.Format(SpanWriter%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L140">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_Format_" data-uid="DotNext.Net.Cluster.ClusterMemberId.Format*"></a>
-  <h4 id="DotNext_Net_Cluster_ClusterMemberId_Format_DotNext_Buffers_SpanWriter_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.Format(DotNext.Buffers.SpanWriter{System.Byte}@)">Format(ref SpanWriter&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Net_Cluster_ClusterMemberId_Format_SpanWriter_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.Format(SpanWriter{System.Byte}@)">Format(ref SpanWriter&lt;Byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Serializes the value as a sequence of bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -368,7 +368,7 @@ to another identifier.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Buffers.SpanWriter-1.html">SpanWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="xref">SpanWriter</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">writer</span></td>
         <td><p>The memory block writer.</p>
 </td>
@@ -740,7 +740,7 @@ to another identifier.</p>
       <span class="xref">IEquatable&lt;&gt;</span>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.IBinaryFormattable-1.html">IBinaryFormattable&lt;TSelf&gt;</a>
+      <span class="xref">IBinaryFormattable&lt;&gt;</span>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

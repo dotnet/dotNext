@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class SoftReferenceOptions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.0.0">
+    <meta name="generator" content="docfx 2.59.2.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -117,7 +117,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_SoftReferenceOptions_CollectionCount.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReferenceOptions.CollectionCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L268">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L269">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReferenceOptions_CollectionCount_" data-uid="DotNext.Runtime.SoftReferenceOptions.CollectionCount*"></a>
   <h4 id="DotNext_Runtime_SoftReferenceOptions_CollectionCount" data-uid="DotNext.Runtime.SoftReferenceOptions.CollectionCount">CollectionCount</h4>
@@ -148,7 +148,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_SoftReferenceOptions_Default.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReferenceOptions.Default%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L263">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L264">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReferenceOptions_Default_" data-uid="DotNext.Runtime.SoftReferenceOptions.Default*"></a>
   <h4 id="DotNext_Runtime_SoftReferenceOptions_Default" data-uid="DotNext.Runtime.SoftReferenceOptions.Default">Default</h4>
@@ -179,7 +179,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_SoftReferenceOptions_MemoryLimit.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReferenceOptions.MemoryLimit%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L282">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L283">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReferenceOptions_MemoryLimit_" data-uid="DotNext.Runtime.SoftReferenceOptions.MemoryLimit*"></a>
   <h4 id="DotNext_Runtime_SoftReferenceOptions_MemoryLimit" data-uid="DotNext.Runtime.SoftReferenceOptions.MemoryLimit">MemoryLimit</h4>
@@ -209,6 +209,41 @@
   <div class="markdown level1 remarks"><p>If soft reference detects that Gen2 occupies more memory than the limit then the referenced
 object will be marked as available for garbage collection regardless of <a class="xref" href="DotNext.Runtime.SoftReferenceOptions.html#DotNext_Runtime_SoftReferenceOptions_CollectionCount">CollectionCount</a>
 configuration value.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_SoftReferenceOptions_MemoryThreshold.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReferenceOptions.MemoryThreshold%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L296">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_SoftReferenceOptions_MemoryThreshold_" data-uid="DotNext.Runtime.SoftReferenceOptions.MemoryThreshold*"></a>
+  <h4 id="DotNext_Runtime_SoftReferenceOptions_MemoryThreshold" data-uid="DotNext.Runtime.SoftReferenceOptions.MemoryThreshold">MemoryThreshold</h4>
+  <div class="markdown level1 summary"><p>Gets the memory threshold.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public double MemoryThreshold { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The memory threshold; must be in range (0, 1].</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_SoftReferenceOptions_MemoryThreshold_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The default is 1.</p>
 </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
