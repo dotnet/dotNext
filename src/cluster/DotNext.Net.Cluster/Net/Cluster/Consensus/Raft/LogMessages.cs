@@ -252,5 +252,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             EventName = EventIdPrefix + "." + nameof(ConnectionWasResetByClient)
         )]
         public static partial void ConnectionWasResetByClient(this ILogger logger, EndPoint? remoteEndPoint);
+
+        [LoggerMessage(
+            EventIdOffset + 30,
+            LogLevel.Critical,
+            "Transition to follower state has failed",
+            EventName = EventIdPrefix + "." + nameof(TransitionToFollowerStateFailed)
+        )]
+        public static partial void TransitionToFollowerStateFailed(this ILogger logger, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 31,
+            LogLevel.Critical,
+            "Transition to candidate state has failed",
+            EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateFailed)
+        )]
+        public static partial void TransitionToCandidateStateFailed(this ILogger logger, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 32,
+            LogLevel.Critical,
+            "Transition to leader state has failed",
+            EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateFailed)
+        )]
+        public static partial void TransitionToLeaderStateFailed(this ILogger logger, Exception e);
     }
 }

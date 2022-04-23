@@ -46,37 +46,33 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-30-2022
+Release Date: 04-23-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.4.0">DotNext 4.4.0</a>
-* Added efficient way to concate multiple strings and represent the result as a rented buffer. See `Span.Concat` method.
-* String concatenation support is added to [BufferWriterSlim&lt;char&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) as well
-* Added `DotNext.Text.InterpolatedString` class with factory methods to create interpolated strings using rented memory
+<a href="https://www.nuget.org/packages/dotnext/4.4.1">DotNext 4.4.1</a>
+* Added memory threshold option to `SoftReferenceOptions`
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.4.0">DotNext.Metaprogramming 4.4.0</a>
-* Added support of [with operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) from C#
-* Added support of [object initializer](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers#object-initializers)
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.4.0">DotNext.Reflection 4.4.0</a>
-* Added `Record<T>` concept class to work with [record types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.4.0">DotNext.Unsafe 4.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.4.1">DotNext.Metaprogramming 4.4.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.4.0">DotNext.Threading 4.4.0</a>
-* Added support of channel completion to [PersistentChannel&lt;TInput, TOutput&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class
-* Added `PersistentChannelOptions.ReliableEnumeration` option that allows transactional reads
-* Fixed token linkage represented by extension methods from [LinkedTokenSourceFactory](https://dotnet.github.io/dotNext/api/DotNext.Threading.LinkedTokenSourceFactory.html) class
-
-<a href="https://www.nuget.org/packages/dotnext.io/4.4.0">DotNext.IO 4.4.0</a>
-* Added extension methods that allow to write interpolated strings efficiently to [TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter)
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.4.0">DotNext.Net.Cluster 4.4.0</a>
-* Fixed exception type for cancellation of replication
-* Fixed incorrect behavior when `IRaftCluster.LeaderChanged` fired but `IRaftCluster.LeadershipToken` indicates that leader is not yet elected
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.4.1">DotNext.Reflection 4.4.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.4.0">DotNext.AspNetCore.Cluster 4.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.4.1">DotNext.Unsafe 4.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.4.1">DotNext.Threading 4.4.1</a>
+* Fixed issue that ignores the value of `PersistentChannelOptions.BufferSize` property
+* Fixed critical bug in `PersistentChannel` that leads to incorrect position of the reader within the file with stored messages
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.4.1">DotNext.IO 4.4.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.4.1">DotNext.Net.Cluster 4.4.1</a>
+* Improved logging in case of critical faults during Raft state transitions
+* Fixed [105](https://github.com/dotnet/dotNext/issues/105)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.4.1">DotNext.AspNetCore.Cluster 4.4.1</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

@@ -10,5 +10,5 @@ internal interface IChannelReader<T> : IChannel, IDisposable
 
     void RollbackRead();
 
-    ValueTask<T> DeserializeAsync(PartitionStream input, CancellationToken token);
+    ValueTask<T> DeserializeAsync(Partition input, CancellationToken token);
 }

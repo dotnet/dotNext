@@ -256,6 +256,7 @@ public class SoftReferenceOptions
 {
     private readonly int collectionCount;
     private readonly long memoryLimit = long.MaxValue;
+    private readonly double memoryThreshold = 1D;
 
     /// <summary>
     /// Gets default options.
@@ -285,18 +286,39 @@ public class SoftReferenceOptions
         init => memoryLimit = value > 0L ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
+    /// <summary>
+    /// Gets the memory threshold.
+    /// </summary>
+    /// <remarks>
+    /// The default is 1.
+    /// </remarks>
+    /// <value>The memory threshold; must be in range (0, 1].</value>
+    public double MemoryThreshold
+    {
+        get => memoryThreshold;
+        init => memoryThreshold = double.IsFinite(value) && value.IsBetween(0D, 1D, BoundType.RightClosed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
+
     internal bool KeepTracking(object target)
     {
         var generation = GC.GetGeneration(target);
-        return generation < GC.MaxGeneration || (GC.CollectionCount(generation) <= collectionCount && (memoryLimit is long.MaxValue || CheckMemoryLimit(generation)));
+        return generation < GC.MaxGeneration || (GC.CollectionCount(generation) <= collectionCount && CheckLimits(generation));
     }
 
-    private bool CheckMemoryLimit(int generation)
+    private bool CheckLimits(int generation)
     {
         var info = GC.GetGCMemoryInfo();
+        return info.Index is 0L || CheckMemoryLimit(generation, in info) && CheckMemoryThreshold(in info);
+    }
+
+    private bool CheckMemoryThreshold(in GCMemoryInfo info)
+        => info.MemoryLoadBytes <= info.HighMemoryLoadThresholdBytes * memoryThreshold;
+
+    private bool CheckMemoryLimit(int generation, in GCMemoryInfo info)
+    {
         ReadOnlySpan<GCGenerationInfo> generations;
 
-        return info.Index is 0L
+        return memoryLimit is long.MaxValue
             || (generations = info.GenerationInfo).Length <= generation
             || generations[generation].SizeAfterBytes < memoryLimit;
     }

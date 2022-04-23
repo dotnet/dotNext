@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
@@ -12,7 +13,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     private readonly IChannelWriter<T> writer;
     private readonly FileCreationOptions fileOptions;
     private AsyncLock writeLock;
-    private PartitionStream? writeTopic;
+    private Partition? writeTopic;
     private ChannelCursor cursor;
 
     internal PersistentChannelWriter(IChannelWriter<T> writer, bool singleWriter, long initialSize)
@@ -32,7 +33,8 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken token = default)
         => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : ValueTask.FromResult(true);
 
-    private PartitionStream Partition => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
+    [MemberNotNull(nameof(writeTopic))]
+    private void GetOrCreatePartition() => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public override async ValueTask WriteAsync(T item, CancellationToken token)
@@ -42,10 +44,10 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
             if (writer.Completion.IsCompleted)
                 throw new ChannelClosedException();
 
-            var partition = Partition;
-            await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
-            await partition.FlushAsync(token).ConfigureAwait(false);
-            await cursor.AdvanceAsync(partition.Position, token).ConfigureAwait(false);
+            GetOrCreatePartition();
+            await writer.SerializeAsync(item, writeTopic, token).ConfigureAwait(false);
+            await writeTopic.Stream.FlushAsync(token).ConfigureAwait(false);
+            await cursor.AdvanceAsync(writeTopic.Stream.Position, token).ConfigureAwait(false);
         }
 
         writer.MessageReady();

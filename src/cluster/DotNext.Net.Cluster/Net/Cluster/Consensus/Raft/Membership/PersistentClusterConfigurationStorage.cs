@@ -64,6 +64,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             output.fs.SetLength(Length);
             output.Fingerprint = Fingerprint;
             fs.Position = 0L;
+            output.fs.Position = 0L;
             await fs.CopyToAsync(output.fs, bufferSize, token).ConfigureAwait(false);
             await output.fs.FlushAsync(token).ConfigureAwait(false);
         }
