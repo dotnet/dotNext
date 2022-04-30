@@ -647,5 +647,31 @@ namespace DotNext.IO
             Equal(4, await ms.ReadAtLeastAsync(3, buffer));
             Equal(ms.ToArray(), buffer.ToArray());
         }
+
+        [Fact]
+        public static async Task ReadEmptyStream()
+        {
+            var count = 0;
+
+            await foreach (var chunk in Stream.Null.ReadAllAsync(64))
+                count++;
+
+            Equal(0, count);
+        }
+
+        [Fact]
+        public static async Task ReadEntireStream()
+        {
+            var bytes = RandomBytes(1024);
+            using var source = new MemoryStream(bytes, false);
+            using var destination = new MemoryStream(1024);
+
+            await foreach(var chunk in source.ReadAllAsync(64))
+            {
+                await destination.WriteAsync(chunk);
+            }
+
+            Equal(bytes, destination.ToArray());
+        }
     }
 }
