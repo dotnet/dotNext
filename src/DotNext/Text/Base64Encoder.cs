@@ -25,6 +25,12 @@ public partial struct Base64Encoder
     public const int MaxBufferedDataSize = sizeof(ushort);
 
     /// <summary>
+    /// Gets the maximum number of characters that can be produced by <see cref="Flush(Span{byte})"/>
+    /// or <see cref="Flush(Span{char})"/> methods.
+    /// </summary>
+    public const int MaxCharsToFlush = ((MaxBufferedDataSize + 2) / 3) * 4;
+
+    /// <summary>
     /// Gets the maximum size of the input block of bytes to encode.
     /// </summary>
     public const int MaxInputSize = (int.MaxValue / 4) * 3;
