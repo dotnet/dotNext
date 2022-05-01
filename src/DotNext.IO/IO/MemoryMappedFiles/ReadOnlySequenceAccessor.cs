@@ -61,14 +61,14 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         }
 
         private MappedSegment(ReadOnlySequenceAccessor cursor, int length)
-            : this(cursor, new Segment(0L, length))
+            : this(cursor, new Segment { Length = length })
         {
         }
 
         private new MappedSegment Next(int length)
         {
             var index = RunningIndex;
-            var segment = new MappedSegment(manager.Cursor, manager.Segment.Next(length))
+            var segment = new MappedSegment(manager.Cursor, manager.Segment >> length)
             {
                 RunningIndex = index + manager.Segment.Length,
             };
