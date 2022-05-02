@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -75,10 +76,16 @@ public partial class RaftCluster<TMember>
     /// <remarks>
     /// The current implementation of Raft doesn't support adding or removing multiple cluster members at a time.
     /// </remarks>
+    [Serializable]
     public sealed class ConcurrentMembershipModificationException : RaftProtocolException
     {
         internal ConcurrentMembershipModificationException()
             : base(ExceptionMessages.ConcurrentMembershipUpdate)
+        {
+        }
+
+        private ConcurrentMembershipModificationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }
@@ -247,7 +254,7 @@ public partial class RaftCluster<TMember>
             // proposes a new member
             if (await configurationStorage.AddMemberAsync(member.Id, addressProvider(member), token).ConfigureAwait(false))
             {
-                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false)) ;
+                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
 
                 // ensure that the newly added member has been committed
                 await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
@@ -292,7 +299,7 @@ public partial class RaftCluster<TMember>
             // remove the existing member
             if (await configurationStorage.RemoveMemberAsync(id, token).ConfigureAwait(false))
             {
-                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false)) ;
+                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
 
                 // ensure that the removed member has been committed
                 await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
