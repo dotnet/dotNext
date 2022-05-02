@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -30,6 +31,7 @@ public sealed class BoxedValue<T>
     /// <summary>
     /// Gets a reference to the boxed value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ref T Value => ref Unsafe.Unbox<T>(this);
 
     /// <summary>
