@@ -51,7 +51,7 @@ internal abstract class HttpMessage
     /// </summary>
     /// <returns><see langword="true"/> to handle the response as <see cref="MemberUnavailableException"/>.</returns>
     internal virtual bool IsMemberUnavailable(HttpStatusCode? code)
-        => code is null || code.GetValueOrDefault() == HttpStatusCode.InternalServerError;
+        => code is null or HttpStatusCode.InternalServerError;
 
     private static string GetMessageType(HeadersReader<StringValues> headers) =>
         ParseHeader(MessageTypeHeader, headers);
