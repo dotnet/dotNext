@@ -8,7 +8,7 @@
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>false</IsTrimmable>
     <Features>nullablePublicOnly</Features>
-    <VersionPrefix>4.4.1</VersionPrefix>
+    <VersionPrefix>4.5.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation</Authors>
     <Product>.NEXT Family of Libraries</Product>
