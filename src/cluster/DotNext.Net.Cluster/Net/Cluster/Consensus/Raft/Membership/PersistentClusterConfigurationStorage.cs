@@ -32,7 +32,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
                 Access = FileAccess.ReadWrite,
                 Share = FileShare.Read,
                 BufferSize = fileBufferSize,
-                Options = FileOptions.SequentialScan | FileOptions.Asynchronous,
+                Options = FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.WriteThrough,
             });
         }
 
@@ -56,17 +56,17 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         {
             Fingerprint = 0L;
             fs.SetLength(0L);
-            fs.Flush(true);
+            fs.Flush(flushToDisk: true);
         }
 
         internal async ValueTask CopyToAsync(ClusterConfiguration output, int bufferSize, CancellationToken token)
         {
-            output.fs.SetLength(Length);
+            output.fs.Position = 0L;
             output.Fingerprint = Fingerprint;
             fs.Position = 0L;
-            output.fs.Position = 0L;
             await fs.CopyToAsync(output.fs, bufferSize, token).ConfigureAwait(false);
             await output.fs.FlushAsync(token).ConfigureAwait(false);
+            output.fs.SetLength(fs.Length);
         }
 
         internal Task CopyToAsync(IBufferWriter<byte> output, CancellationToken token)
