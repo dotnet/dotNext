@@ -38,6 +38,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
     private volatile RaftState? state;
     private volatile TMember? leader;
+    private volatile TaskCompletionSource<TMember?> electionEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
@@ -65,6 +66,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
         localMemberId = new(random);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
+        electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     /// <summary>
@@ -205,9 +207,28 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         {
             var oldLeader = Interlocked.Exchange(ref leader, value);
             if (!ReferenceEquals(oldLeader, value) && !leaderChangedHandlers.IsEmpty)
+            {
+                Interlocked.Exchange(ref electionEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).TrySetResult(value);
                 leaderChangedHandlers.Invoke(this, value);
+            }
         }
     }
+
+    /// <summary>
+    /// Waits for the leader election asynchronously.
+    /// </summary>
+    /// <param name="timeout">The time to wait; or <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The elected leader or <see langword="null"/> if the cluster losts the leader.</returns>
+    /// <exception cref="TimeoutException">The operation is timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
+    public Task<TMember?> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default)
+        => electionEvent.Task.WaitAsync(timeout, token);
+
+    /// <inheritdoc />
+    Task<IClusterMember?> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
+        => Unsafe.As<Task<IClusterMember?>>(WaitForLeaderAsync(timeout, token)); // TODO: Dirty hack but acceptable because there is no covariance with tasks
 
     private FollowerState CreateInitialState()
         => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
@@ -929,6 +950,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
         memberAddedHandlers = memberRemovedHandlers = default;
         leaderChangedHandlers = default;
+        TrySetDisposedException(electionEvent);
     }
 
     /// <summary>
