@@ -186,5 +186,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
                 Equal(ep, storage.As<IClusterConfigurationStorage<HttpEndPoint>>().ProposedConfiguration[id]);
             }
         }
+
+        [Fact]
+        public static async Task CopyConfigurationAsync()
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var ep = new HttpEndPoint(new Uri("https://localhost:3262", UriKind.Absolute));
+            var id = ClusterMemberId.FromEndPoint(ep);
+
+            await using (var storage = new PersistentClusterConfigurationStorage(path))
+            {
+                True(await storage.AddMemberAsync(id, ep));
+                await storage.ApplyAsync();
+            }
+
+            await using (var storage = new PersistentClusterConfigurationStorage(path))
+            {
+                await storage.LoadConfigurationAsync();
+
+                using var ms = new MemoryStream((int)storage.ActiveConfiguration.Length);
+                await storage.ActiveConfiguration.WriteToAsync(ms);
+                Equal(ms.Length, storage.ActiveConfiguration.Length);
+            }
+        }
     }
 }
