@@ -206,10 +206,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         private set
         {
             var oldLeader = Interlocked.Exchange(ref leader, value);
-            if (!ReferenceEquals(oldLeader, value) && !leaderChangedHandlers.IsEmpty)
+            if (!ReferenceEquals(oldLeader, value))
             {
                 Interlocked.Exchange(ref electionEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).TrySetResult(value);
-                leaderChangedHandlers.Invoke(this, value);
+
+                if (!leaderChangedHandlers.IsEmpty)
+                    leaderChangedHandlers.Invoke(this, value);
             }
         }
     }
