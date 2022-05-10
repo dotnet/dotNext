@@ -209,9 +209,6 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         }
 
         builder.Clear();
-
-        // send notifications
-        await base.LoadConfigurationAsync(token).ConfigureAwait(false);
     }
 
     private MemoryOwner<byte> Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration, long fingerprint)
