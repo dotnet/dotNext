@@ -48,31 +48,32 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 04-23-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.4.1">DotNext 4.4.1</a>
-* Added memory threshold option to `SoftReferenceOptions`
+<a href="https://www.nuget.org/packages/dotnext/4.5.0">DotNext 4.5.0</a>
+* Added `Base64Encoder.MaxCharsToFlush` constant for convenient allocation of the buffer to be passed to `Base64Encoder.Flush` method
+* Added `DotNext.Runtime.CompilerServices.Scope` type that allows to attach callbacks to the lexical scope
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.4.1">DotNext.Metaprogramming 4.4.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.5.0">DotNext.Metaprogramming 4.5.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.4.1">DotNext.Reflection 4.4.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.5.0">DotNext.Reflection 4.5.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.4.1">DotNext.Unsafe 4.4.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.5.0">DotNext.Unsafe 4.5.0</a>
+* Small performance improvements of unmanaged memory allocator
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.4.1">DotNext.Threading 4.4.1</a>
-* Fixed issue that ignores the value of `PersistentChannelOptions.BufferSize` property
-* Fixed critical bug in `PersistentChannel` that leads to incorrect position of the reader within the file with stored messages
+<a href="https://www.nuget.org/packages/dotnext.threading/4.5.0">DotNext.Threading 4.5.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.4.1">DotNext.IO 4.4.1</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.io/4.5.0">DotNext.IO 4.5.0</a>
+* Added ability to asynchronously enumerate stream using async enumerator pattern (`ReadAllAsync` extension method)
+* Added implementation of [IAsyncEnumerable&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) to `FileReader` class
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.4.1">DotNext.Net.Cluster 4.4.1</a>
-* Improved logging in case of critical faults during Raft state transitions
-* Fixed [105](https://github.com/dotnet/dotNext/issues/105)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.5.0">DotNext.Net.Cluster 4.5.0</a>
+* Attempt to modify cluster membership concurrently now leads to exception
+* Added `ICluster.WaitForLeaderAsync` method for convenience
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.4.1">DotNext.AspNetCore.Cluster 4.4.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.5.0">DotNext.AspNetCore.Cluster 4.5.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
