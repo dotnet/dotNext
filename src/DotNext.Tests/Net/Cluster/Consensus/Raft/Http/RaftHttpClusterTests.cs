@@ -323,7 +323,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [Fact]
-        public static async Task ClusterRecovery()
+        public static async Task RegressionIssue108()
         {
             var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
