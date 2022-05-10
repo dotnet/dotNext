@@ -225,6 +225,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
     public Task<TMember?> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default)
     {
+        var electionEvent = this.electionEvent;
         var leader = this.leader;
         return leader is null ? electionEvent.Task.WaitAsync(timeout, token) : Task.FromResult<TMember?>(leader);
     }
