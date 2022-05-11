@@ -393,7 +393,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             // recover cluster
             config1["coldStart"] = "false";
-            listener = new LeaderTracker();
             using (var host1 = CreateHost<Startup>(3262, config1))
             {
                 await host1.StartAsync();
@@ -404,9 +403,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 using var host3 = CreateHost<Startup>(3264, config3);
                 await host3.StartAsync();
 
-                var leader1 = GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
-                var leader2 = GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
-                var leader3 = GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+                var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint);
+                Equal(leader1.EndPoint, leader3.EndPoint);
 
                 foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
                 {
