@@ -72,6 +72,7 @@ Release Date: 04-23-2022
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.5.0">DotNext.Net.Cluster 4.5.0</a>
 * Attempt to modify cluster membership concurrently now leads to exception
 * Added `ICluster.WaitForLeaderAsync` method for convenience
+* Fixed [108](https://github.com/dotnet/dotNext/issues/108)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.5.0">DotNext.AspNetCore.Cluster 4.5.0</a>
 * Updated dependencies
