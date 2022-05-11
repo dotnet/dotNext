@@ -352,8 +352,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")}
             };
 
-            var listener = new LeaderTracker();
-            using (var host1 = CreateHost<Startup>(3262, config1, listener))
+            using (var host1 = CreateHost<Startup>(3262, config1))
             {
                 await host1.StartAsync();
                 True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
@@ -365,8 +364,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 using var host3 = CreateHost<Startup>(3264, config3);
                 await host3.StartAsync();
 
-                await listener.Result.WaitAsync(DefaultTimeout);
-                Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+                Equal(GetLocalClusterView(host1).LocalMemberAddress, (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint);
 
                 // add two nodes to the cluster
                 True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -375,8 +373,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
                 await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-                Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host2).Leader.EndPoint);
-                Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host3).Leader.EndPoint);
+                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+                var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint);
+                Equal(leader1.EndPoint, leader3.EndPoint);
 
                 foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
                 {
