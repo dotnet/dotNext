@@ -30,6 +30,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private readonly double heartbeatThreshold, clockDriftBound;
     private readonly Random random;
     private readonly TaskCompletionSource readinessProbe;
+    private readonly Action<TMember?> onLeaderChangedThreadPoolCallback;
 
     private ClusterMemberId localMemberId;
     private bool standbyNode;
@@ -37,8 +38,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
     private volatile RaftState? state;
-    private volatile TMember? leader;
-    private volatile TaskCompletionSource<TMember?> electionEvent;
+    private volatile TaskCompletionSource<TMember> electionEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
@@ -67,6 +67,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         localMemberId = new(random);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        onLeaderChangedThreadPoolCallback = OnLeaderChanged;
     }
 
     /// <summary>
@@ -202,19 +203,40 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// </summary>
     public TMember? Leader
     {
-        get => leader;
+        get => electionEvent.Task is { IsCompletedSuccessfully: true } task ? task.Result : null;
         private set
         {
-            var oldLeader = Interlocked.Exchange(ref leader, value);
-            if (!ReferenceEquals(oldLeader, value))
-            {
-                Interlocked.Exchange(ref electionEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).TrySetResult(value);
+            var electionEventCopy = electionEvent;
+            bool raiseEventHandlers;
 
-                if (!leaderChangedHandlers.IsEmpty)
-                    leaderChangedHandlers.Invoke(this, value);
+            switch ((electionEventCopy.Task.IsCompleted, value is null))
+            {
+                case (true, true):
+                    TaskCompletionSource<TMember> newEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+                    raiseEventHandlers = ReferenceEquals(Interlocked.CompareExchange(ref electionEvent, newEvent, electionEventCopy), electionEventCopy);
+                    break;
+                case (false, false):
+                    Debug.Assert(value is not null);
+                    raiseEventHandlers = electionEventCopy.TrySetResult(value);
+                    break;
+                case (true, false) when !ReferenceEquals(electionEventCopy.Task.Result, value):
+                    Debug.Assert(value is not null);
+                    newEvent = new();
+                    newEvent.SetResult(value);
+                    raiseEventHandlers = ReferenceEquals(Interlocked.CompareExchange(ref electionEvent, newEvent, electionEventCopy), electionEventCopy);
+                    break;
+                default:
+                    raiseEventHandlers = false;
+                    break;
             }
+
+            // execute event handlers asynchronously to avoid blocking of the caller
+            if (raiseEventHandlers && !leaderChangedHandlers.IsEmpty)
+                ThreadPool.QueueUserWorkItem(onLeaderChangedThreadPoolCallback, value, preferLocal: true);
         }
     }
+
+    private void OnLeaderChanged(TMember? member) => leaderChangedHandlers.Invoke(this, member);
 
     /// <summary>
     /// Waits for the leader election asynchronously.
@@ -225,16 +247,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <exception cref="TimeoutException">The operation is timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
-    public Task<TMember?> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        var electionEvent = this.electionEvent;
-        var leader = this.leader;
-        return leader is null ? electionEvent.Task.WaitAsync(timeout, token) : Task.FromResult<TMember?>(leader);
-    }
+    public Task<TMember> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default)
+        => electionEvent.Task;
 
     /// <inheritdoc />
-    Task<IClusterMember?> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
-        => Unsafe.As<Task<IClusterMember?>>(WaitForLeaderAsync(timeout, token)); // TODO: Dirty hack but acceptable because there is no covariance with tasks
+    Task<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
+        => Unsafe.As<Task<IClusterMember>>(WaitForLeaderAsync(timeout, token)); // TODO: Dirty hack but acceptable because there is no covariance with tasks
 
     private FollowerState CreateInitialState()
         => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
@@ -356,7 +374,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             return;
         transitionCancellation.Cancel(false);
         await CancelPendingRequestsAsync().ConfigureAwait(false);
-        leader = null;
+        electionEvent.TrySetCanceled();
         using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
         {
             var currentState = Interlocked.Exchange(ref state, null);
@@ -732,7 +750,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             {
                 await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
             }
-            else if (this.leader is TMember leader)
+            else if (Leader is TMember leader)
             {
                 var commitIndex = await leader.SynchronizeAsync(auditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false);
                 if (commitIndex is null)
@@ -949,7 +967,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
         transitionCancellation.Dispose();
         transitionSync.Dispose();
-        leader = null;
         Interlocked.Exchange(ref state, null)?.Dispose();
         TrySetDisposedException(readinessProbe);
         ConfigurationStorage.Dispose();

@@ -188,9 +188,10 @@ public partial class RaftCluster<TMember>
                 var newState = new StandbyState(this);
                 using var currentState = state;
                 state = newState;
+                await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
             }
 
-            if (ReferenceEquals(result, leader))
+            if (ReferenceEquals(result, Leader))
                 Leader = null;
         }
 
