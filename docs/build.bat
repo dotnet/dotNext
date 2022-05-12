@@ -1,0 +1,3 @@
+set MSBuildEnableWorkloadResolver=false
+dotnet clean
+dotnet build
