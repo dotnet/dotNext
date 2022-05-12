@@ -27,6 +27,16 @@ var str = await fs.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 
 String encoding and decoding methods support various length encoding styles using [LengthFormat](xref:DotNext.IO.LengthFormat) enum type. As a result, you can prefix string with its length automatically.
 
+`ReadAllAsync` extension method allows to enumerate over the contents of a stream in a convenient way without extra ceremony with buffers:
+```csharp
+using DotNext.IO;
+
+using var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
+await foreach (ReadOnlyMemory<byte> chunk in fs.ReadAllAsync(bufferSize: 512))
+{
+}
+```
+
 # Segmenting Streams
 In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](xref:DotNext.IO.StreamSegment) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
 
@@ -98,6 +108,16 @@ var pipe = new Pipe();
 pipe.Writer.Write(Guid.NewGuid());
 pipe.Writer.WriteString("Hello, world!".AsSpan(), Encoding.UTF8, LengthFormat.Plain);
 await pipe.Writer.FlushAsync();
+```
+
+`ReadAllAsync` extension method allows to enumerate over the contents of a pipe in a convenient way:
+```csharp
+using DotNext.IO;
+
+var pipe = new Pipe();
+await foreach (ReadOnlyMemory<byte> chunk in pipe.Reader.ReadAllAsync())
+{
+}
 ```
 
 # Decoding Data from ReadOnlySequence
