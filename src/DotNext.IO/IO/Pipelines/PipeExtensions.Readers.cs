@@ -417,26 +417,10 @@ public static partial class PipeExtensions
     public static async Task CopyToAsync<TConsumer>(this PipeReader reader, TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        ReadResult result;
-        do
+        await foreach (var chunk in ReadAllAsync(reader, token).ConfigureAwait(false))
         {
-            result = await reader.ReadAsync(token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(reader, token);
-            var buffer = result.Buffer;
-            var consumed = buffer.Start;
-
-            try
-            {
-                for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
-                    await consumer.Invoke(block, token).ConfigureAwait(false);
-                consumed = buffer.End;
-            }
-            finally
-            {
-                reader.AdvanceTo(consumed);
-            }
+            await consumer.Invoke(chunk, token).ConfigureAwait(false);
         }
-        while (!result.IsCompleted);
     }
 
     /// <summary>
@@ -748,7 +732,6 @@ public static partial class PipeExtensions
     public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this PipeReader reader, [EnumeratorCancellation] CancellationToken token = default)
     {
         ReadResult result;
-
         do
         {
             result = await reader.ReadAsync(token).ConfigureAwait(false);
