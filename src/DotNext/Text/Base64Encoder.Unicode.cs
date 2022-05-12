@@ -235,6 +235,35 @@ public partial struct Base64Encoder
         => EncodeToChars<StringBuilderConsumer>(bytes, output, flush);
 
     /// <summary>
+    /// Encodes a sequence of bytes to characters using base64 encoding.
+    /// </summary>
+    /// <param name="bytes">A collection of buffers.</param>
+    /// <param name="allocator">Characters buffer allocator.</param>
+    /// <param name="token">The token that can be used to cancel the encoding.</param>
+    /// <returns>A collection of encoded bytes.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async IAsyncEnumerable<ReadOnlyMemory<char>> EncodeToCharsAsync(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes, MemoryAllocator<char>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        var encoder = new Base64Encoder();
+        MemoryOwner<char> buffer;
+
+        await foreach (var chunk in bytes.WithCancellation(token).ConfigureAwait(false))
+        {
+            using (buffer = encoder.EncodeToChars(chunk.Span, allocator))
+                yield return buffer.Memory;
+        }
+
+        if (encoder.HasBufferedData)
+        {
+            using (buffer = allocator.Invoke(MaxBufferedDataSize, exactSize: false))
+            {
+                var count = encoder.Flush(buffer.Span);
+                yield return buffer.Memory.Slice(0, count);
+            }
+        }
+    }
+
+    /// <summary>
     /// Flushes the buffered data as base64-encoded characters to the output buffer.
     /// </summary>
     /// <param name="output">The buffer of characters.</param>

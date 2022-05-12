@@ -188,4 +188,28 @@ public static class TextStreamExtensions
     /// <param name="handler">The interpolated string handler.</param>
     public static void WriteLine(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument("allocator")] ref PoolingInterpolatedStringHandler handler)
         => WriteLine(writer, allocator, null, ref handler);
+
+    /// <summary>
+    /// Reads text stream sequentially.
+    /// </summary>
+    /// <remarks>
+    /// The returned memory block should not be used between iterations.
+    /// </remarks>
+    /// <param name="reader">Readable stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The allocator of the buffer.</param>
+    /// <param name="token">The token that can be used to cancel the enumeration.</param>
+    /// <returns>A collection of memort blocks that can be obtained sequentially to read a whole stream.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1.</exception>
+    public static async IAsyncEnumerable<ReadOnlyMemory<char>> ReadAllAsync(this TextReader reader, int bufferSize, MemoryAllocator<char>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        if (bufferSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+        using var bufferOwner = allocator.Invoke(bufferSize, exactSize: false);
+        var buffer = bufferOwner.Memory;
+
+        for (int count; (count = await reader.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
+            yield return buffer.Slice(0, count);
+    }
 }

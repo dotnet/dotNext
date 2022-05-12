@@ -5,6 +5,7 @@ using System.Text;
 namespace DotNext.Text
 {
     using Buffers;
+    using IO;
 
     [ExcludeFromCodeCoverage]
     public sealed class Base64Tests : Test
@@ -450,6 +451,86 @@ namespace DotNext.Text
 
             static void Write(ReadOnlySpan<char> input, ArrayBufferWriter<char> output)
                 => output.Write(input);
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static async Task EncodeToCharsAsync(int size)
+        {
+            var expected = RandomBytes(size);
+            string base64;
+
+            // encode
+            using (var source = new MemoryStream(expected))
+            {
+                using var destination = new StringWriter();
+
+                await foreach (var chunk in Base64Encoder.EncodeToCharsAsync(source.ReadAllAsync(16)))
+                {
+                    await destination.WriteAsync(chunk);
+                }
+
+                await destination.FlushAsync();
+                base64 = destination.ToString();
+            }
+
+            // decode
+            using (var source = new StringReader(base64))
+            {
+                using var destination = new MemoryStream(expected.Length);
+
+                await foreach (var chunk in Base64Decoder.DecodeAsync(source.ReadAllAsync(16)))
+                {
+                    await destination.WriteAsync(chunk);
+                }
+
+                await destination.FlushAsync();
+                Equal(expected, destination.ToArray());
+            }
+        }
+
+        [Theory]
+        [InlineData(17)]
+        [InlineData(32)]
+        [InlineData(63)]
+        [InlineData(512)]
+        [InlineData(1024)]
+        public static async Task EncodeToUtf8Async(int size)
+        {
+            var expected = RandomBytes(size);
+            byte[] base64;
+
+            // encode
+            using (var source = new MemoryStream(expected))
+            {
+                using var destination = new MemoryStream();
+
+                await foreach (var chunk in Base64Encoder.EncodeToUtf8Async(source.ReadAllAsync(16)))
+                {
+                    await destination.WriteAsync(chunk);
+                }
+
+                await destination.FlushAsync();
+                base64 = destination.ToArray();
+            }
+
+            // decode
+            using (var source = new MemoryStream(base64))
+            {
+                using var destination = new MemoryStream(expected.Length);
+
+                await foreach (var chunk in Base64Decoder.DecodeAsync(source.ReadAllAsync(16)))
+                {
+                    await destination.WriteAsync(chunk);
+                }
+
+                await destination.FlushAsync();
+                Equal(expected, destination.ToArray());
+            }
         }
     }
 }
