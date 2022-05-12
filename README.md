@@ -50,6 +50,7 @@ Release Date: 04-23-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.5.0">DotNext 4.5.0</a>
 * Added `Base64Encoder.MaxCharsToFlush` constant for convenient allocation of the buffer to be passed to `Base64Encoder.Flush` method
+* Added static methods to `Base64Encoder` and `Base64Decoder` types that allow to convert large data asynchronously with low memory consumption
 * Added `DotNext.Runtime.CompilerServices.Scope` type that allows to attach callbacks to the lexical scope
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.5.0">DotNext.Metaprogramming 4.5.0</a>
@@ -66,7 +67,7 @@ Release Date: 04-23-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.5.0">DotNext.IO 4.5.0</a>
-* Added ability to asynchronously enumerate stream using async enumerator pattern (`ReadAllAsync` extension method)
+* Added ability to asynchronously enumerate [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream), [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader), and [text streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) using async enumerator pattern (`ReadAllAsync` extension method)
 * Added implementation of [IAsyncEnumerable&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) to `FileReader` class
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.5.0">DotNext.Net.Cluster 4.5.0</a>
