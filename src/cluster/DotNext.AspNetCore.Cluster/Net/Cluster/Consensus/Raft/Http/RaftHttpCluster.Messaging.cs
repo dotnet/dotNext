@@ -259,7 +259,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         using var configuration = new ReceivedClusterConfiguration((int)message.ConfigurationLength) { Fingerprint = message.ConfigurationFingerprint };
         await configurationReader(configuration.Content, token).ConfigureAwait(false);
 
-        await using (entries)
+        await using (entries.ConfigureAwait(false))
         {
             var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, configuration, message.ApplyConfiguration, token).ConfigureAwait(false);
             await message.SaveResponse(response, result, token).ConfigureAwait(false);
