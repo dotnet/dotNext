@@ -105,9 +105,6 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage-1.html#DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_TAddress__ProposedConfiguration">ClusterConfigurationStorage&lt;TAddress&gt;.IClusterConfigurationStorage&lt;TAddress&gt;.ProposedConfiguration</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage-1.html#DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_LoadConfigurationAsync_CancellationToken_">ClusterConfigurationStorage&lt;TAddress&gt;.LoadConfigurationAsync(CancellationToken)</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage-1.html#DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterConfigurationStorage_1_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_WaitForApplyAsync_CancellationToken_">ClusterConfigurationStorage&lt;TAddress&gt;.IClusterConfigurationStorage.WaitForApplyAsync(CancellationToken)</a>
     </div>
     <div>
@@ -476,7 +473,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/InMemoryClusterConfigurationStorage.cs/#L255">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/InMemoryClusterConfigurationStorage.cs/#L259">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage`1.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -505,6 +502,55 @@
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage&lt;TAddress&gt;.Dispose(System.Boolean)</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_LoadConfigurationAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage%601.LoadConfigurationAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/InMemoryClusterConfigurationStorage.cs/#L255">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_LoadConfigurationAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage`1.LoadConfigurationAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_LoadConfigurationAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage`1.LoadConfigurationAsync(CancellationToken)">LoadConfigurationAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed override ValueTask LoadConfigurationAsync(CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage&lt;TAddress&gt;.LoadConfigurationAsync(CancellationToken)</span></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_InMemoryClusterConfigurationStorage_1_ProposeAsync_DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfiguration_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.InMemoryClusterConfigurationStorage%601.ProposeAsync(DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfiguration%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
