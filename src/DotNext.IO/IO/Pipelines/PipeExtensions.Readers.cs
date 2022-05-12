@@ -417,26 +417,10 @@ public static partial class PipeExtensions
     public static async Task CopyToAsync<TConsumer>(this PipeReader reader, TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        ReadResult result;
-        do
+        await foreach (var chunk in ReadAllAsync(reader, token).ConfigureAwait(false))
         {
-            result = await reader.ReadAsync(token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(reader, token);
-            var buffer = result.Buffer;
-            var consumed = buffer.Start;
-
-            try
-            {
-                for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
-                    await consumer.Invoke(block, token).ConfigureAwait(false);
-                consumed = buffer.End;
-            }
-            finally
-            {
-                reader.AdvanceTo(consumed);
-            }
+            await consumer.Invoke(chunk, token).ConfigureAwait(false);
         }
-        while (!result.IsCompleted);
     }
 
     /// <summary>
@@ -737,4 +721,36 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static Task CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, CancellationToken token = default)
         => CopyToAsync(reader, new BufferConsumer<byte>(destination), token);
+
+    /// <summary>
+    /// Reads all chunks of data from the pipe.
+    /// </summary>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A sequence of data chunks.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this PipeReader reader, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        ReadResult result;
+        do
+        {
+            result = await reader.ReadAsync(token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(reader, token);
+            var buffer = result.Buffer;
+            var consumed = buffer.Start;
+
+            try
+            {
+                for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
+                    yield return block;
+
+                consumed = buffer.End;
+            }
+            finally
+            {
+                reader.AdvanceTo(consumed);
+            }
+        }
+        while (!result.IsCompleted);
+    }
 }

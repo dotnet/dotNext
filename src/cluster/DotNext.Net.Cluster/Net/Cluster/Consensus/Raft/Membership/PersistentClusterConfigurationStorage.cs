@@ -23,16 +23,20 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         // first 8 bytes reserved for fingerprint
         private readonly FileStream fs;
+        private readonly MemoryAllocator<byte>? allocator;
+        private readonly int bufferSize;
 
-        internal ClusterConfiguration(string fileName, int fileBufferSize)
+        internal ClusterConfiguration(string fileName, int fileBufferSize, MemoryAllocator<byte>? allocator)
         {
+            this.allocator = allocator;
+            bufferSize = fileBufferSize;
             fs = new(fileName, new FileStreamOptions
             {
                 Mode = FileMode.OpenOrCreate,
                 Access = FileAccess.ReadWrite,
                 Share = FileShare.Read,
                 BufferSize = fileBufferSize,
-                Options = FileOptions.SequentialScan | FileOptions.Asynchronous,
+                Options = FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.WriteThrough,
             });
         }
 
@@ -56,26 +60,32 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         {
             Fingerprint = 0L;
             fs.SetLength(0L);
-            fs.Flush(true);
+            fs.Flush(flushToDisk: true);
         }
 
-        internal async ValueTask CopyToAsync(ClusterConfiguration output, int bufferSize, CancellationToken token)
+        internal async ValueTask CopyToAsync(ClusterConfiguration output, CancellationToken token)
         {
-            output.fs.SetLength(Length);
+            output.fs.Position = 0L;
             output.Fingerprint = Fingerprint;
             fs.Position = 0L;
-            output.fs.Position = 0L;
             await fs.CopyToAsync(output.fs, bufferSize, token).ConfigureAwait(false);
             await output.fs.FlushAsync(token).ConfigureAwait(false);
+            output.fs.SetLength(fs.Length);
         }
 
         internal Task CopyToAsync(IBufferWriter<byte> output, CancellationToken token)
             => fs.CopyToAsync(output, token: token);
 
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            fs.Position = PayloadOffset;
-            return new(writer.CopyFromAsync(fs, token));
+            // this method should be safe for concurrent invocations
+            var handle = fs.SafeFileHandle;
+            using var buffer = allocator.Invoke(bufferSize, exactSize: false);
+
+            for (int offset = PayloadOffset, count; (count = await RandomAccess.ReadAsync(handle, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
+            {
+                await writer.Invoke(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -111,8 +121,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         if (!storage.Exists)
             storage.Create();
 
-        active = new(Path.Combine(storage.FullName, ActiveConfigurationFileName), fileBufferSize);
-        proposed = new(Path.Combine(storage.FullName, ProposedConfigurationFileName), fileBufferSize);
+        active = new(Path.Combine(storage.FullName, ActiveConfigurationFileName), fileBufferSize, allocator);
+        proposed = new(Path.Combine(storage.FullName, ProposedConfigurationFileName), fileBufferSize, allocator);
         bufferSize = fileBufferSize;
     }
 
@@ -161,7 +171,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         async ValueTask ApplyProposedAsync()
         {
-            await proposed.CopyToAsync(active, bufferSize, token).ConfigureAwait(false);
+            await proposed.CopyToAsync(active, token).ConfigureAwait(false);
             await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
             activeCache = proposedCache;
 
@@ -209,9 +219,6 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         }
 
         builder.Clear();
-
-        // send notifications
-        await base.LoadConfigurationAsync(token).ConfigureAwait(false);
     }
 
     private MemoryOwner<byte> Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration, long fingerprint)

@@ -6,7 +6,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <Version>4.4.1</Version>
+    <Version>4.5.0</Version>
     <IsPackable>false</IsPackable>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>

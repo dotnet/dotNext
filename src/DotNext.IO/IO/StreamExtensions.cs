@@ -1284,4 +1284,28 @@ public static partial class StreamExtensions
 
         return offset;
     }
+
+    /// <summary>
+    /// Reads the stream sequentially.
+    /// </summary>
+    /// <remarks>
+    /// The returned memory block should not be used between iterations.
+    /// </remarks>
+    /// <param name="stream">Readable stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The allocator of the buffer.</param>
+    /// <param name="token">The token that can be used to cancel the enumeration.</param>
+    /// <returns>A collection of memort blocks that can be obtained sequentially to read a whole stream.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1.</exception>
+    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this Stream stream, int bufferSize, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        if (bufferSize < 1)
+            throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+        using var bufferOwner = allocator.Invoke(bufferSize, exactSize: false);
+        var buffer = bufferOwner.Memory;
+
+        for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
+            yield return buffer.Slice(0, count);
+    }
 }

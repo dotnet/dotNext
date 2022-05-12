@@ -130,12 +130,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    public virtual async ValueTask LoadConfigurationAsync(CancellationToken token = default)
-    {
-        // enumerate all entries in active config and raise events
-        foreach (var (id, address) in activeCache)
-            await events.Writer.WriteAsync(new() { Id = id, Address = address, IsAdded = true }, token).ConfigureAwait(false);
-    }
+    public abstract ValueTask LoadConfigurationAsync(CancellationToken token = default);
 
     /// <summary>
     /// Gets a value indicating that this storage has proposed configuration.

@@ -17,3 +17,4 @@ MissingMessageName=Message must have associated type and name
 LeaderIsUnavailable=Leader node is not yet elected
 UnknownRaftMessageType=Unknown Raft message type {0}
 PersistentStateBroken=Internal state of the WAL didn't pass the integrity check
+ConcurrentMembershipUpdate=Cluster membership cannot be modified concurrently

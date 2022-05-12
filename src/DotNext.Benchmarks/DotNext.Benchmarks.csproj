@@ -8,7 +8,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <IsPackable>false</IsPackable>
-    <Version>4.4.1</Version>
+    <Version>4.5.0</Version>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
