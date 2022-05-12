@@ -39,6 +39,7 @@ public abstract class Disposable : IDisposable
     /// <summary>
     /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected Task DisposedTask => Task.FromException(new ObjectDisposedException(ObjectName));
 
     /// <summary>

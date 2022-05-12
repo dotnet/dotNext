@@ -72,14 +72,14 @@ public partial class FileBufferingWriter
         }
 
         private LazySegment(IMemorySegmentProvider cursor, int length)
-            : this(cursor, new Segment(0L, length))
+            : this(cursor, new Segment { Length = length })
         {
         }
 
         private new LazySegment Next(int length)
         {
             var index = RunningIndex;
-            var segment = new LazySegment(manager.Cursor, manager.Segment.Next(length))
+            var segment = new LazySegment(manager.Cursor, manager.Segment >> length)
             {
                 RunningIndex = index + manager.Segment.Length,
             };

@@ -323,6 +323,108 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [Fact]
+        public static async Task RegressionIssue108()
+        {
+            var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var config1 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+                {"metadata:nodeName", "node1"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"partitioning", "false" },
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node2"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")}
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node3"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")}
+            };
+
+            using (var host1 = CreateHost<Startup>(3262, config1))
+            {
+                await host1.StartAsync();
+                True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+
+                // two nodes in frozen state
+                using var host2 = CreateHost<Startup>(3263, config2);
+                await host2.StartAsync();
+
+                using var host3 = CreateHost<Startup>(3264, config3);
+                await host3.StartAsync();
+
+                Equal(GetLocalClusterView(host1).LocalMemberAddress, (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint);
+
+                // add two nodes to the cluster
+                True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
+                await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+                True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
+                await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
+
+                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+                var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint);
+                Equal(leader1.EndPoint, leader3.EndPoint);
+
+                foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
+                {
+                    if (member.IsRemote)
+                    {
+                        NotEmpty(await member.GetMetadataAsync());
+                    }
+                }
+
+                await host3.StopAsync();
+                await host2.StopAsync();
+                await host1.StopAsync();
+            }
+
+            // recover cluster
+            config1["coldStart"] = "false";
+            using (var host1 = CreateHost<Startup>(3262, config1))
+            {
+                await host1.StartAsync();
+
+                using var host2 = CreateHost<Startup>(3263, config2);
+                await host2.StartAsync();
+
+                using var host3 = CreateHost<Startup>(3264, config3);
+                await host3.StartAsync();
+
+                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+                var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint);
+                Equal(leader1.EndPoint, leader3.EndPoint);
+
+                foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
+                {
+                    if (member.IsRemote)
+                    {
+                        NotEmpty(await member.GetMetadataAsync());
+                    }
+                }
+
+                await host3.StopAsync();
+                await host2.StopAsync();
+                await host1.StopAsync();
+            }
+        }
+
+        [Fact]
         public static async Task DependencyInjection()
         {
             var config = new Dictionary<string, string>

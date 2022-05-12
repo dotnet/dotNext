@@ -121,7 +121,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     public override async Task StartAsync(CancellationToken token)
     {
         configurator?.OnStart(this, metadata);
-        pollingLoopTask = ConfigurationPollingLoop();
 
         if (coldStart)
         {
@@ -144,6 +143,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
             }
         }
 
+        pollingLoopTask = ConfigurationPollingLoop();
         await base.StartAsync(token).ConfigureAwait(false);
 
         if (!coldStart && announcer is not null)

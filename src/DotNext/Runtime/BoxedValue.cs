@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -30,6 +31,7 @@ public sealed class BoxedValue<T>
     /// <summary>
     /// Gets a reference to the boxed value.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public ref T Value => ref Unsafe.Unbox<T>(this);
 
     /// <summary>
@@ -57,6 +59,14 @@ public sealed class BoxedValue<T>
     public static BoxedValue<T> Box(T value) => Unsafe.As<BoxedValue<T>>(value);
 
     /// <summary>
+    /// Boxes nullable value type to an object.
+    /// </summary>
+    /// <param name="value">The value to be boxed.</param>
+    /// <returns>A boxed representation of the value.</returns>
+    [return: NotNullIfNotNull("value")]
+    public static BoxedValue<T>? TryBox(in T? value) => value.HasValue ? Box(value.GetValueOrDefault()) : null;
+
+    /// <summary>
     /// Unboxes the value.
     /// </summary>
     /// <param name="boxedValue">The boxed representation of the value.</param>
@@ -68,4 +78,12 @@ public sealed class BoxedValue<T>
     /// <param name="value">The value to be boxed.</param>
     /// <returns>A boxed representation of the value.</returns>
     public static explicit operator BoxedValue<T>(T value) => Box(value);
+
+    /// <summary>
+    /// Boxes nullable value type to an object.
+    /// </summary>
+    /// <param name="value">The value to be boxed.</param>
+    /// <returns>A boxed representation of the value.</returns>
+    [return: NotNullIfNotNull("value")]
+    public static explicit operator BoxedValue<T>?(in T? value) => TryBox(in value);
 }

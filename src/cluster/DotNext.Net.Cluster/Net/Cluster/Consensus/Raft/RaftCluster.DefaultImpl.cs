@@ -107,8 +107,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <returns>The task representing asynchronous execution of the method.</returns>
     public override async Task StartAsync(CancellationToken token = default)
     {
-        pollingLoopTask = ConfigurationPollingLoop();
-
         if (coldStart)
         {
             // in case of cold start, add the local member to the configuration
@@ -130,6 +128,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             }
         }
 
+        pollingLoopTask = ConfigurationPollingLoop();
         await base.StartAsync(token).ConfigureAwait(false);
         server = serverFactory(this);
         server.Start();

@@ -50,4 +50,6 @@ internal static class ExceptionMessages
         => Resources.Get().Format(messageType.ToString());
 
     internal static string PersistentStateBroken => (string)Resources.Get();
+
+    internal static string ConcurrentMembershipUpdate => (string)Resources.Get();
 }

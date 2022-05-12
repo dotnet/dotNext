@@ -252,6 +252,10 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     public ConfigurationBuilder CreateActiveConfigurationBuilder() => new(this);
 
     /// <inheritdoc />
+    public sealed override ValueTask LoadConfigurationAsync(CancellationToken token = default)
+        => ValueTask.CompletedTask;
+
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

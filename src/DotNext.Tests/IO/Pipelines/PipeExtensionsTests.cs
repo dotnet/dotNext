@@ -6,6 +6,8 @@ using System.Text;
 
 namespace DotNext.IO.Pipelines
 {
+    using Buffers;
+
     [ExcludeFromCodeCoverage]
     public sealed class PipeExtensionsTests : Test
     {
@@ -333,6 +335,29 @@ namespace DotNext.IO.Pipelines
             Equal(10, result.Buffer.FirstSpan[0]);
             Equal(20, result.Buffer.FirstSpan[1]);
             Equal(30, result.Buffer.FirstSpan[2]);
+        }
+
+        [Fact]
+        public static async Task ReadPortionAsync()
+        {
+            var portion1 = RandomBytes(64);
+            var portion2 = RandomBytes(64);
+
+            var reader = PipeReader.Create(BufferHelpers.Concat(new ReadOnlyMemory<byte>(portion1), portion2));
+
+            await using (var enumerator = reader.ReadAllAsync().GetAsyncEnumerator())
+            {
+                True(await enumerator.MoveNextAsync());
+                Equal(portion1, enumerator.Current.ToArray());
+                True(await enumerator.MoveNextAsync());
+            }
+
+            await using (var enumerator = reader.ReadAllAsync().GetAsyncEnumerator())
+            {
+                True(await enumerator.MoveNextAsync());
+                Equal(portion2, enumerator.Current.ToArray());
+                False(await enumerator.MoveNextAsync());
+            }
         }
     }
 }

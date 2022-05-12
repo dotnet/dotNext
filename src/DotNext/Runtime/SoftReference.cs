@@ -8,7 +8,7 @@ namespace DotNext.Runtime;
 /// which is eligible for garbage collection in Generation 2 only.
 /// </summary>
 /// <remarks>
-/// The object that is soft-referenced survive garbage collection in
+/// The object that is soft-referenced survives the garbage collection in
 /// Generation 0 and 1. When GC is triggered for Generation 2,
 /// the object can be reclaimed according to <see cref="SoftReferenceOptions"/>.
 /// All public instance members of this type are thread-safe.

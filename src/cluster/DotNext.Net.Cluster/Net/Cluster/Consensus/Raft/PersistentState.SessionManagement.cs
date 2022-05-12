@@ -31,27 +31,26 @@ public partial class PersistentState
         internal override int Take()
         {
             int sessionId;
-            ulong current, newValue;
+            ulong current, newValue = Volatile.Read(ref control);
             do
             {
-                current = control;
-                sessionId = BitOperations.TrailingZeroCount(current);
+                sessionId = BitOperations.TrailingZeroCount(current = newValue);
                 newValue = current ^ (1UL << sessionId);
             }
-            while (Interlocked.CompareExchange(ref control, newValue, current) != current);
+            while ((newValue = Interlocked.CompareExchange(ref control, newValue, current)) != current);
 
             return sessionId;
         }
 
         internal override void Return(int sessionId)
         {
-            ulong current, newValue;
+            ulong current, newValue = Volatile.Read(ref control);
             do
             {
-                current = control;
+                current = newValue;
                 newValue = current | (1UL << sessionId);
             }
-            while (Interlocked.CompareExchange(ref control, newValue, current) != current);
+            while ((newValue = Interlocked.CompareExchange(ref control, newValue, current)) != current);
         }
     }
 
