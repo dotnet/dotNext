@@ -180,6 +180,7 @@ The application may request the following services from ASP.NET Core DI containe
 * [IPeerMesh&lt;IRaftClusterMember&gt;](xref:DotNext.Net.IPeerMesh`1) for tracking changes in cluster membership
 * [IReplicationCluster&lt;IRaftLogEntry&gt;](xref:DotNext.Net.Cluster.Replication.IReplicationCluster`1) to work with audit trail used for replication. [IRaftLogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry) is Raft-specific representation of the record in the audit trail
 * [IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) to work with audit trail in simplified manner
+* [IRaftHttpCluster](xref:DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster) provides HTTP-specific extensions to [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface plus cluster management methods
 
 ### Configuration
 The application should be configured properly to work as a cluster node. The following JSON represents the example of configuration:
