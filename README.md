@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 04-23-2022
+Release Date: 05-12-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.5.0">DotNext 4.5.0</a>
 * Added `Base64Encoder.MaxCharsToFlush` constant for convenient allocation of the buffer to be passed to `Base64Encoder.Flush` method
