@@ -212,7 +212,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     {
         var handlers = peerGoneHandlers;
         if (!handlers.IsEmpty)
-            ThreadPool.QueueUserWorkItem<(InvocationList<Action<PeerController, PeerEventArgs>> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler.Invoke(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, peer), false);
+            handlers.Invoke(this, PeerEventArgs.Create(peer));
     }
 
     /// <summary>
@@ -294,7 +294,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     {
         var handlers = peerDiscoveredHandlers;
         if (!handlers.IsEmpty)
-            ThreadPool.QueueUserWorkItem<(InvocationList<Action<PeerController, PeerEventArgs>> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler.Invoke(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, discoveredPeer), false);
+            handlers.Invoke(this, PeerEventArgs.Create(discoveredPeer));
     }
 
     /// <summary>
