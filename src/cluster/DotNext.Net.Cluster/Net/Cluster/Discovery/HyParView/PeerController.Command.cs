@@ -35,34 +35,34 @@ public partial class PeerController
     {
         private readonly object? peersOrMessageTransport;
 
-        internal CommandType Type { get; init; }
+        internal CommandType Type { get; private init; }
 
         // null only if Type is ShuffleReply or ForceShuffle
         [DisallowNull]
-        internal EndPoint? Sender { get; init; }
+        internal EndPoint? Sender { get; private init; }
 
         [DisallowNull]
-        internal EndPoint? Origin { get; init; }
+        internal EndPoint? Origin { get; private init; }
 
         internal bool IsAliveOrHighPriority
         {
             get => TimeToLive != 0;
-            init => TimeToLive = value.ToInt32();
+            private init => TimeToLive = value.ToInt32();
         }
 
-        internal int TimeToLive { get; init; }
+        internal int TimeToLive { get; private init; }
 
         [DisallowNull]
         internal Func<PeerController, IRumorSender>? RumourTransport
         {
             get => peersOrMessageTransport as Func<PeerController, IRumorSender>;
-            init => peersOrMessageTransport = value;
+            private init => peersOrMessageTransport = value;
         }
 
         internal IReadOnlyCollection<EndPoint> Peers
         {
             get => peersOrMessageTransport as IReadOnlyCollection<EndPoint> ?? Array.Empty<EndPoint>();
-            init => peersOrMessageTransport = value;
+            private init => peersOrMessageTransport = value;
         }
 
         internal static Command Join(EndPoint joinedPeer) => new() { Type = CommandType.Join, Sender = joinedPeer };
