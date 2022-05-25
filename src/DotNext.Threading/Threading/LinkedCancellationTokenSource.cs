@@ -1,11 +1,16 @@
-namespace DotNext.Threading;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
+
+namespace DotNext.Threading;
 
 /// <summary>
 /// Gets cancellation token source that allows to obtain the token that causes
 /// cancellation.
 /// </summary>
+/// <remarks>
+/// This source is not resettable. Calling of <see cref="CancellationTokenSource.TryReset"/>
+/// may lead to unpredictable results.
+/// </remarks>
 public abstract class LinkedCancellationTokenSource : CancellationTokenSource
 {
     private protected static readonly Action<object?, CancellationToken> CancellationCallback;
