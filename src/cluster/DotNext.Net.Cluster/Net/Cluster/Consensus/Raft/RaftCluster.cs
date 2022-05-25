@@ -704,23 +704,43 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
     protected async Task<bool> ResignAsync(CancellationToken token)
     {
-        if (state is StandbyState)
-            return false;
-
-        using var tokenSource = token.LinkTo(LifecycleToken);
-        using var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
         bool result;
-        if (state is LeaderState leaderState)
+
+        if (state is StandbyState)
         {
-            await leaderState.StopAsync().ConfigureAwait(false);
-            state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
-            leaderState.Dispose();
-            Leader = null;
-            result = true;
+            result = false;
         }
         else
         {
-            result = false;
+            var tokenSource = token.LinkTo(LifecycleToken);
+            var lockHolder = default(AsyncLock.Holder);
+
+            try
+            {
+                lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+
+                if (state is LeaderState leaderState)
+                {
+                    await leaderState.StopAsync().ConfigureAwait(false);
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
+                    leaderState.Dispose();
+                    Leader = null;
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                lockHolder.Dispose();
+            }
         }
 
         return result;
@@ -783,15 +803,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <inheritdoc/>
     async Task<bool> ICluster.ResignAsync(CancellationToken token)
     {
-        if (await ResignAsync(token).ConfigureAwait(false))
-        {
-            return true;
-        }
-        else
-        {
-            var leader = Leader;
-            return leader is not null && await leader.ResignAsync(token).ConfigureAwait(false);
-        }
+        return await ResignAsync(token).ConfigureAwait(false) ||
+            (Leader is TMember leader && await leader.ResignAsync(token).ConfigureAwait(false));
     }
 
     private async ValueTask MoveToStandbyState()
