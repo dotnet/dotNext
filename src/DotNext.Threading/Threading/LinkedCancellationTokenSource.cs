@@ -34,7 +34,8 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource
     private CancellationToken originalToken;
 
     private protected LinkedCancellationTokenSource()
-        => originalToken = CancellationToken.None;
+    {
+    }
 
     private void Cancel(CancellationToken token)
     {
