@@ -46,10 +46,14 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
         }
         while (!token.IsCancellationRequested);
 
-        throw new OperationCanceledException(token);
+        throw new OperationCanceledException(tokenSource?.CancellationOrigin ?? token);
 
         static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, MessageReader<TResponse> responseReader, CancellationToken token)
         {
@@ -62,40 +66,37 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         // keep the same message between retries for correct identification of duplicate messages
         var signal = new CustomMessage(LocalMemberId, message, true) { RespectLeadership = true };
-        var tokenSource = token.LinkTo(LifecycleToken);
-        try
+        using var tokenSource = token.LinkTo(LifecycleToken);
+        do
         {
-            do
+            var leader = Leader;
+            if (leader is null)
+                throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+            try
             {
-                var leader = Leader;
-                if (leader is null)
-                    throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-                try
-                {
-                    var response = leader.IsRemote ?
-                        leader.SendSignalAsync(signal, token) :
-                        (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
-                    await response.ConfigureAwait(false);
-                    return;
-                }
-                catch (MemberUnavailableException e)
-                {
-                    Logger.FailedToRouteMessage(message.Name, e);
-                }
-                catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable)
-                {
-                    // keep in sync with ReceiveMessage behavior
-                    Logger.FailedToRouteMessage(message.Name, e);
-                }
+                var response = leader.IsRemote ?
+                    leader.SendSignalAsync(signal, token) :
+                    (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
+                await response.ConfigureAwait(false);
+                return;
             }
-            while (!token.IsCancellationRequested);
+            catch (MemberUnavailableException e)
+            {
+                Logger.FailedToRouteMessage(message.Name, e);
+            }
+            catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable)
+            {
+                // keep in sync with ReceiveMessage behavior
+                Logger.FailedToRouteMessage(message.Name, e);
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
         }
-        finally
-        {
-            tokenSource?.Dispose();
-        }
+        while (!token.IsCancellationRequested);
 
-        throw new OperationCanceledException(token);
+        throw new OperationCanceledException(tokenSource?.CancellationOrigin ?? token);
     }
 
     IOutputChannel IMessageBus.LeaderRouter => this;

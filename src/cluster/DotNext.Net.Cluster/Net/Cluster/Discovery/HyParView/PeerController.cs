@@ -113,8 +113,19 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
 
     private async ValueTask EnqueueAsync(Command command, CancellationToken token)
     {
-        using var tokenSource = token.LinkTo(LifecycleToken);
-        await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+        var tokenSource = token.LinkTo(LifecycleToken);
+        try
+        {
+            await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException e) when (tokenSource is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
     }
 
     private async Task CommandLoop()

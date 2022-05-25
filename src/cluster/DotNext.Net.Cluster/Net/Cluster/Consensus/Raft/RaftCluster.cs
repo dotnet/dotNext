@@ -340,10 +340,23 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         ThrowIfDisposed();
         if (standbyNode && state is StandbyState)
         {
-            using var tokenSource = token.LinkTo(LifecycleToken);
-            using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            standbyNode = false;
-            state = CreateInitialState();
+            var tokenSource = token.LinkTo(LifecycleToken);
+            var transitionLock = default(AsyncLock.Holder);
+            try
+            {
+                transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+                standbyNode = false;
+                state = CreateInitialState();
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                transitionLock.Dispose();
+            }
         }
     }
 
@@ -928,16 +941,26 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     {
         ThrowIfDisposed();
 
-        using var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = token.LinkTo(LifecycleToken);
+        try
+        {
+            // 1 - append entry to the log
+            var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
 
-        // 1 - append entry to the log
-        var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
+            // 2 - force replication
+            await ForceReplicationAsync(token).ConfigureAwait(false);
 
-        // 2 - force replication
-        await ForceReplicationAsync(token).ConfigureAwait(false);
-
-        // 3 - wait for commit
-        await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+            // 3 - wait for commit
+            await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException e) when (tokenSource is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
 
         return auditTrail.Term == entry.Term;
     }
