@@ -755,15 +755,23 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <returns>The index of the last committed log entry known by the leader.</returns>
     protected async Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
     {
-        using var tokenSource = token.LinkTo(LifecycleToken);
-
         // do not execute the next round of heartbeats if the sender is already in sync with the leader
         if (state is LeaderState leaderState)
         {
-            if (commitIndex != auditTrail.LastCommittedEntryIndex)
-                await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+            if (commitIndex < auditTrail.LastCommittedEntryIndex)
+            {
+                try
+                {
+                    await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                }
+                catch (InvalidOperationException)
+                {
+                    // local node is not a leader
+                    return null;
+                }
+            }
 
-            return ReferenceEquals(state, leaderState) ? auditTrail.LastCommittedEntryIndex : null;
+            return auditTrail.LastCommittedEntryIndex;
         }
 
         return null;
