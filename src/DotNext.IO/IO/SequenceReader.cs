@@ -839,5 +839,5 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc/>
-    public override string ToString() => RemainingSequence.ToString();
+    public readonly override string ToString() => RemainingSequence.ToString();
 }
