@@ -112,7 +112,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously, bool flowExecutionContext)
     {
         switch (capturedContext)
