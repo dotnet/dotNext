@@ -65,6 +65,18 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource
     /// </remarks>
     public CancellationToken CancellationOrigin
         => status is ReadyStatus ? originalToken : Token;
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            originalToken = default;
+        }
+
+        status = UnsetStatus;
+        base.Dispose(disposing);
+    }
 }
 
 internal sealed class Linked2CancellationTokenSource : LinkedCancellationTokenSource
