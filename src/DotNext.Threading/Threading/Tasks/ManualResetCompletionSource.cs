@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
+using MethodAttributes = System.Reflection.MethodAttributes;
 using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks;
@@ -15,7 +16,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
 
     private readonly Action<object?, CancellationToken> cancellationCallback;
-    private readonly bool runContinuationsAsynchronously;
+    private readonly bool runContinuationsAsynchronously, isConsumptionCallbackProvided;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
     private CancellationTokenSource? timeoutSource;
 
@@ -30,6 +31,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
         version = short.MinValue;
+        isConsumptionCallbackProvided = (new Action(AfterConsumed).Method.Attributes & MethodAttributes.NewSlot) is 0;
 
         // cached callback to avoid further allocations
         cancellationCallback = CancellationRequested;
@@ -251,12 +253,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     void IThreadPoolWorkItem.Execute() => AfterConsumed();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void OnConsumed<T>()
-        where T : ManualResetCompletionSource
+    private protected void OnConsumed()
     {
         status = ManualResetCompletionSourceStatus.Consumed;
 
-        if (GetType() != typeof(T))
+        if (isConsumptionCallbackProvided)
             ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
     }
 

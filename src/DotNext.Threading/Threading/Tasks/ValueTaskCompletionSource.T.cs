@@ -257,7 +257,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
     private T GetResult(short token)
     {
-        if (Status != ManualResetCompletionSourceStatus.WaitForConsumption)
+        if (Status is not ManualResetCompletionSourceStatus.WaitForConsumption)
             throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
         if (token != version)
@@ -268,7 +268,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         var resultCopy = result;
         Thread.MemoryBarrier();
 
-        OnConsumed<ValueTaskCompletionSource<T>>();
+        OnConsumed();
         return resultCopy.Value;
     }
 
