@@ -268,7 +268,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         status = ManualResetCompletionSourceStatus.WaitForConsumption;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
     {
         string errorMessage;
@@ -401,7 +400,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
     {
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
