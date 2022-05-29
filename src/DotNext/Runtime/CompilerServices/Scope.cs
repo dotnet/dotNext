@@ -72,7 +72,7 @@ public struct Scope : IDisposable, IAsyncDisposable
     /// <summary>
     /// Executes all attached callbacks synchronously.
     /// </summary>
-    void IDisposable.Dispose()
+    public void Dispose()
     {
         var exceptions = new ExceptionAggregator();
         ExecuteCallbacks(callbacks.AsReadOnlySpan(), ref exceptions);
@@ -133,7 +133,7 @@ public struct Scope : IDisposable, IAsyncDisposable
     /// Executes all attached callbacks asynchronously.
     /// </summary>
     /// <returns>The task representing asynchronous execution.</returns>
-    readonly async ValueTask IAsyncDisposable.DisposeAsync()
+    public readonly async ValueTask DisposeAsync()
     {
         var exceptions = BoxedValue<ExceptionAggregator>.Box(new());
         await ExecuteCallbacksAsync(callbacks, static tuple => tuple.AsReadOnlySpan(), exceptions).ConfigureAwait(false);
