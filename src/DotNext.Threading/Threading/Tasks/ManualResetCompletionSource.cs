@@ -5,8 +5,6 @@ using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTask
 
 namespace DotNext.Threading.Tasks;
 
-using BoxedVersion = Runtime.CompilerServices.Shared<short>;
-
 /// <summary>
 /// Represents base class for producer of value task.
 /// </summary>
@@ -41,7 +39,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void CancellationRequested(object? expectedVersion, CancellationToken token)
     {
-        Debug.Assert(expectedVersion is BoxedVersion);
+        Debug.Assert(expectedVersion is short);
 
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
@@ -50,7 +48,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             lock (SyncRoot)
             {
-                if (status is ManualResetCompletionSourceStatus.Activated && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
+                if (status is ManualResetCompletionSourceStatus.Activated && Unsafe.Unbox<short>(expectedVersion) == version)
                 {
                     if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
@@ -64,7 +62,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
     {
         // box current token once and only if needed
-        BoxedVersion? tokenHolder = null;
+        var tokenHolder = default(IEquatable<short>);
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
