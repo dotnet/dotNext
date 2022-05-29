@@ -59,7 +59,7 @@ public partial class AsyncEventHub
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
     public AsyncEventHub(int count)
     {
-        if (count <= 0)
+        if (count < 1)
             throw new ArgumentOutOfRangeException(nameof(count));
 
         accessLock = new();
@@ -142,7 +142,7 @@ public partial class AsyncEventHub
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
     public Task WaitOneAsync(int eventIndex, TimeSpan timeout, CancellationToken token = default)
     {
-        if ((uint)eventIndex > (uint)sources.Length)
+        if ((uint)eventIndex >= (uint)sources.Length)
             return Task.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
         return timeout < TimeSpan.Zero ? WaitOneCoreAsync(eventIndex, token) : WaitOneCoreAsync(eventIndex, timeout, token);
@@ -157,7 +157,7 @@ public partial class AsyncEventHub
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
     public Task WaitOneAsync(int eventIndex, CancellationToken token = default)
-        => (uint)eventIndex > (uint)sources.Length
+        => (uint)eventIndex >= (uint)sources.Length
             ? Task.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)))
             : WaitOneCoreAsync(eventIndex, token);
 
@@ -181,7 +181,7 @@ public partial class AsyncEventHub
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
     public bool ResetAndPulse(int eventIndex)
     {
-        if ((uint)eventIndex > (uint)sources.Length)
+        if ((uint)eventIndex >= (uint)sources.Length)
             throw new ArgumentOutOfRangeException(nameof(eventIndex));
 
         var result = false;
@@ -213,7 +213,7 @@ public partial class AsyncEventHub
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
     public bool Pulse(int eventIndex)
     {
-        if ((uint)eventIndex > (uint)sources.Length)
+        if ((uint)eventIndex >= (uint)sources.Length)
             throw new ArgumentOutOfRangeException(nameof(eventIndex));
 
         lock (accessLock)
