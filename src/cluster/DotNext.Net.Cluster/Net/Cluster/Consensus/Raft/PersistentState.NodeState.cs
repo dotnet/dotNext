@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using Threading;
-using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 using IntegrityException = IO.Log.IntegrityException;
 using Intrinsics = Runtime.Intrinsics;
 
@@ -92,7 +92,7 @@ public partial class PersistentState
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
             snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
             if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
-                votedFor = new() { Value = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)) };
+                votedFor = BoxedClusterMemberId.Box(new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)));
             this.integrityCheck = integrityCheck;
         }
 
@@ -264,7 +264,7 @@ public partial class PersistentState
 
         private void UpdateVotedFor(ClusterMemberId id)
         {
-            votedFor = id;
+            votedFor = BoxedClusterMemberId.Box(id);
             buffer[LastVotePresenceOffset] = True;
 #pragma warning disable CA2252 // TODO: Remove in .NET 7
             IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));

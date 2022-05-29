@@ -1,6 +1,6 @@
 ﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
 /// Represents persistent state of local cluster member

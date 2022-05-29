@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Threading;
 using static Replication.CommitEvent;
-using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
 /// Represents lightweight Raft node state that is suitable for distributed consensus only.
@@ -256,7 +256,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
     {
-        lastVote = member;
+        lastVote = BoxedClusterMemberId.Box(member);
         return new(term.IncrementAndGet());
     }
 
@@ -351,7 +351,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <inheritdoc/>
     ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId? id)
     {
-        lastVote = id;
+        lastVote = BoxedClusterMemberId.TryBox(in id);
         return new();
     }
 
