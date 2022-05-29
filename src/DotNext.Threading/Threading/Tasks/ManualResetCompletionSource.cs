@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
-using MethodAttributes = System.Reflection.MethodAttributes;
 using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks;
@@ -31,7 +30,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
         version = short.MinValue;
-        isConsumptionCallbackProvided = (new Action(AfterConsumed).Method.Attributes & MethodAttributes.NewSlot) is 0;
+        isConsumptionCallbackProvided = new Action(AfterConsumed).Method.DeclaringType != typeof(ManualResetCompletionSource);
 
         // cached callback to avoid further allocations
         cancellationCallback = CancellationRequested;
