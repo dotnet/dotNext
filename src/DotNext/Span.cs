@@ -786,13 +786,10 @@ public static class Span
                             : allocator((int)totalLength);
 
                 var output = result.Span;
-                foreach (var str in values)
+                foreach (ReadOnlySpan<char> str in values)
                 {
-                    if (str is { Length: > 0 })
-                    {
-                        str.CopyTo(output);
-                        output = output.Slice(str.Length);
-                    }
+                    str.CopyTo(output);
+                    output = output.Slice(str.Length);
                 }
 
                 break;
