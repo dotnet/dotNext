@@ -20,6 +20,11 @@ public readonly struct Timeout
     public static Timeout Infinite => default;
 
     /// <summary>
+    /// Gets expired timeout.
+    /// </summary>
+    public static Timeout Expired { get; } = new(TimeSpan.Zero);
+
+    /// <summary>
     /// Constructs a new timeout control object.
     /// </summary>
     /// <param name="timeout">Max duration of operation.</param>
