@@ -61,7 +61,7 @@ public static partial class AsyncBridge
             result = new(WaitHandleTaskCompletionCallback);
 
         IEquatable<short> token = result.Reset();
-        var registration = ThreadPool.RegisterWaitForSingleObject(handle, result.Complete, token, timeout, executeOnlyOnce: true);
+        var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(handle, result.Complete, token, timeout, executeOnlyOnce: true);
 
         if (result.IsCompleted)
         {
