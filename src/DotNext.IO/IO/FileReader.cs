@@ -74,7 +74,7 @@ public partial class FileReader : Disposable
     }
 
     /// <summary>
-    /// Gets read position within the file.
+    /// Gets the read position within the file.
     /// </summary>
     /// <remarks>
     /// The returned value may be larger than <see cref="FilePosition"/> because the reader
