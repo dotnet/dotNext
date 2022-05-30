@@ -20,8 +20,7 @@ public static partial class Scheduler
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="delay"/> is less than <see cref="TimeSpan.Zero"/> and not equal to <see cref="InfiniteTimeSpan"/>.</exception>
     public static DelayedTask ScheduleAsync<TArgs>(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, TimeSpan delay, CancellationToken token = default)
     {
-        if (callback is null)
-            throw new ArgumentNullException(nameof(callback));
+        ArgumentNullException.ThrowIfNull(callback);
 
         if (delay < TimeSpan.Zero && delay != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(delay));
@@ -56,8 +55,7 @@ public static partial class Scheduler
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="delay"/> is less than <see cref="TimeSpan.Zero"/> and not equal to <see cref="InfiniteTimeSpan"/>.</exception>
     public static DelayedTask<TResult> ScheduleAsync<TArgs, TResult>(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, TimeSpan delay, CancellationToken token = default)
     {
-        if (callback is null)
-            throw new ArgumentNullException(nameof(callback));
+        ArgumentNullException.ThrowIfNull(callback);
 
         if (delay < TimeSpan.Zero && delay != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(delay));
