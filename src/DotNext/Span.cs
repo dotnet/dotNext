@@ -765,12 +765,6 @@ public static class Span
 
         switch (values.Length)
         {
-            case 0:
-                result = default;
-                break;
-            case 1:
-                result = Copy(values[0].AsSpan(), allocator);
-                break;
             default:
                 var totalLength = 0L;
                 foreach (var str in values)
@@ -781,31 +775,32 @@ public static class Span
                     }
                 }
 
-                switch (totalLength)
-                {
-                    case 0L:
-                        result = default;
-                        break;
-                    case > int.MaxValue:
-                        throw new OutOfMemoryException();
-                    default:
-                        result = allocator is null
+                if (totalLength is 0)
+                    goto case 0;
+
+                if (totalLength > Array.MaxLength)
+                    throw new OutOfMemoryException();
+
+                result = allocator is null
                             ? new(ArrayPool<char>.Shared, (int)totalLength)
                             : allocator((int)totalLength);
 
-                        var output = result.Span;
-                        foreach (var str in values)
-                        {
-                            if (str is { Length: > 0 })
-                            {
-                                str.CopyTo(output);
-                                output = output.Slice(str.Length);
-                            }
-                        }
-
-                        break;
+                var output = result.Span;
+                foreach (var str in values)
+                {
+                    if (str is { Length: > 0 })
+                    {
+                        str.CopyTo(output);
+                        output = output.Slice(str.Length);
+                    }
                 }
 
+                break;
+            case 0:
+                result = default;
+                break;
+            case 1:
+                result = Copy(values[0].AsSpan(), allocator);
                 break;
         }
 
