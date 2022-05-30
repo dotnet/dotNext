@@ -164,7 +164,7 @@ public interface IDataTransferObject
 
     // use FileBufferingWriter to keep the balance between I/O performance and memory consumption
     // when size is unknown
-    private  async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
+    private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
         var output = new FileBufferingWriter(asyncIO: true);
