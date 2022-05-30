@@ -155,7 +155,7 @@ public interface IDataTransferObject
     private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        Debug.Assert(length < Array.MaxLength);
+        Debug.Assert(length <= Array.MaxLength);
 
         using var writer = new PooledArrayBufferWriter<byte> { Capacity = (int)length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
@@ -164,7 +164,7 @@ public interface IDataTransferObject
 
     // use FileBufferingWriter to keep the balance between I/O performance and memory consumption
     // when size is unknown
-    private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
+    private  async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
         var output = new FileBufferingWriter(asyncIO: true);
