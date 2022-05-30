@@ -213,11 +213,11 @@ public partial class FileReader : Disposable
             return new(0);
 
         return HasBufferedData || output.Length < buffer.Length
-            ? ReadBufferedAsync(output, token)
-            : ReadDirectAsync(output, token);
+            ? ReadBufferedAsync()
+            : ReadDirectAsync();
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
+        async ValueTask<int> ReadDirectAsync()
         {
             var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
             fileOffset += count;
@@ -225,7 +225,7 @@ public partial class FileReader : Disposable
         }
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<int> ReadBufferedAsync(Memory<byte> output, CancellationToken token)
+        async ValueTask<int> ReadBufferedAsync()
         {
             var result = 0;
 
