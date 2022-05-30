@@ -106,6 +106,17 @@ public static partial class Sequence
         => FirstOrNone(seq).OrNull();
 
     /// <summary>
+    /// Obtains the last value type in the sequence; or <see langword="null"/>
+    /// if sequence is empty.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the sequence.</typeparam>
+    /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>The last element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
+    public static T? LastOrNull<T>(this IEnumerable<T> seq)
+        where T : struct
+        => LastOrNone(seq).OrNull();
+
+    /// <summary>
     /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
     /// if sequence is empty.
     /// </summary>
@@ -140,6 +151,36 @@ public static partial class Sequence
         {
             using var enumerator = seq.GetEnumerator();
             return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
+        }
+    }
+
+    /// <summary>
+    /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
+    /// if sequence is empty.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the sequence.</typeparam>
+    /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+    /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
+    public static Optional<T> LastOrNone<T>(this IEnumerable<T> seq)
+    {
+        return seq switch
+        {
+            List<T> list => Span.LastOrNone<T>(CollectionsMarshal.AsSpan(list)),
+            T[] array => Span.LastOrNone<T>(array),
+            string str => ReinterpretCast<Optional<char>, Optional<T>>(str.AsSpan().LastOrNone()), // Workaround for https://github.com/dotnet/runtime/issues/57484
+            IList<T> list => list.Count > 0 ? list[list.Count - 1] : Optional<T>.None,
+            IReadOnlyList<T> list => list.Count > 0 ? list[list.Count - 1] : Optional<T>.None,
+            _ => LastOrNoneSlow(seq),
+        };
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static Optional<T> LastOrNoneSlow(IEnumerable<T> seq)
+        {
+            var result = Optional<T>.None;
+            foreach (var item in seq)
+                result = item;
+
+            return result;
         }
     }
 

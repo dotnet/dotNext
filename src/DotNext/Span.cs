@@ -687,6 +687,15 @@ public static class Span
         => span.Length > 0 ? span[0] : Optional<T>.None;
 
     /// <summary>
+    /// Gets the last element in the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="span">The span of elements.</param>
+    /// <returns>The last element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    public static Optional<T> LastOrNone<T>(this ReadOnlySpan<T> span)
+        => span.Length > 0 ? span[span.Length - 1] : Optional<T>.None;
+
+    /// <summary>
     /// Returns the first element in a span that satisfies a specified condition.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the span.</typeparam>

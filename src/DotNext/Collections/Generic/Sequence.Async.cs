@@ -52,6 +52,25 @@ public static partial class Sequence
     }
 
     /// <summary>
+    /// Obtains the last value type in the sequence; or <see langword="null"/>
+    /// if sequence is empty.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the sequence.</typeparam>
+    /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+    /// <param name="token">The token that can be used to cancel enumeration.</param>
+    /// <returns>The last element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<T?> LastOrNullAsync<T>(this IAsyncEnumerable<T> seq, CancellationToken token = default)
+        where T : struct
+    {
+        T? result = null;
+        await foreach (var item in seq.WithCancellation(token).ConfigureAwait(false))
+            result = item;
+
+        return result;
+    }
+
+    /// <summary>
     /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
     /// if sequence is empty.
     /// </summary>
@@ -65,7 +84,7 @@ public static partial class Sequence
         => FirstOrNoneAsync(seq, token);
 
     /// <summary>
-    /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
+    /// Obtains first element in the sequence; or <see cref="Optional{T}.None"/>
     /// if sequence is empty.
     /// </summary>
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
@@ -78,6 +97,24 @@ public static partial class Sequence
         var enumerator = seq.GetAsyncEnumerator(token);
         await using (enumerator.ConfigureAwait(false))
             return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : Optional<T>.None;
+    }
+
+    /// <summary>
+    /// Obtains the last element in the sequence; or <see cref="Optional{T}.None"/>
+    /// if sequence is empty.
+    /// </summary>
+    /// <typeparam name="T">Type of elements in the sequence.</typeparam>
+    /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+    /// <param name="token">The token that can be used to cancel enumeration.</param>
+    /// <returns>The last element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<Optional<T>> LastOrNoneAsync<T>(this IAsyncEnumerable<T> seq, CancellationToken token = default)
+    {
+        var result = Optional<T>.None;
+        await foreach (var item in seq.WithCancellation(token).ConfigureAwait(false))
+            result = item;
+
+        return result;
     }
 
     /// <summary>

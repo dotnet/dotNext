@@ -223,6 +223,21 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
+        public static void Iteration2()
+        {
+            IEnumerable<int> collection = Array.Empty<int>();
+            Null(collection.LastOrNull());
+            Equal(Optional<int>.None, collection.LastOrNone());
+
+            collection = new int[] { 42 };
+            Equal(42, collection.LastOrNull());
+            Equal(42, collection.LastOrNone());
+
+            Equal('b', "ab".LastOrNone());
+            False(string.Empty.LastOrNone().HasValue);
+        }
+
+        [Fact]
         public static async Task IterationAsync()
         {
             var collection = Array.Empty<int>().ToAsyncEnumerable();
@@ -233,6 +248,17 @@ namespace DotNext.Collections.Generic
             Equal(42, await collection.FirstOrNullAsync());
             Equal(42, await collection.FirstOrNoneAsync());
             Equal(42, await collection.FirstOrNoneAsync(Predicate.True<int>()));
+        }
+
+        [Fact]
+        public static async Task Iteration2Async()
+        {
+            var collection = Array.Empty<int>().ToAsyncEnumerable();
+            Null(await collection.LastOrNullAsync());
+            Equal(Optional<int>.None, await collection.LastOrNoneAsync());
+            collection = new int[] { 42 }.ToAsyncEnumerable();
+            Equal(42, await collection.LastOrNullAsync());
+            Equal(42, await collection.LastOrNoneAsync());
         }
 
         [Fact]
