@@ -189,6 +189,34 @@ public ref partial struct BufferWriterSlim<T>
     }
 
     /// <summary>
+    /// Gets the last added item.
+    /// </summary>
+    /// <param name="item">The last added item.</param>
+    /// <returns><see langword="true"/> if this buffer is not empty; otherwise, <see langword="false"/>.</returns>
+    public readonly bool TryPeek([MaybeNullWhen(false)] out T? item)
+    {
+        var span = WrittenSpan;
+        return Span.ElementAt(span, span.Length - 1, out item);
+    }
+
+    /// <summary>
+    /// Attempts to remove the last added item.
+    /// </summary>
+    /// <param name="item">The removed item.</param>
+    /// <returns><see langword="true"/> if the item is removed successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryPop([MaybeNullWhen(false)] out T? item)
+    {
+        if (position > 0)
+        {
+            item = Unsafe.Add(ref MemoryMarshal.GetReference(WrittenSpan), --position);
+            return true;
+        }
+
+        item = default;
+        return false;
+    }
+
+    /// <summary>
     /// Gets the element at the specified zero-based index within this builder.
     /// </summary>
     /// <param name="index">he zero-based index of the element.</param>

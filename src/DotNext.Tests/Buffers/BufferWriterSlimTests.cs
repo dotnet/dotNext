@@ -211,5 +211,23 @@ namespace DotNext.Buffers
                 writer.Dispose();
             }
         }
+
+        [Fact]
+        public static void StackBehavior()
+        {
+            var writer = new BufferWriterSlim<int>(stackalloc int[4]);
+            False(writer.TryPeek(out var item));
+            False(writer.TryPop(out item));
+
+            writer.Add(42);
+            True(writer.TryPeek(out item));
+            Equal(42, item);
+            True(writer.TryPeek(out item));
+            Equal(42, item);
+
+            True(writer.TryPop(out item));
+            Equal(42, item);
+            False(writer.TryPop(out item));
+        }
     }
 }
