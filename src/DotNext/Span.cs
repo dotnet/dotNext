@@ -797,7 +797,7 @@ public static class Span
                 result = default;
                 break;
             case 1:
-                result = Copy(values[0].AsSpan(), allocator);
+                result = Copy(values[0], allocator);
                 break;
         }
 
