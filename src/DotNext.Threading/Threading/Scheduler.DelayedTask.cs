@@ -77,6 +77,8 @@ public static partial class Scheduler
 
         internal DelayedTask(CancellationToken token)
         {
+            Debug.Assert(token.IsCancellationRequested);
+
             task = System.Threading.Tasks.Task.FromCanceled<TResult>(token);
             cts = null;
         }
