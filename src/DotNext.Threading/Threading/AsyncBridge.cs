@@ -54,7 +54,7 @@ public static partial class AsyncBridge
 
         WaitHandleValueTask? result;
 
-        // do not keep long references when treshold reached
+        // do not keep long references when threshold reached
         if (instantiatedTasks > maxPoolSize)
             result = new(static t => t.Reset());
         else if (!HandlePool.TryTake(out result))
