@@ -84,7 +84,7 @@ public readonly struct Timeout
     /// <summary>
     /// Gets the remaining time.
     /// </summary>
-    /// <value>The remaining time; or <see langword="null"/> if timeout occurs.</value>
+    /// <value>The remaining time; or <see langword="null"/> if timeout occurred.</value>
     public TimeSpan? RemainingTime
     {
         get
