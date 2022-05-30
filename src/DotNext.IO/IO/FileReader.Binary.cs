@@ -74,7 +74,7 @@ public partial class FileReader : IAsyncBinaryReader
     private int Read7BitEncodedInt()
     {
         var decoder = new SevenBitEncodedInt.Reader();
-        var reader = new SpanReader<byte>(Buffer.Span);
+        var reader = new SpanReader<byte>(BufferSpan);
         bool moveNext;
         do
         {
@@ -290,7 +290,7 @@ public partial class FileReader : IAsyncBinaryReader
         {
             Debug.Assert(BufferLength >= T.Size);
 
-            var reader = new SpanReader<byte>(Buffer.Span.Slice(0, T.Size));
+            var reader = new SpanReader<byte>(BufferSpan.Slice(0, T.Size));
             var result = T.Parse(ref reader);
             Consume(reader.ConsumedCount);
             length -= reader.ConsumedCount;
