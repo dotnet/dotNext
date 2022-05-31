@@ -44,7 +44,7 @@ public class AsyncReaderWriterLockBenchmark
         asyncRwLock.Release();
     }
 
-    [Benchmark(Description = "AsyncReaderWriterLock synchronous acquire/release")]
+    [Benchmark(Description = "AsyncReaderWriterLock asynchronous acquire/release")]
     public void AcquireReleaseAsyncRWLockAsynchronously()
     {
         asyncRwLock.EnterWriteLockAsync().GetAwaiter().GetResult();
