@@ -12,6 +12,10 @@ using HttpEndPoint = Net.Http.HttpEndPoint;
 /// <summary>
 /// Provides methods for serialization/deserialization of <see cref="EndPoint"/> derived types.
 /// </summary>
+/// <remarks>
+/// List of supported endpoint types: <see cref="IPEndPoint"/>, <see cref="DnsEndPoint"/>,
+/// <see cref="HttpEndPoint"/>, <see cref="UnixDomainSocketEndPoint"/>.
+/// </remarks>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public static class EndPointFormatter
 {
@@ -25,7 +29,7 @@ public static class EndPointFormatter
     private static Encoding HostNameEncoding => Encoding.UTF8;
 
     /// <summary>
-    /// Serializes <see cref="IPEndPoint"/>, <see cref="DnsEndPoint"/> or <see cref="HttpEndPoint"/> to the buffer.
+    /// Serializes endpoint address to the buffer.
     /// </summary>
     /// <param name="endPoint">The value to be serialized.</param>
     /// <param name="allocator">The buffer allocator.</param>
@@ -51,7 +55,7 @@ public static class EndPointFormatter
     }
 
     /// <summary>
-    /// Serializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/> to the buffer.
+    /// Serializes endpoint address to the buffer.
     /// </summary>
     /// <param name="writer">The output buffer.</param>
     /// <param name="endPoint">The value to be serialized.</param>
@@ -131,7 +135,7 @@ public static class EndPointFormatter
     }
 
     /// <summary>
-    /// Deserializes <see cref="IPEndPoint"/> or <see cref="DnsEndPoint"/>.
+    /// Deserializes endpoint address.
     /// </summary>
     /// <param name="reader">The binary reader.</param>
     /// <returns>The deserialized network endpoint address.</returns>
