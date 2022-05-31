@@ -46,36 +46,43 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-12-2022
+Release Date: 06-12-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.5.0">DotNext 4.5.0</a>
-* Added `Base64Encoder.MaxCharsToFlush` constant for convenient allocation of the buffer to be passed to `Base64Encoder.Flush` method
-* Added static methods to `Base64Encoder` and `Base64Decoder` types that allow to convert large data asynchronously with low memory consumption
-* Added `DotNext.Runtime.CompilerServices.Scope` type that allows to attach callbacks to the lexical scope
+<a href="https://www.nuget.org/packages/dotnext/4.6.0">DotNext 4.6.0</a>
+* Added `CharComparer` class that allows to compare single characters in the same way as [StringComparer](https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparer) comparing strings
+* Minor performance improvements of static methods declared in [Span](https://dotnet.github.io/dotNext/api/DotNext.Span.html) class
+* Added stack manipulation methods to [BufferWriterSlim&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) value type
+* Introduced [Timeout.Expired](https://dotnet.github.io/dotNext/api/DotNext.Threading.Timeout.html) static property that allows to obtain expired timeout
+* Added `LastOrNone` extension methods for various collection types
+* Deprecated `DotNext.Runtime.CompilerServices.Shared<T>` value type
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.5.0">DotNext.Metaprogramming 4.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.6.0">DotNext.Metaprogramming 4.6.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.5.0">DotNext.Reflection 4.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.6.0">DotNext.Reflection 4.6.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.5.0">DotNext.Unsafe 4.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.6.0">DotNext.Unsafe 4.6.0</a>
 * Small performance improvements of unmanaged memory allocator
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.5.0">DotNext.Threading 4.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/4.6.0">DotNext.Threading 4.6.0</a>
+* Fixed incorrect array bounds check in [AsyncEventHub](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncEventHub.html) class
+* Optimized completion callback scheduling for all types of asynchronous locks
+* Linked token created using `LinkedTokenSourceFactory.LinkTo` extension method now allows to track the originally canceled token
+* Added `DotNext.Threading.Scheduler` static class that allows to delay execution of asynchronous tasks
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.5.0">DotNext.IO 4.5.0</a>
-* Added ability to asynchronously enumerate [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream), [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader), and [text streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) using async enumerator pattern (`ReadAllAsync` extension method)
-* Added implementation of [IAsyncEnumerable&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) to `FileReader` class
+<a href="https://www.nuget.org/packages/dotnext.io/4.6.0">DotNext.IO 4.6.0</a>
+* Minor performance improvements of [FileReader](https://dotnet.github.io/dotNext/api/DotNext.IO.FileReader.html) data type
+* Reduced memory allocation caused by asynchronous string decoding methods
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.5.0">DotNext.Net.Cluster 4.5.0</a>
-* Attempt to modify cluster membership concurrently now leads to exception
-* Added `ICluster.WaitForLeaderAsync` method for convenience
-* Fixed [108](https://github.com/dotnet/dotNext/issues/108)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.0">DotNext.Net.Cluster 4.6.0</a>
+* Optimized read barrier
+* Fixed cancellation token propagation in public instance methods declared in [IRaftCluster](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html) interface
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.5.0">DotNext.AspNetCore.Cluster 4.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.0">DotNext.AspNetCore.Cluster 4.6.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
