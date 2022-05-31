@@ -205,7 +205,7 @@ public ref partial struct BufferWriterSlim<T>
     {
         if (position > 0)
         {
-            item = Unsafe.Add(ref MemoryMarshal.GetReference(WrittenSpan), --position);
+            item = Unsafe.Add(ref MemoryMarshal.GetReference(NoOverflow ? initialBuffer : extraBuffer.Span), --position);
             return true;
         }
 
