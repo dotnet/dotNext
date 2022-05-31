@@ -194,10 +194,7 @@ public ref partial struct BufferWriterSlim<T>
     /// <param name="item">The last added item.</param>
     /// <returns><see langword="true"/> if this buffer is not empty; otherwise, <see langword="false"/>.</returns>
     public readonly bool TryPeek([MaybeNullWhen(false)] out T? item)
-    {
-        var span = WrittenSpan;
-        return Span.ElementAt(span, span.Length - 1, out item);
-    }
+        => WrittenSpan.LastOrNone().TryGet(out item);
 
     /// <summary>
     /// Attempts to remove the last added item.
