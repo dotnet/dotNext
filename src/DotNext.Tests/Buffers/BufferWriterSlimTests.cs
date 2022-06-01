@@ -228,6 +228,28 @@ namespace DotNext.Buffers
             True(writer.TryPop(out item));
             Equal(42, item);
             False(writer.TryPop(out item));
+
+            writer.Dispose();
+        }
+
+        [Fact]
+        public static void RemoveMultipleElements()
+        {
+            Span<int> buffer = stackalloc int[4];
+            var writer = new BufferWriterSlim<int>(stackalloc int[4]);
+
+            False(writer.TryPop(buffer));
+            True(writer.TryPop(Span<int>.Empty));
+
+            writer.Write(stackalloc int[] { 10, 20, 30 });
+            True(writer.TryPop(buffer.Slice(0, 2)));
+            Equal(20, buffer[0]);
+            Equal(30, buffer[1]);
+            False(writer.TryPop(buffer));
+
+            True(writer.TryPop(buffer.Slice(0, 1)));
+            Equal(10, buffer[0]);
+            Equal(0, writer.WrittenCount);
         }
     }
 }
