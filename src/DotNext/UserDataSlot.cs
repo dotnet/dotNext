@@ -80,7 +80,7 @@ public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
     /// </summary>
     /// <param name="first">The first data slot to check.</param>
     /// <param name="second">The second data slot to check.</param>
-    /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
+    /// <returns><see langword="true"/> if both data slots identify the same data key.</returns>
     public static bool operator ==(UserDataSlot<TValue> first, UserDataSlot<TValue> second)
         => first.valueIndex == second.valueIndex;
 
@@ -89,7 +89,7 @@ public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
     /// </summary>
     /// <param name="first">The first data slot to check.</param>
     /// <param name="second">The second data slot to check.</param>
-    /// <returns><see langword="false"/> if both data slots identifies the same data key.</returns>
+    /// <returns><see langword="false"/> if both data slots identify the same data key.</returns>
     public static bool operator !=(UserDataSlot<TValue> first, UserDataSlot<TValue> second)
         => first.valueIndex != second.valueIndex;
 }
