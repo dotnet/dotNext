@@ -238,11 +238,7 @@ public ref partial struct BufferWriterSlim<T>
             if ((uint)index >= (uint)position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            ref var first = ref NoOverflow
-                ? ref MemoryMarshal.GetReference(initialBuffer)
-                : ref extraBuffer.First;
-
-            return ref Unsafe.Add(ref first, index);
+            return ref Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), index);
         }
     }
 
