@@ -104,7 +104,7 @@ public ref struct MemoryRental<T>
     public MemoryRental(int minBufferSize, bool exactSize = true)
     {
         var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
-        memory = exactSize ? owner.AsSpan(0, minBufferSize) : new(owner);
+        memory = exactSize ? new(owner, 0, minBufferSize) : new(owner);
         this.owner = owner;
     }
 
