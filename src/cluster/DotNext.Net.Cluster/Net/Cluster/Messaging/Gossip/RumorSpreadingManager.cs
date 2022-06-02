@@ -49,7 +49,7 @@ public sealed class RumorSpreadingManager
     /// Gets 16-bytes long unique identifier of the local peer.
     /// </summary>
     /// <remarks>
-    /// This identifier doesn't survive the application restart even if the adress
+    /// This identifier doesn't survive the application restart even if the address
     /// of the current peer remains the same.
     /// </remarks>
     public ref readonly PeerTransientId LocalId => ref peerTransientId;
