@@ -7,7 +7,7 @@ using Buffers;
 
 /// <summary>
 /// Represents transient identifier that is stable during the application lifetime.
-/// The identifier can be used to organize rumour spreading.
+/// The identifier can be used to organize rumor spreading.
 /// </summary>
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
