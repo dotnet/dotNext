@@ -18,7 +18,7 @@ using static Threading.AtomicInt64;
 /// <see cref="CheckMessageOrder(EndPoint, in PeerTransientId, long)"/> method
 /// to check the message order correctness. If the method returns <see langword="true"/>
 /// the receiver processes the message and retransmits it to other peers using the algorithm
-/// described for the sender.
+/// described for the sender (original address, id and sequence number remain intact).
 /// If the method returns <see langword="false"/> then the receiver must skip the message
 /// and prevent its retransmission.
 /// </remarks>
@@ -67,31 +67,31 @@ public sealed class RumorSpreadingManager
     /// Checks whether the received rumour should be processed by the local peer
     /// and retransmitted to other peers.
     /// </summary>
-    /// <param name="sender">The address of the sender.</param>
-    /// <param name="senderId">The transient identifier of the sender.</param>
-    /// <param name="senderCounter">The message counter.</param>
+    /// <param name="origin">The address of the sender.</param>
+    /// <param name="originId">The transient identifier of the sender.</param>
+    /// <param name="sequenceNumber">The message counter.</param>
     /// <returns>
     /// <see langword="true"/> if the message is allowed for processing;
     /// <see langword="false"/> if the message must be skipped.
     /// </returns>
-    public bool CheckMessageOrder(EndPoint sender, in PeerTransientId senderId, long senderCounter)
+    public bool CheckMessageOrder(EndPoint origin, in PeerTransientId originId, long sequenceNumber)
     {
         PeerState newInfo;
-        while (state.TryGetValue(sender, out var currentInfo))
+        while (state.TryGetValue(origin, out var currentInfo))
         {
-            if (senderId.Equals(currentInfo.Id))
+            if (originId.Equals(currentInfo.Id))
             {
                 // receiving older message
-                if (senderCounter <= currentInfo.Counter)
+                if (sequenceNumber <= currentInfo.Counter)
                     break;
 
                 // update counter
-                newInfo = currentInfo with { Counter = senderCounter };
+                newInfo = currentInfo with { Counter = sequenceNumber };
             }
-            else if (senderId.CreatedAt >= currentInfo.Id.CreatedAt)
+            else if (originId.CreatedAt >= currentInfo.Id.CreatedAt)
             {
                 // sender found, but IDs are different. It means that the peer had restarted
-                newInfo = new() { Id = senderId, Counter = senderCounter };
+                newInfo = new() { Id = originId, Counter = sequenceNumber };
             }
             else
             {
@@ -100,7 +100,7 @@ public sealed class RumorSpreadingManager
             }
 
             // attempts to update atomically
-            if (state.TryUpdate(sender, newInfo, currentInfo))
+            if (state.TryUpdate(origin, newInfo, currentInfo))
                 return true;
         }
 
