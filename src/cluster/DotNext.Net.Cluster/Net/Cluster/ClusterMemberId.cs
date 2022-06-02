@@ -99,8 +99,11 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// Initializes a new random unique identifier.
     /// </summary>
     /// <param name="random">The source of random values.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     public ClusterMemberId(Random random)
     {
+        ArgumentNullException.ThrowIfNull(random);
+
         Span<byte> bytes = stackalloc byte[16];
         random.NextBytes(bytes);
         address = new(bytes);
