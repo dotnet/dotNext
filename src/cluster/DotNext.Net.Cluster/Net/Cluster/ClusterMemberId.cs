@@ -189,7 +189,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <returns>The hexadecimal representation of this identifier.</returns>
     public override string ToString()
     {
-        SpanWriter<byte> writer = new SpanWriter<byte>(stackalloc byte[Size]);
+        var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         Format(ref writer);
         return Span.ToHex(writer.WrittenSpan);
     }
