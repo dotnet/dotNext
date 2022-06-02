@@ -134,7 +134,7 @@ public readonly struct PeerTransientId : IEquatable<PeerTransientId>, IBinaryFor
     /// <param name="identifier">The hexadecimal representation of the identifier.</param>
     /// <param name="result">The parsed identifier.</param>
     /// <returns><see langword="true"/> if identifier parsed successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryParse(string? identifier, out PeerTransientId result)
+    public static bool TryParse([NotNullWhen(true)] string? identifier, out PeerTransientId result)
         => TryParse(identifier.AsSpan(), out result);
 
     /// <summary>
