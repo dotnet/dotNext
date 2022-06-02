@@ -92,7 +92,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
             throw new ArgumentOutOfRangeException(nameof(bytes));
 
         var reader = new SpanReader<byte>(bytes);
-        Parse(ref reader, out address, out port, out length, out family);
+        this = new(ref reader);
     }
 
     /// <summary>
@@ -117,9 +117,6 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// </summary>
     /// <param name="reader">The memory block reader.</param>
     public ClusterMemberId(ref SpanReader<byte> reader)
-        => Parse(ref reader, out address, out port, out length, out family);
-
-    private static void Parse(ref SpanReader<byte> reader, out Guid address, out int port, out int length, out int family)
     {
         address = new Guid(reader.Read(16));
         port = reader.ReadInt32(true);
