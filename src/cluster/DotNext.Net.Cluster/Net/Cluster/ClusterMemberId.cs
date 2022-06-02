@@ -219,7 +219,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <param name="identifier">The hexadecimal representation of identifier.</param>
     /// <param name="value">The parsed identifier.</param>
     /// <returns><see langword="true"/> if identifier parsed successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryParse(string identifier, out ClusterMemberId value)
+    public static bool TryParse([NotNullWhen(true)] string? identifier, out ClusterMemberId value)
         => TryParse(identifier.AsSpan(), out value);
 
     /// <summary>
