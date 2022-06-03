@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Messaging.Gossip
         }
 
         [Fact]
-        public static void IncorrectOrder()
+        public static void MessageOrder()
         {
             var manager = new RumorSpreadingManager();
             var endPoint = new IPEndPoint(IPAddress.Loopback, 80);
@@ -27,6 +27,10 @@ namespace DotNext.Net.Cluster.Messaging.Gossip
 
             id = manager.Tick();
             True(manager.CheckOrder(endPoint, id));
+
+            id = manager.Tick();
+            True(manager.TryDisableControl(endPoint));
+            False(manager.CheckOrder(endPoint, id));
         }
     }
 }
