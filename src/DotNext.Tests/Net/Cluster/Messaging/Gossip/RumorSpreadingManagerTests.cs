@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Messaging.Gossip
         public static void MissingEndPoint()
         {
             var manager = new RumorSpreadingManager();
-            False(manager.CheckMessageOrder(new IPEndPoint(IPAddress.Loopback, 80), default, 10L));
+            False(manager.CheckOrder(new IPEndPoint(IPAddress.Loopback, 80), default));
         }
 
         [Fact]
@@ -18,22 +18,15 @@ namespace DotNext.Net.Cluster.Messaging.Gossip
         {
             var manager = new RumorSpreadingManager();
             var endPoint = new IPEndPoint(IPAddress.Loopback, 80);
-            var id = new PeerTransientId(Random.Shared);
-            Thread.Sleep(30);
-            var id2 = new PeerTransientId(Random.Shared);
+            var id = new RumorTimestamp();
 
-            True(manager.TryEnableMessageOrderControl(endPoint));
-            var timestamp = manager.Tick();
+            True(manager.TryEnableControl(endPoint));
+            True(manager.CheckOrder(endPoint, id));
+            False(manager.CheckOrder(endPoint, id));
+            False(manager.CheckOrder(endPoint, id));
 
-            True(manager.CheckMessageOrder(endPoint, id, timestamp));
-            False(manager.CheckMessageOrder(endPoint, id, timestamp));
-            False(manager.CheckMessageOrder(endPoint, id, timestamp - 1));
-
-            timestamp = manager.Tick();
-            True(manager.CheckMessageOrder(endPoint, id2, timestamp));
-
-            timestamp = manager.Tick();
-            False(manager.CheckMessageOrder(endPoint, id, timestamp));
+            id = manager.Tick();
+            True(manager.CheckOrder(endPoint, id));
         }
     }
 }

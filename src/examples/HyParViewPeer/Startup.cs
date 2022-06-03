@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using DotNext;
 using DotNext.Net;
@@ -6,12 +7,16 @@ using DotNext.Net.Http;
 using DotNext.Net.Cluster.Discovery.HyParView;
 using DotNext.Net.Cluster.Discovery.HyParView.Http;
 using DotNext.Net.Cluster.Messaging.Gossip;
+using Microsoft.Extensions.Options;
+using static System.Globalization.CultureInfo;
 
 namespace HyParViewPeer;
 
 internal sealed class Startup
 {
-    private const string MessageIdHeader = "x-Message-Id";
+    private const string SenderAddressHeader = "X-Sender-Address";
+    private const string SenderIdHeader = "X-Rumor-ID";
+
     private const string RumorResource = "/rumor";
     private const string BroadcastResource = "/broadcast";
     private const string NeighborsResource = "/neighbors";
@@ -19,27 +24,46 @@ internal sealed class Startup
     private sealed class RumorSender : Disposable, IRumorSender
     {
         private readonly IPeerMesh<HttpPeerClient> mesh;
-        private readonly string messageId;
+        private readonly EndPoint senderAddress;
+        private readonly RumorTimestamp senderId;
 
-        internal RumorSender(IPeerMesh<HttpPeerClient> mesh, string? messageId = null)
+        internal RumorSender(IPeerMesh<HttpPeerClient> mesh, EndPoint sender, RumorTimestamp id)
         {
             this.mesh = mesh;
-            this.messageId = messageId ?? Guid.NewGuid().ToString();
+            this.senderAddress = sender;
+            this.senderId = id;
         }
 
-        async Task IRumorSender.SendAsync(EndPoint peer, CancellationToken token)
+        private async Task SendAsync(HttpPeerClient client, CancellationToken token)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, BroadcastResource);
+            AddSenderAddress(request.Headers, senderAddress);
+            AddRumorId(request.Headers, senderId);
+            using var response = await client.SendAsync(request, token);
+            response.EnsureSuccessStatusCode();
+        }
+
+        Task IRumorSender.SendAsync(EndPoint peer, CancellationToken token)
         {
             var client = mesh.TryGetPeer(peer);
-            if (client is not null)
-            {
-                using var request = new HttpRequestMessage(HttpMethod.Post, BroadcastResource);
-                request.Headers.Add(MessageIdHeader, messageId);
-                using var response = await client.SendAsync(request, token);
-                response.EnsureSuccessStatusCode();
-            }
+            return client is not null && !senderAddress.Equals(peer)
+                ? SendAsync(client, token)
+                : Task.CompletedTask;
         }
 
         public new ValueTask DisposeAsync() => base.DisposeAsync();
+
+        private static void AddSenderAddress(HttpRequestHeaders headers, EndPoint address)
+            => headers.Add(SenderAddressHeader, address.ToString());
+
+        internal static HttpEndPoint ParseSenderAddress(HttpRequest request)
+            => HttpEndPoint.TryParse(request.Headers[SenderAddressHeader], out var result) ? result : throw new FormatException("Incorrect sender address");
+
+        private static void AddRumorId(HttpRequestHeaders headers, in RumorTimestamp id)
+            => headers.Add(SenderIdHeader, id.ToString());
+
+        internal static RumorTimestamp ParseRumorId(HttpRequest request)
+            => RumorTimestamp.TryParse(request.Headers[SenderIdHeader], out var result) ? result : throw new FormatException("Invalid rumor ID");
     }
 
     public void Configure(IApplicationBuilder app)
@@ -52,26 +76,37 @@ internal sealed class Startup
         });
     }
 
+    private static (EndPoint, RumorTimestamp) PrepareMessageId(IServiceProvider sp)
+    {
+        var config = sp.GetRequiredService<IOptions<HttpPeerConfiguration>>().Value;
+        var manager = sp.GetRequiredService<RumorSpreadingManager>();
+        return (config.LocalNode!, manager.Tick());
+    }
+
     private static Task BroadcastAsync(HttpContext context)
     {
-        var detector = context.RequestServices.GetRequiredService<DuplicateRequestDetector>();
-        var messageId = context.Request.Headers[MessageIdHeader];
-        if (detector.IsDuplicated(messageId))
+        var senderAddress = RumorSender.ParseSenderAddress(context.Request);
+        var senderId = RumorSender.ParseRumorId(context.Request);
+
+        var spreadingManager = context.RequestServices.GetRequiredService<RumorSpreadingManager>();
+        if (!spreadingManager.CheckOrder(senderAddress, senderId))
             return Task.CompletedTask;
 
-        Console.WriteLine($"Spreading rumor with id = {messageId}");
+        Console.WriteLine($"Spreading rumor from {senderAddress} with sequence number = {senderId}");
 
         return context.RequestServices
             .GetRequiredService<PeerController>()
-            .EnqueueBroadcastAsync(controller => new RumorSender((IPeerMesh<HttpPeerClient>)controller, messageId))
+            .EnqueueBroadcastAsync(controller => new RumorSender((IPeerMesh<HttpPeerClient>)controller, senderAddress, senderId))
             .AsTask();
     }
 
     private static Task SendRumourAsync(HttpContext context)
     {
+        var (sender, id) = PrepareMessageId(context.RequestServices);
+
         return context.RequestServices
             .GetRequiredService<PeerController>()
-            .EnqueueBroadcastAsync(static controller => new RumorSender((IPeerMesh<HttpPeerClient>)controller))
+            .EnqueueBroadcastAsync(controller => new RumorSender((IPeerMesh<HttpPeerClient>)controller, sender, id))
             .AsTask();
     }
 
@@ -88,7 +123,7 @@ internal sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<DuplicateRequestDetector>()
+        services.AddSingleton<RumorSpreadingManager>(static sp => new RumorSpreadingManager())
             .AddSingleton<IPeerLifetime, HyParViewPeerLifetime>()
             .AddSingleton<IHttpMessageHandlerFactory, HyParViewClientHandlerFactory>()
             .AddOptions()
