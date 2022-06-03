@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster
         }
 
         [Fact]
-        public static unsafe void RestoreFromBytes()
+        public static void RestoreFromBytes()
         {
             var id1 = new ClusterMemberId(Random.Shared);
             Span<byte> bytes = stackalloc byte[ClusterMemberId.Size];
