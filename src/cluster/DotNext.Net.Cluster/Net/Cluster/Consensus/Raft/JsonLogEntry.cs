@@ -73,13 +73,13 @@ internal static class JsonLogEntry
         ValueTask result;
         if (bufferWriter is null)
         {
-            // slow path - delegate allocation is required and arguments must be packed
-            result = writer.WriteAsync(SerializeToJson, (typeId, obj, typeInfo), token);
+            // slow path - arguments must be packed
+            result = writer.WriteAsync(static (args, writer) => Serialize(args.typeId, args.obj, writer, args.typeInfo), (typeId, obj, typeInfo), token);
         }
         else
         {
             // fast path - synchronous serialization
-            result = new();
+            result = ValueTask.CompletedTask;
             try
             {
                 Serialize(typeId, obj, bufferWriter, typeInfo);
@@ -101,9 +101,6 @@ internal static class JsonLogEntry
             using var jsonWriter = new Utf8JsonWriter(buffer, DefaultWriterOptions);
             JsonSerializer.Serialize(jsonWriter, value, typeInfo);
         }
-
-        static void SerializeToJson((string TypeId, T Value, JsonTypeInfo<T> TypeInfo) arg, IBufferWriter<byte> buffer)
-            => Serialize(arg.TypeId, arg.Value, buffer, arg.TypeInfo);
     }
 
     [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
