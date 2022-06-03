@@ -14,7 +14,7 @@ using IO;
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T> : IMessage
 {
-    private JsonSerializerOptions? options;
+    private readonly JsonSerializerOptions? options;
 
     /// <summary>
     /// Initializes a new message with JSON-serializable payload.
@@ -44,7 +44,7 @@ public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedM
     public JsonSerializerOptions? Options
     {
         get => options;
-        set => options = value;
+        init => options = value;
     }
 
     private JsonWriterOptions WriterOptions

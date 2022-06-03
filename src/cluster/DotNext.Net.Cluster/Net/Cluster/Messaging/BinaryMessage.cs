@@ -25,7 +25,7 @@ public class BinaryMessage<T> : IO.BinaryTransferObject<T>, IMessage
     /// <param name="type">Media type of the message content.</param>
     public BinaryMessage(string name, ContentType? type)
     {
-        Type = type ?? new ContentType(MediaTypeNames.Application.Octet);
+        Type = type ?? new(MediaTypeNames.Application.Octet);
         Name = name;
     }
 
@@ -54,7 +54,7 @@ public class BinaryMessage : IO.BinaryTransferObject, IMessage
     public BinaryMessage(ReadOnlySequence<byte> content, string name, ContentType? type = null)
         : base(content)
     {
-        Type = type ?? new ContentType(MediaTypeNames.Application.Octet);
+        Type = type ?? new(MediaTypeNames.Application.Octet);
         Name = name;
     }
 
