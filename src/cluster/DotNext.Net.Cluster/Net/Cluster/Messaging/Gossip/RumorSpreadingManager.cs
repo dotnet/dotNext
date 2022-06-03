@@ -41,7 +41,7 @@ public sealed class RumorSpreadingManager
     /// <remarks>
     /// This method is typically called by the source of the rumour.
     /// </remarks>
-    /// <returns>The monotonically increasing local timer value.</returns>
+    /// <returns>The monotonically increased local timer value.</returns>
     public RumorTimestamp Tick() => RumorTimestamp.Next(ref currentTimestamp);
 
     /// <summary>
