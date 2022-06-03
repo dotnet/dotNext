@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Messaging;
 
 using Buffers;
 using IO;
+using static Text.Json.JsonUtils;
 
 /// <summary>
 /// Represents JSON-serializable message.
@@ -47,21 +48,6 @@ public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedM
         init => options = value;
     }
 
-    private JsonWriterOptions WriterOptions
-    {
-        get
-        {
-            var result = new JsonWriterOptions { SkipValidation = false };
-            if (options is not null)
-            {
-                result.Encoder = options.Encoder;
-                result.Indented = options.WriteIndented;
-            }
-
-            return result;
-        }
-    }
-
     /// <inheritdoc />
     ContentType IMessage.Type { get; } = new ContentType(MediaTypeNames.Application.Json);
 
@@ -74,7 +60,7 @@ public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedM
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
     private void SerializeToJson(IBufferWriter<byte> buffer)
     {
-        using var jsonWriter = new Utf8JsonWriter(buffer, WriterOptions);
+        using var jsonWriter = new Utf8JsonWriter(buffer, options?.GetWriterOptions() ?? DefaultWriterOptions);
         JsonSerializer.Serialize(jsonWriter, Content, options);
     }
 
