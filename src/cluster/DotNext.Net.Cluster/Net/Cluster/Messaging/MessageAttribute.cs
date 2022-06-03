@@ -35,6 +35,8 @@ public abstract class MessageAttribute : Attribute
         get => mimeType is { Length: > 0 } ? mimeType : MediaTypeNames.Application.Octet;
         set => mimeType = value;
     }
+
+    internal abstract Type MessageType { get; }
 }
 
 /// <summary>
@@ -55,4 +57,6 @@ public sealed class MessageAttribute<TMessage> : MessageAttribute
         : base(name)
     {
     }
+
+    internal override Type MessageType => typeof(TMessage);
 }

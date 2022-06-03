@@ -20,6 +20,8 @@ public abstract class CommandAttribute : Attribute
     /// Gets unique identifier of the log entry.
     /// </summary>
     public int Id { get; }
+
+    internal abstract Type CommandType { get; }
 }
 
 /// <summary>
@@ -38,4 +40,6 @@ public sealed class CommandAttribute<TCommand> : CommandAttribute
         : base(id)
     {
     }
+
+    internal override Type CommandType => typeof(TCommand);
 }

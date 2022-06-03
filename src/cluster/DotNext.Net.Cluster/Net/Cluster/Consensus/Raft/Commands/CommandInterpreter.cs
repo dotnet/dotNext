@@ -56,17 +56,7 @@ public partial class CommandInterpreter : Disposable
     protected CommandInterpreter()
     {
         // explore command types
-        var identifiers = new Dictionary<Type, int>();
-        foreach (var attribute in GetType().GetCustomAttributes<CommandAttribute>(true))
-        {
-            var type = attribute.GetType();
-
-            if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(CommandAttribute<>))
-            {
-                type = type.GetGenericArguments()[0];
-                identifiers.Add(type, attribute.Id);
-            }
-        }
+        var identifiers = GetType().GetCustomAttributes<CommandAttribute>(true).ToDictionary(static attr => attr.CommandType, static attr => attr.Id);
 
         // register interpreters
         var interpreters = new Dictionary<int, CommandHandler>();
