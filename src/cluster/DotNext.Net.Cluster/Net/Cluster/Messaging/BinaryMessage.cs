@@ -15,6 +15,7 @@ public class BinaryMessage<T> : IO.BinaryTransferObject<T>, IMessage
     /// <summary>
     /// Gets the reader of the binary message.
     /// </summary>
+    [Obsolete("This field can be replaced by delegate pointing to DataTransferObject.ToTypeAsync static method")]
     public static readonly MessageReader<T> Reader = DataTransferObject.ToTypeAsync<T, IMessage>;
 
     /// <summary>
