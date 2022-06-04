@@ -121,11 +121,12 @@ internal sealed class CandidateState : RaftState
     internal CandidateState StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         Logger.VotingStarted(timeout);
-        ICollection<VotingState> voters = new LinkedList<VotingState>();
+        var members = Members;
+        var voters = new List<VotingState>(members.Count);
         votingCancellation.CancelAfter(timeout);
 
         // start voting in parallel
-        foreach (var member in Members)
+        foreach (var member in members)
             voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
         votingTask = EndVoting(voters);
         return this;

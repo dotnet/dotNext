@@ -18,8 +18,9 @@ public static class Messenger
     /// <returns>The task representing asynchronous execution of broadcasting.</returns>
     public static Task SendBroadcastSignalAsync(this IMessageBus cluster, IMessage message, bool requiresConfirmation = true)
     {
-        ICollection<Task> tasks = new LinkedList<Task>();
-        foreach (var member in cluster.Members)
+        var members = cluster.Members;
+        var tasks = new List<Task>(members.Count);
+        foreach (var member in members)
         {
             if (member.IsRemote)
                 tasks.Add(member.SendSignalAsync(message, requiresConfirmation));

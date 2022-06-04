@@ -362,7 +362,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
     private async Task CancelPendingRequestsAsync()
     {
-        ICollection<Task> tasks = new LinkedList<Task>();
+        var tasks = new List<Task>(members.Count);
         foreach (var member in members.Values)
             tasks.Add(member.CancelPendingRequestsAsync().AsTask());
 
@@ -373,6 +373,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         catch (Exception e)
         {
             Logger.FailedToCancelPendingRequests(e);
+        }
+        finally
+        {
+            tasks.Clear(); // help GC
         }
     }
 
