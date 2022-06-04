@@ -19,7 +19,7 @@ internal sealed class EmptyDataTransferObject : IDataTransferObject
     long? IDataTransferObject.Length => 0L;
 
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        => new();
+        => ValueTask.CompletedTask;
 
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         => transformation.TransformAsync(EmptyBinaryReader.Instance, token);
