@@ -32,7 +32,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         activatedEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
-    private protected long GenerateFingerprint() => fingerprintSource.Next<long>();
+    private protected long GenerateFingerprint() => fingerprintSource.NextInt64();
 
     private protected void OnActivated() => Interlocked.Exchange(ref activatedEvent, new(TaskCreationOptions.RunContinuationsAsynchronously)).SetResult();
 
