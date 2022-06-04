@@ -123,11 +123,12 @@ internal sealed class CandidateState : RaftState
         Logger.VotingStarted(timeout);
         var members = Members;
         var voters = new List<VotingState>(members.Count);
-        votingCancellation.CancelAfter(timeout);
 
         // start voting in parallel
         foreach (var member in members)
             voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
+
+        votingCancellation.CancelAfter(timeout);
         votingTask = EndVoting(voters);
         return this;
     }
