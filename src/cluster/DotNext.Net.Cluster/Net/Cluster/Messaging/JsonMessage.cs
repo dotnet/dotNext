@@ -43,6 +43,10 @@ public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <summary>
     /// Gets or sets JSON serialization options.
     /// </summary>
+    /// <remarks>
+    /// <see cref="Options"/> and <see cref="TypeInfo"/> are mutually exclusive properties.
+    /// <see cref="TypeInfo"/> is introduced for compatibility with JSON Source Generator.
+    /// </remarks>
     public JsonSerializerOptions? Options
     {
         get => optionsOrTypeInfo as JsonSerializerOptions;
@@ -52,6 +56,10 @@ public sealed class JsonMessage<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <summary>
     /// Gets or sets JSON type metadata.
     /// </summary>
+    /// <remarks>
+    /// <see cref="Options"/> and <see cref="TypeInfo"/> are mutually exclusive properties.
+    /// <see cref="TypeInfo"/> is introduced for compatibility with JSON Source Generator.
+    /// </remarks>
     public JsonTypeInfo<T>? TypeInfo
     {
         get => optionsOrTypeInfo as JsonTypeInfo<T>;
