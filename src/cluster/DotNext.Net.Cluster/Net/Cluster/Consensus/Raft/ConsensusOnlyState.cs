@@ -270,7 +270,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     private ValueTask<TResult> ReadCoreAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
         if (endIndex > index.VolatileRead())
-            throw new ArgumentOutOfRangeException(nameof(endIndex));
+            return ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
 
         var commitIndex = this.commitIndex.VolatileRead();
         var offset = startIndex - commitIndex - 1L;
