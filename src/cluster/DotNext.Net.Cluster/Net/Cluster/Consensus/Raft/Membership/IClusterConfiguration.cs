@@ -25,5 +25,5 @@ public interface IClusterConfiguration : IDataTransferObject
     /// </summary>
     /// <param name="fingerprint">The fingerprint of the configuration.</param>
     /// <returns>The empty configuration.</returns>
-    public static IClusterConfiguration CreateEmpty(long fingerprint) => new EmptyClusterConfiguration(fingerprint);
+    public static IClusterConfiguration CreateEmpty(long fingerprint) => new EmptyClusterConfiguration { Fingerprint = fingerprint };
 }
