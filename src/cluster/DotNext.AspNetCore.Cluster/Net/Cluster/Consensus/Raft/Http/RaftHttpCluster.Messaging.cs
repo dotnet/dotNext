@@ -24,6 +24,9 @@ internal partial class RaftHttpCluster : IOutputChannel
 
     async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(message);
+        ArgumentNullException.ThrowIfNull(responseReader);
+
         using var tokenSource = token.LinkTo(LifecycleToken);
         do
         {
@@ -64,6 +67,8 @@ internal partial class RaftHttpCluster : IOutputChannel
 
     async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
         // keep the same message between retries for correct identification of duplicate messages
         var signal = new CustomMessage(LocalMemberId, message, true) { RespectLeadership = true };
         using var tokenSource = token.LinkTo(LifecycleToken);
