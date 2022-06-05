@@ -552,12 +552,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <summary>
     /// Receives preliminary vote from the potential Candidate in the cluster.
     /// </summary>
+    /// <param name="sender">The sender of the replica message.</param>
     /// <param name="nextTerm">Caller's current term + 1.</param>
     /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
     /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>Pre-vote result received from the member.</returns>
-    protected async Task<Result<PreVoteResult>> PreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    protected async Task<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
         PreVoteResult result;
         long currentTerm;
@@ -573,7 +574,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             {
                 result = PreVoteResult.RejectedByLeader;
             }
-            else if (Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && currentTerm <= nextTerm && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+            else if (members.ContainsKey(sender) && Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && currentTerm <= nextTerm && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
             {
                 result = PreVoteResult.Accepted;
             }
@@ -660,7 +661,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
 
         // provide leader stickiness
-        if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout)
+        if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
         using (var tokenSource = token.LinkTo(LifecycleToken))

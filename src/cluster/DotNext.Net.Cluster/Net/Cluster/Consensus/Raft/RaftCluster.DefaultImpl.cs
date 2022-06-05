@@ -286,7 +286,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     Task<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
         TryGetMember(sender)?.Touch();
-        return PreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
+        return PreVoteAsync(sender, term + 1L, lastLogIndex, lastLogTerm, token);
     }
 
     /// <inheritdoc />

@@ -228,7 +228,7 @@ internal partial class RaftHttpCluster : IOutputChannel
     private async Task PreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
     {
         TryGetMember(request.Sender)?.Touch();
-        await request.SaveResponse(response, await PreVoteAsync(request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
+        await request.SaveResponse(response, await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
     }
 
     private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
