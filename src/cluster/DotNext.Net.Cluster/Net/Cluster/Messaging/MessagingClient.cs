@@ -77,7 +77,7 @@ public class MessagingClient
         Task<TOutput> result;
         try
         {
-            result = channel.SendMessageAsync(CreateMessage<TInput>(input), Serializable.TransformAsync<IMessage, TOutput>, token);
+            result = channel.SendMessageAsync<TOutput>(CreateMessage<TInput>(input), token);
         }
         catch (Exception e)
         {
