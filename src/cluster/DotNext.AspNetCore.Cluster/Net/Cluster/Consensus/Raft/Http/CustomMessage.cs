@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -9,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using IO;
 using Messaging;
+using Runtime.Serialization;
 using static IO.Pipelines.ResultExtensions;
 
 internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage?>
@@ -148,8 +150,29 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
         var contentType = response.Content.Headers.ContentType?.ToString();
         var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
         var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
-        await using (content.ConfigureAwait(false))
+        try
+        {
             return await reader(new InboundMessageContent(content, name, string.IsNullOrEmpty(contentType) ? new ContentType() : new ContentType(contentType), response.Content.Headers.ContentLength), token).ConfigureAwait(false);
+        }
+        finally
+        {
+            await content.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    [RequiresPreviewFeatures]
+    private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, CancellationToken token)
+        where T : notnull, ISerializable<T>
+    {
+        var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+        try
+        {
+            return await Serializable.ReadFromAsync<T>(content, token: token).ConfigureAwait(false);
+        }
+        finally
+        {
+            await content.DisposeAsync().ConfigureAwait(false);
+        }
     }
 }
 
@@ -162,4 +185,17 @@ internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
 
     Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
         => ParseResponse<T>(response, reader, token);
+}
+
+[RequiresPreviewFeatures]
+internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessageReader<T>
+    where T : notnull, ISerializable<T>
+{
+    internal CustomSerializableMessage(in ClusterMemberId sender, IMessage message)
+        : base(sender, message, DeliveryMode.RequestReply)
+    {
+    }
+
+    Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+        => ParseResponse<T>(response, token);
 }

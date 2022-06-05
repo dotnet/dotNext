@@ -1,11 +1,13 @@
 using System.Collections.Immutable;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Messaging;
+using Runtime.Serialization;
 using static Threading.LinkedTokenSourceFactory;
 
 internal partial class RaftHttpCluster : IOutputChannel
@@ -30,9 +32,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         using var tokenSource = token.LinkTo(LifecycleToken);
         do
         {
-            var leader = Leader;
-            if (leader is null)
-                throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+            var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
             try
             {
                 return await (leader.IsRemote ?
@@ -44,7 +44,7 @@ internal partial class RaftHttpCluster : IOutputChannel
             {
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest)
+            catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.BadRequest)
             {
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
@@ -65,6 +65,47 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
     }
 
+    [RequiresPreviewFeatures]
+    async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        using var tokenSource = token.LinkTo(LifecycleToken);
+        do
+        {
+            var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+            try
+            {
+                return await (leader.IsRemote ?
+                    leader.SendMessageAsync<TResponse>(message, true, token) :
+                    TryReceiveMessage(leader, message, messageHandlers, token))
+                    .ConfigureAwait(false);
+            }
+            catch (MemberUnavailableException e)
+            {
+                Logger.FailedToRouteMessage(message.Name, e);
+            }
+            catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.BadRequest)
+            {
+                // keep in sync with ReceiveMessage behavior
+                Logger.FailedToRouteMessage(message.Name, e);
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+        }
+        while (!token.IsCancellationRequested);
+
+        throw new OperationCanceledException(tokenSource?.CancellationOrigin ?? token);
+
+        static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, CancellationToken token)
+        {
+            var responseMsg = await (handlers.TryReceiveMessage(sender, message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException())).ConfigureAwait(false);
+            return await Serializable.TransformAsync<IMessage, TResponse>(responseMsg, token).ConfigureAwait(false);
+        }
+    }
+
     async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -74,9 +115,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         using var tokenSource = token.LinkTo(LifecycleToken);
         do
         {
-            var leader = Leader;
-            if (leader is null)
-                throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+            var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
             try
             {
                 var response = leader.IsRemote ?
