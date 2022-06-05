@@ -17,7 +17,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// <summary>
     /// Represents the serialized size of this value type.
     /// </summary>
-    public const int Size = sizeof(long) + sizeof(ulong);
+    public static int Size => sizeof(long) + sizeof(ulong);
 
     /// <summary>
     /// Gets the minimum possible value of the timestamp.
