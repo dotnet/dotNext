@@ -78,11 +78,6 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     }
 
     /// <summary>
-    /// Gets the serialized size of this value type.
-    /// </summary>
-    static int IBinaryFormattable<RumorTimestamp>.Size => Size;
-
-    /// <summary>
     /// Deserializes the timestamp.
     /// </summary>
     /// <param name="input">The memory block reader.</param>
