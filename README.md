@@ -83,9 +83,11 @@ Release Date: 06-12-2022
 * Fixed cancellation token propagation in public instance methods declared in [IRaftCluster](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html) interface
 * Introduced a simple framework for rumor spreading for peer-to-peer applications based on [Lamport timestamps](https://en.wikipedia.org/wiki/Lamport_timestamp): `DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp` and `DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager` classes. Also you can check out modified example of P2P application based on HyParView protocol in `src/examples` folder
 * Added compatibility of `DotNext.Net.Cluster.Messaging.JsonMessage<T>` class with JSON Source Generator
+* Introduced `DotNext.Net.Cluster.Messaging.IOutputChannel.SendMessageAsync` overload that directly supports data types implementing `DotNext.Runtime.Serialization.ISerializable<T>` interface
 * Raft vote and pre-vote requests will be rejected if the requester is not a known cluster member (applicable for all transports: HTTP, UDP, TCP)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.0">DotNext.AspNetCore.Cluster 4.6.0</a>
+* Added explicit implementation of newly introduced `DotNext.Net.Cluster.Messaging.IOutputChannel.SendMessageAsync` overload
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
