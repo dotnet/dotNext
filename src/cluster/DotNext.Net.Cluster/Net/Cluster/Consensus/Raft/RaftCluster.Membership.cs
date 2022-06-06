@@ -43,7 +43,10 @@ public partial class RaftCluster<TMember>
             var dictionary = membership.dictionary;
             var result = ImmutableInterlocked.TryAdd(ref dictionary, member.Id, member);
             if (!ReferenceEquals(membership.dictionary, dictionary))
+            {
                 membership = new(dictionary);
+                Interlocked.MemoryBarrierProcessWide();
+            }
 
             return result;
         }
