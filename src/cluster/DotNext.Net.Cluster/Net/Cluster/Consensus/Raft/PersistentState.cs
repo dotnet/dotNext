@@ -19,15 +19,6 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <seealso cref="DiskBasedStateMachine"/>
 public abstract partial class PersistentState : Disposable, IPersistentState
 {
-    private static readonly Predicate<PersistentState> IsConsistentPredicate;
-
-    static PersistentState()
-    {
-        IsConsistentPredicate = IsConsistentCore;
-
-        static bool IsConsistentCore(PersistentState state) => state.IsConsistent;
-    }
-
     private readonly AsyncManualResetEvent commitEvent;
     private protected readonly LockManager syncRoot;
     private readonly long initialSize;
@@ -805,7 +796,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     public ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
-        => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, token);
+        => commitEvent.WaitForCommitAsync(static (state, index) => index <= state.CommitIndex, state, index, token);
 
     private protected abstract ValueTask<long> CommitAsync(long? endIndex, CancellationToken token);
 
@@ -874,7 +865,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         ThrowIfDisposed();
 
         while (!IsConsistent)
-            await commitEvent.WaitAsync(IsConsistentPredicate, this, token).ConfigureAwait(false);
+            await commitEvent.WaitAsync(static state => state.IsConsistent, this, token).ConfigureAwait(false);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

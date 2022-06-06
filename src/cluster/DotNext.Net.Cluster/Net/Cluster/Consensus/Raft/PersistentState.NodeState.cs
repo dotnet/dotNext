@@ -26,8 +26,6 @@ public partial class PersistentState
      */
     private sealed class NodeState : Disposable
     {
-        internal static readonly Func<NodeState, long, bool> IsCommittedPredicate = IsCommitted;
-
         private const string FileName = "node.state";
         private const byte False = 0;
         private const byte True = 1;
@@ -200,8 +198,6 @@ public partial class PersistentState
                 commitIndex.VolatileWrite(value);
             }
         }
-
-        private static bool IsCommitted(NodeState state, long index) => index <= state.CommitIndex;
 
         internal long LastApplied
         {
