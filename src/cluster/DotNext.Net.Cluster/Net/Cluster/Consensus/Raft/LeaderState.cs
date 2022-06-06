@@ -31,7 +31,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        precedingTermCache = new TermCache(MaxTermCacheSize);
+        precedingTermCache = new(MaxTermCacheSize);
         this.maxLease = maxLease;
     }
 
