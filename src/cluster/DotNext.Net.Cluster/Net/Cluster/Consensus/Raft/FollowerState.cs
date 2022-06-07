@@ -17,9 +17,9 @@ internal sealed class FollowerState : RaftState
     internal FollowerState(IRaftStateMachine stateMachine)
         : base(stateMachine)
     {
-        refreshEvent = new AsyncAutoResetEvent(initialState: false);
-        suppressionEvent = new AsyncManualResetEvent(initialState: true);
-        trackerCancellation = new CancellationTokenSource();
+        refreshEvent = new(initialState: false);
+        suppressionEvent = new(initialState: true);
+        trackerCancellation = new();
     }
 
     private void SuspendTracking()

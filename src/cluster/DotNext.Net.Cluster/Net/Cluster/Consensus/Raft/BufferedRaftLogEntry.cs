@@ -131,10 +131,10 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         }
 
         if (writer.TryGetWrittenContent(out _, out var fileName))
-            return new BufferedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
+            return new(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
 
         await writer.DisposeAsync().ConfigureAwait(false);
-        return new BufferedRaftLogEntry(fileName, options.BufferSize, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
+        return new(fileName, options.BufferSize, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
     }
 
     private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
@@ -151,7 +151,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
             throw;
         }
 
-        return new BufferedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
+        return new(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
     }
 
     internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long? length, CancellationToken token)
@@ -186,7 +186,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
             buffer.Dispose();
         }
 
-        return new BufferedRaftLogEntry(output, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
+        return new(output, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
     }
 
     /// <summary>

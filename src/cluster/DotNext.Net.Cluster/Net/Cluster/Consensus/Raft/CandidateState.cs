@@ -61,7 +61,7 @@ internal sealed class CandidateState : RaftState
     internal CandidateState(IRaftStateMachine stateMachine, long term)
         : base(stateMachine)
     {
-        votingCancellation = new CancellationTokenSource();
+        votingCancellation = new();
         Term = term;
     }
 
@@ -147,8 +147,6 @@ internal sealed class CandidateState : RaftState
         if (disposing)
         {
             votingCancellation.Dispose();
-            if (Interlocked.Exchange(ref votingTask, null) is { IsCompleted: true } task)
-                task.Dispose();
         }
 
         base.Dispose(disposing);
