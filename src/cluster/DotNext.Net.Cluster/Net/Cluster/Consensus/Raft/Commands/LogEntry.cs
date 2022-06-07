@@ -12,7 +12,7 @@ using Runtime.Serialization;
 /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 [RequiresPreviewFeatures]
-public readonly struct LogEntry<TCommand> : IRaftLogEntry
+public readonly struct LogEntry<TCommand> : IRaftLogEntry // TODO: Rename to RaftLogEntry
     where TCommand : notnull, ISerializable<TCommand>
 {
     internal LogEntry(long term, TCommand command, int id)
