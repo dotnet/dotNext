@@ -20,7 +20,7 @@ public partial class PersistentState
 
     private ValueTask<TResult> ReadSnapshotAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
     {
-        return reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly ? ReadMetadataOnlyAsync() : ReadSlowAsync();
+        return reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly ? ReadMetadataOnlyAsync() : ReadSlowAsync();
 
         ValueTask<TResult> ReadMetadataOnlyAsync()
             => reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(new LogEntry(in SnapshotInfo), SnapshotInfo.Index, token);
