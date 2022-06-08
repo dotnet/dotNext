@@ -44,29 +44,46 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
         for (int bytesRead; length > 0; length -= bytesRead)
         {
             bytesRead = await stream.ReadAsync(length < buffer.Length ? buffer.Slice(0, length) : buffer, token).ConfigureAwait(false);
-            if (bytesRead == 0)
+            if (bytesRead is 0)
                 throw new EndOfStreamException();
         }
     }
 
     ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
     {
-        if (length < 0)
-            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
+        ValueTask result;
 
-        if (length == 0)
-            goto exit;
+        switch (length)
+        {
+            case < 0:
+                result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
+                break;
+            case 0:
+                result = ValueTask.CompletedTask;
+                break;
+            default:
+                if (stream.CanSeek)
+                {
+                    result = ValueTask.CompletedTask;
+                    try
+                    {
+                        if (stream.Seek(length, SeekOrigin.Current) > stream.Length)
+                            throw new EndOfStreamException();
+                    }
+                    catch (Exception e)
+                    {
+                        result = ValueTask.FromException(e);
+                    }
+                }
+                else
+                {
+                    result = SkipSlowAsync(length, token);
+                }
 
-        if (!stream.CanSeek)
-            return SkipSlowAsync(length, token);
+                break;
+        }
 
-        var current = stream.Position;
-        if (current + length > stream.Length)
-            return ValueTask.FromException(new EndOfStreamException());
-
-        stream.Position = length + current;
-    exit:
-        return new();
+        return result;
     }
 
     ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
