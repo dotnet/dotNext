@@ -21,9 +21,6 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// </summary>
     public static int Size => 16 + (sizeof(int) * 3);
 
-    private static readonly Func<SocketAddress, int, long> SocketAddressByteGetter64 = GetAddressByteAsInt64;
-    private static readonly Func<SocketAddress, int, int> SocketAddressByteGetter32 = GetAddressByteAsInt32;
-
     private readonly Guid address;
     private readonly int port, length, family;
 
@@ -67,19 +64,13 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         Span<byte> bytes = stackalloc byte[16];
         bytes.Clear();
-        WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(SocketAddressByteGetter64, address.Size, address, false));
+        WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(static (address, index) => address[index], address.Size, address, false));
         this.address = new(bytes);
 
-        port = Intrinsics.GetHashCode32(SocketAddressByteGetter32, address.Size, address, false);
+        port = Intrinsics.GetHashCode32(static (address, index) => address[index], address.Size, address, false);
         family = (int)address.Family;
         length = address.Size;
     }
-
-    private static long GetAddressByteAsInt64(SocketAddress address, int index)
-        => address[index];
-
-    private static int GetAddressByteAsInt32(SocketAddress address, int index)
-        => address[index];
 
     /// <summary>
     /// Initializes a new unique identifier from set of bytes.
