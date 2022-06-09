@@ -4,20 +4,12 @@ public static partial class DelegateHelpers
 {
     private static T Unbind<T>(this Delegate del, Type targetType)
         where T : MulticastDelegate
-    {
-        var target = del.Target;
-        if (target is Closure closure)
+        => del.Target switch
         {
-            if (ObjectExtensions.IsContravariant(closure.Target, targetType))
-                return ChangeType<T, EmptyTargetRewriter>(closure.Delegate, default);
-            goto invalid_op;
-        }
-
-        if (ObjectExtensions.IsContravariant(target, targetType))
-            return ChangeType<T, TargetRewriter>(del, default);
-        invalid_op:
-        throw new InvalidOperationException();
-    }
+            Closure closure when ObjectExtensions.IsContravariant(closure.Target, targetType) => ChangeType<T, EmptyTargetRewriter>(closure.Delegate, default),
+            object target when ObjectExtensions.IsContravariant(target, targetType) => ChangeType<T, TargetRewriter>(del, default),
+            _ => throw new InvalidOperationException(),
+        };
 
     /// <summary>
     /// Converts implicitly bound delegate into its unbound version.
