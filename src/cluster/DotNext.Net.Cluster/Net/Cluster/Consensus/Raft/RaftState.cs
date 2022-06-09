@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using ThreadPoolWorkItemFactory = Threading.ThreadPoolWorkItemFactory;
 
-internal abstract class RaftState : Disposable
+internal abstract class RaftState : Disposable, IAsyncDisposable
 {
     private readonly IRaftStateMachine stateMachine;
 
@@ -13,8 +13,6 @@ internal abstract class RaftState : Disposable
     private protected ILogger Logger => stateMachine.Logger;
 
     private protected IReadOnlyCollection<IRaftClusterMember> Members => stateMachine.Members;
-
-    internal abstract Task StopAsync();
 
     private protected void UpdateLeaderStickiness() => stateMachine.UpdateLeaderStickiness();
 
@@ -40,4 +38,6 @@ internal abstract class RaftState : Disposable
         static void MoveToFollowerState(IRaftStateMachine stateMachine, bool randomizeTimeout, long? newTerm)
             => stateMachine.MoveToFollowerState(randomizeTimeout, newTerm);
     }
+
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
 }

@@ -200,10 +200,7 @@ public partial class RaftCluster<TMember>
             if (MemberList.TryRemove(ref members, id, out result) && !result.IsRemote && state is not null)
             {
                 // local member is removed, downgrade it
-                var newState = new StandbyState(this);
-                using var currentState = state;
-                state = newState;
-                await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+                await MoveToStandbyState().ConfigureAwait(false);
             }
 
             if (ReferenceEquals(result, Leader))

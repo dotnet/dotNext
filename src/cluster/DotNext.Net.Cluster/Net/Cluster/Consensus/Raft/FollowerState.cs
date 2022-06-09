@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Threading;
-using static Threading.Tasks.Continuation;
 
 internal sealed class FollowerState : RaftState
 {
@@ -30,9 +30,11 @@ internal sealed class FollowerState : RaftState
 
     private void ResumeTracking() => suppressionEvent.Set();
 
-    private async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, CancellationToken token1, CancellationToken token2)
+    private async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, CancellationToken token)
     {
-        using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token1, token2);
+        Debug.Assert(token != trackerCancellation.Token);
+
+        using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, trackerCancellation.Token);
 
         // spin loop to wait for the timeout
         while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false))
@@ -48,7 +50,7 @@ internal sealed class FollowerState : RaftState
         MoveToCandidateState();
     }
 
-    internal FollowerState StartServing(TimeSpan timeout, CancellationToken token)
+    internal void StartServing(TimeSpan timeout, CancellationToken token)
     {
         if (token.IsCancellationRequested)
         {
@@ -58,25 +60,34 @@ internal sealed class FollowerState : RaftState
         else
         {
             timedOut = false;
-            tracker = Track(timeout, refreshEvent, trackerCancellation.Token, token);
+            tracker = Track(timeout, refreshEvent, token);
         }
-
-        return this;
     }
 
     internal bool IsExpired => timedOut;
-
-    internal override Task StopAsync()
-    {
-        trackerCancellation.Cancel(false);
-        return tracker?.OnCompleted() ?? Task.CompletedTask;
-    }
 
     internal void Refresh()
     {
         Logger.TimeoutReset();
         refreshEvent.Set();
         Metrics?.ReportHeartbeat();
+    }
+
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        try
+        {
+            trackerCancellation.Cancel(false);
+            await (tracker ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.FollowerStateExitedFailed(e);
+        }
+        finally
+        {
+            Dispose(true);
+        }
     }
 
     protected override void Dispose(bool disposing)

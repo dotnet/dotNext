@@ -178,7 +178,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     /// <param name="transactionLog">Transaction log.</param>
     /// <param name="configurationStorage">Cluster configuration storage.</param>
     /// <param name="token">The toke that can be used to cancel the operation.</param>
-    internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    internal void StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         foreach (var member in Members)
         {
@@ -187,17 +187,27 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         }
 
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
-        return this;
     }
 
     bool ILeaderLease.IsExpired
         => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt).IsPast;
 
-    internal override Task StopAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        timerCancellation.Cancel(false);
-        replicationEvent.CancelSuspendedCallers(timerCancellation.Token);
-        return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
+        try
+        {
+            timerCancellation.Cancel(false);
+            replicationEvent.CancelSuspendedCallers(timerCancellation.Token);
+            await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.LeaderStateExitedWithError(e);
+        }
+        finally
+        {
+            Dispose(true);
+        }
     }
 
     protected override void Dispose(bool disposing)

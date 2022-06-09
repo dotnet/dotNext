@@ -10,6 +10,4 @@ internal sealed class StandbyState : RaftState
         : base(stateMachine)
     {
     }
-
-    internal override Task StopAsync() => Task.CompletedTask;
 }

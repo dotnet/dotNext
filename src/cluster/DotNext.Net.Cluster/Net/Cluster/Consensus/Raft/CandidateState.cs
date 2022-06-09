@@ -3,7 +3,6 @@
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
-using static Threading.Tasks.Continuation;
 
 internal sealed class CandidateState : RaftState
 {
@@ -118,7 +117,7 @@ internal sealed class CandidateState : RaftState
     /// </summary>
     /// <param name="timeout">Candidate state timeout.</param>
     /// <param name="auditTrail">The local transaction log.</param>
-    internal CandidateState StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    internal void StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         Logger.VotingStarted(timeout);
         var members = Members;
@@ -126,20 +125,27 @@ internal sealed class CandidateState : RaftState
 
         // start voting in parallel
         foreach (var member in members)
-            voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
+            voters.Add(new(member, Term, auditTrail, votingCancellation.Token));
 
         votingCancellation.CancelAfter(timeout);
         votingTask = EndVoting(voters);
-        return this;
     }
 
-    /// <summary>
-    /// Cancels candidate state.
-    /// </summary>
-    internal override Task StopAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        votingCancellation.Cancel();
-        return votingTask?.OnCompleted() ?? Task.CompletedTask;
+        try
+        {
+            votingCancellation.Cancel();
+            await (votingTask ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.CandidateStateExitedWithError(e);
+        }
+        finally
+        {
+            Dispose(true);
+        }
     }
 
     protected override void Dispose(bool disposing)

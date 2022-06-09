@@ -37,7 +37,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private AsyncLock transitionSync;  // used to synchronize state transitions
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
-    private volatile RaftState? state;
+    private volatile RaftState state;
     private volatile TaskCompletionSource<TMember> electionEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
@@ -68,6 +68,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         onLeaderChangedThreadPoolCallback = OnLeaderChanged;
+        state = new StandbyState(this);
     }
 
     /// <summary>
@@ -254,9 +255,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     Task<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
         => Unsafe.As<Task<IClusterMember>>(WaitForLeaderAsync(timeout, token)); // TODO: Dirty hack but acceptable because there is no covariance with tasks
 
-    private FollowerState CreateInitialState()
-        => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
-
     private ValueTask UnfreezeAsync()
     {
         return readinessProbe.Task.IsCompleted ? ValueTask.CompletedTask : UnfreezeCoreAsync();
@@ -270,10 +268,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 {
                     if (!standbyNode)
                     {
-                        var newState = new FollowerState(this);
-                        using var currentState = state;
-                        await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
-                        state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                        var newState = new FollowerState(this) { Metrics = Metrics };
+                        await UpdateStateAsync(newState).ConfigureAwait(false);
+                        newState.StartServing(ElectionTimeout, LifecycleToken);
                     }
 
                     readinessProbe.TrySetResult();
@@ -338,7 +335,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
     {
         ThrowIfDisposed();
-        if (standbyNode && state is StandbyState)
+        if (standbyNode && state is StandbyState standbyState)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var transitionLock = default(AsyncLock.Holder);
@@ -346,7 +343,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             {
                 transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
                 standbyNode = false;
-                state = CreateInitialState();
+
+                var initialState = new FollowerState(this) { Metrics = Metrics };
+                state = initialState;
+                standbyState.Dispose();
+                initialState.StartServing(ElectionTimeout, LifecycleToken);
             }
             catch (OperationCanceledException e) when (tokenSource is not null)
             {
@@ -380,6 +381,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         }
     }
 
+    private ValueTask UpdateStateAsync(RaftState newState)
+        => Interlocked.Exchange(ref state, newState).DisposeAsync();
+
     /// <summary>
     /// Stops serving local member.
     /// </summary>
@@ -394,12 +398,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         electionEvent.TrySetCanceled();
         using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
         {
-            var currentState = Interlocked.Exchange(ref state, null);
-            if (currentState is not null)
-            {
-                await currentState.StopAsync().ConfigureAwait(false);
-                currentState.Dispose();
-            }
+            await MoveToStandbyState().ConfigureAwait(false);
         }
     }
 
@@ -423,18 +422,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             case FollowerState followerState:
                 followerState.Refresh();
                 break;
-            case LeaderState leaderState:
+            case LeaderState or CandidateState:
                 var newState = new FollowerState(this) { Metrics = Metrics };
-                await leaderState.StopAsync().ConfigureAwait(false);
-                state = newState.StartServing(ElectionTimeout, LifecycleToken);
-                leaderState.Dispose();
-                Metrics?.MovedToFollowerState();
-                break;
-            case CandidateState candidateState:
-                newState = new FollowerState(this) { Metrics = Metrics };
-                await candidateState.StopAsync().ConfigureAwait(false);
-                state = newState.StartServing(ElectionTimeout, LifecycleToken);
-                candidateState.Dispose();
+                await UpdateStateAsync(newState).ConfigureAwait(false);
+                newState.StartServing(ElectionTimeout, LifecycleToken);
                 Metrics?.MovedToFollowerState();
                 break;
         }
@@ -724,13 +715,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             {
                 lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
 
-                if (state is LeaderState leaderState)
+                if (state is LeaderState)
                 {
-                    await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
-                    leaderState.Dispose();
+                    var newState = new FollowerState(this) { Metrics = Metrics };
+                    await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
                     result = true;
+                    newState.StartServing(ElectionTimeout, LifecycleToken);
                 }
                 else
                 {
@@ -820,14 +811,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             (Leader is TMember leader && await leader.ResignAsync(token).ConfigureAwait(false));
     }
 
-    private async ValueTask MoveToStandbyState()
+    private ValueTask MoveToStandbyState()
     {
         Leader = null;
-        if (Interlocked.Exchange(ref state, new StandbyState(this)) is RaftState currentState)
-        {
-            await currentState.StopAsync().ConfigureAwait(false);
-            currentState.Dispose();
-        }
+        return UpdateStateAsync(new StandbyState(this));
     }
 
     /// <inheritdoc />
@@ -881,10 +868,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
                 if (readyForTransition)
                 {
+                    var newState = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false));
+                    state = newState;
                     followerState.Dispose();
 
                     // vote for self
-                    state = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    newState.StartVoting(electionTimeout, auditTrail);
                     Metrics?.MovedToCandidateState();
                     Logger.TransitionToCandidateStateCompleted();
                 }
@@ -920,11 +909,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             long currentTerm;
             if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {
+                var newState = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics };
+                state = newState;
                 candidateState.Dispose();
-                state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
-                    .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
-                await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+
                 Leader = newLeader as TMember;
+                await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+                newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
+
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
             }
@@ -1016,7 +1008,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
         transitionCancellation.Dispose();
         transitionSync.Dispose();
-        Interlocked.Exchange(ref state, null)?.Dispose();
+        state.Dispose();
         TrySetDisposedException(readinessProbe);
         ConfigurationStorage.Dispose();
 
@@ -1025,10 +1017,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         TrySetDisposedException(electionEvent);
     }
 
-    /// <summary>
-    /// Releases managed and unmanaged resources associated with this object.
-    /// </summary>
-    /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)
