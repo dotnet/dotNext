@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -35,8 +34,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private ClusterMemberId localMemberId;
     private bool standbyNode;
     private AsyncLock transitionSync;  // used to synchronize state transitions
-
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
     private volatile RaftState state;
     private volatile TaskCompletionSource<TMember> electionEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
