@@ -359,7 +359,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         transition(State);
         DrainWaitQueue();
 
-        if (IsDisposeRequested && IsReadyToDispose)
+        if (IsDisposing && IsReadyToDispose)
             Dispose(true);
     }
 
@@ -379,7 +379,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         transition(State, arg);
         DrainWaitQueue();
 
-        if (IsDisposeRequested && IsReadyToDispose)
+        if (IsDisposing && IsReadyToDispose)
             Dispose(true);
     }
 

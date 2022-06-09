@@ -581,7 +581,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         state.ExitLock();
         DrainWaitQueue();
 
-        if (IsDisposeRequested && IsReadyToDispose)
+        if (IsDisposing && IsReadyToDispose)
             Dispose(true);
     }
 
