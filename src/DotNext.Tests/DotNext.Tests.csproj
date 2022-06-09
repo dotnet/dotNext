@@ -25,17 +25,17 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="xunit"/>
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
-    <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
+    <PackageReference Include="System.Resources.Extensions"/>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
     <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj"/>
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj"/>

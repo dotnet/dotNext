@@ -41,10 +41,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
-    <PackageReference Include="FastMember.Signed" Version="1.5.0" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="BenchmarkDotNet"/>
+    <PackageReference Include="FastMember.Signed"/>
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
   <ItemGroup>

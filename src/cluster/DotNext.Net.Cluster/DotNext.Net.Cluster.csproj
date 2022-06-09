@@ -58,10 +58,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
-    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+    <PackageReference Include="StyleCop.Analyzers" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="System.Collections.Immutable"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" />
     <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" />
   </ItemGroup>
