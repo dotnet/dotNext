@@ -243,22 +243,9 @@ public partial class PersistentState
             return result;
         }
 
-        internal bool IsVotedFor(in ClusterMemberId? expected) => IPersistentState.IsVotedFor(votedFor, expected);
+        internal bool IsVotedFor(in ClusterMemberId expected) => IPersistentState.IsVotedFor(votedFor, expected);
 
-        internal void UpdateVotedFor(ClusterMemberId? member)
-        {
-            if (member.HasValue)
-            {
-                UpdateVotedFor(member.GetValueOrDefault());
-            }
-            else
-            {
-                votedFor = null;
-                buffer[LastVotePresenceOffset] = False;
-            }
-        }
-
-        private void UpdateVotedFor(ClusterMemberId id)
+        internal void UpdateVotedFor(ClusterMemberId id)
         {
             votedFor = BoxedClusterMemberId.Box(id);
             buffer[LastVotePresenceOffset] = True;

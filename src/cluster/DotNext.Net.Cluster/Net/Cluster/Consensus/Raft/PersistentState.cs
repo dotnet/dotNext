@@ -880,7 +880,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         => (commitIndex = Math.Min(state.LastIndex, commitIndex)) - state.CommitIndex;
 
     /// <inheritdoc/>
-    bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => state.IsVotedFor(id);
+    bool IPersistentState.IsVotedFor(in ClusterMemberId id) => state.IsVotedFor(id);
 
     /// <summary>
     /// Gets the current term.
@@ -921,7 +921,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    async ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId? id)
+    async ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id)
     {
         await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
         try

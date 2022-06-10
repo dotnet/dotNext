@@ -110,7 +110,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(1, await state.IncrementTermAsync(default));
             True(state.IsVotedFor(default(ClusterMemberId)));
             await state.UpdateVotedForAsync(member);
-            False(state.IsVotedFor(default(ClusterMemberId?)));
+            False(state.IsVotedFor(default(ClusterMemberId)));
             True(state.IsVotedFor(member));
         }
         finally
@@ -123,7 +123,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         try
         {
             Equal(1, state.Term);
-            False(state.IsVotedFor(default(ClusterMemberId?)));
+            False(state.IsVotedFor(default(ClusterMemberId)));
             True(state.IsVotedFor(member));
         }
         finally

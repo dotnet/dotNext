@@ -265,7 +265,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
     /// <inheritdoc/>
-    bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => IPersistentState.IsVotedFor(lastVote, id);
+    bool IPersistentState.IsVotedFor(in ClusterMemberId id) => IPersistentState.IsVotedFor(lastVote, in id);
 
     private ValueTask<TResult> ReadCoreAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
@@ -349,9 +349,9 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId? id)
+    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id)
     {
-        lastVote = BoxedClusterMemberId.TryBox(in id);
+        lastVote = BoxedClusterMemberId.Box(id);
         return new();
     }
 
