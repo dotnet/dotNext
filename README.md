@@ -85,6 +85,8 @@ Release Date: 06-12-2022
 * Added compatibility of `DotNext.Net.Cluster.Messaging.JsonMessage<T>` class with JSON Source Generator
 * Introduced `DotNext.Net.Cluster.Messaging.IOutputChannel.SendMessageAsync` overload that directly supports data types implementing `DotNext.Runtime.Serialization.ISerializable<T>` interface
 * Raft vote and pre-vote requests will be rejected if the requester is not a known cluster member (applicable for all transports: HTTP, UDP, TCP)
+* Fixed race conditions between Raft state transitions
+* Added `ILeaderLease.Token` property that allows to control linearizable asynchronous reads on the leader node
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.0">DotNext.AspNetCore.Cluster 4.6.0</a>
 * Added explicit implementation of newly introduced `DotNext.Net.Cluster.Messaging.IOutputChannel.SendMessageAsync` overload
