@@ -815,15 +815,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
+    async void IRaftStateMachine.MoveToFollowerState(WeakReference callerState, bool randomizeTimeout, long? newTerm)
     {
-        Debug.Assert(state is not StandbyState);
-
         var lockHolder = default(AsyncLock.Holder);
         try
         {
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder)
+            if (lockHolder && ReferenceEquals(callerState.Target, state))
             {
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout(random);
@@ -843,17 +841,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine.MoveToCandidateState()
+    async void IRaftStateMachine.MoveToCandidateState(WeakReference callerState)
     {
-        Debug.Assert(state is not StandbyState);
-
         var lockHolder = default(AsyncLock.Holder);
         try
         {
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder && state is FollowerState { IsExpired: true } followerState)
+            if (lockHolder && state is FollowerState { IsExpired: true } followerState && ReferenceEquals(followerState, callerState.Target))
             {
                 Logger.TransitionToCandidateStateStarted();
 
@@ -894,9 +890,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
+    async void IRaftStateMachine.MoveToLeaderState(WeakReference callerState, IRaftClusterMember newLeader)
     {
-        Debug.Assert(state is not StandbyState);
         var lockHolder = default(AsyncLock.Holder);
 
         try
@@ -904,7 +899,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             Logger.TransitionToLeaderStateStarted();
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
-            if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
+            if (lockHolder && state is CandidateState candidateState && ReferenceEquals(callerState.Target, candidateState) && candidateState.Term == (currentTerm = auditTrail.Term))
             {
                 var newState = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics };
                 state = newState;
