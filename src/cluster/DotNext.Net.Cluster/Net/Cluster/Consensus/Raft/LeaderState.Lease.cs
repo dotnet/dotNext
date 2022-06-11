@@ -1,51 +1,50 @@
+using static System.Threading.Timeout;
+
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Timestamp = Diagnostics.Timestamp;
+using BoxedCancellationToken = Runtime.BoxedValue<CancellationToken>;
 
 internal partial class LeaderState : ILeaderLease
 {
     private readonly TimeSpan maxLease;
+    private readonly Timer leaseTimer;
     private CancellationTokenSource leaseTokenSource;
+
+    // cached token from leaseTokenSource to avoid ObjectDisposedException
+    private volatile BoxedCancellationToken leaseToken;
 
     private void RenewLease(Timestamp startTime)
     {
         var leaseTime = maxLease - startTime.Elapsed;
-        if (leaseTime > TimeSpan.Zero)
+        if (leaseTime > TimeSpan.Zero && leaseTimer.Change(leaseTime, InfiniteTimeSpan))
         {
-            // attempt to reuse token source
-            if (!leaseTokenSource.TryReset())
+            lock (leaseTimer)
             {
-                using (leaseTokenSource)
+                var prevTokenSource = leaseTokenSource;
+                if (prevTokenSource.IsCancellationRequested)
                 {
-                    // lease expired
-                    leaseTokenSource = new();
+                    leaseToken = BoxedCancellationToken.Box((leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken)).Token);
+                    prevTokenSource.Dispose();
                 }
             }
-
-            leaseTokenSource.CancelAfter(leaseTime);
-        }
-        else
-        {
-            leaseTokenSource.Cancel();
         }
     }
 
-    CancellationToken ILeaderLease.Token
+    private void OnLeaseExpired()
     {
-        get
+        if (Monitor.TryEnter(leaseTimer))
         {
-            CancellationToken result;
-
             try
             {
-                result = leaseTokenSource.Token;
+                leaseTokenSource.Cancel();
             }
-            catch (ObjectDisposedException)
+            finally
             {
-                result = new(true);
+                Monitor.Exit(leaseTimer);
             }
-
-            return result;
         }
     }
+
+    CancellationToken ILeaderLease.Token => leaseToken.Value;
 }

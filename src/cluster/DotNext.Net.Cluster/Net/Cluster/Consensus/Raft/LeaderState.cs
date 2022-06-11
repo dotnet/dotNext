@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -8,6 +9,7 @@ using Membership;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
 using Timestamp = Diagnostics.Timestamp;
+using BoxedCancellationToken = Runtime.BoxedValue<CancellationToken>;
 
 internal sealed partial class LeaderState : RaftState
 {
@@ -26,10 +28,18 @@ internal sealed partial class LeaderState : RaftState
         currentTerm = term;
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
-        leaseTokenSource = new();
         LeadershipToken = timerCancellation.Token;
+        leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken);
+        leaseToken = BoxedCancellationToken.Box(leaseTokenSource.Token);
         precedingTermCache = new(MaxTermCacheSize);
         this.maxLease = maxLease;
+        leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState>(this), InfiniteTimeSpan, InfiniteTimeSpan);
+
+        static void OnLeaseExpired(object? state)
+        {
+            if ((state as WeakReference<LeaderState>)?.TryGetTarget(out var leader) ?? false)
+                leader.OnLeaseExpired();
+        }
     }
 
     private async Task<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
@@ -149,6 +159,7 @@ internal sealed partial class LeaderState : RaftState
         var responsePipe = CreatePipe(Members.Count);
         await Task.Yield(); // unblock the caller
 
+        leaseTimer.Change(maxLease, InfiniteTimeSpan);
         for (var forced = false; ; responsePipe.Reset())
         {
             var startTime = new Timestamp();
@@ -195,7 +206,8 @@ internal sealed partial class LeaderState : RaftState
         try
         {
             timerCancellation.Cancel(false);
-            replicationEvent.CancelSuspendedCallers(timerCancellation.Token);
+            replicationEvent.CancelSuspendedCallers(LeadershipToken);
+            await leaseTimer.DisposeAsync().ConfigureAwait(false);
             await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false);
         }
         catch (Exception e)
@@ -215,6 +227,7 @@ internal sealed partial class LeaderState : RaftState
             timerCancellation.Dispose();
             heartbeatTask = null;
 
+            leaseTimer.Dispose();
             leaseTokenSource.Dispose();
 
             // cancel replication queue
