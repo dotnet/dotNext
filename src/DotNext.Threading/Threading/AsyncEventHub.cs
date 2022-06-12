@@ -13,40 +13,8 @@ using static Tasks.Conversion;
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
 public partial class AsyncEventHub
 {
-    [StructLayout(LayoutKind.Auto)]
-    private struct EventSource
-    {
-        private TaskCompletionSource source;
-
-        internal EventSource(int index)
-        {
-            source = new(index, TaskCreationOptions.RunContinuationsAsynchronously);
-        }
-
-        internal static int GetIndex(Task task)
-        {
-            Debug.Assert(task.AsyncState is int);
-
-            return Unsafe.Unbox<int>(task.AsyncState);
-        }
-
-        internal readonly bool TrySignal() => source.TrySetResult();
-
-        internal readonly bool TryCancel(CancellationToken token) => source.TrySetCanceled(token);
-
-        internal void Reset()
-        {
-            if (source.Task.IsCompleted)
-                source = new(source.Task.AsyncState, TaskCreationOptions.RunContinuationsAsynchronously);
-        }
-
-        internal readonly Task Task => source.Task;
-
-        public static implicit operator TaskCompletionSource(EventSource source) => source.source;
-    }
-
     private readonly object accessLock;
-    private readonly EventSource[] sources;
+    private readonly TaskCompletionSource[] sources;
     private readonly Converter<Task, int> indexConverter;
 
     /// <summary>
@@ -61,12 +29,27 @@ public partial class AsyncEventHub
 
         accessLock = new();
 
-        sources = new EventSource[count];
+        sources = new TaskCompletionSource[count];
 
         for (var i = 0; i < sources.Length; i++)
-            sources[i] = new(i);
+            sources[i] = new(i, TaskCreationOptions.RunContinuationsAsynchronously);
 
-        indexConverter = EventSource.GetIndex;
+        indexConverter = GetIndex;
+
+        static int GetIndex(Task task)
+        {
+            Debug.Assert(task.AsyncState is int);
+
+            return Unsafe.Unbox<int>(task.AsyncState);
+        }
+    }
+
+    private static void ResetIfNeeded(ref TaskCompletionSource source)
+    {
+        var task = source.Task;
+
+        if (task.IsCompleted)
+            source = new(task.AsyncState, TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     /// <summary>
@@ -166,7 +149,7 @@ public partial class AsyncEventHub
         lock (accessLock)
         {
             foreach (ref var source in sources.AsSpan())
-                source.Reset();
+                ResetIfNeeded(ref source);
         }
     }
 
@@ -190,11 +173,11 @@ public partial class AsyncEventHub
 
                 if (i == eventIndex)
                 {
-                    result = source.TrySignal();
+                    result = source.TrySetResult();
                 }
                 else
                 {
-                    source.Reset();
+                    ResetIfNeeded(ref source);
                 }
             }
         }
@@ -215,7 +198,7 @@ public partial class AsyncEventHub
 
         lock (accessLock)
         {
-            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).TrySignal();
+            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).TrySetResult();
         }
     }
 
@@ -236,9 +219,9 @@ public partial class AsyncEventHub
 
                 if (!eventIndexes.Contains(i))
                 {
-                    source.Reset();
+                    ResetIfNeeded(ref source);
                 }
-                else if (source.TrySignal())
+                else if (source.TrySetResult())
                 {
                     count += 1;
                 }
@@ -273,11 +256,11 @@ public partial class AsyncEventHub
 
                 if (index < 0)
                 {
-                    source.Reset();
+                    ResetIfNeeded(ref source);
                 }
                 else
                 {
-                    Unsafe.Add(ref MemoryMarshal.GetReference(flags), index) = source.TrySignal();
+                    Unsafe.Add(ref MemoryMarshal.GetReference(flags), index) = source.TrySetResult();
                 }
             }
         }
@@ -299,7 +282,7 @@ public partial class AsyncEventHub
         {
             foreach (var index in eventIndexes)
             {
-                if (sources[index].TrySignal())
+                if (sources[index].TrySetResult())
                     count += 1;
             }
         }
@@ -330,7 +313,7 @@ public partial class AsyncEventHub
         {
             foreach (var index in eventIndexes)
             {
-                flags[index] = sources[index].TrySignal();
+                flags[index] = sources[index].TrySetResult();
             }
         }
     }
@@ -347,7 +330,7 @@ public partial class AsyncEventHub
         {
             foreach (ref var source in sources.AsSpan())
             {
-                if (source.TrySignal())
+                if (source.TrySetResult())
                     count += 1;
             }
         }
@@ -376,7 +359,7 @@ public partial class AsyncEventHub
             ref var state = ref MemoryMarshal.GetReference(flags);
 
             foreach (ref var source in sources.AsSpan())
-                Unsafe.Add(ref state, i++) = source.TrySignal();
+                Unsafe.Add(ref state, i++) = source.TrySetResult();
         }
     }
 
@@ -706,7 +689,7 @@ public partial class AsyncEventHub
         lock (accessLock)
         {
             foreach (ref var source in sources.AsSpan())
-                source.TryCancel(token);
+                source.TrySetCanceled(token);
         }
     }
 }
