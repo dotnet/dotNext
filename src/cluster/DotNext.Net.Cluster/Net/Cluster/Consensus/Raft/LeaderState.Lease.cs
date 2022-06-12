@@ -14,12 +14,14 @@ internal partial class LeaderState : ILeaderLease
     // cached token from leaseTokenSource to avoid ObjectDisposedException
     private volatile BoxedCancellationToken leaseToken;
 
+    private object SyncRoot => timerCancellation;
+
     private void RenewLease(Timestamp startTime)
     {
         var leaseTime = maxLease - startTime.Elapsed;
         if (leaseTime > TimeSpan.Zero && leaseTimer.Change(leaseTime, InfiniteTimeSpan))
         {
-            lock (leaseTimer)
+            lock (SyncRoot)
             {
                 var prevTokenSource = leaseTokenSource;
                 if (prevTokenSource.IsCancellationRequested)
@@ -33,7 +35,7 @@ internal partial class LeaderState : ILeaderLease
 
     private void OnLeaseExpired()
     {
-        if (Monitor.TryEnter(leaseTimer))
+        if (Monitor.TryEnter(SyncRoot))
         {
             try
             {
