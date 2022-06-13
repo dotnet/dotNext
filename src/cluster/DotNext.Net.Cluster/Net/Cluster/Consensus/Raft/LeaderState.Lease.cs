@@ -1,35 +1,81 @@
 using static System.Threading.Timeout;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Timestamp = Diagnostics.Timestamp;
-using BoxedCancellationToken = Runtime.BoxedValue<CancellationToken>;
 
-internal partial class LeaderState : ILeaderLease
+internal partial class LeaderState
 {
+    private sealed class LeaderLease : ILeaderLease
+    {
+        private readonly TimeSpan maxLease;
+        private Timestamp createdAt; // volatile
+
+        internal LeaderLease(Timestamp startTime, TimeSpan maxLease, CancellationToken leaseToken)
+        {
+            createdAt = startTime;
+            this.maxLease = maxLease;
+            Token = leaseToken;
+        }
+
+        internal bool TryReset(Timestamp startTime, out TimeSpan remainingTime)
+        {
+            Timestamp.VolatileWrite(ref createdAt, startTime);
+            return (remainingTime = maxLease - startTime.Elapsed) > TimeSpan.Zero;
+        }
+
+        public bool IsExpired => Timestamp.VolatileRead(ref createdAt).Elapsed >= maxLease;
+
+        public CancellationToken Token { get; }
+    }
+
     private readonly TimeSpan maxLease;
     private readonly Timer leaseTimer;
     private CancellationTokenSource leaseTokenSource;
-
-    // cached token from leaseTokenSource to avoid ObjectDisposedException
-    private volatile BoxedCancellationToken leaseToken;
+    private volatile LeaderLease? lease;
 
     private object SyncRoot => timerCancellation;
 
     private void RenewLease(Timestamp startTime)
     {
-        var leaseTime = maxLease - startTime.Elapsed;
-        if (leaseTime > TimeSpan.Zero && leaseTimer.Change(leaseTime, InfiniteTimeSpan))
+        if (TryReset(out var leaseTime) && leaseTimer.Change(leaseTime, InfiniteTimeSpan))
         {
-            lock (SyncRoot)
+            var prevTokenSource = default(CancellationTokenSource);
+            Monitor.Enter(SyncRoot);
+            try
             {
-                var prevTokenSource = leaseTokenSource;
+                prevTokenSource = leaseTokenSource;
                 if (prevTokenSource.IsCancellationRequested)
                 {
-                    leaseToken = BoxedCancellationToken.Box((leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken)).Token);
-                    prevTokenSource.Dispose();
+                    leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken);
+                    lease = new(startTime, maxLease, leaseTokenSource.Token);
+                }
+                else
+                {
+                    prevTokenSource = null;
                 }
             }
+            finally
+            {
+                Monitor.Exit(SyncRoot);
+                prevTokenSource?.Dispose();
+            }
+        }
+
+        bool TryReset(out TimeSpan leaseTime)
+        {
+            LeaderLease? lease = this.lease;
+
+            if (lease is null)
+            {
+                Debug.Assert(leaseTokenSource.IsCancellationRequested);
+
+                leaseTime = maxLease;
+                return true;
+            }
+
+            return lease.TryReset(startTime, out leaseTime);
         }
     }
 
@@ -43,10 +89,10 @@ internal partial class LeaderState : ILeaderLease
             }
             finally
             {
-                Monitor.Exit(leaseTimer);
+                Monitor.Exit(SyncRoot);
             }
         }
     }
 
-    CancellationToken ILeaderLease.Token => leaseToken.Value;
+    internal ILeaderLease? Lease => lease;
 }

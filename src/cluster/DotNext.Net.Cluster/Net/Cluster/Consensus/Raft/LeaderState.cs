@@ -9,7 +9,6 @@ using Membership;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
 using Timestamp = Diagnostics.Timestamp;
-using BoxedCancellationToken = Runtime.BoxedValue<CancellationToken>;
 
 internal sealed partial class LeaderState : RaftState
 {
@@ -29,8 +28,7 @@ internal sealed partial class LeaderState : RaftState
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken);
-        leaseToken = BoxedCancellationToken.Box(leaseTokenSource.Token);
+        (leaseTokenSource = new()).Cancel();
         precedingTermCache = new(MaxTermCacheSize);
         this.maxLease = maxLease;
         leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState>(this), InfiniteTimeSpan, InfiniteTimeSpan);
@@ -159,7 +157,6 @@ internal sealed partial class LeaderState : RaftState
         var responsePipe = CreatePipe(Members.Count);
         await Task.Yield(); // unblock the caller
 
-        leaseTimer.Change(maxLease, InfiniteTimeSpan);
         for (var forced = false; ; responsePipe.Reset())
         {
             var startTime = new Timestamp();
@@ -227,6 +224,7 @@ internal sealed partial class LeaderState : RaftState
             timerCancellation.Dispose();
             heartbeatTask = null;
 
+            lease = null;
             leaseTimer.Dispose();
             leaseTokenSource.Dispose();
 

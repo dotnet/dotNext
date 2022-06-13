@@ -107,7 +107,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <summary>
     /// Gets the lease that can be used for linearizable read.
     /// </summary>
-    public ILeaderLease? Lease => state as LeaderState;
+    public ILeaderLease? Lease => (state as LeaderState)?.Lease;
 
     /// <summary>
     /// Gets the cancellation token that tracks the leader state of the current node.

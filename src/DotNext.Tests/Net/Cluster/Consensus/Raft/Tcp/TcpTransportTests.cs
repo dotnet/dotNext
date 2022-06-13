@@ -258,11 +258,15 @@ public sealed class TcpTransportTests : TransportTestSuite
         await listener1.Result.WaitAsync(DefaultTimeout);
         Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
 
-        // add two nodes to the cluster
         NotNull(host1.Leader);
+
+        // force replication to renew the lease
+        await host1.ForceReplicationAsync();
         NotNull(host1.Lease);
         False(host1.Lease.Token.IsCancellationRequested);
         False(host1.LeadershipToken.IsCancellationRequested);
+
+        // add two nodes to the cluster
         True(await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress));
         await host2.Readiness.WaitAsync(DefaultTimeout);
 
