@@ -41,25 +41,21 @@ internal partial class LeaderState
     {
         if (TryReset(out var leaseTime) && leaseTimer.Change(leaseTime, InfiniteTimeSpan))
         {
-            var prevTokenSource = default(CancellationTokenSource);
+            var tokenSourceToDispose = default(IDisposable);
             Monitor.Enter(SyncRoot);
             try
             {
-                prevTokenSource = leaseTokenSource;
-                if (prevTokenSource.IsCancellationRequested)
+                if (leaseTokenSource.IsCancellationRequested)
                 {
+                    tokenSourceToDispose = leaseTokenSource;
                     leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken);
                     lease = new(startTime, maxLease, leaseTokenSource.Token);
-                }
-                else
-                {
-                    prevTokenSource = null;
                 }
             }
             finally
             {
                 Monitor.Exit(SyncRoot);
-                prevTokenSource?.Dispose();
+                tokenSourceToDispose?.Dispose();
             }
         }
 
