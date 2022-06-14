@@ -106,7 +106,10 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         private ReadSession session;
         private Memory<byte> memory;
 
-        internal BufferedMemoryManager() => memory = default;
+        internal BufferedMemoryManager()
+        {
+            // no need to initialize memory block as empty block
+        }
 
         internal BufferedMemoryManager(FileBufferingWriter writer, in Range range)
         {
