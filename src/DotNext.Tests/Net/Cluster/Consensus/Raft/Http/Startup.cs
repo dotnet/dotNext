@@ -3,35 +3,36 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http;
-
-using Messaging;
-
-[ExcludeFromCodeCoverage]
-internal sealed class Startup
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal const string PersistentConfigurationPath = "persistentConfigPath";
+    using Messaging;
 
-    private readonly IConfiguration configuration;
-
-    public Startup(IConfiguration configuration) => this.configuration = configuration;
-
-    public void Configure(IApplicationBuilder app)
+    [ExcludeFromCodeCoverage]
+    internal sealed class Startup
     {
-        app.UseConsensusProtocolHandler();
-    }
+        internal const string PersistentConfigurationPath = "persistentConfigPath";
 
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddOptions()
-            .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
-            .AddSingleton<IInputChannel, TestMessageHandler>()
-            .AddSingleton<IInputChannel, Mailbox>()
-            .AddSingleton<MetricsCollector, TestMetricsCollector>();
+        private readonly IConfiguration configuration;
 
-        var configPath = configuration[PersistentConfigurationPath];
+        public Startup(IConfiguration configuration) => this.configuration = configuration;
 
-        if (configPath is { Length: > 0 })
-            services.UsePersistentConfigurationStorage(configPath);
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseConsensusProtocolHandler();
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddOptions()
+                .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
+                .AddSingleton<IInputChannel, TestMessageHandler>()
+                .AddSingleton<IInputChannel, Mailbox>()
+                .AddSingleton<MetricsCollector, TestMetricsCollector>();
+
+            var configPath = configuration[PersistentConfigurationPath];
+
+            if (configPath is { Length: > 0 })
+                services.UsePersistentConfigurationStorage(configPath);
+        }
     }
 }

@@ -1,20 +1,21 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Threading.Tasks;
-
-using Generic;
-
-[ExcludeFromCodeCoverage]
-public sealed class CompletedTaskTests : Test
+namespace DotNext.Threading.Tasks
 {
-    [Fact]
-    public static async Task CompletionTest()
+    using Generic;
+
+    [ExcludeFromCodeCoverage]
+    public sealed class CompletedTaskTests : Test
     {
-        var result = await CompletedTask<bool, BooleanConst.True>.Task;
-        True(result);
-        result = await CompletedTask<bool, BooleanConst.True>.Task;
-        True(result);
-        result = await CompletedTask<bool, BooleanConst.False>.Task;
-        False(result);
+        [Fact]
+        public static async Task CompletionTest()
+        {
+            var result = await CompletedTask<bool, BooleanConst.True>.Task;
+            True(result);
+            result = await CompletedTask<bool, BooleanConst.True>.Task;
+            True(result);
+            result = await CompletedTask<bool, BooleanConst.False>.Task;
+            False(result);
+        }
     }
 }

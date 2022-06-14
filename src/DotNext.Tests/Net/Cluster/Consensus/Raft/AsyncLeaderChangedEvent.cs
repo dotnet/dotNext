@@ -1,17 +1,18 @@
-namespace DotNext.Net.Cluster.Consensus.Raft;
-
-internal class LeaderChangedEvent
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    private TaskCompletionSource<IClusterMember> source = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-    internal void OnLeaderChanged(ICluster sender, IClusterMember leader)
+    internal class LeaderChangedEvent
     {
-        if (leader is null)
-            return;
-        source.TrySetResult(leader);
+        private TaskCompletionSource<IClusterMember> source = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal void OnLeaderChanged(ICluster sender, IClusterMember leader)
+        {
+            if (leader is null)
+                return;
+            source.TrySetResult(leader);
+        }
+
+        internal Task<IClusterMember> Result => source.Task;
+
+        internal void Reset() => source = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
-
-    internal Task<IClusterMember> Result => source.Task;
-
-    internal void Reset() => source = new(TaskCreationOptions.RunContinuationsAsynchronously);
 }

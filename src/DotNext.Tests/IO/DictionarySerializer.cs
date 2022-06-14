@@ -1,36 +1,37 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace DotNext.IO;
-
-[ExcludeFromCodeCoverage]
-internal static class DictionarySerializer
+namespace DotNext.IO
 {
-    internal static void Serialize(IReadOnlyDictionary<string, string> dictionary, Stream output)
+    [ExcludeFromCodeCoverage]
+    internal static class DictionarySerializer
     {
-        // write count
-        output.Write(dictionary.Count);
-
-        // write pairs
-        foreach (var (key, value) in dictionary)
+        internal static void Serialize(IReadOnlyDictionary<string, string> dictionary, Stream output)
         {
-            output.WriteString(key, Encoding.UTF8, LengthFormat.Plain);
-            output.WriteString(value, Encoding.UTF8, LengthFormat.Plain);
-        }
-    }
+            // write count
+            output.Write(dictionary.Count);
 
-    internal static IReadOnlyDictionary<string, string> Deserialize(Stream input)
-    {
-        var count = input.Read<int>();
-        var result = new Dictionary<string, string>(count);
-
-        while (--count >= 0)
-        {
-            var key = input.ReadString(LengthFormat.Plain, Encoding.UTF8);
-            var value = input.ReadString(LengthFormat.Plain, Encoding.UTF8);
-            result.Add(key, value);
+            // write pairs
+            foreach (var (key, value) in dictionary)
+            {
+                output.WriteString(key, Encoding.UTF8, LengthFormat.Plain);
+                output.WriteString(value, Encoding.UTF8, LengthFormat.Plain);
+            }
         }
 
-        return result;
+        internal static IReadOnlyDictionary<string, string> Deserialize(Stream input)
+        {
+            var count = input.Read<int>();
+            var result = new Dictionary<string, string>(count);
+
+            while (--count >= 0)
+            {
+                var key = input.ReadString(LengthFormat.Plain, Encoding.UTF8);
+                var value = input.ReadString(LengthFormat.Plain, Encoding.UTF8);
+                result.Add(key, value);
+            }
+
+            return result;
+        }
     }
 }

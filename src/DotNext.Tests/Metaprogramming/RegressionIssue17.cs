@@ -2,53 +2,54 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DotNext.Metaprogramming;
-
-using static Linq.Expressions.ExpressionBuilder;
-
-[ExcludeFromCodeCoverage]
-public sealed class RegressionIssue17 : Test
+namespace DotNext.Metaprogramming
 {
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public static async Task Regression(bool useCompilerGeneratedExpression)
+    using static Linq.Expressions.ExpressionBuilder;
+
+    [ExcludeFromCodeCoverage]
+    public sealed class RegressionIssue17 : Test
     {
-        PropertyInfo _propertyInfo = typeof(TestClass).GetProperty(nameof(TestClass.TestString));
-        var innerExp = GetTestExpression(useCompilerGeneratedExpression);
-
-        var outerExp = CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task Regression(bool useCompilerGeneratedExpression)
         {
-            var output = innerExp.Invoke(context[0]).Await();
-            CodeGenerator.Assign(output, _propertyInfo, Expression.Constant("updated", typeof(string)));
-            CodeGenerator.Return(output);
-        });
+            PropertyInfo _propertyInfo = typeof(TestClass).GetProperty(nameof(TestClass.TestString));
+            var innerExp = GetTestExpression(useCompilerGeneratedExpression);
 
-        var dlg = outerExp.Compile();
-        var result = await dlg(new TestClass("original"));
-        Equal("updated", result.TestString);
-    }
+            var outerExp = CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>
+            {
+                var output = innerExp.Invoke(context[0]).Await();
+                CodeGenerator.Assign(output, _propertyInfo, Expression.Constant("updated", typeof(string)));
+                CodeGenerator.Return(output);
+            });
 
-    private static Expression<Func<TestClass, Task<TestClass>>> GetTestExpression(bool useCompilerGeneratedExpression)
-    {
-        if (useCompilerGeneratedExpression)
-        {
-            return v => Task.FromResult(v);
+            var dlg = outerExp.Compile();
+            var result = await dlg(new TestClass("original"));
+            Equal("updated", result.TestString);
         }
 
-        return CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>
+        private static Expression<Func<TestClass, Task<TestClass>>> GetTestExpression(bool useCompilerGeneratedExpression)
         {
-            CodeGenerator.Return(context[0]);
-        });
-    }
+            if (useCompilerGeneratedExpression)
+            {
+                return v => Task.FromResult(v);
+            }
 
-    public class TestClass
-    {
-        public TestClass(string testString)
-        {
-            TestString = testString;
+            return CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>
+            {
+                CodeGenerator.Return(context[0]);
+            });
         }
 
-        public string TestString { get; set; }
+        public class TestClass
+        {
+            public TestClass(string testString)
+            {
+                TestString = testString;
+            }
+
+            public string TestString { get; set; }
+        }
     }
 }

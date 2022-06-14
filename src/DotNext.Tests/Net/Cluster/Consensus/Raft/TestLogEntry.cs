@@ -1,22 +1,23 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Net.Cluster.Consensus.Raft;
-
-using ILogEntry = IO.Log.ILogEntry;
-using TextMessage = Messaging.TextMessage;
-
-[ExcludeFromCodeCoverage]
-internal sealed class TestLogEntry : TextMessage, IRaftLogEntry
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    public TestLogEntry(string command)
-        : base(command, "Entry")
+    using ILogEntry = IO.Log.ILogEntry;
+    using TextMessage = Messaging.TextMessage;
+
+    [ExcludeFromCodeCoverage]
+    internal sealed class TestLogEntry : TextMessage, IRaftLogEntry
     {
-        Timestamp = DateTimeOffset.UtcNow;
+        public TestLogEntry(string command)
+            : base(command, "Entry")
+        {
+            Timestamp = DateTimeOffset.UtcNow;
+        }
+
+        public DateTimeOffset Timestamp { get; }
+
+        public long Term { get; set; }
+
+        bool ILogEntry.IsSnapshot => false;
     }
-
-    public DateTimeOffset Timestamp { get; }
-
-    public long Term { get; set; }
-
-    bool ILogEntry.IsSnapshot => false;
 }

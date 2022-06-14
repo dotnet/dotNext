@@ -1,49 +1,50 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Runtime.CompilerServices;
-
-[ExcludeFromCodeCoverage]
-public sealed class ScopeTests : Test
+namespace DotNext.Runtime.CompilerServices
 {
-    [Fact]
-    public static void ExecutionOrder()
+    [ExcludeFromCodeCoverage]
+    public sealed class ScopeTests : Test
     {
-        var stack = new Stack<int>();
-
-        using (var scope = new Scope())
+        [Fact]
+        public static void ExecutionOrder()
         {
-            scope.Defer(() => stack.Push(10));
-            scope.Defer(() => stack.Push(20));
-            scope.RegisterForDispose(new StringWriter());
+            var stack = new Stack<int>();
+
+            using (var scope = new Scope())
+            {
+                scope.Defer(() => stack.Push(10));
+                scope.Defer(() => stack.Push(20));
+                scope.RegisterForDispose(new StringWriter());
+            }
+
+            Equal(20, stack.Pop());
+            Equal(10, stack.Pop());
         }
 
-        Equal(20, stack.Pop());
-        Equal(10, stack.Pop());
-    }
-
-    [Fact]
-    public static async Task ExecutionOrderAsync()
-    {
-        var stack = new Stack<int>();
-
-        await using (var scope = new Scope())
+        [Fact]
+        public static async Task ExecutionOrderAsync()
         {
-            scope.Defer(async () =>
-            {
-                await Task.Yield();
-                stack.Push(10);
-            });
+            var stack = new Stack<int>();
 
-            scope.Defer(async () =>
+            await using (var scope = new Scope())
             {
-                await Task.Yield();
-                stack.Push(20);
-            });
+                scope.Defer(async () =>
+                {
+                    await Task.Yield();
+                    stack.Push(10);
+                });
 
-            scope.RegisterForDisposeAsync(new StringWriter());
+                scope.Defer(async () =>
+                {
+                    await Task.Yield();
+                    stack.Push(20);
+                });
+
+                scope.RegisterForDisposeAsync(new StringWriter());
+            }
+
+            Equal(20, stack.Pop());
+            Equal(10, stack.Pop());
         }
-
-        Equal(20, stack.Pop());
-        Equal(10, stack.Pop());
     }
 }

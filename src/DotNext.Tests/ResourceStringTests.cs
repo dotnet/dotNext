@@ -1,22 +1,23 @@
 using System.Reflection;
 
-namespace DotNext;
-
-public sealed class ResourceStringTests : Test
+namespace DotNext
 {
-    [Fact]
-    public static void CheckResourceStrings()
+    public sealed class ResourceStringTests : Test
     {
-        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        [Fact]
+        public static void CheckResourceStrings()
         {
-            if (asm.FullName.StartsWith("DotNext"))
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                var exceptionMessagesType = asm.GetType("DotNext.ExceptionMessages");
-                if (exceptionMessagesType is null)
-                    continue;
-                foreach (var property in exceptionMessagesType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static))
+                if (asm.FullName.StartsWith("DotNext"))
                 {
-                    IsType<string>(property.GetValue(null));
+                    var exceptionMessagesType = asm.GetType("DotNext.ExceptionMessages");
+                    if (exceptionMessagesType is null)
+                        continue;
+                    foreach (var property in exceptionMessagesType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static))
+                    {
+                        IsType<string>(property.GetValue(null));
+                    }
                 }
             }
         }

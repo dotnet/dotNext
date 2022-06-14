@@ -1,19 +1,20 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Reflection;
-
-[ExcludeFromCodeCoverage]
-public sealed class PropertyExtensionsTests : Test
+namespace DotNext.Reflection
 {
-    public int Property { get; init; }
-
-    [Fact]
-    public static void CheckExternalInit()
+    [ExcludeFromCodeCoverage]
+    public sealed class PropertyExtensionsTests : Test
     {
-        var property = typeof(string).GetProperty(nameof(string.Length));
-        False(property.IsExternalInit());
+        public int Property { get; init; }
 
-        property = typeof(PropertyExtensionsTests).GetProperty(nameof(Property));
-        True(property.IsExternalInit());
+        [Fact]
+        public static void CheckExternalInit()
+        {
+            var property = typeof(string).GetProperty(nameof(string.Length));
+            False(property.IsExternalInit());
+
+            property = typeof(PropertyExtensionsTests).GetProperty(nameof(Property));
+            True(property.IsExternalInit());
+        }
     }
 }

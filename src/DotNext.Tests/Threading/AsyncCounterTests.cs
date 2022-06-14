@@ -1,50 +1,51 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DotNext.Threading;
-
-[ExcludeFromCodeCoverage]
-public sealed class AsyncCounterTests : Test
+namespace DotNext.Threading
 {
-    [Fact]
-    public static async Task SignalAndWait()
+    [ExcludeFromCodeCoverage]
+    public sealed class AsyncCounterTests : Test
     {
-        using (var counter = new AsyncCounter())
+        [Fact]
+        public static async Task SignalAndWait()
         {
-            Equal(0, counter.Value);
-            counter.Increment(2L);
-            counter.Increment(0L);
-            Equal(2, counter.Value);
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            False(await counter.WaitAsync(TimeSpan.Zero));
-            Equal(0, counter.Value);
+            using (var counter = new AsyncCounter())
+            {
+                Equal(0, counter.Value);
+                counter.Increment(2L);
+                counter.Increment(0L);
+                Equal(2, counter.Value);
+                True(await counter.WaitAsync(TimeSpan.Zero));
+                True(await counter.WaitAsync(TimeSpan.Zero));
+                False(await counter.WaitAsync(TimeSpan.Zero));
+                Equal(0, counter.Value);
+            }
+            using (IAsyncEvent counter = new AsyncCounter())
+            {
+                False(counter.IsSet);
+                True(counter.Signal());
+                True(counter.Signal());
+                True(counter.IsSet);
+                True(await counter.WaitAsync(TimeSpan.Zero));
+                True(await counter.WaitAsync(TimeSpan.Zero));
+                False(await counter.WaitAsync(TimeSpan.Zero));
+                False(counter.IsSet);
+            }
         }
-        using (IAsyncEvent counter = new AsyncCounter())
+
+        [Fact]
+        public static void InvalidDeltaValue()
         {
-            False(counter.IsSet);
-            True(counter.Signal());
-            True(counter.Signal());
-            True(counter.IsSet);
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            False(await counter.WaitAsync(TimeSpan.Zero));
-            False(counter.IsSet);
+            using var counter = new AsyncCounter();
+
+            Throws<ArgumentOutOfRangeException>(() => counter.Increment(-1L));
         }
-    }
 
-    [Fact]
-    public static void InvalidDeltaValue()
-    {
-        using var counter = new AsyncCounter();
+        [Fact]
+        public static void CounterOverflow()
+        {
+            using var counter = new AsyncCounter(initialValue: long.MaxValue);
 
-        Throws<ArgumentOutOfRangeException>(() => counter.Increment(-1L));
-    }
-
-    [Fact]
-    public static void CounterOverflow()
-    {
-        using var counter = new AsyncCounter(initialValue: long.MaxValue);
-
-        Throws<OverflowException>(counter.Increment);
+            Throws<OverflowException>(counter.Increment);
+        }
     }
 }
