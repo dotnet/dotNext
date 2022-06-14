@@ -138,7 +138,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// Gets members of Raft-based cluster.
     /// </summary>
     /// <returns>A collection of cluster member.</returns>
-    public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : members;
+    public IReadOnlyCollection<TMember> Members => members;
 
     /// <inheritdoc />
     IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
