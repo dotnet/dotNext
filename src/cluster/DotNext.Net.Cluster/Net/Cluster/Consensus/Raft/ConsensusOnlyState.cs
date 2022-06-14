@@ -18,8 +18,6 @@ using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 /// </remarks>
 public sealed class ConsensusOnlyState : Disposable, IPersistentState
 {
-    private static readonly Func<ConsensusOnlyState, long, bool> IsCommittedPredicate = IsCommitted;
-
     [StructLayout(LayoutKind.Auto)]
     private readonly struct EntryList : IReadOnlyList<EmptyLogEntry>
     {
@@ -89,8 +87,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     /// <inheritdoc/>
     bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
-
-    private static bool IsCommitted(ConsensusOnlyState state, long index) => index <= state.commitIndex.VolatileRead();
 
     private void Append(long[] terms, long startIndex)
     {
@@ -361,7 +357,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     /// <inheritdoc/>
     ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
-        => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, token);
+        => commitEvent.WaitForCommitAsync(static (state, index) => index <= state.commitIndex.VolatileRead(), this, index, token);
 
     /// <inheritdoc/>
     async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)
