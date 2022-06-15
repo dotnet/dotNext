@@ -34,7 +34,7 @@ public partial class GCNotification
 
     private sealed class CallbackContext<T> : Tuple<Action<T, GCMemoryInfo>, T, GCMemoryInfo>, IThreadPoolWorkItem
     {
-        internal CallbackContext(Action<T, GCMemoryInfo> callback, T state, GCMemoryInfo info)
+        internal CallbackContext(Action<T, GCMemoryInfo> callback, T state, in GCMemoryInfo info)
             : base(callback, state, info)
         {
         }
