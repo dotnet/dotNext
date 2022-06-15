@@ -19,6 +19,7 @@ public abstract partial class GCNotification
     /// <param name="state">The object to be passed to the callback.</param>
     /// <param name="captureContext"><see langword="true"/> to execute the callback within the captured context; otherwise, <see langword="false"/>.</param>
     /// <returns>The object that can be used to cancel the registration.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
     public Registration Register<T>(Action<T, GCMemoryInfo> callback, T state, bool captureContext = false)
     {
         ArgumentNullException.ThrowIfNull(callback);
