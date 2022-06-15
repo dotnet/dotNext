@@ -55,6 +55,7 @@ Release Date: 06-12-2022
 * Introduced [Timeout.Expired](https://dotnet.github.io/dotNext/api/DotNext.Threading.Timeout.html) static property that allows to obtain expired timeout
 * Added `LastOrNone` extension methods for various collection types
 * Deprecated `DotNext.Runtime.CompilerServices.Shared<T>` value type
+* Added a new powerful API for receiving asynchronous notifications from GC (see `DotNext.Runtime.GCNotification` class)
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.6.0">DotNext.Metaprogramming 4.6.0</a>
 * Updated dependencies
