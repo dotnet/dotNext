@@ -74,4 +74,46 @@ public abstract partial class GCNotification
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<GCMemoryInfo> WaitAsync(CancellationToken token = default)
         => WaitAsync(InfiniteTimeSpan, token);
+
+    /// <summary>
+    /// Creates a filter that allows to detect heap compaction.
+    /// </summary>
+    /// <returns>A new filter.</returns>
+    public static GCNotification HeapCompaction()
+        => HeapCompactionFilter.Instance;
+
+    /// <summary>
+    /// Creates a filter that triggers notification on every GC occurred.
+    /// </summary>
+    /// <returns>A new filter.</returns>
+    public static GCNotification GCTriggered()
+        => GCEvent.Instance;
+
+    /// <summary>
+    /// Creates a filter that allows to detect garbage collection of the specified generation.
+    /// </summary>
+    /// <param name="generation">The expected generation.</param>
+    /// <returns>A new filter.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="generation"/> is less than 0 or greater than <see cref="GC.MaxGeneration"/>.</exception>
+    public static GCNotification GCTriggered(int generation)
+    {
+        if (generation < 0 || generation > GC.MaxGeneration)
+            throw new ArgumentOutOfRangeException(nameof(generation));
+
+        return new GenerationFilter(generation);
+    }
+
+    /// <summary>
+    /// Creates a filter that allows to detect managed heap fragmentation threshold.
+    /// </summary>
+    /// <param name="threshold">The memory threshold. The memory threshold; must be in range (0, 1].</param>
+    /// <returns>A new filter.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="threshold"/> is invalid.</exception>
+    public static GCNotification HeapFragmentation(double threshold)
+    {
+        if (!double.IsFinite(threshold) || !threshold.IsBetween(0D, 1D, BoundType.RightClosed))
+            throw new ArgumentOutOfRangeException(nameof(threshold));
+
+        return new HeapFragmentationThresholdFilter(threshold);
+    }
 }
