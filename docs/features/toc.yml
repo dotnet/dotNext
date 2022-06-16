@@ -81,6 +81,8 @@
       href: threading/channel.md
     - name: ValueTask Completion Source
       href: threading/tasksrc.md
+    - name: Delayed Tasks
+      href: threading/dtask.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
