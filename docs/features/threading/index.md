@@ -81,7 +81,7 @@ For more information check extension methods inside of [AsyncLockAcquisition](xr
 # Diagnostics
 All synchronization primitives for asynchronous code mostly derive from [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) class that exposes a set of important diagnostics counters:
 * `LockContentionCounter` allows to measure a number of lock contentions detected in the specified time period
-* `LockDurationCounter` allows to measure amount of time spend by the suspended caller in the suspended state
+* `LockDurationCounter` allows to measure the amount of time spend by the suspended caller in the suspended state
 
 # Debugging
 In addition to diagnostics tools, [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) and all its derived classes support a rich set of debugging tools:
