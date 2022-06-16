@@ -41,6 +41,14 @@ namespace DotNext.Runtime
         }
 
         [Fact]
+        public static async Task XorOperator()
+        {
+            var task = (GCNotification.HeapFragmentation(0.8D) ^ GCNotification.GCTriggered()).WaitAsync(DefaultTimeout);
+            GC.Collect(2, GCCollectionMode.Forced);
+            await task;
+        }
+
+        [Fact]
         public static async Task AndOperator()
         {
             var task = (GCNotification.GCTriggered() & GCNotification.HeapCompaction()).WaitAsync(DefaultTimeout);
