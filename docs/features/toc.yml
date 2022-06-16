@@ -39,6 +39,8 @@
       href: core/typem.md
     - name: In-Memory Cache
       href: core/cache.md
+    - name: GC Notifications
+      href : core/gcnotif.md
 - name: I/O Enhancements
   href: io/index.md
   items:
