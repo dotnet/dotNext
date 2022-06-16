@@ -37,6 +37,19 @@ public partial class GCNotification
     }
 
     /// <summary>
+    /// Combines two filters using logical XOR.
+    /// </summary>
+    /// <param name="right">The filter to be combined with this filter.</param>
+    /// <returns>A new filter.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="right"/> is <see langword="null"/>.</exception>
+    public virtual GCNotification ExclusiveOr(GCNotification right)
+    {
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new GCXorFilter(this, right);
+    }
+
+    /// <summary>
     /// Negates this filter.
     /// </summary>
     /// <returns>A new filter.</returns>
@@ -77,6 +90,15 @@ public partial class GCNotification
     /// <returns>A new filter.</returns>
     public static GCNotification operator |(GCNotification left, GCNotification right)
         => left.Or(right);
+
+    /// <summary>
+    /// Combines two filters using logical XOR.
+    /// </summary>
+    /// <param name="left">The first filter to combine.</param>
+    /// <param name="right">The second filter to combine.</param>
+    /// <returns>A new filter.</returns>
+    public static GCNotification operator ^(GCNotification left, GCNotification right)
+        => left.ExclusiveOr(right);
 
     /// <summary>
     /// Negates the filter.
@@ -189,6 +211,22 @@ public partial class GCNotification
 
         internal override bool Test(in GCMemoryInfo info)
             => left.Test(in info) || right.Test(in info);
+    }
+
+    private sealed class GCXorFilter : GCNotification
+    {
+        private readonly GCNotification left, right;
+
+        internal GCXorFilter(GCNotification left, GCNotification right)
+        {
+            Debug.Assert(left is not null && right is not null);
+
+            this.left = left;
+            this.right = right;
+        }
+
+        internal override bool Test(in GCMemoryInfo info)
+            => left.Test(in info) ^ right.Test(in info);
     }
 
     private sealed class GCNotFilter : GCNotification
