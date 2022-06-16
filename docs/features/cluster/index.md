@@ -6,7 +6,7 @@ Cluster Programming Suite
 
 .NEXT cluster development suite provides the following features:
 1. Messaging
-1. [Rumour spreading](https://en.wikipedia.org/wiki/Gossip_protocol)
+1. [Rumor spreading](https://en.wikipedia.org/wiki/Gossip_protocol)
 1. [Replication](https://en.wikipedia.org/wiki/Replication_(computing))
 1. [Consensus](https://en.wikipedia.org/wiki/Consensus_(computer_science))
 1. Cluster configuration management
@@ -131,7 +131,7 @@ public class TestMessageHandler : MessageHandler
 
 In contrast to `MessagingClient`, all message types must be registered using [MessageAttribute&lt;TMessage&gt;](xref:DotNext.Net.Cluster.Messaging.MessageAttribute`1) attribute declaratively. However, this is not applicable when you constructing the handle using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder).
 
-# Rumour Spreading
+# Rumor Spreading
 Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. [IPeerMesh](xref:DotNext.Net.IPeerMesh) exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbors. This capability is usually called _membership protocol_ for Gossip-based communication. There are few approaches to achieve that:
 * [HyParView](https://asc.di.fct.unl.pt/~jleitao/pdf/dsn07-leitao.pdf) for large-scale peer meshes with hundreds or event thousands of peers
 * [SWIM](https://research.cs.cornell.edu/projects/Quicksilver/public_pdfs/SWIM.pdf) for mid-size clusters where each node has weakly-consistent view of the entire cluster
@@ -143,6 +143,9 @@ If you want to know more about infection-style communication in cluster computin
 * [Gossip Simulator](https://flopezluis.github.io/gossip-simulator/)
 * [Make your cluster SWIM](https://bartoszsypytkowski.com/make-your-cluster-swim/)
 * [HyParView: cluster membership that scales](https://bartoszsypytkowski.com/hyparview/)
+
+## Message Ordering
+[Lamport Timestamp](https://en.wikipedia.org/wiki/Lamport_timestamp) is a proven and simple way to preserve message order. In case of rumor spreading, it can be used to skip duplicated messages. [RumorTimestamp](xref:DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp) and [RumorSpreadingManager](xref:DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager) types providing a simple framework to organize deduplication of rumor during spreading.
 
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
