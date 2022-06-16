@@ -11,9 +11,9 @@ public static class LinkedTokenSourceFactory
     /// <param name="first">The first cancellation token. Can be modified by this method.</param>
     /// <param name="second">The second cancellation token.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="first"/> or <paramref name="second"/> is not cancelable.</returns>
-    public static CancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second)
+    public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second)
     {
-        var result = default(CancellationTokenSource);
+        var result = default(LinkedCancellationTokenSource);
 
         if (first == second)
         {
@@ -25,7 +25,7 @@ public static class LinkedTokenSourceFactory
         }
         else if (second.CanBeCanceled && !first.IsCancellationRequested)
         {
-            result = CancellationTokenSource.CreateLinkedTokenSource(first, second);
+            result = new Linked2CancellationTokenSource(in first, in second);
             first = result.Token;
         }
 

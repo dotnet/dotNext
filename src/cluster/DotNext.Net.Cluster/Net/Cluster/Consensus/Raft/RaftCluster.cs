@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -35,9 +34,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private ClusterMemberId localMemberId;
     private bool standbyNode;
     private AsyncLock transitionSync;  // used to synchronize state transitions
-
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
-    private volatile RaftState? state;
+    private volatile RaftState state;
     private volatile TaskCompletionSource<TMember> electionEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
@@ -68,6 +65,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         onLeaderChangedThreadPoolCallback = OnLeaderChanged;
+        state = new StandbyState(this);
     }
 
     /// <summary>
@@ -109,7 +107,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <summary>
     /// Gets the lease that can be used for linearizable read.
     /// </summary>
-    public ILeaderLease? Lease => state as LeaderState;
+    public ILeaderLease? Lease => (state as LeaderState)?.Lease;
 
     /// <summary>
     /// Gets the cancellation token that tracks the leader state of the current node.
@@ -140,7 +138,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// Gets members of Raft-based cluster.
     /// </summary>
     /// <returns>A collection of cluster member.</returns>
-    public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : members;
+    public IReadOnlyCollection<TMember> Members => members;
 
     /// <inheritdoc />
     IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
@@ -254,9 +252,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     Task<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
         => Unsafe.As<Task<IClusterMember>>(WaitForLeaderAsync(timeout, token)); // TODO: Dirty hack but acceptable because there is no covariance with tasks
 
-    private FollowerState CreateInitialState()
-        => new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
-
     private ValueTask UnfreezeAsync()
     {
         return readinessProbe.Task.IsCompleted ? ValueTask.CompletedTask : UnfreezeCoreAsync();
@@ -270,10 +265,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 {
                     if (!standbyNode)
                     {
-                        var newState = new FollowerState(this);
-                        using var currentState = state;
-                        await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
-                        state = newState.StartServing(ElectionTimeout, LifecycleToken);
+                        var newState = new FollowerState(this) { Metrics = Metrics };
+                        await UpdateStateAsync(newState).ConfigureAwait(false);
+                        newState.StartServing(ElectionTimeout, LifecycleToken);
                     }
 
                     readinessProbe.TrySetResult();
@@ -338,18 +332,35 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
     {
         ThrowIfDisposed();
-        if (standbyNode && state is StandbyState)
+        if (standbyNode && state is StandbyState standbyState)
         {
-            using var tokenSource = token.LinkTo(LifecycleToken);
-            using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            standbyNode = false;
-            state = CreateInitialState();
+            var tokenSource = token.LinkTo(LifecycleToken);
+            var transitionLock = default(AsyncLock.Holder);
+            try
+            {
+                transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+                standbyNode = false;
+
+                var initialState = new FollowerState(this) { Metrics = Metrics };
+                state = initialState;
+                standbyState.Dispose();
+                initialState.StartServing(ElectionTimeout, LifecycleToken);
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                transitionLock.Dispose();
+            }
         }
     }
 
     private async Task CancelPendingRequestsAsync()
     {
-        ICollection<Task> tasks = new LinkedList<Task>();
+        var tasks = new List<Task>(members.Count);
         foreach (var member in members.Values)
             tasks.Add(member.CancelPendingRequestsAsync().AsTask());
 
@@ -361,7 +372,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         {
             Logger.FailedToCancelPendingRequests(e);
         }
+        finally
+        {
+            tasks.Clear(); // help GC
+        }
     }
+
+    private ValueTask UpdateStateAsync(RaftState newState)
+        => Interlocked.Exchange(ref state, newState).DisposeAsync();
 
     /// <summary>
     /// Stops serving local member.
@@ -377,12 +395,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         electionEvent.TrySetCanceled();
         using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
         {
-            var currentState = Interlocked.Exchange(ref state, null);
-            if (currentState is not null)
-            {
-                await currentState.StopAsync().ConfigureAwait(false);
-                currentState.Dispose();
-            }
+            await MoveToStandbyState().ConfigureAwait(false);
         }
     }
 
@@ -406,18 +419,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             case FollowerState followerState:
                 followerState.Refresh();
                 break;
-            case LeaderState leaderState:
+            case LeaderState or CandidateState:
                 var newState = new FollowerState(this) { Metrics = Metrics };
-                await leaderState.StopAsync().ConfigureAwait(false);
-                state = newState.StartServing(ElectionTimeout, LifecycleToken);
-                leaderState.Dispose();
-                Metrics?.MovedToFollowerState();
-                break;
-            case CandidateState candidateState:
-                newState = new FollowerState(this) { Metrics = Metrics };
-                await candidateState.StopAsync().ConfigureAwait(false);
-                state = newState.StartServing(ElectionTimeout, LifecycleToken);
-                candidateState.Dispose();
+                await UpdateStateAsync(newState).ConfigureAwait(false);
+                newState.StartServing(ElectionTimeout, LifecycleToken);
                 Metrics?.MovedToFollowerState();
                 break;
         }
@@ -535,12 +540,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <summary>
     /// Receives preliminary vote from the potential Candidate in the cluster.
     /// </summary>
+    /// <param name="sender">The sender of the replica message.</param>
     /// <param name="nextTerm">Caller's current term + 1.</param>
     /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
     /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>Pre-vote result received from the member.</returns>
-    protected async Task<Result<PreVoteResult>> PreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    protected async Task<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
         PreVoteResult result;
         long currentTerm;
@@ -556,7 +562,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             {
                 result = PreVoteResult.RejectedByLeader;
             }
-            else if (Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && currentTerm <= nextTerm && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+            else if (members.ContainsKey(sender) && Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && currentTerm <= nextTerm && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
             {
                 result = PreVoteResult.Accepted;
             }
@@ -643,7 +649,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         var currentTerm = auditTrail.Term;
 
         // provide leader stickiness
-        if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout)
+        if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
         using (var tokenSource = token.LinkTo(LifecycleToken))
@@ -691,23 +697,43 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
     protected async Task<bool> ResignAsync(CancellationToken token)
     {
-        if (state is StandbyState)
-            return false;
-
-        using var tokenSource = token.LinkTo(LifecycleToken);
-        using var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
         bool result;
-        if (state is LeaderState leaderState)
+
+        if (state is StandbyState)
         {
-            await leaderState.StopAsync().ConfigureAwait(false);
-            state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, LifecycleToken);
-            leaderState.Dispose();
-            Leader = null;
-            result = true;
+            result = false;
         }
         else
         {
-            result = false;
+            var tokenSource = token.LinkTo(LifecycleToken);
+            var lockHolder = default(AsyncLock.Holder);
+
+            try
+            {
+                lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+
+                if (state is LeaderState)
+                {
+                    var newState = new FollowerState(this) { Metrics = Metrics };
+                    await UpdateStateAsync(newState).ConfigureAwait(false);
+                    Leader = null;
+                    result = true;
+                    newState.StartServing(ElectionTimeout, LifecycleToken);
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                lockHolder.Dispose();
+            }
         }
 
         return result;
@@ -722,15 +748,23 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <returns>The index of the last committed log entry known by the leader.</returns>
     protected async Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
     {
-        using var tokenSource = token.LinkTo(LifecycleToken);
-
         // do not execute the next round of heartbeats if the sender is already in sync with the leader
         if (state is LeaderState leaderState)
         {
-            if (commitIndex != auditTrail.LastCommittedEntryIndex)
-                await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+            if (commitIndex < auditTrail.LastCommittedEntryIndex)
+            {
+                try
+                {
+                    await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                }
+                catch (InvalidOperationException)
+                {
+                    // local node is not a leader
+                    return null;
+                }
+            }
 
-            return ReferenceEquals(state, leaderState) ? auditTrail.LastCommittedEntryIndex : null;
+            return auditTrail.LastCommittedEntryIndex;
         }
 
         return null;
@@ -770,37 +804,24 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <inheritdoc/>
     async Task<bool> ICluster.ResignAsync(CancellationToken token)
     {
-        if (await ResignAsync(token).ConfigureAwait(false))
-        {
-            return true;
-        }
-        else
-        {
-            var leader = Leader;
-            return leader is not null && await leader.ResignAsync(token).ConfigureAwait(false);
-        }
+        return await ResignAsync(token).ConfigureAwait(false) ||
+            (Leader is TMember leader && await leader.ResignAsync(token).ConfigureAwait(false));
     }
 
-    private async ValueTask MoveToStandbyState()
+    private ValueTask MoveToStandbyState()
     {
         Leader = null;
-        if (Interlocked.Exchange(ref state, new StandbyState(this)) is RaftState currentState)
-        {
-            await currentState.StopAsync().ConfigureAwait(false);
-            currentState.Dispose();
-        }
+        return UpdateStateAsync(new StandbyState(this));
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
+    async void IRaftStateMachine.MoveToFollowerState(WeakReference callerState, bool randomizeTimeout, long? newTerm)
     {
-        Debug.Assert(state is not StandbyState);
-
         var lockHolder = default(AsyncLock.Holder);
         try
         {
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder)
+            if (lockHolder && ReferenceEquals(callerState.Target, state))
             {
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout(random);
@@ -820,17 +841,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine.MoveToCandidateState()
+    async void IRaftStateMachine.MoveToCandidateState(WeakReference callerState)
     {
-        Debug.Assert(state is not StandbyState);
-
         var lockHolder = default(AsyncLock.Holder);
         try
         {
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder && state is FollowerState { IsExpired: true } followerState)
+            if (lockHolder && state is FollowerState { IsExpired: true } followerState && ReferenceEquals(followerState, callerState.Target))
             {
                 Logger.TransitionToCandidateStateStarted();
 
@@ -842,10 +861,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
                 if (readyForTransition)
                 {
+                    var newState = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false));
+                    state = newState;
                     followerState.Dispose();
 
                     // vote for self
-                    state = new CandidateState(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    newState.StartVoting(electionTimeout, auditTrail);
                     Metrics?.MovedToCandidateState();
                     Logger.TransitionToCandidateStateCompleted();
                 }
@@ -869,9 +890,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
+    async void IRaftStateMachine.MoveToLeaderState(WeakReference callerState, IRaftClusterMember newLeader)
     {
-        Debug.Assert(state is not StandbyState);
         var lockHolder = default(AsyncLock.Holder);
 
         try
@@ -879,13 +899,16 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             Logger.TransitionToLeaderStateStarted();
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
-            if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
+            if (lockHolder && state is CandidateState candidateState && ReferenceEquals(callerState.Target, candidateState) && candidateState.Term == (currentTerm = auditTrail.Term))
             {
+                var newState = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics };
+                state = newState;
                 candidateState.Dispose();
-                state = new LeaderState(this, allowPartitioning, currentTerm, LeaderLeaseDuration) { Metrics = Metrics }
-                    .StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
-                await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+
                 Leader = newLeader as TMember;
+                await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
+                newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
+
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
             }
@@ -928,16 +951,26 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     {
         ThrowIfDisposed();
 
-        using var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = token.LinkTo(LifecycleToken);
+        try
+        {
+            // 1 - append entry to the log
+            var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
 
-        // 1 - append entry to the log
-        var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
+            // 2 - force replication
+            await ForceReplicationAsync(token).ConfigureAwait(false);
 
-        // 2 - force replication
-        await ForceReplicationAsync(token).ConfigureAwait(false);
-
-        // 3 - wait for commit
-        await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+            // 3 - wait for commit
+            await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException e) when (tokenSource is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
 
         return auditTrail.Term == entry.Term;
     }
@@ -967,7 +1000,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
         transitionCancellation.Dispose();
         transitionSync.Dispose();
-        Interlocked.Exchange(ref state, null)?.Dispose();
+        state.Dispose();
         TrySetDisposedException(readinessProbe);
         ConfigurationStorage.Dispose();
 
@@ -976,10 +1009,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         TrySetDisposedException(electionEvent);
     }
 
-    /// <summary>
-    /// Releases managed and unmanaged resources associated with this object.
-    /// </summary>
-    /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

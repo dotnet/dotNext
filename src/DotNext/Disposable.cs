@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
@@ -13,12 +14,28 @@ using static Runtime.Intrinsics;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
 public abstract class Disposable : IDisposable
 {
-    private volatile bool disposed;
+    private const int NotDisposedState = 0;
+    private const int DisposingState = 1;
+    private const int DisposedState = 2;
+
+    private volatile int state;
 
     /// <summary>
     /// Indicates that this object is disposed.
     /// </summary>
-    protected bool IsDisposed => disposed;
+    protected bool IsDisposed => state is DisposedState;
+
+    /// <summary>
+    /// Indicates that <see cref="DisposeAsync()"/> is called but not yet completed.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    protected bool IsDisposing => state is DisposingState;
+
+    /// <summary>
+    /// Indicates that <see cref="DisposeAsync()"/> is called.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    protected bool IsDisposingOrDisposed => state is not NotDisposedState;
 
     private string ObjectName => GetType().Name;
 
@@ -71,7 +88,8 @@ public abstract class Disposable : IDisposable
     /// Releases managed and unmanaged resources associated with this object.
     /// </summary>
     /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
-    protected virtual void Dispose(bool disposing) => disposed = true;
+    protected virtual void Dispose(bool disposing)
+        => state = DisposedState;
 
     /// <summary>
     /// Releases managed resources associated with this object asynchronously.
@@ -101,14 +119,28 @@ public abstract class Disposable : IDisposable
     /// can be trivially implemented through delegation of the call to this method.
     /// </remarks>
     /// <returns>The task representing asynchronous execution of this method.</returns>
-    protected ValueTask DisposeAsync() => disposed ? ValueTask.CompletedTask : DisposeAsyncImpl();
+    protected ValueTask DisposeAsync() => Interlocked.CompareExchange(ref state, DisposingState, NotDisposedState) switch
+    {
+        NotDisposedState => DisposeAsyncImpl(),
+        DisposingState => DisposeAsyncCore(),
+        _ => ValueTask.CompletedTask,
+    };
+
+    /// <summary>
+    /// Starts disposing this object.
+    /// </summary>
+    /// <returns><see langword="true"/> if cleanup operations can be performed; <see langword="false"/> if the object is already disposing.</returns>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    protected bool TryBeginDispose()
+        => Interlocked.CompareExchange(ref state, DisposingState, NotDisposedState) is NotDisposedState;
 
     /// <summary>
     /// Releases all resources associated with this object.
     /// </summary>
+    [SuppressMessage("Design", "CA1063", Justification = "No need to call Dispose(true) multiple times")]
     public void Dispose()
     {
-        Dispose(true);
+        Dispose(TryBeginDispose());
         GC.SuppressFinalize(this);
     }
 

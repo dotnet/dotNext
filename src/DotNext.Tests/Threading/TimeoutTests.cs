@@ -24,5 +24,12 @@ namespace DotNext.Threading
             InfiniteTest(Timeout.Infinite);
             InfiniteTest(new Timeout(InfiniteTimeSpan));
         }
+
+        [Fact]
+        public static void ExpiredTimeout()
+        {
+            True(Timeout.Expired.IsExpired);
+            False(Timeout.Expired.IsInfinite);
+        }
     }
 }

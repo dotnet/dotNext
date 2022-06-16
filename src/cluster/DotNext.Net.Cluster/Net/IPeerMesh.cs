@@ -15,11 +15,19 @@ public interface IPeerMesh
     /// <summary>
     /// An event raised when a new remote peer has been discovered.
     /// </summary>
+    /// <remarks>
+    /// The implementing class guarantees strong order of
+    /// <see cref="PeerDiscovered"/> and <see cref="PeerGone"/> events (in terms of local clock).
+    /// </remarks>
     event Action<IPeerMesh, PeerEventArgs> PeerDiscovered;
 
     /// <summary>
     /// An event raised when the visible neighbor becomes unavailable.
     /// </summary>
+    /// <remarks>
+    /// The implementing class guarantees strong order of
+    /// <see cref="PeerDiscovered"/> and <see cref="PeerGone"/> events (in terms of local clock).
+    /// </remarks>
     event Action<IPeerMesh, PeerEventArgs> PeerGone;
 }
 

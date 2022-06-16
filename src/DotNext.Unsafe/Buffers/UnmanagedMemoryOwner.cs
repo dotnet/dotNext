@@ -82,4 +82,6 @@ internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMe
             throw new NotSupportedException();
         Reallocate(length);
     }
+
+    bool IUnmanagedMemoryOwner<T>.SupportsReallocation => fromPool is false;
 }

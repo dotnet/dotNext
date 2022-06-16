@@ -125,14 +125,18 @@ static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
 
     return UseConfiguration(configuration, persistentStorage);
 
-    static SslOptions CreateSslOptions()
+    static SslOptions CreateSslOptions() => new()
     {
-        var options = new SslOptions();
-        options.ServerOptions.ServerCertificate = LoadCertificate();
-        options.ClientOptions.TargetHost = "localhost";
-        options.ClientOptions.RemoteCertificateValidationCallback = RaftClientHandlerFactory.AllowCertificate;
-        return options;
-    }
+        ServerOptions = new()
+        {
+            ServerCertificate = LoadCertificate()
+        },
+        ClientOptions = new()
+        {
+            TargetHost = "localhost",
+            RemoteCertificateValidationCallback = RaftClientHandlerFactory.AllowCertificate
+        }
+    };
 }
 
 static Task StartNode(string protocol, int port, string? persistentStorage = null)

@@ -47,12 +47,12 @@ internal sealed class UdpClient : UdpSocket, IClient
     private readonly IPEndPoint localEndPoint;
     private long streamNumber;
 
-    internal UdpClient(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
+    internal UdpClient(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
         : base(remoteEndPoint, backlog, allocator, loggerFactory)
     {
         channels = new(backlog);
         cancellationHandler = channels.CancellationRequested;
-        applicationId = appIdGenerator();
+        applicationId = Random.Shared.NextInt64();
         streamNumber = long.MinValue;
         this.localEndPoint = localEndPoint;
     }

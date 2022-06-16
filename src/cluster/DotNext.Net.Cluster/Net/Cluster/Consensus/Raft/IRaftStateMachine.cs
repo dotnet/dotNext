@@ -10,9 +10,9 @@ internal interface IRaftStateMachine
 
     void UpdateLeaderStickiness();
 
-    void MoveToFollowerState(bool randomizeTimeout, long? newTerm);
+    void MoveToFollowerState(WeakReference callerState, bool randomizeTimeout, long? newTerm);
 
-    void MoveToCandidateState();
+    void MoveToCandidateState(WeakReference callerState);
 
-    void MoveToLeaderState(IRaftClusterMember leader);
+    void MoveToLeaderState(WeakReference callerState, IRaftClusterMember leader);
 }

@@ -155,7 +155,7 @@ public interface IDataTransferObject
     private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        Debug.Assert(length < Array.MaxLength);
+        Debug.Assert(length <= Array.MaxLength);
 
         using var writer = new PooledArrayBufferWriter<byte> { Capacity = (int)length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);

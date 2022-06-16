@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1, await state.IncrementTermAsync(default));
                 True(state.IsVotedFor(default(ClusterMemberId)));
                 await state.UpdateVotedForAsync(member);
-                False(state.IsVotedFor(default(ClusterMemberId?)));
+                False(state.IsVotedFor(default(ClusterMemberId)));
                 True(state.IsVotedFor(member));
             }
             finally
@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 Equal(1, state.Term);
-                False(state.IsVotedFor(default(ClusterMemberId?)));
+                False(state.IsVotedFor(default(ClusterMemberId)));
                 True(state.IsVotedFor(member));
             }
             finally

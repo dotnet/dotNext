@@ -1,0 +1,37 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--Compile-time dependencies-->
+    <PackageVersion Include="Fody" Version="6.6.3"/>
+    <PackageVersion Include="InlineIL.Fody" Version="1.7.1"/>
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118"/>
+  </ItemGroup>
+  <ItemGroup>
+    <!--System packages-->
+    <PackageVersion Include="System.Collections.Immutable" Version="6.0.0" />
+    <PackageVersion Include="System.IO.Pipelines" Version="6.0.3" />
+    <PackageVersion Include="System.Resources.Extensions" Version="6.0.0"/>
+    <PackageVersion Include="System.Runtime.Caching" Version="6.0.0" />
+    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0"/>
+    <PackageVersion Include="System.Threading.Channels" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Microsoft packages-->
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Misc packages-->
+    <PackageVersion Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
+    <PackageVersion Include="xunit" Version="2.4.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3"/>
+  </ItemGroup>
+</Project>

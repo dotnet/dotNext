@@ -113,8 +113,19 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
 
     private async ValueTask EnqueueAsync(Command command, CancellationToken token)
     {
-        using var tokenSource = token.LinkTo(LifecycleToken);
-        await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+        var tokenSource = token.LinkTo(LifecycleToken);
+        try
+        {
+            await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException e) when (tokenSource is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
     }
 
     private async Task CommandLoop()
@@ -212,7 +223,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     {
         var handlers = peerGoneHandlers;
         if (!handlers.IsEmpty)
-            ThreadPool.QueueUserWorkItem<(InvocationList<Action<PeerController, PeerEventArgs>> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler.Invoke(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, peer), false);
+            handlers.Invoke(this, PeerEventArgs.Create(peer));
     }
 
     /// <summary>
@@ -294,7 +305,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     {
         var handlers = peerDiscoveredHandlers;
         if (!handlers.IsEmpty)
-            ThreadPool.QueueUserWorkItem<(InvocationList<Action<PeerController, PeerEventArgs>> Handler, PeerController Sender, EndPoint Peer)>(static args => args.Handler.Invoke(args.Sender, PeerEventArgs.Create(args.Peer)), (handlers, this, discoveredPeer), false);
+            handlers.Invoke(this, PeerEventArgs.Create(discoveredPeer));
     }
 
     /// <summary>

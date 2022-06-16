@@ -21,6 +21,12 @@ namespace DotNext.Net
             yield return new object[] { new HttpEndPoint("2001:0db8:0000:0000:0000:8a2e:0370:7334", 3262, true, AddressFamily.InterNetworkV6) };
             yield return new object[] { new HttpEndPoint("host", 3262, true) };
             yield return new object[] { new HttpEndPoint("host", 3262, false) };
+
+            // if (Socket.OSSupportsUnixDomainSockets)
+            // {
+            //     yield return new object[] { new UnixDomainSocketEndPoint("@abstract") };
+            //     yield return new object[] { new UnixDomainSocketEndPoint(Path.GetTempFileName()) };
+            // }
         }
 
         [Theory]

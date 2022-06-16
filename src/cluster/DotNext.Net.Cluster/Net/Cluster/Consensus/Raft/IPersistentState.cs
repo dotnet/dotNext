@@ -1,6 +1,6 @@
 ﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
 /// Represents persistent state of local cluster member
@@ -13,7 +13,7 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// </summary>
     /// <param name="id">The cluster member to check.</param>
     /// <returns><see langword="true"/> if the local member granted its vote for the specified remote member; otherwise, <see langword="false"/>.</returns>
-    bool IsVotedFor(in ClusterMemberId? id);
+    bool IsVotedFor(in ClusterMemberId id);
 
     /// <summary>
     /// Reads Term value associated with the local member
@@ -45,7 +45,7 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// </summary>
     /// <param name="member">The member which identifier should be stored inside of persistence storage.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
-    ValueTask UpdateVotedForAsync(ClusterMemberId? member);
+    ValueTask UpdateVotedForAsync(ClusterMemberId member);
 
     /// <summary>
     /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
@@ -60,6 +60,6 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask EnsureConsistencyAsync(CancellationToken token = default);
 
-    internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId? expected)
-        => lastVote is null || (expected.HasValue && lastVote.Value.Equals(expected.GetValueOrDefault()));
+    internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId expected)
+        => lastVote is null || lastVote.Value == expected;
 }

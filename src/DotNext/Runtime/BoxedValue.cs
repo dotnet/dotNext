@@ -64,7 +64,7 @@ public sealed class BoxedValue<T>
     /// <param name="value">The value to be boxed.</param>
     /// <returns>A boxed representation of the value.</returns>
     [return: NotNullIfNotNull("value")]
-    public static BoxedValue<T>? TryBox(in T? value) => value.HasValue ? Box(value.GetValueOrDefault()) : null;
+    public static BoxedValue<T>? TryBox(in T? value) => Unsafe.As<BoxedValue<T>?>(value);
 
     /// <summary>
     /// Unboxes the value.

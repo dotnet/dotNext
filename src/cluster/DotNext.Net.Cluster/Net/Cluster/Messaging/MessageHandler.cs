@@ -44,17 +44,7 @@ public partial class MessageHandler : IInputChannel
     protected MessageHandler()
     {
         // inspect message types
-        var messages = new Dictionary<Type, MessageAttribute>();
-        foreach (var attribute in GetType().GetCustomAttributes<MessageAttribute>())
-        {
-            var type = attribute.GetType();
-
-            if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(MessageAttribute<>))
-            {
-                type = type.GetGenericArguments()[0];
-                messages.Add(type, attribute);
-            }
-        }
+        var messages = GetType().GetCustomAttributes<MessageAttribute>().ToDictionary(static attr => attr.MessageType);
 
         // inspect handlers
         const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;

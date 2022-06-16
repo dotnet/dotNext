@@ -11,19 +11,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO;
 using static Buffers.BufferWriter;
+using static Text.Json.JsonUtils;
 
 internal static class JsonLogEntry
 {
     private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
-    private static readonly JsonReaderOptions DefaultReaderOptions;
-    private static readonly JsonWriterOptions DefaultWriterOptions;
-
-    static JsonLogEntry()
-    {
-        var options = new JsonSerializerOptions(JsonSerializerDefaults.General);
-        DefaultReaderOptions = options.GetReaderOptions();
-        DefaultWriterOptions = options.GetWriterOptions();
-    }
 
     [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
     private static Type LoadType(string typeId, Func<string, Type>? typeLoader)
@@ -81,13 +73,13 @@ internal static class JsonLogEntry
         ValueTask result;
         if (bufferWriter is null)
         {
-            // slow path - delegate allocation is required and arguments must be packed
-            result = writer.WriteAsync(SerializeToJson, (typeId, obj, typeInfo), token);
+            // slow path - arguments must be packed
+            result = writer.WriteAsync(static (args, writer) => Serialize(args.typeId, args.obj, writer, args.typeInfo), (typeId, obj, typeInfo), token);
         }
         else
         {
             // fast path - synchronous serialization
-            result = new();
+            result = ValueTask.CompletedTask;
             try
             {
                 Serialize(typeId, obj, bufferWriter, typeInfo);
@@ -109,24 +101,7 @@ internal static class JsonLogEntry
             using var jsonWriter = new Utf8JsonWriter(buffer, DefaultWriterOptions);
             JsonSerializer.Serialize(jsonWriter, value, typeInfo);
         }
-
-        static void SerializeToJson((string TypeId, T Value, JsonTypeInfo<T> TypeInfo) arg, IBufferWriter<byte> buffer)
-            => Serialize(arg.TypeId, arg.Value, buffer, arg.TypeInfo);
     }
-
-    private static JsonReaderOptions GetReaderOptions(this JsonSerializerOptions options) => new()
-    {
-        AllowTrailingCommas = options.AllowTrailingCommas,
-        CommentHandling = options.ReadCommentHandling,
-        MaxDepth = options.MaxDepth,
-    };
-
-    private static JsonWriterOptions GetWriterOptions(this JsonSerializerOptions options) => new()
-    {
-        Indented = options.WriteIndented,
-        Encoder = options.Encoder,
-        SkipValidation = false,
-    };
 
     [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
     internal static object? Deserialize(SequenceReader input, Func<string, Type>? typeLoader, JsonSerializerOptions? options)

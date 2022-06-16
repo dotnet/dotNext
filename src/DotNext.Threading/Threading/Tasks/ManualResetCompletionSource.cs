@@ -5,8 +5,6 @@ using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTask
 
 namespace DotNext.Threading.Tasks;
 
-using BoxedVersion = Runtime.CompilerServices.Shared<short>;
-
 /// <summary>
 /// Represents base class for producer of value task.
 /// </summary>
@@ -15,7 +13,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
 
     private readonly Action<object?, CancellationToken> cancellationCallback;
-    private readonly bool runContinuationsAsynchronously;
+    private readonly bool runContinuationsAsynchronously, isConsumptionCallbackProvided;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
     private CancellationTokenSource? timeoutSource;
 
@@ -30,6 +28,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
         version = short.MinValue;
+        isConsumptionCallbackProvided = new Action(AfterConsumed).Method.DeclaringType != typeof(ManualResetCompletionSource);
 
         // cached callback to avoid further allocations
         cancellationCallback = CancellationRequested;
@@ -40,7 +39,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void CancellationRequested(object? expectedVersion, CancellationToken token)
     {
-        Debug.Assert(expectedVersion is BoxedVersion);
+        Debug.Assert(expectedVersion is short);
 
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
@@ -49,7 +48,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             lock (SyncRoot)
             {
-                if (status is ManualResetCompletionSourceStatus.Activated && Unsafe.As<BoxedVersion>(expectedVersion).Value == version)
+                if (status is ManualResetCompletionSourceStatus.Activated && Unsafe.Unbox<short>(expectedVersion) == version)
                 {
                     if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
@@ -63,7 +62,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
     {
         // box current token once and only if needed
-        BoxedVersion? tokenHolder = null;
+        var tokenHolder = default(IEquatable<short>);
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
@@ -112,7 +111,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously, bool flowExecutionContext)
     {
         switch (capturedContext)
@@ -252,12 +250,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     void IThreadPoolWorkItem.Execute() => AfterConsumed();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void OnConsumed<T>()
-        where T : ManualResetCompletionSource
+    private protected void OnConsumed()
     {
         status = ManualResetCompletionSourceStatus.Consumed;
 
-        if (GetType() != typeof(T))
+        if (isConsumptionCallbackProvided)
             ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
     }
 
@@ -268,7 +265,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         status = ManualResetCompletionSourceStatus.WaitForConsumption;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
     {
         string errorMessage;
@@ -401,7 +397,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
     {
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)

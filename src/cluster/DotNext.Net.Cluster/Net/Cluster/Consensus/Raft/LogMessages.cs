@@ -276,5 +276,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateFailed)
         )]
         public static partial void TransitionToLeaderStateFailed(this ILogger logger, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 33,
+            LogLevel.Debug,
+            "Follower loop stopped with error",
+            EventName = EventIdPrefix + "." + nameof(FollowerStateExitedFailed)
+        )]
+        public static partial void FollowerStateExitedFailed(this ILogger logger, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 34,
+            LogLevel.Debug,
+            "Candidate state reverted with error",
+            EventName = EventIdPrefix + "." + nameof(CandidateStateExitedWithError)
+        )]
+        public static partial void CandidateStateExitedWithError(this ILogger logger, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 35,
+            LogLevel.Debug,
+            "Leader state reverted with error",
+            EventName = EventIdPrefix + "." + nameof(LeaderStateExitedWithError)
+        )]
+        public static partial void LeaderStateExitedWithError(this ILogger logger, Exception e);
     }
 }

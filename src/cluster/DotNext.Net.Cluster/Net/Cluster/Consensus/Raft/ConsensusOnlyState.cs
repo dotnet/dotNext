@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Threading;
 using static Replication.CommitEvent;
-using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
 /// Represents lightweight Raft node state that is suitable for distributed consensus only.
@@ -18,8 +18,6 @@ using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
 /// </remarks>
 public sealed class ConsensusOnlyState : Disposable, IPersistentState
 {
-    private static readonly Func<ConsensusOnlyState, long, bool> IsCommittedPredicate = IsCommitted;
-
     [StructLayout(LayoutKind.Auto)]
     private readonly struct EntryList : IReadOnlyList<EmptyLogEntry>
     {
@@ -89,8 +87,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     /// <inheritdoc/>
     bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
-
-    private static bool IsCommitted(ConsensusOnlyState state, long index) => index <= state.commitIndex.VolatileRead();
 
     private void Append(long[] terms, long startIndex)
     {
@@ -256,7 +252,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
     {
-        lastVote = member;
+        lastVote = BoxedClusterMemberId.Box(member);
         return new(term.IncrementAndGet());
     }
 
@@ -265,12 +261,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
     /// <inheritdoc/>
-    bool IPersistentState.IsVotedFor(in ClusterMemberId? id) => IPersistentState.IsVotedFor(lastVote, id);
+    bool IPersistentState.IsVotedFor(in ClusterMemberId id) => IPersistentState.IsVotedFor(lastVote, in id);
 
     private ValueTask<TResult> ReadCoreAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
         if (endIndex > index.VolatileRead())
-            throw new ArgumentOutOfRangeException(nameof(endIndex));
+            return ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
 
         var commitIndex = this.commitIndex.VolatileRead();
         var offset = startIndex - commitIndex - 1L;
@@ -349,9 +345,9 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId? id)
+    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id)
     {
-        lastVote = id;
+        lastVote = BoxedClusterMemberId.Box(id);
         return new();
     }
 
@@ -361,7 +357,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     /// <inheritdoc/>
     ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
-        => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, token);
+        => commitEvent.WaitForCommitAsync(static (state, index) => index <= state.commitIndex.VolatileRead(), this, index, token);
 
     /// <inheritdoc/>
     async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)

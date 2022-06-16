@@ -4,7 +4,6 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
 using Tasks;
 
 public static partial class AsyncBridge
@@ -34,9 +33,9 @@ public static partial class AsyncBridge
 
         internal void Complete(object? token, bool timedOut)
         {
-            Debug.Assert(token is Shared<short>);
+            Debug.Assert(token is short);
 
-            TrySetResult(Unsafe.As<Shared<short>>(token).Value, !timedOut);
+            TrySetResult(Unsafe.Unbox<short>(token), !timedOut);
         }
     }
 

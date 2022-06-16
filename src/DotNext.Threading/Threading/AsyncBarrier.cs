@@ -33,7 +33,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(participantCount));
 
         participants = participantCount;
-        countdown = new AsyncCountdownEvent(participants);
+        countdown = new(participants);
     }
 
     /// <inheritdoc/>

@@ -10,7 +10,6 @@ internal struct StringReader<TBuffer> : IBufferReader<string>, IBufferReader<int
     where TBuffer : struct, IBuffer<char>
 {
     private readonly Decoder decoder;
-    private readonly Encoding encoding;
 
     // not readonly to avoid defensive copying
     private TBuffer result;
@@ -19,7 +18,6 @@ internal struct StringReader<TBuffer> : IBufferReader<string>, IBufferReader<int
     internal StringReader(in DecodingContext context, TBuffer result)
     {
         decoder = context.GetDecoder();
-        encoding = context.Encoding;
         length = result.Length;
         this.result = result;
         resultOffset = 0;

@@ -3,7 +3,6 @@
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
-using static Threading.Tasks.Continuation;
 
 internal sealed class CandidateState : RaftState
 {
@@ -61,7 +60,7 @@ internal sealed class CandidateState : RaftState
     internal CandidateState(IRaftStateMachine stateMachine, long term)
         : base(stateMachine)
     {
-        votingCancellation = new CancellationTokenSource();
+        votingCancellation = new();
         Term = term;
     }
 
@@ -118,26 +117,35 @@ internal sealed class CandidateState : RaftState
     /// </summary>
     /// <param name="timeout">Candidate state timeout.</param>
     /// <param name="auditTrail">The local transaction log.</param>
-    internal CandidateState StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    internal void StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         Logger.VotingStarted(timeout);
-        ICollection<VotingState> voters = new LinkedList<VotingState>();
-        votingCancellation.CancelAfter(timeout);
+        var members = Members;
+        var voters = new List<VotingState>(members.Count);
 
         // start voting in parallel
-        foreach (var member in Members)
-            voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
+        foreach (var member in members)
+            voters.Add(new(member, Term, auditTrail, votingCancellation.Token));
+
+        votingCancellation.CancelAfter(timeout);
         votingTask = EndVoting(voters);
-        return this;
     }
 
-    /// <summary>
-    /// Cancels candidate state.
-    /// </summary>
-    internal override Task StopAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        votingCancellation.Cancel();
-        return votingTask?.OnCompleted() ?? Task.CompletedTask;
+        try
+        {
+            votingCancellation.Cancel();
+            await (votingTask ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.CandidateStateExitedWithError(e);
+        }
+        finally
+        {
+            Dispose(true);
+        }
     }
 
     protected override void Dispose(bool disposing)
@@ -145,8 +153,6 @@ internal sealed class CandidateState : RaftState
         if (disposing)
         {
             votingCancellation.Dispose();
-            if (Interlocked.Exchange(ref votingTask, null) is { IsCompleted: true } task)
-                task.Dispose();
         }
 
         base.Dispose(disposing);

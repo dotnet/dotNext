@@ -19,9 +19,9 @@ internal struct MemoryReader : IBufferReader<int>, IBufferReader<Missing>
 
     public readonly int RemainingBytes => eosReached ? 0 : buffer.Length - offset;
 
-    int IBufferReader<int>.Complete() => offset;
+    readonly int IBufferReader<int>.Complete() => offset;
 
-    Missing IBufferReader<Missing>.Complete() => Missing.Value;
+    readonly Missing IBufferReader<Missing>.Complete() => Missing.Value;
 
     internal readonly int BytesWritten => offset;
 
