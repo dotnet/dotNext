@@ -18,13 +18,39 @@ GC Notifications
 
 The following example demonstrates detection of a single GC occurred in the process:
 ```csharp
+using System;
 using System.Threading;
 using DotNext.Runtime;
 
-await GCNOtification.GCTriggered().WaitAsync(CancellationToken.None);
+GCMemoryInfo info = await GCNOtification.GCTriggered().WaitAsync(CancellationToken.None);
 Console.WriteLine("GC occurred");
 ```
 
-GC Notifications can be combined using logical operators: AND, OR, NOT, XOR.
+The notification object carries information about the triggered GC in the form of [GCMemoryInfo](https://docs.microsoft.com/en-us/dotnet/api/system.gcmemoryinfo) value type.
 
-The primary consumers of a new API are object pools, in-memory caches, connection pools.
+GC Notifications can be combined using logical operators: AND, OR, NOT, XOR:
+```csharp
+using System;
+using System.Threading;
+using DotNext.Runtime;
+
+// detect GC for generation 0 or 1, but not for 2
+GCMemoryInfo info = await (!GCNOtification.GCTriggered(2)).WaitAsync(CancellationToken.None);
+Console.WriteLine("GC occurred");
+```
+
+[GCNotification](xref:DotNext.Runtime.GCNotification) provides a rich set of predefined filters to capture various GC events. For instance, it is possible to detect GC memory pressure:
+```csharp
+using System;
+using System.Threading;
+using DotNext.Runtime;
+
+// detect 80% memory occupation (GC after cleanup has less than 20% of free memory)
+using GCNotification.Registration reg = GCNotification.MemoryThreshold(0.8).Register(GCCallback, "Memory pressure detected");
+GC.Collect();
+
+static void GCCallback(string message, GCMemoryInfo info)
+    => Console.WriteLine(message);
+```
+
+The primary consumers of a new API are object pools, buffers, in-memory caches, connection pools. For instance, on high memory pressure you can drain in-memory cache.
