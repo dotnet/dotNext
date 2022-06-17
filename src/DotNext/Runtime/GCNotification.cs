@@ -40,7 +40,7 @@ public abstract partial class GCNotification
     /// <returns>The information about last occurred GC.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="TimeoutException">The notification did not arrive in timely manner.</exception>
-    public ValueTask<GCMemoryInfo> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+    public Task<GCMemoryInfo> WaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
         Task<GCMemoryInfo> result;
 
@@ -58,7 +58,7 @@ public abstract partial class GCNotification
             GC.KeepAlive(tracker);
         }
 
-        return new(result);
+        return result;
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public abstract partial class GCNotification
     /// <param name="token">The token that can be used to cancel the notification.</param>
     /// <returns>The information about last occurred GC.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask<GCMemoryInfo> WaitAsync(CancellationToken token = default)
+    public Task<GCMemoryInfo> WaitAsync(CancellationToken token = default)
         => WaitAsync(InfiniteTimeSpan, token);
 
     /// <summary>
