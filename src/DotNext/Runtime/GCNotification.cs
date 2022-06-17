@@ -116,4 +116,22 @@ public abstract partial class GCNotification
 
         return new HeapFragmentationThresholdFilter(threshold);
     }
+
+    /// <summary>
+    /// Creates a filter that allows to detect managed heap occupation.
+    /// </summary>
+    /// <remarks>
+    /// This filter allows to detect a specific ratio between <see cref="GCMemoryInfo.MemoryLoadBytes"/>
+    /// and <see cref="GCMemoryInfo.HighMemoryLoadThresholdBytes"/>.
+    /// </remarks>
+    /// <param name="threshold">The memory threshold. The memory threshold; must be in range (0, 1].</param>
+    /// <returns>A new filter.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="threshold"/> is invalid.</exception>
+    public static GCNotification MemoryThreshold(double threshold)
+    {
+        if (!double.IsFinite(threshold) || !threshold.IsBetween(0D, 1D, BoundType.RightClosed))
+            throw new ArgumentOutOfRangeException(nameof(threshold));
+
+        return new MemoryThresholdFilter(threshold);
+    }
 }
