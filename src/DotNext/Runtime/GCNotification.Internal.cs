@@ -1,5 +1,5 @@
 using Debug = System.Diagnostics.Debug;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime;
 
@@ -33,7 +33,7 @@ public partial class GCNotification
         }
     }
 
-    private abstract class GCCallback<T> : IThreadPoolWorkItem
+    private abstract class GCCallback<T>
     {
         private readonly Action<T, GCMemoryInfo> callback;
         private readonly T state;
@@ -45,7 +45,8 @@ public partial class GCNotification
             this.state = state;
         }
 
-        public void Execute() => callback(state, MemoryInfo);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected void Execute() => callback(state, MemoryInfo);
 
         /// <summary>
         /// Enqueues the callback for asynchronous execution.
@@ -60,12 +61,14 @@ public partial class GCNotification
         }
     }
 
-    private sealed class UnsafeCallback<T> : GCCallback<T>
+    private sealed class UnsafeCallback<T> : GCCallback<T>, IThreadPoolWorkItem
     {
         internal UnsafeCallback(Action<T, GCMemoryInfo> callback, T state)
             : base(callback, state)
         {
         }
+
+        void IThreadPoolWorkItem.Execute() => Execute();
 
         internal override void Enqueue()
             => ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
