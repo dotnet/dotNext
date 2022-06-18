@@ -53,6 +53,7 @@ public partial class GCNotification
         /// </summary>
         internal abstract void Enqueue();
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private protected static void UnsafeExecute(object? state)
         {
             Debug.Assert(state is GCCallback<T>);
