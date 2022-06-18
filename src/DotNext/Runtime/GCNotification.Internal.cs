@@ -1,4 +1,5 @@
 using Debug = System.Diagnostics.Debug;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Runtime;
 
@@ -32,23 +33,192 @@ public partial class GCNotification
         }
     }
 
-    private sealed class CallbackContext<T> : Tuple<Action<T, GCMemoryInfo>, T, GCMemoryInfo>, IThreadPoolWorkItem
+    private abstract class GCCallback<T> : IThreadPoolWorkItem
     {
-        internal CallbackContext(Action<T, GCMemoryInfo> callback, T state, in GCMemoryInfo info)
-            : base(callback, state, info)
+        private readonly Action<T, GCMemoryInfo> callback;
+        private readonly T state;
+        internal GCMemoryInfo MemoryInfo;
+
+        private protected GCCallback(Action<T, GCMemoryInfo> callback, T state)
+        {
+            this.callback = callback;
+            this.state = state;
+        }
+
+        public void Execute() => callback(state, MemoryInfo);
+
+        /// <summary>
+        /// Enqueues the callback for asynchronous execution.
+        /// </summary>
+        internal abstract void Enqueue();
+
+        private protected static void UnsafeExecute(object? state)
+        {
+            Debug.Assert(state is GCCallback<T>);
+
+            Unsafe.As<GCCallback<T>>(state).Execute();
+        }
+    }
+
+    private sealed class UnsafeCallback<T> : GCCallback<T>
+    {
+        internal UnsafeCallback(Action<T, GCMemoryInfo> callback, T state)
+            : base(callback, state)
         {
         }
 
-        public void Execute() => Item1.Invoke(Item2, Item3);
+        internal override void Enqueue()
+            => ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
+    }
+
+    private sealed class SynchronizationContextBoundCallback<T> : GCCallback<T>
+    {
+        private static readonly SendOrPostCallback CallbackInvoker = UnsafeExecute;
+        private readonly SynchronizationContext context;
+
+        internal SynchronizationContextBoundCallback(Action<T, GCMemoryInfo> callback, T state, SynchronizationContext context)
+            : base(callback, state)
+        {
+            Debug.Assert(context is not null);
+
+            this.context = context;
+        }
+
+        internal override void Enqueue()
+            => context.Post(CallbackInvoker, this);
+    }
+
+    private sealed class TaskSchedulerBoundCallback<T> : GCCallback<T>
+    {
+        private static readonly Action<object?> TaskInvoker = UnsafeExecute;
+        private readonly Task task;
+        private readonly TaskScheduler scheduler;
+
+        internal TaskSchedulerBoundCallback(Action<T, GCMemoryInfo> callback, T state, TaskScheduler scheduler)
+            : base(callback, state)
+        {
+            Debug.Assert(scheduler is not null);
+
+            this.scheduler = scheduler;
+            task = CreateCallbackInvocationTask(this);
+        }
+
+        internal static Task CreateCallbackInvocationTask(GCCallback<T> callback)
+            => new(TaskInvoker, callback, CancellationToken.None, TaskCreationOptions.DenyChildAttach);
+
+        internal override void Enqueue() => task.Start(scheduler);
+    }
+
+    private abstract class ExecutionContextBoundCallback<T> : GCCallback<T>
+    {
+        private readonly ExecutionContext context;
+
+        private protected ExecutionContextBoundCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context)
+            : base(callback, state)
+        {
+            Debug.Assert(context is not null);
+
+            this.context = context;
+        }
+
+        private protected abstract ContextCallback Callback { get; }
+
+        internal sealed override void Enqueue()
+            => ExecutionContext.Run(context, Callback, this);
+    }
+
+    private sealed class SafeCallback<T> : ExecutionContextBoundCallback<T>
+    {
+        private static readonly Action<object?> WorkItem;
+        private static readonly ContextCallback ContextCallback;
+
+        static SafeCallback()
+        {
+            WorkItem = UnsafeExecute;
+            ContextCallback = QueueCallback;
+
+            static void QueueCallback(object? callback)
+                => ThreadPool.QueueUserWorkItem(WorkItem, callback, preferLocal: false);
+        }
+
+        internal SafeCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context)
+            : base(callback, state, context)
+        {
+        }
+
+        private protected override ContextCallback Callback => ContextCallback;
+    }
+
+    private sealed class ExecutionAndSynchronizationContextBoundCallback<T> : ExecutionContextBoundCallback<T>
+    {
+        private static readonly SendOrPostCallback CallbackInvoker;
+        private static readonly ContextCallback ContextCallback;
+
+        static ExecutionAndSynchronizationContextBoundCallback()
+        {
+            CallbackInvoker = UnsafeExecute;
+            ContextCallback = QueueCallback;
+
+            static void QueueCallback(object? callback)
+            {
+                Debug.Assert(callback is ExecutionAndSynchronizationContextBoundCallback<T>);
+
+                Unsafe.As<ExecutionAndSynchronizationContextBoundCallback<T>>(callback).Post();
+            }
+        }
+
+        private readonly SynchronizationContext context;
+
+        internal ExecutionAndSynchronizationContextBoundCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context, SynchronizationContext syncContext)
+            : base(callback, state, context)
+        {
+            Debug.Assert(syncContext is not null);
+
+            this.context = syncContext;
+        }
+
+        private protected override ContextCallback Callback => ContextCallback;
+
+        private void Post() => context.Post(CallbackInvoker, this);
+    }
+
+    private sealed class ExecutionContextAndTaskSchedulerBoundCallback<T> : ExecutionContextBoundCallback<T>
+    {
+        private static readonly ContextCallback ContextCallback;
+
+        static ExecutionContextAndTaskSchedulerBoundCallback()
+        {
+            ContextCallback = QueueCallback;
+
+            static void QueueCallback(object? callback)
+            {
+                Debug.Assert(callback is ExecutionContextAndTaskSchedulerBoundCallback<T>);
+
+                Unsafe.As<ExecutionContextAndTaskSchedulerBoundCallback<T>>(callback).Start();
+            }
+        }
+
+        private readonly TaskScheduler scheduler;
+        private readonly Task task;
+
+        internal ExecutionContextAndTaskSchedulerBoundCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context, TaskScheduler scheduler)
+            : base(callback, state, context)
+        {
+            Debug.Assert(scheduler is not null);
+
+            this.scheduler = scheduler;
+            task = TaskSchedulerBoundCallback<T>.CreateCallbackInvocationTask(this);
+        }
+
+        private protected override ContextCallback Callback => ContextCallback;
+
+        private void Start() => task.Start(scheduler);
     }
 
     private sealed class Tracker<T> : IGCCallback
     {
         private readonly GCNotification filter;
-        private readonly T state;
-        private readonly Action<T, GCMemoryInfo> callback;
-        private readonly object? capturedContext;
-        private readonly ExecutionContext? context;
+        private readonly GCCallback<T> callback;
 
         internal Tracker(GCNotification filter, T state, Action<T, GCMemoryInfo> callback, bool continueOnCapturedContext)
         {
@@ -56,75 +226,38 @@ public partial class GCNotification
             Debug.Assert(callback is not null);
 
             this.filter = filter;
-            this.state = state;
-            this.callback = callback;
 
-            context = ExecutionContext.Capture();
+            // preallocate everything we can to prevent memory allocations in Finalizer
+            var executionContext = ExecutionContext.Capture();
             if (!continueOnCapturedContext)
             {
-                capturedContext = null;
+                this.callback = executionContext is null
+                    ? new UnsafeCallback<T>(callback, state)
+                    : new SafeCallback<T>(callback, state, executionContext);
             }
             else if (SynchronizationContext.Current is SynchronizationContext syncContext && syncContext.GetType() != typeof(SynchronizationContext))
             {
-                capturedContext = syncContext;
+                this.callback = executionContext is null
+                    ? new SynchronizationContextBoundCallback<T>(callback, state, syncContext)
+                    : new ExecutionAndSynchronizationContextBoundCallback<T>(callback, state, executionContext, syncContext);
             }
             else
             {
-                capturedContext = TaskScheduler.Current;
+                this.callback = executionContext is null
+                    ? new TaskSchedulerBoundCallback<T>(callback, state, TaskScheduler.Current)
+                    : new ExecutionContextAndTaskSchedulerBoundCallback<T>(callback, state, executionContext, TaskScheduler.Current);
             }
         }
 
         void IGCCallback.StopTracking() => GC.SuppressFinalize(this);
-
-        private static void InvokeCallback(object? capturedContext, Action<T, GCMemoryInfo> callback, T state, in GCMemoryInfo info, bool flowExecutionContext)
-        {
-            var args = new CallbackContext<T>(callback, state, info);
-            switch (capturedContext)
-            {
-                case SynchronizationContext context:
-                    context.Post(static state => (state as CallbackContext<T>)?.Execute(), args);
-                    break;
-                case TaskScheduler scheduler:
-                    Task.Factory.StartNew(static state => (state as CallbackContext<T>)?.Execute(), args, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                    break;
-                default:
-                    if (flowExecutionContext)
-                        ThreadPool.QueueUserWorkItem(static state => state.Execute(), args, preferLocal: false);
-                    else
-                        ThreadPool.UnsafeQueueUserWorkItem(args, preferLocal: false);
-
-                    break;
-            }
-        }
-
-        private void InvokeCallback(in GCMemoryInfo info, bool flowExecutionContext)
-            => InvokeCallback(capturedContext, callback, state, in info, flowExecutionContext);
-
-        private void InvokeCallback(in GCMemoryInfo info)
-        {
-            if (context is null)
-            {
-                InvokeCallback(in info, flowExecutionContext: false);
-            }
-            else
-            {
-                ExecutionContext.Run(
-                    context,
-                    static state =>
-                    {
-                        if (state is Tuple<Tracker<T>, GCMemoryInfo> tuple)
-                            tuple.Item1.InvokeCallback(tuple.Item2, flowExecutionContext: true);
-                    },
-                    new Tuple<Tracker<T>, GCMemoryInfo>(this, info));
-            }
-        }
 
         ~Tracker()
         {
             var memoryInfo = GC.GetGCMemoryInfo();
             if (filter.Test(in memoryInfo))
             {
-                InvokeCallback(in memoryInfo);
+                callback.MemoryInfo = memoryInfo;
+                callback.Enqueue();
             }
             else
             {
