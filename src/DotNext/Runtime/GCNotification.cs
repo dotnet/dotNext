@@ -40,7 +40,7 @@ public abstract partial class GCNotification
     /// <returns>The information about last occurred GC.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="TimeoutException">The notification did not arrive in timely manner.</exception>
-    public ValueTask<GCMemoryInfo> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+    public Task<GCMemoryInfo> WaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
         Task<GCMemoryInfo> result;
 
@@ -58,7 +58,7 @@ public abstract partial class GCNotification
             GC.KeepAlive(tracker);
         }
 
-        return new(result);
+        return result;
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public abstract partial class GCNotification
     /// <param name="token">The token that can be used to cancel the notification.</param>
     /// <returns>The information about last occurred GC.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask<GCMemoryInfo> WaitAsync(CancellationToken token = default)
+    public Task<GCMemoryInfo> WaitAsync(CancellationToken token = default)
         => WaitAsync(InfiniteTimeSpan, token);
 
     /// <summary>
@@ -115,5 +115,23 @@ public abstract partial class GCNotification
             throw new ArgumentOutOfRangeException(nameof(threshold));
 
         return new HeapFragmentationThresholdFilter(threshold);
+    }
+
+    /// <summary>
+    /// Creates a filter that allows to detect managed heap occupation.
+    /// </summary>
+    /// <remarks>
+    /// This filter allows to detect a specific ratio between <see cref="GCMemoryInfo.MemoryLoadBytes"/>
+    /// and <see cref="GCMemoryInfo.HighMemoryLoadThresholdBytes"/>.
+    /// </remarks>
+    /// <param name="threshold">The memory threshold. The memory threshold; must be in range (0, 1].</param>
+    /// <returns>A new filter.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="threshold"/> is invalid.</exception>
+    public static GCNotification MemoryThreshold(double threshold)
+    {
+        if (!double.IsFinite(threshold) || !threshold.IsBetween(0D, 1D, BoundType.RightClosed))
+            throw new ArgumentOutOfRangeException(nameof(threshold));
+
+        return new MemoryThresholdFilter(threshold);
     }
 }

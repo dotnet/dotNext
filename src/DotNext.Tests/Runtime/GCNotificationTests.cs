@@ -15,11 +15,13 @@ namespace DotNext.Runtime
             await task2;
         }
 
-        [Fact]
-        public static void GCHook()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void GCHook(bool continueOnCapturedContext)
         {
             using var mre = new ManualResetEvent(false);
-            using var registration = GCNotification.GCTriggered().Register<ManualResetEvent>(static (mre, info) => mre.Set(), mre);
+            using var registration = GCNotification.GCTriggered().Register<ManualResetEvent>(static (mre, info) => mre.Set(), mre, continueOnCapturedContext);
             GC.Collect(2, GCCollectionMode.Forced);
             mre.WaitOne(DefaultTimeout);
         }
