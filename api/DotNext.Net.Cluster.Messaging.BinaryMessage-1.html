@@ -93,6 +93,9 @@
       <a class="xref" href="DotNext.IO.BinaryTransferObject-1.html#DotNext_IO_BinaryTransferObject_1_Content">BinaryTransferObject&lt;T&gt;.Content</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.IO.BinaryTransferObject-1.html#DotNext_IO_BinaryTransferObject_1_DotNext_ISupplier_T__Invoke">BinaryTransferObject&lt;T&gt;.ISupplier&lt;T&gt;.Invoke()</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.IO.BinaryTransferObject-1.html#DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_IsReusable">BinaryTransferObject&lt;T&gt;.IDataTransferObject.IsReusable</a>
     </div>
     <div>
@@ -133,7 +136,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class BinaryMessage&lt;T&gt; : BinaryTransferObject&lt;T&gt;, IMessage, IDataTransferObject where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public class BinaryMessage&lt;T&gt; : BinaryTransferObject&lt;T&gt;, ISupplier&lt;T&gt;, IMessage, IDataTransferObject where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -158,7 +161,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_BinaryMessage_1__ctor_System_String_System_Net_Mime_ContentType_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.BinaryMessage%601.%23ctor(System.String%2CSystem.Net.Mime.ContentType)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L25">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_BinaryMessage_1__ctor_" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_BinaryMessage_1__ctor_System_String_System_Net_Mime_ContentType_" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.#ctor(System.String,System.Net.Mime.ContentType)">BinaryMessage(String, ContentType)</h4>
@@ -200,7 +203,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_BinaryMessage_1_Reader.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.BinaryMessage%601.Reader%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L19">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_Reader" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.Reader">Reader</h4>
   <div class="markdown level1 summary"><p>Gets the reader of the binary message.</p>
@@ -232,7 +235,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_BinaryMessage_1_Name.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.BinaryMessage%601.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_Name_" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.Name*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_Name" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.Name">Name</h4>
@@ -263,7 +266,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_BinaryMessage_1_Type.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.BinaryMessage%601.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/BinaryMessage.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_Type_" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.Type*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_Type" data-uid="DotNext.Net.Cluster.Messaging.BinaryMessage`1.Type">Type</h4>
@@ -300,6 +303,9 @@
       <a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_CancellationToken_">Messenger.ReadAsTextAsync(IMessage, CancellationToken)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>

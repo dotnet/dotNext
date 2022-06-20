@@ -76,7 +76,7 @@
 <p>.NEXT cluster development suite provides the following features:</p>
 <ol>
 <li>Messaging</li>
-<li><a href="https://en.wikipedia.org/wiki/Gossip_protocol">Rumour spreading</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Gossip_protocol">Rumor spreading</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Replication_(computing)">Replication</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Consensus_(computer_science)">Consensus</a></li>
 <li>Cluster configuration management</li>
@@ -187,7 +187,7 @@ public class TestMessageHandler : MessageHandler
 }
 </code></pre>
 <p>In contrast to <code>MessagingClient</code>, all message types must be registered using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageAttribute-1.html">MessageAttribute&lt;TMessage&gt;</a> attribute declaratively. However, this is not applicable when you constructing the handle using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageHandler.Builder.html">builder</a>.</p>
-<h1 id="rumour-spreading">Rumour Spreading</h1>
+<h1 id="rumor-spreading">Rumor Spreading</h1>
 <p>Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. <a class="xref" href="../../api/DotNext.Net.IPeerMesh.html">IPeerMesh</a> exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbors. This capability is usually called <em>membership protocol</em> for Gossip-based communication. There are few approaches to achieve that:</p>
 <ul>
 <li><a href="https://asc.di.fct.unl.pt/%7Ejleitao/pdf/dsn07-leitao.pdf">HyParView</a> for large-scale peer meshes with hundreds or event thousands of peers</li>
@@ -201,6 +201,8 @@ public class TestMessageHandler : MessageHandler
 <li><a href="https://bartoszsypytkowski.com/make-your-cluster-swim/">Make your cluster SWIM</a></li>
 <li><a href="https://bartoszsypytkowski.com/hyparview/">HyParView: cluster membership that scales</a></li>
 </ul>
+<h2 id="message-ordering">Message Ordering</h2>
+<p><a href="https://en.wikipedia.org/wiki/Lamport_timestamp">Lamport Timestamp</a> is a proven and simple way to preserve message order. In case of rumor spreading, it can be used to skip duplicated messages. <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp.html">RumorTimestamp</a> and <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.html">RumorSpreadingManager</a> types providing a simple framework to organize deduplication of rumor during spreading.</p>
 <h1 id="distributed-consensus">Distributed Consensus</h1>
 <p>Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:</p>
 <ul>

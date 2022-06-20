@@ -78,7 +78,7 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</div>
-    <div><span class="xref">IBinaryFormattable</span>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Buffers.IBinaryFormattable-1.html">IBinaryFormattable</a>&lt;<a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -96,16 +96,50 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_ClusterMemberId_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct ClusterMemberId</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct ClusterMemberId : IBinaryFormattable&lt;ClusterMemberId&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_ClusterMemberId__ctor_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor*"></a>
+  <h4 id="DotNext_Net_Cluster_ClusterMemberId__ctor_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor(DotNext.Buffers.SpanReader{System.Byte}@)">ClusterMemberId(ref SpanReader&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Deserializes the cluster member ID.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ClusterMemberId(ref SpanReader&lt;byte&gt; reader)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.SpanReader-1.html">SpanReader</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The memory block reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_Random_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(Random)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L102">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId__ctor_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId__ctor_Random_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor(Random)">ClusterMemberId(Random)</h4>
@@ -139,7 +173,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId__ctor_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId__ctor_ReadOnlySpan_System_Byte__" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor(ReadOnlySpan{System.Byte})">ClusterMemberId(ReadOnlySpan&lt;Byte&gt;)</h4>
@@ -164,40 +198,6 @@
         <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">bytes</span></td>
         <td><p>The memory block of bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId__ctor_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.%23ctor(SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L116">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_ClusterMemberId__ctor_" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor*"></a>
-  <h4 id="DotNext_Net_Cluster_ClusterMemberId__ctor_SpanReader_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.#ctor(SpanReader{System.Byte}@)">ClusterMemberId(ref SpanReader&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Deserializes the cluster member ID.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ClusterMemberId(ref SpanReader&lt;byte&gt; reader)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">SpanReader</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">reader</span></td>
-        <td><p>The memory block reader.</p>
 </td>
       </tr>
     </tbody>
@@ -242,7 +242,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_Equals_DotNext_Net_Cluster_ClusterMemberId_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.Equals(DotNext.Net.Cluster.ClusterMemberId)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L170">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L161">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_Equals_" data-uid="DotNext.Net.Cluster.ClusterMemberId.Equals*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_Equals_DotNext_Net_Cluster_ClusterMemberId_" data-uid="DotNext.Net.Cluster.ClusterMemberId.Equals(DotNext.Net.Cluster.ClusterMemberId)">Equals(ClusterMemberId)</h4>
@@ -293,7 +293,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L178">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L169">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_Equals_" data-uid="DotNext.Net.Cluster.ClusterMemberId.Equals*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_Equals_System_Object_" data-uid="DotNext.Net.Cluster.ClusterMemberId.Equals(System.Object)">Equals(Object)</h4>
@@ -343,13 +343,13 @@ to another identifier.</p>
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_Format_SpanWriter_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.Format(SpanWriter%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_Format_DotNext_Buffers_SpanWriter_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.Format(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L140">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L131">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_Format_" data-uid="DotNext.Net.Cluster.ClusterMemberId.Format*"></a>
-  <h4 id="DotNext_Net_Cluster_ClusterMemberId_Format_SpanWriter_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.Format(SpanWriter{System.Byte}@)">Format(ref SpanWriter&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Net_Cluster_ClusterMemberId_Format_DotNext_Buffers_SpanWriter_System_Byte___" data-uid="DotNext.Net.Cluster.ClusterMemberId.Format(DotNext.Buffers.SpanWriter{System.Byte}@)">Format(ref SpanWriter&lt;Byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Serializes the value as a sequence of bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -368,7 +368,7 @@ to another identifier.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">SpanWriter</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Buffers.SpanWriter-1.html">SpanWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">writer</span></td>
         <td><p>The memory block writer.</p>
 </td>
@@ -396,7 +396,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_FromEndPoint_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.FromEndPoint(System.Net.EndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L153">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_FromEndPoint_" data-uid="DotNext.Net.Cluster.ClusterMemberId.FromEndPoint*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_FromEndPoint_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.ClusterMemberId.FromEndPoint(System.Net.EndPoint)">FromEndPoint(EndPoint)</h4>
@@ -446,7 +446,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L184">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_GetHashCode_" data-uid="DotNext.Net.Cluster.ClusterMemberId.GetHashCode*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_GetHashCode" data-uid="DotNext.Net.Cluster.ClusterMemberId.GetHashCode">GetHashCode()</h4>
@@ -480,7 +480,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_ToString.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L190">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L181">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_ToString_" data-uid="DotNext.Net.Cluster.ClusterMemberId.ToString*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_ToString" data-uid="DotNext.Net.Cluster.ClusterMemberId.ToString">ToString()</h4>
@@ -514,7 +514,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_TryParse_ReadOnlySpan_System_Char__DotNext_Net_Cluster_ClusterMemberId__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.TryParse(ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Net.Cluster.ClusterMemberId%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L203">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L194">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_TryParse_" data-uid="DotNext.Net.Cluster.ClusterMemberId.TryParse*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_TryParse_ReadOnlySpan_System_Char__DotNext_Net_Cluster_ClusterMemberId__" data-uid="DotNext.Net.Cluster.ClusterMemberId.TryParse(ReadOnlySpan{System.Char},DotNext.Net.Cluster.ClusterMemberId@)">TryParse(ReadOnlySpan&lt;Char&gt;, out ClusterMemberId)</h4>
@@ -570,7 +570,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_TryParse_System_String_DotNext_Net_Cluster_ClusterMemberId__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.TryParse(System.String%2CDotNext.Net.Cluster.ClusterMemberId%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L222">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L213">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_TryParse_" data-uid="DotNext.Net.Cluster.ClusterMemberId.TryParse*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_TryParse_System_String_DotNext_Net_Cluster_ClusterMemberId__" data-uid="DotNext.Net.Cluster.ClusterMemberId.TryParse(System.String,DotNext.Net.Cluster.ClusterMemberId@)">TryParse(String, out ClusterMemberId)</h4>
@@ -628,7 +628,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_op_Equality_DotNext_Net_Cluster_ClusterMemberId__DotNext_Net_Cluster_ClusterMemberId__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.op_Equality(DotNext.Net.Cluster.ClusterMemberId%40%2CDotNext.Net.Cluster.ClusterMemberId%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L231">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L222">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_op_Equality_" data-uid="DotNext.Net.Cluster.ClusterMemberId.op_Equality*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_op_Equality_DotNext_Net_Cluster_ClusterMemberId__DotNext_Net_Cluster_ClusterMemberId__" data-uid="DotNext.Net.Cluster.ClusterMemberId.op_Equality(DotNext.Net.Cluster.ClusterMemberId@,DotNext.Net.Cluster.ClusterMemberId@)">Equality(in ClusterMemberId, in ClusterMemberId)</h4>
@@ -684,7 +684,7 @@ to another identifier.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_ClusterMemberId_op_Inequality_DotNext_Net_Cluster_ClusterMemberId__DotNext_Net_Cluster_ClusterMemberId__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.ClusterMemberId.op_Inequality(DotNext.Net.Cluster.ClusterMemberId%40%2CDotNext.Net.Cluster.ClusterMemberId%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L240">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/ClusterMemberId.cs/#L231">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_ClusterMemberId_op_Inequality_" data-uid="DotNext.Net.Cluster.ClusterMemberId.op_Inequality*"></a>
   <h4 id="DotNext_Net_Cluster_ClusterMemberId_op_Inequality_DotNext_Net_Cluster_ClusterMemberId__DotNext_Net_Cluster_ClusterMemberId__" data-uid="DotNext.Net.Cluster.ClusterMemberId.op_Inequality(DotNext.Net.Cluster.ClusterMemberId@,DotNext.Net.Cluster.ClusterMemberId@)">Inequality(in ClusterMemberId, in ClusterMemberId)</h4>
@@ -740,7 +740,7 @@ to another identifier.</p>
       <span class="xref">IEquatable&lt;&gt;</span>
   </div>
   <div>
-      <span class="xref">IBinaryFormattable&lt;&gt;</span>
+      <a class="xref" href="DotNext.Buffers.IBinaryFormattable-1.html">IBinaryFormattable&lt;TSelf&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

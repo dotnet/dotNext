@@ -121,7 +121,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__1_Action___0____0_" data-uid="DotNext.DelegateHelpers.Bind``1(Action{``0},``0)">Bind&lt;T&gt;(Action&lt;T&gt;, T)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -188,6 +188,80 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__1_DotNext_Predicate___0____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%601(DotNext.Predicate%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Bind.cs/#L170">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
+  <h4 id="DotNext_DelegateHelpers_Bind__1_DotNext_Predicate___0____0_" data-uid="DotNext.DelegateHelpers.Bind``1(DotNext.Predicate{``0},``0)">Bind&lt;T&gt;(Predicate&lt;T&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Func&lt;bool&gt; Bind&lt;T&gt;(this Predicate&lt;T&gt; predicate, T obj)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">predicate</span></td>
+        <td><p>The predicate to bind.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><p>The delegate targeting the specified object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the first parameter to bind.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__2_Action___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%602(Action%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -195,7 +269,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__2_Action___0___1____0_" data-uid="DotNext.DelegateHelpers.Bind``2(Action{``0,``1},``0)">Bind&lt;T1, T2&gt;(Action&lt;T1, T2&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -274,7 +348,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__2_DotNext_Func___0___1____0_" data-uid="DotNext.DelegateHelpers.Bind``2(DotNext.Func{``0,``1},``0)">Bind&lt;T, TResult&gt;(Func&lt;T, TResult&gt;, T)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -353,7 +427,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__3_Action___0___1___2____0_" data-uid="DotNext.DelegateHelpers.Bind``3(Action{``0,``1,``2},``0)">Bind&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -437,7 +511,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__3_DotNext_Func___0___1___2____0_" data-uid="DotNext.DelegateHelpers.Bind``3(DotNext.Func{``0,``1,``2},``0)">Bind&lt;T1, T2, TResult&gt;(Func&lt;T1, T2, TResult&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -521,7 +595,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__4_Action___0___1___2___3____0_" data-uid="DotNext.DelegateHelpers.Bind``4(Action{``0,``1,``2,``3},``0)">Bind&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -610,7 +684,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__4_DotNext_Func___0___1___2___3____0_" data-uid="DotNext.DelegateHelpers.Bind``4(DotNext.Func{``0,``1,``2,``3},``0)">Bind&lt;T1, T2, T3, TResult&gt;(Func&lt;T1, T2, T3, TResult&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -699,7 +773,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__5_Action___0___1___2___3___4____0_" data-uid="DotNext.DelegateHelpers.Bind``5(Action{``0,``1,``2,``3,``4},``0)">Bind&lt;T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -793,7 +867,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__5_DotNext_Func___0___1___2___3___4____0_" data-uid="DotNext.DelegateHelpers.Bind``5(DotNext.Func{``0,``1,``2,``3,``4},``0)">Bind&lt;T1, T2, T3, T4, TResult&gt;(Func&lt;T1, T2, T3, T4, TResult&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -887,7 +961,7 @@
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
   <h4 id="DotNext_DelegateHelpers_Bind__6_DotNext_Func___0___1___2___3___4___5____0_" data-uid="DotNext.DelegateHelpers.Bind``6(DotNext.Func{``0,``1,``2,``3,``4,``5},``0)">Bind&lt;T1, T2, T3, T4, T5, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, TResult&gt;, T1)</h4>
-  <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
+  <div class="markdown level1 summary"><p>Produces a delegate whose first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -4341,7 +4415,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__1_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%601(Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L21">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__1_Action_" data-uid="DotNext.DelegateHelpers.Unbind``1(Action)">Unbind&lt;T&gt;(Action)</h4>
@@ -4406,10 +4480,78 @@ in expression tree.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__1_DotNext_Func_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%601(DotNext.Func%7BSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
+  <h4 id="DotNext_DelegateHelpers_Unbind__1_DotNext_Func_System_Boolean__" data-uid="DotNext.DelegateHelpers.Unbind``1(DotNext.Func{System.Boolean})">Unbind&lt;T&gt;(Func&lt;Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Predicate&lt;T&gt; Unbind&lt;T&gt;(this Func&lt;bool&gt; func)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">func</span></td>
+        <td><p>The delegate to unbind.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><p>Unbound version of the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__2_Action___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%602(Action%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L66">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__2_Action___1__" data-uid="DotNext.DelegateHelpers.Unbind``2(Action{``1})">Unbind&lt;T, TArg&gt;(Action&lt;TArg&gt;)</h4>
@@ -4482,7 +4624,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__2_DotNext_Func___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%602(DotNext.Func%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L41">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__2_DotNext_Func___1__" data-uid="DotNext.DelegateHelpers.Unbind``2(DotNext.Func{``1})">Unbind&lt;T, TResult&gt;(Func&lt;TResult&gt;)</h4>
@@ -4555,7 +4697,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__3_Action___1___2__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%603(Action%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L93">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__3_Action___1___2__" data-uid="DotNext.DelegateHelpers.Unbind``3(Action{``1,``2})">Unbind&lt;T, T1, T2&gt;(Action&lt;T1, T2&gt;)</h4>
@@ -4633,7 +4775,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__3_DotNext_Func___1___2__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%603(DotNext.Func%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L54">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__3_DotNext_Func___1___2__" data-uid="DotNext.DelegateHelpers.Unbind``3(DotNext.Func{``1,``2})">Unbind&lt;T, TArg, TResult&gt;(Func&lt;TArg, TResult&gt;)</h4>
@@ -4711,7 +4853,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__4_Action___1___2___3__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%604(Action%7B%60%601%2C%60%602%2C%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L114">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__4_Action___1___2___3__" data-uid="DotNext.DelegateHelpers.Unbind``4(Action{``1,``2,``3})">Unbind&lt;T, T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;)</h4>
@@ -4794,7 +4936,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__4_DotNext_Func___1___2___3__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%604(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__4_DotNext_Func___1___2___3__" data-uid="DotNext.DelegateHelpers.Unbind``4(DotNext.Func{``1,``2,``3})">Unbind&lt;T, T1, T2, TResult&gt;(Func&lt;T1, T2, TResult&gt;)</h4>
@@ -4877,7 +5019,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__5_Action___1___2___3___4__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%605(Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L153">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L145">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__5_Action___1___2___3___4__" data-uid="DotNext.DelegateHelpers.Unbind``5(Action{``1,``2,``3,``4})">Unbind&lt;T, T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)</h4>
@@ -4965,7 +5107,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__5_DotNext_Func___1___2___3___4__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%605(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L108">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L100">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__5_DotNext_Func___1___2___3___4__" data-uid="DotNext.DelegateHelpers.Unbind``5(DotNext.Func{``1,``2,``3,``4})">Unbind&lt;T, T1, T2, T3, TResult&gt;(Func&lt;T1, T2, T3, TResult&gt;)</h4>
@@ -5053,7 +5195,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__6_Action___1___2___3___4___5__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%606(Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L186">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__6_Action___1___2___3___4___5__" data-uid="DotNext.DelegateHelpers.Unbind``6(Action{``1,``2,``3,``4,``5})">Unbind&lt;T, T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;)</h4>
@@ -5146,7 +5288,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__6_DotNext_Func___1___2___3___4___5__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%606(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L138">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__6_DotNext_Func___1___2___3___4___5__" data-uid="DotNext.DelegateHelpers.Unbind``6(DotNext.Func{``1,``2,``3,``4,``5})">Unbind&lt;T, T1, T2, T3, T4, TResult&gt;(Func&lt;T1, T2, T3, T4, TResult&gt;)</h4>
@@ -5239,7 +5381,7 @@ in expression tree.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__7_DotNext_Func___1___2___3___4___5___6__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%607(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L170">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Unbind.cs/#L162">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
   <h4 id="DotNext_DelegateHelpers_Unbind__7_DotNext_Func___1___2___3___4___5___6__" data-uid="DotNext.DelegateHelpers.Unbind``7(DotNext.Func{``1,``2,``3,``4,``5,``6})">Unbind&lt;T, T1, T2, T3, T4, T5, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, TResult&gt;)</h4>

@@ -91,6 +91,12 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
     </div>
     <div>
@@ -110,6 +116,9 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">Disposable.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
@@ -358,7 +367,7 @@ handle across multiple readers and use dedicated reader in each thread.</p>
   </span>
   <a id="DotNext_IO_FileReader_ReadPosition_" data-uid="DotNext.IO.FileReader.ReadPosition*"></a>
   <h4 id="DotNext_IO_FileReader_ReadPosition" data-uid="DotNext.IO.FileReader.ReadPosition">ReadPosition</h4>
-  <div class="markdown level1 summary"><p>Gets read position within the file.</p>
+  <div class="markdown level1 summary"><p>Gets the read position within the file.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -432,62 +441,6 @@ performs buffered read.</p>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">bytes</span></td>
         <td><p>The number of consumed bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileReader_CopyToAsync_PipeWriter_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync(PipeWriter%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L371">View Source</a>
-  </span>
-  <a id="DotNext_IO_FileReader_CopyToAsync_" data-uid="DotNext.IO.FileReader.CopyToAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_CopyToAsync_PipeWriter_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync(PipeWriter,CancellationToken)">CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyToAsync(PipeWriter output, CancellationToken token = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">PipeWriter</span></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span></td>
-        <td><p>The task representing asynchronous result.</p>
 </td>
       </tr>
     </tbody>
@@ -578,6 +531,62 @@ performs buffered read.</p>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">writer</span></td>
         <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileReader_CopyToAsync_System_IO_Pipelines_PipeWriter_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync(System.IO.Pipelines.PipeWriter%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L371">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileReader_CopyToAsync_" data-uid="DotNext.IO.FileReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_FileReader_CopyToAsync_System_IO_Pipelines_PipeWriter_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync(System.IO.Pipelines.PipeWriter,CancellationToken)">CopyToAsync(PipeWriter, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task CopyToAsync(PipeWriter output, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The writer.</p>
 </td>
       </tr>
       <tr>
@@ -1606,6 +1615,53 @@ implemented by this class.</p>
     <tbody>
       <tr>
         <td><span class="xref">ValueTask</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileReader_DotNext_IO_IAsyncBinaryReader_TryGetRemainingBytesCount_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.DotNext%23IO%23IAsyncBinaryReader%23TryGetRemainingBytesCount(System.Int64%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L458">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileReader_DotNext_IO_IAsyncBinaryReader_TryGetRemainingBytesCount_" data-uid="DotNext.IO.FileReader.DotNext#IO#IAsyncBinaryReader#TryGetRemainingBytesCount*"></a>
+  <h4 id="DotNext_IO_FileReader_DotNext_IO_IAsyncBinaryReader_TryGetRemainingBytesCount_System_Int64__" data-uid="DotNext.IO.FileReader.DotNext#IO#IAsyncBinaryReader#TryGetRemainingBytesCount(System.Int64@)">IAsyncBinaryReader.TryGetRemainingBytesCount(out Int64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>

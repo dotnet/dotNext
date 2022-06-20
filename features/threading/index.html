@@ -142,7 +142,7 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 <p>All synchronization primitives for asynchronous code mostly derive from <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> class that exposes a set of important diagnostics counters:</p>
 <ul>
 <li><code>LockContentionCounter</code> allows to measure a number of lock contentions detected in the specified time period</li>
-<li><code>LockDurationCounter</code> allows to measure amount of time spend by the suspended caller in the suspended state</li>
+<li><code>LockDurationCounter</code> allows to measure the amount of time spend by the suspended caller in the suspended state</li>
 </ul>
 <h1 id="debugging">Debugging</h1>
 <p>In addition to diagnostics tools, <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> and all its derived classes support a rich set of debugging tools:</p>

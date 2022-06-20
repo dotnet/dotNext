@@ -524,86 +524,6 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_PipeWriter_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CPipeWriter%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L95">View Source</a>
-  </span>
-  <a id="DotNext_IO_DataTransferObject_WriteToAsync_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync*"></a>
-  <h4 id="DotNext_IO_DataTransferObject_WriteToAsync__1___0_PipeWriter_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync``1(``0,PipeWriter,CancellationToken)">WriteToAsync&lt;TObject&gt;(TObject, PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the object content to the specified pipe writer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, PipeWriter output, CancellationToken token = null)
-
-    where TObject : IDataTransferObject</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TObject</span></td>
-        <td><span class="parametername">dto</span></td>
-        <td><p>Transfer data object to transform.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">PipeWriter</span></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The pipe writer receiving object content.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">ValueTask</span></td>
-        <td><p>The task representing state of asynchronous execution.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TObject</span></td>
-        <td><p>The type of data transfer object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_Stream_Memory_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CStream%2CMemory%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -812,6 +732,86 @@
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">writer</span></td>
         <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TObject</span></td>
+        <td><p>The type of data transfer object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Pipelines_PipeWriter_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CSystem.IO.Pipelines.PipeWriter%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L95">View Source</a>
+  </span>
+  <a id="DotNext_IO_DataTransferObject_WriteToAsync_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync*"></a>
+  <h4 id="DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Pipelines_PipeWriter_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync``1(``0,System.IO.Pipelines.PipeWriter,CancellationToken)">WriteToAsync&lt;TObject&gt;(TObject, PipeWriter, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies the object content to the specified pipe writer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, PipeWriter output, CancellationToken token = null)
+
+    where TObject : IDataTransferObject</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TObject</span></td>
+        <td><span class="parametername">dto</span></td>
+        <td><p>Transfer data object to transform.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The pipe writer receiving object content.</p>
 </td>
       </tr>
       <tr>

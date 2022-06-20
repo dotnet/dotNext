@@ -78,8 +78,9 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a></div>
-    <div class="level2"><span class="xref">MemoryBasedStateMachine</span></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a></div>
+    <div class="level3"><span class="xref">MemoryBasedStateMachine</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
@@ -138,7 +139,7 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_CancellationToken_">PersistentState.EnsureConsistencyAsync(CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_System_Nullable_DotNext_Net_Cluster_ClusterMemberId___">PersistentState.IPersistentState.IsVotedFor(Nullable&lt;ClusterMemberId&gt;)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_DotNext_Net_Cluster_ClusterMemberId__">PersistentState.IPersistentState.IsVotedFor(ClusterMemberId)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Term">PersistentState.Term</a>
@@ -150,7 +151,7 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_">PersistentState.IPersistentState.UpdateTermAsync(Int64, Boolean)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_System_Nullable_DotNext_Net_Cluster_ClusterMemberId__">PersistentState.IPersistentState.UpdateVotedForAsync(Nullable&lt;ClusterMemberId&gt;)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_DotNext_Net_Cluster_ClusterMemberId_">PersistentState.IPersistentState.UpdateVotedForAsync(ClusterMemberId)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateJsonLogEntry__1___0_System_String_System_Text_Json_JsonSerializerOptions_">PersistentState.CreateJsonLogEntry&lt;T&gt;(T, String, JsonSerializerOptions)</a>
@@ -163,6 +164,54 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastUncommittedEntryIndex">PersistentState.LastUncommittedEntryIndex</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
+    </div>
+    <div>
+      <span class="xref">DotNext.Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;&gt;)</span>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">Disposable.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <span class="xref">DotNext.Disposable.Dispose(IEnumerable&lt;&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">DotNext.Disposable.DisposeAsync(IEnumerable&lt;&gt;)</span>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Nullable_IDisposable____">Disposable.Dispose(Nullable&lt;IDisposable&gt;[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____">Disposable.DisposeAsync(Nullable&lt;IAsyncDisposable&gt;[])</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a></h6>

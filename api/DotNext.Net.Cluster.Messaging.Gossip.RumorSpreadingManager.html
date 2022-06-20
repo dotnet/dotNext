@@ -1,0 +1,489 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RumorSpreadingManager
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RumorSpreadingManager
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.59.2.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager">
+  
+  
+  <h1 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager" class="text-break">Class RumorSpreadingManager
+  </h1>
+  <div class="markdown level0 summary"><p>Represents a helper that allows to control spreading of the rumor (send/receive)
+using Lamport timestamps.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">RumorSpreadingManager</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.html">DotNext.Net.Cluster.Messaging.Gossip</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h5 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class RumorSpreadingManager</code></pre>
+  </div>
+  <h5 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Any instance members of this class are thread-safe.
+This class helps to organize rumour spreading across peers in the network.
+When the peer acts as a source of the rumour (sender), it should call <a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.html#DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_Tick">Tick()</a>
+method to obtain a Lamport timestamp for the message. Then it attaches the address
+of the local peer to the rumour. Receiver calls
+<a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.html#DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_CheckOrder_System_Net_EndPoint_DotNext_Net_Cluster_Messaging_Gossip_RumorTimestamp__">CheckOrder(EndPoint, in RumorTimestamp)</a> method
+to check the message order correctness. If the method returns <span class="xref">true</span>
+the receiver processes the message and retransmits it to other peers using the algorithm
+described for the sender (original address and id remain intact).
+If the method returns <span class="xref">false</span> then the receiver must skip the message
+and prevent its retransmission.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager__ctor_System_Nullable_IEqualityComparer_System_Net_EndPoint___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.%23ctor(System.Nullable%7BIEqualityComparer%7BSystem.Net.EndPoint%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Gossip/RumorSpreadingManager.cs/#L32">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager__ctor_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.#ctor*"></a>
+  <h4 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager__ctor_System_Nullable_IEqualityComparer_System_Net_EndPoint___" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.#ctor(System.Nullable{IEqualityComparer{System.Net.EndPoint}})">RumorSpreadingManager(Nullable&lt;IEqualityComparer&lt;EndPoint&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new manager.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RumorSpreadingManager(IEqualityComparer&lt;EndPoint&gt;? addressComparer = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">IEqualityComparer</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a>&gt;&gt;</td>
+        <td><span class="parametername">addressComparer</span></td>
+        <td><p>The peer comparison algorithm.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_CheckOrder_System_Net_EndPoint_DotNext_Net_Cluster_Messaging_Gossip_RumorTimestamp__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.CheckOrder(System.Net.EndPoint%2CDotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Gossip/RumorSpreadingManager.cs/#L57">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_CheckOrder_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.CheckOrder*"></a>
+  <h4 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_CheckOrder_System_Net_EndPoint_DotNext_Net_Cluster_Messaging_Gossip_RumorTimestamp__" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.CheckOrder(System.Net.EndPoint,DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp@)">CheckOrder(EndPoint, in RumorTimestamp)</h4>
+  <div class="markdown level1 summary"><p>Checks whether the received rumour should be processed by the local peer
+and retransmitted to other peers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CheckOrder(EndPoint origin, in RumorTimestamp timestamp)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a></td>
+        <td><span class="parametername">origin</span></td>
+        <td><p>The address of the sender.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp.html">RumorTimestamp</a></td>
+        <td><span class="parametername">timestamp</span></td>
+        <td><p>The rumor timestamp.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the message is allowed for processing;
+<span class="xref">false</span> if the message must be skipped.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_Tick.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.Tick%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Gossip/RumorSpreadingManager.cs/#L45">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_Tick_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.Tick*"></a>
+  <h4 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_Tick" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.Tick">Tick()</h4>
+  <div class="markdown level1 summary"><p>Advances the logical timer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RumorTimestamp Tick()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp.html">RumorTimestamp</a></td>
+        <td><p>The monotonically increased local timer value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_Tick_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method is typically called by the source of the rumour.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryDisableControl_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.TryDisableControl(System.Net.EndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Gossip/RumorSpreadingManager.cs/#L93">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryDisableControl_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.TryDisableControl*"></a>
+  <h4 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryDisableControl_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.TryDisableControl(System.Net.EndPoint)">TryDisableControl(EndPoint)</h4>
+  <div class="markdown level1 summary"><p>Attempts to disable message order control for the specified peer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryDisableControl(EndPoint peerAddress)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a></td>
+        <td><span class="parametername">peerAddress</span></td>
+        <td><p>The address of the peer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the tracking for the specified endpoint disabled successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryDisableControl_System_Net_EndPoint__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can be used as a reaction on <a class="xref" href="DotNext.Net.IPeerMesh.html#DotNext_Net_IPeerMesh_PeerGone">PeerGone</a> event.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryEnableControl_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.TryEnableControl(System.Net.EndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Gossip/RumorSpreadingManager.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryEnableControl_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.TryEnableControl*"></a>
+  <h4 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryEnableControl_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.TryEnableControl(System.Net.EndPoint)">TryEnableControl(EndPoint)</h4>
+  <div class="markdown level1 summary"><p>Attempts to enable message order control for the specified peer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryEnableControl(EndPoint peerAddress)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a></td>
+        <td><span class="parametername">peerAddress</span></td>
+        <td><p>The address of the peer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the peer is added to this manager successfully;
+<span class="xref">false</span> if the peer is already tracking by this manager.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_TryEnableControl_System_Net_EndPoint__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Without calling of this method, <a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager.html#DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager_CheckOrder_System_Net_EndPoint_DotNext_Net_Cluster_Messaging_Gossip_RumorTimestamp__">CheckOrder(EndPoint, in RumorTimestamp)</a> rejects any message
+from the particular sender.
+This method can be used as a reaction on <a class="xref" href="DotNext.Net.IPeerMesh.html#DotNext_Net_IPeerMesh_PeerDiscovered">PeerDiscovered</a> event.</p>
+</div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Gossip_RumorSpreadingManager.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Gossip/RumorSpreadingManager.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

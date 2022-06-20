@@ -94,6 +94,12 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
     </div>
     <div>
@@ -113,6 +119,9 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">Disposable.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
@@ -410,62 +419,6 @@ performs buffered write.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_CopyFromAsync_PipeReader_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.CopyFromAsync(PipeReader%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L302">View Source</a>
-  </span>
-  <a id="DotNext_IO_FileWriter_CopyFromAsync_" data-uid="DotNext.IO.FileWriter.CopyFromAsync*"></a>
-  <h4 id="DotNext_IO_FileWriter_CopyFromAsync_PipeReader_CancellationToken_" data-uid="DotNext.IO.FileWriter.CopyFromAsync(PipeReader,CancellationToken)">CopyFromAsync(PipeReader, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Writes the content from the specified pipe.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyFromAsync(PipeReader input, CancellationToken token = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">PipeReader</span></td>
-        <td><span class="parametername">input</span></td>
-        <td><p>The pipe to read from.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span></td>
-        <td><p>The task representing state of asynchronous execution.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_CopyFromAsync_Stream_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.CopyFromAsync(Stream%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -494,6 +447,62 @@ performs buffered write.</p>
         <td><span class="xref">Stream</span></td>
         <td><span class="parametername">input</span></td>
         <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileWriter_CopyFromAsync_System_IO_Pipelines_PipeReader_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileWriter.CopyFromAsync(System.IO.Pipelines.PipeReader%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileWriter.Binary.cs/#L302">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileWriter_CopyFromAsync_" data-uid="DotNext.IO.FileWriter.CopyFromAsync*"></a>
+  <h4 id="DotNext_IO_FileWriter_CopyFromAsync_System_IO_Pipelines_PipeReader_CancellationToken_" data-uid="DotNext.IO.FileWriter.CopyFromAsync(System.IO.Pipelines.PipeReader,CancellationToken)">CopyFromAsync(PipeReader, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Writes the content from the specified pipe.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task CopyFromAsync(PipeReader input, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipereader">PipeReader</a></td>
+        <td><span class="parametername">input</span></td>
+        <td><p>The pipe to read from.</p>
 </td>
       </tr>
       <tr>

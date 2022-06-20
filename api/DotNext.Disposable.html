@@ -86,6 +86,14 @@
       <div class="level2"><a class="xref" href="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html">ReadOnlySequenceAccessor</a></div>
       <div class="level2"><a class="xref" href="DotNext.IO.MemoryTransferObject.html">MemoryTransferObject</a></div>
       <div class="level2"><a class="xref" href="DotNext.IO.StreamTransferObject.html">StreamTransferObject</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.html">ConsensusOnlyState</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationStorage-1.html">ClusterConfigurationStorage&lt;TAddress&gt;</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilder.html">MemoryBasedStateMachine.SnapshotBuilder</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html">RaftClusterMember</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a></div>
       <div class="level2"><a class="xref" href="DotNext.Runtime.CompilerServices.ValueTupleBuilder.html">ValueTupleBuilder</a></div>
       <div class="level2"><a class="xref" href="DotNext.Threading.AsyncBarrier.html">AsyncBarrier</a></div>
       <div class="level2"><a class="xref" href="DotNext.Threading.AsyncExchanger-1.html">AsyncExchanger&lt;T&gt;</a></div>
@@ -104,7 +112,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_DisposedTask.md&amp;value=---%0Auid%3A%20DotNext.Disposable.DisposedTask%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L59">View Source</a>
   </span>
   <a id="DotNext_Disposable_DisposedTask_" data-uid="DotNext.Disposable.DisposedTask*"></a>
   <h4 id="DotNext_Disposable_DisposedTask" data-uid="DotNext.Disposable.DisposedTask">DisposedTask</h4>
@@ -135,7 +143,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_IsDisposed.md&amp;value=---%0Auid%3A%20DotNext.Disposable.IsDisposed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L21">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Disposable_IsDisposed_" data-uid="DotNext.Disposable.IsDisposed*"></a>
   <h4 id="DotNext_Disposable_IsDisposed" data-uid="DotNext.Disposable.IsDisposed">IsDisposed</h4>
@@ -161,6 +169,68 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_IsDisposing.md&amp;value=---%0Auid%3A%20DotNext.Disposable.IsDisposing%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L31">View Source</a>
+  </span>
+  <a id="DotNext_Disposable_IsDisposing_" data-uid="DotNext.Disposable.IsDisposing*"></a>
+  <h4 id="DotNext_Disposable_IsDisposing" data-uid="DotNext.Disposable.IsDisposing">IsDisposing</h4>
+  <div class="markdown level1 summary"><p>Indicates that <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">DisposeAsync()</a> is called but not yet completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected bool IsDisposing { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_IsDisposingOrDisposed.md&amp;value=---%0Auid%3A%20DotNext.Disposable.IsDisposingOrDisposed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L37">View Source</a>
+  </span>
+  <a id="DotNext_Disposable_IsDisposingOrDisposed_" data-uid="DotNext.Disposable.IsDisposingOrDisposed*"></a>
+  <h4 id="DotNext_Disposable_IsDisposingOrDisposed" data-uid="DotNext.Disposable.IsDisposingOrDisposed">IsDisposingOrDisposed</h4>
+  <div class="markdown level1 summary"><p>Indicates that <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">DisposeAsync()</a> is called.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected bool IsDisposingOrDisposed { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
@@ -168,7 +238,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Disposable.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L109">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L140">View Source</a>
   </span>
   <a id="DotNext_Disposable_Dispose_" data-uid="DotNext.Disposable.Dispose*"></a>
   <h4 id="DotNext_Disposable_Dispose" data-uid="DotNext.Disposable.Dispose">Dispose()</h4>
@@ -184,7 +254,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_Dispose_IEnumerable_System_Nullable_IDisposable___.md&amp;value=---%0Auid%3A%20DotNext.Disposable.Dispose(IEnumerable%7BSystem.Nullable%7BIDisposable%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L119">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Disposable_Dispose_" data-uid="DotNext.Disposable.Dispose*"></a>
   <h4 id="DotNext_Disposable_Dispose_IEnumerable_System_Nullable_IDisposable___" data-uid="DotNext.Disposable.Dispose(IEnumerable{System.Nullable{IDisposable}})">Dispose(IEnumerable&lt;Nullable&lt;IDisposable&gt;&gt;)</h4>
@@ -218,7 +288,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Disposable.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Disposable_Dispose_" data-uid="DotNext.Disposable.Dispose*"></a>
   <h4 id="DotNext_Disposable_Dispose_System_Boolean_" data-uid="DotNext.Disposable.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -252,7 +322,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_Dispose_System_Nullable_IDisposable____.md&amp;value=---%0Auid%3A%20DotNext.Disposable.Dispose(System.Nullable%7BIDisposable%7D%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L143">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_Disposable_Dispose_" data-uid="DotNext.Disposable.Dispose*"></a>
   <h4 id="DotNext_Disposable_Dispose_System_Nullable_IDisposable____" data-uid="DotNext.Disposable.Dispose(System.Nullable{IDisposable}[])">Dispose(Nullable&lt;IDisposable&gt;[])</h4>
@@ -286,7 +356,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Disposable.DisposeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L122">View Source</a>
   </span>
   <a id="DotNext_Disposable_DisposeAsync_" data-uid="DotNext.Disposable.DisposeAsync*"></a>
   <h4 id="DotNext_Disposable_DisposeAsync" data-uid="DotNext.Disposable.DisposeAsync">DisposeAsync()</h4>
@@ -322,7 +392,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_DisposeAsync_IEnumerable_System_Nullable_IAsyncDisposable___.md&amp;value=---%0Auid%3A%20DotNext.Disposable.DisposeAsync(IEnumerable%7BSystem.Nullable%7BIAsyncDisposable%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L130">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L162">View Source</a>
   </span>
   <a id="DotNext_Disposable_DisposeAsync_" data-uid="DotNext.Disposable.DisposeAsync*"></a>
   <h4 id="DotNext_Disposable_DisposeAsync_IEnumerable_System_Nullable_IAsyncDisposable___" data-uid="DotNext.Disposable.DisposeAsync(IEnumerable{System.Nullable{IAsyncDisposable}})">DisposeAsync(IEnumerable&lt;Nullable&lt;IAsyncDisposable&gt;&gt;)</h4>
@@ -372,7 +442,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____.md&amp;value=---%0Auid%3A%20DotNext.Disposable.DisposeAsync(System.Nullable%7BIAsyncDisposable%7D%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L154">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L186">View Source</a>
   </span>
   <a id="DotNext_Disposable_DisposeAsync_" data-uid="DotNext.Disposable.DisposeAsync*"></a>
   <h4 id="DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____" data-uid="DotNext.Disposable.DisposeAsync(System.Nullable{IAsyncDisposable}[])">DisposeAsync(Nullable&lt;IAsyncDisposable&gt;[])</h4>
@@ -422,7 +492,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Disposable.DisposeAsyncCore%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Disposable_DisposeAsyncCore_" data-uid="DotNext.Disposable.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Disposable_DisposeAsyncCore" data-uid="DotNext.Disposable.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -457,7 +527,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_Finalize.md&amp;value=---%0Auid%3A%20DotNext.Disposable.Finalize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L160">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L192">View Source</a>
   </span>
   <a id="DotNext_Disposable_Finalize_" data-uid="DotNext.Disposable.Finalize*"></a>
   <h4 id="DotNext_Disposable_Finalize" data-uid="DotNext.Disposable.Finalize">Finalize()</h4>
@@ -473,7 +543,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_GetDisposedTask__1.md&amp;value=---%0Auid%3A%20DotNext.Disposable.GetDisposedTask%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L50">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L67">View Source</a>
   </span>
   <a id="DotNext_Disposable_GetDisposedTask_" data-uid="DotNext.Disposable.GetDisposedTask*"></a>
   <h4 id="DotNext_Disposable_GetDisposedTask__1" data-uid="DotNext.Disposable.GetDisposedTask``1">GetDisposedTask&lt;T&gt;()</h4>
@@ -521,7 +591,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_ThrowIfDisposed.md&amp;value=---%0Auid%3A%20DotNext.Disposable.ThrowIfDisposed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_Disposable_ThrowIfDisposed_" data-uid="DotNext.Disposable.ThrowIfDisposed*"></a>
   <h4 id="DotNext_Disposable_ThrowIfDisposed" data-uid="DotNext.Disposable.ThrowIfDisposed">ThrowIfDisposed()</h4>
@@ -534,10 +604,42 @@ can be trivially implemented through delegation of the call to this method.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_TryBeginDispose.md&amp;value=---%0Auid%3A%20DotNext.Disposable.TryBeginDispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L133">View Source</a>
+  </span>
+  <a id="DotNext_Disposable_TryBeginDispose_" data-uid="DotNext.Disposable.TryBeginDispose*"></a>
+  <h4 id="DotNext_Disposable_TryBeginDispose" data-uid="DotNext.Disposable.TryBeginDispose">TryBeginDispose()</h4>
+  <div class="markdown level1 summary"><p>Starts disposing this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected bool TryBeginDispose()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if cleanup operations can be performed; <span class="xref">false</span> if the object is already disposing.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_.md&amp;value=---%0Auid%3A%20DotNext.Disposable.TrySetDisposedException(TaskCompletionSource)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Disposable_TrySetDisposedException_" data-uid="DotNext.Disposable.TrySetDisposedException*"></a>
   <h4 id="DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_" data-uid="DotNext.Disposable.TrySetDisposedException(TaskCompletionSource)">TrySetDisposedException(TaskCompletionSource)</h4>
@@ -587,7 +689,7 @@ can be trivially implemented through delegation of the call to this method.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable_TrySetDisposedException__1_TaskCompletionSource___0__.md&amp;value=---%0Auid%3A%20DotNext.Disposable.TrySetDisposedException%60%601(TaskCompletionSource%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L59">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_Disposable_TrySetDisposedException_" data-uid="DotNext.Disposable.TrySetDisposedException*"></a>
   <h4 id="DotNext_Disposable_TrySetDisposedException__1_TaskCompletionSource___0__" data-uid="DotNext.Disposable.TrySetDisposedException``1(TaskCompletionSource{``0})">TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</h4>
@@ -715,7 +817,7 @@ can be trivially implemented through delegation of the call to this method.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Disposable.md&amp;value=---%0Auid%3A%20DotNext.Disposable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Disposable.cs/#L15" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

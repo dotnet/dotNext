@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>GC Notifications | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="GC Notifications | .NEXT ">
+    <meta name="generator" content="docfx 2.59.2.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="gc-notifications">GC Notifications</h1>
+
+<p>.NET BCL provides <a href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/notifications">API</a> for receiving notifications from GC. It has the following disadvantages:</p>
+<ol>
+<li>It is blocking API</li>
+<li>It allows to receive notifications from full blocking GC only</li>
+</ol>
+<p><a class="xref" href="../../api/DotNext.Runtime.GCNotification.html">GCNotification</a> from .NEXT library class exposes a way to receive GC notifications asynchronously.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Garbage Collection Notifications API from .NET provides ability to wait for GC approach and GC completion. GC Asynchronous Notifications from .NEXT library can be received only asynchronously after beginning of GC.</p>
+</div>
+<p><strong>GC Asynchronous Notifications</strong> are asynchronous by nature. When actual GC occurs, the infrastructure schedules the notification using .NET Thread Pool for further delivery to the receiver. As a result, the delay between sending and receiving notification is possible.</p>
+<p><a class="xref" href="../../api/DotNext.Runtime.GCNotification.html">GCNotification</a> class allows to receive the notification in the following ways:</p>
+<ul>
+<li>Through registered callback</li>
+<li>Using <strong>await</strong> operator</li>
+</ul>
+<p>The following example demonstrates detection of a single GC occurred in the process:</p>
+<pre><code class="lang-csharp">using System;
+using System.Threading;
+using DotNext.Runtime;
+
+GCMemoryInfo info = await GCNOtification.GCTriggered().WaitAsync(CancellationToken.None);
+Console.WriteLine(&quot;GC occurred&quot;);
+</code></pre>
+<p>The notification object carries information about the triggered GC in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.gcmemoryinfo">GCMemoryInfo</a> value type.</p>
+<p>GC Notifications can be combined using logical operators: AND, OR, NOT, XOR:</p>
+<pre><code class="lang-csharp">using System;
+using System.Threading;
+using DotNext.Runtime;
+
+// detect GC for generation 0 or 1, but not for 2
+GCMemoryInfo info = await (!GCNOtification.GCTriggered(2)).WaitAsync(CancellationToken.None);
+Console.WriteLine(&quot;GC occurred&quot;);
+</code></pre>
+<p><a class="xref" href="../../api/DotNext.Runtime.GCNotification.html">GCNotification</a> provides a rich set of predefined filters to capture various GC events. For instance, it is possible to detect GC memory pressure:</p>
+<pre><code class="lang-csharp">using System;
+using System.Threading;
+using DotNext.Runtime;
+
+// detect 80% memory occupation (GC after cleanup has less than 20% of free memory)
+using GCNotification.Registration reg = GCNotification.MemoryThreshold(0.8).Register(GCCallback, &quot;Memory pressure detected&quot;);
+GC.Collect();
+
+static void GCCallback(string message, GCMemoryInfo info)
+    =&gt; Console.WriteLine(message);
+</code></pre>
+<p>The primary consumers of a new API are object pools, buffers, in-memory caches, connection pools. For instance, on high memory pressure you can drain in-memory cache.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/core/gcnotif.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

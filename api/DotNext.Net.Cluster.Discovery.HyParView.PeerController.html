@@ -79,12 +79,58 @@ protocol for Gossip-based broadcast.</p>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">PeerController</span></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><span class="xref">PeerController</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Net.IPeerMesh.html">IPeerMesh</a></div>
     <div><span class="xref">IAsyncDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
+    </div>
+    <div>
+      <span class="xref">DotNext.Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;&gt;)</span>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <span class="xref">DotNext.Disposable.Dispose(IEnumerable&lt;&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">DotNext.Disposable.DisposeAsync(IEnumerable&lt;&gt;)</span>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Nullable_IDisposable____">Disposable.Dispose(Nullable&lt;IDisposable&gt;[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____">Disposable.DisposeAsync(Nullable&lt;IAsyncDisposable&gt;[])</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Discovery.HyParView.html">DotNext.Net.Cluster.Discovery.HyParView</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
@@ -196,7 +242,7 @@ protocol for Gossip-based broadcast.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ILogger</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger">ILogger</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -239,7 +285,7 @@ protocol for Gossip-based broadcast.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.Destroy(System.Net.EndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L235">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L246">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Destroy*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Destroy(System.Net.EndPoint)">Destroy(EndPoint)</h4>
@@ -276,7 +322,7 @@ protocol for Gossip-based broadcast.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DestroyAsync(System.Net.EndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L226">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L237">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DestroyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DestroyAsync(System.Net.EndPoint)">DestroyAsync(EndPoint)</h4>
@@ -445,7 +491,7 @@ protocol for Gossip-based broadcast.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L389">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L400">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Dispose_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -472,12 +518,14 @@ protocol for Gossip-based broadcast.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(Boolean)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L429">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L440">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsync" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsync">DisposeAsync()</h4>
@@ -507,7 +555,7 @@ protocol for Gossip-based broadcast.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsyncCore%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L411">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L422">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -532,15 +580,17 @@ protocol for Gossip-based broadcast.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_Func_DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_Cluster_Messaging_Gossip_IRumorSender__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync(Func%7BDotNext.Net.Cluster.Discovery.HyParView.PeerController%2CDotNext.Net.Cluster.Messaging.Gossip.IRumorSender%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_DotNext_Func_DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_Cluster_Messaging_Gossip_IRumorSender__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync(DotNext.Func%7BDotNext.Net.Cluster.Discovery.HyParView.PeerController%2CDotNext.Net.Cluster.Messaging.Gossip.IRumorSender%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs/#L18">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_Func_DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_Cluster_Messaging_Gossip_IRumorSender__CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync(Func{DotNext.Net.Cluster.Discovery.HyParView.PeerController,DotNext.Net.Cluster.Messaging.Gossip.IRumorSender},CancellationToken)">EnqueueBroadcastAsync(Func&lt;PeerController, IRumorSender&gt;, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_DotNext_Func_DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_Cluster_Messaging_Gossip_IRumorSender__CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync(DotNext.Func{DotNext.Net.Cluster.Discovery.HyParView.PeerController,DotNext.Net.Cluster.Messaging.Gossip.IRumorSender},CancellationToken)">EnqueueBroadcastAsync(Func&lt;PeerController, IRumorSender&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Spreads the rumor across neighbors.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -559,7 +609,7 @@ protocol for Gossip-based broadcast.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Func</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a>, <a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.IRumorSender.html">IRumorSender</a>&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Discovery.HyParView.PeerController.html">PeerController</a>, <a class="xref" href="DotNext.Net.Cluster.Messaging.Gossip.IRumorSender.html">IRumorSender</a>&gt;</td>
         <td><span class="parametername">senderFactory</span></td>
         <td><p>The rumour sender factory.</p>
 </td>
@@ -1094,7 +1144,7 @@ protocol for Gossip-based broadcast.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_IsLocalNode_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.IsLocalNode(System.Net.EndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L305">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_IsLocalNode_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.IsLocalNode*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_IsLocalNode_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.IsLocalNode(System.Net.EndPoint)">IsLocalNode(EndPoint)</h4>
@@ -1552,7 +1602,7 @@ or <span class="xref">null</span> if the current peer is the sender of the messa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_StopAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.StopAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L341">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L352">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_StopAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.StopAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_StopAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.StopAsync(CancellationToken)">StopAsync(CancellationToken)</h4>
@@ -1604,7 +1654,7 @@ or <span class="xref">null</span> if the current peer is the sender of the messa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerDiscovered.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerDiscovered%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L280">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L291">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerDiscovered" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerDiscovered">PeerDiscovered</h4>
   <div class="markdown level1 summary"><p>An event raised when a new remote peer has been discovered.</p>
@@ -1634,7 +1684,7 @@ or <span class="xref">null</span> if the current peer is the sender of the messa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerGone.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerGone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L198">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L209">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerGone" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerGone">PeerGone</h4>
   <div class="markdown level1 summary"><p>An event raised when the visible neighbor becomes unavailable.</p>
@@ -1666,7 +1716,7 @@ or <span class="xref">null</span> if the current peer is the sender of the messa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_IPeerMesh_PeerDiscovered.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DotNext%23Net%23IPeerMesh%23PeerDiscovered%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L287">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L298">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_IPeerMesh_PeerDiscovered" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DotNext#Net#IPeerMesh#PeerDiscovered">IPeerMesh.PeerDiscovered</h4>
   <div class="markdown level1 summary"></div>
@@ -1695,7 +1745,7 @@ or <span class="xref">null</span> if the current peer is the sender of the messa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_IPeerMesh_PeerGone.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DotNext%23Net%23IPeerMesh%23PeerGone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L205">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L216">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_IPeerMesh_PeerGone" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DotNext#Net#IPeerMesh#PeerGone">IPeerMesh.PeerGone</h4>
   <div class="markdown level1 summary"></div>

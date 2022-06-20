@@ -207,6 +207,39 @@ unmanaged memory.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_IUnmanagedMemoryOwner_1_SupportsReallocation.md&amp;value=---%0Auid%3A%20DotNext.Buffers.IUnmanagedMemoryOwner%601.SupportsReallocation%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/IUnmanagedMemoryOwner.cs/#L30">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_IUnmanagedMemoryOwner_1_SupportsReallocation_" data-uid="DotNext.Buffers.IUnmanagedMemoryOwner`1.SupportsReallocation*"></a>
+  <h4 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_SupportsReallocation" data-uid="DotNext.Buffers.IUnmanagedMemoryOwner`1.SupportsReallocation">SupportsReallocation</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that the referenced memory can be reallocated.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual bool SupportsReallocation { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
@@ -214,7 +247,7 @@ unmanaged memory.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_IUnmanagedMemoryOwner_1_Reallocate_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.IUnmanagedMemoryOwner%601.Reallocate(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/IUnmanagedMemoryOwner.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/IUnmanagedMemoryOwner.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Buffers_IUnmanagedMemoryOwner_1_Reallocate_" data-uid="DotNext.Buffers.IUnmanagedMemoryOwner`1.Reallocate*"></a>
   <h4 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_Reallocate_System_Int32_" data-uid="DotNext.Buffers.IUnmanagedMemoryOwner`1.Reallocate(System.Int32)">Reallocate(Int32)</h4>
@@ -246,6 +279,10 @@ unmanaged memory.</p>
   <h5 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_Reallocate_System_Int32__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method is dangerous becase it invalidates all buffers returned by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory#system-buffers-imemoryowner-1-memory">Memory</a> property.</p>
 </div>
+  <h5 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_Reallocate_System_Int32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Buffers.IUnmanagedMemoryOwner-1.html#DotNext_Buffers_IUnmanagedMemoryOwner_1_SupportsReallocation">SupportsReallocation</a></div>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
