@@ -77,6 +77,7 @@ Release Date: 06-12-2022
 <a href="https://www.nuget.org/packages/dotnext.io/4.6.0">DotNext.IO 4.6.0</a>
 * Minor performance improvements of [FileReader](https://dotnet.github.io/dotNext/api/DotNext.IO.FileReader.html) data type
 * Reduced memory allocation caused by asynchronous string decoding methods
+* Added `IAsyncBinaryReader.TryGetRemainingBytesCount` method that allows to preallocate buffers
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.0">DotNext.Net.Cluster 4.6.0</a>

@@ -147,6 +147,9 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
         return false;
     }
 
+    long? IAsyncBinaryReader.TryGetRemainingBytesCount()
+        => stream.CanSeek ? Math.Max(0L, stream.Length - stream.Position) : null;
+
     #endregion
 
     #region Writer

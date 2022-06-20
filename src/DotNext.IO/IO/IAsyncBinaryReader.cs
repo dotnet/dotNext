@@ -428,6 +428,12 @@ public interface IAsyncBinaryReader
     }
 
     /// <summary>
+    /// Attempts to get the number of bytes available for read.
+    /// </summary>
+    /// <returns>The number of bytes available for read.</returns>
+    long? TryGetRemainingBytesCount() => null;
+
+    /// <summary>
     /// Creates default implementation of binary reader for the stream.
     /// </summary>
     /// <remarks>
