@@ -839,8 +839,11 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc />
-    readonly long? IAsyncBinaryReader.TryGetRemainingBytesCount()
-        => sequence.Length - sequence.GetOffset(position);
+    readonly bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
+    {
+        count = sequence.Length - sequence.GetOffset(position);
+        return true;
+    }
 
     /// <inheritdoc/>
     public readonly override string ToString() => RemainingSequence.ToString();

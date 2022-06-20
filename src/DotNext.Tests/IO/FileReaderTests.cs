@@ -13,13 +13,21 @@ namespace DotNext.IO
             using var reader = new FileReader(handle);
             False(reader.HasBufferedData);
             True(reader.Buffer.IsEmpty);
+            True(reader.As<IAsyncBinaryReader>().TryGetRemainingBytesCount(out var remainingCount));
+            Equal(0L, remainingCount);
 
             var expected = RandomBytes(512);
             await RandomAccess.WriteAsync(handle, expected, 0L);
 
             True(await reader.ReadAsync());
+            Equal(0L, reader.FilePosition);
+            Equal(expected.Length, reader.ReadPosition);
+            Throws<InvalidOperationException>(() => reader.FilePosition = 10L);
+            Throws<ArgumentOutOfRangeException>(() => reader.FilePosition = -10L);
             True(reader.HasBufferedData);
             False(reader.Buffer.IsEmpty);
+            True(reader.As<IAsyncBinaryReader>().TryGetRemainingBytesCount(out remainingCount));
+            Equal(expected.Length, remainingCount);
 
             Equal(expected, reader.Buffer.ToArray());
         }
