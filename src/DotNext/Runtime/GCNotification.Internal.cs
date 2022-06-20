@@ -1,5 +1,5 @@
-using Debug = System.Diagnostics.Debug;
 using System.Runtime.CompilerServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime;
 

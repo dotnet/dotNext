@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    [ExcludeFromCodeCoverage]
     internal class LeaderChangedEvent
     {
         private TaskCompletionSource<IClusterMember> source = new(TaskCreationOptions.RunContinuationsAsynchronously);

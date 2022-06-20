@@ -16,6 +16,12 @@
 					</CodeCoverage>
 				</Configuration>
 			</DataCollector>
+			<DataCollector friendlyName="XPlat Code Coverage">
+				<Configuration>
+				<Format>lcov</Format>          
+				<ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+				</Configuration>
+			</DataCollector>
 		</DataCollectors>
 	</DataCollectionRunSettings>
 </RunSettings>

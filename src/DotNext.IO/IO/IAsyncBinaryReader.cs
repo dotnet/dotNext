@@ -428,6 +428,17 @@ public interface IAsyncBinaryReader
     }
 
     /// <summary>
+    /// Attempts to get the number of bytes available for read.
+    /// </summary>
+    /// <param name="count">The number of bytes available for read.</param>
+    /// <returns><see langword="true"/> if the method is supported; otherwise, <see langword="false"/>.</returns>
+    bool TryGetRemainingBytesCount(out long count)
+    {
+        count = default;
+        return false;
+    }
+
+    /// <summary>
     /// Creates default implementation of binary reader for the stream.
     /// </summary>
     /// <remarks>

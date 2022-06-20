@@ -18,6 +18,7 @@ namespace DotNext.Threading
                 True(await counter.WaitAsync(TimeSpan.Zero));
                 False(await counter.WaitAsync(TimeSpan.Zero));
                 Equal(0, counter.Value);
+                False(counter.As<IAsyncEvent>().Reset());
             }
             using (IAsyncEvent counter = new AsyncCounter())
             {

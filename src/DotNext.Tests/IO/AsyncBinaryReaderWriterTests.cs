@@ -556,6 +556,8 @@ namespace DotNext.IO
             var reader = IAsyncBinaryReader.Empty;
             True(reader.TryGetSequence(out var sequence));
             True(sequence.IsEmpty);
+            True(reader.TryGetRemainingBytesCount(out var remainingCount));
+            Equal(0L, remainingCount);
             True(reader.SkipAsync(0).IsCompletedSuccessfully);
             True(reader.CopyToAsync(Stream.Null).IsCompletedSuccessfully);
             True(reader.CopyToAsync(new ArrayBufferWriter<byte>()).IsCompletedSuccessfully);

@@ -838,6 +838,13 @@ public struct SequenceReader : IAsyncBinaryReader
         return true;
     }
 
+    /// <inheritdoc />
+    readonly bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
+    {
+        count = sequence.Length - sequence.GetOffset(position);
+        return true;
+    }
+
     /// <inheritdoc/>
     public readonly override string ToString() => RemainingSequence.ToString();
 }

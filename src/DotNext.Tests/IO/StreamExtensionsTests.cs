@@ -233,6 +233,9 @@ namespace DotNext.IO
             await ms.WriteStringAsync(value.AsMemory(), encoding, buffer, lengthEnc);
             ms.Position = 0;
             var reader = IAsyncBinaryReader.Create(ms, buffer);
+            True(reader.TryGetRemainingBytesCount(out long remainingCount));
+            Equal(ms.Length, remainingCount);
+
             var result = await (lengthEnc is null ?
                 reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
                 reader.ReadStringAsync(lengthEnc.Value, encoding));

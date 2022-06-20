@@ -25,7 +25,7 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->
@@ -33,5 +33,6 @@
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
     <PackageVersion Include="xunit" Version="2.4.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3"/>
+    <PackageVersion Include="coverlet.collector" Version="3.1.2"/>
   </ItemGroup>
 </Project>

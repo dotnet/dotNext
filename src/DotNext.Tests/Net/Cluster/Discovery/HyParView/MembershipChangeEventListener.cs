@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
+[ExcludeFromCodeCoverage]
 internal sealed class MembershipChangeEventListener : IPeerLifetime
 {
     private readonly TaskCompletionSource<EndPoint> discovered, gone;
