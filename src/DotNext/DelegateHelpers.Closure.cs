@@ -25,6 +25,10 @@ public static partial class DelegateHelpers
 
         internal static Action Create(Action<T> action, T arg) => new Closure<T>(arg, action).InvokeAction;
 
+        private bool InvokePredicate() => Unsafe.As<Predicate<T>>(Delegate).Invoke(Target);
+
+        public static Func<bool> Create(Predicate<T> predicate, T arg) => new Closure<T>(arg, predicate).InvokePredicate;
+
         private TResult InvokeFunc<TResult>() => Unsafe.As<Func<T, TResult>>(Delegate).Invoke(Target);
 
         internal static Func<TResult> Create<TResult>(Func<T, TResult> func, T arg) => new Closure<T>(arg, func).InvokeFunc<TResult>;

@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using Threading;
-using BoxedClusterMemberId = Runtime.CompilerServices.Shared<ClusterMemberId>;
+using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 using IntegrityException = IO.Log.IntegrityException;
 using Intrinsics = Runtime.Intrinsics;
 
@@ -26,8 +26,6 @@ public partial class PersistentState
      */
     private sealed class NodeState : Disposable
     {
-        internal static readonly Func<NodeState, long, bool> IsCommittedPredicate = IsCommitted;
-
         private const string FileName = "node.state";
         private const byte False = 0;
         private const byte True = 1;
@@ -92,7 +90,7 @@ public partial class PersistentState
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
             snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
             if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
-                votedFor = new() { Value = new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)) };
+                votedFor = BoxedClusterMemberId.Box(new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)));
             this.integrityCheck = integrityCheck;
         }
 
@@ -201,8 +199,6 @@ public partial class PersistentState
             }
         }
 
-        private static bool IsCommitted(NodeState state, long index) => index <= state.CommitIndex;
-
         internal long LastApplied
         {
             get => lastApplied.VolatileRead();
@@ -247,24 +243,11 @@ public partial class PersistentState
             return result;
         }
 
-        internal bool IsVotedFor(in ClusterMemberId? expected) => IPersistentState.IsVotedFor(votedFor, expected);
+        internal bool IsVotedFor(in ClusterMemberId expected) => IPersistentState.IsVotedFor(votedFor, expected);
 
-        internal void UpdateVotedFor(ClusterMemberId? member)
+        internal void UpdateVotedFor(ClusterMemberId id)
         {
-            if (member.HasValue)
-            {
-                UpdateVotedFor(member.GetValueOrDefault());
-            }
-            else
-            {
-                votedFor = null;
-                buffer[LastVotePresenceOffset] = False;
-            }
-        }
-
-        private void UpdateVotedFor(ClusterMemberId id)
-        {
-            votedFor = id;
+            votedFor = BoxedClusterMemberId.Box(id);
             buffer[LastVotePresenceOffset] = True;
 #pragma warning disable CA2252 // TODO: Remove in .NET 7
             IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));

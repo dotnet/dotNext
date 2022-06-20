@@ -132,6 +132,20 @@ namespace DotNext
         }
 
         [Fact]
+        public static void BindUnbindPredicate()
+        {
+            Predicate<string> predicate = string.IsNullOrEmpty;
+            var func = predicate.Bind(string.Empty);
+            True(func());
+            func = predicate.Bind("abc");
+            False(func());
+
+            predicate = func.Unbind<string>();
+            True(predicate(string.Empty));
+            False(predicate("abc"));
+        }
+
+        [Fact]
         public static void TryInvokeFunc()
         {
             static MethodInfo GetMethod(int argCount)

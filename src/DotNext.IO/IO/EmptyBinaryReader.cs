@@ -79,6 +79,12 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader
         return true;
     }
 
+    bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
+    {
+        count = 0L;
+        return true;
+    }
+
     Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
         => GetCompletedOrCanceledTask(token);
 

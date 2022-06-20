@@ -233,7 +233,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
     {
-        if (IsDisposed || IsDisposeRequested)
+        if (IsDisposingOrDisposed)
         {
             completedSynchronously = true;
             return BooleanValueTaskFactory.FromTask(GetDisposedTask<bool>());
@@ -250,7 +250,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(out bool completedSynchronously, CancellationToken token)
     {
-        if (IsDisposed || IsDisposeRequested)
+        if (IsDisposingOrDisposed)
         {
             completedSynchronously = true;
             return ValueTaskFactory.FromTask(DisposedTask);

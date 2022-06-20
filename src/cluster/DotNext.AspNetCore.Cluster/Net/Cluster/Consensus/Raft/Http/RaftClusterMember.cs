@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -7,6 +8,7 @@ using Collections.Specialized;
 using Membership;
 using Messaging;
 using Net.Http;
+using Runtime.Serialization;
 using Threading;
 using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 using Timestamp = Diagnostics.Timestamp;
@@ -201,10 +203,19 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     ClusterMemberStatus IClusterMember.Status => IsRemote ? status.Value : ClusterMemberStatus.Available;
 
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
-        => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalMember, message, responseReader) { RespectLeadership = respectLeadership }, token);
+        => SendAsync<TResponse, CustomMessage<TResponse>>(new(context.LocalMember, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
     Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         => SendMessageAsync(message, responseReader, false, token);
+
+    [RequiresPreviewFeatures]
+    internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, bool respectLeadership, CancellationToken token)
+        where TResponse : notnull, ISerializable<TResponse>
+        => SendAsync<TResponse, CustomSerializableMessage<TResponse>>(new(context.LocalMember, message) { RespectLeadership = respectLeadership }, token);
+
+    [RequiresPreviewFeatures]
+    Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, CancellationToken token)
+        => SendMessageAsync<TResponse>(message, false, token);
 
     internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
         SendAsync<IMessage?, CustomMessage>(message, token);

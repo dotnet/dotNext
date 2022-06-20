@@ -9,4 +9,9 @@ public interface ILeaderLease
     /// Gets a value indicating that lease has expired.
     /// </summary>
     bool IsExpired { get; }
+
+    /// <summary>
+    /// Gets the token that can be used for async linearizable read.
+    /// </summary>
+    CancellationToken Token { get; }
 }

@@ -21,9 +21,6 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// </summary>
     public static int Size => 16 + (sizeof(int) * 3);
 
-    private static readonly Func<SocketAddress, int, long> SocketAddressByteGetter64 = GetAddressByteAsInt64;
-    private static readonly Func<SocketAddress, int, int> SocketAddressByteGetter32 = GetAddressByteAsInt32;
-
     private readonly Guid address;
     private readonly int port, length, family;
 
@@ -67,19 +64,13 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         Span<byte> bytes = stackalloc byte[16];
         bytes.Clear();
-        WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(SocketAddressByteGetter64, address.Size, address, false));
+        WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(static (address, index) => address[index], address.Size, address, false));
         this.address = new(bytes);
 
-        port = Intrinsics.GetHashCode32(SocketAddressByteGetter32, address.Size, address, false);
+        port = Intrinsics.GetHashCode32(static (address, index) => address[index], address.Size, address, false);
         family = (int)address.Family;
         length = address.Size;
     }
-
-    private static long GetAddressByteAsInt64(SocketAddress address, int index)
-        => address[index];
-
-    private static int GetAddressByteAsInt32(SocketAddress address, int index)
-        => address[index];
 
     /// <summary>
     /// Initializes a new unique identifier from set of bytes.
@@ -92,15 +83,18 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
             throw new ArgumentOutOfRangeException(nameof(bytes));
 
         var reader = new SpanReader<byte>(bytes);
-        Parse(ref reader, out address, out port, out length, out family);
+        this = new(ref reader);
     }
 
     /// <summary>
     /// Initializes a new random unique identifier.
     /// </summary>
     /// <param name="random">The source of random values.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     public ClusterMemberId(Random random)
     {
+        ArgumentNullException.ThrowIfNull(random);
+
         Span<byte> bytes = stackalloc byte[16];
         random.NextBytes(bytes);
         address = new(bytes);
@@ -114,9 +108,6 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// </summary>
     /// <param name="reader">The memory block reader.</param>
     public ClusterMemberId(ref SpanReader<byte> reader)
-        => Parse(ref reader, out address, out port, out length, out family);
-
-    private static void Parse(ref SpanReader<byte> reader, out Guid address, out int port, out int length, out int family)
     {
         address = new Guid(reader.Read(16));
         port = reader.ReadInt32(true);
@@ -189,7 +180,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <returns>The hexadecimal representation of this identifier.</returns>
     public override string ToString()
     {
-        SpanWriter<byte> writer = new SpanWriter<byte>(stackalloc byte[Size]);
+        var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         Format(ref writer);
         return Span.ToHex(writer.WrittenSpan);
     }
@@ -219,7 +210,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <param name="identifier">The hexadecimal representation of identifier.</param>
     /// <param name="value">The parsed identifier.</param>
     /// <returns><see langword="true"/> if identifier parsed successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryParse(string identifier, out ClusterMemberId value)
+    public static bool TryParse([NotNullWhen(true)] string? identifier, out ClusterMemberId value)
         => TryParse(identifier.AsSpan(), out value);
 
     /// <summary>

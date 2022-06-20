@@ -43,7 +43,10 @@ public partial class RaftCluster<TMember>
             var dictionary = membership.dictionary;
             var result = ImmutableInterlocked.TryAdd(ref dictionary, member.Id, member);
             if (!ReferenceEquals(membership.dictionary, dictionary))
+            {
                 membership = new(dictionary);
+                Interlocked.MemoryBarrierProcessWide();
+            }
 
             return result;
         }
@@ -154,15 +157,26 @@ public partial class RaftCluster<TMember>
     /// <returns><see langword="true"/> if the member is addedd successfully; <see langword="false"/> if the member is already in the list.</returns>
     protected async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
     {
-        using var tokenHolder = token.LinkTo(LifecycleToken);
-
-        using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+        var tokenHolder = token.LinkTo(LifecycleToken);
+        var lockHolder = default(AsyncLock.Holder);
+        try
         {
+            lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+
             // assuming that the member is in sync with the leader
             member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
 
             if (!MemberList.TryAdd(ref members, member))
                 return false;
+        }
+        catch (OperationCanceledException e) when (tokenHolder is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
+        }
+        finally
+        {
+            tokenHolder?.Dispose();
+            lockHolder.Dispose();
         }
 
         OnMemberAdded(member);
@@ -178,21 +192,28 @@ public partial class RaftCluster<TMember>
     protected async ValueTask<TMember?> RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
     {
         TMember? result;
-        using var tokenHolder = token.LinkTo(LifecycleToken);
-
-        using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+        var tokenHolder = token.LinkTo(LifecycleToken);
+        var lockHolder = default(AsyncLock.Holder);
+        try
         {
+            lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             if (MemberList.TryRemove(ref members, id, out result) && !result.IsRemote && state is not null)
             {
                 // local member is removed, downgrade it
-                var newState = new StandbyState(this);
-                using var currentState = state;
-                state = newState;
-                await (currentState?.StopAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+                await MoveToStandbyState().ConfigureAwait(false);
             }
 
             if (ReferenceEquals(result, Leader))
                 Leader = null;
+        }
+        catch (OperationCanceledException e) when (tokenHolder is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
+        }
+        finally
+        {
+            tokenHolder?.Dispose();
+            lockHolder.Dispose();
         }
 
         if (result is not null)
@@ -264,6 +285,10 @@ public partial class RaftCluster<TMember>
 
             return false;
         }
+        catch (OperationCanceledException e) when (tokenSource is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
         finally
         {
             tokenSource?.Dispose();
@@ -308,6 +333,10 @@ public partial class RaftCluster<TMember>
             }
 
             return false;
+        }
+        catch (OperationCanceledException e) when (tokenSource is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
         }
         finally
         {

@@ -37,11 +37,28 @@ namespace DotNext.IO
         {
             using var dest = new MemoryStream();
             using var buffer = new SparseBufferWriter<byte>();
-            buffer.Write(in sequence);
+            buffer.Write(in sequence, copyMemory: false);
             using var src = buffer.AsStream(true);
-            src.CopyTo(dest);
+            Equal(0L, src.Position);
+
+            src.CopyTo(dest, bufferSize: 32);
+            Equal(dest.Position, src.Position);
+
             dest.Position = 0;
             Equal(data, dest.ToArray());
+        }
+
+        [Fact]
+        public static void SparseMemoryStreamMembers()
+        {
+            using var buffer = new SparseBufferWriter<byte>();
+            buffer.Write(ToReadOnlySequence<byte>(data, 2), copyMemory: false);
+            using var src = buffer.AsStream(true);
+
+            False(src.CanSeek);
+            Throws<NotSupportedException>(() => src.Position = 0L);
+            Throws<NotSupportedException>(() => src.SetLength(10L));
+            Throws<NotSupportedException>(() => src.Seek(0L, SeekOrigin.Begin));
         }
 
         [Fact]

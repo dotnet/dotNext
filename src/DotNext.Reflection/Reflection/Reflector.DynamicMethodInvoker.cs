@@ -5,7 +5,6 @@ using System.Reflection;
 
 namespace DotNext.Reflection;
 
-using static Collections.Generic.Sequence;
 using static Runtime.CompilerServices.ReflectionUtils;
 
 public static partial class Reflector

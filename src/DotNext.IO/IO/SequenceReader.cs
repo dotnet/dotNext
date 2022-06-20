@@ -15,6 +15,8 @@ using DecodingContext = Text.DecodingContext;
 /// <summary>
 /// Represents binary reader for the sequence of bytes.
 /// </summary>
+/// <seealso cref="IAsyncBinaryReader.Create(ReadOnlySequence{byte})"/>
+/// <seealso cref="IAsyncBinaryReader.Create(ReadOnlyMemory{byte})"/>
 [StructLayout(LayoutKind.Auto)]
 public struct SequenceReader : IAsyncBinaryReader
 {
@@ -40,12 +42,12 @@ public struct SequenceReader : IAsyncBinaryReader
     /// <summary>
     /// Gets unread part of the sequence.
     /// </summary>
-    public ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
+    public readonly ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
 
     /// <summary>
     /// Gets position in the underlying sequence.
     /// </summary>
-    public SequencePosition Position => position;
+    public readonly SequencePosition Position => position;
 
     private TResult Read<TResult, TParser>(TParser parser)
         where TParser : struct, IBufferReader<TResult>
@@ -438,7 +440,7 @@ public struct SequenceReader : IAsyncBinaryReader
         }
         else
         {
-            result = new ValueTask();
+            result = ValueTask.CompletedTask;
             try
             {
                 Read(output.Span);
@@ -463,7 +465,7 @@ public struct SequenceReader : IAsyncBinaryReader
         }
         else
         {
-            result = new ValueTask();
+            result = ValueTask.CompletedTask;
             try
             {
                 Skip(length);
@@ -756,15 +758,15 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc/>
-    Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
+    readonly Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
         => output.WriteAsync(RemainingSequence, token).AsTask();
 
     /// <inheritdoc/>
-    Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
+    readonly Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
         => output.WriteAsync(RemainingSequence, token).AsTask();
 
     /// <inheritdoc/>
-    Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+    readonly Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
     {
         Task result;
         if (token.IsCancellationRequested)
@@ -788,7 +790,7 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc/>
-    Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, CancellationToken token)
+    readonly Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, CancellationToken token)
     {
         Task result;
         if (token.IsCancellationRequested)
@@ -800,8 +802,11 @@ public struct SequenceReader : IAsyncBinaryReader
             result = Task.CompletedTask;
             try
             {
-                for (ReadOnlyMemory<byte> block; sequence.TryGet(ref position, out block); token.ThrowIfCancellationRequested())
-                    reader(block.Span, arg);
+                foreach (var segment in RemainingSequence)
+                {
+                    reader(segment.Span, arg);
+                    token.ThrowIfCancellationRequested();
+                }
             }
             catch (Exception e)
             {
@@ -813,23 +818,33 @@ public struct SequenceReader : IAsyncBinaryReader
     }
 
     /// <inheritdoc/>
-    async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
+    readonly async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
     {
         foreach (var segment in RemainingSequence)
             await reader(arg, segment, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    async Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+    readonly async Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
     {
         foreach (var segment in RemainingSequence)
             await consumer.Invoke(segment, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
+    readonly bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
     {
         bytes = RemainingSequence;
         return true;
     }
+
+    /// <inheritdoc />
+    readonly bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
+    {
+        count = sequence.Length - sequence.GetOffset(position);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public readonly override string ToString() => RemainingSequence.ToString();
 }

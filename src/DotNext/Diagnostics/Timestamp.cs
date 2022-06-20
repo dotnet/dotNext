@@ -62,6 +62,9 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <summary>
     /// Gets precise difference between the current point in time and this timestamp.
     /// </summary>
+    /// <remarks>
+    /// This property is always greater than or equal to <see cref="TimeSpan.Zero"/>.
+    /// </remarks>
     public TimeSpan Elapsed => new(ToTicks(Math.Max(0L, GetTimestamp() - ticks)));
 
     /// <summary>

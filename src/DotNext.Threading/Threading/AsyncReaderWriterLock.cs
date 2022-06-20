@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -582,7 +581,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         state.ExitLock();
         DrainWaitQueue();
 
-        if (IsDisposeRequested && IsReadyToDispose)
+        if (IsDisposing && IsReadyToDispose)
             Dispose(true);
     }
 

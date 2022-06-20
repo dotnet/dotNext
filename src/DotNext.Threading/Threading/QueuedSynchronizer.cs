@@ -241,12 +241,6 @@ public class QueuedSynchronizer : Disposable
         return node.TrySetResult(Sentinel.Instance, value: true);
     }
 
-    private protected bool IsDisposeRequested
-    {
-        get;
-        private set;
-    }
-
     /// <summary>
     /// Enables capturing information about suspended callers in DEBUG configuration.
     /// </summary>
@@ -400,7 +394,7 @@ public class QueuedSynchronizer : Disposable
         ValueTaskFactory result;
         var callerInfo = this.callerInfo?.Capture();
 
-        if (IsDisposed || IsDisposeRequested)
+        if (IsDisposingOrDisposed)
         {
             result = ValueTaskFactory.FromTask(DisposedTask);
         }
@@ -438,7 +432,7 @@ public class QueuedSynchronizer : Disposable
         ValueTaskFactory result;
         var callerInfo = this.callerInfo?.Capture();
 
-        if (IsDisposed || IsDisposeRequested)
+        if (IsDisposingOrDisposed)
         {
             result = ValueTaskFactory.FromTask(DisposedTask);
         }
@@ -467,7 +461,7 @@ public class QueuedSynchronizer : Disposable
         BooleanValueTaskFactory result;
         var callerInfo = this.callerInfo?.Capture();
 
-        if (IsDisposed || IsDisposeRequested)
+        if (IsDisposingOrDisposed)
         {
             result = BooleanValueTaskFactory.FromTask(GetDisposedTask<bool>());
         }
@@ -575,8 +569,6 @@ public class QueuedSynchronizer : Disposable
 
     private void Dispose(bool disposing, Exception? reason)
     {
-        IsDisposeRequested = true;
-
         if (disposing)
         {
             NotifyObjectDisposed(reason);
@@ -603,7 +595,7 @@ public class QueuedSynchronizer : Disposable
     /// <param name="reason">The exeption to be passed to all suspended callers.</param>
     public void Dispose(Exception? reason)
     {
-        Dispose(disposing: true, reason);
+        Dispose(TryBeginDispose(), reason);
         GC.SuppressFinalize(this);
     }
 
@@ -613,8 +605,6 @@ public class QueuedSynchronizer : Disposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     protected override ValueTask DisposeAsyncCore()
     {
-        IsDisposeRequested = true;
-
         if (IsReadyToDispose)
         {
             Dispose(true);

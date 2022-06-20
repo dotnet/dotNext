@@ -85,18 +85,14 @@ public ref partial struct BufferWriterSlim<T>
 
     private readonly bool NoOverflow => position <= initialBuffer.Length;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private readonly Span<T> Buffer => NoOverflow ? initialBuffer : extraBuffer.Span;
+
     /// <summary>
     /// Gets span over constructed memory block.
     /// </summary>
     /// <value>The constructed memory block.</value>
-    public readonly ReadOnlySpan<T> WrittenSpan
-    {
-        get
-        {
-            var result = NoOverflow ? initialBuffer : extraBuffer.Span;
-            return result.Slice(0, position);
-        }
-    }
+    public readonly ReadOnlySpan<T> WrittenSpan => Buffer.Slice(0, position);
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
@@ -189,9 +185,50 @@ public ref partial struct BufferWriterSlim<T>
     }
 
     /// <summary>
+    /// Gets the last added item.
+    /// </summary>
+    /// <param name="item">The last added item.</param>
+    /// <returns><see langword="true"/> if this buffer is not empty; otherwise, <see langword="false"/>.</returns>
+    public readonly bool TryPeek([MaybeNullWhen(false)] out T? item)
+        => WrittenSpan.LastOrNone().TryGet(out item);
+
+    /// <summary>
+    /// Attempts to remove the last added item.
+    /// </summary>
+    /// <param name="item">The removed item.</param>
+    /// <returns><see langword="true"/> if the item is removed successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryPop([MaybeNullWhen(false)] out T? item)
+    {
+        if (position > 0)
+        {
+            item = Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), --position);
+            return true;
+        }
+
+        item = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to remove a sequence of last added items.
+    /// </summary>
+    /// <param name="output">The buffer to receive last added items.</param>
+    /// <returns><see langword="true"/> if items are removed successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryPop(Span<T> output)
+    {
+        if (position >= output.Length && Buffer.Slice(position - output.Length, output.Length).TryCopyTo(output))
+        {
+            position -= output.Length;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Gets the element at the specified zero-based index within this builder.
     /// </summary>
-    /// <param name="index">he zero-based index of the element.</param>
+    /// <param name="index">Zero-based index of the element.</param>
     /// <value>The element at the specified index.</value>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero or greater than or equal to <see cref="WrittenCount"/>.</exception>
     public readonly ref T this[int index]
@@ -201,11 +238,7 @@ public ref partial struct BufferWriterSlim<T>
             if ((uint)index >= (uint)position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            ref var first = ref NoOverflow
-                ? ref MemoryMarshal.GetReference(initialBuffer)
-                : ref extraBuffer.First;
-
-            return ref Unsafe.Add(ref first, index);
+            return ref Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), index);
         }
     }
 

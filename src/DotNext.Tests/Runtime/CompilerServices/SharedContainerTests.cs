@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DotNext.Runtime.CompilerServices
 {
     [ExcludeFromCodeCoverage]
+    [Obsolete]
     public sealed class SharedContainerTests : Test
     {
         [Fact]

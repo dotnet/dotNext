@@ -165,7 +165,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         manager.ExitLock();
         DrainWaitQueue();
 
-        if (IsDisposeRequested && IsReadyToDispose)
+        if (IsDisposing && IsReadyToDispose)
             Dispose(true);
     }
 

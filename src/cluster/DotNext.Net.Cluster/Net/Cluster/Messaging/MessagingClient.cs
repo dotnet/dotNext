@@ -23,18 +23,7 @@ public class MessagingClient
     public MessagingClient(IOutputChannel channel)
     {
         this.channel = channel ?? throw new ArgumentNullException(nameof(channel));
-        messages = new Dictionary<Type, (string, ContentType)>();
-
-        // inspects applied attributes
-        foreach (var attribute in GetType().GetCustomAttributes<MessageAttribute>(true))
-        {
-            var type = attribute.GetType();
-            if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(MessageAttribute<>))
-            {
-                type = type.GetGenericArguments()[0];
-                messages.Add(type, (attribute.Name, new(attribute.MimeType)));
-            }
-        }
+        messages = GetType().GetCustomAttributes<MessageAttribute>(true).ToDictionary(static attr => attr.MessageType, static attr => (attr.Name, new ContentType(attr.MimeType)));
     }
 
     /// <summary>
@@ -88,7 +77,7 @@ public class MessagingClient
         Task<TOutput> result;
         try
         {
-            result = channel.SendMessageAsync(CreateMessage<TInput>(input), Serializable.TransformAsync<IMessage, TOutput>, token);
+            result = channel.SendMessageAsync<TOutput>(CreateMessage<TInput>(input), token);
         }
         catch (Exception e)
         {

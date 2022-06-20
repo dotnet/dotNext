@@ -54,4 +54,7 @@ internal partial class LeaderState
             return false;
         }
     }
+
+    // key is log entry index, value is log entry term
+    private readonly TermCache precedingTermCache;
 }

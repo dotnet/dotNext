@@ -51,7 +51,6 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     private readonly TaskCompletionSource disposeTask;
     private ValueTaskPool<T, ExchangePoint, Action<ExchangePoint>> pool;
     private ExchangePoint? point;
-    private bool disposeRequested;
     private volatile ExchangeTerminatedException? termination;
 
     /// <summary>
@@ -106,9 +105,9 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         {
             result = new(GetDisposedTask<T>());
         }
-        else if (disposeRequested)
+        else if (IsDisposing)
         {
-            Dispose();
+            Dispose(true);
             result = new(GetDisposedTask<T>());
         }
         else if (termination is not null)
@@ -158,9 +157,9 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         ThrowIfDisposed();
 
         bool result;
-        if (disposeRequested)
+        if (IsDisposing)
         {
-            Dispose();
+            Dispose(true);
             result = false;
         }
         else if (termination is not null)
@@ -222,8 +221,6 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        disposeRequested = true;
-
         if (disposing)
         {
             NotifyObjectDisposed();
@@ -238,8 +235,6 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     protected override ValueTask DisposeAsyncCore()
     {
-        disposeRequested = true;
-
         if (point is null or { IsCompleted: true })
         {
             Dispose(true);

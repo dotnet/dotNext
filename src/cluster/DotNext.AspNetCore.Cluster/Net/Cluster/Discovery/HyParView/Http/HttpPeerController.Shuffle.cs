@@ -16,7 +16,7 @@ internal partial class HttpPeerController
 
     private async Task ProcessShuffleReplyAsync(HttpRequest request, HttpResponse response, int payloadLength, CancellationToken token)
     {
-        IReadOnlyCollection<EndPoint> peers;
+        IReadOnlySet<EndPoint> peers;
 
         if (request.BodyReader.TryReadBlock(payloadLength, out var result))
         {
@@ -34,10 +34,10 @@ internal partial class HttpPeerController
         response.StatusCode = StatusCodes.Status204NoContent;
     }
 
-    private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ref SequenceReader reader)
+    private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ref SequenceReader reader)
     {
         var count = reader.ReadInt32(true);
-        var result = new List<EndPoint>(count);
+        var result = new HashSet<EndPoint>(count);
 
         while (count-- > 0)
             result.Add(reader.ReadEndPoint());
@@ -46,13 +46,13 @@ internal partial class HttpPeerController
         return result;
     }
 
-    private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ReadOnlyMemory<byte> buffer)
+    private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ReadOnlyMemory<byte> buffer)
     {
         var reader = IAsyncBinaryReader.Create(buffer);
         return DeserializeShuffleReply(ref reader);
     }
 
-    private static IReadOnlyCollection<EndPoint> DeserializeShuffleReply(ReadOnlySequence<byte> buffer, out SequencePosition position)
+    private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ReadOnlySequence<byte> buffer, out SequencePosition position)
     {
         var reader = IAsyncBinaryReader.Create(buffer);
         var result = DeserializeShuffleReply(ref reader);
@@ -91,7 +91,7 @@ internal partial class HttpPeerController
     private async Task ProcessShuffleRequestAsync(HttpRequest request, HttpResponse response, long payloadLength, CancellationToken token)
     {
         EndPoint sender, origin;
-        IReadOnlyCollection<EndPoint> peers;
+        IReadOnlySet<EndPoint> peers;
         int timeToLive;
 
         if (request.BodyReader.TryReadBlock(payloadLength, out var result))
@@ -115,14 +115,14 @@ internal partial class HttpPeerController
         response.StatusCode = StatusCodes.Status204NoContent;
     }
 
-    private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ref SequenceReader reader)
+    private static (EndPoint, EndPoint, int, IReadOnlySet<EndPoint>) DeserializeShuffleRequest(ref SequenceReader reader)
     {
         var sender = reader.ReadEndPoint();
         var origin = reader.ReadEndPoint();
         var timeToLive = reader.ReadInt32(true);
 
         var count = reader.ReadInt32(true);
-        var peers = new List<EndPoint>(count);
+        var peers = new HashSet<EndPoint>(count);
 
         while (count-- > 0)
             peers.Add(reader.ReadEndPoint());
@@ -131,13 +131,13 @@ internal partial class HttpPeerController
         return (sender, origin, timeToLive, peers);
     }
 
-    private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ReadOnlyMemory<byte> buffer)
+    private static (EndPoint, EndPoint, int, IReadOnlySet<EndPoint>) DeserializeShuffleRequest(ReadOnlyMemory<byte> buffer)
     {
         var reader = IAsyncBinaryReader.Create(buffer);
         return DeserializeShuffleRequest(ref reader);
     }
 
-    private static (EndPoint, EndPoint, int, IReadOnlyCollection<EndPoint>) DeserializeShuffleRequest(ReadOnlySequence<byte> buffer, out SequencePosition position)
+    private static (EndPoint, EndPoint, int, IReadOnlySet<EndPoint>) DeserializeShuffleRequest(ReadOnlySequence<byte> buffer, out SequencePosition position)
     {
         var reader = IAsyncBinaryReader.Create(buffer);
         var result = DeserializeShuffleRequest(ref reader);

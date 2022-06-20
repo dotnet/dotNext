@@ -4,6 +4,8 @@ using System.Net.Sockets;
 
 namespace DotNext.Net.Cluster
 {
+    using Buffers;
+
     [ExcludeFromCodeCoverage]
     public sealed class ClusterMemberIdTests : Test
     {
@@ -24,10 +26,13 @@ namespace DotNext.Net.Cluster
         }
 
         [Fact]
-        public static unsafe void RestoreFromBytes()
+        public static void RestoreFromBytes()
         {
             var id1 = new ClusterMemberId(Random.Shared);
-            var bytes = Span.AsReadOnlyBytes(id1);
+            Span<byte> bytes = stackalloc byte[ClusterMemberId.Size];
+            var writer = new SpanWriter<byte>(bytes);
+            id1.Format(ref writer);
+
             var id2 = new ClusterMemberId(bytes);
             Equal(id1, id2);
         }

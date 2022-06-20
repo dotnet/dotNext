@@ -110,6 +110,7 @@ namespace DotNext.Buffers
             array[3] = 40;
             array[4] = 50;
             Equal(50, array[4]);
+            True(owner.SupportsReallocation);
             owner.Reallocate(2);
             array = owner.Span;
             Equal(2, array.Length);

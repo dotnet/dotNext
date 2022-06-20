@@ -33,7 +33,6 @@ public partial class RaftCluster
         private ILoggerFactory? loggerFactory;
         private TimeSpan? requestTimeout;
         private int warmupRounds;
-        private protected readonly Func<long> applicationIdGenerator;
 
         private protected NodeConfiguration(IPEndPoint hostAddress)
         {
@@ -41,7 +40,6 @@ public partial class RaftCluster
             heartbeatThreshold = 0.5D;
             Metadata = new Dictionary<string, string>();
             HostEndPoint = hostAddress;
-            applicationIdGenerator = Random.Shared.Next<long>;
             TimeToLive = 64;
             warmupRounds = 10;
         }
@@ -333,7 +331,7 @@ public partial class RaftCluster
         }
 
         private UdpClient CreateClient(IPEndPoint address)
-            => new(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory)
+            => new(LocalEndPoint, address, ClientBacklog, MemoryAllocator, LoggerFactory)
             {
                 DatagramSize = datagramSize,
                 DontFragment = DontFragment,

@@ -2,12 +2,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using IO;
 
-internal sealed class EmptyClusterConfiguration : IClusterConfiguration
+internal readonly struct EmptyClusterConfiguration : IClusterConfiguration
 {
-    internal EmptyClusterConfiguration(long fingerprint)
-        => Fingerprint = fingerprint;
-
-    public long Fingerprint { get; }
+    public long Fingerprint { get; internal init; }
 
     long IClusterConfiguration.Length => 0L;
 

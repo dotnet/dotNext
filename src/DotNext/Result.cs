@@ -434,7 +434,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// Extracts the actual result.
     /// </summary>
     /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
-    public unsafe T Value
+    public T Value
     {
         get
         {

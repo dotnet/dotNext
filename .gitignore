@@ -11,3 +11,4 @@ FodyWeavers.xsd
 launchSettings.json
 *.csproj.user
 *.coverage
+TestResults/

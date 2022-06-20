@@ -19,7 +19,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
-    private sealed class Tracker
+    private sealed class Tracker : IGCCallback
     {
         private readonly SoftReferenceOptions options;
         private readonly SoftReference<T> parent;
@@ -30,7 +30,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
             this.parent = parent;
         }
 
-        internal void StopTracking() => GC.SuppressFinalize(this);
+        void IGCCallback.StopTracking() => GC.SuppressFinalize(this);
 
         ~Tracker()
         {
@@ -64,45 +64,6 @@ public sealed class SoftReference<T> : IOptionMonad<T>
         }
     }
 
-    private sealed class IntermediateReference : WeakReference
-    {
-        internal IntermediateReference(Tracker tracker)
-            : base(tracker, trackResurrection: true)
-        {
-        }
-
-        internal IntermediateReference(T target)
-            : base(target, trackResurrection: false)
-        {
-        }
-
-        internal void Clear()
-        {
-            switch (Target)
-            {
-                case null:
-                    break;
-                case Tracker tracker:
-                    tracker.StopTracking();
-                    goto default;
-                default:
-                    // Change target only if it is alive (not null).
-                    // Otherwise, CLR GC thread may crash with InvalidOperationException
-                    // because underlying GC handle is no longer valid
-                    try
-                    {
-                        Target = null;
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // suspend exception, the weak reference is already finalized
-                    }
-
-                    break;
-            }
-        }
-    }
-
     // Thread safety: this field must be requested first. If it is null then try to get the reference
     // from trackerRef
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -110,7 +71,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
 
     // Target can be of type Tracker, or of type T
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private volatile IntermediateReference? trackerRef;
+    private volatile GCIntermediateReference? trackerRef;
 
     /// <summary>
     /// Initializes a new soft reference.

@@ -54,6 +54,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             protected override ValueTask ApplyAsync(LogEntry entry)
             {
                 False(entry.IsEmpty);
+                True(entry.GetReader().TryGetRemainingBytesCount(out var length));
+                NotEqual(0L, length);
                 return ValueTask.CompletedTask;
             }
 
@@ -110,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1, await state.IncrementTermAsync(default));
                 True(state.IsVotedFor(default(ClusterMemberId)));
                 await state.UpdateVotedForAsync(member);
-                False(state.IsVotedFor(default(ClusterMemberId?)));
+                False(state.IsVotedFor(default(ClusterMemberId)));
                 True(state.IsVotedFor(member));
             }
             finally
@@ -123,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 Equal(1, state.Term);
-                False(state.IsVotedFor(default(ClusterMemberId?)));
+                False(state.IsVotedFor(default(ClusterMemberId)));
                 True(state.IsVotedFor(member));
             }
             finally

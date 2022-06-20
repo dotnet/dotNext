@@ -2,9 +2,7 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using ThreadPoolWorkItemFactory = Threading.ThreadPoolWorkItemFactory;
-
-internal abstract class RaftState : Disposable
+internal abstract class RaftState : Disposable, IAsyncDisposable
 {
     private readonly IRaftStateMachine stateMachine;
 
@@ -14,30 +12,72 @@ internal abstract class RaftState : Disposable
 
     private protected IReadOnlyCollection<IRaftClusterMember> Members => stateMachine.Members;
 
-    internal abstract Task StopAsync();
-
     private protected void UpdateLeaderStickiness() => stateMachine.UpdateLeaderStickiness();
 
-    private protected unsafe void MoveToCandidateState()
-    {
-        ThreadPool.UnsafeQueueUserWorkItem(ThreadPoolWorkItemFactory.Create(&MoveToCandidateState, stateMachine), preferLocal: true);
+    private protected void MoveToCandidateState()
+        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToCandidateState(this), preferLocal: true);
 
-        static void MoveToCandidateState(IRaftStateMachine stateMachine) => stateMachine.MoveToCandidateState();
+    private protected void MoveToLeaderState(IRaftClusterMember member)
+        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToLeaderState(this, member), preferLocal: true);
+
+    private protected void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null)
+        => ThreadPool.UnsafeQueueUserWorkItem(new TransitionToFollowerState(this, randomizeTimeout, newTerm), preferLocal: true);
+
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
+
+    private abstract class StateTransition : WeakReference
+    {
+        private protected StateTransition(RaftState currentState)
+            : base(currentState)
+        {
+        }
     }
 
-    private protected unsafe void MoveToLeaderState(IRaftClusterMember member)
+    private sealed class TransitionToCandidateState : StateTransition, IThreadPoolWorkItem
     {
-        ThreadPool.UnsafeQueueUserWorkItem(ThreadPoolWorkItemFactory.Create(&MoveToLeaderState, stateMachine, member), preferLocal: true);
+        internal TransitionToCandidateState(RaftState currentState)
+            : base(currentState)
+        {
+        }
 
-        static void MoveToLeaderState(IRaftStateMachine stateMachine, IRaftClusterMember member)
-            => stateMachine.MoveToLeaderState(member);
+        void IThreadPoolWorkItem.Execute()
+        {
+            if (Target is RaftState currentState)
+                currentState.stateMachine.MoveToCandidateState(this);
+        }
     }
 
-    private protected unsafe void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null)
+    private sealed class TransitionToFollowerState : StateTransition, IThreadPoolWorkItem
     {
-        ThreadPool.UnsafeQueueUserWorkItem(ThreadPoolWorkItemFactory.Create(&MoveToFollowerState, stateMachine, randomizeTimeout, newTerm), preferLocal: true);
+        private readonly bool randomizeTimeout;
+        private readonly long? newTerm;
 
-        static void MoveToFollowerState(IRaftStateMachine stateMachine, bool randomizeTimeout, long? newTerm)
-            => stateMachine.MoveToFollowerState(randomizeTimeout, newTerm);
+        internal TransitionToFollowerState(RaftState currentState, bool randomizeTimeout, long? newTerm)
+            : base(currentState)
+        {
+            this.randomizeTimeout = randomizeTimeout;
+            this.newTerm = newTerm;
+        }
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            if (Target is RaftState currentState)
+                currentState.stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
+        }
+    }
+
+    private sealed class TransitionToLeaderState : StateTransition, IThreadPoolWorkItem
+    {
+        private readonly IRaftClusterMember leader;
+
+        internal TransitionToLeaderState(RaftState currentState, IRaftClusterMember leader)
+            : base(currentState)
+            => this.leader = leader;
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            if (Target is RaftState currentState)
+                currentState.stateMachine.MoveToLeaderState(this, leader);
+        }
     }
 }

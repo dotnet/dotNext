@@ -8,6 +8,7 @@ namespace DotNext.Runtime.CompilerServices;
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
+[Obsolete("Use BoxedValue<T> data type instead")]
 public sealed class Shared<T>
     where T : struct
 {

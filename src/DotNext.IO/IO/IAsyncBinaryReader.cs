@@ -128,14 +128,21 @@ public interface IAsyncBinaryReader
     /// <returns>The decoded value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    async ValueTask<BigInteger> ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token = default)
+    ValueTask<BigInteger> ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token = default)
     {
-        if (length == 0)
-            return BigInteger.Zero;
+        return length switch
+        {
+            < 0 => ValueTask.FromException<BigInteger>(new ArgumentOutOfRangeException(nameof(length))),
+            0 => new(BigInteger.Zero),
+            _ => ReadAsync(),
+        };
 
-        using var buffer = MemoryAllocator.Allocate<byte>(length, true);
-        await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
+        async ValueTask<BigInteger> ReadAsync()
+        {
+            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+            await this.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return new(buffer.Span, isBigEndian: !littleEndian);
+        }
     }
 
     /// <summary>
@@ -149,8 +156,8 @@ public interface IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
     {
-        using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
-        return buffer.IsEmpty ? BigInteger.Zero : new BigInteger(buffer.Span, isBigEndian: !littleEndian);
+        using var buffer = await ReadAsync(lengthFormat, token: token).ConfigureAwait(false);
+        return buffer.IsEmpty ? BigInteger.Zero : new(buffer.Span, isBigEndian: !littleEndian);
     }
 
     /// <summary>
@@ -172,13 +179,18 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-    async ValueTask SkipAsync(int length, CancellationToken token = default)
+    ValueTask SkipAsync(int length, CancellationToken token = default)
     {
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-        if (length > 0)
+        return length switch
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(length, true);
+            < 0 => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
+            0 => ValueTask.CompletedTask,
+            _ => SkipAsync(),
+        };
+
+        async ValueTask SkipAsync()
+        {
+            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
             await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
         }
     }
@@ -203,14 +215,21 @@ public interface IAsyncBinaryReader
     /// <returns>The decoded string.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
+    ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
     {
-        if (length == 0)
-            return string.Empty;
+        return length switch
+        {
+            < 0 => ValueTask.FromException<string>(new ArgumentOutOfRangeException(nameof(length))),
+            0 => new(string.Empty),
+            _ => ReadAsync(),
+        };
 
-        using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
-        await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return context.Encoding.GetString(buffer.Span);
+        async ValueTask<string> ReadAsync()
+        {
+            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+            await this.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return context.Encoding.GetString(buffer.Span);
+        }
     }
 
     /// <summary>
@@ -223,14 +242,21 @@ public interface IAsyncBinaryReader
     /// <returns>The buffer of characters.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    async ValueTask<MemoryOwner<char>> ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
+    ValueTask<MemoryOwner<char>> ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
     {
-        if (length == 0)
-            return new();
+        return length switch
+        {
+            < 0 => ValueTask.FromException<MemoryOwner<char>>(new ArgumentOutOfRangeException(nameof(length))),
+            0 => new(default(MemoryOwner<char>)),
+            _ => ReadAsync(),
+        };
 
-        using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
-        await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-        return context.Encoding.GetChars(buffer.Span, allocator);
+        async ValueTask<MemoryOwner<char>> ReadAsync()
+        {
+            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+            await this.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return context.Encoding.GetChars(buffer.Span, allocator);
+        }
     }
 
     /// <summary>
@@ -245,7 +271,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     async ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
     {
-        using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
+        using var buffer = await ReadAsync(lengthFormat, token: token).ConfigureAwait(false);
         return context.Encoding.GetString(buffer.Span);
     }
 
@@ -262,7 +288,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     async ValueTask<MemoryOwner<char>> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token = default)
     {
-        using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
+        using var buffer = await ReadAsync(lengthFormat, token: token).ConfigureAwait(false);
         return context.Encoding.GetChars(buffer.Span, allocator);
     }
 
@@ -398,6 +424,17 @@ public interface IAsyncBinaryReader
     bool TryGetSequence(out ReadOnlySequence<byte> bytes)
     {
         bytes = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to get the number of bytes available for read.
+    /// </summary>
+    /// <param name="count">The number of bytes available for read.</param>
+    /// <returns><see langword="true"/> if the method is supported; otherwise, <see langword="false"/>.</returns>
+    bool TryGetRemainingBytesCount(out long count)
+    {
+        count = default;
         return false;
     }
 

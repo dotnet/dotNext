@@ -15,7 +15,7 @@ public static partial class DelegateHelpers
     }
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
     /// <param name="action">The action to bind.</param>
@@ -27,7 +27,7 @@ public static partial class DelegateHelpers
         => Bind<Action<T>, Action, T>(action, obj, &Closure<T>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="TResult">The type of the return value of the method that the delegate encapsulates.</typeparam>
@@ -40,7 +40,7 @@ public static partial class DelegateHelpers
         => Bind<Func<T, TResult>, Func<TResult>, T>(func, obj, &Closure<T>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -54,7 +54,7 @@ public static partial class DelegateHelpers
         => Bind<Func<T1, T2, TResult>, Func<T2, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -67,7 +67,7 @@ public static partial class DelegateHelpers
         => Bind<Action<T1, T2>, Action<T2>, T1>(action, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -82,7 +82,7 @@ public static partial class DelegateHelpers
         => Bind<Func<T1, T2, T3, TResult>, Func<T2, T3, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -96,7 +96,7 @@ public static partial class DelegateHelpers
         => Bind<Action<T1, T2, T3>, Action<T2, T3>, T1>(action, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -112,7 +112,7 @@ public static partial class DelegateHelpers
         => Bind<Func<T1, T2, T3, T4, TResult>, Func<T2, T3, T4, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -127,7 +127,7 @@ public static partial class DelegateHelpers
         => Bind<Action<T1, T2, T3, T4>, Action<T2, T3, T4>, T1>(action, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -144,7 +144,7 @@ public static partial class DelegateHelpers
         => Bind<Func<T1, T2, T3, T4, T5, TResult>, Func<T2, T3, T4, T5, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
     /// <summary>
-    /// Produces delegate which first parameter is implicitly bound to the given object.
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
     /// </summary>
     /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
     /// <typeparam name="T2">The type of the second parameter.</typeparam>
@@ -158,4 +158,16 @@ public static partial class DelegateHelpers
     public static unsafe Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
         where T1 : class
         => Bind<Action<T1, T2, T3, T4, T5>, Action<T2, T3, T4, T5>, T1>(action, obj, &Closure<T1>.Create);
+
+    /// <summary>
+    /// Produces a delegate whose first parameter is implicitly bound to the given object.
+    /// </summary>
+    /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
+    /// <param name="predicate">The predicate to bind.</param>
+    /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+    /// <returns>The delegate targeting the specified object.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+    public static unsafe Func<bool> Bind<T>(this Predicate<T> predicate, T obj)
+        where T : class
+        => Bind<Predicate<T>, Func<bool>, T>(predicate, obj, &Closure<T>.Create);
 }

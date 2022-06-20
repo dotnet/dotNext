@@ -51,6 +51,13 @@ namespace DotNext
         {
             public new bool IsDisposed => base.IsDisposed;
 
+            protected override ValueTask DisposeAsyncCore()
+            {
+                True(IsDisposing);
+                True(IsDisposingOrDisposed);
+                return ValueTask.CompletedTask;
+            }
+
             ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
         }
 

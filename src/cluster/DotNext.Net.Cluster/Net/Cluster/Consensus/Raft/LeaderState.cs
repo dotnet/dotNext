@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -9,7 +10,7 @@ using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
 using Timestamp = Diagnostics.Timestamp;
 
-internal sealed partial class LeaderState : RaftState, ILeaderLease
+internal sealed partial class LeaderState : RaftState
 {
     private const int MaxTermCacheSize = 100;
     private readonly long currentTerm;
@@ -17,10 +18,6 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     private readonly CancellationTokenSource timerCancellation;
     internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
-    // key is log entry index, value is log entry term
-    private readonly TermCache precedingTermCache;
-    private readonly TimeSpan maxLease;
-    private Timestamp replicatedAt;
     private Task? heartbeatTask;
     internal ILeaderStateMetrics? Metrics;
 
@@ -31,8 +28,16 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        precedingTermCache = new TermCache(MaxTermCacheSize);
+        (leaseTokenSource = new()).Cancel();
+        precedingTermCache = new(MaxTermCacheSize);
         this.maxLease = maxLease;
+        leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState>(this), InfiniteTimeSpan, InfiniteTimeSpan);
+
+        static void OnLeaseExpired(object? state)
+        {
+            if ((state as WeakReference<LeaderState>)?.TryGetTarget(out var leader) ?? false)
+                leader.OnLeaseExpired();
+        }
     }
 
     private async Task<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
@@ -73,7 +78,11 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         else
             precedingTermCache.RemoveHead(minPrecedingIndex);
 
-        leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
+        // update lease if the cluster contains only one local node
+        if (leaseRenewalThreshold is 1)
+            RenewLease(startTime);
+        else
+            leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
 
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
         await foreach (var task in responsePipe.ConfigureAwait(false))
@@ -89,7 +98,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
                 if (result.Value)
                 {
                     if (--leaseRenewalThreshold is 0)
-                        Timestamp.VolatileWrite(ref replicatedAt, startTime + maxLease); // renew lease
+                        RenewLease(startTime);
 
                     commitQuorum++;
                 }
@@ -159,7 +168,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
 
             // subtract heartbeat processing duration from heartbeat period for better stability
             var delay = period - startTime.Elapsed;
-            forced = await WaitForReplicationAsync(delay >= TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
+            forced = await WaitForReplicationAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
         }
 
         static TaskCompletionPipe<Task<Result<bool>>> CreatePipe(int capacity)
@@ -178,7 +187,7 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
     /// <param name="transactionLog">Transaction log.</param>
     /// <param name="configurationStorage">Cluster configuration storage.</param>
     /// <param name="token">The toke that can be used to cancel the operation.</param>
-    internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    internal void StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         foreach (var member in Members)
         {
@@ -187,17 +196,25 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         }
 
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
-        return this;
     }
 
-    bool ILeaderLease.IsExpired
-        => LeadershipToken.IsCancellationRequested || Timestamp.VolatileRead(ref replicatedAt).IsPast;
-
-    internal override Task StopAsync()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        timerCancellation.Cancel(false);
-        replicationEvent.CancelSuspendedCallers(timerCancellation.Token);
-        return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
+        try
+        {
+            timerCancellation.Cancel(false);
+            replicationEvent.CancelSuspendedCallers(LeadershipToken);
+            await leaseTimer.DisposeAsync().ConfigureAwait(false);
+            await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            Logger.LeaderStateExitedWithError(e);
+        }
+        finally
+        {
+            Dispose(true);
+        }
     }
 
     protected override void Dispose(bool disposing)
@@ -206,6 +223,10 @@ internal sealed partial class LeaderState : RaftState, ILeaderLease
         {
             timerCancellation.Dispose();
             heartbeatTask = null;
+
+            lease = null;
+            leaseTimer.Dispose();
+            leaseTokenSource.Dispose();
 
             // cancel replication queue
             replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
