@@ -54,6 +54,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             protected override ValueTask ApplyAsync(LogEntry entry)
             {
                 False(entry.IsEmpty);
+                True(entry.GetReader().TryGetRemainingBytesCount(out var length));
+                NotEqual(0L, length);
                 return ValueTask.CompletedTask;
             }
 
