@@ -42,10 +42,10 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         {
             0 => true,
             sizeof(byte) => InToRef<T, byte>(first) == InToRef<TOther, byte>(second),
-            sizeof(ushort) => InToRef<T, ushort>(first) == InToRef<TOther, ushort>(second),
-            sizeof(uint) => InToRef<T, uint>(first) == InToRef<TOther, uint>(second),
-            sizeof(ulong) => InToRef<T, ulong>(first) == InToRef<TOther, ulong>(second),
-            _ => EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(first)) == ReadUnaligned<ushort>(ref InToRef<TOther, byte>(second)),
+            sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(first)) == ReadUnaligned<uint>(ref InToRef<TOther, byte>(second)),
+            sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(first)) == ReadUnaligned<ulong>(ref InToRef<TOther, byte>(second)),
+            _ => EqualsUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
         };
 
     /// <summary>
@@ -61,10 +61,10 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         {
             0 => 0,
             sizeof(byte) => InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second)),
-            sizeof(ushort) => InToRef<T, ushort>(first).CompareTo(InToRef<TOther, ushort>(second)),
-            sizeof(uint) => InToRef<T, uint>(first).CompareTo(InToRef<TOther, uint>(second)),
-            sizeof(ulong) => InToRef<T, ulong>(first).CompareTo(InToRef<TOther, ulong>(second)),
-            _ => Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<short>(ref InToRef<TOther, byte>(second))),
+            sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<uint>(ref InToRef<TOther, byte>(second))),
+            sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<ulong>(ref InToRef<TOther, byte>(second))),
+            _ => CompareUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
         };
 
     /// <summary>
@@ -79,7 +79,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         switch (SizeOf<T>())
         {
             default:
-                return GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), salted);
+                return GetHashCode32Unaligned(ref InToRef<T, byte>(value), SizeOf<T>(), salted);
             case 0:
                 hash = 0;
                 break;
@@ -87,13 +87,13 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
                 hash = InToRef<T, byte>(value);
                 break;
             case sizeof(ushort):
-                hash = InToRef<T, ushort>(value);
+                hash = ReadUnaligned<ushort>(ref InToRef<T, byte>(value));
                 break;
-            case sizeof(int):
-                hash = InToRef<T, int>(value);
+            case sizeof(uint):
+                hash = ReadUnaligned<int>(ref InToRef<T, byte>(value));
                 break;
             case sizeof(ulong):
-                hash = InToRef<T, ulong>(value).GetHashCode();
+                hash = ReadUnaligned<ulong>(ref InToRef<T, byte>(value)).GetHashCode();
                 break;
         }
 
@@ -103,13 +103,13 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         return hash;
     }
 
-    private static void GetHashCode<THashFunction>(in T value, ref THashFunction hashFunction, bool salted)
+    private static void GetHashCodeUnaligned<THashFunction>(in T value, ref THashFunction hashFunction, bool salted)
         where THashFunction : struct, IConsumer<int>
     {
         switch (SizeOf<T>())
         {
             default:
-                GetHashCode32(ref hashFunction, ref InToRef<T, byte>(value), SizeOf<T>());
+                GetHashCode32Unaligned(ref hashFunction, ref InToRef<T, byte>(value), SizeOf<T>());
                 break;
             case 0:
                 break;
@@ -117,10 +117,10 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
                 hashFunction.Invoke(InToRef<T, byte>(in value));
                 break;
             case sizeof(ushort):
-                hashFunction.Invoke(InToRef<T, ushort>(in value));
+                hashFunction.Invoke(ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)));
                 break;
             case sizeof(int):
-                hashFunction.Invoke(InToRef<T, int>(in value));
+                hashFunction.Invoke(ReadUnaligned<int>(ref InToRef<T, byte>(in value)));
                 break;
         }
 
@@ -143,7 +143,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
-        GetHashCode(in value, ref fn, salted);
+        GetHashCodeUnaligned(in value, ref fn, salted);
         return fn.Invoke();
     }
 
@@ -163,7 +163,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
-        GetHashCode(in value, ref hash, salted);
+        GetHashCodeUnaligned(in value, ref hash, salted);
         return hash.Invoke();
     }
 

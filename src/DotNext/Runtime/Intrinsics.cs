@@ -110,6 +110,7 @@ public static class Intrinsics
 
         // copy from input into output as-is
         PushInRef(in input);
+        Unaligned(1);
         Ldobj<TResult>();
         Stobj<TResult>();
         Ret();
@@ -117,6 +118,7 @@ public static class Intrinsics
         MarkLabel(slowPath);
         PushInRef(in input);
         Ldobj<T>();
+        Unaligned(1);
         Stobj<T>();
         Ret();
     }
@@ -131,9 +133,9 @@ public static class Intrinsics
     {
         0 => true,
         sizeof(byte) => InToRef<T, byte>(value) == 0,
-        sizeof(ushort) => InToRef<T, ushort>(value) == 0,
-        sizeof(uint) => InToRef<T, uint>(value) == 0,
-        sizeof(ulong) => InToRef<T, ulong>(value) == 0UL,
+        sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(value)) is 0,
+        sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(value)) is 0U,
+        sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(value)) is 0UL,
         _ => IsZero(ref InToRef<T, byte>(in value), Unsafe.SizeOf<T>()),
     };
 
@@ -238,22 +240,17 @@ public static class Intrinsics
         return ref ReturnRef<T>();
     }
 
-    internal static int Compare(ref byte first, ref byte second, nint length)
+    internal static int CompareUnaligned(ref byte first, ref byte second, nint length)
     {
         var comparison = 0;
         for (int count; length > 0L && comparison is 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
             count = length > int.MaxValue ? int.MaxValue : (int)length;
-            comparison = MemoryMarshal.CreateSpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateSpan(ref second, count));
+            comparison = MemoryMarshal.CreateReadOnlySpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateReadOnlySpan(ref second, count));
         }
 
         return comparison;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static T Read<T>(this ref byte address)
-        where T : unmanaged
-        => Unsafe.As<byte, T>(ref address);
 
     /// <summary>
     /// Bitwise comparison of two memory blocks.
@@ -264,42 +261,18 @@ public static class Intrinsics
     /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
     [CLSCompliant(false)]
     public static unsafe int Compare([In] void* first, [In] void* second, nint length)
-        => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
+        => CompareUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-    internal static unsafe bool EqualsAligned(ref byte first, ref byte second, nint length)
+    internal static bool EqualsUnaligned(ref byte first, ref byte second, nint length)
     {
-        var result = false;
-        if (Vector.IsHardwareAccelerated && Vector<byte>.Count > sizeof(nuint))
+        for (int count; length > 0L; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
-            for (; length >= sizeof(Vector<byte>); first = ref first.Advance<Vector<byte>>(), second = ref second.Advance<Vector<byte>>())
-            {
-                if (first.Read<Vector<byte>>() == second.Read<Vector<byte>>())
-                    length -= Vector<byte>.Count;
-                else
-                    goto exit;
-            }
+            count = length > int.MaxValue ? int.MaxValue : (int)length;
+            if (!MemoryMarshal.CreateReadOnlySpan(ref first, count).SequenceEqual(MemoryMarshal.CreateReadOnlySpan(ref second, count)))
+                return false;
         }
 
-        for (; length >= sizeof(nuint); first = ref first.Advance<nuint>(), second = ref second.Advance<nuint>())
-        {
-            if (first.Read<nuint>() == second.Read<nuint>())
-                length -= sizeof(nuint);
-            else
-                goto exit;
-        }
-
-        for (; length > 0; first = ref first.Advance<byte>(), second = ref second.Advance<byte>())
-        {
-            if (first == second)
-                length -= sizeof(byte);
-            else
-                goto exit;
-        }
-
-        // TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
-        result = true;
-    exit:
-        return result;
+        return true;
     }
 
     /// <summary>
@@ -311,16 +284,7 @@ public static class Intrinsics
     /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
     [CLSCompliant(false)]
     public static unsafe bool Equals([In] void* first, [In] void* second, nint length)
-    {
-        var result = true;
-        for (int count; length > 0 && result; length -= count, first = Unsafe.Add<byte>(first, count), second = Unsafe.Add<byte>(first, count))
-        {
-            count = length > int.MaxValue ? int.MaxValue : (int)length;
-            result = new ReadOnlySpan<byte>(first, count).SequenceEqual(new ReadOnlySpan<byte>(second, count));
-        }
-
-        return result;
-    }
+        => EqualsUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
     /// <summary>
     /// Allows to reinterpret managed pointer to array element.
@@ -486,7 +450,7 @@ public static class Intrinsics
         {
             while (length >= Vector<byte>.Count)
             {
-                if (address.Read<Vector<byte>>() == Vector<byte>.Zero)
+                if (Unsafe.ReadUnaligned<Vector<byte>>(ref address) == Vector<byte>.Zero)
                     address = ref address.Advance<Vector<byte>>(&length);
                 else
                     goto exit;
@@ -495,7 +459,7 @@ public static class Intrinsics
 
         while (length >= sizeof(nuint))
         {
-            if (address.Read<nuint>() == 0U)
+            if (Unsafe.ReadUnaligned<nuint>(ref address) is 0U)
                 address = ref address.Advance<nuint>(&length);
             else
                 goto exit;
@@ -503,7 +467,7 @@ public static class Intrinsics
 
         while (length > 0)
         {
-            if (address == 0)
+            if (address is 0)
                 address = ref address.Advance<byte>(&length);
             else
                 goto exit;
@@ -526,13 +490,13 @@ public static class Intrinsics
         {
             count = length > int.MaxValue ? int.MaxValue : (int)length;
 
-            Unsafe.InitBlock(address, 0, (uint)count);
+            Unsafe.InitBlockUnaligned(address, 0, (uint)count);
         }
     }
 
     #region Bitwise Hash Code
 
-    internal static unsafe void GetHashCode64<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
+    internal static unsafe void GetHashCode64Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
         where THashFunction : struct, IConsumer<long>
     {
         switch (length)
@@ -557,10 +521,10 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe long GetHashCode64([In] ref byte source, nint length, bool salted)
+    internal static unsafe long GetHashCode64Unaligned([In] ref byte source, nint length, bool salted)
     {
         var hash = new FNV1a64();
-        GetHashCode64(ref hash, ref source, length);
+        GetHashCode64Unaligned(ref hash, ref source, length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -638,7 +602,7 @@ public static class Intrinsics
     public static unsafe long GetHashCode64([In] void* source, nint length, long hash, Func<long, long, long> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
-        GetHashCode64(ref fn, ref ((byte*)source)[0], length);
+        GetHashCode64Unaligned(ref fn, ref ((byte*)source)[0], length);
 
         if (salted)
             fn.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -663,7 +627,7 @@ public static class Intrinsics
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
         var hash = new THashFunction();
-        GetHashCode64(ref hash, ref ((byte*)source)[0], length);
+        GetHashCode64Unaligned(ref hash, ref ((byte*)source)[0], length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -684,7 +648,7 @@ public static class Intrinsics
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64([In] void* source, nint length, bool salted = true)
-        => GetHashCode64(ref ((byte*)source)[0], length, salted);
+        => GetHashCode64Unaligned(ref ((byte*)source)[0], length, salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory.
@@ -703,7 +667,7 @@ public static class Intrinsics
     public static unsafe int GetHashCode32([In] void* source, nint length, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
-        GetHashCode32(ref fn, ref ((byte*)source)[0], length);
+        GetHashCode32Unaligned(ref fn, ref ((byte*)source)[0], length);
 
         if (salted)
             fn.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -711,7 +675,7 @@ public static class Intrinsics
         return fn.Invoke();
     }
 
-    internal static unsafe void GetHashCode32<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
+    internal static unsafe void GetHashCode32Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
         where THashFunction : struct, IConsumer<int>
     {
         switch (length)
@@ -733,10 +697,10 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe int GetHashCode32([In] ref byte source, nint length, bool salted)
+    internal static unsafe int GetHashCode32Unaligned([In] ref byte source, nint length, bool salted)
     {
         var hash = new FNV1a32();
-        GetHashCode32(ref hash, ref source, length);
+        GetHashCode32Unaligned(ref hash, ref source, length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -761,7 +725,7 @@ public static class Intrinsics
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
-        GetHashCode32(ref hash, ref ((byte*)source)[0], length);
+        GetHashCode32Unaligned(ref hash, ref ((byte*)source)[0], length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -782,7 +746,7 @@ public static class Intrinsics
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32([In] void* source, nint length, bool salted = true)
-        => GetHashCode32(ref ((byte*)source)[0], length, salted);
+        => GetHashCode32Unaligned(ref ((byte*)source)[0], length, salted);
     #endregion
 
     /// <summary>
@@ -874,7 +838,11 @@ public static class Intrinsics
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static TTo ReinterpretCast<TFrom, TTo>(TFrom input)
-        => Unsafe.As<TFrom, TTo>(ref input);
+    {
+        Debug.Assert(Unsafe.SizeOf<TFrom>() == Unsafe.SizeOf<TTo>());
+
+        return Unsafe.As<TFrom, TTo>(ref input);
+    }
 
     /// <summary>
     /// Explicitly invokes object finalizer.
