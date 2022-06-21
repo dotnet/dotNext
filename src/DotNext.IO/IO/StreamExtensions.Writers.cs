@@ -350,18 +350,8 @@ public static partial class StreamExtensions
     public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, LengthFormat? lengthFormat = null, CancellationToken token = default)
     {
         await stream.WriteLengthAsync(value.Span, context.Encoding, lengthFormat, buffer, token).ConfigureAwait(false);
-        if (value.IsEmpty)
-            return;
-        var encoder = context.GetEncoder();
-        var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
-        if (maxChars == 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
-        for (int charsLeft = value.Length, charsUsed; charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
-        {
-            charsUsed = Math.Min(maxChars, charsLeft);
-            encoder.Convert(value.Span.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
-            await stream.WriteAsync(buffer.Slice(0, bytesUsed), token).ConfigureAwait(false);
-        }
+        foreach (var chunk in context.GetBytes(value, buffer))
+            await stream.WriteAsync(chunk, token).ConfigureAwait(false);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
