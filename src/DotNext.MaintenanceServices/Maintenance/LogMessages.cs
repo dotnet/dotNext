@@ -13,7 +13,7 @@ namespace DotNext.Maintenance
         [LoggerMessage(
             EventIdOffset,
             LogLevel.Debug,
-            "Failed to process command received through {endPoint} Unix Domain Socket",
+            "Failed to process command received through {EndPoint} Unix Domain Socket",
             EventName = EventIdPrefix + "." + nameof(FailedToProcessCommand)
         )]
         internal static partial void FailedToProcessCommand(this ILogger logger, UnixDomainSocketEndPoint endPoint, Exception e);
