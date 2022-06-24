@@ -242,7 +242,7 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
         while (!token.IsCancellationRequested)
         {
             var connection = await listener.AcceptAsync(token).ConfigureAwait(false);
-            ThreadPool.QueueUserWorkItem(requestProcessor, new Tuple<Socket, CancellationToken>(connection, token), preferLocal: true);
+            ThreadPool.QueueUserWorkItem(requestProcessor, new Tuple<Socket, CancellationToken>(connection, token), preferLocal: false);
         }
     }
 
