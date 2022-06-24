@@ -14,7 +14,9 @@ using ManagementConsole = CommandLine.IO.ManagementConsole;
 /// Provides AMI in the form of the text commands with the syntax identical to OS shell commands.
 /// </summary>
 /// <example>
+/// <code>
 /// echo "gc collect 2" | nc -U /path/to/endpoint.sock
+/// </code>
 /// </example>
 public sealed class CommandLineManagementInterfaceHost : ApplicationManagementInterfaceHost
 {
