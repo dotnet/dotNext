@@ -4,11 +4,13 @@ using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance;
 
 using Buffers;
 using EncodingContext = Text.EncodingContext;
+using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
 /// <summary>
 /// Represents host of Application Management Interface (AMI). The host provides
@@ -36,11 +38,18 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
     /// Initializes a new host.
     /// </summary>
     /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <exception cref="ArgumentNullException"><paramref name="endPoint"/> is <see langword="null"/>.</exception>
-    protected ApplicationManagementInterfaceHost(UnixDomainSocketEndPoint endPoint)
+    protected ApplicationManagementInterfaceHost(UnixDomainSocketEndPoint endPoint, ILoggerFactory? loggerFactory)
     {
         this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
+        Logger = loggerFactory?.CreateLogger(GetType()) ?? NullLogger.Instance;
     }
+
+    /// <summary>
+    /// Gets the logger associated with this host.
+    /// </summary>
+    protected ILogger Logger { get; }
 
     /// <summary>
     /// Gets or sets the maximum length of the pending connections queue.
@@ -199,6 +208,10 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
         catch (SocketException e) when (e.SocketErrorCode is SocketError.Shutdown)
         {
             // suppress shutdown by client
+        }
+        catch (Exception e)
+        {
+            Logger.FailedToProcessCommand(endPoint, e);
         }
         finally
         {

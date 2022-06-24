@@ -5,6 +5,7 @@ using System.CommandLine.Builder;
 using System.CommandLine.Help;
 using System.CommandLine.Parsing;
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
@@ -29,8 +30,9 @@ public sealed class CommandLineManagementInterfaceHost : ApplicationManagementIn
     /// </summary>
     /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
     /// <param name="commands">A set of commands to be available for execution.</param>
-    public CommandLineManagementInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationManagementCommand> commands)
-        : base(endPoint)
+    /// <param name="loggerFactory">The logger factory.</param>
+    public CommandLineManagementInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationManagementCommand> commands, ILoggerFactory? loggerFactory)
+        : base(endPoint, loggerFactory)
     {
         parser = CreateDefaultParser(commands);
     }

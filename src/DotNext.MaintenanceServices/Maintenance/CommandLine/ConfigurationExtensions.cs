@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
@@ -130,7 +131,7 @@ public static class ConfigurationExtensions
         => services.AddSingleton<IHostedService, CommandLineManagementInterfaceHost>(unixDomainSocketPath.CreateHost);
 
     private static CommandLineManagementInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
-        => new(new(unixDomainSocketPath), services.GetServices<ApplicationManagementCommand>());
+        => new(new(unixDomainSocketPath), services.GetServices<ApplicationManagementCommand>(), services.GetService<ILoggerFactory>());
 
     /// <summary>
     /// Enables Application Management Interface.
@@ -138,11 +139,11 @@ public static class ConfigurationExtensions
     /// <param name="services">A registry of services.</param>
     /// <param name="hostFactory">The host factory.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationManagementInterface(this IServiceCollection services, Func<IEnumerable<ApplicationManagementCommand>, CommandLineManagementInterfaceHost> hostFactory)
+    public static IServiceCollection UseApplicationManagementInterface(this IServiceCollection services, Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, CommandLineManagementInterfaceHost> hostFactory)
         => services.AddSingleton<IHostedService, CommandLineManagementInterfaceHost>(hostFactory.CreateHost);
 
-    private static CommandLineManagementInterfaceHost CreateHost(this Func<IEnumerable<ApplicationManagementCommand>, CommandLineManagementInterfaceHost> hostFactory, IServiceProvider services)
-        => hostFactory(services.GetServices<ApplicationManagementCommand>());
+    private static CommandLineManagementInterfaceHost CreateHost(this Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, CommandLineManagementInterfaceHost> hostFactory, IServiceProvider services)
+        => hostFactory(services.GetServices<ApplicationManagementCommand>(), services.GetService<ILoggerFactory>());
 
     /// <summary>
     /// Enables Application Management Interface.
@@ -151,11 +152,11 @@ public static class ConfigurationExtensions
     /// <param name="services">A registry of services.</param>
     /// <param name="hostFactory">The host factory.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationManagementInterface<TDependency>(this IServiceCollection services, Func<IEnumerable<ApplicationManagementCommand>, TDependency, CommandLineManagementInterfaceHost> hostFactory)
+    public static IServiceCollection UseApplicationManagementInterface<TDependency>(this IServiceCollection services, Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, TDependency, CommandLineManagementInterfaceHost> hostFactory)
         where TDependency : notnull
         => services.AddSingleton<IHostedService, CommandLineManagementInterfaceHost>(hostFactory.CreateHost);
 
-    private static CommandLineManagementInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationManagementCommand>, TDependency, CommandLineManagementInterfaceHost> hostFactory, IServiceProvider services)
+    private static CommandLineManagementInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, TDependency, CommandLineManagementInterfaceHost> hostFactory, IServiceProvider services)
         where TDependency : notnull
-        => hostFactory(services.GetServices<ApplicationManagementCommand>(), services.GetRequiredService<TDependency>());
+        => hostFactory(services.GetServices<ApplicationManagementCommand>(), services.GetService<ILoggerFactory>(), services.GetRequiredService<TDependency>());
 }
