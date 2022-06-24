@@ -48,6 +48,7 @@
     <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj"/>
     <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj"/>
     <ProjectReference Include="..\DotNext\DotNext.csproj"/>
+    <ProjectReference Include="..\DotNext.MaintenanceServices\DotNext.MaintenanceServices.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

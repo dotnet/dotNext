@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyParViewPeer", "examples\HyParViewPeer\HyParViewPeer.csproj", "{1A2FAA85-95B5-4377-B430-622DC5000C89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.MaintenanceServices", "DotNext.MaintenanceServices\DotNext.MaintenanceServices.csproj", "{73088778-30C0-4BF7-9D9A-A50E025FDDED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bench|Any CPU = Bench|Any CPU
@@ -125,6 +127,12 @@ Global
 		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A2FAA85-95B5-4377-B430-622DC5000C89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Bench|Any CPU.ActiveCfg = Debug|Any CPU
+		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Bench|Any CPU.Build.0 = Debug|Any CPU
+		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
