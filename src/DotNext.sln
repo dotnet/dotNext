@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyParViewPeer", "examples\H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.MaintenanceServices", "DotNext.MaintenanceServices\DotNext.MaintenanceServices.csproj", "{73088778-30C0-4BF7-9D9A-A50E025FDDED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineAMI", "examples\CommandLineAMI\CommandLineAMI.csproj", "{39583DDE-E579-44AD-B7AF-5BB77D979E55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bench|Any CPU = Bench|Any CPU
@@ -133,6 +135,12 @@ Global
 		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73088778-30C0-4BF7-9D9A-A50E025FDDED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Bench|Any CPU.ActiveCfg = Debug|Any CPU
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Bench|Any CPU.Build.0 = Debug|Any CPU
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,6 +153,7 @@ Global
 		{D9A4D7A3-A948-465A-B679-546411DC885D} = {511B9F61-9A94-44CB-B506-74E49E3A0B41}
 		{EF588447-3DB4-4719-A9FB-210C21035C65} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 		{1A2FAA85-95B5-4377-B430-622DC5000C89} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
+		{39583DDE-E579-44AD-B7AF-5BB77D979E55} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1CE24157-AFE0-4CDF-B063-2876343F0A66}
