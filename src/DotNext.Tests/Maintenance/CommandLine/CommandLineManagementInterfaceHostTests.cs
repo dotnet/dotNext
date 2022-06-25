@@ -10,8 +10,13 @@ namespace DotNext.Maintenance.CommandLine
     [ExcludeFromCodeCoverage]
     public sealed class CommandLineManagementInterfaceHostTests : Test
     {
-        [Fact]
-        public static async Task ApplicationProbeAsync()
+        [Theory]
+        [InlineData("probe readiness 00:00:01", "ok")]
+        [InlineData("probe startup 00:00:01", "ok")]
+        [InlineData("probe liveness 00:00:01", "fail")]
+        [InlineData("gc collect 0", "")]
+        [InlineData("gc loh-compaction-mode CompactOnce", "")]
+        public static async Task DefaultCommandsAsync(string command, string response)
         {
             var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var host = new HostBuilder()
@@ -25,28 +30,12 @@ namespace DotNext.Maintenance.CommandLine
 
             await host.StartAsync();
 
-            // TODO: Recreate socker according to https://github.com/dotnet/runtime/issues/71291
             var buffer = new byte[512];
-            Socket socket;
-            using (socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
+            using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
             {
                 await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
                 Equal("ok", await ExecuteCommandAsync(socket, "probe readiness 00:00:01", buffer));
                 await socket.DisconnectAsync(true);
-            }
-
-            using (socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
-            {
-                await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
-                Equal("ok", await ExecuteCommandAsync(socket, "probe startup 00:00:01", buffer));
-                await socket.DisconnectAsync(true);
-            }
-
-            using (socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
-            {
-                await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
-                Equal("fail", await ExecuteCommandAsync(socket, "probe liveness 00:00:01", buffer));
-                await socket.DisconnectAsync(false);
             }
 
             await host.StopAsync();
