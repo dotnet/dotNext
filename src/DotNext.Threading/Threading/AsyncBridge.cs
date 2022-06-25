@@ -27,7 +27,7 @@ public static partial class AsyncBridge
 
         CancellationTokenValueTask? result;
 
-        // do not keep long references when treshold reached
+        // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
             result = new(static t => t.Reset());
         else if (!TokenPool.TryTake(out result))
@@ -54,7 +54,7 @@ public static partial class AsyncBridge
 
         WaitHandleValueTask? result;
 
-        // do not keep long references when threshold reached
+        // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
             result = new(static t => t.Reset());
         else if (!HandlePool.TryTake(out result))
