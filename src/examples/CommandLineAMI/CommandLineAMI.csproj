@@ -18,11 +18,4 @@
     <PackageReference Include="Microsoft.Extensions.Hosting"/>
     <ProjectReference Include="..\..\DotNext.MaintenanceServices\DotNext.MaintenanceServices.csproj"/>
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\node.pfx">
-      <LogicalName>node.pfx</LogicalName>
-      <Generator></Generator>
-    </EmbeddedResource>
-  </ItemGroup>
 </Project>
