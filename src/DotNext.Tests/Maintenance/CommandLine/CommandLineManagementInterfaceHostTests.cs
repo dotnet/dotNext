@@ -25,18 +25,25 @@ namespace DotNext.Maintenance.CommandLine
 
             await host.StartAsync();
 
-            using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
+            // TODO: Recreate socker according to https://github.com/dotnet/runtime/issues/71291
+            var buffer = new byte[512];
+            Socket socket;
+            using (socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
             {
-                var buffer = new byte[512];
-
                 await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
                 Equal("ok", await ExecuteCommandAsync(socket, "probe readiness 00:00:01", buffer));
                 await socket.DisconnectAsync(true);
+            }
 
+            using (socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
+            {
                 await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
                 Equal("ok", await ExecuteCommandAsync(socket, "probe startup 00:00:01", buffer));
                 await socket.DisconnectAsync(true);
+            }
 
+            using (socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
+            {
                 await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
                 Equal("fail", await ExecuteCommandAsync(socket, "probe liveness 00:00:01", buffer));
                 await socket.DisconnectAsync(false);
