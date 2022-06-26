@@ -16,7 +16,7 @@ namespace DotNext.Maintenance.CommandLine
         [InlineData("probe liveness 00:00:01", "fail")]
         [InlineData("gc collect 0", "")]
         [InlineData("gc loh-compaction-mode CompactOnce", "")]
-        public static async Task DefaultCommandsAsync(string command, string response)
+        public static async Task DefaultCommandsAsync(string request, string response)
         {
             var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var host = new HostBuilder()
@@ -34,7 +34,7 @@ namespace DotNext.Maintenance.CommandLine
             using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
             {
                 await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
-                Equal("ok", await ExecuteCommandAsync(socket, "probe readiness 00:00:01", buffer));
+                Equal(response, await ExecuteCommandAsync(socket, request, buffer));
                 await socket.DisconnectAsync(true);
             }
 
