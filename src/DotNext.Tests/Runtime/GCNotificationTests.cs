@@ -18,12 +18,12 @@ namespace DotNext.Runtime
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public static void GCHook(bool continueOnCapturedContext)
+        public static async Task GCHook(bool continueOnCapturedContext)
         {
-            using var mre = new ManualResetEvent(false);
-            using var registration = GCNotification.GCTriggered().Register<ManualResetEvent>(static (mre, info) => mre.Set(), mre, continueOnCapturedContext);
-            GC.Collect(2, GCCollectionMode.Forced);
-            mre.WaitOne(DefaultTimeout);
+            var source = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = GCNotification.GCTriggered().Register<TaskCompletionSource>(static (src, info) => src.SetResult(), source, continueOnCapturedContext);
+            GC.Collect(0, GCCollectionMode.Forced);
+            await source.Task.WaitAsync(DefaultTimeout);
         }
 
         [Fact]
