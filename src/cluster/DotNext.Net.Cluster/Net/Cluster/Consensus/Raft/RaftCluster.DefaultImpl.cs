@@ -123,7 +123,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
             {
                 var member = CreateMember(id, address);
-                member.IsRemote = !Equals(address, LocalMemberAddress);
+                member.IsRemote = EndPointComparer.Equals(address, LocalMemberAddress) is false;
                 await AddMemberAsync(member, token).ConfigureAwait(false);
             }
         }
@@ -167,7 +167,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
     {
         using var member = CreateMember(id, address);
-        member.IsRemote = !Equals(LocalMemberAddress, address);
+        member.IsRemote = EndPointComparer.Equals(LocalMemberAddress, address) is false;
         return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
     }
 
@@ -184,7 +184,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         foreach (var member in Members)
         {
-            if (Equals(member.EndPoint, address))
+            if (EndPointComparer.Equals(member.EndPoint, address))
                 return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
         }
 
@@ -199,7 +199,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             {
                 var member = CreateMember(eventInfo.Id, eventInfo.Address);
                 if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
-                    member.IsRemote = !Equals(eventInfo.Address, LocalMemberAddress);
+                    member.IsRemote = EndPointComparer.Equals(eventInfo.Address, LocalMemberAddress) is false;
                 else
                     member.Dispose();
             }
