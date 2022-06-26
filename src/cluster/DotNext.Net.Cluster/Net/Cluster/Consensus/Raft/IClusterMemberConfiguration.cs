@@ -1,4 +1,6 @@
-﻿namespace DotNext.Net.Cluster.Consensus.Raft;
+﻿using System.Net;
+
+namespace DotNext.Net.Cluster.Consensus.Raft;
 
 /// <summary>
 /// Represents configuration of cluster member.
@@ -43,4 +45,9 @@ public interface IClusterMemberConfiguration
     /// to the candidate state if the leader is reachable via the network.
     /// </summary>
     bool AggressiveLeaderStickiness => false;
+
+    /// <summary>
+    /// Gets comparer for endpoint address.
+    /// </summary>
+    IEqualityComparer<EndPoint> EndPointComparer => EqualityComparer<EndPoint>.Default;
 }
