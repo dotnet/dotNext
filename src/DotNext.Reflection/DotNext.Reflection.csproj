@@ -9,7 +9,7 @@
   <IsTrimmable>false</IsTrimmable>
   <Features>nullablePublicOnly</Features>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<VersionPrefix>4.7.0</VersionPrefix>
+	<VersionPrefix>4.6.1</VersionPrefix>
   <VersionSuffix></VersionSuffix>
 	<Authors>.NET Foundation and Contributors</Authors>
 	<Product>.NEXT Family of Libraries</Product>
