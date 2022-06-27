@@ -22,7 +22,7 @@ public interface IUnmanagedMemoryOwner<T> : IUnmanagedMemory<T>, IUnmanagedArray
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
     /// <exception cref="NotSupportedException">Reallocation is not supported.</exception>
     /// <seealso cref="SupportsReallocation"/>
-    void Reallocate(int length);
+    void Reallocate(int length) => throw new NotSupportedException();
 
     /// <summary>
     /// Gets a value indicating that the referenced memory can be reallocated.
