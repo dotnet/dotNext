@@ -437,19 +437,6 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void Alignment()
-        {
-            Pointer<int> ptr = default;
-            True(ptr.IsAligned);
-            var a = 20;
-            ptr = &a;
-            True(ptr.IsAligned);
-            decimal d = 20;
-            ptr = (int*)(((byte*)&d) + 1);
-            False(ptr.IsAligned);
-        }
-
-        [Fact]
         public static unsafe void Operators()
         {
             var ptr1 = new Pointer<int>(new IntPtr(42));
