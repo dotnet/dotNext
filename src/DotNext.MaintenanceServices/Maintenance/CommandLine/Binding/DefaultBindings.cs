@@ -46,6 +46,6 @@ public static class DefaultBindings
 
         Type IValueDescriptor.ValueType => typeof(IManagementSession);
 
-        string IValueDescriptor.ValueName => "Session";
+        string IValueDescriptor.ValueName => "ManagementSession";
     }
 }
