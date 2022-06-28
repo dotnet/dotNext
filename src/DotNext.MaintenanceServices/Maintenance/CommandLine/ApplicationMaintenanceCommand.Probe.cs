@@ -7,7 +7,7 @@ namespace DotNext.Maintenance.CommandLine;
 
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
 
-public static partial class DefaultCommands
+public partial class ApplicationMaintenanceCommand
 {
     /// <summary>
     /// Creates a command that can be used to execute members of <see cref="IApplicationStatusProvider"/>.
@@ -15,14 +15,14 @@ public static partial class DefaultCommands
     /// <param name="provider">The status provider.</param>
     /// <returns>A new command.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="provider"/> is <see langword="null"/>.</exception>
-    public static ApplicationManagementCommand CreateCommand(this IApplicationStatusProvider provider)
+    public static ApplicationMaintenanceCommand Create(IApplicationStatusProvider provider)
     {
         const string startupProbeName = "startup";
         const string readinessProbeName = "readiness";
         const string livenessProbeName = "liveness";
 
         ArgumentNullException.ThrowIfNull(provider);
-        var command = new ApplicationManagementCommand("probe", CommandResources.ProbeCommandDescription);
+        var command = new ApplicationMaintenanceCommand("probe", CommandResources.ProbeCommandDescription);
 
         var probeTypeArg = new Argument<string>("type", CommandResources.ProbeCommandProbeTypeArgDescription).FromAmong(startupProbeName, readinessProbeName, livenessProbeName);
         command.AddArgument(probeTypeArg);

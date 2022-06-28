@@ -8,7 +8,7 @@ using Anonymous = Security.Principal.AnonymousPrincipal;
 /// <summary>
 /// Represents AMI interaction session.
 /// </summary>
-public interface IManagementSession
+public interface IMaintenanceSession
 {
     /// <summary>
     /// Gets or sets a value indicating that the current session is interactive.

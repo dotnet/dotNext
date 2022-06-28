@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
-using ManagementConsole = CommandLine.IO.ManagementConsole;
+using MaintenanceConsole = CommandLine.IO.MaintenanceConsole;
 
 /// <summary>
 /// Provides AMI in the form of the text commands with the syntax identical to OS shell commands.
@@ -19,7 +19,7 @@ using ManagementConsole = CommandLine.IO.ManagementConsole;
 /// echo "gc collect 2" | nc -U /path/to/endpoint.sock
 /// </code>
 /// </example>
-public sealed class CommandLineManagementInterfaceHost : ApplicationManagementInterfaceHost
+public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenanceInterfaceHost
 {
     private const int InvalidArgumentExitCode = 64; // EX_USAGE from sysexits.h
 
@@ -31,19 +31,24 @@ public sealed class CommandLineManagementInterfaceHost : ApplicationManagementIn
     /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
     /// <param name="commands">A set of commands to be available for execution.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public CommandLineManagementInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationManagementCommand> commands, ILoggerFactory? loggerFactory)
+    public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationMaintenanceCommand> commands, ILoggerFactory? loggerFactory)
         : base(endPoint, loggerFactory)
     {
-        parser = CreateDefaultParser(commands);
+        parser = CreateCommandParser(commands);
     }
 
-    private static Parser CreateDefaultParser(IEnumerable<ApplicationManagementCommand> commands)
+    /// <summary>
+    /// Creates a default command-line parser.
+    /// </summary>
+    /// <param name="commands">A collection of commands to be available for execution.</param>
+    /// <returns>A parser of the commands.</returns>
+    /// <seealso cref="ApplicationMaintenanceCommand.GetDefaultCommands"/>
+    public static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands)
     {
-        var root = new RootCommand(RootCommand.ExecutableName + " Management Interface");
+        var root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
         foreach (var subCommand in commands)
             root.Add(subCommand);
 
-        root.AddDefaultCommands();
         return new CommandLineBuilder(root)
             .UseHelpBuilder(CustomizeHelp)
             .UseHelp()
@@ -78,6 +83,7 @@ public sealed class CommandLineManagementInterfaceHost : ApplicationManagementIn
     /// <summary>
     /// Gets or sets command-line parser.
     /// </summary>
+    /// <seealso cref="CreateCommandParser(IEnumerable{ApplicationMaintenanceCommand})"/>
     public Parser CommandParser
     {
         get => parser;
@@ -85,9 +91,9 @@ public sealed class CommandLineManagementInterfaceHost : ApplicationManagementIn
     }
 
     /// <inheritdoc />
-    protected override async ValueTask ExecuteCommandAsync(IManagementSession session, ReadOnlyMemory<char> command, CancellationToken token)
+    protected override async ValueTask ExecuteCommandAsync(IMaintenanceSession session, ReadOnlyMemory<char> command, CancellationToken token)
     {
-        var console = new ManagementConsole(session, BufferSize, CharBufferAllocator);
+        var console = new MaintenanceConsole(session, BufferSize, CharBufferAllocator);
         try
         {
             console.Exit(await parser.InvokeAsync(command.ToString(), console).ConfigureAwait(false));

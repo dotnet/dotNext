@@ -13,7 +13,7 @@ public static class ConfigurationExtensions
 {
     /// <summary>
     /// Registers <see cref="IApplicationStatusProvider"/> as a singleton service
-    /// and exposes access via Application Management Interface.
+    /// and exposes access via Application Maintenance Interface.
     /// </summary>
     /// <typeparam name="TProvider">The type implementing <see cref="IApplicationStatusProvider"/>.</typeparam>
     /// <param name="services">A registry of services.</param>
@@ -23,56 +23,56 @@ public static class ConfigurationExtensions
     {
         return services
             .AddSingleton<IApplicationStatusProvider, TProvider>()
-            .AddSingleton<ApplicationManagementCommand>(CreateCommand);
+            .AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
 
-        static ApplicationManagementCommand CreateCommand(IServiceProvider services)
-            => services.GetRequiredService<IApplicationStatusProvider>().CreateCommand();
+        static ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
+            => ApplicationMaintenanceCommand.Create(services.GetRequiredService<IApplicationStatusProvider>());
     }
 
     /// <summary>
-    /// Registers management command.
+    /// Registers maintenance command.
     /// </summary>
     /// <param name="services">A registry of services.</param>
     /// <param name="name">The name of the command.</param>
     /// <param name="action">The action that can be used to initialize the command.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection RegisterCommand(this IServiceCollection services, string name, Action<ApplicationManagementCommand> action)
+    public static IServiceCollection RegisterMaintenanceCommand(this IServiceCollection services, string name, Action<ApplicationMaintenanceCommand> action)
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationManagementCommand>(CreateCommand);
+        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
 
-        ApplicationManagementCommand CreateCommand(IServiceProvider services)
+        ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
-            var command = new ApplicationManagementCommand(name);
+            var command = new ApplicationMaintenanceCommand(name);
             action(command);
             return command;
         }
     }
 
     /// <summary>
-    /// Registers management command.
+    /// Registers maintenance command.
     /// </summary>
     /// <typeparam name="TDependency">The command initialization dependency.</typeparam>
     /// <param name="services">A registry of services.</param>
     /// <param name="name">The name of the command.</param>
     /// <param name="action">The action that can be used to initialize the command.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection RegisterCommand<TDependency>(this IServiceCollection services, string name, Action<ApplicationManagementCommand, TDependency> action)
+    public static IServiceCollection RegisterMaintenanceCommand<TDependency>(this IServiceCollection services, string name, Action<ApplicationMaintenanceCommand, TDependency> action)
         where TDependency : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationManagementCommand>(CreateCommand);
+        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
 
-        ApplicationManagementCommand CreateCommand(IServiceProvider services)
+        ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
-            var command = new ApplicationManagementCommand(name);
+            var command = new ApplicationMaintenanceCommand(name);
             action(command, services.GetRequiredService<TDependency>());
             return command;
         }
     }
 
     /// <summary>
-    /// Registers management command.
+    /// Registers maintenance command.
     /// </summary>
     /// <typeparam name="TDependency1">The first dependency required for command initialization.</typeparam>
     /// <typeparam name="TDependency2">The second dependency required for command initialization.</typeparam>
@@ -80,23 +80,23 @@ public static class ConfigurationExtensions
     /// <param name="name">The name of the command.</param>
     /// <param name="action">The action that can be used to initialize the command.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection RegisterCommand<TDependency1, TDependency2>(this IServiceCollection services, string name, Action<ApplicationManagementCommand, TDependency1, TDependency2> action)
+    public static IServiceCollection RegisterMaintenanceCommand<TDependency1, TDependency2>(this IServiceCollection services, string name, Action<ApplicationMaintenanceCommand, TDependency1, TDependency2> action)
         where TDependency1 : notnull
         where TDependency2 : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationManagementCommand>(CreateCommand);
+        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
 
-        ApplicationManagementCommand CreateCommand(IServiceProvider services)
+        ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
-            var command = new ApplicationManagementCommand(name);
+            var command = new ApplicationMaintenanceCommand(name);
             action(command, services.GetRequiredService<TDependency1>(), services.GetRequiredService<TDependency2>());
             return command;
         }
     }
 
     /// <summary>
-    /// Registers management command.
+    /// Registers maintenance command.
     /// </summary>
     /// <typeparam name="TDependency1">The first dependency required for command initialization.</typeparam>
     /// <typeparam name="TDependency2">The second dependency required for command initialization.</typeparam>
@@ -105,58 +105,72 @@ public static class ConfigurationExtensions
     /// <param name="name">The name of the command.</param>
     /// <param name="action">The action that can be used to initialize the command.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection RegisterCommand<TDependency1, TDependency2, TDependency3>(this IServiceCollection services, string name, Action<ApplicationManagementCommand, TDependency1, TDependency2, TDependency3> action)
+    public static IServiceCollection RegisterMaintenanceCommand<TDependency1, TDependency2, TDependency3>(this IServiceCollection services, string name, Action<ApplicationMaintenanceCommand, TDependency1, TDependency2, TDependency3> action)
         where TDependency1 : notnull
         where TDependency2 : notnull
         where TDependency3 : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationManagementCommand>(CreateCommand);
+        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
 
-        ApplicationManagementCommand CreateCommand(IServiceProvider services)
+        ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
-            var command = new ApplicationManagementCommand(name);
+            var command = new ApplicationMaintenanceCommand(name);
             action(command, services.GetRequiredService<TDependency1>(), services.GetRequiredService<TDependency2>(), services.GetRequiredService<TDependency3>());
             return command;
         }
     }
 
     /// <summary>
-    /// Enables Application Management Interface.
+    /// Registers default commands.
+    /// </summary>
+    /// <param name="services">A registry of services.</param>
+    /// <returns>A modified registry of services.</returns>
+    /// <seealso cref="ApplicationMaintenanceCommand.GetDefaultCommands"/>
+    public static IServiceCollection RegisterDefaultMaintenanceCommands(this IServiceCollection services)
+    {
+        foreach (var command in ApplicationMaintenanceCommand.GetDefaultCommands())
+            services.AddSingleton(command);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Enables Application Maintenance Interface.
     /// </summary>
     /// <param name="services">A registry of services.</param>
     /// <param name="unixDomainSocketPath">The path to the interaction point represented by Unix Domain Socket.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationManagementInterface(this IServiceCollection services, string unixDomainSocketPath)
-        => services.AddSingleton<IHostedService, CommandLineManagementInterfaceHost>(unixDomainSocketPath.CreateHost);
+    public static IServiceCollection UseApplicationMaintenanceInterface(this IServiceCollection services, string unixDomainSocketPath)
+        => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(unixDomainSocketPath.CreateHost);
 
-    private static CommandLineManagementInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
-        => new(new(unixDomainSocketPath), services.GetServices<ApplicationManagementCommand>(), services.GetService<ILoggerFactory>());
+    private static CommandLineMaintenanceInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
+        => new(new(unixDomainSocketPath), services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>());
 
     /// <summary>
-    /// Enables Application Management Interface.
+    /// Enables Application Maintenance Interface.
     /// </summary>
     /// <param name="services">A registry of services.</param>
     /// <param name="hostFactory">The host factory.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationManagementInterface(this IServiceCollection services, Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, CommandLineManagementInterfaceHost> hostFactory)
-        => services.AddSingleton<IHostedService, CommandLineManagementInterfaceHost>(hostFactory.CreateHost);
+    public static IServiceCollection UseApplicationMaintenanceInterface(this IServiceCollection services, Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, CommandLineMaintenanceInterfaceHost> hostFactory)
+        => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(hostFactory.CreateHost);
 
-    private static CommandLineManagementInterfaceHost CreateHost(this Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, CommandLineManagementInterfaceHost> hostFactory, IServiceProvider services)
-        => hostFactory(services.GetServices<ApplicationManagementCommand>(), services.GetService<ILoggerFactory>());
+    private static CommandLineMaintenanceInterfaceHost CreateHost(this Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, CommandLineMaintenanceInterfaceHost> hostFactory, IServiceProvider services)
+        => hostFactory(services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>());
 
     /// <summary>
-    /// Enables Application Management Interface.
+    /// Enables Application Maintenance Interface.
     /// </summary>
     /// <typeparam name="TDependency">The dependency required for host initialization.</typeparam>
     /// <param name="services">A registry of services.</param>
     /// <param name="hostFactory">The host factory.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationManagementInterface<TDependency>(this IServiceCollection services, Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, TDependency, CommandLineManagementInterfaceHost> hostFactory)
+    public static IServiceCollection UseApplicationMaintenanceInterface<TDependency>(this IServiceCollection services, Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, TDependency, CommandLineMaintenanceInterfaceHost> hostFactory)
         where TDependency : notnull
-        => services.AddSingleton<IHostedService, CommandLineManagementInterfaceHost>(hostFactory.CreateHost);
+        => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(hostFactory.CreateHost);
 
-    private static CommandLineManagementInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationManagementCommand>, ILoggerFactory?, TDependency, CommandLineManagementInterfaceHost> hostFactory, IServiceProvider services)
+    private static CommandLineMaintenanceInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, TDependency, CommandLineMaintenanceInterfaceHost> hostFactory, IServiceProvider services)
         where TDependency : notnull
-        => hostFactory(services.GetServices<ApplicationManagementCommand>(), services.GetService<ILoggerFactory>(), services.GetRequiredService<TDependency>());
+        => hostFactory(services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>(), services.GetRequiredService<TDependency>());
 }

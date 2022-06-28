@@ -13,17 +13,17 @@ using EncodingContext = Text.EncodingContext;
 using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
 /// <summary>
-/// Represents host of Application Management Interface (AMI). The host provides
+/// Represents host of Application Maintenance Interface (AMI). The host provides
 /// IPC using Unix Domain Socket.
 /// </summary>
 /// <remarks>
-/// AMI (Application Management Interface) allows to interact with running
+/// AMI (Application Maintenance Interface) allows to interact with running
 /// application or microservice through Unix Domain Socket.
 /// The administrator can use command-line tools
 /// such as netcat to send commands to the applications. These commands may trigger GC,
 /// clear application cache, force reconnection to DB or any other maintenance actions.
 /// </remarks>
-public abstract class ApplicationManagementInterfaceHost : BackgroundService
+public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 {
     private const int MinBufferSize = 32;
     private static readonly ReadOnlyMemory<char> NewLineMemory = Environment.NewLine.AsMemory();
@@ -40,7 +40,7 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
     /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <exception cref="ArgumentNullException"><paramref name="endPoint"/> is <see langword="null"/>.</exception>
-    protected ApplicationManagementInterfaceHost(UnixDomainSocketEndPoint endPoint, ILoggerFactory? loggerFactory)
+    protected ApplicationMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, ILoggerFactory? loggerFactory)
     {
         this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
         Logger = loggerFactory?.CreateLogger(GetType()) ?? NullLogger.Instance;
@@ -138,7 +138,7 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
     /// <param name="command">The command to execute.</param>
     /// <param name="token">The token that is associated with the host lifetime.</param>
     /// <returns>A task representing asynchronous execution of the command.</returns>
-    protected abstract ValueTask ExecuteCommandAsync(IManagementSession session, ReadOnlyMemory<char> command, CancellationToken token);
+    protected abstract ValueTask ExecuteCommandAsync(IMaintenanceSession session, ReadOnlyMemory<char> command, CancellationToken token);
 
     /// <summary>
     /// Identifies the requester asynchronously.
@@ -147,7 +147,7 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The identity of the requester.</returns>
     protected virtual ValueTask<IIdentity> IdentifyAsync(Socket socket, CancellationToken token)
-        => new(IManagementSession.AnonymousIdentity); // TODO: https://github.com/dotnet/runtime/issues/71207
+        => new(IMaintenanceSession.AnonymousIdentity); // TODO: https://github.com/dotnet/runtime/issues/71207
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private static async ValueTask WriteResponseAsync(Socket clientSocket, ReadOnlyMemory<char> response, EncodingContext encoding, Memory<byte> buffer, CancellationToken token)
@@ -246,7 +246,7 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
         }
     }
 
-    private sealed class Session : Disposable, IManagementSession
+    private sealed class Session : Disposable, IMaintenanceSession
     {
         private readonly PooledBufferWriter<char> output;
         private IDictionary<string, object>? context;
@@ -258,14 +258,14 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
             identityOrPrincipal = identity;
         }
 
-        IIdentity IManagementSession.Identity => identityOrPrincipal switch
+        IIdentity IMaintenanceSession.Identity => identityOrPrincipal switch
         {
             IIdentity id => id,
-            IPrincipal principal => principal.Identity ?? IManagementSession.AnonymousIdentity,
-            _ => IManagementSession.AnonymousIdentity,
+            IPrincipal principal => principal.Identity ?? IMaintenanceSession.AnonymousIdentity,
+            _ => IMaintenanceSession.AnonymousIdentity,
         };
 
-        IPrincipal? IManagementSession.Principal
+        IPrincipal? IMaintenanceSession.Principal
         {
             get => identityOrPrincipal as IPrincipal;
             set => identityOrPrincipal = value;
@@ -277,7 +277,7 @@ public abstract class ApplicationManagementInterfaceHost : BackgroundService
 
         public bool IsInteractive { get; set; }
 
-        IBufferWriter<char> IManagementSession.Output => output;
+        IBufferWriter<char> IMaintenanceSession.Output => output;
 
         public IDictionary<string, object> Context => context ??= new Dictionary<string, object>(StringComparer.Ordinal);
 

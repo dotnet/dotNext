@@ -8,7 +8,7 @@ namespace DotNext.Maintenance.CommandLine
     using Diagnostics;
 
     [ExcludeFromCodeCoverage]
-    public sealed class CommandLineManagementInterfaceHostTests : Test
+    public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     {
         [Theory]
         [InlineData("probe readiness 00:00:01", "ok")]
@@ -23,7 +23,8 @@ namespace DotNext.Maintenance.CommandLine
                 .ConfigureServices(services =>
                 {
                     services
-                        .UseApplicationManagementInterface(unixDomainSocketPath)
+                        .RegisterDefaultMaintenanceCommands()
+                        .UseApplicationMaintenanceInterface(unixDomainSocketPath)
                         .UseApplicationStatusProvider<TestStatusProvider>();
                 })
                 .Build();

@@ -5,11 +5,11 @@ using System.Runtime;
 
 namespace DotNext.Maintenance.CommandLine;
 
-public static partial class DefaultCommands
+public partial class ApplicationMaintenanceCommand
 {
-    private static ApplicationManagementCommand GCCollectCommand()
+    private static ApplicationMaintenanceCommand GCCollectCommand()
     {
-        var command = new ApplicationManagementCommand("collect", CommandResources.GCCollectCommandDescription);
+        var command = new ApplicationMaintenanceCommand("collect", CommandResources.GCCollectCommandDescription);
 
         var generationArg = new Argument<int>("generation", parse: ParseGeneration, description: CommandResources.GCCollectCommandGenerationArgDescription);
         command.AddArgument(generationArg);
@@ -51,7 +51,7 @@ public static partial class DefaultCommands
 
     private static Command LohCompactionModeCommand()
     {
-        var command = new ApplicationManagementCommand("loh-compaction-mode", CommandResources.GCLohModeCommandDescription);
+        var command = new ApplicationMaintenanceCommand("loh-compaction-mode", CommandResources.GCLohModeCommandDescription);
 
         var modeArg = new Argument<GCLargeObjectHeapCompactionMode>("mode", parse: ParseMode, description: CommandResources.GCLohModeCommandModeArgDescription);
         modeArg.FromAmong(Enum.GetNames<GCLargeObjectHeapCompactionMode>());
@@ -77,9 +77,9 @@ public static partial class DefaultCommands
     /// Creates a command that allows to force Garbage Collection.
     /// </summary>
     /// <returns>A new command.</returns>
-    public static ApplicationManagementCommand GCCommand()
+    public static ApplicationMaintenanceCommand GCCommand()
     {
-        var command = new ApplicationManagementCommand("gc", CommandResources.GCCommandDescription);
+        var command = new ApplicationMaintenanceCommand("gc", CommandResources.GCCommandDescription);
         command.AddCommand(GCCollectCommand());
         command.AddCommand(LohCompactionModeCommand());
         return command;

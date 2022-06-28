@@ -7,7 +7,7 @@ namespace DotNext.Maintenance.CommandLine.IO;
 /// <summary>
 /// Represents standard error and output streams as buffers.
 /// </summary>
-public interface IManagementConsole : IConsole
+public interface IMaintenanceConsole : IConsole
 {
     /// <summary>
     /// Gets the buffer writer for standard error.
@@ -28,5 +28,5 @@ public interface IManagementConsole : IConsole
     /// <summary>
     /// Gets interaction session.
     /// </summary>
-    IManagementSession Session { get; }
+    IMaintenanceSession Session { get; }
 }

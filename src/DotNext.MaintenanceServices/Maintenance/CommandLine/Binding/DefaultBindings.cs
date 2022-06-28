@@ -10,42 +10,42 @@ using IO;
 public static class DefaultBindings
 {
     /// <summary>
-    /// Gets a descriptor that allows to obtain <see cref="IManagementConsole"/>
+    /// Gets a descriptor that allows to obtain <see cref="IMaintenanceConsole"/>
     /// for bound parameter.
     /// </summary>
-    public static IValueDescriptor<IManagementConsole> Console { get; } = new ConsoleBinder();
+    public static IValueDescriptor<IMaintenanceConsole> Console { get; } = new ConsoleBinder();
 
     /// <summary>
-    /// Gets a descriptor that allows to obtain <see cref="IManagementSession"/>
+    /// Gets a descriptor that allows to obtain <see cref="IMaintenanceSession"/>
     /// for bound parameter.
     /// </summary>
-    public static IValueDescriptor<IManagementSession> Session { get; } = new SessionBinder();
+    public static IValueDescriptor<IMaintenanceSession> Session { get; } = new SessionBinder();
 
-    private sealed class ConsoleBinder : IValueDescriptor<IManagementConsole>, IValueSource
+    private sealed class ConsoleBinder : IValueDescriptor<IMaintenanceConsole>, IValueSource
     {
         bool IValueSource.TryGetValue(IValueDescriptor valueDescriptor, BindingContext bindingContext, out object? boundValue)
-            => (boundValue = bindingContext.Console as IManagementConsole) is not null;
+            => (boundValue = bindingContext.Console as IMaintenanceConsole) is not null;
 
         bool IValueDescriptor.HasDefaultValue => false;
 
         object? IValueDescriptor.GetDefaultValue() => null;
 
-        Type IValueDescriptor.ValueType => typeof(IManagementConsole);
+        Type IValueDescriptor.ValueType => typeof(IMaintenanceConsole);
 
-        string IValueDescriptor.ValueName => nameof(ManagementConsole);
+        string IValueDescriptor.ValueName => nameof(MaintenanceConsole);
     }
 
-    private sealed class SessionBinder : IValueDescriptor<IManagementSession>, IValueSource
+    private sealed class SessionBinder : IValueDescriptor<IMaintenanceSession>, IValueSource
     {
         bool IValueSource.TryGetValue(IValueDescriptor valueDescriptor, BindingContext bindingContext, out object? boundValue)
-            => (boundValue = (bindingContext.Console as IManagementConsole)?.Session) is not null;
+            => (boundValue = (bindingContext.Console as IMaintenanceConsole)?.Session) is not null;
 
         bool IValueDescriptor.HasDefaultValue => false;
 
         object? IValueDescriptor.GetDefaultValue() => null;
 
-        Type IValueDescriptor.ValueType => typeof(IManagementSession);
+        Type IValueDescriptor.ValueType => typeof(IMaintenanceSession);
 
-        string IValueDescriptor.ValueName => "ManagementSession";
+        string IValueDescriptor.ValueName => "MaintenanceSession";
     }
 }

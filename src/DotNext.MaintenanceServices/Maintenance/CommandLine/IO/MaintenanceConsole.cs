@@ -6,7 +6,7 @@ namespace DotNext.Maintenance.CommandLine.IO;
 
 using Buffers;
 
-internal sealed class ManagementConsole : Disposable, IManagementConsole
+internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
 {
     private sealed class BufferedStreamWriter : Disposable, IStandardStreamWriter
     {
@@ -34,14 +34,14 @@ internal sealed class ManagementConsole : Disposable, IManagementConsole
 
     private readonly BufferedStreamWriter output, error;
 
-    internal ManagementConsole(IManagementSession session, int capacity, MemoryAllocator<char>? allocator)
+    internal MaintenanceConsole(IMaintenanceSession session, int capacity, MemoryAllocator<char>? allocator)
     {
         output = new(capacity, allocator);
         error = new(capacity, allocator);
         Session = session;
     }
 
-    public IManagementSession Session { get; }
+    public IMaintenanceSession Session { get; }
 
     bool IStandardIn.IsInputRedirected => true;
 

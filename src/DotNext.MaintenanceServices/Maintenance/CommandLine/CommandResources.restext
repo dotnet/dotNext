@@ -1,4 +1,4 @@
-WelcomeMessage = Welcome to {0} Management Interface! Type -h or --help to get help
+WelcomeMessage = Welcome to {0} Maintenance Interface! Type -h or --help to get help
 GCCommandDescription=Provides interaction with GC
 GCCollectCommandDescription=Forces Garbage Collection
 GCCollectCommandGenerationArgDescription=The number of the oldest generation to be garbage collected

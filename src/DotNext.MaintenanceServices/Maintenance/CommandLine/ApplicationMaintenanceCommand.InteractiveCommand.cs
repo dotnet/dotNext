@@ -5,19 +5,19 @@ namespace DotNext.Maintenance.CommandLine;
 
 using DefaultBindings = Binding.DefaultBindings;
 
-public static partial class DefaultCommands
+public partial class ApplicationMaintenanceCommand
 {
     /// <summary>
     /// Creates a command that allows to enter interactive mode.
     /// </summary>
     /// <returns>A new command.</returns>
-    public static ApplicationManagementCommand EnterInteractiveModeCommand()
+    public static ApplicationMaintenanceCommand EnterInteractiveModeCommand()
     {
-        var command = new ApplicationManagementCommand("interactive-mode", CommandResources.InteractiveCommandDescription);
+        var command = new ApplicationMaintenanceCommand("interactive-mode", CommandResources.InteractiveCommandDescription);
         command.SetHandler(EnterInteractiveMode, DefaultBindings.Session);
         return command;
 
-        static void EnterInteractiveMode(IManagementSession session)
+        static void EnterInteractiveMode(IMaintenanceSession session)
         {
             session.IsInteractive = true;
             session.Output.Write(CommandResources.WelcomeMessage(RootCommand.ExecutableName) + Environment.NewLine);
@@ -28,9 +28,9 @@ public static partial class DefaultCommands
     /// Creates a command that allows to leave interactive mode.
     /// </summary>
     /// <returns>A new command.</returns>
-    public static ApplicationManagementCommand LeaveInteractiveModeCommand()
+    public static ApplicationMaintenanceCommand LeaveInteractiveModeCommand()
     {
-        var command = new ApplicationManagementCommand("exit", CommandResources.ExitCommandDescription);
+        var command = new ApplicationMaintenanceCommand("exit", CommandResources.ExitCommandDescription);
         command.SetHandler(static session => session.IsInteractive = false, DefaultBindings.Session);
         return command;
     }
