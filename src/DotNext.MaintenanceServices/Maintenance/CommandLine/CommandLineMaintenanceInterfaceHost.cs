@@ -37,13 +37,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         parser = CreateCommandParser(commands);
     }
 
-    /// <summary>
-    /// Creates a default command-line parser.
-    /// </summary>
-    /// <param name="commands">A collection of commands to be available for execution.</param>
-    /// <returns>A parser of the commands.</returns>
-    /// <seealso cref="ApplicationMaintenanceCommand.GetDefaultCommands"/>
-    public static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands)
+    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands)
     {
         var root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
         foreach (var subCommand in commands)
@@ -83,7 +77,6 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     /// <summary>
     /// Gets or sets command-line parser.
     /// </summary>
-    /// <seealso cref="CreateCommandParser(IEnumerable{ApplicationMaintenanceCommand})"/>
     public Parser CommandParser
     {
         get => parser;
