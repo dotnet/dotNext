@@ -158,8 +158,6 @@ var array2 = new int[] { 1, 2, 3 };
 array2.BitwiseEquals(new [] {1, 2, 4});    //false
 ```
 
-This method is faster than naive implementation using `foreach` iteration and comparison by index. Read [Benchmarks](../../benchmarks.md) for more information.
-
 ## Functional iteration
 Extension method `ForEach` allows to iterate over array elements and, optionally, modify array element.
 
