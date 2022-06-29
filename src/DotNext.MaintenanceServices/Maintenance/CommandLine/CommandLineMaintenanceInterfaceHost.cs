@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Maintenance.CommandLine;
 
 using Authentication;
+using Authorization;
 using MaintenanceConsole = CommandLine.IO.MaintenanceConsole;
 
 /// <summary>
@@ -54,7 +55,8 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
             .UseHelp()
             .UseParseErrorReporting(InvalidArgumentExitCode)
             .UseExceptionHandler(HandleException)
-            .AddMiddleware(authHandler is null ? AuthenticationHandler.SetDefaultPrincipal : authHandler.ProcessCommandAsync)
+            .AddMiddleware(authHandler is null ? AuthenticationMiddleware.SetDefaultPrincipal : authHandler.AuthenticateAsync)
+            .AddMiddleware(AuthorizationMiddleware.AuthorizeAsync)
             .AddMiddleware(InjectServices)
             .Build();
     }

@@ -1,6 +1,11 @@
 using System.CommandLine;
+using System.CommandLine.Parsing;
+using System.Runtime.CompilerServices;
+using System.Security.Principal;
 
 namespace DotNext.Maintenance.CommandLine;
+
+using Authorization;
 
 /// <summary>
 /// Represents application maintenance command.
@@ -11,6 +16,8 @@ namespace DotNext.Maintenance.CommandLine;
 /// </remarks>
 public sealed partial class ApplicationMaintenanceCommand : Command
 {
+    private AuthorizationCallback? authorizationRules;
+
     /// <summary>
     /// Initializes a new maintenance command.
     /// </summary>
@@ -19,6 +26,30 @@ public sealed partial class ApplicationMaintenanceCommand : Command
     public ApplicationMaintenanceCommand(string name, string? description = null)
         : base(name, description)
     {
+    }
+
+    /// <summary>
+    /// Allows to attach custom authorization rules for this command.
+    /// </summary>
+    public event AuthorizationCallback Authorization
+    {
+        add => authorizationRules += value;
+        remove => authorizationRules -= value;
+    }
+
+    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    internal async ValueTask<bool> AuthorizeAsync(IPrincipal? principal, CommandResult target, CancellationToken token)
+    {
+        if (principal is null)
+            return false;
+
+        foreach (AuthorizationCallback rule in authorizationRules?.GetInvocationList() ?? Array.Empty<AuthorizationCallback>())
+        {
+            if (!await rule.Invoke(principal, target, token).ConfigureAwait(false))
+                return false;
+        }
+
+        return true;
     }
 
     /// <summary>

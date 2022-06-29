@@ -1,6 +1,6 @@
 WelcomeMessage = Welcome to {0} Maintenance Interface! Type -h or --help to get help
 CommandTimeoutOccurred=Command has timed out. Please try again
-AuthenticationFailed=Authentication failed
+AccessDenined=Access denied
 GCCommandDescription=Provides interaction with GC
 GCCollectCommandDescription=Forces Garbage Collection
 GCCollectCommandGenerationArgDescription=The number of the oldest generation to be garbage collected

@@ -1,11 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
+using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Hosting;
 
 namespace DotNext.Maintenance.CommandLine
 {
-    using System.Security.Principal;
+    using Authentication;
     using Diagnostics;
 
     [ExcludeFromCodeCoverage]
