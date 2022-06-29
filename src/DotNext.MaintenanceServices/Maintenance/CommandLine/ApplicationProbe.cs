@@ -33,7 +33,7 @@ internal static class ApplicationProbe
         console.Out.Write(success ? successfulResponse : unsuccessfulRespose);
     }
 
-    static Task<bool> ExecuteProbeByNameAsync(IApplicationStatusProvider provider, string probeName, CancellationToken token) => probeName switch
+    private static Task<bool> ExecuteProbeByNameAsync(IApplicationStatusProvider provider, string probeName, CancellationToken token) => probeName switch
     {
         LivenessProbeName => provider.LivenessProbeAsync(token),
         ReadinessProbeName => provider.ReadinessProbeAsync(token),
