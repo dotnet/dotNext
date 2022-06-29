@@ -11,6 +11,7 @@ using LinuxUdsPeerIdentity = Security.Principal.LinuxUdsPeerIdentity;
 /// <remarks>
 /// This handler requires that AMI client must be represented by Unix Domain Socket remote peer on Linux.
 /// </remarks>
+/// <seealso cref="LinuxUdsPeerIdentity"/>
 [CLSCompliant(false)]
 public sealed class LinuxUdsPeerAuthenticationHandler : IAuthenticationHandler
 {
