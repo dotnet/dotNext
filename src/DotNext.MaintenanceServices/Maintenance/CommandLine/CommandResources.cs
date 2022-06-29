@@ -16,6 +16,12 @@ internal static class CommandResources
 
     internal static string CommandTimeoutOccurred => (string)Resources.Get();
 
+    internal static string AuthenticationFailed => (string)Resources.Get();
+
+    internal static string LoginOptionName => (string)Resources.Get();
+
+    internal static string SecretOptionName => (string)Resources.Get();
+
     internal static string GCCommandDescription => (string)Resources.Get();
 
     internal static string GCCollectCommandDescription => (string)Resources.Get();

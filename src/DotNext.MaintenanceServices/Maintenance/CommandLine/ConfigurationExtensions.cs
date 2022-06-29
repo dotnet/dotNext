@@ -145,7 +145,7 @@ public static class ConfigurationExtensions
         => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(unixDomainSocketPath.CreateHost);
 
     private static CommandLineMaintenanceInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
-        => new(new(unixDomainSocketPath), services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>());
+        => new(new(unixDomainSocketPath), services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<IAuthenticationHandler>(), services.GetService<ILoggerFactory>());
 
     /// <summary>
     /// Enables Application Maintenance Interface.
@@ -173,4 +173,16 @@ public static class ConfigurationExtensions
     private static CommandLineMaintenanceInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, TDependency, CommandLineMaintenanceInterfaceHost> hostFactory, IServiceProvider services)
         where TDependency : notnull
         => hostFactory(services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>(), services.GetRequiredService<TDependency>());
+
+    /// <summary>
+    /// Enables authentication of the specified type required to execute commands over AMI.
+    /// </summary>
+    /// <typeparam name="T">The type of the authentication.</typeparam>
+    /// <param name="services">A registry of services.</param>
+    /// <returns>A modified registry of services.</returns>
+    /// <seealso cref="PasswordAuthenticationHandler"/>
+    /// <seealso cref="LinuxUdsPeerAuthenticationHandler"/>
+    public static IServiceCollection UseApplicationMaintenanceInterfaceAuthentication<T>(this IServiceCollection services)
+        where T : class, IAuthenticationHandler
+        => services.AddSingleton<IAuthenticationHandler, T>();
 }

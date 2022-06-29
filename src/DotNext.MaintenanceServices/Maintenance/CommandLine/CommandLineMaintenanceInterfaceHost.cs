@@ -31,25 +31,30 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     /// </summary>
     /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
     /// <param name="commands">A set of commands to be available for execution.</param>
-    /// <param name="loggerFactory">The logger factory.</param>
-    public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationMaintenanceCommand> commands, ILoggerFactory? loggerFactory)
+    /// <param name="authHandler">Optional authentication handler.</param>
+    /// <param name="loggerFactory">Optional logger factory.</param>
+    public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler = null, ILoggerFactory? loggerFactory = null)
         : base(endPoint, loggerFactory)
     {
-        parser = CreateCommandParser(commands);
+        parser = CreateCommandParser(commands, authHandler);
     }
 
-    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands)
+    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler)
     {
         var root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
         foreach (var subCommand in commands)
             root.Add(subCommand);
+
+        foreach (var authOption in authHandler?.GetGlobalOptions() ?? Array.Empty<Option>())
+            root.AddGlobalOption(authOption);
 
         return new CommandLineBuilder(root)
             .UseHelpBuilder(CustomizeHelp)
             .UseHelp()
             .UseParseErrorReporting(InvalidArgumentExitCode)
             .UseExceptionHandler(HandleException)
-            .AddMiddleware(SetupServices)
+            .AddMiddleware(authHandler is null ? AuthenticationHandler.SetDefaultPrincipal : authHandler.ProcessCommandAsync)
+            .AddMiddleware(InjectServices)
             .Build();
     }
 
@@ -77,7 +82,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         }
     }
 
-    private static Task SetupServices(InvocationContext context, Func<InvocationContext, Task> next)
+    private static Task InjectServices(InvocationContext context, Func<InvocationContext, Task> next)
     {
         var token = context.GetCancellationToken();
         context.BindingContext.AddService(Helpers.GetValueProvider(token));
@@ -91,30 +96,13 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         return builder;
     }
 
-    /// <summary>
-    /// Constucts a default layout of help page.
-    /// </summary>
-    /// <remarks>
-    /// This layout doesn't include usage syntax.
-    /// </remarks>
-    /// <param name="context">The help page construction context.</param>
-    /// <returns>A collection of sections.</returns>
-    public static IEnumerable<HelpSectionDelegate> DefaultLayout(HelpContext context)
+    private static IEnumerable<HelpSectionDelegate> DefaultLayout(HelpContext context)
     {
         yield return HelpBuilder.Default.SynopsisSection();
         yield return HelpBuilder.Default.CommandArgumentsSection();
         yield return HelpBuilder.Default.OptionsSection();
         yield return HelpBuilder.Default.SubcommandsSection();
         yield return HelpBuilder.Default.AdditionalArgumentsSection();
-    }
-
-    /// <summary>
-    /// Gets or sets command-line parser.
-    /// </summary>
-    public Parser CommandParser
-    {
-        get => parser;
-        init => parser = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <inheritdoc />

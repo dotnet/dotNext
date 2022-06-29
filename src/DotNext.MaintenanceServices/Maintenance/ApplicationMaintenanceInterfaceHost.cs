@@ -142,30 +142,19 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     /// <returns>A task representing asynchronous execution of the command.</returns>
     protected abstract ValueTask ExecuteCommandAsync(IMaintenanceSession session, ReadOnlyMemory<char> command, CancellationToken token);
 
-    /// <summary>
-    /// Identifies the requester asynchronously.
-    /// </summary>
-    /// <param name="socket">The socket connected with the client side.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The identity of the requester.</returns>
-    protected virtual ValueTask<IIdentity> IdentifyAsync(Socket socket, CancellationToken token)
+    private static IIdentity GetRemotePeerIdentity(Socket socket)
     {
-        IIdentity result;
         if (OperatingSystem.IsLinux() && socket.TryGetCredentials(out var processId, out var userId, out var groupId))
         {
-            result = new LinuxUdsPeerIdentity()
+            return new LinuxUdsPeerIdentity()
             {
                 ProcessId = processId,
                 UserId = userId,
                 GroupId = groupId,
             };
         }
-        else
-        {
-            result = IMaintenanceSession.AnonymousIdentity;
-        }
 
-        return new(result);
+        return IMaintenanceSession.AnonymousIdentity;
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
@@ -189,7 +178,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         {
             // process request
             buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false);
-            session = new Session(bufferSize, CharBufferAllocator, await IdentifyAsync(clientSocket, token).ConfigureAwait(false));
+            session = new Session(bufferSize, CharBufferAllocator, GetRemotePeerIdentity(clientSocket));
             inputBuffer = new PooledBufferWriter<char>
             {
                 BufferAllocator = CharBufferAllocator,
