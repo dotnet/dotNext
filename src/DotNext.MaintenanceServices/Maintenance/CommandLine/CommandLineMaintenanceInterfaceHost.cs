@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
+using Authentication;
 using MaintenanceConsole = CommandLine.IO.MaintenanceConsole;
 
 /// <summary>

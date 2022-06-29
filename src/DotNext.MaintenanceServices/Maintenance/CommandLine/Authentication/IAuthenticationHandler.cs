@@ -2,7 +2,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Security.Principal;
 
-namespace DotNext.Maintenance.CommandLine;
+namespace DotNext.Maintenance.CommandLine.Authentication;
 
 using Security.Principal;
 using IMaintenanceConsole = IO.IMaintenanceConsole;

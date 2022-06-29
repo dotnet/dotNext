@@ -4,12 +4,13 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
+using IAuthenticationHandler = Authentication.IAuthenticationHandler;
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
 
 /// <summary>
-/// Provides configuration helpers for DI environment.
+/// Provides methods for configuring AMI host in DI environment.
 /// </summary>
-public static class ConfigurationExtensions
+public static class HostingServices
 {
     /// <summary>
     /// Registers <see cref="IApplicationStatusProvider"/> as a singleton service
@@ -173,16 +174,4 @@ public static class ConfigurationExtensions
     private static CommandLineMaintenanceInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, TDependency, CommandLineMaintenanceInterfaceHost> hostFactory, IServiceProvider services)
         where TDependency : notnull
         => hostFactory(services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>(), services.GetRequiredService<TDependency>());
-
-    /// <summary>
-    /// Enables authentication of the specified type required to execute commands over AMI.
-    /// </summary>
-    /// <typeparam name="T">The type of the authentication.</typeparam>
-    /// <param name="services">A registry of services.</param>
-    /// <returns>A modified registry of services.</returns>
-    /// <seealso cref="PasswordAuthenticationHandler"/>
-    /// <seealso cref="LinuxUdsPeerAuthenticationHandler"/>
-    public static IServiceCollection UseApplicationMaintenanceInterfaceAuthentication<T>(this IServiceCollection services)
-        where T : class, IAuthenticationHandler
-        => services.AddSingleton<IAuthenticationHandler, T>();
 }
