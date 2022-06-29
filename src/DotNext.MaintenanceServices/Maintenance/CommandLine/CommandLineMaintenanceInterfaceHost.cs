@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Builder;
 using System.CommandLine.Help;
+using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,40 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
             .UseHelpBuilder(CustomizeHelp)
             .UseHelp()
             .UseParseErrorReporting(InvalidArgumentExitCode)
+            .UseExceptionHandler(HandleException)
+            .AddMiddleware(SetupServices)
             .Build();
+    }
+
+    private static void HandleException(Exception e, InvocationContext context)
+    {
+        switch (e)
+        {
+            case TimeoutException:
+                const int timeoutExitCode = 75; // EX_TEMPFAIL from sysexits.h
+                context.ExitCode = timeoutExitCode;
+                context.Console.Error.Write(e.Message);
+                break;
+            default:
+                if (context.Console is MaintenanceConsole console)
+                {
+                    console.Session.IsInteractive = false;
+                    console.Session.Output.Write(e.ToString());
+                }
+                else
+                {
+                    context.Console.Error.Write(e.ToString());
+                }
+
+                break;
+        }
+    }
+
+    private static Task SetupServices(InvocationContext context, Func<InvocationContext, Task> next)
+    {
+        var token = context.GetCancellationToken();
+        context.BindingContext.AddService(Helpers.GetValueProvider(token));
+        return next(context);
     }
 
     private static HelpBuilder CustomizeHelp(BindingContext context)
@@ -86,19 +120,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     /// <inheritdoc />
     protected override async ValueTask ExecuteCommandAsync(IMaintenanceSession session, ReadOnlyMemory<char> command, CancellationToken token)
     {
-        var console = new MaintenanceConsole(session, BufferSize, CharBufferAllocator);
-        try
-        {
-            console.Exit(await parser.InvokeAsync(command.ToString(), console).ConfigureAwait(false));
-        }
-        catch (Exception e)
-        {
-            session.Output.Write(e.ToString());
-            session.IsInteractive = false;
-        }
-        finally
-        {
-            console.Dispose();
-        }
+        using var console = new MaintenanceConsole(session, BufferSize, CharBufferAllocator);
+        console.Exit(await parser.InvokeAsync(command.ToString(), console).ConfigureAwait(false));
     }
 }

@@ -1,11 +1,11 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Globalization;
 
 namespace DotNext.Maintenance.CommandLine;
 
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
+using DefaultBindings = Binding.DefaultBindings;
 
 public partial class ApplicationMaintenanceCommand
 {
@@ -17,14 +17,11 @@ public partial class ApplicationMaintenanceCommand
     /// <exception cref="ArgumentNullException"><paramref name="provider"/> is <see langword="null"/>.</exception>
     public static ApplicationMaintenanceCommand Create(IApplicationStatusProvider provider)
     {
-        const string startupProbeName = "startup";
-        const string readinessProbeName = "readiness";
-        const string livenessProbeName = "liveness";
-
         ArgumentNullException.ThrowIfNull(provider);
         var command = new ApplicationMaintenanceCommand("probe", CommandResources.ProbeCommandDescription);
 
-        var probeTypeArg = new Argument<string>("type", CommandResources.ProbeCommandProbeTypeArgDescription).FromAmong(startupProbeName, readinessProbeName, livenessProbeName);
+        var probeTypeArg = new Argument<string>("type", CommandResources.ProbeCommandProbeTypeArgDescription)
+            .FromAmong(ApplicationProbe.StartupProbeName, ApplicationProbe.ReadinessProbeName, ApplicationProbe.LivenessProbeName);
         command.AddArgument(probeTypeArg);
 
         var timeoutArg = new Argument<TimeSpan>("timeout", parse: ParseTimeout, description: CommandResources.ProbeCommandTimeoutArgDescription);
@@ -48,7 +45,7 @@ public partial class ApplicationMaintenanceCommand
         failedResponseOption.AddAlias("-f");
         command.AddOption(failedResponseOption);
 
-        command.SetHandler(ExecuteProbeAsync);
+        command.SetHandler(provider.InvokeProbeAsync, probeTypeArg, DefaultBindings.Console, successfulResponseOption, failedResponseOption, timeoutArg, DefaultBindings.Token);
         return command;
 
         static TimeSpan ParseTimeout(ArgumentResult result)
@@ -62,41 +59,5 @@ public partial class ApplicationMaintenanceCommand
 
             return timeout;
         }
-
-        async Task ExecuteProbeAsync(InvocationContext context)
-        {
-            const int timeoutExitCode = 75; // EX_TEMPFAIL from sysexits.h
-            var probeName = context.ParseResult.GetValueForArgument(probeTypeArg);
-            var token = context.GetCancellationToken();
-
-            var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-            bool success;
-            try
-            {
-                timeoutSource.CancelAfter(context.ParseResult.GetValueForArgument(timeoutArg));
-                success = await ExecuteProbeByNameAsync(provider, probeName, timeoutSource.Token).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) when (!token.IsCancellationRequested)
-            {
-                // timeout occurred
-                context.Console.Error.Write(CommandResources.ProbeCommandTimeoutOccurred(probeName));
-                context.ExitCode = timeoutExitCode;
-                return;
-            }
-            finally
-            {
-                timeoutSource.Dispose();
-            }
-
-            context.Console.Out.Write(context.ParseResult.GetValueForOption(success ? successfulResponseOption : failedResponseOption));
-        }
-
-        static Task<bool> ExecuteProbeByNameAsync(IApplicationStatusProvider provider, string probeName, CancellationToken token) => probeName switch
-        {
-            livenessProbeName => provider.LivenessProbeAsync(token),
-            readinessProbeName => provider.ReadinessProbeAsync(token),
-            startupProbeName => provider.StartupProbeAsync(token),
-            _ => Task.FromResult(true),
-        };
     }
 }

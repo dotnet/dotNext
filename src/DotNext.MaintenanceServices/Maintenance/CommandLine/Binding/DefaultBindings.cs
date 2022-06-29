@@ -21,6 +21,12 @@ public static class DefaultBindings
     /// </summary>
     public static IValueDescriptor<IMaintenanceSession> Session { get; } = new SessionBinder();
 
+    /// <summary>
+    /// Gets a descriptor that allows to obtain <see cref="CancellationToken"/>
+    /// associated with AMI host.
+    /// </summary>
+    public static IValueDescriptor<CancellationToken> Token { get; } = new CancellationTokenBinder();
+
     private sealed class ConsoleBinder : IValueDescriptor<IMaintenanceConsole>, IValueSource
     {
         bool IValueSource.TryGetValue(IValueDescriptor valueDescriptor, BindingContext bindingContext, out object? boundValue)
@@ -47,5 +53,19 @@ public static class DefaultBindings
         Type IValueDescriptor.ValueType => typeof(IMaintenanceSession);
 
         string IValueDescriptor.ValueName => "MaintenanceSession";
+    }
+
+    private sealed class CancellationTokenBinder : IValueDescriptor<CancellationToken>, IValueSource
+    {
+        bool IValueSource.TryGetValue(IValueDescriptor valueDescriptor, BindingContext bindingContext, out object? boundValue)
+            => (boundValue = bindingContext.GetService(typeof(CancellationToken))) is CancellationToken;
+
+        bool IValueDescriptor.HasDefaultValue => false;
+
+        object? IValueDescriptor.GetDefaultValue() => null;
+
+        Type IValueDescriptor.ValueType => typeof(CancellationToken);
+
+        string IValueDescriptor.ValueName => nameof(CancellationToken);
     }
 }

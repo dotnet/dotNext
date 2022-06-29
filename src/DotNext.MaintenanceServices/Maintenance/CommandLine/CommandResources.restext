@@ -1,4 +1,5 @@
 WelcomeMessage = Welcome to {0} Maintenance Interface! Type -h or --help to get help
+CommandTimeoutOccurred=Command has timed out. Please try again
 GCCommandDescription=Provides interaction with GC
 GCCollectCommandDescription=Forces Garbage Collection
 GCCollectCommandGenerationArgDescription=The number of the oldest generation to be garbage collected
@@ -16,4 +17,3 @@ ProbeCommandTimeoutArgDescription=The probe execution timeout. Format is [d.]hh:
 ProbeCommandSuccessfulResponseOptionDescription=Specifies the message to be returned in case of successful probe
 ProbeCommandUnsuccessfulResponseOptionDescription=Specifies the message to be returned in case of unsuccessful probe
 ProbeCommandInvalidTimeoutArg=Incorrect timeout {0}
-ProbeCommandTimeoutOccurred=Probe {0} has timed out

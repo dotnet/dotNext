@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Maintenance;
 
 using Buffers;
+using Security.Principal;
+using static Runtime.InteropServices.UnixDomainSocketInterop;
 using EncodingContext = Text.EncodingContext;
 using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
@@ -147,7 +149,24 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The identity of the requester.</returns>
     protected virtual ValueTask<IIdentity> IdentifyAsync(Socket socket, CancellationToken token)
-        => new(IMaintenanceSession.AnonymousIdentity); // TODO: https://github.com/dotnet/runtime/issues/71207
+    {
+        IIdentity result;
+        if (OperatingSystem.IsLinux() && socket.TryGetCredentials(out var processId, out var userId, out var groupId))
+        {
+            result = new LinuxUdsPeerIdentity()
+            {
+                ProcessId = processId,
+                UserId = userId,
+                GroupId = groupId,
+            };
+        }
+        else
+        {
+            result = IMaintenanceSession.AnonymousIdentity;
+        }
+
+        return new(result);
+    }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private static async ValueTask WriteResponseAsync(Socket clientSocket, ReadOnlyMemory<char> response, EncodingContext encoding, Memory<byte> buffer, CancellationToken token)
