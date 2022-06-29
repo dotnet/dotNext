@@ -1,9 +1,9 @@
-using System.Buffers;
 using System.CommandLine;
 
 namespace DotNext.Maintenance.CommandLine;
 
 using DefaultBindings = Binding.DefaultBindings;
+using static Buffers.BufferHelpers;
 
 public partial class ApplicationMaintenanceCommand
 {
@@ -20,7 +20,7 @@ public partial class ApplicationMaintenanceCommand
         static void EnterInteractiveMode(IMaintenanceSession session)
         {
             session.IsInteractive = true;
-            session.Output.Write(CommandResources.WelcomeMessage(RootCommand.ExecutableName) + Environment.NewLine);
+            session.Output.WriteString($"{CommandResources.WelcomeMessage(RootCommand.ExecutableName)}{Environment.NewLine}");
         }
     }
 

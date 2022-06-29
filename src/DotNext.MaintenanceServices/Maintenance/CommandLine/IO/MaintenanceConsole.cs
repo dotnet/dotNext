@@ -53,8 +53,19 @@ internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
 
     public IBufferWriter<char> Out => output.BufferWriter;
 
+    internal bool SuppressErrorBuffer { get; set; }
+
+    internal bool SuppressOutputBuffer { get; set; }
+
+    internal bool PrintExitCode { get; set; }
+
     internal void Exit(int exitCode)
-        => (exitCode is 0 ? output : error).CopyTo(Session.Output);
+    {
+        if (PrintExitCode)
+            Session.Output.WriteString($"[{exitCode}]");
+
+        (exitCode is 0 ? output : error).CopyTo(Session.Output);
+    }
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)

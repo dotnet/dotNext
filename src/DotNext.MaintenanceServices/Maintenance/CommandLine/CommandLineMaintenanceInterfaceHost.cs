@@ -33,15 +33,21 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     /// </summary>
     /// <param name="endPoint">Unix Domain Socket address used as a interaction point.</param>
     /// <param name="commands">A set of commands to be available for execution.</param>
-    /// <param name="authHandler">Optional authentication handler.</param>
+    /// <param name="authentication">Optional authentication handler.</param>
+    /// <param name="authorization">A set of global authorization rules to be applied to all commands.</param>
     /// <param name="loggerFactory">Optional logger factory.</param>
-    public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler = null, ILoggerFactory? loggerFactory = null)
+    public CommandLineMaintenanceInterfaceHost(
+        UnixDomainSocketEndPoint endPoint,
+        IEnumerable<ApplicationMaintenanceCommand> commands,
+        IAuthenticationHandler? authentication = null,
+        IEnumerable<AuthorizationCallback>? authorization = null,
+        ILoggerFactory? loggerFactory = null)
         : base(endPoint, loggerFactory)
     {
-        parser = CreateCommandParser(commands, authHandler);
+        parser = CreateCommandParser(commands, authentication, authorization ?? Array.Empty<AuthorizationCallback>());
     }
 
-    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler)
+    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler, IEnumerable<AuthorizationCallback> globalAuth)
     {
         var root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
         foreach (var subCommand in commands)
@@ -56,7 +62,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
             .UseParseErrorReporting(InvalidArgumentExitCode)
             .UseExceptionHandler(HandleException)
             .AddMiddleware(authHandler is null ? AuthenticationMiddleware.SetDefaultPrincipal : authHandler.AuthenticateAsync)
-            .AddMiddleware(AuthorizationMiddleware.AuthorizeAsync)
+            .AddMiddleware(globalAuth.AuthorizeAsync)
             .AddMiddleware(InjectServices)
             .Build();
     }
