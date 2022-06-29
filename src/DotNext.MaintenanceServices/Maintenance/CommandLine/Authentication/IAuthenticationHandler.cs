@@ -4,8 +4,8 @@ using System.Security.Principal;
 
 namespace DotNext.Maintenance.CommandLine.Authentication;
 
-using Security.Principal;
 using IMaintenanceConsole = IO.IMaintenanceConsole;
+using AnonymousPrincipal = Security.Principal.AnonymousPrincipal;
 
 /// <summary>
 /// Represents authentication handler for command-line AMI.
@@ -58,7 +58,7 @@ internal static class AuthenticationHandler
     {
         if ((context.Console as IMaintenanceConsole)?.Session is { Principal: null } session)
         {
-            session.Principal = ReferenceEquals(AnonymousPrincipal.Instance.Identity, session.Identity)
+            session.Principal = ReferenceEquals(AnonymousPrincipal.Instance, session.Identity)
                 ? AnonymousPrincipal.Instance
                 : new GenericPrincipal(session.Identity, roles: null);
         }

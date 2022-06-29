@@ -6,7 +6,7 @@ internal sealed class AnonymousPrincipal : IPrincipal, IIdentity
 {
     internal static readonly AnonymousPrincipal Instance = new();
 
-    public IIdentity Identity => this;
+    IIdentity IPrincipal.Identity => this;
 
     bool IPrincipal.IsInRole(string role) => false;
 

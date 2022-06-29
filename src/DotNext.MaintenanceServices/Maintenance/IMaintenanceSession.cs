@@ -3,8 +3,6 @@ using System.Security.Principal;
 
 namespace DotNext.Maintenance;
 
-using Anonymous = Security.Principal.AnonymousPrincipal;
-
 /// <summary>
 /// Represents AMI interaction session.
 /// </summary>
@@ -39,14 +37,4 @@ public interface IMaintenanceSession
     /// </summary>
     /// <value><see langword="null"/> means unauthenticated session.</value>
     IPrincipal? Principal { get; set; }
-
-    /// <summary>
-    /// Gets anonymous user.
-    /// </summary>
-    public static IPrincipal AnonymousPrincipal => Anonymous.Instance;
-
-    /// <summary>
-    /// Gets identity of the anonymous user.
-    /// </summary>
-    public static IIdentity AnonymousIdentity => Anonymous.Instance.Identity;
 }

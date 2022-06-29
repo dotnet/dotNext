@@ -154,7 +154,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
             };
         }
 
-        return IMaintenanceSession.AnonymousIdentity;
+        return AnonymousPrincipal.Instance;
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
@@ -269,8 +269,8 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         IIdentity IMaintenanceSession.Identity => identityOrPrincipal switch
         {
             IIdentity id => id,
-            IPrincipal principal => principal.Identity ?? IMaintenanceSession.AnonymousIdentity,
-            _ => IMaintenanceSession.AnonymousIdentity,
+            IPrincipal principal => principal.Identity ?? AnonymousPrincipal.Instance,
+            _ => AnonymousPrincipal.Instance,
         };
 
         IPrincipal? IMaintenanceSession.Principal
