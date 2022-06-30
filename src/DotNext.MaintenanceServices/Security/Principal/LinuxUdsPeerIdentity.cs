@@ -46,47 +46,6 @@ public sealed record class LinuxUdsPeerIdentity : IIdentity
     /// <inheritdoc />
     string? IIdentity.AuthenticationType => "ucred";
 
-    /// <summary>
-    /// Gets username of the process identified by <see cref="ProcessId"/>.
-    /// </summary>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public string? Name
-    {
-        get
-        {
-            Passwd passwd;
-            string? result;
-            Span<byte> buffer = stackalloc byte[Passwd.InitialBufferSize];
-
-            if (GetPwUidR(UserId, out passwd, Intrinsics.AddressOf(MemoryMarshal.GetReference(buffer)), buffer.Length) is 0)
-            {
-                Debug.Assert(passwd.Name != default);
-                result = Marshal.PtrToStringAnsi(passwd.Name);
-            }
-            else
-            {
-                result = null;
-            }
-
-            return result;
-        }
-    }
-
-    // https://github.com/dotnet/runtime/discussions/71408
-    [DllImport("libSystem.Native", EntryPoint = "SystemNative_GetPwUidR", SetLastError = false)]
-    private static extern int GetPwUidR(uint uid, out Passwd pwd, nint buf, int bufLen);
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Passwd
-    {
-        internal const int InitialBufferSize = 256;
-
-        internal readonly nint Name;
-        internal readonly nint Password;
-        internal readonly uint UserId;
-        internal readonly uint GroupId;
-        internal readonly nint UserInfo;
-        internal readonly nint HomeDirectory;
-        internal readonly nint Shell;
-    }
+    /// <inheritdoc />
+    string? IIdentity.Name => null;
 }
