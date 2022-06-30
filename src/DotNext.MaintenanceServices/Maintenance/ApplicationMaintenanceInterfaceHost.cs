@@ -172,13 +172,13 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     private async void ProcessRequestAsync(Socket clientSocket, CancellationToken token)
     {
         var buffer = default(MemoryOwner<byte>);
-        var session = default(Session);
+        var session = default(MaintenanceSession);
         var inputBuffer = default(BufferWriter<char>);
         try
         {
             // process request
             buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false);
-            session = new Session(bufferSize, CharBufferAllocator, GetRemotePeerIdentity(clientSocket));
+            session = new MaintenanceSession(bufferSize, CharBufferAllocator, GetRemotePeerIdentity(clientSocket));
             inputBuffer = new PooledBufferWriter<char>
             {
                 BufferAllocator = CharBufferAllocator,
@@ -254,13 +254,12 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         }
     }
 
-    private sealed class Session : Disposable, IMaintenanceSession
+    private sealed class MaintenanceSession : Dictionary<string, object>, IMaintenanceSession
     {
         private readonly PooledBufferWriter<char> output;
-        private IDictionary<string, object>? context;
         private object? identityOrPrincipal;
 
-        internal Session(int capacity, MemoryAllocator<char>? allocator, IIdentity identity)
+        internal MaintenanceSession(int capacity, MemoryAllocator<char>? allocator, IIdentity identity)
         {
             output = new() { BufferAllocator = allocator, Capacity = capacity };
             identityOrPrincipal = identity;
@@ -287,17 +286,23 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 
         IBufferWriter<char> IMaintenanceSession.Output => output;
 
-        public IDictionary<string, object> Context => context ??= new Dictionary<string, object>(StringComparer.Ordinal);
+        IDictionary<string, object> IMaintenanceSession.Context => this;
 
-        protected override void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing)
             {
                 output.Dispose();
-                context?.Clear();
+                Clear();
             }
-
-            base.Dispose(disposing);
         }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~MaintenanceSession() => Dispose(disposing: false);
     }
 }

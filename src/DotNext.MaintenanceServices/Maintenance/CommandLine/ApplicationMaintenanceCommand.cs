@@ -1,7 +1,5 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
-using System.Runtime.CompilerServices;
-using System.Security.Principal;
 
 namespace DotNext.Maintenance.CommandLine;
 
@@ -37,20 +35,8 @@ public sealed partial class ApplicationMaintenanceCommand : Command
         remove => authorizationRules -= value;
     }
 
-    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    internal async ValueTask<bool> AuthorizeAsync(IPrincipal? principal, CommandResult target, CancellationToken token)
-    {
-        if (principal is null)
-            return false;
-
-        foreach (AuthorizationCallback rule in authorizationRules?.GetInvocationList() ?? Array.Empty<AuthorizationCallback>())
-        {
-            if (!await rule.Invoke(principal, target, token).ConfigureAwait(false))
-                return false;
-        }
-
-        return true;
-    }
+    internal ValueTask<bool> AuthorizeAsync(IMaintenanceSession session, CommandResult target, CancellationToken token)
+        => authorizationRules.AuthorizeAsync(session, target, token);
 
     /// <summary>
     /// Gets a collection of default commands.

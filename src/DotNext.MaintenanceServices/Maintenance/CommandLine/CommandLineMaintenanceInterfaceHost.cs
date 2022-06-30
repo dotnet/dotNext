@@ -25,6 +25,9 @@ using MaintenanceConsole = CommandLine.IO.MaintenanceConsole;
 public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenanceInterfaceHost
 {
     private const int InvalidArgumentExitCode = 64; // EX_USAGE from sysexits.h
+    private const string PrintErrorCodeDirective = "prnec";
+    private const string SuppressStandardOutputDirective = "supout";
+    private const string SuppressStandardErrorDirective = "superr";
 
     private readonly Parser parser;
 
@@ -40,14 +43,14 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         UnixDomainSocketEndPoint endPoint,
         IEnumerable<ApplicationMaintenanceCommand> commands,
         IAuthenticationHandler? authentication = null,
-        IEnumerable<AuthorizationCallback>? authorization = null,
+        AuthorizationCallback? authorization = null,
         ILoggerFactory? loggerFactory = null)
         : base(endPoint, loggerFactory)
     {
-        parser = CreateCommandParser(commands, authentication, authorization ?? Array.Empty<AuthorizationCallback>());
+        parser = CreateCommandParser(commands, authentication, authorization);
     }
 
-    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler, IEnumerable<AuthorizationCallback> globalAuth)
+    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler, AuthorizationCallback? globalAuth)
     {
         var root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
         foreach (var subCommand in commands)
@@ -61,10 +64,23 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
             .UseHelp()
             .UseParseErrorReporting(InvalidArgumentExitCode)
             .UseExceptionHandler(HandleException)
+            .AddMiddleware(ProcessDirectives)
             .AddMiddleware(authHandler is null ? AuthenticationMiddleware.SetDefaultPrincipal : authHandler.AuthenticateAsync)
             .AddMiddleware(globalAuth.AuthorizeAsync)
             .AddMiddleware(InjectServices)
             .Build();
+    }
+
+    private static Task ProcessDirectives(InvocationContext context, Func<InvocationContext, Task> next)
+    {
+        if (context.Console is MaintenanceConsole console)
+        {
+            console.PrintExitCode = context.ParseResult.Directives.Contains(PrintErrorCodeDirective);
+            console.SuppressOutputBuffer = context.ParseResult.Directives.Contains(SuppressStandardOutputDirective);
+            console.SuppressErrorBuffer = context.ParseResult.Directives.Contains(SuppressStandardErrorDirective);
+        }
+
+        return next(context);
     }
 
     private static void HandleException(Exception e, InvocationContext context)

@@ -1,13 +1,19 @@
+using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Hosting;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Maintenance.CommandLine
 {
     using Authentication;
+    using Authorization;
+    using Binding;
     using Diagnostics;
+    using Security.Principal;
+    using static Buffers.BufferHelpers;
 
     [ExcludeFromCodeCoverage]
     public sealed class CommandLineMaintenanceInterfaceHostTests : Test
@@ -16,6 +22,12 @@ namespace DotNext.Maintenance.CommandLine
         [InlineData("probe readiness 00:00:01", "ok")]
         [InlineData("probe startup 00:00:01", "ok")]
         [InlineData("probe liveness 00:00:01", "fail")]
+        [InlineData("[prnec] probe readiness 00:00:01", "[0]ok")]
+        [InlineData("[prnec] probe startup 00:00:01", "[0]ok")]
+        [InlineData("[prnec] probe liveness 00:00:01", "[0]fail")]
+        [InlineData("[superr] [supout] [prnec] probe readiness 00:00:01", "[0]")]
+        [InlineData("[superr] [supout] [prnec] probe startup 00:00:01", "[0]")]
+        [InlineData("[superr] [supout] [prnec] probe liveness 00:00:01", "[0]")]
         [InlineData("gc collect 0", "")]
         [InlineData("gc loh-compaction-mode CompactOnce", "")]
         public static async Task DefaultCommandsAsync(string request, string response)
@@ -44,10 +56,49 @@ namespace DotNext.Maintenance.CommandLine
             await host.StopAsync();
         }
 
+        [PlatformSpecificFact("linux")]
+        public static async Task UdsEndpointAuthentication()
+        {
+            var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using var host = new HostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services
+                        .UseApplicationMaintenanceInterface(unixDomainSocketPath)
+                        .UseApplicationMaintenanceInterfaceAuthentication<LinuxUdsPeerAuthenticationHandler>()
+                        .RegisterMaintenanceCommand("client-pid", static command =>
+                        {
+                            command.SetHandler(static session =>
+                            {
+                                True(session.Identity.IsAuthenticated);
+                                IsType<LinuxUdsPeerIdentity>(session.Identity);
+                                session.Output.WriteFormattable(((LinuxUdsPeerIdentity)session.Identity).ProcessId, provider: InvariantCulture);
+                            },
+                            DefaultBindings.Session);
+                        });
+                })
+                .Build();
+
+            await host.StartAsync();
+
+            var buffer = new byte[512];
+            using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified))
+            {
+                await socket.ConnectAsync(new UnixDomainSocketEndPoint(unixDomainSocketPath));
+                Equal(Environment.ProcessId.ToString(InvariantCulture), await ExecuteCommandAsync(socket, "client-pid", buffer));
+                await socket.DisconnectAsync(true);
+            }
+
+            await host.StopAsync();
+        }
+
         [Theory]
         [InlineData("probe readiness 00:00:01 --login test --secret pwd", "ok")]
         [InlineData("probe startup 00:00:01 --login test --secret pwd", "ok")]
         [InlineData("probe liveness 00:00:01 --login test --secret pwd", "fail")]
+        [InlineData("[superr] [supout] [prnec] add 10 20", "[77]")]
+        [InlineData("[superr] [supout] [prnec] add 10 20 -login test --secret pwd", "[77]")]
+        [InlineData("add 10 20 --login test2 --secret pwd", "30")]
         public static async Task PasswordAuthentication(string request, string response)
         {
             var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -57,7 +108,29 @@ namespace DotNext.Maintenance.CommandLine
                     services
                         .UseApplicationMaintenanceInterface(unixDomainSocketPath)
                         .UseApplicationMaintenanceInterfaceAuthentication<TestPasswordAuthenticationHandler>()
-                        .UseApplicationStatusProvider<TestStatusProvider>();
+                        .UseApplicationStatusProvider<TestStatusProvider>()
+                        .UseApplicationMaintenanceInterfaceGlobalAuthorization(static (user, cmd, ctx, token) =>
+                        {
+                            True(user.Identity.IsAuthenticated);
+                            return new(user.IsInRole("role1"));
+                        })
+                        .RegisterMaintenanceCommand("add", static cmd =>
+                        {
+                            var argX = new Argument<int>("x")
+                            {
+                                Arity = ArgumentArity.ExactlyOne,
+                            };
+                            cmd.AddArgument(argX);
+
+                            var argY = new Argument<int>("y")
+                            {
+                                Arity = ArgumentArity.ExactlyOne,
+                            };
+                            cmd.AddArgument(argY);
+
+                            cmd.SetHandler(static (x, y, session) => session.Output.WriteFormattable(x + y, provider: InvariantCulture), argX, argY, DefaultBindings.Session);
+                            cmd.Authorization += static (user, cmd, ctx, token) => new(user.IsInRole("role2"));
+                        });
                 })
                 .Build();
 
@@ -91,7 +164,15 @@ namespace DotNext.Maintenance.CommandLine
         private sealed class TestPasswordAuthenticationHandler : PasswordAuthenticationHandler
         {
             protected override ValueTask<IPrincipal> ChallengeAsync(string login, string secret, CancellationToken token)
-                => new(string.Equals(login, "test", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal) ? new GenericPrincipal(new GenericIdentity(login), roles: null) : null);
+            {
+                if (string.Equals(login, "test", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal))
+                    return new(new GenericPrincipal(new GenericIdentity(login), roles: new[] { "role1" }));
+
+                if (string.Equals(login, "test2", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal))
+                    return new(new GenericPrincipal(new GenericIdentity(login), roles: new[] { "role1", "role2" }));
+
+                return new(default(IPrincipal));
+            }
         }
     }
 }

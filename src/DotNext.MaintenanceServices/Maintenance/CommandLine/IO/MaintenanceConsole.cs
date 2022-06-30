@@ -64,7 +64,15 @@ internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
         if (PrintExitCode)
             Session.Output.WriteString($"[{exitCode}]");
 
-        (exitCode is 0 ? output : error).CopyTo(Session.Output);
+        switch (exitCode)
+        {
+            case 0 when SuppressOutputBuffer is false:
+                output.CopyTo(Session.Output);
+                break;
+            case not 0 when SuppressErrorBuffer is false:
+                error.CopyTo(Session.Output);
+                break;
+        }
     }
 
     /// <inheritdoc />

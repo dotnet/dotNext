@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
+using AuthorizationCallback = Authorization.AuthorizationCallback;
 using IAuthenticationHandler = Authentication.IAuthenticationHandler;
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
 
@@ -146,32 +147,5 @@ public static class HostingServices
         => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(unixDomainSocketPath.CreateHost);
 
     private static CommandLineMaintenanceInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
-        => new(new(unixDomainSocketPath), services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<IAuthenticationHandler>(), services.GetService<ILoggerFactory>());
-
-    /// <summary>
-    /// Enables Application Maintenance Interface.
-    /// </summary>
-    /// <param name="services">A registry of services.</param>
-    /// <param name="hostFactory">The host factory.</param>
-    /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationMaintenanceInterface(this IServiceCollection services, Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, CommandLineMaintenanceInterfaceHost> hostFactory)
-        => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(hostFactory.CreateHost);
-
-    private static CommandLineMaintenanceInterfaceHost CreateHost(this Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, CommandLineMaintenanceInterfaceHost> hostFactory, IServiceProvider services)
-        => hostFactory(services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>());
-
-    /// <summary>
-    /// Enables Application Maintenance Interface.
-    /// </summary>
-    /// <typeparam name="TDependency">The dependency required for host initialization.</typeparam>
-    /// <param name="services">A registry of services.</param>
-    /// <param name="hostFactory">The host factory.</param>
-    /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationMaintenanceInterface<TDependency>(this IServiceCollection services, Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, TDependency, CommandLineMaintenanceInterfaceHost> hostFactory)
-        where TDependency : notnull
-        => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(hostFactory.CreateHost);
-
-    private static CommandLineMaintenanceInterfaceHost CreateHost<TDependency>(this Func<IEnumerable<ApplicationMaintenanceCommand>, ILoggerFactory?, TDependency, CommandLineMaintenanceInterfaceHost> hostFactory, IServiceProvider services)
-        where TDependency : notnull
-        => hostFactory(services.GetServices<ApplicationMaintenanceCommand>(), services.GetService<ILoggerFactory>(), services.GetRequiredService<TDependency>());
+        => new(new(unixDomainSocketPath), services.GetServices<ApplicationMaintenanceCommand>(), authentication: services.GetService<IAuthenticationHandler>(), authorization: Delegate.Combine(services.GetServices<AuthorizationCallback>().ToArray()) as AuthorizationCallback, loggerFactory: services.GetService<ILoggerFactory>());
 }
