@@ -17,8 +17,8 @@ public sealed class LinuxUdsPeerAuthenticationHandler : IAuthenticationHandler
 {
     /// <inheritdoc />
     ValueTask<IPrincipal?> IAuthenticationHandler.ChallengeAsync(InvocationContext context, IIdentity identity, CancellationToken token)
-        => new(identity is LinuxUdsPeerIdentity peerIdentity ? ChallengeAsync(peerIdentity) : null);
+        => new(identity is LinuxUdsPeerIdentity peerIdentity ? Challenge(peerIdentity) : null);
 
-    private static GenericPrincipal ChallengeAsync(LinuxUdsPeerIdentity identity)
+    private static GenericPrincipal Challenge(LinuxUdsPeerIdentity identity)
         => new(identity with { IsAuthenticated = true }, roles: null);
 }
