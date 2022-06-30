@@ -138,3 +138,5 @@
   items:
     - name: K8s Probes
       href: ami/probes.md
+    - name: Authentication and Authorization
+      href: ami/auth.md

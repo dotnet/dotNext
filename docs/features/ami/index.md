@@ -41,14 +41,92 @@ If you want to send the command programmatically then you need to insert line te
 
 Some of the commands may produce output in the form of plain text.
 
+In interactive mode, administrator can use standard flags `-h` or `--help` to get help for the commands or subcommands.
+
 # AMI Hosting
-AMI is supported for the application with or without Dependency Injection support. For simplicity, 
+AMI is supported for the application with or without Dependency Injection support. For simplicity, all code examples implies DI enabled.
+
+The following code snippet demonstrates bare minimum to enable AMI for the application:
+```csharp
+using DotNext.Maintenance.CommandLine;
+
+await new HostBuilder()
+    .ConfigureServices(static services =>
+    {
+        services
+            .RegisterDefaultMaintenanceCommands()
+            .UseApplicationMaintenanceInterface("/path/to/unix/domain/socket");
+    })
+    .Build()
+    .RunAsync();
+```
+
+`RegisterDefaultMaintenanceCommands` extension method registers default set of maintenance commands (`gc`, `interactive-mode`, `exit`). `UseApplicationMaintenanceInterface` registers a host that listens for the commands to be received through Unix Domain Socket at the specificed location. Note that pseudo file at that path **should not** exist before application startup. The file will be created by the host automatically. However, if file exists, the host throws an exception.
 
 # Custom Commands
-Command parsing is implemented on top of [System.CommandLine](https://docs.microsoft.com/en-us/dotnet/standard/commandline/) open-source library.
+Command parsing is implemented on top of [System.CommandLine](https://docs.microsoft.com/en-us/dotnet/standard/commandline/) open-source library. [ApplicationMaintenanceCommand](xref:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand) class represents maintenance command that can be registered in DI:
+```csharp
+using System.Buffers;
+using System.CommandLine;
+using System.CommandLine.Parsing;
+using DotNext.Maintenance.CommandLine;
+using DotNext.Maintenance.CommandLine.Binding;
+using Microsoft.Extensions.Hosting;
+
+await new HostBuilder()
+    .ConfigureServices(static services =>
+    {
+        services
+            .UseApplicationMaintenanceInterface("/path/to/unix/domain/socket")
+            .RegisterMaintenanceCommand("add", ConfigureAddCommand);
+    })
+    .Build()
+    .RunAsync();
+
+static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
+{
+    command.Description = "Adds two integers";
+    var argX = new Argument<int>("x", parse: ParseInteger, description: "The first operand")
+    {
+        Arity = ArgumentArity.ExactlyOne
+    };
+    var argY = new Argument<int>("y", parse: ParseInteger, description: "The second operand")
+    {
+        Arity = ArgumentArity.ExactlyOne,
+    };
+
+    command.AddArgument(argX);
+    command.AddArgument(argY);
+    command.SetHandler(static (x, y, console) =>
+    {
+        console.Out.Write((x + y).ToString());
+        console.Out.Write(Environment.NewLine);
+    },
+    argX,
+    argY,
+    DefaultBindings.Console);
+}
+```
+
+Registered custom commands will be automatically discovered by AMI host. [DefaultBindings](xref:DotNext.Maintenance.CommandLine.Binding.DefaultBindings) provides extra bindings available for the commands when executing by AMI host.
 
 # Security
+AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have a direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:
+* Configure access rights for the pseudo file at file system level
+* Use authentication and authorization at AMI level
 
+Read more [here](./auth.md) about authentication and authorization in AMI.
+
+# Directives
+AMI supports special directives aimed to control output:
+* `[prnec]` - prints exit code of the command in square brackets at the beginning of the output
+* `[supout]` - suppresses command output
+* `[superr]` - suppresses command error output
+
+The following example demonstrates how to add exit code to the probe output:
+```sh
+[prnec] probe liveness 00:00:01
+```
 
 # Example
-You can find a simple application with AMI enabled [here](https://github.com/dotnet/dotNext/tree/develop/src/examples/CommandLineAMI). All you need is to run it with `dotnet run` command and follow instructions printed by the app.
+You can find a simple application with AMI enabled [here](https://github.com/dotnet/dotNext/tree/master/src/examples/CommandLineAMI). All you need is to run it with `dotnet run` command and follow instructions printed by the app.
