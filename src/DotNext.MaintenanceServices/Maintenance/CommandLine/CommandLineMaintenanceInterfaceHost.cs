@@ -110,7 +110,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     private static Task InjectServices(InvocationContext context, Func<InvocationContext, Task> next)
     {
         var token = context.GetCancellationToken();
-        context.BindingContext.AddService(Helpers.GetValueProvider(token));
+        context.BindingContext.AddService(sp => token);
         return next(context);
     }
 

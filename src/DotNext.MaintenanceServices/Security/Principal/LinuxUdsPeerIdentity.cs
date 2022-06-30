@@ -1,11 +1,7 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Principal;
 
 namespace DotNext.Security.Principal;
-
-using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
 /// Represents identity of the peer interacting via Unix Domain Socket on Linux.
