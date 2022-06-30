@@ -13,14 +13,15 @@ await new HostBuilder()
     .ConfigureServices(services =>
     {
         services
-            .UseApplicationManagementInterface(path)
-            .RegisterCommand("add", ConfigureAddCommand)
-            .RegisterCommand("sub", ConfigureSubtractCommand);
+            .UseApplicationMaintenanceInterface(path)
+            .RegisterDefaultMaintenanceCommands()
+            .RegisterMaintenanceCommand("add", ConfigureAddCommand)
+            .RegisterMaintenanceCommand("sub", ConfigureSubtractCommand);
     })
     .Build()
     .RunAsync();
 
-static void ConfigureAddCommand(ApplicationManagementCommand command)
+static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
 {
     command.Description = "Adds two integers";
     var argX = new Argument<int>("x", parse: ParseInteger, description: "The first operand")
@@ -44,7 +45,7 @@ static void ConfigureAddCommand(ApplicationManagementCommand command)
     DefaultBindings.Console);
 }
 
-static void ConfigureSubtractCommand(ApplicationManagementCommand command)
+static void ConfigureSubtractCommand(ApplicationMaintenanceCommand command)
 {
     command.Description = "Adds two integers";
     var argX = new Argument<int>("x", parse: ParseInteger, description: "The first operand")

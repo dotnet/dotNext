@@ -181,3 +181,6 @@ dotnet_diagnostic.SA1106.severity = none
 
 # CA1507: Use nameof in place of string
 dotnet_diagnostic.CA1507.severity = error
+
+# CA1060: Move P/Invokes to NativeMethods class
+dotnet_diagnostic.CA1060.severity = none

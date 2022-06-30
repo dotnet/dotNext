@@ -14,6 +14,14 @@ internal static class CommandResources
     internal static string WelcomeMessage(string appName)
         => Resources.Get().Format(appName);
 
+    internal static string CommandTimeoutOccurred => (string)Resources.Get();
+
+    internal static string AccessDenined => (string)Resources.Get();
+
+    internal static string LoginOptionName => (string)Resources.Get();
+
+    internal static string SecretOptionName => (string)Resources.Get();
+
     internal static string GCCommandDescription => (string)Resources.Get();
 
     internal static string GCCollectCommandDescription => (string)Resources.Get();
@@ -46,9 +54,6 @@ internal static class CommandResources
 
     internal static string ProbeCommandInvalidTimeoutArg(string? timeout)
         => Resources.Get().Format(timeout);
-
-    internal static string ProbeCommandTimeoutOccurred(string probeName)
-        => Resources.Get().Format(probeName);
 
     internal static string ProbeCommandSuccessfulResponseOptionDescription => (string)Resources.Get();
 
