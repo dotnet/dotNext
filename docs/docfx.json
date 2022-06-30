@@ -33,6 +33,10 @@
         {
           "files": [ "**.csproj" ],
           "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.MaintenanceServices/"
         }
       ],
       "dest": "api"

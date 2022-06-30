@@ -133,3 +133,8 @@
       href: cluster/raft.md
     - name: Persistent Log
       href: cluster/wal.md
+- name: Application Maintenance Interface
+  href: ami/index.md
+  items:
+    - name: K8s Probes
+      href: ami/probes.md
