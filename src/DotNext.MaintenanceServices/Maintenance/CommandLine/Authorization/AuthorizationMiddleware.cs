@@ -28,7 +28,7 @@ internal static class AuthorizationMiddleware
     private static ValueTask<bool> AuthorizeCommandAsync(IMaintenanceConsole console, InvocationContext context)
         => context.ParseResult.CommandResult.Command is ApplicationMaintenanceCommand maintenanceCommand ? maintenanceCommand.AuthorizeAsync(console.Session, context.ParseResult.CommandResult, context.GetCancellationToken()) : new(true);
 
-    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     internal static async ValueTask<bool> AuthorizeAsync(this AuthorizationCallback? authorizationRules, IMaintenanceSession session, CommandResult target, CancellationToken token)
     {
         if (session.Principal is null)

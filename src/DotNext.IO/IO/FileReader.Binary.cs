@@ -297,7 +297,7 @@ public partial class FileReader : IAsyncBinaryReader
             return result;
         }
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<T> ParseSlowAsync()
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, exactSize: true);
