@@ -17,7 +17,7 @@ internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
 
         internal IBufferWriter<char> BufferWriter => buffer;
 
-        internal void CopyTo(IBufferWriter<char> output)
+        internal void CopyTo(TextWriter output)
             => output.Write(buffer.WrittenMemory.Span);
 
         void IStandardStreamWriter.Write(string? value)
@@ -62,15 +62,19 @@ internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
     internal void Exit(int exitCode)
     {
         if (PrintExitCode)
-            Session.Output.WriteString($"[{exitCode}]");
+        {
+            Session.ResponseWriter.Write('[');
+            Session.ResponseWriter.Write(exitCode);
+            Session.ResponseWriter.Write(']');
+        }
 
         switch (exitCode)
         {
             case 0 when SuppressOutputBuffer is false:
-                output.CopyTo(Session.Output);
+                output.CopyTo(Session.ResponseWriter);
                 break;
             case not 0 when SuppressErrorBuffer is false:
-                error.CopyTo(Session.Output);
+                error.CopyTo(Session.ResponseWriter);
                 break;
         }
     }

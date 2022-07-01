@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Security.Principal;
 
 namespace DotNext.Maintenance;
@@ -21,7 +20,7 @@ public interface IMaintenanceSession
     /// <summary>
     /// Gets output buffer.
     /// </summary>
-    IBufferWriter<char> Output { get; }
+    TextWriter ResponseWriter { get; }
 
     /// <summary>
     /// Gets identity of the user started this session.

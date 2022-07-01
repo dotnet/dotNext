@@ -13,7 +13,6 @@ namespace DotNext.Maintenance.CommandLine
     using Binding;
     using Diagnostics;
     using Security.Principal;
-    using static Buffers.BufferHelpers;
 
     [ExcludeFromCodeCoverage]
     public sealed class CommandLineMaintenanceInterfaceHostTests : Test
@@ -72,7 +71,7 @@ namespace DotNext.Maintenance.CommandLine
                             {
                                 True(session.Identity.IsAuthenticated);
                                 IsType<LinuxUdsPeerIdentity>(session.Identity);
-                                session.Output.WriteFormattable(((LinuxUdsPeerIdentity)session.Identity).ProcessId, provider: InvariantCulture);
+                                session.ResponseWriter.Write(((LinuxUdsPeerIdentity)session.Identity).ProcessId);
                             },
                             DefaultBindings.Session);
                         });
@@ -128,7 +127,7 @@ namespace DotNext.Maintenance.CommandLine
                             };
                             cmd.AddArgument(argY);
 
-                            cmd.SetHandler(static (x, y, session) => session.Output.WriteFormattable(x + y, provider: InvariantCulture), argX, argY, DefaultBindings.Session);
+                            cmd.SetHandler(static (x, y, session) => session.ResponseWriter.Write(x + y), argX, argY, DefaultBindings.Session);
                             cmd.Authorization += static (user, cmd, ctx, token) => new(user.IsInRole("role2"));
                         });
                 })

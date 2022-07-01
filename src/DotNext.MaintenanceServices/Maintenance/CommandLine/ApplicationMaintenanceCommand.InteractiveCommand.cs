@@ -3,7 +3,6 @@ using System.CommandLine;
 namespace DotNext.Maintenance.CommandLine;
 
 using DefaultBindings = Binding.DefaultBindings;
-using static Buffers.BufferHelpers;
 
 public partial class ApplicationMaintenanceCommand
 {
@@ -17,10 +16,10 @@ public partial class ApplicationMaintenanceCommand
         command.SetHandler(EnterInteractiveMode, DefaultBindings.Session);
         return command;
 
-        static void EnterInteractiveMode(IMaintenanceSession session)
+        static Task EnterInteractiveMode(IMaintenanceSession session)
         {
             session.IsInteractive = true;
-            session.Output.WriteString($"{CommandResources.WelcomeMessage(RootCommand.ExecutableName)}{Environment.NewLine}");
+            return session.ResponseWriter.WriteLineAsync(CommandResources.WelcomeMessage(RootCommand.ExecutableName));
         }
     }
 
