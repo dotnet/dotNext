@@ -18,7 +18,7 @@ public interface IMaintenanceSession
     IDictionary<string, object> Context { get; }
 
     /// <summary>
-    /// Gets output buffer.
+    /// Gets command response writer.
     /// </summary>
     TextWriter ResponseWriter { get; }
 
