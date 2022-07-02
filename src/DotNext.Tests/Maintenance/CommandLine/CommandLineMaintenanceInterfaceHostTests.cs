@@ -72,7 +72,6 @@ namespace DotNext.Maintenance.CommandLine
                                 True(session.Identity.IsAuthenticated);
                                 IsType<LinuxUdsPeerIdentity>(session.Identity);
                                 session.ResponseWriter.Write(((LinuxUdsPeerIdentity)session.Identity).ProcessId);
-                                session.ResponseWriter.Flush();
                             },
                             DefaultBindings.Session);
                         });
@@ -131,7 +130,7 @@ namespace DotNext.Maintenance.CommandLine
                             cmd.SetHandler(static (x, y, session) =>
                             {
                                 session.ResponseWriter.Write(x + y);
-                                return session.ResponseWriter.FlushAsync();
+                                session.ResponseWriter.Flush();
                             },
                             argX,
                             argY,
