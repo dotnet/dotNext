@@ -72,6 +72,7 @@ namespace DotNext.Maintenance.CommandLine
                                 True(session.Identity.IsAuthenticated);
                                 IsType<LinuxUdsPeerIdentity>(session.Identity);
                                 session.ResponseWriter.Write(((LinuxUdsPeerIdentity)session.Identity).ProcessId);
+                                session.ResponseWriter.Flush();
                             },
                             DefaultBindings.Session);
                         });
