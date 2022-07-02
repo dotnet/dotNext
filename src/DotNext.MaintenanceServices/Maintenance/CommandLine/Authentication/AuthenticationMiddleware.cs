@@ -47,6 +47,7 @@ internal static class AuthenticationMiddleware
     private static void Forbid(InvocationContext context)
     {
         context.ExitCode = ForbiddenExitCode;
-        context.Console.Error.Write(CommandResources.AccessDenined + Environment.NewLine);
+        context.Console.Error.Write(CommandResources.AccessDenined);
+        context.Console.Error.Write(Environment.NewLine);
     }
 }
