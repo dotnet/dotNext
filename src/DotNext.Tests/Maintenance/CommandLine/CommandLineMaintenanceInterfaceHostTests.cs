@@ -128,7 +128,14 @@ namespace DotNext.Maintenance.CommandLine
                             };
                             cmd.AddArgument(argY);
 
-                            cmd.SetHandler(static (x, y, session) => session.ResponseWriter.Write(x + y), argX, argY, DefaultBindings.Session);
+                            cmd.SetHandler(static (x, y, session) =>
+                            {
+                                session.ResponseWriter.Write(x + y);
+                                return session.ResponseWriter.FlushAsync();
+                            },
+                            argX,
+                            argY,
+                            DefaultBindings.Session);
                             cmd.Authorization += static (user, cmd, ctx, token) => new(user.IsInRole("role2"));
                         });
                 })
