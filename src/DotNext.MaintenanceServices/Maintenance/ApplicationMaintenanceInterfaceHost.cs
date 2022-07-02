@@ -225,7 +225,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         }
     }
 
-    private void ProcessRequestAsync(Tuple<Socket, CancellationToken> args)
+    private void ProcessRequestAsync((Socket, CancellationToken) args)
         => ProcessRequestAsync(args.Item1, args.Item2);
 
     /// <summary>
@@ -240,10 +240,10 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         listener.Listen(backlog);
 
         // preallocate delegate
-        for (Action<Tuple<Socket, CancellationToken>> requestProcessor = ProcessRequestAsync; !token.IsCancellationRequested;)
+        for (Action<(Socket, CancellationToken)> requestProcessor = ProcessRequestAsync; !token.IsCancellationRequested;)
         {
             var connection = await listener.AcceptAsync(token).ConfigureAwait(false);
-            ThreadPool.QueueUserWorkItem(requestProcessor, new Tuple<Socket, CancellationToken>(connection, token), preferLocal: false);
+            ThreadPool.QueueUserWorkItem(requestProcessor, (connection, token), preferLocal: false);
         }
     }
 
