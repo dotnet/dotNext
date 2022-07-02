@@ -25,10 +25,7 @@ public interface IMaintenanceSession
     /// <summary>
     /// Gets identity of the user started this session.
     /// </summary>
-    /// <remarks>
-    /// On Linux and FreeBSD, it is possible to obtain identity of the user
-    /// started AMI session.
-    /// </remarks>
+    /// <seealso cref="Security.Principal.LinuxUdsPeerIdentity"/>
     IIdentity Identity { get; }
 
     /// <summary>
