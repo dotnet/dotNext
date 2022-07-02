@@ -240,9 +240,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         listener.Listen(backlog);
 
         // preallocate delegate
-        Action<Tuple<Socket, CancellationToken>> requestProcessor = ProcessRequestAsync;
-
-        while (!token.IsCancellationRequested)
+        for (Action<Tuple<Socket, CancellationToken>> requestProcessor = ProcessRequestAsync; !token.IsCancellationRequested;)
         {
             var connection = await listener.AcceptAsync(token).ConfigureAwait(false);
             ThreadPool.QueueUserWorkItem(requestProcessor, new Tuple<Socket, CancellationToken>(connection, token), preferLocal: false);
