@@ -18,14 +18,11 @@ public partial class ApplicationMaintenanceCommand
     public static ApplicationMaintenanceCommand Create(IApplicationStatusProvider provider)
     {
         ArgumentNullException.ThrowIfNull(provider);
-        var command = new ApplicationMaintenanceCommand("probe", CommandResources.ProbeCommandDescription);
 
         var probeTypeArg = new Argument<string>("type", CommandResources.ProbeCommandProbeTypeArgDescription)
             .FromAmong(ApplicationProbe.StartupProbeName, ApplicationProbe.ReadinessProbeName, ApplicationProbe.LivenessProbeName);
-        command.AddArgument(probeTypeArg);
 
         var timeoutArg = new Argument<TimeSpan>("timeout", parse: ParseTimeout, description: CommandResources.ProbeCommandTimeoutArgDescription);
-        command.AddArgument(timeoutArg);
 
         var successfulResponseOption = new Option<string>("--successful-response", Func.Constant("ok"), CommandResources.ProbeCommandSuccessfulResponseOptionDescription)
         {
@@ -34,7 +31,6 @@ public partial class ApplicationMaintenanceCommand
         };
         successfulResponseOption.AddAlias("-s");
         successfulResponseOption.AddAlias("-ok");
-        command.AddOption(successfulResponseOption);
 
         var failedResponseOption = new Option<string>("--unsuccessful-response", Func.Constant("fail"), CommandResources.ProbeCommandUnsuccessfulResponseOptionDescription)
         {
@@ -43,7 +39,14 @@ public partial class ApplicationMaintenanceCommand
         };
         failedResponseOption.AddAlias("-u");
         failedResponseOption.AddAlias("-f");
-        command.AddOption(failedResponseOption);
+
+        var command = new ApplicationMaintenanceCommand("probe", CommandResources.ProbeCommandDescription)
+        {
+            probeTypeArg,
+            timeoutArg,
+            successfulResponseOption,
+            failedResponseOption,
+        };
 
         command.SetHandler(provider.InvokeProbeAsync, probeTypeArg, DefaultBindings.Console, successfulResponseOption, failedResponseOption, timeoutArg, DefaultBindings.Token);
         return command;
