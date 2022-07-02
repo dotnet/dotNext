@@ -1,6 +1,84 @@
 Release Notes
 ====
 
+<a href="https://www.nuget.org/packages/dotnext/4.6.0">DotNext 4.6.1</a>
+* Fixed memory alignment issues
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.6.1">DotNext.Metaprogramming 4.6.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.6.0">DotNext.Reflection 4.6.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.6.0">DotNext.Unsafe 4.6.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.6.1">DotNext.Threading 4.6.1</a>
+* Fixed task pooling of some asynchronous methods
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.6.1">DotNext.IO 4.6.1</a>
+* Fixed task pooling of some asynchronous methods
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.1">DotNext.Net.Cluster 4.6.1</a>
+* Fixed task pooling of some asynchronous methods
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.1">DotNext.AspNetCore.Cluster 4.6.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/4.6.1">DotNext.MaintenanceServices</a>
+* First version of library providing Application Maintenance Inteface via Unix Domain Socket and command-line shell for app administrators
+* Added support for probes when running app in K8s container
+
+# 06-12-2022
+<a href="https://www.nuget.org/packages/dotnext/4.6.0">DotNext 4.6.0</a>
+* Added `CharComparer` class that allows to compare single characters in the same way as [StringComparer](https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparer) comparing strings
+* Minor performance improvements of static methods declared in [Span](https://dotnet.github.io/dotNext/api/DotNext.Span.html) class
+* Added stack manipulation methods to [BufferWriterSlim&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) value type
+* Introduced [Timeout.Expired](https://dotnet.github.io/dotNext/api/DotNext.Threading.Timeout.html) static property that allows to obtain expired timeout
+* Added `LastOrNone` extension methods for various collection types
+* Deprecated `DotNext.Runtime.CompilerServices.Shared<T>` value type
+* Added a new powerful API for receiving asynchronous notifications from GC (see `DotNext.Runtime.GCNotification` class)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.6.0">DotNext.Metaprogramming 4.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.6.0">DotNext.Reflection 4.6.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.6.0">DotNext.Unsafe 4.6.0</a>
+* Small performance improvements of unmanaged memory allocator
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.6.0">DotNext.Threading 4.6.0</a>
+* Fixed incorrect array bounds check in [AsyncEventHub](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncEventHub.html) class
+* Optimized completion callback scheduling for all types of asynchronous locks
+* Linked token created using `LinkedTokenSourceFactory.LinkTo` extension method now allows to track the originally canceled token
+* Added `DotNext.Threading.Scheduler` static class that allows to delay execution of asynchronous tasks
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.6.0">DotNext.IO 4.6.0</a>
+* Minor performance improvements of [FileReader](https://dotnet.github.io/dotNext/api/DotNext.IO.FileReader.html) data type
+* Reduced memory allocation caused by asynchronous string decoding methods
+* Added `IAsyncBinaryReader.TryGetRemainingBytesCount` method that allows to preallocate buffers
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.0">DotNext.Net.Cluster 4.6.0</a>
+* Optimized read barrier
+* Fixed cancellation token propagation in public instance methods declared in [IRaftCluster](https://dotnet.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html) interface
+* Introduced a simple framework for rumor spreading for peer-to-peer applications based on [Lamport timestamps](https://en.wikipedia.org/wiki/Lamport_timestamp): `DotNext.Net.Cluster.Messaging.Gossip.RumorTimestamp` and `DotNext.Net.Cluster.Messaging.Gossip.RumorSpreadingManager` classes. Also you can check out modified example of P2P application based on HyParView protocol in `src/examples` folder
+* Added compatibility of `DotNext.Net.Cluster.Messaging.JsonMessage<T>` class with JSON Source Generator
+* Introduced `DotNext.Net.Cluster.Messaging.IOutputChannel.SendMessageAsync` overload that directly supports data types implementing `DotNext.Runtime.Serialization.ISerializable<T>` interface
+* Raft vote and pre-vote requests will be rejected if the requester is not a known cluster member (applicable for all transports: HTTP, UDP, TCP)
+* Fixed race conditions between Raft state transitions
+* Added `ILeaderLease.Token` property that allows to control linearizable asynchronous reads on the leader node
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.0">DotNext.AspNetCore.Cluster 4.6.0</a>
+* Added explicit implementation of newly introduced `DotNext.Net.Cluster.Messaging.IOutputChannel.SendMessageAsync` overload
+* Updated dependencies
+
 # 05-12-2022
 <a href="https://www.nuget.org/packages/dotnext/4.5.0">DotNext 4.5.0</a>
 * Added `Base64Encoder.MaxCharsToFlush` constant for convenient allocation of the buffer to be passed to `Base64Encoder.Flush` method
