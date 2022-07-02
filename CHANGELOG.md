@@ -1,16 +1,16 @@
 Release Notes
 ====
 
-<a href="https://www.nuget.org/packages/dotnext/4.6.0">DotNext 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext/4.6.1">DotNext 4.6.1</a>
 * Fixed memory alignment issues
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.6.1">DotNext.Metaprogramming 4.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.6.0">DotNext.Reflection 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.6.1">DotNext.Reflection 4.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.6.0">DotNext.Unsafe 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.6.1">DotNext.Unsafe 4.6.1</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.6.1">DotNext.Threading 4.6.1</a>
@@ -28,9 +28,9 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.1">DotNext.AspNetCore.Cluster 4.6.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/4.6.1">DotNext.MaintenanceServices</a>
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.1.0">DotNext.MaintenanceServices</a>
 * First version of library providing Application Maintenance Inteface via Unix Domain Socket and command-line shell for app administrators
-* Added support for probes when running app in K8s container
+* Added support for [probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) when running app in Kubernetes
 
 # 06-12-2022
 <a href="https://www.nuget.org/packages/dotnext/4.6.0">DotNext 4.6.0</a>
