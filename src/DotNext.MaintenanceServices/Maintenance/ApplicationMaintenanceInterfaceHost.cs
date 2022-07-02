@@ -103,9 +103,8 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     private static async ValueTask<int> ReadRequestAsync(Socket clientSocket, Encoding encoding, Memory<byte> buffer, BufferWriter<char> output, CancellationToken token)
     {
         var decoder = encoding.GetDecoder();
-        int bytesRead;
 
-        while ((bytesRead = await clientSocket.ReceiveAsync(buffer, SocketFlags.None, token).ConfigureAwait(false)) > 0)
+        for (int bytesRead; (bytesRead = await clientSocket.ReceiveAsync(buffer, SocketFlags.None, token).ConfigureAwait(false)) > 0;)
         {
             var charsWritten = encoding.GetMaxCharCount(bytesRead);
             charsWritten = decoder.GetChars(buffer.Span.Slice(0, bytesRead), output.GetSpan(charsWritten), flush: false);
