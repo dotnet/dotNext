@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Builder;
