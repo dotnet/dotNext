@@ -36,9 +36,7 @@ internal static class AuthenticationMiddleware
     {
         if ((context.Console as IMaintenanceConsole)?.Session is { Principal: null } session)
         {
-            session.Principal = ReferenceEquals(AnonymousPrincipal.Instance, session.Identity)
-                ? AnonymousPrincipal.Instance
-                : new GenericPrincipal(session.Identity, roles: null);
+            session.Principal = new GenericPrincipal(session.Identity, roles: null);
         }
 
         return next(context);
