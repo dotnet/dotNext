@@ -5,7 +5,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
-internal abstract class TextBufferWriter<T, TWriter> : TextWriter
+internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
     where T : struct, IEquatable<T>, IConvertible, IComparable<T>
     where TWriter : class, IBufferWriter<T>
 {
@@ -39,19 +39,21 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter
         }
     }
 
-    public sealed override Task FlushAsync()
+    public Task FlushAsync(CancellationToken token)
     {
         if (flushAsync is null)
         {
             return flush is null ?
                 Task.CompletedTask
-                : Task.Factory.StartNew(() => flush(writer), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Current);
+                : Task.Factory.StartNew(() => flush(writer), token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Current);
         }
         else
         {
-            return flushAsync(writer, CancellationToken.None);
+            return flushAsync(writer, token);
         }
     }
+
+    public sealed override Task FlushAsync() => FlushAsync(CancellationToken.None);
 
     public sealed override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
 
