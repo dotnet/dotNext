@@ -22,6 +22,8 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
         this.flushAsync = flushAsync;
     }
 
+    public abstract override void Write(ReadOnlySpan<char> chars);
+
     public sealed override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
 
     public sealed override void Write(char value) => Write(CreateReadOnlySpan(ref value, 1));
