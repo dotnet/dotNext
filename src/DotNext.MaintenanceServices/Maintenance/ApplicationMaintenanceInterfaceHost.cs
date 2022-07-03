@@ -100,10 +100,8 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 
     // detects new line chars sequence or null char
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private static async ValueTask<int> ReadRequestAsync(Socket clientSocket, Encoding encoding, Memory<byte> buffer, BufferWriter<char> output, CancellationToken token)
+    private static async ValueTask<int> ReadRequestAsync(Socket clientSocket, Encoding encoding, Decoder decoder, Memory<byte> buffer, BufferWriter<char> output, CancellationToken token)
     {
-        var decoder = encoding.GetDecoder();
-
         for (int bytesRead; (bytesRead = await clientSocket.ReceiveAsync(buffer, SocketFlags.None, token).ConfigureAwait(false)) > 0;)
         {
             var charsWritten = encoding.GetMaxCharCount(bytesRead);
@@ -175,13 +173,13 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
             };
 
             session = new(clientSocket, encoding, outputBuffer, GetRemotePeerIdentity(clientSocket));
-            while (true)
+            for (var decoder = encoding.GetDecoder(); ; decoder.Reset())
             {
                 int commandLength;
 
                 using (var buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false))
                 {
-                    commandLength = await ReadRequestAsync(clientSocket, encoding, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
+                    commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
                 }
 
                 // skip empty input
