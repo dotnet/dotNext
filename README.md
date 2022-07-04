@@ -103,6 +103,13 @@ Philosophy of development process:
 1. Stay cross-platform
 1. Provide benchmarks
 
+# Our Users
+.NEXT is used by several companies in their projects:
+
+[![Copenhagen Atomics](https://www.copenhagenatomics.com/images/logo.svg)](https://www.copenhagenatomics.com)
+
+[![Wargaming](https://wargaming.com/assets/img/global/logo.svg)](https://wargaming.com)
+
 # Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
