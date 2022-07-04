@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Application Maintenance Interface | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Application Maintenance Interface | .NEXT ">
+    <meta name="generator" content="docfx 2.59.2.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="application-maintenance-interface">Application Maintenance Interface</h1>
+
+<p>.NET ecosystem provides a rich set of tools for collecting runtime metrics and diagnostics information. However, this is one-way communication with the application. What if administrator wants to trigger Garbage Collector or clear cache? <strong>Application Maintenance Interface</strong> (AMI) provides a way to send maintenance commands to .NET application directly.</p>
+<p>AMI is a sort of Inter-Process Communication specially designed to have first-class support by command-line shells such as Bash. The implementation is constructed on top of open technologies:</p>
+<ul>
+<li>IPC transport layer is based on Unix Domain Sockets</li>
+<li>Input is just a plain text</li>
+<li>The format of the input follows convention of POSIX or Windows command-line tools</li>
+</ul>
+<p>In other words, AMI is very similar to Telnet or SSH.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>AMI is secure, because there is no way to establish connection to the application remotely. Unix Domain Socket is a form of IPC without support of connection through the network. However, administrator can still use SSH to connect to the host or container and then execute command via command-line shell using, for instance, <em>netcat</em>.</p>
+</div>
+<p>AMI can be seen as alternative to <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/jmx/index.html">Java Management Extensions</a> but built natively for .NET and based on open technologies. The following table describes the difference between these technologies:</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>JMX</th>
+<th>AMI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data format</td>
+<td>Binary (Java serialization)</td>
+<td>Plain text</td>
+</tr>
+<tr>
+<td>Direct remote access</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Requires special client app</td>
+<td>Yes (for instance, VisualVM)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Built-in support of Kubernetes probes</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>AMI provides the following maintenace commands out-of-the-box:</p>
+<ul>
+<li><code>gc</code> - forces Garbage Collection or sets compaction mode for LOH</li>
+<li><code>interactive-mode</code> - enters interactive mode. This mode is suitable for administrators</li>
+<li><code>exit</code> - leaves interactive mode</li>
+<li><code>probe</code> - execute application probe. See <a href="probes.html">here</a> for more information</li>
+</ul>
+<p>At the application startup, AMI infrastructure creates interaction point represented by pseudo file of Unix Domain Socket type. This path can be used by tools like <code>nc</code> for connection from the terminal session:</p>
+<pre><code class="lang-sh">nc -U /path/to/unix/domain/socket
+</code></pre>
+<p>For instance, you can force Garbage Collection directly from the command-line shell:</p>
+<pre><code class="lang-sh">echo gc collect 2 | nc -U /path/to/unix/domain/socket
+</code></pre>
+<p>If you want to send the command programmatically then you need to insert line termination sequence (<code>\n</code> on Unix, or <code>\n\r</code> on Windows) or null character (<code>\0</code>) in the end of each command.</p>
+<p>Some of the commands may produce output in the form of plain text.</p>
+<p>In interactive mode, administrator can use standard flags <code>-h</code> or <code>--help</code> to get help for the commands or subcommands.</p>
+<h1 id="ami-hosting">AMI Hosting</h1>
+<p>AMI is supported for the application with or without Dependency Injection support. For simplicity, all code examples implies DI enabled.</p>
+<p>The following code snippet demonstrates bare minimum to enable AMI for the application:</p>
+<pre><code class="lang-csharp">using DotNext.Maintenance.CommandLine;
+
+await new HostBuilder()
+    .ConfigureServices(static services =&gt;
+    {
+        services
+            .RegisterDefaultMaintenanceCommands()
+            .UseApplicationMaintenanceInterface(&quot;/path/to/unix/domain/socket&quot;);
+    })
+    .Build()
+    .RunAsync();
+</code></pre>
+<p><code>RegisterDefaultMaintenanceCommands</code> extension method registers default set of maintenance commands (<code>gc</code>, <code>interactive-mode</code>, <code>exit</code>). <code>UseApplicationMaintenanceInterface</code> registers a host that listens for the commands to be received through Unix Domain Socket at the specificed location. Note that pseudo file at that path <strong>should not</strong> exist before application startup. The file will be created by the host automatically. However, if file exists, the host throws an exception.</p>
+<h1 id="custom-commands">Custom Commands</h1>
+<p>Command parsing is implemented on top of <a href="https://docs.microsoft.com/en-us/dotnet/standard/commandline/">System.CommandLine</a> open-source library. <a class="xref" href="../../api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a> class represents maintenance command that can be registered in DI:</p>
+<pre><code class="lang-csharp">using System.Buffers;
+using System.CommandLine;
+using System.CommandLine.Parsing;
+using DotNext.Maintenance.CommandLine;
+using DotNext.Maintenance.CommandLine.Binding;
+using Microsoft.Extensions.Hosting;
+
+await new HostBuilder()
+    .ConfigureServices(static services =&gt;
+    {
+        services
+            .UseApplicationMaintenanceInterface(&quot;/path/to/unix/domain/socket&quot;)
+            .RegisterMaintenanceCommand(&quot;add&quot;, ConfigureAddCommand);
+    })
+    .Build()
+    .RunAsync();
+
+static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
+{
+    command.Description = &quot;Adds two integers&quot;;
+    var argX = new Argument&lt;int&gt;(&quot;x&quot;, parse: ParseInteger, description: &quot;The first operand&quot;)
+    {
+        Arity = ArgumentArity.ExactlyOne
+    };
+    var argY = new Argument&lt;int&gt;(&quot;y&quot;, parse: ParseInteger, description: &quot;The second operand&quot;)
+    {
+        Arity = ArgumentArity.ExactlyOne,
+    };
+
+    command.AddArgument(argX);
+    command.AddArgument(argY);
+    command.SetHandler(static (x, y, console) =&gt;
+    {
+        console.Out.Write((x + y).ToString());
+        console.Out.Write(Environment.NewLine);
+    },
+    argX,
+    argY,
+    DefaultBindings.Console);
+}
+</code></pre>
+<p>Registered custom commands will be automatically discovered by AMI host. <a class="xref" href="../../api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html">DefaultBindings</a> provides extra bindings available for the commands when executing by AMI host.</p>
+<h1 id="security">Security</h1>
+<p>AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have a direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:</p>
+<ul>
+<li>Configure access rights for the pseudo file at file system level</li>
+<li>Use authentication and authorization at AMI level</li>
+</ul>
+<p>Read more <a href="auth.html">here</a> about authentication and authorization in AMI.</p>
+<h1 id="directives">Directives</h1>
+<p>AMI supports special directives aimed to control output:</p>
+<ul>
+<li><code>[prnec]</code> - prints exit code of the command in square brackets at the beginning of the output</li>
+<li><code>[supout]</code> - suppresses command output</li>
+<li><code>[superr]</code> - suppresses command error output</li>
+</ul>
+<p>The following example demonstrates how to add exit code to the probe output:</p>
+<pre><code class="lang-sh">[prnec] probe liveness 00:00:01
+</code></pre>
+<h1 id="example">Example</h1>
+<p>You can find a simple application with AMI enabled <a href="https://github.com/dotnet/dotNext/tree/master/src/examples/CommandLineAMI">here</a>. All you need is to run it with <code>dotnet run</code> command and follow instructions printed by the app.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/ami/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,409 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CommandLineMaintenanceInterfaceHost
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CommandLineMaintenanceInterfaceHost
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.59.2.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost">
+  
+  
+  <h1 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost" class="text-break">Class CommandLineMaintenanceInterfaceHost
+  </h1>
+  <div class="markdown level0 summary"><p>Provides AMI in the form of the text commands with the syntax identical to OS shell commands.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.backgroundservice">BackgroundService</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html">ApplicationMaintenanceInterfaceHost</a></div>
+    <div class="level3"><span class="xref">CommandLineMaintenanceInterfaceHost</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_Logger">ApplicationMaintenanceInterfaceHost.Logger</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_Backlog">ApplicationMaintenanceInterfaceHost.Backlog</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_BufferSize">ApplicationMaintenanceInterfaceHost.BufferSize</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_ByteBufferAllocator">ApplicationMaintenanceInterfaceHost.ByteBufferAllocator</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_CharBufferAllocator">ApplicationMaintenanceInterfaceHost.CharBufferAllocator</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_TextEncoding">ApplicationMaintenanceInterfaceHost.TextEncoding</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_ExecuteAsync_CancellationToken_">ApplicationMaintenanceInterfaceHost.ExecuteAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.backgroundservice.executeasync#microsoft-extensions-hosting-backgroundservice-executeasync(system-threading-cancellationtoken)">BackgroundService.ExecuteAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.backgroundservice.startasync#microsoft-extensions-hosting-backgroundservice-startasync(system-threading-cancellationtoken)">BackgroundService.StartAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.backgroundservice.stopasync#microsoft-extensions-hosting-backgroundservice-stopasync(system-threading-cancellationtoken)">BackgroundService.StopAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.backgroundservice.dispose#microsoft-extensions-hosting-backgroundservice-dispose">BackgroundService.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.backgroundservice.executetask#microsoft-extensions-hosting-backgroundservice-executetask">BackgroundService.ExecuteTask</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Maintenance.CommandLine.html">DotNext.Maintenance.CommandLine</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.MaintenanceServices.dll</h6>
+  <h5 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenanceInterfaceHost, IHostedService, IDisposable</code></pre>
+  </div>
+  <h5 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_examples"><strong>Examples</strong></h5>
+  <pre><code>echo &quot;gc collect 2&quot; | nc -U /path/to/endpoint.sock</code></pre>
+
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_DotNext_Maintenance_CommandLine_Authorization_AuthorizationCallback_Microsoft_Extensions_Logging_ILoggerFactory_.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.%23ctor(System.Net.Sockets.UnixDomainSocketEndPoint%2CIEnumerable%7BDotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand%7D%2CDotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler%2CDotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback%2CMicrosoft.Extensions.Logging.ILoggerFactory)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs/#L41">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_DotNext_Maintenance_CommandLine_Authorization_AuthorizationCallback_Microsoft_Extensions_Logging_ILoggerFactory_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,Microsoft.Extensions.Logging.ILoggerFactory)">CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable&lt;ApplicationMaintenanceCommand&gt;, IAuthenticationHandler, AuthorizationCallback, ILoggerFactory)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new host.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint endPoint, IEnumerable&lt;ApplicationMaintenanceCommand&gt; commands, IAuthenticationHandler authentication = null, AuthorizationCallback authorization = null, ILoggerFactory loggerFactory = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.net.sockets.unixdomainsocketendpoint">UnixDomainSocketEndPoint</a></td>
+        <td><span class="parametername">endPoint</span></td>
+        <td><p>Unix Domain Socket address used as a interaction point.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;<a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a>&gt;</td>
+        <td><span class="parametername">commands</span></td>
+        <td><p>A set of commands to be available for execution.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.html">IAuthenticationHandler</a></td>
+        <td><span class="parametername">authentication</span></td>
+        <td><p>Optional authentication handler.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback.html">AuthorizationCallback</a></td>
+        <td><span class="parametername">authorization</span></td>
+        <td><p>A set of global authorization rules to be applied to all commands.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory">ILoggerFactory</a></td>
+        <td><span class="parametername">loggerFactory</span></td>
+        <td><p>Optional logger factory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ExecuteCommandAsync_DotNext_Maintenance_IMaintenanceSession_ReadOnlyMemory_System_Char__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync(DotNext.Maintenance.IMaintenanceSession%2CReadOnlyMemory%7BSystem.Char%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs/#L133">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ExecuteCommandAsync_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost_ExecuteCommandAsync_DotNext_Maintenance_IMaintenanceSession_ReadOnlyMemory_System_Char__CancellationToken_" data-uid="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.ExecuteCommandAsync(DotNext.Maintenance.IMaintenanceSession,ReadOnlyMemory{System.Char},CancellationToken)">ExecuteCommandAsync(IMaintenanceSession, ReadOnlyMemory&lt;Char&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override async ValueTask ExecuteCommandAsync(IMaintenanceSession session, ReadOnlyMemory&lt;char&gt; command, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.IMaintenanceSession.html">IMaintenanceSession</a></td>
+        <td><span class="parametername">session</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">command</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Maintenance.ApplicationMaintenanceInterfaceHost.html#DotNext_Maintenance_ApplicationMaintenanceInterfaceHost_ExecuteCommandAsync_DotNext_Maintenance_IMaintenanceSession_ReadOnlyMemory_System_Char__CancellationToken_">ApplicationMaintenanceInterfaceHost.ExecuteCommandAsync(IMaintenanceSession, ReadOnlyMemory&lt;Char&gt;, CancellationToken)</a></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">Microsoft.Extensions.Hosting.IHostedService</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/CommandLineMaintenanceInterfaceHost.cs/#L24" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+          
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In This Article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+              
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
