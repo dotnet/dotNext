@@ -36,9 +36,7 @@ internal static class AuthenticationMiddleware
     {
         if ((context.Console as IMaintenanceConsole)?.Session is { Principal: null } session)
         {
-            session.Principal = ReferenceEquals(AnonymousPrincipal.Instance, session.Identity)
-                ? AnonymousPrincipal.Instance
-                : new GenericPrincipal(session.Identity, roles: null);
+            session.Principal = new GenericPrincipal(session.Identity, roles: null);
         }
 
         return next(context);
@@ -47,6 +45,7 @@ internal static class AuthenticationMiddleware
     private static void Forbid(InvocationContext context)
     {
         context.ExitCode = ForbiddenExitCode;
-        context.Console.Error.Write(CommandResources.AccessDenined + Environment.NewLine);
+        context.Console.Error.Write(CommandResources.AccessDenined);
+        context.Console.Error.Write(Environment.NewLine);
     }
 }

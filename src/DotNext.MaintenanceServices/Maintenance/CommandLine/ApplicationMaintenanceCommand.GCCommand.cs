@@ -9,10 +9,7 @@ public partial class ApplicationMaintenanceCommand
 {
     private static ApplicationMaintenanceCommand GCCollectCommand()
     {
-        var command = new ApplicationMaintenanceCommand("collect", CommandResources.GCCollectCommandDescription);
-
         var generationArg = new Argument<int>("generation", parse: ParseGeneration, description: CommandResources.GCCollectCommandGenerationArgDescription);
-        command.AddArgument(generationArg);
 
         var blockingOption = new Option<bool>("--blocking", Func.Constant(false), description: CommandResources.GCCollectCommandBlockingOptionDescription)
         {
@@ -22,7 +19,6 @@ public partial class ApplicationMaintenanceCommand
 
         blockingOption.AddAlias("-b");
         blockingOption.Arity = ArgumentArity.ZeroOrOne;
-        command.AddOption(blockingOption);
 
         var compactingOption = new Option<bool>("--compacting", Func.Constant(false), description: CommandResources.GCCollectCommandCompactingOptionDescription)
         {
@@ -31,7 +27,13 @@ public partial class ApplicationMaintenanceCommand
         };
 
         compactingOption.AddAlias("-c");
-        command.AddOption(compactingOption);
+
+        var command = new ApplicationMaintenanceCommand("collect", CommandResources.GCCollectCommandDescription)
+        {
+            generationArg,
+            blockingOption,
+            compactingOption,
+        };
 
         command.SetHandler(static (generation, blocking, compacting) => GC.Collect(generation, GCCollectionMode.Forced, blocking, compacting), generationArg, blockingOption, compactingOption);
         return command;
@@ -51,13 +53,15 @@ public partial class ApplicationMaintenanceCommand
 
     private static Command LohCompactionModeCommand()
     {
-        var command = new ApplicationMaintenanceCommand("loh-compaction-mode", CommandResources.GCLohModeCommandDescription);
-
         var modeArg = new Argument<GCLargeObjectHeapCompactionMode>("mode", parse: ParseMode, description: CommandResources.GCLohModeCommandModeArgDescription);
         modeArg.FromAmong(Enum.GetNames<GCLargeObjectHeapCompactionMode>());
-        command.AddArgument(modeArg);
-        command.SetHandler(static mode => GCSettings.LargeObjectHeapCompactionMode = mode, modeArg);
 
+        var command = new ApplicationMaintenanceCommand("loh-compaction-mode", CommandResources.GCLohModeCommandDescription)
+        {
+            modeArg,
+        };
+
+        command.SetHandler(static mode => GCSettings.LargeObjectHeapCompactionMode = mode, modeArg);
         return command;
 
         static GCLargeObjectHeapCompactionMode ParseMode(ArgumentResult result)

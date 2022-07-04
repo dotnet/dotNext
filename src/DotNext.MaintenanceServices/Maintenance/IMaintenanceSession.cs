@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Security.Principal;
 
 namespace DotNext.Maintenance;
@@ -19,17 +18,14 @@ public interface IMaintenanceSession
     IDictionary<string, object> Context { get; }
 
     /// <summary>
-    /// Gets output buffer.
+    /// Gets command response writer.
     /// </summary>
-    IBufferWriter<char> Output { get; }
+    TextWriter ResponseWriter { get; }
 
     /// <summary>
     /// Gets identity of the user started this session.
     /// </summary>
-    /// <remarks>
-    /// On Linux and FreeBSD, it is possible to obtain identity of the user
-    /// started AMI session.
-    /// </remarks>
+    /// <seealso cref="Security.Principal.LinuxUdsPeerIdentity"/>
     IIdentity Identity { get; }
 
     /// <summary>

@@ -1,4 +1,4 @@
-using System.Buffers;
+using System.Globalization;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
@@ -10,8 +10,8 @@ namespace DotNext.Maintenance;
 
 using Buffers;
 using Security.Principal;
+using static IO.TextStreamExtensions;
 using static Runtime.InteropServices.UnixDomainSocketInterop;
-using EncodingContext = Text.EncodingContext;
 using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
 /// <summary>
@@ -100,12 +100,9 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 
     // detects new line chars sequence or null char
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private static async ValueTask<int> ReadRequestAsync(Socket clientSocket, Encoding encoding, Memory<byte> buffer, BufferWriter<char> output, CancellationToken token)
+    private static async ValueTask<int> ReadRequestAsync(Socket clientSocket, Encoding encoding, Decoder decoder, Memory<byte> buffer, BufferWriter<char> output, CancellationToken token)
     {
-        var decoder = encoding.GetDecoder();
-        int bytesRead;
-
-        while ((bytesRead = await clientSocket.ReceiveAsync(buffer, SocketFlags.None, token).ConfigureAwait(false)) > 0)
+        for (int bytesRead; (bytesRead = await clientSocket.ReceiveAsync(buffer, SocketFlags.None, token).ConfigureAwait(false)) > 0;)
         {
             var charsWritten = encoding.GetMaxCharCount(bytesRead);
             charsWritten = decoder.GetChars(buffer.Span.Slice(0, bytesRead), output.GetSpan(charsWritten), flush: false);
@@ -157,48 +154,43 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         return AnonymousPrincipal.Instance;
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private static async ValueTask WriteResponseAsync(Socket clientSocket, ReadOnlyMemory<char> response, EncodingContext encoding, Memory<byte> buffer, CancellationToken token)
-    {
-        foreach (var chunk in encoding.GetBytes(response, buffer))
-        {
-            for (var offset = 0; offset < chunk.Length;)
-            {
-                offset += await clientSocket.SendAsync(chunk, SocketFlags.None, token).ConfigureAwait(false);
-            }
-        }
-    }
-
     private async void ProcessRequestAsync(Socket clientSocket, CancellationToken token)
     {
-        var buffer = default(MemoryOwner<byte>);
         var session = default(MaintenanceSession);
         var inputBuffer = default(BufferWriter<char>);
+        var outputBuffer = default(BufferWriter<byte>);
         try
         {
-            // process request
-            buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false);
-            session = new MaintenanceSession(bufferSize, CharBufferAllocator, GetRemotePeerIdentity(clientSocket));
+            outputBuffer = new PooledBufferWriter<byte>
+            {
+                BufferAllocator = ByteBufferAllocator,
+                Capacity = bufferSize,
+            };
             inputBuffer = new PooledBufferWriter<char>
             {
                 BufferAllocator = CharBufferAllocator,
                 Capacity = bufferSize,
             };
 
-            while (true)
+            session = new(clientSocket, encoding, outputBuffer, GetRemotePeerIdentity(clientSocket));
+            for (var decoder = encoding.GetDecoder(); ; decoder.Reset())
             {
-                var commandLength = await ReadRequestAsync(clientSocket, encoding, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
+                int commandLength;
+
+                using (var buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false))
+                {
+                    commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
+                }
 
                 // skip empty input
                 if (commandLength > 0)
                 {
                     await ExecuteCommandAsync(session, inputBuffer.WrittenMemory.Slice(0, commandLength), token).ConfigureAwait(false);
-                    await WriteResponseAsync(clientSocket, session.Output, encoding, buffer.Memory, token).ConfigureAwait(false);
                 }
 
+                await clientSocket.FlushAsync(outputBuffer, token).ConfigureAwait(false);
                 if (session.IsInteractive)
                 {
-                    session.ReuseOutputBuffer();
                     inputBuffer.Clear(reuseBuffer: true);
                 }
                 else
@@ -225,12 +217,11 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         {
             clientSocket.Dispose();
             inputBuffer?.Dispose();
-            buffer.Dispose();
             session?.Dispose();
         }
     }
 
-    private void ProcessRequestAsync(Tuple<Socket, CancellationToken> args)
+    private void ProcessRequestAsync((Socket, CancellationToken) args)
         => ProcessRequestAsync(args.Item1, args.Item2);
 
     /// <summary>
@@ -245,23 +236,20 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         listener.Listen(backlog);
 
         // preallocate delegate
-        Action<Tuple<Socket, CancellationToken>> requestProcessor = ProcessRequestAsync;
-
-        while (!token.IsCancellationRequested)
+        for (Action<(Socket, CancellationToken)> requestProcessor = ProcessRequestAsync; !token.IsCancellationRequested;)
         {
             var connection = await listener.AcceptAsync(token).ConfigureAwait(false);
-            ThreadPool.QueueUserWorkItem(requestProcessor, new Tuple<Socket, CancellationToken>(connection, token), preferLocal: false);
+            ThreadPool.QueueUserWorkItem(requestProcessor, (connection, token), preferLocal: false);
         }
     }
 
     private sealed class MaintenanceSession : Dictionary<string, object>, IMaintenanceSession
     {
-        private readonly PooledBufferWriter<char> output;
         private object? identityOrPrincipal;
 
-        internal MaintenanceSession(int capacity, MemoryAllocator<char>? allocator, IIdentity identity)
+        internal MaintenanceSession(Socket socket, Encoding encoding, BufferWriter<byte> buffer, IIdentity identity)
         {
-            output = new() { BufferAllocator = allocator, Capacity = capacity };
+            ResponseWriter = buffer.AsTextWriter(encoding, CultureInfo.CurrentCulture, socket.Flush, socket.FlushAsync);
             identityOrPrincipal = identity;
         }
 
@@ -278,13 +266,9 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
             set => identityOrPrincipal = value;
         }
 
-        internal void ReuseOutputBuffer() => output.Clear(reuseBuffer: true);
-
-        internal ReadOnlyMemory<char> Output => output.WrittenMemory;
-
         public bool IsInteractive { get; set; }
 
-        IBufferWriter<char> IMaintenanceSession.Output => output;
+        public TextWriter ResponseWriter { get; }
 
         IDictionary<string, object> IMaintenanceSession.Context => this;
 
@@ -292,7 +276,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         {
             if (disposing)
             {
-                output.Dispose();
+                ResponseWriter.Dispose();
                 Clear();
             }
         }

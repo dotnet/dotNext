@@ -59,7 +59,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         return result;
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         async ValueTask WriteSmallValueAsync()
         {
             await FlushCoreAsync(token).ConfigureAwait(false);

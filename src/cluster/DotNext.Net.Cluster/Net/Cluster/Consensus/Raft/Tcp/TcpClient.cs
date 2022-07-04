@@ -200,7 +200,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
@@ -213,7 +213,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<Result<PreVoteResult>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
@@ -226,7 +226,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteSynchronizeRequestAsync(commitIndex, token).ConfigureAwait(false);
@@ -239,7 +239,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<IReadOnlyDictionary<string, string>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteMetadataRequestAsync(token).ConfigureAwait(false);
@@ -252,7 +252,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteResignRequestAsync(token).ConfigureAwait(false);
@@ -265,7 +265,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token).ConfigureAwait(false);
@@ -278,7 +278,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     {
         return RequestAsync(ExecuteAsync, token);
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token).ConfigureAwait(false);

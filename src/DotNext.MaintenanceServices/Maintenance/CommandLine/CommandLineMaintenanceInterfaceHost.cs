@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Builder;
@@ -96,7 +95,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
                 if (context.Console is MaintenanceConsole console)
                 {
                     console.Session.IsInteractive = false;
-                    console.Session.Output.Write(e.ToString());
+                    console.Session.ResponseWriter.Write(e.ToString());
                 }
                 else
                 {
