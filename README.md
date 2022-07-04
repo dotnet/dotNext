@@ -105,13 +105,10 @@ Philosophy of development process:
 
 # Our Users
 .NEXT is used by several companies in their projects:
-<figure intersection-observe>
-    <a href="https://www.copenhagenatomics.com"><img src="https://www.copenhagenatomics.com/images/logo.svg"/></a>
-</figure>
-<br/>
-<figure intersection-observe>
-    <a href="https://wargaming.com"><img src="https://wargaming.com/assets/img/global/logo.svg"/></a>
-</figure>
+
+[![Copenhagen Atomics](https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Copenhagenatomics_logo_gray.png/320px-Copenhagenatomics_logo_gray.png)](https://www.copenhagenatomics.com)
+
+[![Wargaming](https://upload.wikimedia.org/wikipedia/en/f/fa/Wargaming_logo.svg)](https://wargaming.com)
 
 # Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
