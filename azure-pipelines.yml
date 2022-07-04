@@ -67,7 +67,7 @@ stages:
               configuration: Release
               packDirectory: $(Build.ArtifactStagingDirectory)/packages
               verbosityPack: Minimal
-              packagesToPack: src/DotNext/DotNext.csproj;src/DotNext.IO/DotNext.IO.csproj;src/DotNext.Metaprogramming/DotNext.Metaprogramming.csproj;src/DotNext.Reflection/DotNext.Reflection.csproj;src/DotNext.Threading/DotNext.Threading.csproj;src/DotNext.Unsafe/DotNext.Unsafe.csproj;src/cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj;src/cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj
+              packagesToPack: src/DotNext/DotNext.csproj;src/DotNext.IO/DotNext.IO.csproj;src/DotNext.Metaprogramming/DotNext.Metaprogramming.csproj;src/DotNext.Reflection/DotNext.Reflection.csproj;src/DotNext.Threading/DotNext.Threading.csproj;src/DotNext.Unsafe/DotNext.Unsafe.csproj;src/DotNext.MaintenanceServices/DotNext.MaintenanceServices.csproj;src/cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj;src/cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj
           - publish: build
             displayName: Publish signing config
             artifact: config
