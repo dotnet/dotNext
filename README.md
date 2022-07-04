@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-02-2022
+Release Date: 07-04-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.6.1">DotNext 4.6.1</a>
 * Fixed memory alignment issues
