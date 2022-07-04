@@ -55,6 +55,9 @@ internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, 
     {
         switch (value)
         {
+            case string str:
+                writer.Write(str);
+                break;
             case ISpanFormattable formattable:
                 writer.WriteFormattable(formattable, provider: FormatProvider);
                 break;
