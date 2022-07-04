@@ -113,68 +113,7 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
         return result;
     }
 
-    private protected abstract void Write(DateTime value);
-
-    private protected abstract void Write(DateTimeOffset value);
-
-    private protected abstract void Write(TimeSpan value);
-
-    public sealed override void Write(object? value)
-    {
-        switch (value)
-        {
-            case null:
-                break;
-            case byte v:
-                Write(v);
-                break;
-            case sbyte v:
-                Write(v);
-                break;
-            case short v:
-                Write(v);
-                break;
-            case ushort v:
-                Write(v);
-                break;
-            case int v:
-                Write(v);
-                break;
-            case uint v:
-                Write(v);
-                break;
-            case long v:
-                Write(v);
-                break;
-            case ulong v:
-                Write(v);
-                break;
-            case decimal v:
-                Write(v);
-                break;
-            case float v:
-                Write(v);
-                break;
-            case double v:
-                Write(v);
-                break;
-            case DateTime v:
-                Write(v);
-                break;
-            case DateTimeOffset v:
-                Write(v);
-                break;
-            case TimeSpan v:
-                Write(v);
-                break;
-            case IFormattable formattable:
-                Write(formattable.ToString(null, FormatProvider));
-                break;
-            default:
-                Write(value.ToString());
-                break;
-        }
-    }
+    public override abstract void Write(object? value);
 
     public sealed override void WriteLine(object? value)
     {
