@@ -6,7 +6,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <Version>4.6.0</Version>
+    <Version>4.6.1</Version>
     <IsPackable>false</IsPackable>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -48,6 +48,7 @@
     <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj"/>
     <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj"/>
     <ProjectReference Include="..\DotNext\DotNext.csproj"/>
+    <ProjectReference Include="..\DotNext.MaintenanceServices\DotNext.MaintenanceServices.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -5,7 +5,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
-internal abstract class TextBufferWriter<T, TWriter> : TextWriter
+internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
     where T : struct, IEquatable<T>, IConvertible, IComparable<T>
     where TWriter : class, IBufferWriter<T>
 {
@@ -21,6 +21,8 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter
         this.flush = flush;
         this.flushAsync = flushAsync;
     }
+
+    public abstract override void Write(ReadOnlySpan<char> chars);
 
     public sealed override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
 
@@ -39,19 +41,21 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter
         }
     }
 
-    public sealed override Task FlushAsync()
+    public Task FlushAsync(CancellationToken token)
     {
         if (flushAsync is null)
         {
             return flush is null ?
                 Task.CompletedTask
-                : Task.Factory.StartNew(() => flush(writer), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Current);
+                : Task.Factory.StartNew(() => flush(writer), token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Current);
         }
         else
         {
-            return flushAsync(writer, CancellationToken.None);
+            return flushAsync(writer, token);
         }
     }
+
+    public sealed override Task FlushAsync() => FlushAsync(CancellationToken.None);
 
     public sealed override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
 
@@ -109,68 +113,7 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter
         return result;
     }
 
-    private protected abstract void Write(DateTime value);
-
-    private protected abstract void Write(DateTimeOffset value);
-
-    private protected abstract void Write(TimeSpan value);
-
-    public sealed override void Write(object? value)
-    {
-        switch (value)
-        {
-            case null:
-                break;
-            case byte v:
-                Write(v);
-                break;
-            case sbyte v:
-                Write(v);
-                break;
-            case short v:
-                Write(v);
-                break;
-            case ushort v:
-                Write(v);
-                break;
-            case int v:
-                Write(v);
-                break;
-            case uint v:
-                Write(v);
-                break;
-            case long v:
-                Write(v);
-                break;
-            case ulong v:
-                Write(v);
-                break;
-            case decimal v:
-                Write(v);
-                break;
-            case float v:
-                Write(v);
-                break;
-            case double v:
-                Write(v);
-                break;
-            case DateTime v:
-                Write(v);
-                break;
-            case DateTimeOffset v:
-                Write(v);
-                break;
-            case TimeSpan v:
-                Write(v);
-                break;
-            case IFormattable formattable:
-                Write(formattable.ToString(null, FormatProvider));
-                break;
-            default:
-                Write(value.ToString());
-                break;
-        }
-    }
+    public override abstract void Write(object? value);
 
     public sealed override void WriteLine(object? value)
     {

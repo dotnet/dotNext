@@ -40,7 +40,7 @@ internal partial class ProtocolStream
 
         return BufferizeSlowAsync();
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         async ValueTask BufferizeSlowAsync()
         {
             Debug.Assert(bufferEnd < this.buffer.Length);
@@ -69,7 +69,7 @@ internal partial class ProtocolStream
     private unsafe ValueTask<T> ReadAsync<T>(int count, delegate*<ref SpanReader<byte>, T> decoder, CancellationToken token)
         => ReadAsync<T>(count, (IntPtr)decoder, token);
 
-    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     internal async ValueTask<MessageType> ReadMessageTypeAsync(CancellationToken token)
     {
         Debug.Assert(bufferStart is 0);
@@ -130,7 +130,7 @@ internal partial class ProtocolStream
         static long Read(ref SpanReader<byte> reader) => reader.ReadInt64(true);
     }
 
-    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     internal async ValueTask<IReadOnlyDictionary<string, string>> ReadMetadataResponseAsync(Memory<byte> buffer, CancellationToken token)
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
         => (await Serializable.ReadFromAsync<MetadataTransferObject>(this, buffer, token).ConfigureAwait(false)).Metadata;

@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    <IsTrimmable>true</IsTrimmable>
+    <Features>nullablePublicOnly</Features>
+    <RootNamespace>DotNext</RootNamespace>
+    <Authors>.NET Foundation and Contributors</Authors>
+    <Company />
+    <Product>.NEXT Family of Libraries</Product>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+	<AssemblyName>DotNext.MaintenanceServices</AssemblyName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>k8s;kubernetes;ipc;probes;liveness;readiness;startup</PackageTags>
+    <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<Description>Provides API to manage applications and microservices in containers</Description>
+    <PackageIcon>logo.png</PackageIcon>
+  <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>true</Optimize>
+	  <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <DebugType>embedded</DebugType>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessages.restext">
+      <LogicalName>DotNext.ExceptionMessages.resources</LogicalName>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance/CommandLine/CommandResources.restext">
+      <LogicalName>DotNext.Maintenance.CommandLine.CommandResources.resources</LogicalName>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <None Include="../../logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="../stylecop.json" />
+    <SourceRoot Include="$(MSBuildProjectDirectory)\..\..\" />
+  </ItemGroup>
+</Project>

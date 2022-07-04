@@ -66,7 +66,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         onLeaderChangedThreadPoolCallback = OnLeaderChanged;
         state = new StandbyState(this);
+        EndPointComparer = config.EndPointComparer;
     }
+
+    /// <summary>
+    /// Gets the comparer for <see cref="EndPoint"/> type.
+    /// </summary>
+    protected IEqualityComparer<EndPoint> EndPointComparer { get; }
 
     /// <summary>
     /// Gets logger used by this object.
@@ -410,7 +416,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
         }
     }
 
-    [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask StepDown()
     {
         Logger.DowngradingToFollowerState();
@@ -979,7 +985,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     {
         foreach (var member in members.Values)
         {
-            if (Equals(member.EndPoint, peer))
+            if (EndPointComparer.Equals(member.EndPoint, peer))
                 return member;
         }
 
@@ -993,7 +999,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     IClusterMember? IPeerMesh<IClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
 
     /// <inheritdoc />
-    IReadOnlySet<EndPoint> IPeerMesh.Peers => ImmutableHashSet.CreateRange(members.Values.Select(static m => m.EndPoint));
+    IReadOnlySet<EndPoint> IPeerMesh.Peers => ImmutableHashSet.CreateRange(EndPointComparer, members.Values.Select(static m => m.EndPoint));
 
     private void Cleanup()
     {

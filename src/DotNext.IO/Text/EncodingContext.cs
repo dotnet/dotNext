@@ -56,4 +56,31 @@ public readonly struct EncodingContext : ICloneable
     /// </summary>
     /// <param name="encoding">The text encoding.</param>
     public static implicit operator EncodingContext(Encoding encoding) => new(encoding, false);
+
+    private IEnumerable<ReadOnlyMemory<byte>> GetBytes(ReadOnlyMemory<char> chars, int maxChars, Memory<byte> buffer)
+    {
+        var encoder = GetEncoder();
+        for (int charsLeft = chars.Length, charsUsed; charsLeft > 0; chars = chars.Slice(charsUsed), charsLeft -= charsUsed)
+        {
+            charsUsed = Math.Min(maxChars, charsLeft);
+            encoder.Convert(chars.Span.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
+            yield return buffer.Slice(0, bytesUsed);
+        }
+    }
+
+    /// <summary>
+    /// Encodes the characters.
+    /// </summary>
+    /// <param name="chars">The characters to encode.</param>
+    /// <param name="buffer">The temporary buffer used internally to encode characters.</param>
+    /// <returns>A collection of memory chunks representing encoded characters.</returns>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="chars"/>.</exception>
+    public IEnumerable<ReadOnlyMemory<byte>> GetBytes(ReadOnlyMemory<char> chars, Memory<byte> buffer)
+    {
+        var maxChars = buffer.Length / Encoding.GetMaxByteCount(1);
+        if (maxChars is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        return chars.IsEmpty ? Enumerable.Empty<ReadOnlyMemory<byte>>() : GetBytes(chars, maxChars, buffer);
+    }
 }

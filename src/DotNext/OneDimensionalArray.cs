@@ -347,7 +347,7 @@ public static class OneDimensionalArray
         if (Intrinsics.GetLength(first) == 0)
             return true;
 
-        return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
+        return Intrinsics.EqualsUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
     }
 
     /// <summary>
@@ -361,7 +361,7 @@ public static class OneDimensionalArray
         where T : unmanaged
     {
         var length = Intrinsics.GetLength(array);
-        return length > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0;
+        return length > 0 ? Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0;
     }
 
     private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
@@ -371,7 +371,7 @@ public static class OneDimensionalArray
         var length = Intrinsics.GetLength(array);
 
         if (length > 0)
-            Intrinsics.GetHashCode32(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
+            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
 
         if (salted)
             hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -419,7 +419,7 @@ public static class OneDimensionalArray
         var length = Intrinsics.GetLength(array);
 
         if (length > 0)
-            Intrinsics.GetHashCode64(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
+            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
 
         if (salted)
             hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -471,7 +471,7 @@ public static class OneDimensionalArray
         where T : unmanaged
     {
         var length = Intrinsics.GetLength(array);
-        return length > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0L;
+        return length > 0 ? Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0L;
     }
 
     private sealed class ArrayEqualityComparer
@@ -546,7 +546,7 @@ public static class OneDimensionalArray
         var firstLength = Intrinsics.GetLength(first);
         var cmp = firstLength.CompareTo(Intrinsics.GetLength(second));
         if (cmp == 0)
-            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(firstLength * sizeof(T)));
+            cmp = Intrinsics.CompareUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(firstLength * sizeof(T)));
 
         return cmp;
     }

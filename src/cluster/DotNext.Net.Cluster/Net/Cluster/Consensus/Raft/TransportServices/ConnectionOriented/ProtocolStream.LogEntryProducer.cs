@@ -71,7 +71,7 @@ internal partial class ProtocolStream
             return new(writer.CopyFromAsync(stream, token));
         }
 
-        [AsyncStateMachine(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
             using var buffer = stream.allocator.Invoke(stream.BufferLength, exactSize: false);
