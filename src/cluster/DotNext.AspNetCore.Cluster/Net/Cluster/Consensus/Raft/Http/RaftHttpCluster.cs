@@ -39,6 +39,20 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
         MetricsCollector? metrics = null,
         ClusterMemberAnnouncer<HttpEndPoint>? announcer = null)
+        : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, metrics, announcer)
+    {
+    }
+
+    internal RaftHttpCluster(
+        IOptionsMonitor<HttpClusterMemberConfiguration> config,
+        IEnumerable<IInputChannel> messageHandlers,
+        ILogger logger,
+        IClusterMemberLifetime? configurator = null,
+        IPersistentState? auditTrail = null,
+        IClusterConfigurationStorage<HttpEndPoint>? configStorage = null,
+        IHttpMessageHandlerFactory? httpHandlerFactory = null,
+        MetricsCollector? metrics = null,
+        ClusterMemberAnnouncer<HttpEndPoint>? announcer = null)
         : base(config.CurrentValue)
     {
         openConnectionForEachRequest = config.CurrentValue.OpenConnectionForEachRequest;
@@ -64,7 +78,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         AuditTrail = auditTrail ?? new ConsensusOnlyState();
         ConfigurationStorage = configStorage ?? new InMemoryClusterConfigurationStorage();
         this.httpHandlerFactory = httpHandlerFactory;
-        Logger = loggerFactory.CreateLogger(GetType());
+        Logger = logger;
         Metrics = metrics;
         this.announcer = announcer;
 

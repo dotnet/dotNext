@@ -450,5 +450,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             NotNull(host.Services.GetService<IInputChannel>());
             await host.StopAsync();
         }
+
+        [Fact]
+        public static async Task SelfHost()
+        {
+            var configuration = new Dictionary<string, string>
+            {
+                {"metadata:nodeName", "TestNode"},
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+            };
+
+            using var host = new HostBuilder()
+                .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
+                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+                .ConfigureServices(static (context, services) =>
+                {
+                    services.Configure<HttpClusterMemberConfiguration>(context.Configuration);
+                })
+                .Build();
+
+            await host.StartAsync();
+            using (var clusterHost = new RaftClusterHttpHost(host.Services, "category"))
+            {
+                Equal(new HttpEndPoint(new(configuration["publicEndPoint"])), clusterHost.Cluster.LocalMemberAddress);
+                IsType<ConsensusOnlyState>(clusterHost.Cluster.AuditTrail);
+            }
+            await host.StopAsync();
+        }
     }
 }
