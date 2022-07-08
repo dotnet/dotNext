@@ -11,7 +11,8 @@ namespace DotNext.Threading
             var task = Scheduler.ScheduleAsync(static (args, token) => ValueTask.CompletedTask, 42, DefaultTimeout);
             False(task.Task.IsCompleted);
             task.Cancel();
-            await ThrowsAsync<TaskCanceledException>(Func.Constant(task.Task));
+            await ThrowsAsync<TaskCanceledException>(Func.Constant<Task>(task));
+            True(task.Task.IsCanceled);
         }
 
         [Fact]
@@ -20,7 +21,8 @@ namespace DotNext.Threading
             var task = Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(args), 42, DefaultTimeout);
             False(task.Task.IsCompleted);
             task.Cancel();
-            await ThrowsAsync<TaskCanceledException>(Func.Constant(task.Task));
+            await ThrowsAsync<TaskCanceledException>(Func.Constant<Task<int>>(task));
+            True(task.Task.IsCanceled);
         }
 
         [Fact]
