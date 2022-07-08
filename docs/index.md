@@ -25,7 +25,7 @@ This library is the core of .NEXT which extends .NET standard library with
   * Ad-hoc user data associated with arbitrary object
   * A rich set of dynamic buffer types
   * Fast HEX conversion
-  * Fast Base64 encoding/decoding in streaming scenarios
+  * Fast Base64 encoding/decoding for streaming scenarios
   * [Optional](features/core/optional.md) and [Result](features/core/result.md) monads
   * [Soft Reference](features/core/softref.md)
   * [LRU/LFU cache](features/core/cache.md)
