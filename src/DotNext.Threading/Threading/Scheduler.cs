@@ -25,20 +25,7 @@ public static partial class Scheduler
         if (delay < TimeSpan.Zero && delay != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(delay));
 
-        if (token.IsCancellationRequested)
-            return new(token);
-
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-        return new(ExecuteAsync(), cts);
-
-        async Task ExecuteAsync()
-        {
-            using (cts)
-            {
-                await Task.Delay(delay, cts.Token).ConfigureAwait(false);
-                await callback(args, cts.Token).ConfigureAwait(false);
-            }
-        }
+        return DelayedTaskStateMachine<TArgs>.Start(callback, args, delay, token);
     }
 
     /// <summary>
@@ -60,19 +47,6 @@ public static partial class Scheduler
         if (delay < TimeSpan.Zero && delay != InfiniteTimeSpan)
             throw new ArgumentOutOfRangeException(nameof(delay));
 
-        if (token.IsCancellationRequested)
-            return new(token);
-
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-        return new(ExecuteAsync(), cts);
-
-        async Task<TResult> ExecuteAsync()
-        {
-            using (cts)
-            {
-                await Task.Delay(delay, cts.Token).ConfigureAwait(false);
-                return await callback(args, cts.Token).ConfigureAwait(false);
-            }
-        }
+        return DelayedTaskStateMachine<TArgs, TResult>.Start(callback, args, delay, token);
     }
 }

@@ -1,4 +1,5 @@
-using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
@@ -11,103 +12,233 @@ public static partial class Scheduler
     /// <summary>
     /// Represents a task with delayed completion.
     /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct DelayedTask
+    public abstract class DelayedTask
     {
-        private readonly CancellationTokenSource? cts;
-        private readonly Task? task;
+        private protected readonly CancellationToken token; // cached token to avoid ObjectDisposedException
+        private volatile CancellationTokenSource? tokenSource;
 
-        internal DelayedTask(Task task, CancellationTokenSource cts)
-        {
-            this.cts = cts;
-            this.task = task;
-        }
-
-        internal DelayedTask(CancellationToken token)
-        {
-            Debug.Assert(token.IsCancellationRequested);
-
-            task = Task.FromCanceled(token);
-            cts = null;
-        }
+        private protected DelayedTask(CancellationToken token)
+            => this.token = (tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
 
         /// <summary>
-        /// Gets the underlying task.
+        /// Gets delayed task.
         /// </summary>
-        public Task Task => task ?? Task.FromCanceled(new(true));
+        public abstract Task Task { get; }
 
         /// <summary>
         /// Cancels scheduled task.
         /// </summary>
         public void Cancel()
         {
-            try
+            var cts = Interlocked.Exchange(ref tokenSource, null);
+            if (cts is not null)
             {
-                cts?.Cancel();
-            }
-            catch (ObjectDisposedException)
-            {
-                // suppress exception without any action
+                try
+                {
+                    cts.Cancel();
+                }
+                finally
+                {
+                    cts.Dispose();
+                }
             }
         }
 
+        private protected virtual void Cleanup() => Interlocked.Exchange(ref tokenSource, null)?.Dispose();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static void GetResultAndClear(ref ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter)
+        {
+            awaiter.GetResult();
+            awaiter = default;
+        }
+
         /// <summary>
-        /// Gets the underlying task.
+        /// Gets delayed task.
         /// </summary>
-        /// <param name="task">The delayed task.</param>
-        /// <returns>The underlying task.</returns>
-        public static implicit operator Task(in DelayedTask task) => task.Task;
+        /// <param name="task">Delayed task.</param>
+        /// <returns>The delayed task.</returns>
+        [return: NotNullIfNotNull("task")]
+        public static implicit operator Task?(DelayedTask? task) => task?.Task;
+    }
+
+    private sealed class DelayedTaskStateMachine<TArgs> : DelayedTask, IAsyncStateMachine
+    {
+        private readonly Func<TArgs, CancellationToken, ValueTask> callback;
+        private readonly TArgs args;
+        private readonly TimeSpan delay;
+        private AsyncTaskMethodBuilder builder;
+        private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter delayAwaiter;
+        private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter callbackAwaiter;
+        private byte state;
+
+        private DelayedTaskStateMachine(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, TimeSpan delay, CancellationToken token)
+            : base(token)
+        {
+            Debug.Assert(callback is not null);
+
+            this.callback = callback;
+            this.delay = delay;
+            this.args = args;
+            builder = AsyncTaskMethodBuilder.Create();
+        }
+
+        internal static DelayedTask Start(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, TimeSpan delay, CancellationToken token)
+        {
+            var machine = new DelayedTaskStateMachine<TArgs>(callback, args, delay, token);
+            machine.builder.Start(ref machine);
+            return machine;
+        }
+
+        public override Task Task => builder.Task;
+
+        private static void MoveNext(DelayedTaskStateMachine<TArgs> machine)
+        {
+            try
+            {
+                switch (machine.state)
+                {
+                    case 0:
+                        machine.delayAwaiter = Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
+                        if (machine.delayAwaiter.IsCompleted)
+                            goto case 1;
+                        machine.state = 1;
+                        machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
+                        break;
+                    case 1:
+                        GetResultAndClear(ref machine.delayAwaiter);
+                        machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
+                        if (machine.callbackAwaiter.IsCompleted)
+                            goto default;
+                        machine.state = 2;
+                        machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
+                        break;
+                    default:
+                        machine.callbackAwaiter.GetResult();
+                        machine.builder.SetResult();
+                        machine.Cleanup();
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                machine.Cleanup();
+                machine.builder.SetException(e);
+            }
+        }
+
+        void IAsyncStateMachine.MoveNext() => MoveNext(this);
+
+        private protected override void Cleanup()
+        {
+            callbackAwaiter = default;
+            delayAwaiter = default;
+            base.Cleanup();
+        }
+
+        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+            => builder.SetStateMachine(stateMachine);
     }
 
     /// <summary>
     /// Represents a task with delayed completion.
     /// </summary>
     /// <typeparam name="TResult">The type of the result produced by this task.</typeparam>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct DelayedTask<TResult>
+    public abstract class DelayedTask<TResult> : DelayedTask
     {
-        private readonly CancellationTokenSource? cts;
-        private readonly Task<TResult>? task;
-
-        internal DelayedTask(Task<TResult> task, CancellationTokenSource cts)
+        private protected DelayedTask(CancellationToken token)
+            : base(token)
         {
-            this.cts = cts;
-            this.task = task;
-        }
-
-        internal DelayedTask(CancellationToken token)
-        {
-            Debug.Assert(token.IsCancellationRequested);
-
-            task = System.Threading.Tasks.Task.FromCanceled<TResult>(token);
-            cts = null;
         }
 
         /// <summary>
-        /// Gets the underlying task.
+        /// Gets delayed task.
         /// </summary>
-        public Task<TResult> Task => task ?? System.Threading.Tasks.Task.FromCanceled<TResult>(new(true));
+        public override abstract Task<TResult> Task { get; }
 
         /// <summary>
-        /// Cancels scheduled task.
+        /// Gets delayed task.
         /// </summary>
-        public void Cancel()
+        /// <param name="task">Delayed task.</param>
+        /// <returns>The delayed task.</returns>
+        [return: NotNullIfNotNull("task")]
+        public static implicit operator Task<TResult>?(DelayedTask<TResult>? task) => task?.Task;
+    }
+
+    private sealed class DelayedTaskStateMachine<TArgs, TResult> : DelayedTask<TResult>, IAsyncStateMachine
+    {
+        private readonly Func<TArgs, CancellationToken, ValueTask<TResult>> callback;
+        private readonly TArgs args;
+        private readonly TimeSpan delay;
+        private AsyncTaskMethodBuilder<TResult> builder;
+        private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter delayAwaiter;
+        private ConfiguredValueTaskAwaitable<TResult>.ConfiguredValueTaskAwaiter callbackAwaiter;
+        private byte state;
+
+        private DelayedTaskStateMachine(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, TimeSpan delay, CancellationToken token)
+            : base(token)
+        {
+            Debug.Assert(callback is not null);
+
+            this.callback = callback;
+            this.delay = delay;
+            this.args = args;
+            builder = AsyncTaskMethodBuilder<TResult>.Create();
+        }
+
+        internal static DelayedTask<TResult> Start(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, TimeSpan delay, CancellationToken token)
+        {
+            var machine = new DelayedTaskStateMachine<TArgs, TResult>(callback, args, delay, token);
+            machine.builder.Start(ref machine);
+            return machine;
+        }
+
+        public override Task<TResult> Task => builder.Task;
+
+        private static void MoveNext(DelayedTaskStateMachine<TArgs, TResult> machine)
         {
             try
             {
-                cts?.Cancel();
+                switch (machine.state)
+                {
+                    case 0:
+                        machine.delayAwaiter = System.Threading.Tasks.Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
+                        if (machine.delayAwaiter.IsCompleted)
+                            goto case 1;
+                        machine.state = 1;
+                        machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
+                        break;
+                    case 1:
+                        GetResultAndClear(ref machine.delayAwaiter);
+                        machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
+                        if (machine.callbackAwaiter.IsCompleted)
+                            goto default;
+                        machine.state = 2;
+                        machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
+                        break;
+                    default:
+                        machine.builder.SetResult(machine.callbackAwaiter.GetResult());
+                        machine.Cleanup();
+                        break;
+                }
             }
-            catch (ObjectDisposedException)
+            catch (Exception e)
             {
-                // suppress exception without any action
+                machine.Cleanup();
+                machine.builder.SetException(e);
             }
         }
 
-        /// <summary>
-        /// Gets the underlying task.
-        /// </summary>
-        /// <param name="task">The delayed task.</param>
-        /// <returns>The underlying task.</returns>
-        public static implicit operator Task<TResult>(in DelayedTask<TResult> task) => task.Task;
+        void IAsyncStateMachine.MoveNext() => MoveNext(this);
+
+        private protected override void Cleanup()
+        {
+            delayAwaiter = default;
+            callbackAwaiter = default;
+            base.Cleanup();
+        }
+
+        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+            => builder.SetStateMachine(stateMachine);
     }
 }
