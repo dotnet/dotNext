@@ -101,8 +101,8 @@ public static partial class Scheduler
                     case 0U:
                         machine.delayAwaiter = Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.delayAwaiter.IsCompleted)
-                            goto case 1;
-                        machine.state = 1;
+                            goto case 1U;
+                        machine.state = 1U;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
                     case 1U:
@@ -110,7 +110,7 @@ public static partial class Scheduler
                         machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.callbackAwaiter.IsCompleted)
                             goto default;
-                        machine.state = 2;
+                        machine.state = 2U;
                         machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
                         break;
                     default:
@@ -203,8 +203,8 @@ public static partial class Scheduler
                     case 0U:
                         machine.delayAwaiter = System.Threading.Tasks.Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.delayAwaiter.IsCompleted)
-                            goto case 1;
-                        machine.state = 1;
+                            goto case 1U;
+                        machine.state = 1U;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
                     case 1U:
@@ -212,7 +212,7 @@ public static partial class Scheduler
                         machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.callbackAwaiter.IsCompleted)
                             goto default;
-                        machine.state = 2;
+                        machine.state = 2U;
                         machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
                         break;
                     default:
