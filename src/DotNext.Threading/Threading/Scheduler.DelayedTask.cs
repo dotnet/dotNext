@@ -44,7 +44,7 @@ public static partial class Scheduler
             }
         }
 
-        private protected virtual void Cleanup() => Interlocked.Exchange(ref tokenSource, null)?.Dispose();
+        private protected void Cleanup() => Interlocked.Exchange(ref tokenSource, null)?.Dispose();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected static void GetResultAndClear(ref ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter)
@@ -129,7 +129,7 @@ public static partial class Scheduler
 
         void IAsyncStateMachine.MoveNext() => MoveNext(this);
 
-        private protected override void Cleanup()
+        private new void Cleanup()
         {
             callbackAwaiter = default;
             delayAwaiter = default;
@@ -231,7 +231,7 @@ public static partial class Scheduler
 
         void IAsyncStateMachine.MoveNext() => MoveNext(this);
 
-        private protected override void Cleanup()
+        private new void Cleanup()
         {
             delayAwaiter = default;
             callbackAwaiter = default;
